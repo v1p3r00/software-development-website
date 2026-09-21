@@ -20,41 +20,6 @@ npm run build    # type-check + production build into dist/
 npm run preview  # serve the production build
 ```
 
-## Deployment
-
-The site is hosted on **GitHub Pages** and served at **softwaredevelopment.hu**.
-Websupport is used only as the domain/DNS provider.
-
-`.github/workflows/deploy.yml` builds on every push to `main` and publishes
-`dist/` to Pages. Two one-off setup steps:
-
-1. **Repo → Settings → Pages → Build and deployment → Source: GitHub Actions.**
-2. **Repo → Settings → Pages → Custom domain:** `softwaredevelopment.hu`, then
-   tick **Enforce HTTPS** once the certificate has been issued (can take up to
-   an hour after DNS resolves).
-
-`public/CNAME` keeps the custom domain attached across deployments — do not
-delete it.
-
-### DNS at Websupport
-
-In the Websupport DNS editor for `softwaredevelopment.hu`:
-
-| Type | Name | Value |
-|---|---|---|
-| A | `@` | `185.199.108.153` |
-| A | `@` | `185.199.109.153` |
-| A | `@` | `185.199.110.153` |
-| A | `@` | `185.199.111.153` |
-| AAAA | `@` | `2606:50c0:8000::153` |
-| AAAA | `@` | `2606:50c0:8001::153` |
-| AAAA | `@` | `2606:50c0:8002::153` |
-| AAAA | `@` | `2606:50c0:8003::153` |
-| CNAME | `www` | `v1p3r00.github.io.` |
-
-Remove any existing A/AAAA records on `@` that point at the old hosting, and any
-conflicting `www` record. Propagation can take a few hours.
-
 ### Client-side routing
 
 GitHub Pages has no rewrite rules, so the build copies `index.html` to
