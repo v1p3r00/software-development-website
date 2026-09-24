@@ -198,6 +198,7 @@ export const projects: Project[] = [
     category: 'business',
     filters: ['custom', 'finance'],
     visual: 'table',
+    period: '2018',
     tags: ['Java', 'Angular', 'Finance', 'Automation'],
     summary: {
       en: 'Custom accounting software built around specific business requirements.',
