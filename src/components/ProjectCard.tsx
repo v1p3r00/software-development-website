@@ -35,9 +35,11 @@ export default function ProjectCard({ project, index }: { project: Project; inde
           <div className="absolute left-3 top-3 font-mono text-2xs uppercase tracking-tech text-accent">
             ID {project.id}
           </div>
-          <div className="absolute bottom-3 left-3 font-mono text-2xs uppercase tracking-tech text-muted">
-            {project.period}
-          </div>
+          {project.period && (
+            <div className="absolute bottom-3 left-3 font-mono text-2xs uppercase tracking-tech text-muted">
+              {project.period}
+            </div>
+          )}
           <div className="absolute inset-x-0 top-1/2 h-px bg-accent/40" />
           <div className="absolute inset-y-0 left-1/2 w-px bg-accent/40" />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 border border-accent px-2 py-1 font-mono text-2xs uppercase tracking-tech text-accent">

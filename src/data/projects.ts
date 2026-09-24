@@ -52,7 +52,6 @@ export const projects: Project[] = [
     category: 'enterprise',
     filters: ['enterprise'],
     visual: 'dashboard',
-    period: '2019 — present',
     tags: ['Java', 'Angular', 'Spring', 'Clarity', 'Automic'],
     summary: {
       en: 'Development, architecture and long-term support.',
@@ -84,7 +83,6 @@ export const projects: Project[] = [
     category: 'finance',
     filters: ['finance', 'enterprise'],
     visual: 'ledger',
-    period: '2021 — 2023',
     tags: ['Java', 'Angular', 'Spring Boot', 'Banking', 'Integration'],
     summary: {
       en: 'Software systems and integrations developed for Merkantil Bank.',
@@ -113,7 +111,6 @@ export const projects: Project[] = [
     category: 'government',
     filters: ['government', 'enterprise'],
     visual: 'map',
-    period: '2022 — 2023',
     tags: ['Java', 'Spring Boot', 'Angular', 'Security', 'Government'],
     summary: {
       en: 'Government project for the Czech Republic. A complex system for managing refugee-related processes and information.',
@@ -169,7 +166,6 @@ export const projects: Project[] = [
     category: 'data',
     filters: ['enterprise'],
     visual: 'pipeline',
-    period: '2020 — 2022',
     tags: ['Java', 'Reporting', 'ETL', 'Analytics'],
     summary: {
       en: 'Reporting and data solutions for Slovnaft / MOL Group.',
@@ -197,7 +193,6 @@ export const projects: Project[] = [
     category: 'business',
     filters: ['custom', 'finance'],
     visual: 'table',
-    period: '2021',
     tags: ['Java', 'Angular', 'Finance', 'Automation'],
     summary: {
       en: 'Custom accounting software built around specific business requirements.',
@@ -253,7 +248,6 @@ export const projects: Project[] = [
     category: 'custom',
     filters: ['custom'],
     visual: 'cube',
-    period: 'Ongoing',
     tags: ['Java', 'Angular', 'React', 'Cloud', 'Docker'],
     summary: {
       en: 'Tailor-made digital products and web applications for unique business challenges.',
