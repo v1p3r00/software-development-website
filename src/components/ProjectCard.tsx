@@ -52,7 +52,8 @@ export default function ProjectCard({ project, index }: { project: Project; inde
       {/* body */}
       <div className="flex flex-1 flex-col p-4">
         <h3 className="display text-lg leading-tight sm:text-xl">{project.title}</h3>
-        {project.client && <div className="label-a mt-1">{project.client}</div>}
+        <div className="mt-1 text-[13px] leading-snug text-muted">{pick(project.kind)}</div>
+        {project.client && <div className="label-a mt-1.5">{project.client}</div>}
         <p className="mt-2 flex-1 text-[13px] leading-relaxed text-muted">{pick(project.summary)}</p>
 
         <div className="mt-4 flex items-end gap-2">

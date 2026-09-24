@@ -26,6 +26,8 @@ export interface Project {
   id: string;
   num: string;
   title: string;
+  /** what the thing is — sits between the title and the client */
+  kind: L10n;
   client?: string;
   category: CategoryKey;
   filters: FilterKey[];
@@ -45,6 +47,7 @@ export const projects: Project[] = [
     id: '3c-tricise',
     num: '01',
     title: '3C (Tricise)',
+    kind: { en: 'Enterprise Management Platform', hu: 'Vállalati menedzsmentplatform' },
     client: 'Tricise',
     category: 'enterprise',
     filters: ['enterprise'],
@@ -52,8 +55,8 @@ export const projects: Project[] = [
     period: '2019 — present',
     tags: ['Java', 'Angular', 'Spring', 'Clarity', 'Automic'],
     summary: {
-      en: 'Enterprise software product. Development, architecture and long-term support.',
-      hu: 'Vállalati szoftvertermék. Fejlesztés, architektúra és hosszú távú támogatás.',
+      en: 'Development, architecture and long-term support.',
+      hu: 'Fejlesztés, architektúra és hosszú távú támogatás.',
     },
     role: {
       en: 'Full-stack developer / architect',
@@ -76,6 +79,7 @@ export const projects: Project[] = [
     id: 'bank-projects',
     num: '02',
     title: 'Bank projects',
+    kind: { en: 'Banking Platform Modernization', hu: 'Banki platform modernizációja' },
     client: 'Merkantil Bank',
     category: 'finance',
     filters: ['finance', 'enterprise'],
@@ -104,7 +108,8 @@ export const projects: Project[] = [
     id: 'refugee-management-system',
     num: '03',
     title: 'Refugee management system',
-    client: 'Czech Republic',
+    kind: { en: 'Government Platform', hu: 'Államigazgatási platform' },
+    client: 'ICZ',
     category: 'government',
     filters: ['government', 'enterprise'],
     visual: 'map',
@@ -132,13 +137,14 @@ export const projects: Project[] = [
     id: 'wexo',
     num: '04',
     title: 'Wexo',
+    kind: { en: 'Stock Market Web Application', hu: 'Tőzsdei webalkalmazás' },
     category: 'finance',
     filters: ['finance', 'web'],
     visual: 'market',
     tags: ['Node.js', 'Angular', 'TypeScript', 'REST'],
     summary: {
-      en: 'Stock market web application. Backend infrastructure in Node.js, front end in Angular.',
-      hu: 'Tőzsdei webalkalmazás. Backend infrastruktúra Node.js-ben, frontend Angularban.',
+      en: 'Backend infrastructure in Node.js, front end in Angular — one owner across both.',
+      hu: 'Backend infrastruktúra Node.js-ben, frontend Angularban — mindkét oldal egy kézben.',
     },
     role: { en: 'Full-stack developer', hu: 'Full-stack fejlesztő' },
     context: {
@@ -158,6 +164,7 @@ export const projects: Project[] = [
     id: 'reporting-system',
     num: '05',
     title: 'Reporting system',
+    kind: { en: 'Reporting & Data Platform', hu: 'Riportálási és adatplatform' },
     client: 'Slovnaft / MOL Group',
     category: 'data',
     filters: ['enterprise'],
@@ -186,6 +193,7 @@ export const projects: Project[] = [
     id: 'accounting-system',
     num: '06',
     title: 'Accounting system',
+    kind: { en: 'Custom Accounting System', hu: 'Egyedi könyvelési rendszer' },
     category: 'business',
     filters: ['custom', 'finance'],
     visual: 'table',
@@ -213,6 +221,7 @@ export const projects: Project[] = [
     id: 'various-web-design',
     num: '07',
     title: 'Various web design',
+    kind: { en: 'Websites & E-commerce', hu: 'Weboldalak és e-kereskedelem' },
     category: 'web',
     filters: ['web'],
     visual: 'layout',
@@ -240,6 +249,7 @@ export const projects: Project[] = [
     id: 'custom-solutions',
     num: '08',
     title: 'Custom solutions',
+    kind: { en: 'Tailor-made Digital Products', hu: 'Egyedi digitális termékek' },
     category: 'custom',
     filters: ['custom'],
     visual: 'cube',

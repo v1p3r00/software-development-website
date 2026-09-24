@@ -94,6 +94,15 @@ export default function ProjectDetail() {
               <span className="display text-accent text-[2.6rem] leading-none">{project.num}</span>
               <h1 className="display text-[clamp(2.4rem,7vw,5rem)]">{project.title}</h1>
             </div>
+            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="text-base text-muted sm:text-lg">{pick(project.kind)}</span>
+              {project.client && (
+                <>
+                  <span className="h-1 w-1 bg-line-strong" aria-hidden />
+                  <span className="label-a">{project.client}</span>
+                </>
+              )}
+            </div>
             <p className="mt-5 max-w-[62ch] text-lg leading-relaxed text-muted">{pick(project.summary)}</p>
           </header>
 
