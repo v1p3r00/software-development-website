@@ -12,7 +12,15 @@ export type CategoryKey =
 
 export type FilterKey = 'all' | 'enterprise' | 'finance' | 'government' | 'web' | 'custom';
 
-export type VisualKey = 'dashboard' | 'ledger' | 'map' | 'pipeline' | 'table' | 'layout' | 'cube';
+export type VisualKey =
+  | 'dashboard'
+  | 'ledger'
+  | 'market'
+  | 'map'
+  | 'pipeline'
+  | 'table'
+  | 'layout'
+  | 'cube';
 
 export interface Project {
   id: string;
@@ -22,7 +30,8 @@ export interface Project {
   category: CategoryKey;
   filters: FilterKey[];
   visual: VisualKey;
-  period: string;
+  /** omit while the dates are still to be confirmed */
+  period?: string;
   tags: string[];
   summary: L10n;
   role: L10n;
@@ -120,8 +129,34 @@ export const projects: Project[] = [
     },
   },
   {
-    id: 'reporting-system',
+    id: 'wexo',
     num: '04',
+    title: 'Wexo',
+    category: 'finance',
+    filters: ['finance', 'web'],
+    visual: 'market',
+    tags: ['Node.js', 'Angular', 'TypeScript', 'REST'],
+    summary: {
+      en: 'Stock market web application. Backend infrastructure in Node.js, front end in Angular.',
+      hu: 'Tőzsdei webalkalmazás. Backend infrastruktúra Node.js-ben, frontend Angularban.',
+    },
+    role: { en: 'Full-stack developer', hu: 'Full-stack fejlesztő' },
+    context: {
+      en: 'A market application, where the interface has to stay readable while the numbers under it keep moving, and the backend has to keep up with the data feeding them.',
+      hu: 'Tőzsdei alkalmazás, ahol a felületnek akkor is olvashatónak kell maradnia, amikor alatta folyamatosan mozognak a számok — a backendnek pedig lépést kell tartania az azokat tápláló adatokkal.',
+    },
+    approach: {
+      en: 'Built the backend infrastructure in Node.js — services, data handling and the API the client reads from — and the Angular front end on top of it. Owning both sides meant the API contract was shaped by what the interface actually needed, rather than negotiated after the fact.',
+      hu: 'A backend infrastruktúrát Node.js-ben építettem — szolgáltatások, adatkezelés és az az API, amelyből a kliens dolgozik —, a ráépülő Angular felülettel együtt. Mivel mindkét oldal nálam volt, az API-szerződést az szabta meg, amire a felületnek valóban szüksége volt, nem utólagos egyeztetés.',
+    },
+    outcome: {
+      en: 'A front end and a backend designed together instead of across team boundaries, with market data reaching the screen through one owner rather than three handovers.',
+      hu: 'Együtt tervezett frontend és backend, csapathatárokon átnyúló egyeztetés helyett — a tőzsdei adat egyetlen felelősön keresztül jut a képernyőre, nem három átadáson át.',
+    },
+  },
+  {
+    id: 'reporting-system',
+    num: '05',
     title: 'Reporting system',
     client: 'Slovnaft / MOL Group',
     category: 'data',
@@ -149,7 +184,7 @@ export const projects: Project[] = [
   },
   {
     id: 'accounting-system',
-    num: '05',
+    num: '06',
     title: 'Accounting system',
     category: 'business',
     filters: ['custom', 'finance'],
@@ -176,7 +211,7 @@ export const projects: Project[] = [
   },
   {
     id: 'various-web-design',
-    num: '06',
+    num: '07',
     title: 'Various web design',
     category: 'web',
     filters: ['web'],
@@ -203,7 +238,7 @@ export const projects: Project[] = [
   },
   {
     id: 'custom-solutions',
-    num: '07',
+    num: '08',
     title: 'Custom solutions',
     category: 'custom',
     filters: ['custom'],

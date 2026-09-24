@@ -104,7 +104,7 @@ export default function ProjectDetail() {
                 {[
                   [t.projects.detail.category, t.projects.categories[project.category]],
                   [t.projects.detail.role, pick(project.role)],
-                  [t.projects.detail.period, project.period],
+                  ...(project.period ? [[t.projects.detail.period, project.period]] : []),
                   ...(project.client ? [[t.ui.client, project.client]] : []),
                 ].map(([k, v]) => (
                   <div key={k} className="flex items-baseline justify-between gap-4 border-b border-line py-3">

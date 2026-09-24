@@ -72,6 +72,63 @@ function render(variant: VisualKey) {
           <line x1="180" y1="16" x2="180" y2="184" stroke={L} strokeDasharray="3 3" />
         </g>
       );
+    case 'market':
+      return (
+        <g>
+          {/* ticker strip */}
+          <rect x="16" y="16" width="288" height="20" stroke={D} />
+          {[0, 1, 2, 3, 4].map((i) => (
+            <g key={i}>
+              <rect x={24 + i * 56} y="23" width="18" height="5" fill={T} opacity="0.45" />
+              <rect x={46 + i * 56} y="23" width="12" height="5" fill={i === 1 ? A : D} />
+            </g>
+          ))}
+          {/* candlesticks */}
+          {[
+            [44, 108, 70],
+            [72, 96, 56],
+            [100, 118, 84],
+            [128, 88, 52],
+            [156, 104, 64],
+            [184, 74, 44],
+            [212, 92, 60],
+            [240, 66, 36],
+            [268, 80, 50],
+          ].map(([x, top, bottom], i) => (
+            <g key={x}>
+              <line
+                x1={x}
+                y1={Math.min(top, bottom) - 10}
+                x2={x}
+                y2={Math.max(top, bottom) + 10}
+                stroke={L}
+                strokeWidth="0.8"
+              />
+              <rect
+                x={x - 5}
+                y={Math.min(top, bottom)}
+                width="10"
+                height={Math.abs(bottom - top)}
+                fill={i === 7 ? A : 'rgb(var(--c-bg))'}
+                stroke={i === 7 ? A : L}
+              />
+            </g>
+          ))}
+          {/* trend + axis */}
+          <polyline
+            points="44,89 72,76 100,101 128,70 156,84 184,59 212,76 240,51 268,65"
+            stroke={A}
+            strokeWidth="1"
+            opacity="0.55"
+          />
+          <line x1="16" y1="160" x2="304" y2="160" stroke={D} />
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <line key={i} x1={44 + i * 48} y1="160" x2={44 + i * 48} y2="166" stroke={L} strokeWidth="0.8" />
+          ))}
+          <rect x="16" y="174" width="52" height="6" fill={D} />
+          <rect x="252" y="174" width="52" height="6" fill={D} />
+        </g>
+      );
     case 'map':
       return (
         <g>
