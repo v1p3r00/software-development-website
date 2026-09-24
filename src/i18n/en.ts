@@ -141,6 +141,8 @@ export const en = {
       database: 'Database',
       infrastructure: 'Infrastructure',
       enterprise: 'Enterprise',
+      cms: 'CMS & commerce',
+      ai: 'AI',
     },
   },
 

@@ -1,4 +1,11 @@
-export type GroupKey = 'frontend' | 'backend' | 'database' | 'infrastructure' | 'enterprise';
+export type GroupKey =
+  | 'frontend'
+  | 'backend'
+  | 'database'
+  | 'infrastructure'
+  | 'enterprise'
+  | 'cms'
+  | 'ai';
 
 export interface Tech {
   id: string;
@@ -8,7 +15,15 @@ export interface Tech {
   links: string[];
 }
 
-export const groups: GroupKey[] = ['frontend', 'backend', 'database', 'infrastructure', 'enterprise'];
+export const groups: GroupKey[] = [
+  'frontend',
+  'backend',
+  'database',
+  'infrastructure',
+  'enterprise',
+  'cms',
+  'ai',
+];
 
 export const technologies: Tech[] = [
   { id: 'react', name: 'React', group: 'frontend', links: ['typescript', 'rest', 'css', 'html'] },
@@ -30,6 +45,13 @@ export const technologies: Tech[] = [
   { id: 'git', name: 'Git', group: 'infrastructure', links: ['cicd'] },
   { id: 'cicd', name: 'CI/CD', group: 'infrastructure', links: ['git', 'docker', 'linux', 'h2'] },
   { id: 'linux', name: 'Linux', group: 'infrastructure', links: ['docker', 'cicd'] },
+
+  { id: 'wordpress', name: 'WordPress', group: 'cms', links: ['woocommerce', 'php', 'css'] },
+  { id: 'woocommerce', name: 'WooCommerce', group: 'cms', links: ['wordpress', 'php'] },
+  { id: 'shopify', name: 'Shopify', group: 'cms', links: ['css', 'rest'] },
+  { id: 'php', name: 'PHP', group: 'cms', links: ['wordpress', 'woocommerce', 'mariadb'] },
+
+  { id: 'ai', name: 'AI integration', group: 'ai', links: ['rest', 'react', 'java', 'docker'] },
 
   { id: 'clarity', name: 'Clarity', group: 'enterprise', links: ['angular'] },
   { id: 'automic', name: 'Automic', group: 'enterprise', links: ['java', 'linux'] },

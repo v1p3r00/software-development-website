@@ -143,6 +143,8 @@ export const hu: Dict = {
       database: 'Adatbázis',
       infrastructure: 'Infrastruktúra',
       enterprise: 'Vállalati',
+      cms: 'CMS és webshop',
+      ai: 'AI',
     },
   },
 

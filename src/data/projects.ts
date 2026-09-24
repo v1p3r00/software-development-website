@@ -27,7 +27,7 @@ export interface Project {
   num: string;
   title: string;
   /** what the thing is — sits between the title and the client */
-  kind: L10n;
+  kind?: L10n;
   client?: string;
   category: CategoryKey;
   filters: FilterKey[];
@@ -46,7 +46,7 @@ export const projects: Project[] = [
   {
     id: '3c-tricise',
     num: '01',
-    title: '3C (Tricise)',
+    title: '3C',
     kind: { en: 'Enterprise Management Platform', hu: 'Vállalati menedzsmentplatform' },
     client: 'Tricise',
     category: 'enterprise',
@@ -136,8 +136,8 @@ export const projects: Project[] = [
   {
     id: 'wexo',
     num: '04',
-    title: 'Wexo',
-    kind: { en: 'Stock Market Web Application', hu: 'Tőzsdei webalkalmazás' },
+    title: 'Stock Market Webapp',
+    client: 'Wexo',
     category: 'finance',
     filters: ['finance', 'web'],
     visual: 'market',
@@ -227,7 +227,7 @@ export const projects: Project[] = [
     filters: ['web'],
     visual: 'layout',
     period: '2018 — present',
-    tags: ['React', 'Next.js', 'Shopify', 'UI/UX'],
+    tags: ['WordPress', 'Shopify', 'WooCommerce', 'React', 'Next.js', 'UI/UX'],
     summary: {
       en: 'Modern websites, e-commerce experiences and custom web interfaces.',
       hu: 'Modern weboldalak, e-kereskedelmi élmények és egyedi webes felületek.',
@@ -254,7 +254,7 @@ export const projects: Project[] = [
     category: 'custom',
     filters: ['custom'],
     visual: 'cube',
-    tags: ['Java', 'Angular', 'React', 'Cloud', 'Docker'],
+    tags: ['Java', 'Angular', 'React', 'AI', 'Cloud', 'Docker'],
     summary: {
       en: 'Tailor-made digital products and web applications for unique business challenges.',
       hu: 'Egyedi digitális termékek és webalkalmazások különleges üzleti kihívásokra.',

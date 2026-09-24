@@ -47,8 +47,11 @@ export default function TechStack() {
     if (!el) return;
     const ro = new ResizeObserver(([entry]) => {
       const w = entry.contentRect.width;
-      // keep the arc spacing wider than a card so neighbours never overlap
-      setRadius(Math.round(Math.min(560, Math.max(360, w * 0.5))));
+      // the ring has to be wide enough that one card's arc slot exceeds the card
+      // itself, whatever the node count — otherwise neighbours overlap
+      const cardW = window.matchMedia('(min-width: 640px)').matches ? 150 : 118;
+      const needed = (N * cardW * 1.06) / (2 * Math.PI);
+      setRadius(Math.round(Math.min(900, Math.max(needed, w * 0.5))));
     });
     ro.observe(el);
     return () => ro.disconnect();
@@ -189,7 +192,7 @@ export default function TechStack() {
               'relative col-span-1 h-[340px] touch-pan-y select-none overflow-hidden sm:h-[420px] lg:col-span-8 lg:h-[480px]',
               dragging ? 'cursor-grabbing' : 'cursor-grab',
             )}
-            style={{ perspective: '1300px', perspectiveOrigin: '50% 50%' }}
+            style={{ perspective: '1800px', perspectiveOrigin: '50% 50%' }}
             data-cursor="inspect"
           >
             {/* floor grid + horizon */}
