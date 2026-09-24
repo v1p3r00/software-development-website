@@ -52,6 +52,7 @@ export const projects: Project[] = [
     category: 'enterprise',
     filters: ['enterprise'],
     visual: 'dashboard',
+    period: '2025 — present',
     tags: ['Java', 'Angular', 'Spring', 'Clarity', 'Automic'],
     summary: {
       en: 'Development, architecture and long-term support.',
@@ -83,6 +84,7 @@ export const projects: Project[] = [
     category: 'finance',
     filters: ['finance', 'enterprise'],
     visual: 'ledger',
+    period: '2024 — 2025',
     tags: ['Java', 'Angular', 'Spring Boot', 'Banking', 'Integration'],
     summary: {
       en: 'Software systems and integrations developed for Merkantil Bank.',
@@ -111,6 +113,7 @@ export const projects: Project[] = [
     category: 'government',
     filters: ['government', 'enterprise'],
     visual: 'map',
+    period: '2022 — 2023',
     tags: ['Java', 'Spring Boot', 'Angular', 'Security', 'Government'],
     summary: {
       en: 'Government project for the Czech Republic. A complex system for managing refugee-related processes and information.',
@@ -138,6 +141,7 @@ export const projects: Project[] = [
     category: 'finance',
     filters: ['finance', 'web'],
     visual: 'market',
+    period: '2021 — 2022',
     tags: ['Node.js', 'Angular', 'TypeScript', 'REST'],
     summary: {
       en: 'Backend infrastructure in Node.js, front end in Angular — one owner across both.',
@@ -166,6 +170,7 @@ export const projects: Project[] = [
     category: 'data',
     filters: ['enterprise'],
     visual: 'pipeline',
+    period: '2019 — 2020',
     tags: ['Java', 'Reporting', 'ETL', 'Analytics'],
     summary: {
       en: 'Reporting and data solutions for Slovnaft / MOL Group.',
