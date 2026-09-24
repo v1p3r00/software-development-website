@@ -137,6 +137,7 @@ export const projects: Project[] = [
     id: 'wexo',
     num: '04',
     title: 'Stock Market Webapp',
+    kind: { en: 'Fintech Platform', hu: 'Fintech platform' },
     client: 'Wexo',
     category: 'finance',
     filters: ['finance', 'web'],
