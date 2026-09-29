@@ -58,6 +58,8 @@ export const hu: Dict = {
     scroll: 'Görgess',
     roles: ['Full-stack fejlesztő', 'Terméképítő', 'Webdizájner'],
     note: 'Ugyanaz a kíváncsiság,\nmás-más feladat.',
+    inspectModel: 'A 3D modell megtekintése',
+    inspectHint: 'Húzd a forgatáshoz · görgess a nagyításhoz · Esc a bezáráshoz',
     portraitTag: 'Alany / M.D.',
   },
 

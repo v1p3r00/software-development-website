@@ -56,6 +56,8 @@ export const en = {
     scroll: 'Scroll',
     roles: ['Full-stack developer', 'Product builder', 'Web designer'],
     note: 'Same curiosity,\ndifferent problems.',
+    inspectModel: 'Inspect the 3D model',
+    inspectHint: 'Drag to rotate · scroll to zoom · Esc to close',
     portraitTag: 'Subject / D.M.',
   },
 
