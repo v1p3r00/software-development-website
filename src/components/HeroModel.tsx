@@ -66,6 +66,87 @@ function box(a: V3, b: V3, rxA: number, rzA: number, rxB: number, rzB: number, c
   return tris;
 }
 
+
+/** A ring-by-ring lathe. Each ring is an ellipse in xz at its own height, with
+ *  its own forward offset, so the profile can be shaped like a face. */
+function lathe(
+  rings: Array<{ y: number; rx: number; rz: number; zc: number }>,
+  color: V3,
+  segments = 10,
+  capBottom?: V3,
+  capTop?: V3,
+): Tri[] {
+  const ring = (r: { y: number; rx: number; rz: number; zc: number }) =>
+    Array.from({ length: segments }, (_, i) => {
+      const a = (i / segments) * Math.PI * 2;
+      return [Math.sin(a) * r.rx, r.y, Math.cos(a) * r.rz + r.zc] as V3;
+    });
+
+  const loops = rings.map(ring);
+  const tris: Tri[] = [];
+  for (let r = 0; r < loops.length - 1; r++) {
+    for (let i = 0; i < segments; i++) {
+      const j = (i + 1) % segments;
+      const a = loops[r][i];
+      const b = loops[r][j];
+      const c = loops[r + 1][j];
+      const d = loops[r + 1][i];
+      tris.push({ a, b, c, color }, { a, b: c, c: d, color });
+    }
+  }
+  if (capBottom) {
+    for (let i = 0; i < segments; i++) {
+      const j = (i + 1) % segments;
+      tris.push({ a: capBottom, b: loops[0][j], c: loops[0][i], color });
+    }
+  }
+  if (capTop) {
+    const top = loops[loops.length - 1];
+    for (let i = 0; i < segments; i++) {
+      const j = (i + 1) % segments;
+      tris.push({ a: capTop, b: top[i], c: top[j], color });
+    }
+  }
+  return tris;
+}
+
+/** Head profile: jaw, cheeks, brow, skull. +z is the front of the face. */
+const HEAD_RINGS = [
+  { y: 58.4, rx: 3.88, rz: 4.33, zc: 1.6 },
+  { y: 60.8, rx: 6.38, rz: 6.61, zc: 1.0 },
+  { y: 63.6, rx: 7.98, rz: 8.21, zc: 0.4 },
+  { y: 66.6, rx: 8.89, rz: 9.12, zc: 0.0 },
+  { y: 69.6, rx: 9.12, rz: 9.46, zc: -0.5 },
+  { y: 72.6, rx: 8.78, rz: 9.12, zc: -0.9 },
+  { y: 75.4, rx: 7.07, rz: 7.52, zc: -1.3 },
+  { y: 77.4, rx: 4.10, rz: 4.45, zc: -1.5 },
+];
+
+function headMesh(): Tri[] {
+  const tris: Tri[] = [
+    ...lathe(HEAD_RINGS, SKIN, 10, [0, 56.4, 2.2], [0, 78.8, -1.5]),
+    // nose
+    {
+      a: [0, 70.4, 9.3] as V3, b: [-2.1, 66.3, 9.1] as V3, c: [0, 65.4, 11.9] as V3, color: SKIN,
+    },
+    { a: [0, 70.4, 9.3] as V3, b: [0, 65.4, 11.9] as V3, c: [2.1, 66.3, 9.1] as V3, color: SKIN },
+    { a: [-2.1, 66.3, 9.1] as V3, b: [2.1, 66.3, 9.1] as V3, c: [0, 65.4, 11.9] as V3, color: SKIN },
+    // ears
+    ...box([-8.9, 68.6, -1.2], [-10.1, 68.6, -1.2], 1.1, 2.7, 1.1, 2.7, SKIN),
+    ...box([8.9, 68.6, -1.2], [10.1, 68.6, -1.2], 1.1, 2.7, 1.1, 2.7, SKIN),
+  ];
+
+  // hair: the same skull, a little larger, from the brow up and around the back
+  const hairRings = HEAD_RINGS.slice(3).map((r, i) => ({
+    y: r.y + (i === 0 ? 0 : 0.2),
+    rx: r.rx + 0.75,
+    rz: r.rz + 0.75,
+    zc: r.zc - 1.4,
+  }));
+  tris.push(...lathe(hairRings, HAIR, 10, undefined, [0, 79.6, -2.9]));
+  return tris;
+}
+
 function buildMesh(): Tri[] {
   const hip: V3 = [0, 0, 2];
   const shoulder: V3 = [0, 49, -5];
@@ -119,8 +200,7 @@ function buildMesh(): Tri[] {
 
     // neck, head, hair
     ...box([0, 48, -5], [0, 57, -4], 4, 4, 4.2, 4.2, SKIN),
-    ...box([0, 57, -3], [0, 72, -3], 8, 9, 7.6, 8.6, SKIN),
-    ...box([0, 68.5, -3], [0, 75.5, -3], 8.6, 9.6, 6.8, 7.8, HAIR),
+    ...headMesh(),
 
     // laptop
     ...box([0, 24, 40], [0, 25.4, 40], 17, 10, 17, 10, DEVICE),
@@ -157,10 +237,6 @@ export default function HeroModel({ className = '' }: { className?: string }) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const low = document.createElement('canvas');
-    const lctx = low.getContext('2d');
-    if (!lctx) return;
-
     let accent = readAccent();
     const themeObserver = new MutationObserver(() => {
       accent = readAccent();
@@ -176,10 +252,6 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      // the internal framebuffer: small, so everything upscales chunky
-      const lw = Math.max(110, Math.min(230, Math.round(w / 3.1)));
-      low.width = lw;
-      low.height = Math.max(80, Math.round((lw * h) / Math.max(1, w)));
     });
     ro.observe(canvas);
 
@@ -199,17 +271,14 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       }
 
       ctx.clearRect(0, 0, w, h);
-      lctx.clearRect(0, 0, low.width, low.height);
       if (!w || !h) {
         raf = requestAnimationFrame(draw);
         return;
       }
 
-      const lw = low.width;
-      const lh = low.height;
-      const scale = Math.min(lw / 130, lh / 160);
-      const cx = lw * 0.46;
-      const cy = lh / 2 + 26 * scale;
+      const scale = Math.min(w / 130, h / 160);
+      const cx = w * 0.42;
+      const cy = h / 2 + 26 * scale;
       const sinA = Math.sin(angle);
       const cosA = Math.cos(angle);
       const sinT = Math.sin(TILT);
@@ -224,11 +293,8 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       };
       const project = (v: V3) => {
         const persp = 320 / (320 - v[2] * 0.55);
-        // snapping to the low-res grid is what gives PS1 geometry its wobble
-        return [Math.round(cx + v[0] * scale * persp), Math.round(cy - v[1] * scale * persp)] as const;
+        return [cx + v[0] * scale * persp, cy - v[1] * scale * persp] as const;
       };
-
-      const q = (n: number) => Math.min(255, Math.max(0, Math.round(n / 14) * 14));
 
       const drawn = MESH.map((t) => {
         const va = view(t.a);
@@ -254,39 +320,35 @@ export default function HeroModel({ className = '' }: { className?: string }) {
           const shade = 0.34 + 0.66 * lambert;
           col = [t.color[0] * shade, t.color[1] * shade, t.color[2] * shade];
         }
-        lctx.fillStyle = `rgb(${q(col[0])} ${q(col[1])} ${q(col[2])})`;
-        lctx.beginPath();
-        lctx.moveTo(pa[0], pa[1]);
-        lctx.lineTo(pb[0], pb[1]);
-        lctx.lineTo(pc[0], pc[1]);
-        lctx.closePath();
-        lctx.fill();
+        ctx.fillStyle = `rgb(${col[0].toFixed(0)} ${col[1].toFixed(0)} ${col[2].toFixed(0)})`;
+        ctx.beginPath();
+        ctx.moveTo(pa[0], pa[1]);
+        ctx.lineTo(pb[0], pb[1]);
+        ctx.lineTo(pc[0], pc[1]);
+        ctx.closePath();
+        ctx.fill();
       }
 
-      // the lit screen, painted last so it always reads
-      const scr = [
-        view([-15, 25.5, 49.6]), view([15, 25.5, 49.6]), view([15, 45.5, 44]), view([-15, 45.5, 44]),
-      ].map(project);
-      const facing =
-        (scr[1][0] - scr[0][0]) * (scr[2][1] - scr[0][1]) - (scr[2][0] - scr[0][0]) * (scr[1][1] - scr[0][1]);
-      if (facing < 0) {
-        lctx.fillStyle = `rgb(${accent[0]} ${accent[1]} ${accent[2]} / 0.85)`;
-        lctx.beginPath();
-        lctx.moveTo(scr[0][0], scr[0][1]);
-        for (let i = 1; i < scr.length; i++) lctx.lineTo(scr[i][0], scr[i][1]);
-        lctx.closePath();
-        lctx.fill();
+      // the lit face of the screen sits on the side that looks at the figure
+      const scrV = [
+        view([-15, 25.6, 49.2]), view([15, 25.6, 49.2]), view([15, 45.4, 43.5]), view([-15, 45.4, 43.5]),
+      ];
+      const sn = norm(cross(sub(scrV[1], scrV[0]), sub(scrV[3], scrV[0])));
+      if (sn[2] > 0) {
+        const p2 = scrV.map(project);
+        ctx.fillStyle = `rgb(${accent[0]} ${accent[1]} ${accent[2]} / 0.9)`;
+        ctx.beginPath();
+        ctx.moveTo(p2[0][0], p2[0][1]);
+        for (let i = 1; i < p2.length; i++) ctx.lineTo(p2[i][0], p2[i][1]);
+        ctx.closePath();
+        ctx.fill();
       }
-
-      // blow the framebuffer up with no smoothing
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(low, 0, 0, w, h);
 
       // equations, at full resolution
       const headTop = (() => {
         const v = view([0, 74, -3]);
         const persp = 320 / (320 - v[2] * 0.55);
-        return { x: (cx + v[0] * scale * persp) * (w / lw), y: (cy - v[1] * scale * persp) * (h / lh) };
+        return { x: cx + v[0] * scale * persp, y: cy - v[1] * scale * persp };
       })();
       const fontSize = Math.max(9, Math.round(w / 42));
       ctx.font = `${fontSize}px "JetBrains Mono Variable", ui-monospace, monospace`;
@@ -299,8 +361,8 @@ export default function HeroModel({ className = '' }: { className?: string }) {
         const persp = 320 / (320 - v[2] * 0.55);
         return {
           eq,
-          x: (cx + v[0] * scale * persp) * (w / lw),
-          y: (cy - v[1] * scale * persp) * (h / lh),
+          x: cx + v[0] * scale * persp,
+          y: cy - v[1] * scale * persp,
           d: v[2],
         };
       }).sort((a, b) => a.d - b.d);

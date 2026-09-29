@@ -36,7 +36,7 @@ function Portrait() {
       </div>
 
       {/* rotating wireframe model, sitting in the dark below the photograph */}
-      <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-[50%] w-[78%] sm:h-[54%]">
+      <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-[56%] w-[92%] sm:h-[60%]">
         <div
           className="absolute inset-0 bg-gradient-to-t from-bg via-bg/85 to-transparent"
           aria-hidden
