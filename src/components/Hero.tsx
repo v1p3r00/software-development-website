@@ -36,15 +36,15 @@ function Portrait() {
       </div>
 
       {/* rotating wireframe model, sitting in the dark below the photograph */}
-      <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-[58%] w-full sm:h-[60%]">
+      <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-[50%] w-[78%] sm:h-[54%]">
         <div
-          className="absolute inset-0 bg-gradient-to-t from-bg via-bg/55 to-transparent"
+          className="absolute inset-0 bg-gradient-to-t from-bg via-bg/85 to-transparent"
           aria-hidden
         />
         <HeroModel className="relative h-full w-full" />
         <div className="absolute bottom-1 left-2 flex flex-col gap-0.5">
           <span className="label-a">Model / seated_01</span>
-          <span className="label hidden sm:block">rot 0.42 rad·s⁻¹ · wireframe</span>
+          <span className="label hidden sm:block">low-poly · flat shaded · 0.32 rad·s⁻¹</span>
         </div>
       </div>
 
