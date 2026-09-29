@@ -43,8 +43,8 @@ function Portrait() {
         />
         <HeroModel className="relative h-full w-full" />
         <div className="absolute bottom-1 left-2 flex flex-col gap-0.5">
-          <span className="label-a">Model / seated_01</span>
-          <span className="label hidden sm:block">low-poly · flat shaded · 0.32 rad·s⁻¹</span>
+          <span className="label-a">Model / dm_desk.glb</span>
+          <span className="label hidden sm:block">low-poly · 57k tris · 0.30 rad·s⁻¹</span>
         </div>
       </div>
 
