@@ -20,6 +20,7 @@ export const en = {
     quote: 'Good software makes people\u2019s lives easier.',
     buildTogether: 'Let\u2019s build something useful.',
     skip: 'Skip to content',
+    present: 'present',
     systemOnline: 'System: online',
   },
 

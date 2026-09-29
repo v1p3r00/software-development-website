@@ -37,7 +37,7 @@ export default function ProjectCard({ project, index }: { project: Project; inde
           </div>
           {project.period && (
             <div className="absolute bottom-3 left-3 font-mono text-2xs uppercase tracking-tech text-muted">
-              {project.period}
+              {project.period.replace('present', t.ui.present)}
             </div>
           )}
           <div className="absolute inset-x-0 top-1/2 h-px bg-accent/40" />

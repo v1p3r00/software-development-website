@@ -6,8 +6,7 @@ export const site = {
   version: 'v2.6',
   timezone: 'Europe/Budapest',
   links: [
-    { label: 'LinkedIn', short: 'IN', href: 'https://www.linkedin.com/' },
-    { label: 'GitHub', short: 'GH', href: 'https://github.com/' },
+    { label: 'LinkedIn', short: 'IN', href: 'https://www.linkedin.com/meszdav' },
     { label: 'Email', short: 'EM', href: 'mailto:meszarosdavid@protonmail.com' },
   ],
   sections: ['home', 'about', 'projects', 'services', 'contact'] as const,

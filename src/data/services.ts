@@ -15,13 +15,13 @@ export const services: Service[] = [
     title: { en: 'Full-stack development', hu: 'Full-stack fejlesztés' },
     desc: {
       en: 'One person across the whole depth of the product — data model, services, API and interface — so nothing gets lost between layers.',
-      hu: 'Egy ember a termék teljes mélységében — adatmodell, szolgáltatások, API és felület —, így semmi nem vész el a rétegek között.',
+      hu: 'A termék teljes technológiai rétegén dolgozom az adatmodelltől és a backend szolgáltatásoktól az API-kon át a felhasználói felületig. Így a rétegek nem elszigetelten fejlődnek, hanem egy összefüggő rendszerként.',
     },
     flow: {
       input: { en: 'Business requirement', hu: 'Üzleti igény' },
-      process: { en: 'Domain model + API design', hu: 'Domain-modell + API-terv' },
+      process: { en: 'Domain model + API design', hu: 'Domainmodell és API-tervezés' },
       system: { en: 'Spring Boot / Angular / React', hu: 'Spring Boot / Angular / React' },
-      output: { en: 'Working, deployed feature', hu: 'Működő, kiélesített funkció' },
+      output: { en: 'Working, deployed feature', hu: 'Működő, élesben használható funkció' },
     },
   },
   {
@@ -30,13 +30,13 @@ export const services: Service[] = [
     title: { en: 'Web applications', hu: 'Webalkalmazások' },
     desc: {
       en: 'Dense, fast interfaces for people who use them all day — forms, tables, dashboards and workflows that respect the user’s time.',
-      hu: 'Sűrű, gyors felületek azoknak, akik naphosszat használják: űrlapok, táblák, dashboardok és folyamatok, amelyek tiszteletben tartják a felhasználó idejét.',
+      hu: 'Gyors és hatékony felületek olyan felhasználók számára, akik nap mint nap dolgoznak velük. Űrlapok, táblázatok, dashboardok és munkafolyamatok, amelyek a felhasználó idejét és figyelmét is szem előtt tartják.',
     },
     flow: {
-      input: { en: 'User workflow', hu: 'Felhasználói folyamat' },
-      process: { en: 'Interaction + state design', hu: 'Interakció- és állapotterv' },
+      input: { en: 'User workflow', hu: 'Felhasználói munkafolyamat' },
+      process: { en: 'Interaction + state design', hu: 'Interakciók és állapotok megtervezése' },
       system: { en: 'Component architecture', hu: 'Komponensarchitektúra' },
-      output: { en: 'Application in production', hu: 'Éles alkalmazás' },
+      output: { en: 'Application in production', hu: 'Éles környezetben működő alkalmazás' },
     },
   },
   {
@@ -45,13 +45,13 @@ export const services: Service[] = [
     title: { en: 'UI / UX & web design', hu: 'UI / UX és webdizájn' },
     desc: {
       en: 'Design that is made to be built. Type, grid, hierarchy and motion decided with the front-end implementation already in view.',
-      hu: 'Olyan design, amit meg is lehet építeni. Tipográfia, rács, hierarchia és mozgás — már a frontend megvalósítás ismeretében.',
+      hu: 'Olyan design, amely nemcsak jól néz ki, hanem ténylegesen meg is valósítható. A tipográfia, az elrendezés, a vizuális hierarchia és az animációk már a frontend technikai megvalósítását figyelembe véve születnek.',
     },
     flow: {
-      input: { en: 'Brand + intent', hu: 'Márka és szándék' },
-      process: { en: 'Grid, type, hierarchy', hu: 'Rács, tipográfia, hierarchia' },
+      input: { en: 'Brand + intent', hu: 'Márka és cél' },
+      process: { en: 'Grid, type, hierarchy', hu: 'Rácsszerkezet, tipográfia és vizuális hierarchia' },
       system: { en: 'Reusable design system', hu: 'Újrahasznosítható design system' },
-      output: { en: 'Interface people trust', hu: 'Felület, amiben megbíznak' },
+      output: { en: 'Interface people trust', hu: 'Intuitív és megbízható felhasználói felület' },
     },
   },
   {
@@ -60,13 +60,13 @@ export const services: Service[] = [
     title: { en: 'Software architecture', hu: 'Szoftverarchitektúra' },
     desc: {
       en: 'Structure decided early and deliberately: boundaries, contracts and failure modes, documented well enough that the next developer agrees with it.',
-      hu: 'Korán és tudatosan meghozott szerkezeti döntések: határok, szerződések és hibakezelés — olyan dokumentáltsággal, hogy a következő fejlesztő is egyetértsen velük.',
+      hu: 'A rendszer legfontosabb szerkezeti döntéseit már a kezdetektől tudatosan kell meghozni. Modulhatárok, interfészek, felelősségi körök és hibakezelési stratégiák kialakítása úgy, hogy a rendszer később is érthető és továbbfejleszthető maradjon.',
     },
     flow: {
-      input: { en: 'Constraints + scale', hu: 'Korlátok és méret' },
-      process: { en: 'Boundaries + contracts', hu: 'Határok és szerződések' },
+      input: { en: 'Constraints + scale', hu: 'Technikai korlátok és várható terhelés' },
+      process: { en: 'Boundaries + contracts', hu: 'Modulhatárok és interfészek meghatározása' },
       system: { en: 'Modular services', hu: 'Moduláris szolgáltatások' },
-      output: { en: 'System that survives change', hu: 'Változást is kibíró rendszer' },
+      output: { en: 'System that survives change', hu: 'Változásokhoz alkalmazkodó, hosszú távon fenntartható rendszer' },
     },
   },
   {
@@ -75,13 +75,13 @@ export const services: Service[] = [
     title: { en: 'Enterprise systems', hu: 'Vállalati rendszerek' },
     desc: {
       en: 'Long-lived platforms with real users, real audits and real legacy — banking, government and industrial environments where stability is the feature.',
-      hu: 'Hosszú életű platformok valódi felhasználókkal, valódi auditokkal és valódi örökséggel — banki, államigazgatási és ipari környezetben, ahol a stabilitás maga a funkció.',
+      hu: 'Hosszú életciklusú rendszerek valódi felhasználókkal, szigorú auditkövetelményekkel és meglévő technológiai örökséggel. Banki, államigazgatási és ipari környezetben, ahol a stabilitás és a megbízhatóság nem extra, hanem alapkövetelmény.',
     },
     flow: {
       input: { en: 'Existing landscape', hu: 'Meglévő rendszerkörnyezet' },
-      process: { en: 'Analysis + integration plan', hu: 'Elemzés és integrációs terv' },
-      system: { en: 'Secure, auditable services', hu: 'Biztonságos, auditálható szolgáltatások' },
-      output: { en: 'Platform in daily operation', hu: 'Napi működésben lévő platform' },
+      process: { en: 'Analysis + integration plan', hu: 'Rendszerelemzés és integrációs tervezés' },
+      system: { en: 'Secure, auditable services', hu: 'Biztonságos és auditálható szolgáltatások' },
+      output: { en: 'Platform in daily operation', hu: 'Napi működésben használt, stabil platform' },
     },
   },
   {
@@ -90,13 +90,13 @@ export const services: Service[] = [
     title: { en: 'Custom solutions', hu: 'Egyedi megoldások' },
     desc: {
       en: 'For problems no product covers. Short discovery, an early prototype, then iteration against real use rather than assumptions.',
-      hu: 'Olyan problémákra, amelyekre nincs kész termék. Rövid felmérés, korai prototípus, majd iteráció valós használat — nem feltételezések — alapján.',
+      hu: 'Olyan üzleti problémákra, amelyekre nincs megfelelő késztermék. Rövid felméréssel és korai prototípussal indulunk, majd a megoldást valós használatból származó tapasztalatok alapján iteráljuk, nem előzetes feltételezésekre építve.',
     },
     flow: {
-      input: { en: 'An unusual problem', hu: 'Nem szokványos probléma' },
-      process: { en: 'Discovery + prototype', hu: 'Felmérés és prototípus' },
-      system: { en: 'Containerised delivery', hu: 'Konténerizált szállítás' },
-      output: { en: 'A product that fits exactly', hu: 'Pontosan illeszkedő termék' },
+      input: { en: 'An unusual problem', hu: 'Egyedi üzleti probléma' },
+      process: { en: 'Discovery + prototype', hu: 'Felmérés és működő prototípus' },
+      system: { en: 'Containerised delivery', hu: 'Konténerizált fejlesztés és üzemeltetés' },
+      output: { en: 'A product that fits exactly', hu: 'Az adott problémára pontosan illeszkedő digitális termék' },
     },
   },
 ];
