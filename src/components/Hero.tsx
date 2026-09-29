@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useI18n } from '../i18n';
 import { site } from '../data/site';
 import { usePrefersReducedMotion } from '../hooks/useMisc';
+import HeroModel from './HeroModel';
 import { Arrow, CornerMarks, cx } from './ui';
 
 const STACK = ['Java', 'Angular', 'React', 'Spring Boot', 'PostgreSQL', 'Docker'];
@@ -32,6 +33,15 @@ function Portrait() {
               'radial-gradient(70% 55% at 50% 30%, transparent 0%, rgb(var(--c-bg) / 0.35) 70%, rgb(var(--c-bg)) 100%)',
           }}
         />
+      </div>
+
+      {/* rotating wireframe model, sitting in the dark below the photograph */}
+      <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-[44%] w-[66%] sm:h-[46%]">
+        <HeroModel className="h-full w-full" />
+        <div className="absolute bottom-1 left-2 flex flex-col gap-0.5">
+          <span className="label-a">Model / seated_01</span>
+          <span className="label hidden sm:block">rot 0.42 rad·s⁻¹ · wireframe</span>
+        </div>
       </div>
 
       {/* technical annotations over the portrait */}
