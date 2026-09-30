@@ -4,7 +4,7 @@ import { site } from '../data/site';
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
-  const { t } = useI18n();
+  const { t, lp } = useI18n();
   const year = new Date().getFullYear();
   const goTo = useGoToSection();
 
@@ -43,7 +43,7 @@ export default function Footer() {
               </a>
             ))}
             <Link
-              to="/articles/"
+              to={lp('/articles/')}
               data-cursor="follow"
               className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
             >

@@ -3,7 +3,8 @@
  *
  * GitHub Pages cannot rewrite URLs, and crawlers and link previews often do not
  * run JavaScript. So after the build this writes a real HTML file for every
- * route (home, each case study, the article index and each article), each with
+ * route (home, each case study, the article index and each article), in English
+ * at the bare path and in Hungarian under /hu/, each with
  * its own title, description, canonical URL, Open Graph / Twitter tags and
  * structured data, plus sitemap.xml, robots.txt and a noindex 404 page.
  * The app then takes over as usual and keeps the head current (useSeo).
@@ -14,11 +15,19 @@ import type { Plugin } from 'vite';
 import { projects } from '../src/data/projects.ts';
 import { site } from '../src/data/site.ts';
 import { en } from '../src/i18n/en.ts';
+import { hu } from '../src/i18n/hu.ts';
+import { localePath } from '../src/i18n/paths.ts';
 import { articlePath, isoDate, parseArticle } from '../src/content/frontmatter.ts';
 import { clip, siteGraph } from '../src/lib/seo-shared.ts';
 
+type Lang = 'en' | 'hu';
+
 interface Page {
+  /** full path including the /hu prefix for Hungarian pages */
   path: string;
+  lang: Lang;
+  /** the page's path in each language it exists in, for hreflang */
+  alternates?: Partial<Record<Lang, string>>;
   title: string;
   description: string;
   type?: 'website' | 'article';
@@ -38,6 +47,16 @@ const ld = (data: object) => JSON.stringify(data).replace(/</g, '\\u003c');
 
 const MARKER = /<!--seo-->[\s\S]*?<!--\/seo-->|<!--seo-->/;
 
+function hreflang(page: Page) {
+  const alt = page.alternates;
+  if (!alt?.en || !alt.hu) return [];
+  return [
+    `<link rel="alternate" hreflang="en" href="${site.url}${alt.en}" />`,
+    `<link rel="alternate" hreflang="hu" href="${site.url}${alt.hu}" />`,
+    `<link rel="alternate" hreflang="x-default" href="${site.url}${alt.en}" />`,
+  ];
+}
+
 function headTags(page: Page) {
   const url = site.url + page.path;
   const image = site.url + (page.image ?? site.ogImage);
@@ -46,10 +65,11 @@ function headTags(page: Page) {
     `<meta name="description" content="${esc(page.description)}" />`,
     `<meta name="robots" content="${page.noindex ? 'noindex, follow' : 'index, follow'}" />`,
     `<link rel="canonical" href="${url}" />`,
+    ...hreflang(page),
     `<meta property="og:type" content="${page.type ?? 'website'}" />`,
     `<meta property="og:site_name" content="${esc(site.name)}" />`,
-    `<meta property="og:locale" content="en_GB" />`,
-    `<meta property="og:locale:alternate" content="hu_HU" />`,
+    `<meta property="og:locale" content="${page.lang === 'hu' ? 'hu_HU' : 'en_GB'}" />`,
+    `<meta property="og:locale:alternate" content="${page.lang === 'hu' ? 'en_GB' : 'hu_HU'}" />`,
     `<meta property="og:title" content="${esc(page.title)}" />`,
     `<meta property="og:description" content="${esc(page.description)}" />`,
     `<meta property="og:url" content="${url}" />`,
@@ -69,9 +89,12 @@ function headTags(page: Page) {
   return `<!--seo-->\n    ${tags.join('\n    ')}\n    <!--/seo-->`;
 }
 
-const render = (html: string, page: Page) => html.replace(MARKER, headTags(page));
+const render = (html: string, page: Page) =>
+  html.replace(MARKER, headTags(page)).replace(/<html lang="[a-z]+"/, `<html lang="${page.lang}"`);
 
-const home: Page = { path: '/', title: en.seo.homeTitle, description: en.seo.homeDescription };
+const both = (bare: string) => ({ en: bare, hu: localePath(bare, 'hu') });
+
+const home: Page = { path: '/', lang: 'en', alternates: both('/'), title: en.seo.homeTitle, description: en.seo.homeDescription };
 
 function readArticles(root: string) {
   const dir = path.join(root, 'src/content/articles');
@@ -93,53 +116,74 @@ function readArticles(root: string) {
 }
 
 function pages(root: string): Page[] {
-  const list: Page[] = [home];
-
-  for (const p of projects) {
-    list.push({
-      path: `/project/${p.id}/`,
-      title: `${p.title}${p.kind ? ` — ${p.kind.en}` : ''} | ${site.name}`,
-      description: clip(p.context.en),
-    });
-  }
-
+  const list: Page[] = [];
   const articles = readArticles(root);
-  list.push({
-    path: '/articles/',
-    title: en.seo.articlesTitle,
-    description: en.seo.articlesDescription,
-    noindex: articles.length === 0,
-  });
 
-  for (const a of articles) {
-    const lang = a.versions.en ? 'en' : 'hu';
-    const { meta } = a.versions[lang];
-    const url = `${site.url}/articles/${a.slug}/`;
-    const image = a.versions.en?.meta.image ?? a.versions.hu?.meta.image;
+  for (const lang of ['en', 'hu'] as const) {
+    const t = lang === 'en' ? en : hu;
+    const at = (bare: string) => localePath(bare, lang);
+
+    list.push({ path: at('/'), lang, alternates: both('/'), title: t.seo.homeTitle, description: t.seo.homeDescription });
+
+    for (const p of projects) {
+      const bare = `/project/${p.id}/`;
+      list.push({
+        path: at(bare),
+        lang,
+        alternates: both(bare),
+        title: `${p.title}${p.kind ? ` — ${p.kind[lang]}` : ''} | ${site.name}`,
+        description: clip(p.context[lang]),
+      });
+    }
+
     list.push({
-      path: `/articles/${a.slug}/`,
-      title: `${meta.title} — ${site.name}`,
-      description: clip(meta.description),
-      type: 'article',
-      image,
-      imageAlt: image ? meta.title : undefined,
-      lastmod: isoDate(meta.updated ?? meta.date).slice(0, 10),
-      jsonLd: {
-        '@context': 'https://schema.org',
-        '@type': 'BlogPosting',
-        headline: meta.title,
-        description: meta.description,
-        datePublished: isoDate(meta.date),
-        dateModified: isoDate(meta.updated ?? meta.date),
-        inLanguage: lang,
-        keywords: meta.tags.join(', '),
-        url,
-        mainEntityOfPage: url,
-        image: site.url + (image ?? site.ogImage),
-        author: { '@id': `${site.url}/#person` },
-        publisher: { '@id': `${site.url}/#person` },
-      },
+      path: at('/articles/'),
+      lang,
+      alternates: both('/articles/'),
+      title: t.seo.articlesTitle,
+      description: t.seo.articlesDescription,
+      noindex: articles.length === 0,
     });
+
+    for (const a of articles) {
+      // a page per language the article is written in
+      const version = a.versions[lang];
+      if (!version) continue;
+      const { meta } = version;
+      const bare = `/articles/${a.slug}/`;
+      const url = site.url + at(bare);
+      // each language can have its own picture; otherwise use the other one's
+      const image = meta.image ?? a.versions.en?.meta.image ?? a.versions.hu?.meta.image;
+      list.push({
+        path: at(bare),
+        lang,
+        alternates: {
+          en: a.versions.en ? bare : undefined,
+          hu: a.versions.hu ? localePath(bare, 'hu') : undefined,
+        },
+        title: `${meta.title} — ${site.name}`,
+        description: clip(meta.description),
+        type: 'article',
+        image,
+        imageAlt: image ? meta.title : undefined,
+        lastmod: isoDate(meta.updated ?? meta.date).slice(0, 10),
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: meta.title,
+          description: meta.description,
+          datePublished: isoDate(meta.date),
+          dateModified: isoDate(meta.updated ?? meta.date),
+          inLanguage: lang,
+          keywords: meta.tags.join(', '),
+          url,
+          mainEntityOfPage: url,
+          image: site.url + (image ?? site.ogImage),
+          author: { '@id': `${site.url}/#person` },
+          publisher: { '@id': `${site.url}/#person` },
+        },
+      });
+    }
   }
   return list;
 }
@@ -173,7 +217,7 @@ export function seoPages(): Plugin {
       // app still boots, so client-side routes keep working
       fs.writeFileSync(
         path.join(outDir, '404.html'),
-        render(template, { path: '/', title: en.seo.notFoundTitle, description: en.seo.homeDescription, noindex: true }),
+        render(template, { path: '/', lang: 'en', title: en.seo.notFoundTitle, description: en.seo.homeDescription, noindex: true }),
       );
 
       const urls = all

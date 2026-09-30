@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import { useI18n } from '../i18n';
+import { stripLang } from '../i18n/paths';
 import { site } from '../data/site';
 import { useActiveSection, useScrollProgress } from '../hooks/useMisc';
 import { cx } from './ui';
@@ -7,7 +8,7 @@ import { cx } from './ui';
 export default function ScrollProgress() {
   const { t } = useI18n();
   const { pathname } = useLocation();
-  const onHome = pathname === '/';
+  const onHome = stripLang(pathname) === '/';
   const active = useActiveSection(site.sections, onHome);
   const progress = useScrollProgress();
   const labels: Record<string, string> = {

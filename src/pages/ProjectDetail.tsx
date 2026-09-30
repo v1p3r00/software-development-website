@@ -28,7 +28,7 @@ function Loader({ num, label, progress }: { num: string; label: string; progress
 
 export default function ProjectDetail() {
   const { id } = useParams();
-  const { t, pick } = useI18n();
+  const { t, pick, lp } = useI18n();
   const reduced = usePrefersReducedMotion();
   const project = projects.find((p) => p.id === id);
   const idx = projects.findIndex((p) => p.id === id);
@@ -68,7 +68,7 @@ export default function ProjectDetail() {
       <div className="grid min-h-screen place-items-center px-6 text-center">
         <div>
           <div className="display text-5xl">404</div>
-          <Link to="/" className="label-a mt-4 inline-block">
+          <Link to={lp('/')} className="label-a mt-4 inline-block">
             ← {t.projects.back}
           </Link>
         </div>
@@ -93,7 +93,7 @@ export default function ProjectDetail() {
 
         <div className="relative mx-auto w-full max-w-[1500px] px-5 sm:px-8 lg:px-12">
           <Link
-            to="/"
+            to={lp('/')}
             data-cursor="follow"
             className="group inline-flex items-center gap-3 font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
           >
@@ -180,7 +180,7 @@ export default function ProjectDetail() {
 
           {/* next */}
           <Link
-            to={`/project/${next.id}`}
+            to={lp(`/project/${next.id}`)}
             data-cursor="open"
             className="group mb-20 flex items-center justify-between gap-6 border-t border-line py-10"
           >

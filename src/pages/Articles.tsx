@@ -7,7 +7,7 @@ import { useGoToSection } from '../hooks/useGoToSection';
 import { Arrow, CornerMarks, Section, SectionHeader } from '../components/ui';
 
 export default function Articles() {
-  const { t, lang } = useI18n();
+  const { t, lang, lp } = useI18n();
   const goTo = useGoToSection();
 
   useSeo({
@@ -54,7 +54,7 @@ export default function Articles() {
             return (
               <li key={article.slug} className="border-b border-line">
                 <Link
-                  to={`/articles/${article.slug}/`}
+                  to={lp(`/articles/${article.slug}/`)}
                   data-cursor="follow"
                   className="group grid grid-cols-1 gap-3 py-7 sm:grid-cols-12 sm:gap-6"
                 >

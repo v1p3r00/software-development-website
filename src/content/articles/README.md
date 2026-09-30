@@ -5,6 +5,7 @@ Each article is a folder with one Markdown file per language:
 ```
 src/content/articles/
   how-long-does-a-web-app-take/   ← the folder name is the URL: /articles/how-long-does-a-web-app-take/
+                                    (Hungarian: /hu/articles/how-long-does-a-web-app-take/)
     en.md
     hu.md                         ← optional; readers fall back to the other language
 ```
@@ -30,8 +31,9 @@ draft: true
 - `updated`, `tags` and `image` are optional.
 - `image` is the picture shown when the article is shared (Facebook, LinkedIn,
   X, Messenger…): 1200×630 px, saved as `public/articles/<slug>/share.jpg`. Without
-  it, the site's general card (`public/og.png`) is used. Put it in `en.md`; the
-  Hungarian version uses the same picture.
+  it, the site's general card (`public/og.png`) is used. The Hungarian version can
+  have its own (`share-hu.jpg`, set in `hu.md`); if `hu.md` has none, it uses the
+  English one.
 - `draft: true` shows the article in `npm run dev` only. Remove it to publish.
 
 The body is ordinary Markdown: `##` headings, lists, links, **bold**, `code`,

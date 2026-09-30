@@ -3,7 +3,7 @@ title: Legacy software vagy modernizált rendszer? Mikor érdemes továbbfejlesz
 description: Rehost, replatform, refactoring, rearchitect vagy fokozatos kiváltás? Mikor érdemes modernizálni egy legacy rendszert, és hogyan lehet lépésről lépésre.
 date: 2026-09-30 14:40
 tags: [legacy, modernizáció, architektúra, refactoring, vállalati szoftver]
-image: /articles/legacy-software-modernization/share.jpg
+image: /articles/legacy-software-modernization/share-hu.jpg
 ---
 
 Sok vállalat működésének alapját évek vagy akár évtizedek óta ugyanaz a szoftver adja.

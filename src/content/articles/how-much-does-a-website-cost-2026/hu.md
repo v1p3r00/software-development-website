@@ -3,7 +3,7 @@ title: Mennyibe kerül egy weboldal 2026-ban – és mennyit ér valójában egy
 description: Irányárak landing page-től vállalati rendszerig, és egyszerű számítások ügyfélértékről, megtérülésről (ROI) és teljes birtoklási költségről (TCO).
 date: 2026-09-30 15:21
 tags: [weboldal ár, webshop, roi, ügyfélérték, tco]
-image: /articles/how-much-does-a-website-cost-2026/share.jpg
+image: /articles/how-much-does-a-website-cost-2026/share-hu.jpg
 ---
 
 **„Mennyibe kerül egy weboldal?”**

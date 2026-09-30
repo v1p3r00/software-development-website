@@ -15,7 +15,7 @@ interface Command {
 }
 
 export default function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => void }) {
-  const { t, setLang, lang } = useI18n();
+  const { t, setLang, lang, lp } = useI18n();
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
@@ -26,7 +26,7 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
 
   const goTo = (hash: string) => () => {
     setOpen(false);
-    navigate('/');
+    navigate(lp('/'));
     window.setTimeout(() => {
       document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 60);
@@ -46,7 +46,7 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
         hint: '06',
         run: () => {
           setOpen(false);
-          navigate('/articles/');
+          navigate(lp('/articles/'));
         },
       },
     ];
@@ -57,7 +57,7 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
       hint: '↗',
       run: () => {
         setOpen(false);
-        navigate(`/project/${p.id}`);
+        navigate(lp(`/project/${p.id}`));
       },
     }));
     const actions: Command[] = [

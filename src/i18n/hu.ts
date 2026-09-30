@@ -1,4 +1,4 @@
-import type { Dict } from './en';
+import type { Dict } from './en.ts';
 
 export const hu: Dict = {
   meta: {

@@ -5,11 +5,11 @@ import ProjectVisual from './ProjectVisual';
 import { Arrow } from './ui';
 
 export default function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const { t, pick } = useI18n();
+  const { t, pick, lp } = useI18n();
 
   return (
     <Link
-      to={`/project/${project.id}`}
+      to={lp(`/project/${project.id}`)}
       data-cursor="open"
       aria-label={`${project.num} — ${project.title}`}
       className="lift group relative flex h-full flex-col border border-line bg-surface transition-[border-color,transform,box-shadow] duration-500 ease-tech hover:z-10 hover:border-line-strong hover:-translate-y-1"

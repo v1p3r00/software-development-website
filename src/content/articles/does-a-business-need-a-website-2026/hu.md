@@ -3,7 +3,7 @@ title: Szüksége van egy vállalkozásnak weboldalra 2026-ban?
 description: Facebook, Instagram, Google Cégprofil – elég ennyi? Mikor nincs szükség weboldalra, mikor válik fontossá, és milyen üzleti célt kell kiszolgálnia.
 date: 2026-09-30 15:00
 tags: [weboldal, online jelenlét, seo, közösségi média, kisvállalkozás]
-image: /articles/does-a-business-need-a-website-2026/share.jpg
+image: /articles/does-a-business-need-a-website-2026/share-hu.jpg
 ---
 
 „Nekünk nincs szükségünk weboldalra. Ott van a Facebook.”\

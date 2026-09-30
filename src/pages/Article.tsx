@@ -11,12 +11,12 @@ import { Arrow } from '../components/ui';
 
 export default function Article() {
   const { slug } = useParams();
-  const { t, lang } = useI18n();
+  const { t, lang, lp } = useI18n();
   const goTo = useGoToSection();
   const article = articles.find((a) => a.slug === slug);
   const v = article ? inLang(article, lang) : null;
-  // one share picture per article, whichever language file declares it
-  const image = article?.versions.en?.image ?? article?.versions.hu?.image;
+  // the share picture of the language shown, else the other language's
+  const image = v?.image ?? article?.versions.en?.image ?? article?.versions.hu?.image;
   // links to other sites (sources, references) open in a new tab
   const html = useMemo(
     () =>
@@ -43,14 +43,14 @@ export default function Article() {
             dateModified: isoDate(v.updated ?? v.date),
             inLanguage: article.versions[lang] ? lang : Object.keys(article.versions)[0],
             keywords: v.tags.join(', '),
-            url: `${site.url}/articles/${article.slug}/`,
-            mainEntityOfPage: `${site.url}/articles/${article.slug}/`,
+            url: `${site.url}${lp(`/articles/${article.slug}/`)}`,
+            mainEntityOfPage: `${site.url}${lp(`/articles/${article.slug}/`)}`,
             image: site.url + (image ?? site.ogImage),
             author: { '@id': `${site.url}/#person` },
             publisher: { '@id': `${site.url}/#person` },
           }
         : undefined,
-    [article, v, lang, image],
+    [article, v, lang, image, lp],
   );
 
   useSeo(
@@ -61,6 +61,7 @@ export default function Article() {
           path: `/articles/${article.slug}/`,
           type: 'article',
           image,
+          langs: (['en', 'hu'] as const).filter((l) => article.versions[l]),
           jsonLd,
         }
       : { title: t.seo.notFoundTitle, description: t.articles.notFound, path: `/articles/${slug ?? ''}/`, noindex: true },
@@ -72,7 +73,7 @@ export default function Article() {
         <div>
           <div className="display text-5xl">404</div>
           <p className="mt-4 text-sm text-muted">{t.articles.notFound}</p>
-          <Link to="/articles/" className="label-a mt-6 inline-block">
+          <Link to={lp('/articles/')} className="label-a mt-6 inline-block">
             ← {t.articles.back}
           </Link>
         </div>
@@ -83,7 +84,7 @@ export default function Article() {
   return (
     <article className="relative mx-auto w-full max-w-[1500px] px-5 pb-24 pt-32 sm:px-8 lg:px-12 lg:pt-36">
       <div className="mx-auto max-w-[760px]">
-        <Link to="/articles/" data-cursor="follow" className="label transition-colors hover:text-accent">
+        <Link to={lp('/articles/')} data-cursor="follow" className="label transition-colors hover:text-accent">
           ← {t.articles.back}
         </Link>
 

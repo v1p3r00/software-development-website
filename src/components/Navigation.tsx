@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../i18n';
+import { stripLang } from '../i18n/paths';
 import { useGoToSection } from '../hooks/useGoToSection';
 import { site } from '../data/site';
 import { useActiveSection } from '../hooks/useMisc';
@@ -25,12 +26,12 @@ function Monogram({ compact }: { compact: boolean }) {
 }
 
 export default function Navigation({ onOpenPalette }: { onOpenPalette: () => void }) {
-  const { t } = useI18n();
+  const { t, lp } = useI18n();
   const { theme, toggle } = useTheme();
   const [compact, setCompact] = useState(false);
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
-  const onHome = pathname === '/';
+  const onHome = stripLang(pathname) === '/';
   const section = useActiveSection(site.sections, onHome);
   const active = onHome ? section : '';
   const goTo = useGoToSection();
@@ -56,7 +57,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
     { id: 'services', label: t.nav.services },
     { id: 'contact', label: t.nav.contact },
   ];
-  const onArticles = pathname.startsWith('/articles');
+  const onArticles = stripLang(pathname).startsWith('/articles');
 
   return (
     <header
@@ -112,7 +113,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             );
           })}
           <Link
-            to="/articles/"
+            to={lp('/articles/')}
             data-cursor="follow"
             className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[11px] uppercase tracking-tech"
           >
@@ -212,7 +213,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             </a>
           ))}
           <Link
-            to="/articles/"
+            to={lp('/articles/')}
             onClick={() => setOpen(false)}
             className="flex items-baseline justify-between border-b border-line py-4 font-display text-2xl font-extrabold uppercase tracking-tight last:border-b-0"
           >

@@ -1,6 +1,6 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useI18n } from './i18n';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import CommandPalette from './components/CommandPalette';
@@ -13,28 +13,9 @@ import ProjectDetail from './pages/ProjectDetail';
 const Articles = lazy(() => import('./pages/Articles'));
 const Article = lazy(() => import('./pages/Article'));
 
-/**
- * Hungarian pages carry ?lang=hu in the address bar, so a copied link opens in the
- * same language. English, the default, keeps clean URLs.
- */
-function useLangInUrl(lang: string) {
-  // pathname/hash come from the router so this reruns on navigation; the query is read
-  // from the live address because replaceState below does not update the router's copy
-  const { pathname, hash } = useLocation();
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if ((params.get('lang') ?? 'en') === lang) return;
-    if (lang === 'en') params.delete('lang');
-    else params.set('lang', lang);
-    const query = params.toString();
-    window.history.replaceState(window.history.state, '', `${pathname}${query ? `?${query}` : ''}${hash}`);
-  }, [lang, pathname, hash]);
-}
-
 export default function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const { t, lang } = useI18n();
-  useLangInUrl(lang);
+  const { t } = useI18n();
 
   return (
     <div className="grain relative min-h-screen bg-bg">
@@ -51,10 +32,11 @@ export default function App() {
       <main>
         <Suspense fallback={<div className="min-h-screen" />}>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/project/:id" element={<ProjectDetail />} />
-            <Route path="/articles" element={<Articles />} />
-            <Route path="/articles/:slug" element={<Article />} />
+            {/* every route also exists under /hu for the Hungarian version */}
+            <Route path="/hu?" element={<Home />} />
+            <Route path="/hu?/project/:id" element={<ProjectDetail />} />
+            <Route path="/hu?/articles" element={<Articles />} />
+            <Route path="/hu?/articles/:slug" element={<Article />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </Suspense>
