@@ -17,7 +17,7 @@ import { site } from '../src/data/site.ts';
 import { en } from '../src/i18n/en.ts';
 import { hu } from '../src/i18n/hu.ts';
 import { localePath } from '../src/i18n/paths.ts';
-import { articlePath, isoDate, parseArticle } from '../src/content/frontmatter.ts';
+import { articlePath, isoDate, isPublished, parseArticle } from '../src/content/frontmatter.ts';
 import { clip, siteGraph } from '../src/lib/seo-shared.ts';
 
 type Lang = 'en' | 'hu';
@@ -115,6 +115,15 @@ function readArticles(root: string) {
   return [...bySlug.values()];
 }
 
+type SourceArticle = ReturnType<typeof readArticles>[number];
+
+/** an article's publication time: the later of its language versions' dates */
+const articleDate = (a: SourceArticle) =>
+  Object.values(a.versions)
+    .map((v) => isoDate(v.meta.date))
+    .sort()
+    .pop() ?? '';
+
 function pages(root: string): Page[] {
   const list: Page[] = [];
   const articles = readArticles(root);
@@ -142,7 +151,7 @@ function pages(root: string): Page[] {
       alternates: both('/articles/'),
       title: t.seo.articlesTitle,
       description: t.seo.articlesDescription,
-      noindex: articles.length === 0,
+      noindex: !articles.some((a) => isPublished(articleDate(a))),
     });
 
     for (const a of articles) {
@@ -164,6 +173,9 @@ function pages(root: string): Page[] {
         title: `${meta.title} — ${site.name}`,
         description: clip(meta.description),
         type: 'article',
+        // scheduled articles get a live page now (so posts can link to it) but stay out of
+        // search and the sitemap until the daily rebuild after their date
+        noindex: !isPublished(articleDate(a)),
         image,
         imageAlt: image ? meta.title : undefined,
         lastmod: isoDate(meta.updated ?? meta.date).slice(0, 10),

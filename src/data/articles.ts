@@ -1,4 +1,4 @@
-import { articlePath, isoDate, parseArticle, readingMinutes } from '../content/frontmatter';
+import { articlePath, isoDate, isPublished, parseArticle, readingMinutes } from '../content/frontmatter';
 import type { ArticleMeta } from '../content/frontmatter';
 import type { Lang } from './projects';
 
@@ -36,6 +36,13 @@ for (const [path, raw] of Object.entries(files)) {
 export const articles: Article[] = [...bySlug.values()].sort(
   (a, b) => isoDate(b.date).localeCompare(isoDate(a.date)) || a.slug.localeCompare(b.slug),
 );
+
+/**
+ * The articles shown on /articles: scheduled ones stay reachable by URL (see
+ * Article.tsx) but are only listed once their date has passed. Checked in the
+ * browser, so an article appears on time even before the next rebuild.
+ */
+export const listedArticles = () => articles.filter((a) => isPublished(a.date));
 
 /** the version in the reader's language, falling back to whichever exists */
 export function inLang(article: Article, lang: Lang): ArticleVersion {

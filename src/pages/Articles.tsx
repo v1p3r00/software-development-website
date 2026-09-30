@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { articles, formatDate, inLang } from '../data/articles';
+import { formatDate, inLang, listedArticles } from '../data/articles';
 import { isoDate } from '../content/frontmatter';
 import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
@@ -9,6 +9,7 @@ import { Arrow, CornerMarks, Section, SectionHeader } from '../components/ui';
 export default function Articles() {
   const { t, lang, lp } = useI18n();
   const goTo = useGoToSection();
+  const articles = listedArticles();
 
   useSeo({
     title: t.seo.articlesTitle,

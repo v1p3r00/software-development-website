@@ -10,6 +10,10 @@
  *   tags: [web apps, planning]  (optional)
  *   image: /articles/<slug>/share.jpg  (optional; 1200×630 link-preview picture in public/)
  *   draft: true                 (optional; drafts only show in `npm run dev`)
+ *
+ * A date in the future schedules the article: its page is live at its URL straight
+ * away (so posts can link to it), but it only appears on /articles and in the
+ * sitemap once that time has passed (Budapest time).
  *   ---
  */
 export interface ArticleMeta {
@@ -78,6 +82,26 @@ export function isoDate(value: string) {
   if (!m) return value;
   return m[2] ? `${m[1]}T${m[2]}:00` : m[1];
 }
+
+const siteClock = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Europe/Budapest',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hourCycle: 'h23',
+});
+
+/** the current time on the site's clock (Budapest), shaped like isoDate(): `2026-10-01T08:00:00` */
+export function nowIso(date = new Date()) {
+  const p = Object.fromEntries(siteClock.formatToParts(date).map((x) => [x.type, x.value]));
+  return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}`;
+}
+
+/** listed once its publication time has passed; a date without a time counts from the start of that day */
+export const isPublished = (date: string, now = nowIso()) => isoDate(date) <= now;
 
 export const readingMinutes = (body: string) =>
   Math.max(1, Math.round(body.split(/\s+/).filter(Boolean).length / 200));

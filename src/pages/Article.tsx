@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { marked } from 'marked';
 import { articles, formatDate, inLang } from '../data/articles';
-import { isoDate } from '../content/frontmatter';
+import { isoDate, isPublished } from '../content/frontmatter';
 import { site } from '../data/site';
 import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
@@ -61,6 +61,8 @@ export default function Article() {
           path: `/articles/${article.slug}/`,
           type: 'article',
           image,
+          // scheduled: reachable by link, but kept out of search results until its date
+          noindex: !isPublished(article.date),
           langs: (['en', 'hu'] as const).filter((l) => article.versions[l]),
           jsonLd,
         }
