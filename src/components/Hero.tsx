@@ -103,14 +103,6 @@ export default function Hero() {
         style={{ background: 'radial-gradient(90% 70% at 50% 0%, transparent 40%, rgb(var(--c-bg)) 100%)' }}
       />
 
-      {/* visitor readout, top right under the menu bar */}
-      <div
-        className="relative mx-auto flex w-full max-w-[1500px] justify-end px-5 pb-2 pt-3 sm:px-8 lg:px-12 lg:pt-5"
-        style={reveal(20)}
-      >
-        <VisitorCounter />
-      </div>
-
       <div className="relative mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-0 px-5 sm:px-8 lg:grid-cols-12 lg:px-12">
         {/* ── left column: headline ── */}
         <div className="order-2 flex flex-col justify-center py-10 lg:order-1 lg:col-span-5 lg:py-16">
@@ -206,7 +198,8 @@ export default function Hero() {
 
         {/* ── right column: system metadata ── */}
         <div className="order-3 flex flex-col justify-center gap-8 border-t border-line py-8 lg:col-span-2 lg:border-l lg:border-t-0 lg:py-12 lg:pl-6 2xl:pr-10">
-          <div style={reveal(300)} className="flex flex-row justify-between gap-6 lg:flex-col">
+          <div style={reveal(300)} className="flex flex-row flex-wrap justify-between gap-x-6 gap-y-5 lg:flex-col lg:flex-nowrap">
+            <VisitorCounter className="basis-full lg:basis-auto" />
             <div>
               <div className="label mb-2">{t.ui.location}</div>
               <div className="font-mono text-[11px] uppercase leading-relaxed tracking-tech text-text">
