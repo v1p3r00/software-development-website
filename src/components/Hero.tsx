@@ -3,6 +3,7 @@ import { useI18n } from '../i18n';
 import { site } from '../data/site';
 import { usePrefersReducedMotion } from '../hooks/useMisc';
 import HeroModel from './HeroModel';
+import VisitorCounter from './VisitorCounter';
 import { Arrow, CornerMarks, cx } from './ui';
 
 const STACK = ['Java', 'Angular', 'React', 'Spring Boot', 'PostgreSQL', 'Docker'];
@@ -101,6 +102,14 @@ export default function Hero() {
         aria-hidden
         style={{ background: 'radial-gradient(90% 70% at 50% 0%, transparent 40%, rgb(var(--c-bg)) 100%)' }}
       />
+
+      {/* visitor readout, top right under the menu bar */}
+      <div
+        className="relative mx-auto flex w-full max-w-[1500px] justify-end px-5 pb-2 pt-3 sm:px-8 lg:px-12 lg:pt-5"
+        style={reveal(20)}
+      >
+        <VisitorCounter />
+      </div>
 
       <div className="relative mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-0 px-5 sm:px-8 lg:grid-cols-12 lg:px-12">
         {/* ── left column: headline ── */}

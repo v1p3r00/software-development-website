@@ -50,6 +50,8 @@ export const hu: Dict = {
   },
 
   hero: {
+    visitors: 'Látogató',
+    visitorsTitle: 'Látogatások az indulás óta, böngésző-munkamenetenként egyszer számolva',
     kicker: 'Ötletekből működő termékek',
     l1: 'Építs.',
     l2: 'Oldd meg.',

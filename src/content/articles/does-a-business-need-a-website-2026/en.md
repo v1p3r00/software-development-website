@@ -3,6 +3,7 @@ title: Does a business need a website in 2026?
 description: Facebook, Instagram and a Google Business Profile – is that enough? When you can do without a website, when it becomes essential, and what it should do for you.
 date: 2026-09-30 15:00
 tags: [websites, online presence, seo, social media, small business]
+image: /articles/does-a-business-need-a-website-2026/share.jpg
 ---
 
 "We don't need a website. We have Facebook."\

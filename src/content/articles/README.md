@@ -19,6 +19,7 @@ description: One or two sentences, about 150 characters. Used in search results 
 date: 2026-10-15
 updated: 2026-11-02
 tags: [web apps, planning]
+image: /articles/how-long-does-a-web-app-take/share.jpg
 draft: true
 ---
 ```
@@ -26,7 +27,11 @@ draft: true
 - `date` is `YYYY-MM-DD`, optionally with a time (`YYYY-MM-DD HH:MM`); the list is
   sorted newest first, and the time decides the order of articles from the same day
   (an article without a time counts as the start of that day).
-- `updated` and `tags` are optional.
+- `updated`, `tags` and `image` are optional.
+- `image` is the picture shown when the article is shared (Facebook, LinkedIn,
+  X, Messenger…): 1200×630 px, saved as `public/articles/<slug>/share.jpg`. Without
+  it, the site's general card (`public/og.png`) is used. Put it in `en.md`; the
+  Hungarian version uses the same picture.
 - `draft: true` shows the article in `npm run dev` only. Remove it to publish.
 
 The body is ordinary Markdown: `##` headings, lists, links, **bold**, `code`,

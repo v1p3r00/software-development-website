@@ -3,6 +3,7 @@ title: Legacy software or a modernised system? When is it worth developing old s
 description: Rehost, replatform, refactor, rearchitect or replace step by step? When a legacy system is worth modernising, and how to do it without a big-bang rewrite.
 date: 2026-09-30 14:40
 tags: [legacy, modernisation, architecture, refactoring, enterprise software]
+image: /articles/legacy-software-modernization/share.jpg
 ---
 
 For many companies, the same piece of software has been at the heart of the business for years, sometimes decades.

@@ -3,6 +3,7 @@ title: Custom website vagy kész megoldás? Melyik a megfelelő a vállalkozáso
 description: Wix, WordPress, Shopify, Webflow vagy egyedi fejlesztés? Mikor elég egy kész platform, mikor éri meg a custom weboldal, és mikor a hibrid megoldás.
 date: 2026-09-30 14:20
 tags: [weboldal, webshop, wordpress, shopify, egyedi fejlesztés]
+image: /articles/custom-website-vs-ready-made-platform/share.jpg
 ---
 
 Egy új weboldal indításakor ma már rengeteg lehetőség közül választhatsz.

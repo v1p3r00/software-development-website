@@ -15,6 +15,8 @@ export default function Article() {
   const goTo = useGoToSection();
   const article = articles.find((a) => a.slug === slug);
   const v = article ? inLang(article, lang) : null;
+  // one share picture per article, whichever language file declares it
+  const image = article?.versions.en?.image ?? article?.versions.hu?.image;
   // links to other sites (sources, references) open in a new tab
   const html = useMemo(
     () =>
@@ -43,12 +45,12 @@ export default function Article() {
             keywords: v.tags.join(', '),
             url: `${site.url}/articles/${article.slug}/`,
             mainEntityOfPage: `${site.url}/articles/${article.slug}/`,
-            image: site.url + site.ogImage,
+            image: site.url + (image ?? site.ogImage),
             author: { '@id': `${site.url}/#person` },
             publisher: { '@id': `${site.url}/#person` },
           }
         : undefined,
-    [article, v, lang],
+    [article, v, lang, image],
   );
 
   useSeo(
@@ -58,6 +60,7 @@ export default function Article() {
           description: v.description,
           path: `/articles/${article.slug}/`,
           type: 'article',
+          image,
           jsonLd,
         }
       : { title: t.seo.notFoundTitle, description: t.articles.notFound, path: `/articles/${slug ?? ''}/`, noindex: true },

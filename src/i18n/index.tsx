@@ -20,6 +20,9 @@ const LanguageContext = createContext<Ctx | null>(null);
 
 function initialLang(): Lang {
   if (typeof window === 'undefined') return 'en';
+  // a shared link can carry the language: /articles/<slug>/?lang=hu
+  const fromUrl = new URLSearchParams(window.location.search).get('lang');
+  if (fromUrl === 'hu' || fromUrl === 'en') return fromUrl;
   const stored = window.localStorage.getItem(STORAGE_KEY);
   return stored === 'hu' || stored === 'en' ? stored : 'en';
 }

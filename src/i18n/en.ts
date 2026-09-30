@@ -48,6 +48,8 @@ export const en = {
   },
 
   hero: {
+    visitors: 'Visitors',
+    visitorsTitle: 'Visits since launch, counted once per browser session',
     kicker: 'Turning ideas into useful products',
     l1: 'Build.',
     l2: 'Solve.',

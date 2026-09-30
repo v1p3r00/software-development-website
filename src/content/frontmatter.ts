@@ -8,6 +8,7 @@
  *   date: 2026-10-15           (or 2026-10-15 14:30, to order articles published the same day)
  *   updated: 2026-11-02        (optional)
  *   tags: [web apps, planning]  (optional)
+ *   image: /articles/<slug>/share.jpg  (optional; 1200×630 link-preview picture in public/)
  *   draft: true                 (optional; drafts only show in `npm run dev`)
  *   ---
  */
@@ -17,6 +18,8 @@ export interface ArticleMeta {
   date: string;
   updated?: string;
   tags: string[];
+  /** link-preview picture (1200×630), a path under public/ */
+  image?: string;
   draft: boolean;
 }
 
@@ -56,6 +59,7 @@ export function parseArticle(raw: string): ParsedArticle {
       date: unquote(fields.date ?? ''),
       updated: fields.updated ? unquote(fields.updated) : undefined,
       tags,
+      image: fields.image ? unquote(fields.image) : undefined,
       draft: unquote(fields.draft ?? '') === 'true',
     },
     body,

@@ -3,6 +3,7 @@ title: How much does a website cost in 2026 – and what is it really worth to a
 description: Price ranges from landing pages to enterprise systems, plus simple calculations of customer value, return on investment (ROI) and total cost of ownership (TCO).
 date: 2026-09-30 15:21
 tags: [website cost, e-commerce, roi, customer value, tco]
+image: /articles/how-much-does-a-website-cost-2026/share.jpg
 ---
 
 **"How much does a website cost?"**

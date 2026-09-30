@@ -22,6 +22,9 @@ interface Page {
   title: string;
   description: string;
   type?: 'website' | 'article';
+  /** link-preview picture under public/, defaults to the site card */
+  image?: string;
+  imageAlt?: string;
   noindex?: boolean;
   jsonLd?: object;
   lastmod?: string;
@@ -37,7 +40,7 @@ const MARKER = /<!--seo-->[\s\S]*?<!--\/seo-->|<!--seo-->/;
 
 function headTags(page: Page) {
   const url = site.url + page.path;
-  const image = site.url + site.ogImage;
+  const image = site.url + (page.image ?? site.ogImage);
   const tags = [
     `<title>${esc(page.title)}</title>`,
     `<meta name="description" content="${esc(page.description)}" />`,
@@ -53,7 +56,7 @@ function headTags(page: Page) {
     `<meta property="og:image" content="${image}" />`,
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
-    `<meta property="og:image:alt" content="${esc(`${site.name} — ${site.domain}`)}" />`,
+    `<meta property="og:image:alt" content="${esc(page.imageAlt ?? `${site.name} — ${site.domain}`)}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc(page.title)}" />`,
     `<meta name="twitter:description" content="${esc(page.description)}" />`,
@@ -112,11 +115,14 @@ function pages(root: string): Page[] {
     const lang = a.versions.en ? 'en' : 'hu';
     const { meta } = a.versions[lang];
     const url = `${site.url}/articles/${a.slug}/`;
+    const image = a.versions.en?.meta.image ?? a.versions.hu?.meta.image;
     list.push({
       path: `/articles/${a.slug}/`,
       title: `${meta.title} — ${site.name}`,
       description: clip(meta.description),
       type: 'article',
+      image,
+      imageAlt: image ? meta.title : undefined,
       lastmod: isoDate(meta.updated ?? meta.date).slice(0, 10),
       jsonLd: {
         '@context': 'https://schema.org',
@@ -129,7 +135,7 @@ function pages(root: string): Page[] {
         keywords: meta.tags.join(', '),
         url,
         mainEntityOfPage: url,
-        image: site.url + site.ogImage,
+        image: site.url + (image ?? site.ogImage),
         author: { '@id': `${site.url}/#person` },
         publisher: { '@id': `${site.url}/#person` },
       },
