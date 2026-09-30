@@ -2,8 +2,10 @@ export const site = {
   name: 'David Mészáros',
   monogram: 'DM',
   email: 'meszarosdavid@softwaredevelopment.hu',
-  // the contact form posts here (FormSubmit relays it to the address above)
-  formEndpoint: 'https://formsubmit.co/ajax/meszarosdavid@softwaredevelopment.hu',
+  // the contact form posts to Web3Forms, which mails it to the address above.
+  // The access key is public by design: it can only deliver to that address.
+  formEndpoint: 'https://api.web3forms.com/submit',
+  formAccessKey: '6663fd0a-d3f1-4c91-b881-8ea938ffb30e',
   build: '2026.09',
   version: 'v2.6',
   timezone: 'Europe/Budapest',

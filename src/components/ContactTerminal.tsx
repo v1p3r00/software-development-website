@@ -85,6 +85,8 @@ export default function ContactTerminal() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
+          access_key: site.formAccessKey,
+          from_name: 'softwaredevelopment.hu',
           name: values.name,
           email: values.email,
           company: values.company || '—',
@@ -93,9 +95,8 @@ export default function ContactTerminal() {
           timeline: choices.timeline || '—',
           heard_via: choices.source || '—',
           message: values.project,
-          _subject: `Project enquiry — ${values.name}${choices.type ? ` (${choices.type})` : ''}`,
-          _replyto: values.email,
-          _template: 'table',
+          subject: `Project enquiry — ${values.name}${choices.type ? ` (${choices.type})` : ''}`,
+          replyto: values.email,
         }),
       });
       const data = (await res.json().catch(() => ({}))) as { success?: string | boolean };
