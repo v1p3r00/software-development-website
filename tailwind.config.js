@@ -18,6 +18,7 @@ export default {
         muted: c('muted'),
         dim: c('dim'),
         accent: c('accent'),
+        onaccent: c('on-accent'),
         sand: c('sand'),
       },
       fontFamily: {

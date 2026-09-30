@@ -12,7 +12,7 @@ export default function ProjectCard({ project, index }: { project: Project; inde
       to={`/project/${project.id}`}
       data-cursor="open"
       aria-label={`${project.num} — ${project.title}`}
-      className="group relative flex h-full flex-col border border-line bg-surface transition-[border-color,transform] duration-500 ease-tech hover:z-10 hover:border-line-strong hover:-translate-y-1"
+      className="lift group relative flex h-full flex-col border border-line bg-surface transition-[border-color,transform,box-shadow] duration-500 ease-tech hover:z-10 hover:border-line-strong hover:-translate-y-1"
       style={{ animationDelay: `${index * 40}ms` }}
     >
       {/* top bar */}

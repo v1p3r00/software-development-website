@@ -4,7 +4,10 @@ import { site } from '../data/site';
 import { usePrefersReducedMotion } from '../hooks/useMisc';
 import { Section, SectionHeader, cx } from './ui';
 
-type Field = 'name' | 'email' | 'project';
+type Field = 'name' | 'email' | 'company' | 'project';
+type Choice = 'type' | 'budget' | 'timeline' | 'source';
+const EMPTY = { name: '', email: '', company: '', project: '' };
+const NO_CHOICES: Record<Choice, string> = { type: '', budget: '', timeline: '', source: '' };
 type Errors = Partial<Record<Field, string>>;
 
 function useTypewriter(text: string, enabled: boolean) {
@@ -29,9 +32,11 @@ function useTypewriter(text: string, enabled: boolean) {
 export default function ContactTerminal() {
   const { t } = useI18n();
   const reduced = usePrefersReducedMotion();
-  const [values, setValues] = useState({ name: '', email: '', project: '' });
+  const [values, setValues] = useState(EMPTY);
+  const [choices, setChoices] = useState(NO_CHOICES);
   const [errors, setErrors] = useState<Errors>({});
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [honey, setHoney] = useState('');
   const [visible, setVisible] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
 
@@ -58,8 +63,9 @@ export default function ContactTerminal() {
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (status === 'sending') return;
     const next: Errors = {};
     if (!values.name.trim()) next.name = t.contact.errorName;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) next.email = t.contact.errorEmail;
@@ -67,11 +73,78 @@ export default function ContactTerminal() {
     setErrors(next);
     if (Object.keys(next).length) return;
 
-    const subject = `Project enquiry — ${values.name}`;
-    const body = `${values.project}\n\n—\n${values.name}\n${values.email}`;
-    window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setSent(true);
+    // bots fill the hidden field; pretend it worked and send nothing
+    if (honey) {
+      setStatus('sent');
+      return;
+    }
+
+    setStatus('sending');
+    try {
+      const res = await fetch(site.formEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name: values.name,
+          email: values.email,
+          company: values.company || '—',
+          project_type: choices.type || '—',
+          budget: choices.budget || '—',
+          timeline: choices.timeline || '—',
+          heard_via: choices.source || '—',
+          message: values.project,
+          _subject: `Project enquiry — ${values.name}${choices.type ? ` (${choices.type})` : ''}`,
+          _replyto: values.email,
+          _template: 'table',
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { success?: string | boolean };
+      if (!res.ok || String(data.success) !== 'true') throw new Error('not delivered');
+      setStatus('sent');
+      setValues(EMPTY);
+      setChoices(NO_CHOICES);
+    } catch {
+      setStatus('error');
+    }
   };
+
+  /** A row of toggle chips; picking the selected one again clears it. */
+  const choice = (key: Choice, label: string, options: readonly string[], wideLabel = false) => (
+    <fieldset className="border-b border-line py-3">
+      <div className={cx('flex flex-col gap-2', !wideLabel && 'sm:flex-row sm:items-start sm:gap-3')}>
+        <legend
+          className={cx(
+            'float-left mt-1.5 shrink-0 font-mono text-2xs uppercase tracking-tech text-dim',
+            !wideLabel && 'sm:w-[4.5rem]',
+          )}
+        >
+          {/[?:]$/.test(label) ? label : `${label}:`}
+        </legend>
+        <div className="flex flex-wrap gap-1.5">
+          {options.map((option) => {
+            const on = choices[key] === option;
+            return (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={on}
+                data-cursor="follow"
+                onClick={() => setChoices((c) => ({ ...c, [key]: on ? '' : option }))}
+                className={cx(
+                  'border px-2.5 py-1.5 font-mono text-2xs uppercase tracking-tech transition-colors duration-200',
+                  on
+                    ? 'border-accent bg-accent text-onaccent'
+                    : 'border-line text-muted hover:border-line-strong hover:text-text',
+                )}
+              >
+                {option}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </fieldset>
+  );
 
   const field = (name: Field, label: string, placeholder: string, textarea = false) => {
     const id = `contact-${name}`;
@@ -82,6 +155,7 @@ export default function ContactTerminal() {
       value: values[name],
       onChange: set(name),
       placeholder,
+      autoComplete: ({ name: 'name', email: 'email', company: 'organization', project: 'off' } as const)[name],
       'aria-invalid': invalid,
       'aria-describedby': invalid ? `${id}-error` : undefined,
       className: cx(
@@ -136,27 +210,49 @@ export default function ContactTerminal() {
               <p className="mb-6 font-mono text-2xs uppercase tracking-tech text-accent">● {t.contact.ready}</p>
 
               <form onSubmit={submit} noValidate>
+                {/* honeypot: hidden from people, tempting to bots */}
+                <input
+                  type="text"
+                  name="_honey"
+                  value={honey}
+                  onChange={(e) => setHoney(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden
+                  className="absolute -left-[9999px] h-px w-px opacity-0"
+                />
                 {field('name', t.contact.name, t.contact.namePh)}
                 {field('email', t.contact.email, t.contact.emailPh)}
+                {field('company', t.contact.company, t.contact.companyPh)}
+                {choice('type', t.contact.typeLabel, t.contact.types)}
+                {choice('budget', t.contact.budgetLabel, t.contact.budgets)}
+                {choice('timeline', t.contact.timelineLabel, t.contact.timelines)}
                 {field('project', t.contact.project, t.contact.projectPh, true)}
+                {choice('source', t.contact.sourceLabel, t.contact.sources, true)}
 
                 <div className="mt-6 flex flex-wrap items-center gap-4">
                   <button
                     type="submit"
+                    disabled={status === 'sending'}
                     data-cursor="follow"
-                    className="group inline-flex items-center gap-3 bg-accent px-6 py-3.5 font-mono text-[11px] uppercase tracking-tech text-black transition-colors duration-300 hover:bg-text"
+                    className="group inline-flex items-center gap-3 bg-accent px-6 py-3.5 font-mono text-[11px] uppercase tracking-tech text-onaccent transition-colors duration-300 hover:bg-text disabled:cursor-wait disabled:opacity-70"
                   >
-                    <span>&gt; {t.contact.send}</span>
+                    <span>
+                      &gt; {status === 'sending' ? `${t.contact.sending}…` : t.contact.send}
+                    </span>
                     <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
                   </button>
-                  {sent && (
-                    <p role="status" className="font-mono text-2xs uppercase tracking-tech text-muted">
-                      {t.contact.sent}{' '}
-                      <a href={`mailto:${site.email}`} className="text-accent underline underline-offset-2">
-                        {site.email}
-                      </a>
-                    </p>
-                  )}
+                  <p role="status" aria-live="polite" className="font-mono text-2xs uppercase tracking-tech">
+                    {status === 'sent' && <span className="text-accent">● {t.contact.sent}</span>}
+                    {status === 'error' && (
+                      <span className="text-muted">
+                        ! {t.contact.error}{' '}
+                        <a href={`mailto:${site.email}`} className="text-accent underline underline-offset-2">
+                          {site.email}
+                        </a>
+                      </span>
+                    )}
+                  </p>
                 </div>
               </form>
             </div>

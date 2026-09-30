@@ -1,13 +1,15 @@
 export const site = {
   name: 'David Mészáros',
   monogram: 'DM',
-  email: 'meszarosdavid@protonmail.com',
+  email: 'meszarosdavid@softwaredevelopment.hu',
+  // the contact form posts here (FormSubmit relays it to the address above)
+  formEndpoint: 'https://formsubmit.co/ajax/meszarosdavid@softwaredevelopment.hu',
   build: '2026.09',
   version: 'v2.6',
   timezone: 'Europe/Budapest',
   links: [
     { label: 'LinkedIn', short: 'IN', href: 'https://www.linkedin.com/in/meszdav' },
-    { label: 'Email', short: 'EM', href: 'mailto:meszarosdavid@protonmail.com' },
+    { label: 'Email', short: 'EM', href: 'mailto:meszarosdavid@softwaredevelopment.hu' },
   ],
   sections: ['home', 'about', 'projects', 'services', 'contact'] as const,
 };

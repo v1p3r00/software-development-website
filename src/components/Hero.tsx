@@ -255,7 +255,7 @@ export default function Hero() {
           { v: '50+', l: t.about.stats[1].label },
           { v: '∞', l: t.hero.roles.length ? t.about.stats[2].label : '' },
         ].map((s) => (
-          <div key={s.l} className="flex-1 border-r border-line py-5 pr-4 last:border-r-0 sm:pr-8">
+          <div key={s.l} className="flex-1 border-r border-line py-5 pl-4 pr-4 first:pl-0 last:border-r-0 sm:pl-8 sm:pr-8">
             <div className="display text-3xl sm:text-4xl">{s.v}</div>
             <div className="label mt-1">{s.l}</div>
           </div>

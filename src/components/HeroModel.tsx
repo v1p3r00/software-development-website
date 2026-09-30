@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { usePrefersReducedMotion } from '../hooks/useMisc';
+import { useTheme } from '../hooks/useTheme';
 import { useI18n } from '../i18n';
 import { CornerMarks, cx } from './ui';
 
@@ -9,6 +10,10 @@ import { CornerMarks, cx } from './ui';
  * can be dragged to rotate, and opens into a full-screen inspector on click.
  * Equations orbit the head, cycling in and out of a larger pool, drawn on a 2D
  * canvas above the WebGL one so the type stays crisp.
+ *
+ * Lighting follows the site theme: in dark mode a low-key room where the laptop
+ * screen lights the figure's face; in light mode soft overcast daylight with a
+ * diffuse contact shadow.
  *
  * three and the model load lazily, after first paint, so neither blocks the page.
  */
@@ -58,8 +63,47 @@ function readAccent(): [number, number, number] {
     : [255, 95, 31];
 }
 
+type Mode = 'dark' | 'light';
+
+/** A small dark-theme code editor, drawn once, used as the laptop's display. */
+function drawEditor(THREE: typeof import('three')) {
+  const c = document.createElement('canvas');
+  c.width = 512;
+  c.height = 420;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#0d1422';
+  g.fillRect(0, 0, c.width, c.height);
+  g.fillStyle = '#16213a';
+  g.fillRect(0, 0, c.width, 34); // tab bar
+  g.fillRect(0, 34, 44, c.height); // gutter
+  g.fillStyle = '#0d1422';
+  g.fillRect(52, 6, 130, 28); // active tab
+  const palette = ['#7aa2ff', '#c3e88d', '#ff9e64', '#bb9af7', '#89ddff', '#e0e6f0'];
+  let seed = 7;
+  const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let row = 0, y = 52; y < c.height - 12; row++, y += 19) {
+    g.fillStyle = '#3b4a6b';
+    g.fillRect(14, y, 18, 7); // line number
+    let x = 60 + (row % 5 === 0 ? 0 : 22 * (1 + Math.floor(rnd() * 3)));
+    const words = 1 + Math.floor(rnd() * 5);
+    for (let w = 0; w < words && x < c.width - 30; w++) {
+      const len = 18 + Math.floor(rnd() * 70);
+      g.fillStyle = palette[Math.floor(rnd() * palette.length)];
+      g.fillRect(x, y, len, 7);
+      x += len + 10;
+    }
+  }
+  g.fillStyle = '#7aa2ff';
+  g.fillRect(60, 52 + 19 * 9, 3, 12); // cursor
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
 interface Stage {
   el: HTMLDivElement;
+  setMode: (mode: Mode) => void;
   setZoom: (distance: number) => void;
   zoomBy: (delta: number) => void;
   resetView: () => void;
@@ -71,6 +115,9 @@ export default function HeroModel({ className = '' }: { className?: string }) {
   const modalHost = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Stage | null>(null);
   const reduced = usePrefersReducedMotion();
+  const { theme } = useTheme();
+  const themeRef = useRef<Mode>(theme);
+  themeRef.current = theme;
   const [ready, setReady] = useState(false);
   const [inspect, setInspect] = useState(false);
 
@@ -83,9 +130,10 @@ export default function HeroModel({ className = '' }: { className?: string }) {
 
     const start = async () => {
       const THREE = await import('three');
-      const [{ GLTFLoader }, { MeshoptDecoder }] = await Promise.all([
+      const [{ GLTFLoader }, { MeshoptDecoder }, { RoomEnvironment }] = await Promise.all([
         import('three/examples/jsm/loaders/GLTFLoader.js'),
         import('three/examples/jsm/libs/meshopt_decoder.module.js'),
+        import('three/examples/jsm/environments/RoomEnvironment.js'),
       ]);
       if (disposed) return;
 
@@ -98,6 +146,8 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.15;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFShadowMap; // honours shadow.radius, for a soft overcast shadow
 
       // one stage, moved between the hero and the inspector, so the model and
       // its GPU resources are only ever created once
@@ -110,27 +160,120 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       const octx = overlay.getContext('2d');
 
       const scene = new THREE.Scene();
+      const pivot = new THREE.Group();
+      scene.add(pivot);
       const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
       let distance = INLINE_DISTANCE;
       let targetDistance = INLINE_DISTANCE;
       let elevation = 0.15;
 
-      const accent = readAccent();
-      const accentColor = new THREE.Color(accent[0] / 255, accent[1] / 255, accent[2] / 255);
+      let accent = readAccent();
 
-      scene.add(new THREE.HemisphereLight(0xc8d2e0, 0x0a0a0c, 1.1));
+      const hemi = new THREE.HemisphereLight(0xc8d2e0, 0x0a0a0c, 1.1);
+      scene.add(hemi);
       const key = new THREE.DirectionalLight(0xffffff, 2.2);
-      key.position.set(-2.5, 3.2, 2.6);
+      key.shadow.mapSize.set(2048, 2048);
+      key.shadow.camera.left = -1.6;
+      key.shadow.camera.right = 1.6;
+      key.shadow.camera.top = 1.6;
+      key.shadow.camera.bottom = -1.6;
+      key.shadow.camera.near = 0.5;
+      key.shadow.camera.far = 14;
+      key.shadow.bias = -0.0004;
+      key.shadow.normalBias = 0.025;
+      key.shadow.radius = 9;
+      key.shadow.blurSamples = 16;
       scene.add(key);
       const fill = new THREE.DirectionalLight(0x9fb0c8, 0.5);
-      fill.position.set(2.6, 0.8, -2.2);
       scene.add(fill);
-      const glow = new THREE.PointLight(accentColor, 6, 6, 2);
+      const glow = new THREE.PointLight(0xffffff, 6, 6, 2);
       glow.position.set(0.25, -0.1, 1.1);
       scene.add(glow);
 
-      const pivot = new THREE.Group();
-      scene.add(pivot);
+      // the laptop screen, as a cool spot aimed up at the face; it lives in the
+      // pivot so it turns with the figure. Positions are in the model's
+      // normalised space (figure faces +z, 2 units tall).
+      const SCREEN_LIGHT = 4.2;
+      const screen = new THREE.SpotLight(0xa9c9ff, SCREEN_LIGHT, 2.4, 0.75, 0.9, 1.6);
+      screen.position.set(-0.148, 0.18, 0.553);
+      screen.target.position.set(-0.09, 0.72, 0.1);
+      pivot.add(screen, screen.target);
+
+      // the display itself: a glowing panel laid over the lid, showing an editor
+      // lid plane, measured by ray-casting the model: tilted ~25° back, yawed slightly
+      const lidFace = new THREE.Vector3(0.108, 0.419, -0.901).normalize(); // out of the display, towards the face
+      const lidEdge = new THREE.Vector3(0.993, 0, 0.119).normalize(); // along the hinge
+      const lidUp = new THREE.Vector3().crossVectors(lidEdge, lidFace).normalize(); // hinge to top
+      const display = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.45, 0.3),
+        new THREE.MeshBasicMaterial({ map: drawEditor(THREE), toneMapped: false }),
+      );
+      display.quaternion.setFromRotationMatrix(
+        new THREE.Matrix4().makeBasis(new THREE.Vector3().crossVectors(lidUp, lidFace), lidUp, lidFace),
+      );
+      display.position.set(-0.153, 0.16, 0.598).addScaledVector(lidUp, 0.012).addScaledVector(lidFace, 0.006);
+      pivot.add(display);
+
+      // a floor that only shows the shadow the sun casts, to ground the figure
+      const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(8, 8),
+        new THREE.ShadowMaterial({ color: 0x0b1a3a, opacity: 0.14 }),
+      );
+      floor.rotation.x = -Math.PI / 2;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      // soft sky reflections for the daylight look, built on first use
+      let daylightEnv: InstanceType<typeof THREE.Texture> | null = null;
+      const pmrem = new THREE.PMREMGenerator(renderer);
+
+      let light = false;
+      const setMode = (mode: Mode) => {
+        accent = readAccent();
+        light = mode === 'light';
+        if (light) {
+          // overcast: a bright, even sky, the sun lost behind cloud overhead
+          renderer.toneMappingExposure = 1.0;
+          hemi.color.set(0xeef2f7);
+          hemi.groundColor.set(0xb9b6ae);
+          hemi.intensity = 2.3;
+          key.color.set(0xf2f5fa);
+          key.intensity = 1.0;
+          key.position.set(0.4, 6, 1.2);
+          key.castShadow = true;
+          fill.color.set(0xdfe6ef);
+          fill.intensity = 0.55;
+          fill.position.set(2.8, 1.6, -2.4);
+          glow.intensity = 0;
+          screen.visible = false;
+          (display.material as InstanceType<typeof THREE.MeshBasicMaterial>).color.setScalar(0.72); // screen, in daylight
+          floor.visible = true;
+          (floor.material as InstanceType<typeof THREE.ShadowMaterial>).opacity = 0.16;
+          if (!daylightEnv) daylightEnv = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+          scene.environment = daylightEnv;
+          scene.environmentIntensity = 0.85;
+        } else {
+          // a dim room: the laptop screen does most of the work on the face
+          renderer.toneMappingExposure = 1.15;
+          hemi.color.set(0xa9b6c8);
+          hemi.groundColor.set(0x0a0a0c);
+          hemi.intensity = 0.55;
+          key.color.set(0xdfe6f0);
+          key.intensity = 1.1;
+          key.position.set(-2.5, 3.2, -1.6); // behind, as a rim
+          key.castShadow = false;
+          fill.color.set(0x9fb0c8);
+          fill.intensity = 0.35;
+          fill.position.set(2.6, 0.8, -2.2);
+          glow.color.setRGB(accent[0] / 255, accent[1] / 255, accent[2] / 255);
+          glow.intensity = 1.2;
+          screen.visible = true;
+          (display.material as InstanceType<typeof THREE.MeshBasicMaterial>).color.setScalar(1.25); // lit, in the dark
+          floor.visible = false;
+          scene.environment = null;
+        }
+      };
+
 
       const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(MODEL_URL);
       if (disposed) {
@@ -148,8 +291,17 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       model.position.sub(centre);
       model.scale.setScalar(unit);
       model.position.multiplyScalar(unit);
+      model.traverse((obj) => {
+        const mesh = obj as InstanceType<typeof THREE.Mesh>;
+        if (mesh.isMesh) {
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+        }
+      });
       pivot.add(model);
       pivot.rotation.y = 0.35;
+      floor.position.y = (bounds.min.y - centre.y) * unit;
+      setMode(themeRef.current);
 
       const headY = (bounds.max.y - centre.y) * unit + 0.12;
       const orbitCentre = new THREE.Vector3(0, headY, 0);
@@ -233,6 +385,10 @@ export default function HeroModel({ className = '' }: { className?: string }) {
         }
         if (!reduced) orbit += dt * 0.45;
         pivot.rotation.y = 0.35 + spin;
+        // the odd shift in what is on screen, so the glow is not dead still
+        if (screen.visible && !reduced) {
+          screen.intensity = SCREEN_LIGHT * (0.93 + 0.05 * Math.sin(now / 900) + 0.02 * Math.sin(now / 137));
+        }
 
         distance += (targetDistance - distance) * Math.min(1, dt * 6);
         camera.position.set(0, elevation, distance);
@@ -242,7 +398,7 @@ export default function HeroModel({ className = '' }: { className?: string }) {
         if (octx && w && h) {
           octx.clearRect(0, 0, w, h);
           const fontSize = Math.max(9, Math.min(21, Math.round(h / 38)));
-          octx.font = `${fontSize}px "JetBrains Mono Variable", ui-monospace, monospace`;
+          octx.font = `${light ? 600 : 400} ${fontSize}px "JetBrains Mono Variable", ui-monospace, monospace`;
           octx.textAlign = 'center';
           octx.textBaseline = 'middle';
 
@@ -275,9 +431,11 @@ export default function HeroModel({ className = '' }: { className?: string }) {
             .sort((m, n) => m.depth - n.depth);
 
           for (const e of placed) {
-            const alpha = Math.min(1, Math.max(0, (e.depth + 0.95) / 1.7)) * e.life;
+            const depthFade = Math.min(1, Math.max(0, (e.depth + 0.95) / 1.7));
+            // on white, the far side of the orbit has to stay readable too
+            const alpha = (light ? 0.5 + 0.5 * depthFade : depthFade) * e.life;
             if (alpha <= 0.04) continue;
-            octx.strokeStyle = `rgb(${accent[0]} ${accent[1]} ${accent[2]} / ${(0.13 * alpha).toFixed(3)})`;
+            octx.strokeStyle = `rgb(${accent[0]} ${accent[1]} ${accent[2]} / ${((light ? 0.3 : 0.13) * alpha).toFixed(3)})`;
             octx.setLineDash([2, 4]);
             octx.lineWidth = 1;
             octx.beginPath();
@@ -285,14 +443,21 @@ export default function HeroModel({ className = '' }: { className?: string }) {
             octx.lineTo(e.x, e.y);
             octx.stroke();
             octx.setLineDash([]);
-            octx.fillStyle = `rgb(${accent[0]} ${accent[1]} ${accent[2]} / ${(0.9 * alpha).toFixed(3)})`;
+            if (light) {
+              // a paper-white halo keeps the type legible over the photograph
+              octx.lineJoin = 'round';
+              octx.lineWidth = 4;
+              octx.strokeStyle = `rgb(255 255 255 / ${(0.7 * alpha).toFixed(3)})`;
+              octx.strokeText(e.slot.text, e.x, e.y);
+            }
+            octx.fillStyle = `rgb(${accent[0]} ${accent[1]} ${accent[2]} / ${(Math.min(1, light ? 1.1 : 0.9) * alpha).toFixed(3)})`;
             octx.fillText(e.slot.text, e.x, e.y);
           }
 
           const small = Math.max(8, Math.round(fontSize * 0.68));
           octx.font = `${small}px "JetBrains Mono Variable", ui-monospace, monospace`;
           octx.textAlign = 'right';
-          octx.fillStyle = `rgb(${accent[0]} ${accent[1]} ${accent[2]} / 0.75)`;
+          octx.fillStyle = `rgb(${accent[0]} ${accent[1]} ${accent[2]} / ${light ? 0.95 : 0.75})`;
           octx.fillText(`SOLVED ${String(solved).padStart(4, '0')}`, w - 10, small + 6);
         }
         raf = requestAnimationFrame(frame);
@@ -301,6 +466,7 @@ export default function HeroModel({ className = '' }: { className?: string }) {
 
       stageRef.current = {
         el,
+        setMode,
         setZoom: (d) => {
           targetDistance = d;
         },
@@ -333,6 +499,8 @@ export default function HeroModel({ className = '' }: { className?: string }) {
             for (const m of mats) m?.dispose?.();
           }
         });
+        daylightEnv?.dispose();
+        pmrem.dispose();
         renderer.dispose();
         el.remove();
         stageRef.current = null;
@@ -351,6 +519,14 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       cleanup?.();
     };
   }, [reduced]);
+
+  /* ---- relight when the theme changes ---- */
+  useEffect(() => {
+    // the provider writes data-theme in its own effect, which runs after this
+    // one, so read the new accent on the next frame
+    const id = requestAnimationFrame(() => stageRef.current?.setMode(theme));
+    return () => cancelAnimationFrame(id);
+  }, [theme, ready]);
 
   /* ---- move the stage between the hero and the inspector ---- */
   useEffect(() => {

@@ -19,7 +19,7 @@ export default function LanguageSwitcher({ className = '' }: { className?: strin
           className={cx(
             'px-2 py-1 uppercase transition-colors duration-200',
             i === 1 && 'border-l border-line',
-            lang === code ? 'bg-accent text-black' : 'text-dim hover:text-text',
+            lang === code ? 'bg-accent text-onaccent' : 'text-dim hover:text-text',
           )}
         >
           {code}

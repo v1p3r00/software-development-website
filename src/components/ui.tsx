@@ -99,7 +99,7 @@ export function TechButton({
     'group relative inline-flex items-center gap-4 px-6 py-4 font-mono text-[11px] uppercase tracking-tech transition-colors duration-300';
   const styles =
     variant === 'solid'
-      ? 'bg-accent text-black hover:bg-text'
+      ? 'bg-accent text-onaccent hover:bg-text'
       : 'border border-line-strong text-text hover:border-accent hover:text-accent';
   const content = (
     <>
