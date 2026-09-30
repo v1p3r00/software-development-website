@@ -1,6 +1,6 @@
 ---
 title: Meshy fileok kinyerése és glb-vé alakítása
-description: DevTools-vizsgálat arról, hogyan szállít egy webalkalmazás 3D-modelleket: nincs .glb kérés, csak egy saját MESHY.AI konténer és egy WebAssembly-dekóder.
+description: nincs .glb kérés, csak egy saját MESHY.AI konténer és egy WebAssembly-dekóder.
 date: 2026-09-30
 tags: [devtools, webassembly, 3d, visszafejtés]
 ---

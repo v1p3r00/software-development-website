@@ -1,6 +1,6 @@
 ---
 title: How to extract Meshy files and convert them to GLB
-description: A DevTools investigation into how a web app ships 3D models: no .glb request, a proprietary MESHY.AI container, and a WebAssembly decoder in the browser.
+description: no .glb request, a proprietary MESHY.AI container, and a WebAssembly decoder in the browser.
 date: 2026-09-30
 tags: [devtools, webassembly, 3d, reverse engineering]
 ---
