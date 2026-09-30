@@ -224,6 +224,83 @@ function render(variant: VisualKey) {
           ))}
         </g>
       );
+    case 'compass':
+      // one question branching into options; the chosen path runs on to a roadmap
+      return (
+        <g>
+          <rect x="16" y="78" width="64" height="44" stroke={L} fill="rgb(var(--c-surface))" />
+          <rect x="26" y="92" width="34" height="6" fill={T} opacity="0.55" />
+          <rect x="26" y="104" width="44" height="4" fill={D} />
+          {[34, 100, 166].map((y, i) => (
+            <g key={y}>
+              <path d={`M80 100 C 104 100, 104 ${y}, 128 ${y}`} stroke={i === 1 ? A : D} strokeWidth={i === 1 ? 1.5 : 1} />
+              <rect x="128" y={y - 18} width="76" height="36" stroke={i === 1 ? A : L} />
+              <rect x="138" y={y - 7} width={i === 1 ? 40 : 48} height="5" fill={i === 1 ? A : D} />
+              <rect x="138" y={y + 3} width="30" height="4" fill={D} opacity="0.7" />
+            </g>
+          ))}
+          <path d="M204 100 L232 100" stroke={A} strokeWidth="1.5" />
+          <line x1="232" y1="100" x2="304" y2="100" stroke={L} />
+          {[232, 256, 280, 304].map((x, i) => (
+            <circle key={x} cx={x} cy="100" r={i === 0 ? 4 : 3} fill={i === 0 ? A : 'rgb(var(--c-surface-2))'} stroke={i === 0 ? A : L} />
+          ))}
+          {[0, 1, 2].map((i) => (
+            <rect key={i} x={238 + i * 24} y="112" width="14" height="4" fill={D} />
+          ))}
+          <path d="M136 162 L142 168 L152 156" stroke={L} opacity="0.6" />
+          <path d="M136 30 L150 44 M150 30 L136 44" stroke={D} />
+        </g>
+      );
+    case 'lens':
+      // camera aperture beside a small brand sheet: mark, palette, type
+      return (
+        <g>
+          <circle cx="92" cy="100" r="68" stroke={L} />
+          <circle cx="92" cy="100" r="54" stroke={D} />
+          <path d="M92 58 L128 79 L128 121 L92 142 L56 121 L56 79 Z" stroke={L} />
+          <path d="M92 58 L110 110 M128 79 L74 110 M128 121 L92 74 M92 142 L74 90 M56 121 L110 90 M56 79 L92 126" stroke={D} strokeWidth="0.8" />
+          <circle cx="92" cy="100" r="10" fill={A} opacity="0.9" />
+          <rect x="182" y="24" width="122" height="152" stroke={L} fill="rgb(var(--c-surface))" />
+          <rect x="196" y="40" width="22" height="22" stroke={T} opacity="0.7" />
+          <rect x="212" y="54" width="6" height="6" fill={A} />
+          <rect x="226" y="45" width="56" height="6" fill={T} opacity="0.55" />
+          <rect x="226" y="55" width="36" height="4" fill={D} />
+          {[0, 1, 2, 3].map((i) => (
+            <rect key={i} x={196 + i * 26} y="78" width="20" height="20" fill={i === 0 ? A : i === 1 ? T : 'rgb(var(--c-surface-2))'} opacity={i === 1 ? 0.75 : 1} stroke={i > 1 ? L : 'none'} />
+          ))}
+          <text x="196" y="138" fill={T} opacity="0.8" fontSize="28" fontWeight="800" fontFamily="Archivo Variable, sans-serif">Aa</text>
+          <rect x="244" y="118" width="46" height="5" fill={D} />
+          <rect x="244" y="128" width="34" height="5" fill={D} />
+          <rect x="196" y="152" width="94" height="10" stroke={D} />
+        </g>
+      );
+    case 'flow':
+      // a spec page next to the process model it documents
+      return (
+        <g>
+          <path d="M16 20 L82 20 L96 34 L96 180 L16 180 Z" stroke={L} fill="rgb(var(--c-surface))" />
+          <path d="M82 20 L82 34 L96 34" stroke={L} />
+          <rect x="26" y="44" width="46" height="6" fill={T} opacity="0.55" />
+          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+            <rect key={i} x="26" y={60 + i * 14} width={i % 3 === 2 ? 38 : 60} height="4" fill={i === 3 ? A : D} opacity={i === 3 ? 0.8 : 1} />
+          ))}
+          <circle cx="120" cy="100" r="7" stroke={L} />
+          <line x1="127" y1="100" x2="142" y2="100" stroke={L} />
+          <rect x="142" y="86" width="44" height="28" stroke={L} />
+          <rect x="150" y="97" width="28" height="5" fill={D} />
+          <line x1="186" y1="100" x2="202" y2="100" stroke={L} />
+          <path d="M218 84 L234 100 L218 116 L202 100 Z" stroke={A} fill="rgb(var(--c-surface))" />
+          <path d="M218 84 L218 52 L246 52" stroke={L} />
+          <path d="M218 116 L218 148 L246 148" stroke={L} />
+          <rect x="246" y="38" width="44" height="28" stroke={L} />
+          <rect x="254" y="49" width="26" height="5" fill={D} />
+          <rect x="246" y="134" width="44" height="28" stroke={L} />
+          <rect x="254" y="145" width="22" height="5" fill={D} />
+          <path d="M290 52 L300 52 L300 92 M290 148 L300 148 L300 108" stroke={L} />
+          <circle cx="300" cy="100" r="7" stroke={T} strokeWidth="2" opacity="0.7" />
+          <rect x="120" y="172" width="60" height="5" fill={D} />
+        </g>
+      );
     case 'cube':
     default:
       return (

@@ -8,9 +8,12 @@ export type CategoryKey =
   | 'data'
   | 'business'
   | 'web'
-  | 'custom';
+  | 'custom'
+  | 'consulting'
+  | 'design'
+  | 'analysis';
 
-export type FilterKey = 'all' | 'enterprise' | 'finance' | 'government' | 'web' | 'custom';
+export type FilterKey = 'all' | 'enterprise' | 'finance' | 'government' | 'web' | 'custom' | 'consulting';
 
 export type VisualKey =
   | 'dashboard'
@@ -20,7 +23,10 @@ export type VisualKey =
   | 'pipeline'
   | 'table'
   | 'layout'
-  | 'cube';
+  | 'cube'
+  | 'compass'
+  | 'lens'
+  | 'flow';
 
 export interface Project {
   id: string;
@@ -274,6 +280,87 @@ export const projects: Project[] = [
       hu: 'Célzott digitális termékek és megoldások, amelyeket konkrét üzleti problémákra építünk — nem egy meglévő termékkategóriába próbáljuk beleilleszteni az igényt.',
     },
   },
+  {
+    id: 'digital-consulting',
+    num: '09',
+    title: 'Digital consulting',
+    kind: { en: 'Opportunity & Technology Consulting', hu: 'Lehetőség- és technológiai tanácsadás' },
+    category: 'consulting',
+    filters: ['consulting'],
+    visual: 'compass',
+    tags: ['Discovery', 'Digital strategy', 'AI', 'Automation', 'Process mapping', 'Roadmap'],
+    summary: {
+      en: 'Consulting on where digital tools, automation and AI can create real value — before anything is built.',
+      hu: 'Tanácsadás arról, hol teremthetnek valódi értéket a digitális eszközök, az automatizáció és az AI — még mielőtt bármi elkészülne.',
+    },
+    role: { en: 'Consultant', hu: 'Tanácsadó' },
+    context: {
+      en: 'Businesses that know something could work better — more enquiries, less admin, a system they have outgrown — but are not sure whether the answer is a website, an automation, AI, an integration or custom software.',
+      hu: 'Olyan vállalkozások, amelyek érzik, hogy valami jobban is működhetne — több érdeklődő, kevesebb adminisztráció, egy kinőtt rendszer —, de nem biztosak benne, hogy a megoldás weboldal, automatizáció, AI, rendszerintegráció vagy egyedi szoftver.',
+    },
+    approach: {
+      en: 'Start from the business, not the technology: map the current processes, find where time, money or leads are lost, then compare the options on cost, risk and expected return. The result is a prioritised, realistic roadmap — including the things that are not worth building.',
+      hu: 'Az üzletből indulok ki, nem a technológiából: feltérképezem a jelenlegi folyamatokat, megkeresem, hol vész el idő, pénz vagy érdeklődő, majd költség, kockázat és várható megtérülés alapján összevetem a lehetőségeket. Az eredmény egy priorizált, reális ütemterv — benne azzal is, amit nem érdemes megépíteni.',
+    },
+    outcome: {
+      en: 'Clear decisions before the budget is spent, and projects that start from a real problem.',
+      hu: 'Megalapozott döntések még a költségvetés elköltése előtt, és valós problémából induló projektek.',
+    },
+  },
+  {
+    id: 'brand-and-photography',
+    num: '10',
+    title: 'Brand identity & photography',
+    kind: { en: 'Visual Identity, Product & Portrait Photos', hu: 'Arculat, termék- és portréfotók' },
+    category: 'design',
+    filters: ['web'],
+    visual: 'lens',
+    tags: ['Brand identity', 'Logo', 'Typography', 'Colour systems', 'Product photography', 'Portraits'],
+    summary: {
+      en: 'Brand identities and original product and portrait photography, so a site does not have to rely on stock images.',
+      hu: 'Arculattervezés, valamint saját termék- és portréfotók, hogy egy weboldalnak ne stockképekre kelljen támaszkodnia.',
+    },
+    role: { en: 'Brand designer / photographer', hu: 'Arculattervező / fotós' },
+    context: {
+      en: 'A new site is only as convincing as what goes on it. Many businesses have no consistent logo, colours or type, and no photos of their own products or people.',
+      hu: 'Egy új weboldal csak annyira meggyőző, amennyire a tartalma. Sok vállalkozásnak nincs egységes logója, színvilága vagy tipográfiája, és nincsenek saját fotói a termékeiről vagy a csapatáról.',
+    },
+    approach: {
+      en: 'Identity first: logo, colour palette, typography and simple usage rules that work on the web, in print and on social media. Then photography planned for the site itself — product shots on consistent backgrounds and portraits in a matching style, edited and exported for fast loading.',
+      hu: 'Először az arculat: logó, színpaletta, tipográfia és egyszerű használati szabályok, amelyek weben, nyomtatásban és a közösségi médiában is működnek. Ezután a fotózás, kifejezetten a weboldalhoz tervezve — egységes hátterű termékfotók és hozzájuk illő stílusú portrék, gyors betöltésre optimalizálva.',
+    },
+    outcome: {
+      en: 'A consistent, recognisable brand and authentic images that build more trust than stock photos.',
+      hu: 'Egységes, felismerhető arculat és hiteles képek, amelyek több bizalmat építenek, mint a stockfotók.',
+    },
+  },
+  {
+    id: 'business-analysis',
+    num: '11',
+    title: 'Business analysis & documentation',
+    kind: { en: 'Requirements, Processes & System Documentation', hu: 'Követelmények, folyamatok és rendszerdokumentáció' },
+    category: 'analysis',
+    filters: ['consulting', 'enterprise'],
+    visual: 'flow',
+    tags: ['Requirements', 'Process modelling', 'BPMN', 'UML', 'User stories', 'Documentation'],
+    summary: {
+      en: 'Turning business needs into clear requirements, and documenting how existing systems actually work.',
+      hu: 'Az üzleti igények egyértelmű követelményekké alakítása, és a meglévő rendszerek tényleges működésének dokumentálása.',
+    },
+    role: { en: 'Business analyst', hu: 'Üzleti elemző' },
+    context: {
+      en: "Projects rarely fail on code alone; they fail on unclear requirements and on systems whose logic lives only in a few people's heads. Before a rebuild, a modernisation or a handover, someone has to write down what the system does and what the business really needs.",
+      hu: 'A projektek ritkán csak a kódon buknak el; sokkal gyakrabban a tisztázatlan követelményeken és azokon a rendszereken, amelyek logikája csak néhány ember fejében létezik. Egy újraírás, modernizáció vagy átadás előtt valakinek le kell írnia, mit csinál a rendszer, és mire van valójában szüksége az üzletnek.',
+    },
+    approach: {
+      en: 'Interviews with the people who use the system, analysis of the existing code and data, and process models (BPMN, UML) that both developers and business stakeholders can read. Requirements are broken down into user stories with acceptance criteria, and the documentation is kept where the team already works.',
+      hu: 'Interjúk a rendszert használó munkatársakkal, a meglévő kód és adatok elemzése, valamint olyan folyamatmodellek (BPMN, UML), amelyeket a fejlesztők és az üzleti oldal is értenek. A követelményeket elfogadási feltételekkel ellátott user story-kra bontom, a dokumentációt pedig ott tartom karban, ahol a csapat amúgy is dolgozik.',
+    },
+    outcome: {
+      en: 'Shared understanding between business and IT, fewer surprises during development, and systems that can be handed over.',
+      hu: 'Közös értelmezés az üzleti és az IT oldal között, kevesebb meglepetés a fejlesztés során, és átadható rendszerek.',
+    },
+  },
 ];
 
-export const filterKeys: FilterKey[] = ['all', 'enterprise', 'finance', 'government', 'web', 'custom'];
+export const filterKeys: FilterKey[] = ['all', 'enterprise', 'finance', 'government', 'web', 'custom', 'consulting'];

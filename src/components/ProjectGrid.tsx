@@ -14,18 +14,7 @@ export default function ProjectGrid() {
     [filter],
   );
 
-  const labelFor = (key: FilterKey) =>
-    key === 'all'
-      ? t.projects.all
-      : key === 'enterprise'
-        ? t.projects.categories.enterprise
-        : key === 'finance'
-          ? t.projects.categories.finance
-          : key === 'government'
-            ? t.projects.categories.government
-            : key === 'web'
-              ? t.projects.categories.web
-              : t.projects.categories.custom;
+  const labelFor = (key: FilterKey) => (key === 'all' ? t.projects.all : t.projects.categories[key]);
 
   return (
     <Section id="projects">

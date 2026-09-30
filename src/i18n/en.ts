@@ -110,6 +110,9 @@ export const en = {
       business: 'Business software',
       web: 'Web design',
       custom: 'Custom software',
+      consulting: 'Consulting',
+      design: 'Brand & photography',
+      analysis: 'Business analysis',
     },
     detail: {
       overview: 'Overview',

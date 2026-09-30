@@ -115,6 +115,9 @@ export const hu: Dict = {
       business: 'Üzleti szoftver',
       web: 'Webdizájn',
       custom: 'Egyedi szoftver',
+      consulting: 'Tanácsadás',
+      design: 'Arculat és fotó',
+      analysis: 'Üzleti elemzés',
     },
     detail: {
       overview: 'Áttekintés',
