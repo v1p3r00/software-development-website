@@ -23,7 +23,9 @@ draft: true
 ---
 ```
 
-- `date` is `YYYY-MM-DD`; the list is sorted newest first.
+- `date` is `YYYY-MM-DD`, optionally with a time (`YYYY-MM-DD HH:MM`); the list is
+  sorted newest first, and the time decides the order of articles from the same day
+  (an article without a time counts as the start of that day).
 - `updated` and `tags` are optional.
 - `draft: true` shows the article in `npm run dev` only. Remove it to publish.
 

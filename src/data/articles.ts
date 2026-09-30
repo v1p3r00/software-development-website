@@ -1,4 +1,4 @@
-import { articlePath, parseArticle, readingMinutes } from '../content/frontmatter';
+import { articlePath, isoDate, parseArticle, readingMinutes } from '../content/frontmatter';
 import type { ArticleMeta } from '../content/frontmatter';
 import type { Lang } from './projects';
 
@@ -28,12 +28,14 @@ for (const [path, raw] of Object.entries(files)) {
   if (meta.draft && import.meta.env.PROD) continue;
   const article = bySlug.get(where.slug) ?? { slug: where.slug, date: meta.date, versions: {} };
   article.versions[where.lang] = { ...meta, body, minutes: readingMinutes(body) };
-  if (meta.date > article.date) article.date = meta.date;
+  if (isoDate(meta.date) > isoDate(article.date)) article.date = meta.date;
   bySlug.set(where.slug, article);
 }
 
-/** newest first */
-export const articles: Article[] = [...bySlug.values()].sort((a, b) => b.date.localeCompare(a.date));
+/** newest first; a time in the date orders articles from the same day, the slug breaks any remaining tie */
+export const articles: Article[] = [...bySlug.values()].sort(
+  (a, b) => isoDate(b.date).localeCompare(isoDate(a.date)) || a.slug.localeCompare(b.slug),
+);
 
 /** the version in the reader's language, falling back to whichever exists */
 export function inLang(article: Article, lang: Lang): ArticleVersion {
@@ -41,7 +43,7 @@ export function inLang(article: Article, lang: Lang): ArticleVersion {
 }
 
 export function formatDate(iso: string, lang: Lang) {
-  const d = new Date(`${iso}T12:00:00`);
+  const d = new Date(`${iso.slice(0, 10)}T12:00:00`);
   return Number.isNaN(d.getTime())
     ? iso
     : d.toLocaleDateString(lang === 'hu' ? 'hu-HU' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' });

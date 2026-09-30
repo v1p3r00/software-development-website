@@ -14,7 +14,7 @@ import type { Plugin } from 'vite';
 import { projects } from '../src/data/projects.ts';
 import { site } from '../src/data/site.ts';
 import { en } from '../src/i18n/en.ts';
-import { articlePath, parseArticle } from '../src/content/frontmatter.ts';
+import { articlePath, isoDate, parseArticle } from '../src/content/frontmatter.ts';
 import { clip, siteGraph } from '../src/lib/seo-shared.ts';
 
 interface Page {
@@ -117,14 +117,14 @@ function pages(root: string): Page[] {
       title: `${meta.title} — ${site.name}`,
       description: clip(meta.description),
       type: 'article',
-      lastmod: meta.updated ?? meta.date,
+      lastmod: isoDate(meta.updated ?? meta.date).slice(0, 10),
       jsonLd: {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
         headline: meta.title,
         description: meta.description,
-        datePublished: meta.date,
-        dateModified: meta.updated ?? meta.date,
+        datePublished: isoDate(meta.date),
+        dateModified: isoDate(meta.updated ?? meta.date),
         inLanguage: lang,
         keywords: meta.tags.join(', '),
         url,

@@ -172,10 +172,10 @@ export const projects: Project[] = [
     filters: ['enterprise'],
     visual: 'pipeline',
     period: '2019 — 2020',
-    tags: ['Java', 'Reporting', 'ETL', 'Analytics'],
+    tags: ['Java', 'SQL', 'LIMS', 'Reporting', 'ETL'],
     summary: {
-      en: 'Reporting and data solutions for Slovnaft / MOL Group.',
-      hu: 'Riportálási és adatmegoldások fejlesztése a Slovnaft / MOL Group számára.',
+      en: 'Reporting and data solutions for Slovnaft / MOL Group, built inside their own LIMS.',
+      hu: 'Riportálási és adatmegoldások fejlesztése a Slovnaft / MOL Group számára, a vállalat saját LIMS-rendszerében.',
     },
     role: { en: 'Developer / data engineer', hu: 'Fejlesztő / adatmérnök' },
     context: {
@@ -183,8 +183,8 @@ export const projects: Project[] = [
       hu: 'Több különböző rendszerben rendelkezésre álló működési és pénzügyi adatok, amelyeket a vezetőség számára egységes, megbízható és döntéstámogatásra alkalmas formában kellett elérhetővé tenni.',
     },
     approach: {
-      en: 'Designed ETL routines to consolidate sources, then built reporting layers on top with an emphasis on reproducibility — the same report run twice has to produce the same numbers, and it has to be possible to explain where each figure came from.',
-      hu: 'ETL-folyamatokat terveztem és fejlesztettem a különböző adatforrások konszolidálására, majd ezekre építettem a riportálási réteget. Kiemelt szempont volt a reprodukálhatóság: ugyanannak a riportnak azonos adatokból mindig ugyanazt az eredményt kellett adnia, miközben az egyes értékek eredete is visszakövethető maradt.',
+      en: 'Worked inside the company\u2019s own LIMS (laboratory information management system), with SQL for the data work. Designed ETL routines to consolidate sources, then built reporting layers on top with an emphasis on reproducibility — the same report run twice has to produce the same numbers, and it has to be possible to explain where each figure came from.',
+      hu: 'A munka a vállalat saját LIMS-rendszerén (laboratóriumi információkezelő rendszer) belül zajlott, SQL-lel. ETL-folyamatokat terveztem és fejlesztettem a különböző adatforrások konszolidálására, majd ezekre építettem a riportálási réteget. Kiemelt szempont volt a reprodukálhatóság: ugyanannak a riportnak azonos adatokból mindig ugyanazt az eredményt kellett adnia, miközben az egyes értékek eredete is visszakövethető maradt.',
     },
     outcome: {
       en: 'Automated reporting that removed recurring manual spreadsheet work and shortened the path from raw data to decision.',

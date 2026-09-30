@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { articles, formatDate, inLang } from '../data/articles';
+import { isoDate } from '../content/frontmatter';
 import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
 import { useGoToSection } from '../hooks/useGoToSection';
@@ -60,7 +61,7 @@ export default function Articles() {
                   <div className="font-mono text-2xs uppercase tracking-tech text-dim sm:col-span-3">
                     <span className="text-accent">{String(articles.length - i).padStart(2, '0')}</span>
                     <span className="mx-2">/</span>
-                    <time dateTime={article.date}>{formatDate(article.date, lang)}</time>
+                    <time dateTime={isoDate(article.date)}>{formatDate(article.date, lang)}</time>
                     <div className="mt-1">
                       {v.minutes} {t.articles.minutes}
                     </div>

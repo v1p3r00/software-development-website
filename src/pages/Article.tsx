@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { marked } from 'marked';
 import { articles, formatDate, inLang } from '../data/articles';
+import { isoDate } from '../content/frontmatter';
 import { site } from '../data/site';
 import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
@@ -14,7 +15,17 @@ export default function Article() {
   const goTo = useGoToSection();
   const article = articles.find((a) => a.slug === slug);
   const v = article ? inLang(article, lang) : null;
-  const html = useMemo(() => (v ? (marked.parse(v.body, { async: false }) as string) : ''), [v]);
+  // links to other sites (sources, references) open in a new tab
+  const html = useMemo(
+    () =>
+      v
+        ? (marked.parse(v.body, { async: false }) as string).replace(
+            /<a href="(https?:\/\/(?!softwaredevelopment\.hu)[^"]+)"/g,
+            '<a href="$1" target="_blank" rel="noopener noreferrer"',
+          )
+        : '',
+    [v],
+  );
 
   useEffect(() => window.scrollTo(0, 0), [slug]);
 
@@ -26,8 +37,8 @@ export default function Article() {
             '@type': 'BlogPosting',
             headline: v.title,
             description: v.description,
-            datePublished: v.date,
-            dateModified: v.updated ?? v.date,
+            datePublished: isoDate(v.date),
+            dateModified: isoDate(v.updated ?? v.date),
             inLanguage: article.versions[lang] ? lang : Object.keys(article.versions)[0],
             keywords: v.tags.join(', '),
             url: `${site.url}/articles/${article.slug}/`,
@@ -77,14 +88,14 @@ export default function Article() {
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-2xs uppercase tracking-tech text-dim">
             <span>
               {t.articles.published}{' '}
-              <time dateTime={v.date} className="text-text">
+              <time dateTime={isoDate(v.date)} className="text-text">
                 {formatDate(v.date, lang)}
               </time>
             </span>
             {v.updated && (
               <span>
                 {t.articles.updated}{' '}
-                <time dateTime={v.updated} className="text-text">
+                <time dateTime={isoDate(v.updated)} className="text-text">
                   {formatDate(v.updated, lang)}
                 </time>
               </span>
