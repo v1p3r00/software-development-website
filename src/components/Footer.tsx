@@ -1,6 +1,7 @@
 import { useI18n } from '../i18n';
 import { useGoToSection } from '../hooks/useGoToSection';
 import { site } from '../data/site';
+import { Link } from 'react-router-dom';
 
 export default function Footer() {
   const { t } = useI18n();
@@ -41,6 +42,13 @@ export default function Footer() {
                 {label}
               </a>
             ))}
+            <Link
+              to="/articles/"
+              data-cursor="follow"
+              className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
+            >
+              {t.nav.articles}
+            </Link>
           </nav>
 
           <div className="flex gap-2">

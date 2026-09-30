@@ -5,6 +5,8 @@ import { useI18n } from '../i18n';
 import ProjectVisual from '../components/ProjectVisual';
 import { usePrefersReducedMotion } from '../hooks/useMisc';
 import { Arrow, CornerMarks, cx } from '../components/ui';
+import { clip, useSeo } from '../hooks/useSeo';
+import { site } from '../data/site';
 
 function Loader({ num, label, progress }: { num: string; label: string; progress: number }) {
   const cells = 20;
@@ -31,6 +33,16 @@ export default function ProjectDetail() {
   const project = projects.find((p) => p.id === id);
   const idx = projects.findIndex((p) => p.id === id);
   const next = projects[(idx + 1) % projects.length];
+
+  useSeo(
+    project
+      ? {
+          title: `${project.title}${project.kind ? ` — ${pick(project.kind)}` : ''} | ${site.name}`,
+          description: clip(pick(project.context)),
+          path: `/project/${project.id}/`,
+        }
+      : { title: t.seo.notFoundTitle, description: t.seo.homeDescription, path: '/', noindex: true },
+  );
 
   const [progress, setProgress] = useState(reduced ? 100 : 0);
   const done = progress >= 100;

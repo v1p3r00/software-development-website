@@ -20,11 +20,18 @@ npm run build    # type-check + production build into dist/
 npm run preview  # serve the production build
 ```
 
-### Client-side routing
+### Routing and SEO
 
-GitHub Pages has no rewrite rules, so the build copies `index.html` to
-`404.html`. A deep link such as `/project/bank-projects` is served that file and
-React Router renders the right view with the URL intact.
+GitHub Pages cannot rewrite URLs, and crawlers and link previews often do not
+run JavaScript. So after `vite build`, `scripts/seo.ts` writes a real HTML file
+for every route — home, each case study (`/project/<id>/`), the article index
+(`/articles/`) and each article (`/articles/<slug>/`) — each with its own title,
+description, canonical URL, Open Graph / Twitter tags and schema.org data. It
+also writes `sitemap.xml`, `robots.txt` and a `noindex` `404.html` (which still
+boots the app, so any other client-side route keeps working). In the browser,
+`src/hooks/useSeo.ts` keeps the head in step as you navigate.
+
+The social preview image is `public/og.png` (1200×630).
 
 ## Structure
 
@@ -37,7 +44,10 @@ src/
   data/          projects.ts, services.ts, technologies.ts, site.ts
   hooks/         useTheme, useMisc (scroll/observer/clock helpers), useGoToSection
   i18n/          en.ts (source of truth + Dict type), hu.ts, index.tsx (provider)
-  pages/         Home, ProjectDetail
+  pages/         Home, ProjectDetail, Articles, Article
+  content/       articles/ (Markdown), frontmatter.ts
+  lib/           seo-shared.ts (used by the app and the build)
+scripts/         seo.ts (per-route HTML, sitemap, robots)
 ```
 
 Content lives in `src/data` and `src/i18n`; components contain no copy.
@@ -56,6 +66,12 @@ Content lives in `src/data` and `src/i18n`; components contain no copy.
   needs declaring once. The ring auto-sizes its radius so cards never overlap,
   whatever the node count.
 - **Contact details, social links, build tag** — `src/data/site.ts`.
+- **Articles** — Markdown files in `src/content/articles/<slug>/en.md` (and
+  optionally `hu.md`). See `src/content/articles/README.md`; copy `_template/`
+  to start one. `draft: true` keeps an article out of the production build.
+  While there are no articles, `/articles/` shows a "coming soon" state and is
+  kept out of search results.
+- **Search titles and descriptions** — `seo` in `src/i18n/en.ts` / `hu.ts`.
 
 ## Interactions
 
@@ -81,6 +97,11 @@ custom cursor.
 
 ## Contact form
 
-The form composes a `mailto:` message — no backend. To post to an API or a
-service like Formspree instead, replace the `submit` handler in
-`src/components/ContactTerminal.tsx`.
+The form posts to [Web3Forms](https://web3forms.com), which emails each enquiry
+to the site address (`site.formEndpoint` / `site.formAccessKey` in
+`src/data/site.ts`; the key is public by design and can only deliver to that
+address). Besides name, email and the project description it asks, optionally,
+for a phone number, the preferred way to be contacted (email, phone with call
+hours, or a meeting online or in person), company, project type, budget,
+timeline and how the visitor found the site. A hidden honeypot field filters
+out bots.

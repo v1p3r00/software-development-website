@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useI18n } from './i18n';
 import { Route, Routes } from 'react-router-dom';
 import Navigation from './components/Navigation';
@@ -9,6 +9,9 @@ import ScrollProgress from './components/ScrollProgress';
 import TechnicalCursor from './components/TechnicalCursor';
 import Home from './pages/Home';
 import ProjectDetail from './pages/ProjectDetail';
+// the article pages (and the Markdown renderer) load only when visited
+const Articles = lazy(() => import('./pages/Articles'));
+const Article = lazy(() => import('./pages/Article'));
 
 export default function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -27,11 +30,15 @@ export default function App() {
       <Navigation onOpenPalette={() => setPaletteOpen(true)} />
 
       <main>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/project/:id" element={<ProjectDetail />} />
-          <Route path="*" element={<Home />} />
-        </Routes>
+        <Suspense fallback={<div className="min-h-screen" />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/project/:id" element={<ProjectDetail />} />
+            <Route path="/articles" element={<Articles />} />
+            <Route path="/articles/:slug" element={<Article />} />
+            <Route path="*" element={<Home />} />
+          </Routes>
+        </Suspense>
       </main>
 
       <Footer />

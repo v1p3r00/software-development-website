@@ -4,10 +4,13 @@ import { site } from '../data/site';
 import { usePrefersReducedMotion } from '../hooks/useMisc';
 import { Section, SectionHeader, cx } from './ui';
 
-type Field = 'name' | 'email' | 'company' | 'project';
-type Choice = 'type' | 'budget' | 'timeline' | 'source';
-const EMPTY = { name: '', email: '', company: '', project: '' };
-const NO_CHOICES: Record<Choice, string> = { type: '', budget: '', timeline: '', source: '' };
+type Field = 'name' | 'email' | 'phone' | 'company' | 'project';
+type Choice = 'contact' | 'meeting' | 'type' | 'budget' | 'timeline' | 'source';
+const EMPTY = { name: '', email: '', phone: '', company: '', project: '' };
+const NO_CHOICES: Record<Choice, string> = { contact: '', meeting: '', type: '', budget: '', timeline: '', source: '' };
+const CALL_HOURS = { from: '09:00', to: '17:00' };
+// at least seven digits, allowing the usual + ( ) - / and spaces
+const PHONE = /^\+?[\d\s()\-/]{7,20}$/;
 type Errors = Partial<Record<Field, string>>;
 
 function useTypewriter(text: string, enabled: boolean) {
@@ -34,6 +37,9 @@ export default function ContactTerminal() {
   const reduced = usePrefersReducedMotion();
   const [values, setValues] = useState(EMPTY);
   const [choices, setChoices] = useState(NO_CHOICES);
+  const [callHours, setCallHours] = useState(CALL_HOURS);
+  const wantsCall = choices.contact !== '' && choices.contact === t.contact.contactMethods[1];
+  const wantsMeeting = choices.contact !== '' && choices.contact === t.contact.contactMethods[2];
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [honey, setHoney] = useState('');
@@ -69,6 +75,7 @@ export default function ContactTerminal() {
     const next: Errors = {};
     if (!values.name.trim()) next.name = t.contact.errorName;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) next.email = t.contact.errorEmail;
+    if (values.phone.trim() ? !PHONE.test(values.phone.trim()) : wantsCall) next.phone = t.contact.errorPhone;
     if (values.project.trim().length < 8) next.project = t.contact.errorProject;
     setErrors(next);
     if (Object.keys(next).length) return;
@@ -89,6 +96,10 @@ export default function ContactTerminal() {
           from_name: 'softwaredevelopment.hu',
           name: values.name,
           email: values.email,
+          phone: values.phone.trim() || '—',
+          preferred_contact: choices.contact || '—',
+          call_hours: wantsCall ? `${callHours.from}–${callHours.to}` : '—',
+          meeting: wantsMeeting ? choices.meeting || '—' : '—',
           company: values.company || '—',
           project_type: choices.type || '—',
           budget: choices.budget || '—',
@@ -104,6 +115,7 @@ export default function ContactTerminal() {
       setStatus('sent');
       setValues(EMPTY);
       setChoices(NO_CHOICES);
+      setCallHours(CALL_HOURS);
     } catch {
       setStatus('error');
     }
@@ -116,7 +128,7 @@ export default function ContactTerminal() {
         <legend
           className={cx(
             'float-left mt-1.5 shrink-0 font-mono text-2xs uppercase tracking-tech text-dim',
-            !wideLabel && 'sm:w-[4.5rem]',
+            !wideLabel && 'sm:w-[7rem]',
           )}
         >
           {/[?:]$/.test(label) ? label : `${label}:`}
@@ -156,7 +168,7 @@ export default function ContactTerminal() {
       value: values[name],
       onChange: set(name),
       placeholder,
-      autoComplete: ({ name: 'name', email: 'email', company: 'organization', project: 'off' } as const)[name],
+      autoComplete: ({ name: 'name', email: 'email', phone: 'tel', company: 'organization', project: 'off' } as const)[name],
       'aria-invalid': invalid,
       'aria-describedby': invalid ? `${id}-error` : undefined,
       className: cx(
@@ -175,7 +187,15 @@ export default function ContactTerminal() {
           >
             {label}:
           </label>
-          {textarea ? <textarea rows={3} {...shared} /> : <input type={name === 'email' ? 'email' : 'text'} {...shared} />}
+          {textarea ? (
+            <textarea rows={3} {...shared} />
+          ) : (
+            <input
+              type={name === 'email' ? 'email' : name === 'phone' ? 'tel' : 'text'}
+              inputMode={name === 'phone' ? 'tel' : undefined}
+              {...shared}
+            />
+          )}
         </div>
         {invalid && (
           <p id={`${id}-error`} role="alert" className="mt-1 pl-1 font-mono text-2xs tracking-tech text-accent">
@@ -224,7 +244,35 @@ export default function ContactTerminal() {
                 />
                 {field('name', t.contact.name, t.contact.namePh)}
                 {field('email', t.contact.email, t.contact.emailPh)}
+                {field('phone', t.contact.phone, t.contact.phonePh)}
                 {field('company', t.contact.company, t.contact.companyPh)}
+                {choice('contact', t.contact.contactLabel, t.contact.contactMethods)}
+                {wantsCall && (
+                  <fieldset className="border-b border-line py-3">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                      <legend className="float-left shrink-0 font-mono text-2xs uppercase tracking-tech text-dim sm:w-[7rem]">
+                        └ {t.contact.callLabel}:
+                      </legend>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {(['from', 'to'] as const).map((edge, i) => (
+                          <span key={edge} className="flex items-center gap-2">
+                            {i === 1 && <span className="font-mono text-sm text-dim">–</span>}
+                            <input
+                              type="time"
+                              step={900}
+                              value={callHours[edge]}
+                              onChange={(e) => setCallHours((h) => ({ ...h, [edge]: e.target.value }))}
+                              aria-label={`${t.contact.callLabel} ${edge === 'from' ? t.contact.callFrom : t.contact.callTo}`}
+                              className="time-input border border-line bg-transparent px-2 py-1 font-mono text-sm text-text focus:border-accent focus:outline-none"
+                            />
+                          </span>
+                        ))}
+                        <span className="font-mono text-2xs uppercase tracking-tech text-dim">{t.contact.callHint}</span>
+                      </div>
+                    </div>
+                  </fieldset>
+                )}
+                {wantsMeeting && choice('meeting', `└ ${t.contact.meetingLabel}`, t.contact.meetings)}
                 {choice('type', t.contact.typeLabel, t.contact.types)}
                 {choice('budget', t.contact.budgetLabel, t.contact.budgets)}
                 {choice('timeline', t.contact.timelineLabel, t.contact.timelines)}

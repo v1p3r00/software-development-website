@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { useGoToSection } from '../hooks/useGoToSection';
 import { site } from '../data/site';
@@ -56,6 +56,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
     { id: 'services', label: t.nav.services },
     { id: 'contact', label: t.nav.contact },
   ];
+  const onArticles = pathname.startsWith('/articles');
 
   return (
     <header
@@ -76,19 +77,19 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
           <Monogram compact={compact} />
           <div
             className={cx(
-              'hidden overflow-hidden border-l border-line pl-4 transition-all duration-500 ease-tech sm:block',
+              'hidden overflow-hidden border-l border-line pl-4 transition-all duration-500 ease-tech sm:block xl:hidden min-[1400px]:block',
               compact ? 'max-h-4 opacity-70' : 'max-h-12 opacity-100',
             )}
           >
-            <div className="font-mono text-[11px] uppercase tracking-tech text-text">{site.name}</div>
+            <div className="whitespace-nowrap font-mono text-[11px] uppercase tracking-tech text-text">{site.name}</div>
             {!compact && (
               <div className="label mt-0.5 leading-tight">{t.ui.roleLine}</div>
             )}
           </div>
         </div>
 
-        <nav aria-label="Primary" className="hidden items-center gap-6 lg:flex">
-          {items.map((item, i) => {
+        <nav aria-label="Primary" className="hidden items-center gap-5 xl:flex min-[1700px]:gap-6">
+          {items.map((item) => {
             const on = active === item.id;
             return (
               <a
@@ -98,9 +99,6 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
                 data-cursor="follow"
                 className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[11px] uppercase tracking-tech"
               >
-                <span className={cx('transition-colors', on ? 'text-accent' : 'text-dim')}>
-                  [{String(i + 1).padStart(2, '0')}]
-                </span>
                 <span className={cx('transition-colors', on ? 'text-text' : 'text-muted group-hover:text-text')}>
                   {item.label}
                 </span>
@@ -113,6 +111,21 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
               </a>
             );
           })}
+          <Link
+            to="/articles/"
+            data-cursor="follow"
+            className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[11px] uppercase tracking-tech"
+          >
+            <span className={cx('transition-colors', onArticles ? 'text-text' : 'text-muted group-hover:text-text')}>
+              {t.nav.articles}
+            </span>
+            <span
+              className={cx(
+                'absolute -bottom-0.5 left-0 h-px bg-accent transition-all duration-300 ease-tech',
+                onArticles ? 'w-full' : 'w-0 group-hover:w-full',
+              )}
+            />
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -161,7 +174,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-label={open ? t.nav.close : t.nav.menu}
-            className="grid h-[30px] w-[30px] place-items-center border border-line text-text lg:hidden"
+            className="grid h-[30px] w-[30px] place-items-center border border-line text-text xl:hidden"
           >
             <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" aria-hidden>
               {open ? (
@@ -177,7 +190,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
       {/* mobile panel */}
       <div
         className={cx(
-          'overflow-hidden border-t border-line bg-bg transition-[max-height] duration-500 ease-tech lg:hidden',
+          'overflow-hidden border-t border-line bg-bg transition-[max-height] duration-500 ease-tech xl:hidden',
           open ? 'max-h-[80vh]' : 'max-h-0',
         )}
       >
@@ -198,6 +211,16 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
               </span>
             </a>
           ))}
+          <Link
+            to="/articles/"
+            onClick={() => setOpen(false)}
+            className="flex items-baseline justify-between border-b border-line py-4 font-display text-2xl font-extrabold uppercase tracking-tight last:border-b-0"
+          >
+            {t.nav.articles}
+            <span className="font-mono text-2xs tracking-tech text-accent">
+              [{String(items.length + 1).padStart(2, '0')}]
+            </span>
+          </Link>
           <div className="mt-4 flex items-center justify-between">
             <span className="label">{site.email}</span>
             <LanguageSwitcher />

@@ -39,6 +39,16 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
       { id: 'projects', group: t.palette.navigate, label: t.palette.goProjects, hint: '03', run: goTo('projects') },
       { id: 'services', group: t.palette.navigate, label: t.palette.goServices, hint: '04', run: goTo('services') },
       { id: 'contact', group: t.palette.navigate, label: t.palette.goContact, hint: '05', run: goTo('contact') },
+      {
+        id: 'articles',
+        group: t.palette.navigate,
+        label: t.palette.goArticles,
+        hint: '06',
+        run: () => {
+          setOpen(false);
+          navigate('/articles/');
+        },
+      },
     ];
     const cases: Command[] = projects.map((p) => ({
       id: `case-${p.id}`,

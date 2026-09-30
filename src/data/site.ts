@@ -1,6 +1,10 @@
 export const site = {
   name: 'David Mészáros',
   monogram: 'DM',
+  url: 'https://softwaredevelopment.hu',
+  domain: 'softwaredevelopment.hu',
+  github: 'https://github.com/v1p3r00',
+  ogImage: '/og.png',
   email: 'meszarosdavid@softwaredevelopment.hu',
   // the contact form posts to Web3Forms, which mails it to the address above.
   // The access key is public by design: it can only deliver to that address.
