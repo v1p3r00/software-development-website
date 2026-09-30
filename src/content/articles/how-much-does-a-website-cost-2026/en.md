@@ -39,22 +39,22 @@ There is no single price for a website.
 
 A simple landing page and a custom shop handling thousands of products can be worlds apart.
 
-Typical ranges in Hungary, in Hungarian forints (HUF):
+Typical ranges in Hungary, converted to euros (at roughly HUF 367 = €1, September 2026):
 
-| Project type                     |           Typical range |
-| -------------------------------- | ----------------------: |
-| Landing page                     |        HUF 70–250 thousand |
-| Simple introductory site         |       HUF 150–450 thousand |
-| Company website                  |       HUF 300–900 thousand |
-| Website with custom design       | HUF 400 thousand–1.5 M+ |
-| Simple online shop               |  HUF 500 thousand–1.5 M |
-| Complex online shop              |           HUF 1.5–4 M+ |
-| Custom web application           |             HUF 1–5 M+ |
-| Complex enterprise system        |               HUF 5 M+ |
+| Project type                     |   Typical range |
+| -------------------------------- | --------------: |
+| Landing page                     |       €200–700 |
+| Simple introductory site         |     €400–1,200 |
+| Company website                  |     €800–2,500 |
+| Website with custom design       |  €1,100–4,000+ |
+| Simple online shop               |   €1,400–4,000 |
+| Complex online shop              | €4,000–11,000+ |
+| Custom web application           | €2,700–14,000+ |
+| Complex enterprise system        |       €14,000+ |
 
 These are **guide prices**, not fixed rates. The final cost depends on functionality, design, content, integrations, back end, administration and the other needs of the project.
 
-For comparison: according to [1B Telecom's 2026 overview](https://1b.hu/blog/weboldal-keszites-arak-2026-mennyibe-kerul-egy-ceges-weboldal), a simple company website in Hungary typically costs around HUF 250–700 thousand, a company website generally HUF 250–800 thousand, and a more complex project can run into the millions. According to [a 2022 Privátbankár article](https://privatbankar.hu/cikkek/vasarlo/ennyibe-kerul-ha-sajat-webaruhazat-nyitnal.html), building a shop on an open-source system started at around HUF 100–300 thousand, while custom builds rarely came in under half a million.
+For comparison: according to [1B Telecom's 2026 overview](https://1b.hu/blog/weboldal-keszites-arak-2026-mennyibe-kerul-egy-ceges-weboldal), a simple company website in Hungary typically costs around €700–1,900 (HUF 250–700 thousand), a company website generally €700–2,200 (HUF 250–800 thousand), and a more complex project can run into several thousand euros. According to [a 2022 Privátbankár article](https://privatbankar.hu/cikkek/vasarlo/ennyibe-kerul-ha-sajat-webaruhazat-nyitnal.html), building a shop on an open-source system started at around HUF 100–300 thousand (roughly €300–800 at today's rate), while custom builds rarely came in under HUF 500 thousand (about €1,400).
 
 But the price alone does not tell you whether a website is a good investment.
 
@@ -68,20 +68,20 @@ There is no universal figure.
 
 A website's value is determined mainly by **how much business impact it can create**.
 
-Say a business's average customer **spends HUF 100,000**.
+Say a business's average customer **spends €250**.
 
 If the website brings in just **5 new customers a month**:
 
 ```text
-5 × HUF 100,000 = HUF 500,000 revenue a month
-HUF 500,000 × 12 = HUF 6,000,000 a year
+5 × €250 = €1,250 revenue a month
+€1,250 × 12 = €15,000 a year
 ```
 
 This is of course a simple example. The real result depends on the conversion rate, customer value, margin, repeat purchases, and whether those new customers really came because of the website.
 
 But it shows the way of thinking:
 
-> **The question is not whether the website costs HUF 500,000 or HUF 1,000,000. The question is what business result it can create.**
+> **The question is not whether the website costs €1,500 or €3,000. The question is what business result it can create.**
 
 ---
 
@@ -121,15 +121,15 @@ Yet it can still be part of the sales process.
 
 This is one of the most important numbers a business should know: **customer lifetime value** (CLV). The simple formula, as used by [Shopify](https://www.shopify.com/blog/customer-lifetime-value), is average purchase value × purchase frequency × average customer lifespan.
 
-Say a customer's first purchase is **HUF 80,000**, they buy **three times a year** on average, and they stay a customer for **three years** on average.
+Say a customer's first purchase is **€200**, they buy **three times a year** on average, and they stay a customer for **three years** on average.
 
 Their total value is then:
 
 ```text
-HUF 80,000 × 3 × 3 = HUF 720,000
+€200 × 3 × 3 = €1,800
 ```
 
-So the value of winning a new customer is not necessarily HUF 80,000.
+So the value of winning a new customer is not necessarily €200.
 
 **It is the value of the whole customer relationship that counts.**
 
@@ -141,14 +141,14 @@ That is why a well-functioning website can be worth far more than the first purc
 
 Let us look at it another way. Say:
 
-- the website costs **HUF 600,000**
-- the average customer value is **HUF 300,000**
+- the website costs **€1,500**
+- the average customer value is **€750**
 - the website brings in **1 new customer a month**
 
 In this simple model:
 
 ```text
-HUF 600,000 / HUF 300,000 = 2 customers
+€1,500 / €750 = 2 customers
 ```
 
 In other words, once the website brings in two new customers who would not have come otherwise, it has generated revenue equal to its development cost.
@@ -161,9 +161,9 @@ That is why a website is best treated as an **asset**, not a one-off expense.
 
 ## But what you build matters
 
-A HUF 300,000 website is not necessarily worse than a HUF 2 million one.
+An €800 website is not necessarily worse than a €5,000 one.
 
-And a HUF 2 million website is not necessarily a better investment.
+And a €5,000 website is not necessarily a better investment.
 
 The question is:
 
@@ -277,8 +277,8 @@ But it is easy to model. For example:
 200 leads
         ↓  20% become customers
 40 new customers
-        ×  HUF 100,000 average customer value
-= HUF 4,000,000 revenue a month
+        ×  €250 average customer value
+= €10,000 revenue a month
 ```
 
 This is only an **illustrative model**, not a general benchmark. For reference: [Unbounce's 2024 analysis](https://marketingprofs.com/charts/2024/52374/landing-page-conversion-benchmarks) of more than 57 million conversions on over 41,000 landing pages found a median conversion rate of 6.6%, with wide differences between industries, and a campaign page's numbers cannot be projected onto a whole website's traffic.
@@ -317,13 +317,13 @@ ROI = (gain attributable to the website – website cost) / website cost × 100
 
 Say:
 
-- the website's total cost: **HUF 1,000,000**
-- the extra result attributable to the website in a year: **HUF 3,000,000**
+- the website's total cost: **€2,500**
+- the extra result attributable to the website in a year: **€7,500**
 
 The simplified ROI:
 
 ```text
-(3,000,000 – 1,000,000) / 1,000,000 × 100 = 200%
+(7,500 – 2,500) / 2,500 × 100 = 200%
 ```
 
 This is only a model; a real calculation also has to account for things like marketing spend, running costs, margin and the uncertainty of attribution.
@@ -377,7 +377,7 @@ If a business:
 - lives mainly on recommendations,
 - and does not need to sell online,
 
-then it may not need a multi-million custom system.
+then it may not need an expensive custom system.
 
 A simple, well-made website can be far more sensible.
 
@@ -427,7 +427,7 @@ Over time, a well-functioning website can become one of the business's key digit
 
 ## The question is not what it costs
 
-A website can cost **HUF 200,000**, **HUF 800,000**, **HUF 2,000,000**, or even **HUF 10 million or more**.
+A website can cost **€500**, **€2,000**, **€5,000**, or even **€25,000 or more**.
 
 Any of them can be justified – and any of them can be a bad investment.
 
@@ -453,11 +453,11 @@ Not every business needs custom development.
 
 Not every business needs an online shop.
 
-And not every business needs a multi-million website.
+And not every business needs a five-figure website.
 
 But if a website can regularly win new customers, support sales, save time or automate a business process, its value should not be compared only with its development price.
 
-**The question is not whether a website costs HUF 500,000 or HUF 1,500,000.**
+**The question is not whether a website costs €1,500 or €4,000.**
 
 **The question is what you get for it – and what value it can create for your business.**
 
