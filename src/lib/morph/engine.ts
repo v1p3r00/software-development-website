@@ -2,8 +2,8 @@
  * Language-switch letter morph.
  *
  * When the language changes, every visible heading, navigation label and button
- * whose text changed is redrawn for ~0.6 s as real glyph outlines in a fixed SVG
- * overlay: each character's contours are resampled, paired with the contours of the
+ * whose text changed is redrawn for ~0.6 s as real glyph outlines on a canvas
+ * laid over just that part of the screen: each character's contours are resampled, paired with the contours of the
  * character that replaces it, and interpolated point by point, so the letter itself
  * deforms into the new one (with a little rotation, stretch, overshoot and motion
  * softness). The real text is laid out in its final state underneath, hidden only
@@ -14,19 +14,20 @@
  *
  * Elements can opt in with [data-morph] or out with [data-no-morph].
  */
-import { fontKey, getFont, glyphShape, loadFont, resample } from './glyphs';
+import { fontKey, getFont, glyphShape, loadFont, outline, resample } from './glyphs';
 import type { GlyphFont, GlyphShape, Ring } from './glyphs';
 
 const SELECTOR = 'h1,h2,h3,h4,nav a,nav button,button,a[data-cursor],.label,.label-a,[data-morph]';
 const MAX_TEXT = 80; // longer strings are body copy, not labels…
 const MAX_HEADING = 240; // …except in headings (article titles run long)
 const MAX_ELEMENTS = 120;
-const MAX_GLYPHS = 1800; // keeps a page full of cards smooth
+// letters animated per switch: past this, further text switches without morphing.
+// Fewer on machines with few cores, so the switch stays smooth everywhere.
+const MAX_GLYPHS = typeof navigator !== 'undefined' && (navigator.hardwareConcurrency ?? 4) >= 8 ? 700 : 400;
 const DURATION = 540; // per glyph, ms
 const STAGGER = 16; // ms between neighbouring glyphs…
 const STAGGER_MAX = 150; // …but a whole string never takes longer than this to start
 const HIDE = 'lang-morph-hide';
-const NS = 'http://www.w3.org/2000/svg';
 
 interface Glyph {
   ch: string;
@@ -61,10 +62,16 @@ interface Morph {
   rot: number;
   stretch: number;
   fade: boolean;
-  /** exact final outline, drawn on the last frame for a seamless hand-off to the real text */
-  end: { path: string; x: number; y: number; scale: number } | null;
-  node: SVGPathElement;
-  done: boolean;
+  /** exact outlines before and after, so the first and last frames match the real text */
+  start: Placed;
+  end: Placed | null;
+}
+
+interface Placed {
+  shape: GlyphShape;
+  x: number;
+  y: number;
+  scale: number;
 }
 
 let captured: Snap[] | null = null;
@@ -129,11 +136,14 @@ interface TextStyle {
   transform: string;
 }
 
+const opacities = new Map<Element, number>(); // cleared per measuring pass
+
 function opacityChain(el: Element | null): number {
-  let o = 1;
-  for (let e = el; e && e !== document.documentElement; e = e.parentElement) {
-    o *= Number.parseFloat(getComputedStyle(e).opacity) || 0;
-    if (o === 0) break;
+  if (!el || el === document.documentElement) return 1;
+  let o = opacities.get(el);
+  if (o === undefined) {
+    o = (Number.parseFloat(getComputedStyle(el).opacity) || 0) * opacityChain(el.parentElement);
+    opacities.set(el, o);
   }
   return o;
 }
@@ -149,8 +159,8 @@ function textStyle(parent: Element, cache: Map<Element, TextStyle | null>): Text
     const font = key ? getFont(key) : undefined;
     if (key && !font) void loadFont(key);
     if (key && font) {
-      const fill = cs.webkitTextFillColor;
-      const c = parseColor(fill && !fill.includes('transparent') ? fill : cs.color);
+      const fill = cs.webkitTextFillColor ? parseColor(cs.webkitTextFillColor) : null;
+      const c = fill && fill.alpha > 0 ? fill : parseColor(cs.color);
       out = {
         key,
         font,
@@ -271,7 +281,8 @@ function align(a: Float32Array, b: Float32Array): Float32Array {
   return out;
 }
 
-const pointsFor = (lenPx: number) => clamp(Math.round(lenPx / 3.5), 10, 110);
+// a point every ~5px of outline is plenty while the letter is moving
+const pointsFor = (lenPx: number) => clamp(Math.round(lenPx / 5), 8, 72);
 
 function collapsed(n: number, x: number, y: number): Float32Array {
   const p = new Float32Array(2 * n);
@@ -312,7 +323,7 @@ function centre(g: Glyph): [number, number] {
   return [g.x + g.shape.cx * s, g.base + g.shape.cy * s];
 }
 
-function buildMorph(A: Glyph, B: Glyph | null, to: [number, number], index: number, delay: number): Omit<Morph, 'node' | 'done'> {
+function buildMorph(A: Glyph, B: Glyph | null, to: [number, number], index: number, delay: number): Morph {
   const sa = A.size / A.font.upm;
   const rings: Morph['rings'] = [];
   const local = (r: Ring, s: number, sh: GlyphShape): [number, number] => [(r.cx - sh.cx) * s, (r.cy - sh.cy) * s];
@@ -365,7 +376,8 @@ function buildMorph(A: Glyph, B: Glyph | null, to: [number, number], index: numb
     rot: sign * (2 + 5 * rand(index)),
     stretch: (0.05 + 0.1 * rand(index + 17)) * (rand(index + 31) > 0.3 ? 1 : -1),
     fade: !B,
-    end: B ? { path: B.shape.path, x: B.x, y: B.base, scale: B.size / B.font.upm } : null,
+    start: { shape: A.shape, x: A.x, y: A.base, scale: sa },
+    end: B ? { shape: B.shape, x: B.x, y: B.base, scale: B.size / B.font.upm } : null,
   };
 }
 
@@ -373,7 +385,7 @@ function buildMorph(A: Glyph, B: Glyph | null, to: [number, number], index: numb
 function pairRun(oldG: Glyph[], newG: Glyph[], indexBase: number, first: number, step: number) {
   const nA = oldG.length;
   const nB = newG.length;
-  const out: Omit<Morph, 'node' | 'done'>[] = [];
+  const out: Morph[] = [];
   const used = new Set<number>();
   newG.forEach((g, j) => {
     const i = nB === 1 ? 0 : Math.round((j * (nA - 1)) / (nB - 1));
@@ -402,7 +414,7 @@ function pairLines(oldG: Glyph[], newG: Glyph[], indexBase: number, first: numbe
   const a = lines(oldG);
   const b = lines(newG);
   if (a.length < 2 || a.length !== b.length) return pairRun(oldG, newG, indexBase, first, step);
-  const out: Omit<Morph, 'node' | 'done'>[] = [];
+  const out: Morph[] = [];
   let offset = first;
   a.forEach((line, k) => {
     out.push(...pairRun(line, b[k], indexBase, offset, step));
@@ -424,7 +436,7 @@ function pairUp(oldG: Glyph[], newG: Glyph[], indexBase: number) {
   const a = runs(oldG);
   const b = runs(newG);
   if (a.length < 2 || a.length !== b.length) return pairLines(oldG, newG, indexBase, 0, step);
-  const out: Omit<Morph, 'node' | 'done'>[] = [];
+  const out: Morph[] = [];
   let first = 0;
   a.forEach((run, k) => {
     out.push(...pairLines(run, b[k], indexBase, first, step));
@@ -435,120 +447,152 @@ function pairUp(oldG: Glyph[], newG: Glyph[], indexBase: number) {
 
 /* ───────────────────────── playback ───────────────────────── */
 
-function pathData(m: Morph, e: number): string {
-  let d = '';
-  for (const { a, b } of m.rings) {
-    for (let i = 0; i < a.length; i += 2) {
-      const x = a[i] + (b[i] - a[i]) * e;
-      const y = a[i + 1] + (b[i + 1] - a[i + 1]) * e;
-      d += `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
-    }
-    d += 'Z';
-  }
-  return d;
+const rgb = (c: [number, number, number]) => `rgb(${c[0]} ${c[1]} ${c[2]})`;
+
+interface Stage {
+  ctx: CanvasRenderingContext2D;
+  ox: number;
+  oy: number;
+  dpr: number;
 }
 
-function render(m: Morph, t: number) {
-  if (t >= 1) {
-    if (m.done) return;
-    m.done = true;
-    if (m.end) {
-      m.node.setAttribute('d', m.end.path);
-      m.node.setAttribute('transform', `translate(${m.end.x} ${m.end.y}) scale(${m.end.scale})`);
-      m.node.setAttribute('fill', `rgb(${m.cb.join(' ')})`);
-      m.node.setAttribute('fill-opacity', String(m.ab));
-    } else {
-      m.node.setAttribute('fill-opacity', '0');
-    }
-    return;
-  }
+function drawPlaced(st: Stage, g: Placed, fill: string, alpha: number) {
+  const k = g.scale * st.dpr;
+  st.ctx.setTransform(k, 0, 0, k, (g.x - st.ox) * st.dpr, (g.y - st.oy) * st.dpr);
+  st.ctx.globalAlpha = alpha;
+  st.ctx.fillStyle = fill;
+  st.ctx.fill(outline(g.shape), 'evenodd');
+}
+
+function draw(st: Stage, m: Morph, t: number) {
+  if (t <= 0) return drawPlaced(st, m.start, rgb(m.ca), m.aa);
+  if (t >= 1) return m.end ? drawPlaced(st, m.end, rgb(m.cb), m.ab) : undefined;
   const p = easeInOut(t);
   // shape progress overshoots by a few percent before settling
   const e = p + 0.055 * Math.sin(Math.PI * clamp((t - 0.55) / 0.45, 0, 1));
   const wave = Math.sin(Math.PI * t);
-  const x = m.pa[0] + (m.pb[0] - m.pa[0]) * p;
-  const y = m.pa[1] + (m.pb[1] - m.pa[1]) * p;
+  const r = ((m.rot * wave) * Math.PI) / 180;
   const sx = 1 + m.stretch * wave;
   const sy = 1 - m.stretch * 0.45 * wave;
-  const c = m.ca.map((v, i) => Math.round(v + (m.cb[i] - v) * p));
-  const alpha = m.fade ? m.aa * (1 - smoothstep(0.2, 0.8, t)) : m.aa + (m.ab - m.aa) * p;
-  m.node.setAttribute('d', pathData(m, e));
-  m.node.setAttribute(
-    'transform',
-    `translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${(m.rot * wave).toFixed(2)}) scale(${sx.toFixed(3)} ${sy.toFixed(3)})`,
+  const cos = Math.cos(r);
+  const sin = Math.sin(r);
+  const d = st.dpr;
+  st.ctx.setTransform(
+    cos * sx * d,
+    sin * sx * d,
+    -sin * sy * d,
+    cos * sy * d,
+    (m.pa[0] + (m.pb[0] - m.pa[0]) * p - st.ox) * d,
+    (m.pa[1] + (m.pb[1] - m.pa[1]) * p - st.oy) * d,
   );
-  m.node.setAttribute('fill', `rgb(${c.join(' ')})`);
-  m.node.setAttribute('fill-opacity', alpha.toFixed(3));
+  st.ctx.globalAlpha = m.fade ? m.aa * (1 - smoothstep(0.2, 0.8, t)) : m.aa + (m.ab - m.aa) * p;
+  st.ctx.fillStyle =
+    m.ca === m.cb ? rgb(m.ca) : rgb(m.ca.map((v, i) => Math.round(v + (m.cb[i] - v) * p)) as [number, number, number]);
+  const ctx = st.ctx;
+  ctx.beginPath();
+  for (const { a, b } of m.rings) {
+    for (let i = 0; i < a.length; i += 2) {
+      const x = a[i] + (b[i] - a[i]) * e;
+      const y = a[i + 1] + (b[i + 1] - a[i + 1]) * e;
+      if (i) ctx.lineTo(x, y);
+      else ctx.moveTo(x, y);
+    }
+    ctx.closePath();
+  }
+  ctx.fill('evenodd');
+}
+
+/** a canvas covering only the screen area the letters move through */
+function makeStage(glyphs: Glyph[]): { canvas: HTMLCanvasElement; stage: Stage } | null {
+  let x0 = Infinity;
+  let y0 = Infinity;
+  let x1 = -Infinity;
+  let y1 = -Infinity;
+  for (const g of glyphs) {
+    const pad = g.size * 0.35; // room for the rotation and stretch
+    x0 = Math.min(x0, g.x - pad);
+    x1 = Math.max(x1, g.x + g.size * 1.1 + pad);
+    y0 = Math.min(y0, g.base - g.size * 1.05 - pad);
+    y1 = Math.max(y1, g.base + g.size * 0.35 + pad);
+  }
+  x0 = Math.max(0, Math.floor(x0));
+  y0 = Math.max(0, Math.floor(y0));
+  x1 = Math.min(window.innerWidth, Math.ceil(x1));
+  y1 = Math.min(window.innerHeight, Math.ceil(y1));
+  if (x1 <= x0 || y1 <= y0) return null;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round((x1 - x0) * dpr);
+  canvas.height = Math.round((y1 - y0) * dpr);
+  canvas.setAttribute('aria-hidden', 'true');
+  canvas.style.cssText = `position:fixed;left:${x0}px;top:${y0}px;width:${x1 - x0}px;height:${y1 - y0}px;pointer-events:none;z-index:2147483000`;
+  const ctx = canvas.getContext('2d');
+  return ctx ? { canvas, stage: { ctx, ox: x0, oy: y0, dpr } } : null;
 }
 
 function run(snaps: Snap[]) {
-  const jobs: { el: Element; morphs: Omit<Morph, 'node' | 'done'>[] }[] = [];
-  let index = 0;
+  const jobs: { el: Element; from: Glyph[]; to: Glyph[] }[] = [];
+  opacities.clear();
   for (const s of snaps) {
     const el = s.el.isConnected ? s.el : document.querySelector(s.path);
     if (!el || norm(el.textContent) === s.text) continue;
-    const now = measure(el);
-    if (!now.length) continue;
-    jobs.push({ el, morphs: pairUp(s.glyphs, now, index) });
-    index += s.glyphs.length + now.length;
+    const to = measure(el);
+    if (to.length) jobs.push({ el, from: s.glyphs, to });
   }
   if (!jobs.length) return;
+  const made = makeStage(jobs.flatMap((j) => [...j.from, ...j.to]));
+  if (!made) return;
+  const { canvas, stage } = made;
 
-  const svg = document.createElementNS(NS, 'svg');
-  svg.setAttribute('aria-hidden', 'true');
-  svg.style.cssText =
-    'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483000;overflow:visible';
-  const defs = document.createElementNS(NS, 'defs');
-  const filter = document.createElementNS(NS, 'filter');
-  filter.id = 'lang-morph-soften';
-  for (const [k, v] of Object.entries({ x: '-10%', y: '-10%', width: '120%', height: '120%' })) filter.setAttribute(k, v);
-  const blur = document.createElementNS(NS, 'feGaussianBlur');
-  blur.setAttribute('stdDeviation', '0 0');
-  filter.appendChild(blur);
-  defs.appendChild(filter);
-  svg.appendChild(defs);
-  const group = document.createElementNS(NS, 'g');
-  group.setAttribute('filter', 'url(#lang-morph-soften)');
-  svg.appendChild(group);
-
-  const morphs: Morph[] = [];
-  for (const job of jobs)
-    for (const m of job.morphs) {
-      const node = document.createElementNS(NS, 'path');
-      node.setAttribute('fill-rule', 'evenodd');
-      group.appendChild(node);
-      morphs.push({ ...m, node, done: false });
-    }
-  const total = DURATION + Math.max(...morphs.map((m) => m.delay));
-
+  // Before the first paint: hide the new text and show the old letters exactly as they were.
+  // The morph geometry is built a frame later, so the switch itself isn't held up.
   const els = jobs.map((j) => j.el);
+  for (const el of els) el.classList.add(HIDE);
+  document.body.appendChild(canvas);
+  for (const j of jobs) {
+    for (const g of j.from) drawPlaced(stage, { shape: g.shape, x: g.x, y: g.base, scale: g.size / g.font.upm }, rgb(g.rgb), g.alpha);
+  }
+
   let raf = 0;
   let timer = 0;
   const finish = () => {
     cancelAnimationFrame(raf);
     window.clearTimeout(timer);
-    svg.remove();
+    canvas.remove();
     for (const el of els) el.classList.remove(HIDE);
     if (finishRunning === finish) finishRunning = null;
   };
   finishRunning = finish;
+  timer = window.setTimeout(finish, 2000); // background tabs throttle rAF
 
-  for (const m of morphs) render(m, 0);
-  document.body.appendChild(svg);
-  for (const el of els) el.classList.add(HIDE);
-
-  const start = performance.now();
-  const tick = (now: number) => {
-    const elapsed = now - start;
-    for (const m of morphs) render(m, clamp((elapsed - m.delay) / DURATION, 0, 1));
-    // a touch of directional softness while the letters move fastest
-    const s = Math.sin(Math.PI * clamp(elapsed / total, 0, 1)) ** 2;
-    blur.setAttribute('stdDeviation', `${(0.85 * s).toFixed(2)} ${(0.25 * s).toFixed(2)}`);
-    if (elapsed >= total) finish();
-    else raf = requestAnimationFrame(tick);
+  // build the morph geometry a few milliseconds per frame, then animate
+  let index = 0;
+  let next = 0;
+  const morphs: Morph[] = [];
+  const build = () => {
+    const t0 = performance.now();
+    while (next < jobs.length && performance.now() - t0 < 6) {
+      const j = jobs[next++];
+      morphs.push(...pairUp(j.from, j.to, index));
+      index += j.from.length + j.to.length;
+    }
+    if (next < jobs.length) {
+      raf = requestAnimationFrame(build);
+      return;
+    }
+    const total = DURATION + Math.max(0, ...morphs.map((m) => m.delay));
+    const start = performance.now();
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      stage.ctx.setTransform(1, 0, 0, 1, 0, 0);
+      stage.ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const m of morphs) draw(stage, m, clamp((elapsed - m.delay) / DURATION, 0, 1));
+      if (elapsed >= total) finish();
+      else raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
   };
-  raf = requestAnimationFrame(tick);
-  timer = window.setTimeout(finish, total + 600); // background tabs throttle rAF
+  raf = requestAnimationFrame(build);
 }
 
 /** Measure the current glyphs. Call synchronously right before switching language. */
@@ -559,7 +603,10 @@ export function captureMorph() {
   try {
     let budget = MAX_GLYPHS;
     captured = [];
+    opacities.clear();
     for (const el of candidates(true)) {
+      // skip what can't fit before paying for the measurement
+      if (norm(el.textContent).replace(/\s/g, '').length > budget) continue;
       const glyphs = measure(el);
       if (!glyphs.length || glyphs.length > budget) continue;
       budget -= glyphs.length;

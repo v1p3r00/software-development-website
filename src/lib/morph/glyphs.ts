@@ -30,6 +30,8 @@ export interface Ring {
 
 export interface GlyphShape {
   rings: Ring[];
+  /** the exact outline as a canvas path, built on first use */
+  p2d?: Path2D;
   /** bounding-box centre (em units) — glyphs rotate and stretch around it */
   cx: number;
   cy: number;
@@ -224,4 +226,9 @@ export function resample(r: Ring, n: number, scale: number, ox: number, oy: numb
     out[2 * k + 1] = (ay + (by - ay) * t - oy) * scale;
   }
   return out;
+}
+
+/** exact outline (em units) for canvas drawing */
+export function outline(shape: GlyphShape): Path2D {
+  return (shape.p2d ??= new Path2D(shape.path));
 }
