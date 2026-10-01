@@ -2,9 +2,12 @@ import { useI18n } from '../i18n';
 import { useGoToSection } from '../hooks/useGoToSection';
 import { site } from '../data/site';
 import { Link } from 'react-router-dom';
+import { usePageTransition } from '../lib/pageTransition';
+import { ArticlesPage } from '../pages/lazy';
 
 export default function Footer() {
   const { t, lp } = useI18n();
+  const { link } = usePageTransition();
   const year = new Date().getFullYear();
   const goTo = useGoToSection();
 
@@ -44,6 +47,7 @@ export default function Footer() {
             ))}
             <Link
               to={lp('/articles/')}
+              onClick={link(lp('/articles/'), 'slide', { prepare: ArticlesPage.preload })}
               data-cursor="follow"
               className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
             >

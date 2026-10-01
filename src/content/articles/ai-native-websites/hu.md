@@ -69,7 +69,7 @@ Strukturált tartalom
 API-k és üzleti műveletek
   ↓
 AI-agent
-```text
+```
 
 A hagyományos web elsősorban az első két rétegre koncentrált.
 
@@ -108,7 +108,7 @@ Szerződés: havidíjas
 Felhasználók: maximum 10
 Támogatás: e-mail
 Bevezetés: 3 munkanap
-```text
+```
 
 A gép számára nem feltétlenül a szebb megfogalmazás a jobb.
 
@@ -144,7 +144,7 @@ Termék
 ├── készlet
 ├── értékelés
 └── URL
-```text
+```
 
 A Google Search dokumentációja szerint a strukturált adat szabványos formátum arra, hogy egy oldal tartalmának jelentését egyértelműbben leírjuk; a Google többek között JSON-LD használatát is támogatja és általában ezt ajánlja. [Google Search Central – Introduction to structured data markup](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data)
 
@@ -179,7 +179,7 @@ GET /api/products/123
 GET /api/products?category=frames
 GET /api/availability?product=123
 POST /api/orders
-```text
+```
 
 A weboldal az embernek mutatja az adatot.
 
@@ -224,7 +224,7 @@ check_stock
 get_delivery_options
 create_quote
 book_appointment
-```text
+```
 
 Ez már sokkal közelebb áll egy agent által használható rendszerhez, mint egy hagyományos weboldal.
 
@@ -251,7 +251,7 @@ Saját üzleti rendszer
    ├── készlet
    ├── rendelések
    └── időpontok
-```text
+```
 
 Fontos viszont:
 
@@ -275,7 +275,7 @@ Agent ↔ Tool / Data
 
 A2A
 Agent ↔ Agent
-```text
+```
 
 Az A2A hivatalos dokumentációja szerint a protokoll célja, hogy különböző agentek kommunikálhassanak, feladatokat delegálhassanak és eredményeket cserélhessenek egymással. Az MCP ezzel szemben agentek és eszközök, API-k, illetve adatok közötti kapcsolatot szabványosít. [A2A Protocol – Overview](https://a2a-protocol.org/latest/)
 
@@ -307,7 +307,7 @@ Magyarországi képkeret-webshop.
 - /shipping
 - /returns
 - /faq
-```text
+```
 
 Ez érdekes lehet olyan agentek számára, amelyek kifejezetten támogatják ezt a formátumot.
 
@@ -337,7 +337,7 @@ Egy agent számára jobb lehet:
 
 ```text
 [Megrendelés leadása]
-```text
+```
 
 mint egy ikon, amelyről csak vizuális kontextusból derül ki, hogy mit csinál.
 
@@ -376,7 +376,7 @@ Rendelés létrehozása    ?
 Fizetés                 ???
  ↓
 Visszatérítés           ???
-```text
+```
 
 Nem minden műveletnek kell ugyanolyan engedélyezési szintet kapnia.
 
@@ -436,7 +436,7 @@ Kosár
 Pénztár
 ↓
 Fizetés
-```text
+```
 
 Egy lehetséges jövőbeli folyamat:
 
@@ -456,7 +456,7 @@ Feltételek ellenőrzése
 Felhasználói jóváhagyás
 ↓
 Rendelés
-```text
+```
 
 Ebben a modellben a weboldal már nem csak egy felület.
 

@@ -52,7 +52,7 @@ Data / result
 API
    ↓
 Website
-```text
+```
 
 The website does not need to know how the other system works internally.
 
@@ -82,7 +82,7 @@ Payment
 Success / failure
   ↓
 Online shop
-```text
+```
 
 The API can provide the communication layer between the website and the payment service.
 
@@ -146,7 +146,7 @@ Invoicing system
 Shipping system
    ↓
 CRM
-```text
+```
 
 With APIs and suitable integrations:
 
@@ -157,7 +157,7 @@ Online shop
    ├──→ Invoicing
    ├──→ Shipping
    └──→ CRM
-```text
+```
 
 That does not mean every system should automatically be connected to everything else.
 
@@ -185,7 +185,7 @@ Download PDF
 Open NAV
    ↓
 Enter data manually
-```text
+```
 
 With a properly implemented system-to-system connection, the invoicing software can submit the required data electronically.
 
@@ -221,7 +221,7 @@ Shipping label
 Tracking number
    ↓
 Shop / customer
-```text
+```
 
 The customer can then receive tracking information automatically.
 
@@ -252,7 +252,7 @@ Employee
 Manual data entry
    ↓
 CRM
-```text
+```
 
 With an API integration:
 
@@ -264,7 +264,7 @@ CRM API
 New lead
    ↓
 Automatic workflow
-```text
+```
 
 HubSpot, for example, provides APIs that allow CRM objects to be managed and synchronised with other systems. [HubSpot – API Reference](https://developers.hubspot.com/docs/reference/api/overview)
 
@@ -300,7 +300,7 @@ CRM ←→ Integration ←→ Invoicing
         Shipping
            ↕
          Payment
-```text
+```
 
 **APIs allow different systems to work together without requiring every system to be rebuilt from scratch.**
 
@@ -430,7 +430,7 @@ Manual entry
 → person
 → copy and paste
 → greater error risk
-```text
+```
 
 The more data your business moves around, the more important it becomes to think about how that data moves.
 
@@ -470,7 +470,7 @@ Need for automation
 API + integration
    ↓
 More scalable workflow
-```text
+```
 
 That is why it is worth thinking about future growth when choosing software today.
 

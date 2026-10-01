@@ -148,13 +148,13 @@ For example:
 
 ```text
 Service page → Case study → Request a quote
-```text
+```
 
 Or:
 
 ```text
 Blog article → Related service → Contact
-```text
+```
 
 Your CTA does not need to say "Click here".
 
@@ -351,7 +351,7 @@ For a service business, you could measure a journey such as:
 
 ```text
 Visitor → service page → CTA click → contact form → enquiry
-```text
+```
 
 Useful events might include:
 

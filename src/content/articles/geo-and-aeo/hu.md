@@ -149,7 +149,7 @@ Példa
 Forrás / bizonyíték
 ↓
 Kapcsolódó kérdések
-```text
+```
 
 Nem azért, mert ez egy „AI-trükk”.
 
@@ -172,7 +172,7 @@ Alapcsomag: 49 000 Ft / hó
 Felhasználók: maximum 10
 Bevezetés: 3–5 munkanap
 Támogatás: e-mail
-```text
+```
 
 A második formátum ember számára is könnyebben áttekinthető.
 
@@ -429,7 +429,7 @@ Tartalom feldolgozása
 Válasz generálása
 ↓
 Hivatkozások
-```text
+```
 
 A pontos pipeline rendszerenként eltérhet, és a teljes működés nem nyilvános.
 
@@ -548,7 +548,7 @@ Idézet / felhasználás
 AI-ból érkező forgalom
         ↓
 Üzleti eredmény
-```text
+```
 
 Az első hat lépésből több már évek óta a jó weboldal alapja.
 

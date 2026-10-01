@@ -41,7 +41,7 @@ RAG
 
 Fine-tuning
 → How do we adapt the model's behaviour to a specific task?
-```text
+```
 
 These are not mutually exclusive technologies.
 
@@ -81,7 +81,7 @@ Always:
 - use simple language,
 - say when you do not have enough information,
 - never invent product information.
-```text
+```
 
 Anthropic's official prompting guidance recommends clear instructions, relevant context and examples as core techniques for improving model behaviour. [Anthropic – Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/prompt-templates-and-variables)
 
@@ -118,7 +118,7 @@ Prompt + retrieved information
 LLM
 ↓
 Answer
-```text
+```
 
 The model does not necessarily “learn” the information.
 
@@ -146,7 +146,7 @@ New document
 Update index
 ↓
 AI can use the new information
-```text
+```
 
 This matters especially when the information changes regularly.
 
@@ -210,7 +210,7 @@ Relevant products
 LLM
 ↓
 Answer
-```text
+```
 
 But if your goal is:
 
@@ -271,7 +271,7 @@ Evaluation
 Retraining
 +
 Operations
-```text
+```
 
 If you operate a custom or fine-tuned model yourself, additional costs can include:
 
@@ -363,7 +363,7 @@ Behaviour / format?
        Specialised task or behaviour?
                   ↓
              FINE-TUNING
-```text
+```
 
 There is an important addition.
 
@@ -377,7 +377,7 @@ Fine-tuned model
    Prompt
       ↓
 Business AI system
-```text
+```
 
 ---
 

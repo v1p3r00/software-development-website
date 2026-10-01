@@ -41,7 +41,7 @@ RAG
 
 Fine-tuning
 → Hogyan alakítsuk át a modell viselkedését egy konkrét feladatra?
-```text
+```
 
 Ez nem három egymást kizáró technológia.
 
@@ -81,7 +81,7 @@ Mindig:
 - használj egyszerű nyelvezetet,
 - ha nincs elegendő információd, jelezd ezt,
 - ne találj ki termékinformációt.
-```text
+```
 
 A prompting egyik alapelve, hogy minél pontosabban határozod meg az elvárt feladatot, formátumot, kontextust és példákat, annál jobban tud alkalmazkodni a modell. Az Anthropic hivatalos útmutatója például a világos instrukciókat, a kontextust és a few-shot példákat is a hatékony promptolás alapvető eszközei között kezeli. [Anthropic – Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/prompt-templates-and-variables)
 
@@ -118,7 +118,7 @@ Prompt + megtalált információ
 LLM
 ↓
 Válasz
-```text
+```
 
 A modell ilyenkor nem feltétlenül „tanulja meg” az adatokat.
 
@@ -146,7 +146,7 @@ Régi dokumentum
 Index frissítése
 ↓
 Az AI már az új információt használja
-```text
+```
 
 Ez különösen fontos olyan adatoknál, amelyek folyamatosan változnak.
 
@@ -210,7 +210,7 @@ Releváns termékek
 LLM
 ↓
 Válasz
-```text
+```
 
 Ha viszont a cél:
 
@@ -271,7 +271,7 @@ Tesztelés
 Újratanítás
 +
 Üzemeltetés
-```text
+```
 
 Ha saját modellt vagy saját fine-tuned modellt üzemeltetsz, további költségek is megjelenhetnek:
 
@@ -363,7 +363,7 @@ Viselkedés / formátum?
        Speciális feladat vagy viselkedés?
                   ↓
              FINE-TUNING
-```text
+```
 
 Van egy fontos kiegészítés:
 
@@ -379,7 +379,7 @@ Fine-tuned model
    Prompt
       ↓
 Vállalati AI-rendszer
-```text
+```
 
 ---
 

@@ -62,7 +62,7 @@ CRM record created
 Customer receives a reply
         ↓
 Someone follows up later
-```text
+```
 
 You may not need to automate one individual task.
 
@@ -158,7 +158,7 @@ Find / create CRM record
 Create task
         ↓
 Send automatic acknowledgement
-```text
+```
 
 In a simpler case, it could be as basic as:
 
@@ -197,7 +197,7 @@ Assign salesperson
 Automatic confirmation
     ↓
 Follow-up task
-```text
+```
 
 These workflows are strong candidates because they are triggered by an event, contain rule-based steps and often happen repeatedly. IBM lists email notifications, data handling and invoicing among common business automation examples. :contentReference[oaicite:15]{index=15}
 
@@ -223,7 +223,7 @@ Check
 Send
         ↓
 Accounting system
-```text
+```
 
 Microsoft's documentation describes automated invoicing as something that can be fully automated, partially automated or kept manual depending on the complexity of the contracts and process. :contentReference[oaicite:16]{index=16}
 
@@ -262,7 +262,7 @@ Automatic data collection
 Report
         ↓
 Weekly email
-```text
+```
 
 Modern workflow systems can not only automate tasks but also help measure process performance and identify bottlenecks. :contentReference[oaicite:18]{index=18}
 
@@ -286,7 +286,7 @@ Excel
 CRM
    ↓
 Invoicing system
-```text
+```
 
 If the same information has to be manually copied into several places, you are not just losing time.
 
@@ -391,7 +391,7 @@ Rule-based process
 
 Free-form language / complex interpretation
 → AI + automation
-```text
+```
 
 **AI is not a synonym for automation.**
 
@@ -438,7 +438,7 @@ Reporting
 Follow-ups
 Appointment scheduling
 File organisation
-```text
+```
 
 Then mark:
 

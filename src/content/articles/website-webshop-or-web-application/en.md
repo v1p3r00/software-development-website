@@ -43,7 +43,7 @@ The visitor normally comes to learn something, compare services, view examples o
 
 ```text
 Google → website → learn about the service → contact the business
-```text
+```
 
 That does not mean a website has to be basic.
 
@@ -52,6 +52,7 @@ It can include multiple languages, a blog, animations, contact forms, booking sy
 The important distinction is that **information and communication remain at the centre of the experience.**
 
 The web itself has some useful advantages here. Content can be accessed through URLs, shared and discovered through search engines, while the same web technologies can work across different devices and operating systems.  
+
 [MDN – What is a progressive web app?](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/What_is_a_progressive_web_app)
 
 ---
@@ -80,16 +81,18 @@ A typical flow might look like this:
 
 ```text
 Product → basket → checkout → payment → order → confirmation
-```text
+```
 
 The checkout is particularly important because the customer is making a decision at this point.
 
 A visually attractive shop does not automatically make a good shop. The buying process needs to be understandable, predictable and reasonably easy to complete.
 
 Baymard Institute's current research puts the global average cart abandonment rate at around 70%. That figure is based on international research and should not be treated as a prediction for an individual Hungarian shop. It does, however, illustrate how much of the online shopping journey can end without a completed purchase.  
+
 [Baymard Institute – Reasons for Cart Abandonment](https://baymard.com/research-articles/ecommerce-checkout-usability-report-and-benchmark)
 
 Baymard's research also identifies checkout complexity and usability problems as important sources of friction.  
+
 [Baymard Institute – Cart & Checkout Usability Research](https://baymard.com/research/checkout-usability)
 
 **An online shop is therefore not simply a product catalogue. It is an online sales process.**
@@ -120,7 +123,7 @@ Consider an appointment system:
 
 ```text
 User logs in → selects service → chooses a time → system checks availability → booking is created → confirmation is sent
-```text
+```
 
 The browser is still involved, but this is no longer simply a collection of pages.
 
@@ -131,6 +134,7 @@ That is the key difference.
 **A web application is software delivered through the web.**
 
 Modern web applications can also become progressively more app-like. Progressive Web Apps, for example, can use standard web technologies while offering capabilities such as installation, offline operation and background functionality where supported.  
+
 [MDN – Progressive web apps](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 
 ---
@@ -197,11 +201,12 @@ For example:
 
 ```text
 Order → payment → stock check → invoice → warehouse → delivery → customer notification
-```text
+```
 
 If half of that process is still being copied manually between spreadsheets and emails, the shop may only have digitised the first part of the problem.
 
 Eurostat continues to track e-commerce activity across businesses and company sizes, with current datasets covering data through 2025. The statistics also distinguish between different enterprise sizes and industries, which is useful when considering digital sales as part of a broader business process.  
+
 [Eurostat – E-commerce sales of enterprises by size class of enterprise](https://ec.europa.eu/eurostat/databrowser/view/isoc_ec_esels/default/table)
 
 ---
@@ -220,13 +225,13 @@ Imagine a simple process:
 
 ```text
 Customer enquiry → email → spreadsheet → employee processes it → another email → status update
-```text
+```
 
 A dedicated system could turn that into:
 
 ```text
 Customer enquiry → system → task created → employee assigned → status updated → customer notified
-```text
+```
 
 The point is not to make the interface look more impressive.
 

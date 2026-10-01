@@ -80,7 +80,7 @@ An AI context window works in a similar way.
                  LLM
                   ↓
                 answer
-```text
+```
 
 The information in the context does not necessarily come from one place.
 
@@ -112,7 +112,7 @@ Context
 LLM
    ↓
 answer
-```text
+```
 
 An AI application might store:
 
@@ -180,7 +180,7 @@ CONTEXT
             ↓
        may be harder
        in the middle
-```text
+```
 
 This does not mean every modern model always “forgets” information in the middle.
 
@@ -260,7 +260,7 @@ available tools
        LLM
         ↓
       answer
-```text
+```
 
 It probably does not need:
 
@@ -288,7 +288,7 @@ For example:
 ```text
 Task:
 “Answer the customer's warranty question.”
-```text
+```
 
 The model may need:
 
@@ -315,7 +315,7 @@ relevant documents
 context
         ↓
 LLM
-```text
+```
 
 Instead of sending the entire knowledge base, the application first retrieves the relevant parts.
 
@@ -357,7 +357,7 @@ RELEVANT DATA
 Order #18452
 Product: ...
 Purchase date: ...
-```text
+```
 
 This can be much more useful than a long, unstructured block of text.
 
@@ -384,7 +384,7 @@ User:
 Assistant:
 “Understood, the project is being developed in London,
 with a December deadline.”
-```text
+```
 
 Continue this for hundreds of messages and the context grows rapidly.
 
@@ -424,7 +424,7 @@ A more sophisticated AI application may separate several layers:
                  └───────┬───────┘
                          ↓
                         LLM
-```text
+```
 
 This is much more scalable than sending all stored information with every request.
 
@@ -456,7 +456,7 @@ context update
 LLM
         ↓
 answer
-```text
+```
 
 The tool result can therefore become new information in the next inference context.
 
@@ -511,7 +511,7 @@ B:
 12 pages
 10 pages important
 2 pages background
-```text
+```
 
 The second context may be far more useful.
 
@@ -534,7 +534,7 @@ It was bought on 12 May.
 The product is X.
 The customer wants a refund.
 Refund policy says ...
-```text
+```
 
 This may work.
 
@@ -554,7 +554,7 @@ type: refund
 
 POLICY
 ...
-```text
+```
 
 Anthropic's long-context prompting guidance recommends structured document markup such as XML tags when working with multiple documents, making documents and their metadata easier for the model to distinguish. ([docs.anthropic.com](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/prompt-templates-and-variables))
 
@@ -579,7 +579,7 @@ A practical checklist:
 [✗] duplicate information
 [✗] unnecessary tools
 [✗] the entire database
-```text
+```
 
 The exact answer depends on the application.
 
@@ -613,7 +613,7 @@ The system might do this:
 8. Use a tool if necessary
           ↓
 9. Add the result back to context
-```text
+```
 
 This is much more than writing a clever prompt.
 
@@ -652,7 +652,7 @@ continue
 summary / state
    ↓
 Context 3
-```text
+```
 
 **Long-term memory is therefore often not one enormous context window. It is state managed across multiple contexts.**
 
@@ -682,7 +682,7 @@ Tools ───────┼──→ Context → LLM → Output
 History ─────┤
 State ───────┤
 Instructions ┘
-```text
+```
 
 **A strong AI application is not simply built around a strong model. The model and the context assembled for it together determine what the application can actually accomplish.**
 

@@ -187,7 +187,7 @@ Try following the main customer journey:
 
 ```text
 Google → homepage → service → case study → contact
-```text
+```
 
 If the route contains unnecessary obstacles, the structure probably needs attention.
 
@@ -257,13 +257,13 @@ Suppose your current page is:
 
 ```text
 https://example.com/services/web-development
-```text
+```
 
 And the new site uses:
 
 ```text
 https://example.com/web-development
-```text
+```
 
 These are different URLs.
 
@@ -292,13 +292,13 @@ A straightforward migration might look like:
 
 ```text
 Old URL → 301 redirect → relevant new URL
-```text
+```
 
 Not:
 
 ```text
 Old URL → homepage
-```text
+```
 
 Google specifically advises against redirecting large numbers of unrelated old URLs to the new homepage. This can confuse users and may result in pages being treated as soft 404s. ([developers.google.com](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes))
 

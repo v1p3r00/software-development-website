@@ -52,7 +52,7 @@ narrower focus
 lower resource requirements
 ↓
 fast, targeted tasks
-```text
+```
 
 That does not mean an SLM is simply a “stupid LLM”.
 
@@ -84,7 +84,7 @@ incoming email
 invoice / delivery / complaint / other
       ↓
 appropriate workflow
-```text
+```
 
 Now imagine a different requirement:
 
@@ -136,7 +136,7 @@ User
 local SLM
  ↓
 local response
-```text
+```
 
 versus:
 
@@ -152,7 +152,7 @@ LLM
 internet
  ↓
 response
-```text
+```
 
 **For some workloads, a smaller local model can avoid the network round trip altogether.**
 
@@ -198,7 +198,7 @@ your server
 SLM
        ↓
 response
-```text
+```
 
 This can be attractive to businesses that handle sensitive information or have strict internal security requirements.
 
@@ -277,7 +277,7 @@ available hardware
 operating cost
  ↓
 model choice
-```text
+```
 
 ---
 
@@ -321,7 +321,7 @@ relevant passages
 SLM
   ↓
 answer
-```text
+```
 
 AWS specifically notes that RAG and fine-tuning can improve the performance of SLMs for specialised domains. ([AWS](https://aws.amazon.com/blogs/compute/running-and-optimizing-small-language-models-on-premises-and-at-the-edge/))
 
@@ -407,7 +407,7 @@ sensitive data
 local SLM
       ↓
 data stays inside the environment
-```text
+```
 
 This is sometimes described as model routing: the application decides which model should handle a particular request.
 

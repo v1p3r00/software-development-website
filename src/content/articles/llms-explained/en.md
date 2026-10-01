@@ -63,7 +63,7 @@ tokenisation
 numbers
         ↓
 LLM
-```text
+```
 
 **The model is therefore not directly reading your sentence in the way a human does. It is processing a numerical representation of it.**
 
@@ -89,7 +89,7 @@ For example:
                               likely next token?
                                       ↓
                                     "week"
-```text
+```
 
 The model performs this kind of prediction over and over again during training.
 
@@ -167,7 +167,7 @@ probabilities for next token
 ...
      ↓
 final response
-```text
+```
 
 Hugging Face's Transformers documentation demonstrates the same basic pattern: text is tokenised, passed through a model, new token IDs are generated, and those IDs are decoded back into text. ([Hugging Face](https://huggingface.co/docs/transformers/quicktour))
 
@@ -213,7 +213,7 @@ current question
    context window
         ↓
        LLM
-```text
+```
 
 Google's LLM material explains the importance of context for language-model predictions, while modern generative AI systems support increasingly large context windows. ([Google for Developers](https://developers.google.com/machine-learning/crash-course/llm))
 
@@ -363,7 +363,7 @@ CRM / database / documents
 LLM
         ↓
 answer or action
-```text
+```
 
 **In many real business applications, the value comes less from the LLM itself and more from connecting the model to the right information and processes.**
 

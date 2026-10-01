@@ -80,7 +80,7 @@ Az AI context window-ja hasonló.
                  LLM
                   ↓
                 válasz
-```text
+```
 
 A kontextusba bekerülő információ nem feltétlenül mind ugyanonnan érkezik.
 
@@ -112,7 +112,7 @@ Context
 LLM
    ↓
 válasz
-```text
+```
 
 Egy AI-alkalmazás például tárolhatja:
 
@@ -179,7 +179,7 @@ CONTEXT
 ↑ jobb hozzáférés lehet
       ↓
   középen elveszhet
-```text
+```
 
 Ez nem azt jelenti, hogy minden modern modell mindig „elfelejti” a középen lévő információt.
 
@@ -259,7 +259,7 @@ available tools
        LLM
         ↓
       answer
-```text
+```
 
 Nem feltétlenül kell hozzáadni:
 
@@ -287,7 +287,7 @@ Például:
 ```text
 Feladat:
 „Válaszolj az ügyfél garanciális kérdésére.”
-```text
+```
 
 Ehhez szükség lehet:
 
@@ -314,7 +314,7 @@ releváns dokumentumok
 context
         ↓
 LLM
-```text
+```
 
 Nem az egész tudásbázist küldöd át.
 
@@ -358,7 +358,7 @@ RELEVANT DATA
 Order #18452
 Product: ...
 Purchase date: ...
-```text
+```
 
 Ez sokkal hasznosabb lehet, mint egy hosszú, strukturálatlan szöveghalmaz.
 
@@ -385,7 +385,7 @@ User:
 Assistant:
 „Értem, a projekt Budapesten készül,
 a határidő december.”
-```text
+```
 
 Ha ezt több száz üzeneten keresztül folytatjuk, a context egyre nagyobb lesz.
 
@@ -425,7 +425,7 @@ Egy fejlettebb AI-alkalmazásban érdemes különválasztani:
                  └───────┬───────┘
                          ↓
                         LLM
-```text
+```
 
 Ez sokkal skálázhatóbb, mint minden adatot minden kérdésnél elküldeni.
 
@@ -457,7 +457,7 @@ context update
 LLM
         ↓
 answer
-```text
+```
 
 A tool eredménye tehát új információként bekerülhet a következő inference kontextusába.
 
@@ -512,7 +512,7 @@ B:
 12 oldal
 10 oldal fontos
 2 oldal háttér
-```text
+```
 
 A második context lehet sokkal hatékonyabb.
 
@@ -535,7 +535,7 @@ It was bought on 12 May.
 The product is X.
 The customer wants a refund.
 Refund policy says ...
-```text
+```
 
 működhet.
 
@@ -555,7 +555,7 @@ type: refund
 
 POLICY
 ...
-```text
+```
 
 egyértelműbb lehet.
 
@@ -582,7 +582,7 @@ Egy praktikus ellenőrzőlista:
 [✗] duplikált információ
 [✗] felesleges toolok
 [✗] teljes adatbázis
-```text
+```
 
 Ez természetesen alkalmazásonként változik.
 
@@ -616,7 +616,7 @@ A rendszer:
 8. Ha szükséges, toolt használ
           ↓
 9. Az eredmény visszakerül a contextbe
-```text
+```
 
 Ez már sokkal inkább **context engineering**, mint egyszerű promptírás.
 
@@ -653,7 +653,7 @@ folytatás
 összefoglaló / state
    ↓
 Context 3
-```text
+```
 
 **A hosszú távú memória tehát gyakran nem egyetlen hatalmas context window, hanem több context között kezelt állapot.**
 
@@ -683,7 +683,7 @@ Tools ───────┼──→ Context → LLM → Output
 History ─────┤
 State ───────┤
 Instructions ┘
-```text
+```
 
 **Egy jó AI-rendszer nem egyszerűen egy jó modellből áll. A modell és a számára összeállított context együtt határozza meg, hogy az alkalmazás mit tud ténylegesen megoldani.**
 

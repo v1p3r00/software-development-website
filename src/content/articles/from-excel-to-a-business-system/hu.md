@@ -26,7 +26,7 @@ ugyfelek_final.xlsx
 ugyfelek_final2.xlsx
 ugyfelek_FINAL.xlsx
 ugyfelek_FINAL_javitott.xlsx
-```text
+```
 
 Egy ponton már nem az Excel segíti a vállalkozást.
 
@@ -76,7 +76,7 @@ Anna → Excel
 e-mail
         ↓
 János → Excel
-```text
+```
 
 akkor érdemes feltenni a kérdést, hogy **nem lenne-e jobb egy közös rendszerben ugyanazt az adatot kezelni.**
 
@@ -112,7 +112,7 @@ Vezető
 
 Admin
   → felhasználókat kezelhet
-```text
+```
 
 **Nem minden felhasználónak kell minden adatot és minden műveletet elérnie.**
 
@@ -132,7 +132,7 @@ Kovács Anna
 Ügyfél: #1245
 Státusz:
 "Ajánlat" → "Megrendelés"
-```text
+```
 
 Az audit trail nem minden vállalkozásnál szükséges.
 
@@ -160,7 +160,7 @@ Számlázó
 Projekt Excel
    ↓
 E-mail
-```text
+```
 
 Ha ugyanazt az adatot több rendszerbe manuálisan kell beírni, az nemcsak időt vesz el.
 
@@ -303,7 +303,7 @@ Jóváhagyás
 Értesítés
   ↓
 Riport
-```text
+```
 
 Előnye, hogy gyorsan lehet prototípust készíteni.
 
@@ -332,7 +332,7 @@ Saját üzleti rendszer
    └── riportok
           ↓
       számlázó
-```text
+```
 
 Az egyedi rendszer előnye, hogy a folyamatot lehet hozzá igazítani.
 
@@ -370,7 +370,7 @@ Ajánlat készül
 Projekt indul
    ↓
 Számlázás
-```text
+```
 
 Ezután jelöld meg, hogy jelenleg hol használtok Excelt.
 
@@ -394,7 +394,7 @@ CRM = egyetlen hivatalos rekord
 Projekt
    ↓
 Számlázás
-```text
+```
 
 A többi rendszer innen kapja meg az adatot.
 
@@ -442,7 +442,7 @@ ABC Kft.
 ABC KFT
 ABC Kft
 Abc Kft.
-```text
+```
 
 Egy ember számára ezek valószínűleg ugyanazt jelentik.
 
@@ -470,7 +470,7 @@ teszt
 ellenőrzés
   ↓
 éles használat
-```text
+```
 
 Egy ideig lehet ellenőrizni, hogy az új rendszer ugyanazokat az eredményeket adja-e.
 
@@ -541,7 +541,7 @@ adatok exportja
 Excel elemzés
        ↓
 vezetői riport
-```text
+```
 
 Az Excel ilyenkor elemzőeszköz.
 

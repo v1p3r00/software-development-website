@@ -36,7 +36,7 @@ következő token
 következő token
    ↓
 válasz
-```text
+```
 
 A modell a rendelkezésére álló kontextus alapján valószínűsíti, hogy milyen tokenekből érdemes felépíteni a választ.
 
@@ -72,7 +72,7 @@ Egyszerű kérdés
 → több ellenőrzés / tervezés
 → lassabb válasz
 → nagyobb esély a helyes megoldásra
-```text
+```
 
 A kutatásokban a test-time scaling kifejezést is használják arra, amikor a rendszer több számítás felhasználásával próbál jobb eredményt elérni. A módszer nem egyetlen technikát jelenthet: különböző megközelítések léteznek például több megoldás előállítására, azok összevetésére vagy részleges megoldások keresésére. ([arxiv.org](https://arxiv.org/abs/2608.04001))
 
@@ -136,7 +136,7 @@ Alternatívák és részfeladatok
 Ellenőrzés
   ↓
 Végső válasz
-```text
+```
 
 A konkrét belső működés modellenként eltérhet, és nem minden reasoning modell ugyanazt a technikát használja.
 
@@ -182,7 +182,7 @@ Magas reasoning
 → több compute
 → drágább lehet
 → összetett feladatoknál hasznosabb
-```text
+```
 
 Egy ügyfélszolgálati chatbotnál például lehet fontos, hogy a válasz néhány pillanaton belül megérkezzen.
 
@@ -214,7 +214,7 @@ problémák azonosítása
 lehetséges okok
        ↓
 javasolt intézkedések
-```text
+```
 
 ### Programozás
 
@@ -252,7 +252,7 @@ ellenőrzés
 következő lépés
  ↓
 végső eredmény
-```text
+```
 
 Minél több ilyen lépést tartalmaz a workflow, annál fontosabb lehet a reasoning képesség.
 
@@ -347,7 +347,7 @@ Egyre inkább:
 jobb modell
 + több inference-time compute
 → jobb problémamegoldás
-```text
+```
 
 A test-time scaling kutatása jelenleg is aktív terület, és a különböző módszerek eltérő költséggel, teljesítménnyel és hibamintázattal járhatnak. ([arxiv.org](https://arxiv.org/abs/2608.04001))
 

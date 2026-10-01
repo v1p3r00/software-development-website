@@ -403,3 +403,108 @@
     transform: translateY(0);
   }
 }
+
+/* ---- language-switch letter morph (src/lib/morph) ----
+   The new text is laid out in place but hidden while its glyphs animate in an overlay. */
+.lang-morph-hide,
+.lang-morph-hide * {
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+
+/* ---- page transitions (src/lib/pageTransition.ts) ---- */
+@keyframes vt-dissolve {
+  to {
+    opacity: 0;
+    filter: blur(8px);
+    transform: scale(0.965);
+  }
+}
+@keyframes vt-from-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+/* slide: the current page dissolves, the articles page comes in from the right */
+html[data-vt='slide']::view-transition-old(root) {
+  animation: vt-dissolve 460ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+html[data-vt='slide']::view-transition-new(root) {
+  animation: vt-from-right 680ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  box-shadow: -40px 0 80px -20px rgb(0 0 0 / 0.45);
+}
+/* expand / collapse: the clicked card becomes the article header (and back) */
+html[data-vt='expand'] .vt-source,
+html[data-vt='collapse'] .vt-source,
+html[data-vt='expand'] .vt-article,
+html[data-vt='collapse'] .vt-article {
+  view-transition-name: article-card;
+}
+html[data-vt='expand'] .vt-source .vt-media,
+html[data-vt='collapse'] .vt-source .vt-media,
+html[data-vt='expand'] .vt-article .vt-media,
+html[data-vt='collapse'] .vt-article .vt-media {
+  view-transition-name: article-media;
+}
+html[data-vt='expand']::view-transition-old(root),
+html[data-vt='collapse']::view-transition-old(root) {
+  animation: vt-dissolve 380ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+html[data-vt='expand']::view-transition-new(root),
+html[data-vt='collapse']::view-transition-new(root) {
+  animation: vt-fade-in 420ms 180ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+::view-transition-group(article-card),
+::view-transition-group(article-media) {
+  animation-duration: 640ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+::view-transition-old(article-card),
+::view-transition-new(article-card) {
+  /* the card and the header have different proportions: scale both to the moving frame */
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+}
+::view-transition-group(article-card) {
+  z-index: 1;
+}
+::view-transition-group(article-media) {
+  z-index: 2;
+}
+::view-transition-old(article-media),
+::view-transition-new(article-media) {
+  height: 100%;
+  object-fit: cover;
+}
+::view-transition-group(site-header),
+::view-transition-group(scroll-bar) {
+  z-index: 3;
+}
+::view-transition-group(tech-cursor) {
+  z-index: 4;
+}
+/* the header switches state at once instead of cross-fading two layouts */
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+/* the card's own text clears quickly so it doesn't ghost over the article header */
+::view-transition-old(article-card) {
+  animation: vt-fade-out 240ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+::view-transition-new(article-card) {
+  animation: vt-fade-in 420ms 140ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}

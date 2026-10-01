@@ -143,13 +143,13 @@ Például:
 
 ```text
 Szolgáltatás → Esettanulmány → Ajánlatkérés
-```text
+```
 
 vagy:
 
 ```text
 Blogcikk → Kapcsolódó szolgáltatás → Kapcsolatfelvétel
-```text
+```
 
 A CTA ne legyen feltétlenül „Kattints ide”.
 
@@ -342,7 +342,7 @@ Ne csak az oldalletöltéseket figyeld.
 
 ```text
 Látogató → szolgáltatásoldal → CTA-kattintás → kapcsolatfelvétel → ajánlatkérés
-```text
+```
 
 Egy szolgáltató vállalkozásnál fontos esemény lehet:
 

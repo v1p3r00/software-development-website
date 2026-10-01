@@ -43,7 +43,7 @@ Saját ügyfélportál
     ├── Projekt státusza
     ├── Üzenetek
     └── Ügyfélszolgálat
-```text
+```
 
 A pontos funkciók természetesen vállalkozásonként változnak.
 
@@ -80,7 +80,7 @@ Dokumentumok:
 Számlák:
 ✓ 1. részszámla
 ○ 2. részszámla
-```text
+```
 
 Az ügyfél rögtön látja, hogy hol tart a folyamat.
 
@@ -115,7 +115,7 @@ E-mail
    ├── szerződés_final.pdf
    ├── szerződés_final2.pdf
    └── szerződés_aláírt.pdf
-```text
+```
 
 a portálon lehet egy strukturált dokumentumtár:
 
@@ -125,7 +125,7 @@ Dokumentumok
 ├── Számlák
 ├── Műszaki dokumentáció
 └── Egyéb
-```text
+```
 
 **A cél nem pusztán az, hogy a fájlok online legyenek, hanem hogy a megfelelő ügyfél a megfelelő fájlokat lássa.**
 
@@ -151,7 +151,7 @@ Minőségellenőrzés
 Szállítás
       ↓
 Teljesítve
-```text
+```
 
 Az ügyfélnek nem kell minden állapotváltozás miatt e-mailt küldenie.
 
@@ -171,7 +171,7 @@ Folyamatban
 Ellenőrzés
   ↓
 Lezárva
-```text
+```
 
 A státuszoknak ráadásul nem feltétlenül kell technikai állapotokat megjeleníteniük.
 
@@ -211,7 +211,7 @@ Sikeres fizetés
 Portál frissül
    ↓
 "Fizetve"
-```text
+```
 
 Ilyenkor a portál nem maga kezeli feltétlenül a bankkártyaadatokat. A fizetést egy erre kialakított fizetési szolgáltató kezelheti.
 
@@ -236,7 +236,7 @@ Vállalkozás:
 
 Ügyfél:
 "Rendben, jóváhagyom."
-```text
+```
 
 A kommunikáció így közvetlenül kapcsolódhat az adott projekthez, rendeléshez vagy ügyhöz.
 
@@ -343,7 +343,7 @@ Projekt
   ├── változtatási kérelmek
   ├── számlák
   └── üzenetek
-```text
+```
 
 Egy általános CRM ezt részben megoldhatja.
 
@@ -369,7 +369,7 @@ Például:
                    ├── Webshop
                    │
                    └── Projektkezelő
-```text
+```
 
 Az ügyfél egy helyen látja az információt.
 
@@ -430,7 +430,7 @@ Például:
 
 Admin
   → minden ügyfelet kezelhet
-```text
+```
 
 Nem elég elrejteni egy gombot a felületen.
 
@@ -468,7 +468,7 @@ Például ez nem megfelelő biztonsági modell:
 
 ```text
 https://pelda.hu/uploads/szerzodes-123.pdf
-```text
+```
 
 és azt feltételezni, hogy csak az fér hozzá, aki ismeri a linket.
 
@@ -493,7 +493,7 @@ Egy első verzió lehet például:
 6. Számlák
 7. Üzenetek
 8. Értesítések
-```text
+```
 
 Ez már önmagában komoly értéket adhat.
 

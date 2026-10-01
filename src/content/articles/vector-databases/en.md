@@ -41,7 +41,7 @@ id | name              | category | price
 1  | Trail Runner      | shoes    | 450
 2  | Mountain Boot     | shoes    | 680
 3  | Road Runner       | shoes    | 390
-```text
+```
 
 You can ask:
 
@@ -50,7 +50,7 @@ SELECT *
 FROM products
 WHERE category = 'shoes'
 AND price < 500;
-```text
+```
 
 That is precise.
 
@@ -81,7 +81,7 @@ For example:
 “Waterproof hiking shoe for long mountain trips”
           ↓
 [0.12, -0.44, 0.81, 0.17, ...]
-```text
+```
 
 That vector can be stored in a database.
 
@@ -96,7 +96,7 @@ Product A
 
                   ●
               Product C
-```text
+```
 
 A vector database is therefore not simply a place to store a lot of numbers.
 
@@ -122,7 +122,7 @@ vector search
 nearest vectors
         ↓
 relevant documents
-```text
+```
 
 If you search an internal knowledge base for:
 
@@ -180,7 +180,7 @@ content
 category
 created_at
 embedding
-```text
+```
 
 Your conventional data and embeddings can live in the same database.
 
@@ -201,7 +201,7 @@ orders
 documents
 users
 permissions
-```text
+```
 
 Now you want to add AI-powered document search.
 
@@ -219,7 +219,7 @@ PostgreSQL
      ├── metadata
      ├── documents
      └── embeddings
-```text
+```
 
 One of pgvector's key advantages is precisely that vectors can live alongside the rest of your PostgreSQL data, while retaining PostgreSQL capabilities such as joins and ACID transactions. ([github.com](https://github.com/pgvector/pgvector))
 
@@ -276,7 +276,7 @@ price < £1000
 in_stock = true
         ↓
 relevant results
-```text
+```
 
 Qdrant's documentation explicitly points out that semantic vectors cannot represent every business constraint, so metadata filters are needed for requirements such as price, stock and location. ([qdrant.tech](https://qdrant.tech/documentation/search/filtering/))
 
@@ -318,7 +318,7 @@ stock > 0
         ↓
 
 final results
-```text
+```
 
 **AI search does not replace conventional database logic. The two are often more useful together.**
 
@@ -357,7 +357,7 @@ It combines semantic and lexical search.
                     ranking
                        ↓
                     results
-```text
+```
 
 Qdrant documents hybrid search as a combination of dense and sparse retrieval, allowing semantic similarity and exact keyword matching to contribute to the result ranking. ([qdrant.tech](https://qdrant.tech/documentation/search/text-search/hybrid-search/))
 
@@ -418,7 +418,7 @@ relevant document sections
 LLM
      ↓
 answer
-```text
+```
 
 This is why a vector database is not the AI itself in a typical RAG system.
 
@@ -446,7 +446,7 @@ FROM products
 WHERE category = 'shirt'
   AND colour = 'black'
   AND price BETWEEN 300 AND 500;
-```text
+```
 
 The same applies to:
 
@@ -483,7 +483,7 @@ PostgreSQL
 ├── documents
 ├── permissions
 └── embeddings
-```text
+```
 
 This can be a very convenient architecture for an existing business application.
 
@@ -509,7 +509,7 @@ hybrid search
 multiple retrieval strategies
           ↓
 dedicated vector infrastructure
-```text
+```
 
 Examples of dedicated vector databases include Qdrant, Pinecone, Weaviate and Milvus.
 
@@ -545,7 +545,7 @@ Search Engine
 LLM
      +
 separate ingestion service
-```text
+```
 
 while the actual project contains only a few tens of thousands of documents.
 
@@ -587,7 +587,7 @@ vector
 vector database
     ↓
 similarity search
-```text
+```
 
 If the embedding model produces a poor representation, the vector database can still very efficiently find the nearest poor representation.
 
@@ -623,7 +623,7 @@ Vector search
 
 LLM
 → natural-language response
-```text
+```
 
 That is much closer to how a serious AI application should be designed.
 
@@ -653,4 +653,3 @@ A good architecture does not become modern by containing as many AI components a
 - Qdrant: [Filtering](https://qdrant.tech/documentation/search/filtering/)
 - Qdrant: [Hybrid Search](https://qdrant.tech/documentation/search/text-search/hybrid-search/)
 - Qdrant: [Hybrid and Multi-Stage Queries](https://qdrant.tech/documentation/search/hybrid-queries/)
-````

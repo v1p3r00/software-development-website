@@ -50,7 +50,7 @@ szűkebb fókusz
 kisebb erőforrásigény
 ↓
 gyors, célzott feladatok
-```text
+```
 
 Ez azonban nem jelenti azt, hogy az SLM egyszerűen egy „butább LLM”.
 
@@ -82,7 +82,7 @@ beérkező e-mail
 számlázás / szállítás / reklamáció / egyéb
        ↓
 megfelelő folyamat
-```text
+```
 
 Ezzel szemben ha azt mondod:
 
@@ -132,7 +132,7 @@ Felhasználó
 helyi SLM
    ↓
 azonnali feldolgozás
-```text
+```
 
 szemben:
 
@@ -148,7 +148,7 @@ LLM
 internet
    ↓
 eredmény
-```text
+```
 
 **A kisebb modell egyik legnagyobb előnye az lehet, hogy bizonyos feladatoknál nincs szükség távoli AI-szolgáltatásra.**
 
@@ -192,7 +192,7 @@ saját szerver
 SLM
        ↓
 válasz
-```text
+```
 
 Ez különösen érdekes lehet olyan vállalkozásoknál, ahol érzékeny adatokkal dolgoznak, vagy szigorú belső szabályok vonatkoznak az adatkezelésre.
 
@@ -271,7 +271,7 @@ Elérhető hardver
 üzemeltetési költség
   ↓
 modellválasztás
-```text
+```
 
 ---
 
@@ -315,7 +315,7 @@ releváns részek
 SLM
   ↓
 válasz
-```text
+```
 
 Az AWS is kiemeli, hogy SLM-eknél RAG és fine-tuning segítségével egy adott területre specializált teljesítmény javítható. ([AWS](https://aws.amazon.com/blogs/compute/running-and-optimizing-small-language-models-on-premises-and-at-the-edge/))
 
@@ -395,7 +395,7 @@ részletesebb feldolgozás
 helyi SLM
       ↓
 nem kerül ki a hálózatból
-```text
+```
 
 Ezt akár routingnak is nevezheted: a rendszer a feladat alapján eldönti, melyik modellhez küldje a kérést.
 

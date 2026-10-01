@@ -30,7 +30,7 @@ Question
 AI model
   ↓
 Answer
-```text
+```
 
 If you ask:
 
@@ -73,7 +73,7 @@ Use another tool
 Check again
  ↓
 Task complete / ask a human
-```text
+```
 
 OpenAI's agent documentation describes this as an agent loop: the model decides what to do, calls tools when necessary, receives their results and continues until it reaches a genuine stopping point. ([OpenAI](https://developers.openai.com/api/docs/guides/agents/running-agents))
 
@@ -100,7 +100,7 @@ An agent might break it down into something like:
 6. Prepare a summary
 7. Verify sources
 8. Produce the final report
-```text
+```
 
 The agent does not necessarily have to follow exactly this plan.
 
@@ -179,7 +179,7 @@ Step 2
 Step 3
  ↓
 Done
-```text
+```
 
 If step two fails, the workflow usually stops.
 
@@ -197,7 +197,7 @@ AI evaluates the result
 Alternative?
  ├── Yes → another tool / another attempt
  └── No → human intervention
-```text
+```
 
 Anthropic describes agents in a similar self-directed loop: they plan, act, observe the result, adjust their approach and repeat. ([Anthropic](https://www.anthropic.com/research/trustworthy-agents))
 
@@ -233,7 +233,7 @@ Order → #48152
 Status → shipped
 Courier → XYZ
 Tracking → 123456
-```text
+```
 
 ### 3. Check the courier
 
@@ -245,7 +245,7 @@ The result:
 Last update:
 Package arrived at regional depot
 Delay: 2 days
-```text
+```
 
 ### 4. Adapt the response
 
@@ -272,7 +272,7 @@ Lost package
 
 Refund
 → approval required
-```text
+```
 
 **A useful agent is not one that can do everything. It is one that knows how far it is allowed to go.**
 
@@ -305,7 +305,7 @@ Send high-value quotation
 
 Issue refund
 → Human
-```text
+```
 
 The human does not need to review every action. They only need to intervene where their judgement adds meaningful value.
 
@@ -347,7 +347,7 @@ A useful architecture therefore looks like:
                         ↓
                Human approval
                 when required
-```text
+```
 
 The important point is that **the model should not be the only security boundary**.
 
@@ -420,7 +420,7 @@ Input
 → database
 → email
 → done
-```text
+```
 
 a traditional deterministic workflow is often simpler and more predictable.
 
@@ -433,7 +433,7 @@ Task arrives
 → choose between several possible paths
 → use the result to decide what happens next
 → ask a human in some cases
-```text
+```
 
 then an agentic approach may make sense.
 
@@ -459,7 +459,7 @@ A safer approach is to increase autonomy gradually.
 5. Human approves critical actions
    ↓
 6. More parts become autonomous
-```text
+```
 
 The system should also be evaluated continuously.
 

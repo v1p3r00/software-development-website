@@ -43,7 +43,7 @@ Customer portal
     ├── Project status
     ├── Messages
     └── Support
-```text
+```
 
 The exact features depend on the business.
 
@@ -80,7 +80,7 @@ Documents:
 Invoices:
 ✓ First invoice
 ○ Second invoice
-```text
+```
 
 The customer immediately knows where things stand.
 
@@ -115,7 +115,7 @@ Email
    ├── contract_final.pdf
    ├── contract_final2.pdf
    └── contract_signed.pdf
-```text
+```
 
 the customer can see a structured document area:
 
@@ -125,7 +125,7 @@ Documents
 ├── Invoices
 ├── Technical documentation
 └── Other
-```text
+```
 
 **The goal is not simply to put files online. It is to make sure the right customer can access the right files.**
 
@@ -151,7 +151,7 @@ Quality check
 Shipping
       ↓
 Completed
-```text
+```
 
 The customer does not need to email you every time they want an update.
 
@@ -171,7 +171,7 @@ In progress
 Review
   ↓
 Completed
-```text
+```
 
 The internal system might use a technical status such as:
 
@@ -209,7 +209,7 @@ Payment successful
 Portal updated
    ↓
 "Paid"
-```text
+```
 
 The portal does not necessarily need to handle card details itself. Payment can be handled by a dedicated payment provider.
 
@@ -234,7 +234,7 @@ Company:
 
 Customer:
 "Approved."
-```text
+```
 
 The communication can be linked directly to a project, order or case.
 
@@ -341,7 +341,7 @@ Project
   ├── change requests
   ├── invoices
   └── messages
-```text
+```
 
 A generic CRM may cover some of this.
 
@@ -367,7 +367,7 @@ Customer portal ───┼── ERP
                    ├── Online shop
                    │
                    └── Project management
-```text
+```
 
 The customer sees one interface.
 
@@ -428,7 +428,7 @@ Customer B
 
 Administrator
   → can manage all customers
-```text
+```
 
 It is not enough to hide a button in the interface.
 
@@ -466,7 +466,7 @@ For example, this is not a sufficient security model:
 
 ```text
 https://example.com/uploads/contract-123.pdf
-```text
+```
 
 and then simply assuming that only someone who knows the URL can access it.
 
@@ -491,7 +491,7 @@ A first version could contain:
 6. Invoices
 7. Messages
 8. Notifications
-```text
+```
 
 That can already provide significant value.
 

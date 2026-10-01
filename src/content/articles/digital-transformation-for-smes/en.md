@@ -106,7 +106,7 @@ Quotation
 Email to customer
 ↓
 CRM update
-```text
+```
 
 Automated process:
 
@@ -120,7 +120,7 @@ Automatic task
 Quotation template
 ↓
 Sales notification
-```text
+```
 
 You do not necessarily need a completely new business system to achieve this.
 
@@ -158,7 +158,7 @@ Webshop
 New order
    ↓
 Invoicing system
-```text
+```
 
 A more complex setup could look like this:
 
@@ -170,7 +170,7 @@ Integration layer
    ├── Invoicing
    ├── Stock management
    └── Email platform
-```text
+```
 
 **The goal of integration is not to connect as many systems as possible. It is to remove unnecessary manual data movement.**
 
@@ -239,7 +239,7 @@ AI service
 Custom business application
        =
 One connected system
-```text
+```
 
 In many cases, this is more sensible than rebuilding every individual function yourself.
 
@@ -313,7 +313,7 @@ A simple prioritisation model could look like:
 Impact × Frequency × Time saved
 -------------------------------
       Implementation cost
-```text
+```
 
 This is not a precise financial model.
 
@@ -341,7 +341,7 @@ For example:
 Quotation processing: 15 minutes / customer
 20 customers / week
 = 5 hours / week
-```text
+```
 
 **After**
 
@@ -349,7 +349,7 @@ Quotation processing: 15 minutes / customer
 Automated pre-processing: 3 minutes / customer
 20 customers / week
 = 1 hour / week
-```text
+```
 
 Saving four hours a week is already a meaningful amount of time over a year.
 
@@ -385,7 +385,7 @@ Quotation preparation → 15 minutes
 
 Result:
 → 67% time saving
-```text
+```
 
 Now the question is no longer:
 
@@ -431,7 +431,7 @@ If you are starting now, this can be a useful sequence:
 6. AI
           ↓
 7. Custom software
-```text
+```
 
 You do not have to complete all seven steps.
 

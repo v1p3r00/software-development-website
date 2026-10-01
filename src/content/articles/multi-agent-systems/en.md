@@ -58,7 +58,7 @@ AI agent
 Tools
 ↓
 Result
-````
+```
 
 A multi-agent system:
 
@@ -957,4 +957,3 @@ And in every case, measure:
 * A2A Protocol: [Agent2Agent Protocol](https://a2a-protocol.org/v1.0.0/)
 * arXiv: [Reinforcement Learning for LLM-based Multi-Agent Systems through Orchestration Traces](https://arxiv.org/abs/2605.02801)
 
-```

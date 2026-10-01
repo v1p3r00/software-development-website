@@ -62,7 +62,7 @@ Létrehoz egy CRM rekordot
 Visszaír az ügyfélnek
         ↓
 Később újra előveszi
-```text
+```
 
 Lehet, hogy itt nem egyetlen feladatot kell automatizálni.
 
@@ -158,7 +158,7 @@ CRM rekord keresése / létrehozása
 Feladat létrehozása
         ↓
 Automatikus visszaigazolás
-```text
+```
 
 Egyszerűbb esetben akár csak ennyi:
 
@@ -197,7 +197,7 @@ Megfelelő értékesítő
 Automatikus visszaigazolás
     ↓
 Follow-up feladat
-```text
+```
 
 Az ilyen folyamatok különösen jó jelöltek, mert eseményre indulnak, szabályalapú lépéseket tartalmaznak, és gyakran ismétlődnek. Az IBM többek között az e-mail-értesítéseket, adatkezelést és számlázást is tipikus automatizálási példaként említi. :contentReference[oaicite:4]{index=4}
 
@@ -223,7 +223,7 @@ Ellenőrzés
 Kiküldés
         ↓
 Könyvelési rendszer
-```text
+```
 
 A Microsoft dokumentációja szerint az automatizált számlázásnál a folyamat lehet teljesen automatizált, részben automatizált vagy manuális is, a szerződés és a folyamat összetettségétől függően. :contentReference[oaicite:5]{index=5}
 
@@ -262,7 +262,7 @@ Automatikus adatgyűjtés
 Riport
         ↓
 Heti e-mail
-```text
+```
 
 A modern workflow-rendszerek nem csak a feladatokat tudják automatizálni, hanem a folyamat teljesítményének mérését és a szűk keresztmetszetek felismerését is támogathatják. :contentReference[oaicite:7]{index=7}
 
@@ -286,7 +286,7 @@ Excel
 CRM
    ↓
 Számlázó
-```text
+```
 
 Ha ugyanazt az adatot több helyre kézzel be kell másolni, nem csak időt veszítesz.
 
@@ -395,7 +395,7 @@ Szabályalapú folyamat
 
 Szabad szöveg / összetett értelmezés
 → AI + automatizálás
-```text
+```
 
 **Az AI nem az automatizálás szinonimája.**
 
@@ -442,7 +442,7 @@ Riport
 Follow-up
 Időpont-egyeztetés
 Fájlok rendezése
-```text
+```
 
 Ezután jelöld meg:
 

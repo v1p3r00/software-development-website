@@ -44,7 +44,7 @@ CRM vagy üzleti rendszer
 Automatikus visszaigazolás
    ↓
 Értékesítés / ügyfélkezelés
-```text
+```
 
 A weboldal ebben az esetben nem a folyamat vége.
 
@@ -96,7 +96,7 @@ AI azonosítja a témát
 Válasz a céges információk alapján
    ↓
 Ha szükséges → emberhez továbbítás
-```text
+```
 
 A jó megoldás nem próbál minden helyzetben embernek látszani.
 
@@ -122,7 +122,7 @@ Egy egyszerű weboldalon:
 E-mail a tulajdonosnak
  ↓
 Kézi válasz
-```text
+```
 
 Egy integrált rendszerben:
 
@@ -136,7 +136,7 @@ Automatikus visszaigazolás
 Értékesítési feladat
  ↓
 Follow-up emlékeztető
-```text
+```
 
 A CRM-integráció egyik előnye pontosan ez: az érdeklődő adatai nem feltétlenül egy e-mail fiókban maradnak, hanem bekerülhetnek az ügyfélkezelési folyamatba.
 
@@ -181,7 +181,7 @@ Foglalás
 Automatikus visszaigazolás
  ↓
 Emlékeztető
-```text
+```
 
 A Google saját dokumentációja szerint bizonyos helyi vállalkozásoknál a strukturált adatok és a kapcsolódó booking-megoldások a Search/Maps környezetben is támogathatják a foglalást és más üzleti műveleteket. [Google Search Central – Local Business structured data](https://developers.google.com/search/docs/appearance/structured-data/local-business)
 
@@ -223,7 +223,7 @@ Fizetés
 Foglalás visszaigazolása
  ↓
 Automatikus e-mail
-```text
+```
 
 Nem kell minden esetben saját fizetési rendszert fejleszteni.
 
@@ -265,7 +265,7 @@ Ajánlat
 Tárgyalás
  ↓
 Ügyfél
-```text
+```
 
 A CRM-integráció különösen akkor lehet hasznos, ha havonta már nem néhány, hanem több tucat vagy több száz érdeklődő érkezik.
 
@@ -408,7 +408,7 @@ Például:
 6. AI
    ↓
 7. 3D / personalisation / összetettebb funkciók
-```text
+```
 
 Nem azért, mert ez minden vállalkozásnál kötelező sorrend.
 
@@ -438,7 +438,7 @@ Weboldal
  ├── AI
  ├── Ügyfélszolgálat
  └── Belső üzleti rendszer
-```text
+```
 
 Közben a Google Search is egyre többféleképpen jeleníti meg és használja a webes tartalmakat, beleértve az AI-alapú keresési funkciókat is. Google szerint ezekhez nincs külön „AI SEO” követelmény: továbbra is a technikailag elérhető, hasznos, megbízható tartalom és az alapvető SEO-szempontok számítanak. [Google Search Central – AI features and your website](https://developers.google.com/search/docs/appearance/ai-features)
 

@@ -216,7 +216,7 @@ Own customers + own tasks
 External partner
     ↓
 Only assigned projects
-```text
+```
 
 Permissions do not just affect one administration screen.
 

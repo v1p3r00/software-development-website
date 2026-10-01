@@ -8,11 +8,14 @@ import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
 import { useGoToSection } from '../hooks/useGoToSection';
 import { Arrow } from '../components/ui';
+import { usePageTransition } from '../lib/pageTransition';
+import { ArticlesPage } from './lazy';
 
 export default function Article() {
   const { slug } = useParams();
   const { t, lang, lp } = useI18n();
   const goTo = useGoToSection();
+  const { link } = usePageTransition();
   const article = articles.find((a) => a.slug === slug);
   const v = article ? inLang(article, lang) : null;
   // the share picture of the language shown, else the other language's
@@ -86,11 +89,22 @@ export default function Article() {
   return (
     <article className="relative mx-auto w-full max-w-[1500px] px-5 pb-24 pt-32 sm:px-8 lg:px-12 lg:pt-36">
       <div className="mx-auto max-w-[760px]">
-        <Link to={lp('/articles/')} data-cursor="follow" className="label transition-colors hover:text-accent">
+        <Link
+          to={lp('/articles/')}
+          onClick={link(lp('/articles/'), 'collapse', { slug: article.slug, prepare: ArticlesPage.preload })}
+          data-cursor="follow"
+          className="label transition-colors hover:text-accent"
+        >
           ← {t.articles.back}
         </Link>
 
-        <header className="mt-8 border-b border-line pb-8">
+        {/* .vt-article / .vt-media: the card on the index grows into this header (see pageTransition.ts) */}
+        <header className="vt-article mt-8 border-b border-line pb-8">
+          {image && (
+            <div className="mb-8 aspect-[1200/630] overflow-hidden border border-line bg-surface2">
+              <img src={image} alt="" width={1200} height={630} decoding="async" className="vt-media h-full w-full object-cover" />
+            </div>
+          )}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-2xs uppercase tracking-tech text-dim">
             <span>
               {t.articles.published}{' '}

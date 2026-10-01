@@ -5,6 +5,8 @@ import { useTheme } from '../hooks/useTheme';
 import { projects } from '../data/projects';
 import { site } from '../data/site';
 import { cx } from './ui';
+import { usePageTransition } from '../lib/pageTransition';
+import { ArticlesPage } from '../pages/lazy';
 
 interface Command {
   id: string;
@@ -17,6 +19,7 @@ interface Command {
 export default function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => void }) {
   const { t, setLang, lang, lp } = useI18n();
   const { theme, toggle } = useTheme();
+  const { go } = usePageTransition();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [index, setIndex] = useState(0);
@@ -46,7 +49,7 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
         hint: '06',
         run: () => {
           setOpen(false);
-          navigate(lp('/articles/'));
+          void go(lp('/articles/'), 'slide', { prepare: ArticlesPage.preload });
         },
       },
     ];
@@ -98,7 +101,7 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
     ];
     return [...nav, ...cases, ...actions, ...langs];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t, theme, lang, copied]);
+  }, [t, theme, lang, copied, go]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

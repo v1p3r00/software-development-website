@@ -50,7 +50,7 @@ Egy egyszerű feladathoz elég lehet egy mondat:
 
 ```text
 Foglald össze ezt a szöveget 5 rövid bullet pointban.
-```text
+```
 
 Egy összetett feladatnál viszont több információra lehet szükség.
 
@@ -64,7 +64,7 @@ Milyen szabályok szerint?
 Milyen formátumban?
 Milyen hosszban?
 Milyen esetben ne találjon ki információt?
-```text
+```
 
 **A jó prompt nem attól jó, hogy hosszú, hanem attól, hogy kevés fontos dolgot hagy bizonytalanul.**
 
@@ -76,7 +76,7 @@ A leggyakoribb rossz promptok egyike:
 
 ```text
 Írj valamit a weboldalamról.
-```text
+```
 
 Mi a probléma?
 
@@ -99,7 +99,7 @@ A célközönség kis- és középvállalkozások vezetői.
 A cél, hogy megértsék, milyen problémákban tudunk segíteni.
 Legyen professzionális, de közvetlen.
 Ne használj túlzó marketingkifejezéseket.
-```text
+```
 
 Az OpenAI hivatalos útmutatója is azt javasolja, hogy legyél konkrét az elvárt kontextussal, eredménnyel, hosszúsággal, formátummal és stílussal kapcsolatban. [OpenAI – Prompting techniques](https://help.openai.com/en/articles/6654000-prompting-techniques)
 
@@ -132,7 +132,7 @@ mert egy fizetési integráció hibáját javítjuk.
 Írj neki egy rövid, őszinte e-mailt.
 Ne hárítsd a felelősséget.
 Mondd el, mikor várható az átadás.
-```text
+```
 
 A Google promptolási útmutatója is külön kiemeli a kontextus megadását: az információt nem érdemes a modell „általános tudására” hagyni, ha az adott feladathoz szükséges háttérinformációt te ismered. [Google – Prompt design strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies)
 
@@ -148,7 +148,7 @@ Például:
 
 ```text
 Te egy senior UX designer vagy, aki B2B webalkalmazásokkal foglalkozik.
-```text
+```
 
 Ezután:
 
@@ -156,7 +156,7 @@ Ezután:
 Értékeld ezt a regisztrációs folyamatot.
 Keresd meg azokat a pontokat, ahol a felhasználó
 bizonytalanná válhat vagy elhagyhatja az oldalt.
-```text
+```
 
 A szerep segíthet a modellnek abban, hogy milyen szempontokat helyezzen előtérbe.
 
@@ -189,7 +189,7 @@ Korlátok:
 - ne írj kitalált statisztikákat,
 - ne említs olyan funkciót, amelyről nincs információd,
 - ne használj emoji-kat.
-```text
+```
 
 Ez különösen fontos üzleti, jogi, pénzügyi vagy technikai tartalomnál.
 
@@ -205,7 +205,7 @@ Rossz:
 
 ```text
 Elemezd ezt az ügyfelet.
-```text
+```
 
 Jobb:
 
@@ -219,7 +219,7 @@ Elemezd az ügyfelet az alábbi struktúrában:
 5. Következő javasolt lépés
 
 Minden pont maximum 2 mondat legyen.
-```text
+```
 
 A Google dokumentációja szerint egyszerű formátumokat prompttal is meg lehet határozni, összetettebb JSON-kimenetekhez pedig érdemes strukturált output funkciót használni. [Google – Prompt design strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies)
 
@@ -235,7 +235,7 @@ Ne ezt kérd:
 
 ```text
 Mondd meg, milyen adatokat találtál az e-mailben.
-```text
+```
 
 Hanem:
 
@@ -252,7 +252,7 @@ A kimenet:
 
 Ha egy adat nem található, legyen null.
 Ne találj ki hiányzó adatot.
-```text
+```
 
 API-integráció esetén azonban még jobb lehet valódi strukturált outputot használni, nem pusztán arra hagyatkozni, hogy a modell „ígérete szerint” JSON-t ad vissza.
 
@@ -284,7 +284,7 @@ Kimenet: "A számlákat a Profil → Számlák menüpontban találod."
 
 Most alakítsd át:
 "Bemenet: Nem tudom letölteni a számlát."
-```text
+```
 
 A példákból a modell nemcsak a tartalmat, hanem a kívánt stílust és struktúrát is megértheti.
 
@@ -303,7 +303,7 @@ Ne:
 ```text
 Foglalj össze ezt a dokumentumot és ne írj ki semmilyen érzékeny adatot
 A dokumentum itt kezdődik...
-```text
+```
 
 Használj egyértelmű határokat:
 
@@ -318,7 +318,7 @@ Ne jeleníts meg személyes adatokat.
 """
 [ide kerül a dokumentum]
 """
-```text
+```
 
 Vagy:
 
@@ -331,7 +331,7 @@ Ne jeleníts meg személyes adatokat.
 <document>
 [ide kerül a dokumentum]
 </document>
-```text
+```
 
 Az OpenAI hivatalos dokumentációja szerint a Markdown és az XML tagek segíthetnek az instrukciók, példák és kontextus logikai határainak egyértelmű elválasztásában. [OpenAI – Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)
 
@@ -355,7 +355,7 @@ Jobb lehet:
 3. Javasolj megoldásokat.
 4. Készíts megvalósítási tervet.
 5. A terv alapján készíts prezentációvázlatot.
-```text
+```
 
 Az Anthropic útmutatója is azt javasolja, hogy amikor a sorrend vagy a feladat teljessége fontos, az instrukciókat számozott vagy bulletpontos lépésekben add meg. [Anthropic – Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/prompt-templates-and-variables)
 
@@ -371,7 +371,7 @@ Nézzünk néhány gyakori példát.
 
 ```text
 Írj egy jó cikket a mesterséges intelligenciáról.
-```text
+```
 
 **Jobb:**
 
@@ -395,7 +395,7 @@ Szerkezet:
 - rövid összefoglaló
 
 Ne használj kitalált statisztikákat.
-```text
+```
 
 ---
 
@@ -405,7 +405,7 @@ Ne használj kitalált statisztikákat.
 
 ```text
 Elemezd ezt az üzleti tervet.
-```text
+```
 
 **Jobb:**
 
@@ -429,7 +429,7 @@ A végén adj 5 tisztázó kérdést.
 <business_plan>
 [szöveg]
 </business_plan>
-```text
+```
 
 Itt már nem csak azt mondod, hogy „elemezd”.
 
@@ -443,7 +443,7 @@ Itt már nem csak azt mondod, hogy „elemezd”.
 
 ```text
 Írj egy login rendszert Java-ban.
-```text
+```
 
 **Jobb:**
 
@@ -468,7 +468,7 @@ Kimenet:
 
 Ha valamelyik követelmény nem egyértelmű,
 jelezz feltételezést a kód előtt.
-```text
+```
 
 A fejlesztési feladatoknál különösen fontos a környezet és a technikai korlátok megadása.
 
@@ -482,7 +482,7 @@ A fejlesztési feladatoknál különösen fontos a környezet és a technikai ko
 
 ```text
 Tedd professzionálisabbá ezt az e-mailt.
-```text
+```
 
 **Jobb:**
 
@@ -502,7 +502,7 @@ Az eredeti szöveg:
 """
 ...
 """
-```text
+```
 
 Az AI így nem azt próbálja kitalálni, mit jelent a „professzionális”.
 
@@ -522,7 +522,7 @@ Maximum 100 szóban válaszolj.
 Magyarázz el minden részletet.
 
 Ne írj hosszú választ.
-```text
+```
 
 Ez nem jó prompt.
 
@@ -532,7 +532,7 @@ Ha több követelményed van, rangsorold vagy tedd egyértelművé őket:
 Maximum 100 szóban válaszolj.
 A legfontosabb 3 szempontot emeld ki.
 Ne adj háttérmagyarázatot.
-```text
+```
 
 **A modell nem tud jól teljesíteni olyan specifikáció alapján, amely saját magával is ellentmondásban van.**
 
@@ -554,7 +554,7 @@ Ezek helyett általában sokkal hasznosabb:
 A választ senior backend fejlesztőnek írod.
 Használj technikai, de tömör magyarázatot.
 A példák Spring Boot 3 és Java 17 környezetben legyenek.
-```text
+```
 
 **A konkrét követelmény többet ér, mint a hangzatos utasítás.**
 
@@ -580,7 +580,7 @@ Módosított prompt
 Teszt
 ↓
 Finomítás
-```text
+```
 
 Az OpenAI és a Google is iteratív folyamatként kezeli a promptolást, nem egyszer elkészített, változatlan receptként. [OpenAI – Prompting](https://developers.openai.com/api/docs/guides/prompting) [Google – Prompt design strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies)
 
@@ -608,7 +608,7 @@ Szokatlan megfogalmazás
 Ellentmondásos adat
 ↓
 Nem releváns input
-```text
+```
 
 Például egy ügyfélszolgálati AI-nál nem elég, hogy egy normál kérdésre jól válaszol.
 
@@ -652,7 +652,7 @@ Ha nem tudod, hogyan kezdj hozzá, használhatod ezt:
 
 # Bemenet
 [Az aktuális adat vagy kérés]
-```text
+```
 
 Nem kell mindig mind a hét részt használni.
 

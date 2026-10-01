@@ -26,7 +26,7 @@ customers_final.xlsx
 customers_final2.xlsx
 customers_FINAL.xlsx
 customers_FINAL_fixed.xlsx
-```text
+```
 
 At some point, Excel is no longer helping the business.
 
@@ -76,7 +76,7 @@ Anna → Excel
 email
         ↓
 John → Excel
-```text
+```
 
 then it is worth asking whether everyone should be working on the same data in a shared business system instead.
 
@@ -112,7 +112,7 @@ Manager
 
 Administrator
   → manages users
-```text
+```
 
 **Not every employee needs access to every piece of data or every operation.**
 
@@ -132,7 +132,7 @@ Anna Smith
 Customer: #1245
 Status:
 "Quote" → "Order"
-```text
+```
 
 An audit trail is not necessary for every business.
 
@@ -160,7 +160,7 @@ Invoicing system
 Project spreadsheet
    ↓
 Email
-```text
+```
 
 If the same information has to be entered manually into several systems, you are not just wasting time.
 
@@ -294,7 +294,7 @@ Approval
 Notification
   ↓
 Report
-```text
+```
 
 The advantage is speed.
 
@@ -323,7 +323,7 @@ Custom business system
    └── reports
           ↓
        invoicing
-```text
+```
 
 The advantage is that the software can be designed around your actual process.
 
@@ -361,7 +361,7 @@ Customer accepts
 Project starts
    ↓
 Invoicing
-```text
+```
 
 Then identify where Excel is currently being used.
 
@@ -385,7 +385,7 @@ CRM = official record
 Project
    ↓
 Invoicing
-```text
+```
 
 Other systems can receive the information from there.
 
@@ -433,7 +433,7 @@ ABC Ltd
 ABC LTD
 ABC Ltd.
 Abc Ltd
-```text
+```
 
 A person will probably understand that these refer to the same company.
 
@@ -461,7 +461,7 @@ testing
 validation
   ↓
 live use
-```text
+```
 
 For a while, you can check whether the new system produces the expected results.
 
@@ -532,7 +532,7 @@ data export
 Excel analysis
        ↓
 management report
-```text
+```
 
 Excel is then an analysis tool.
 

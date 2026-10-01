@@ -49,7 +49,7 @@ embedding
 embedding
         ↓
 [0.20, -0.39, 0.69, 0.11, ...]
-```text
+```
 
 Real embeddings can have many dimensions, and the individual numbers usually do not have a simple human-readable interpretation such as “this number represents passwords”.
 
@@ -71,7 +71,7 @@ A point could have two coordinates:
 A = (2, 3)
 B = (5, 4)
 C = (-2, 6)
-```text
+```
 
 You can place these points on a map.
 
@@ -91,7 +91,7 @@ A piece of text gets a position in a much higher-dimensional space.
 
           ● ●
                  different topics
-```text
+```
 
 In a real system, we cannot simply draw this space because embeddings may contain many dimensions.
 
@@ -146,7 +146,7 @@ Vector A
 
 small angle → similar direction
 large angle → less similar direction
-```text
+```
 
 The mathematical definition is:
 
@@ -229,7 +229,7 @@ query embedding
 similarity search
    ↓
 most relevant documents
-```text
+```
 
 The system can therefore find information based on semantic relevance rather than exact keyword matching.
 
@@ -260,7 +260,7 @@ Product C
 “Waterproof mountain boots for hiking”
         ↓
 embedding
-```text
+```
 
 If the embedding of one product is close to another, that can be one signal that the products are semantically related.
 
@@ -289,7 +289,7 @@ For example, a customer-support system might contain:
 “I can't sign in.”
 
 “The system won't let me log in.”
-```text
+```
 
 The wording is different.
 
@@ -332,7 +332,7 @@ query embedding
 similarity search
         ↓
 Top 10 results
-```text
+```
 
 Sentence Transformers provides semantic retrieval functions that use cosine similarity by default and can retrieve the highest-scoring results from a corpus. ([sbert.net](https://www.sbert.net/docs/package_reference/util/retrieval.html))
 
@@ -379,7 +379,7 @@ Embedding model
 vector
    ↓
 search / similarity / clustering
-```text
+```
 
 An LLM can then use the retrieved information.
 
@@ -397,7 +397,7 @@ relevant documents
 LLM
  ↓
 answer
-```text
+```
 
 **The embedding is often part of the AI system's search layer rather than the component that writes the final answer.**
 
@@ -454,7 +454,7 @@ Embedding
 ├── document clustering
 ├── similar-case search
 └── content discovery
-```text
+```
 
 That is why the word “embedding” appears so often in modern AI search systems.
 

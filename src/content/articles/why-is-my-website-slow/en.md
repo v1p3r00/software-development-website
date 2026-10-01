@@ -32,7 +32,7 @@ The browser sends a request, but waits a long time for the first response.
 Browser → server → database → application → HTML
                             ↑
                        long wait
-```text
+```
 
 ### The browser is slow
 
@@ -42,7 +42,7 @@ The server has already sent the page, but the browser has too much JavaScript, C
 Server → HTML + JS + CSS → browser → processing → usable page
                                     ↑
                                 too much work
-```text
+```
 
 ### The resources are slow
 
@@ -203,7 +203,7 @@ Backend
 HTML / JSON
    ↓
 Browser
-```text
+```
 
 The visitor does not see the SQL query.
 
@@ -347,7 +347,7 @@ For example:
 
 ```text
 Click → processing → visual response
-```text
+```
 
 If you click a menu and the browser takes a noticeable amount of time before responding, the interaction experience is poor.
 
@@ -480,7 +480,7 @@ Performance optimisation is usually a process rather than a single setting.
 
 ```text
 Measure → identify the problem → change something → measure again
-```text
+```
 
 **Good performance work starts with evidence, not guesswork.**
 
@@ -519,4 +519,3 @@ Run the site through PageSpeed Insights, identify the biggest bottleneck and **f
 - web.dev: [Content delivery networks](https://web.dev/articles/content-delivery-networks)
 - web.dev: [Getting started with measuring Web Vitals](https://web.dev/articles/vitals-measurement-getting-started)
 - Google for Developers: [PageSpeed Insights FAQ](https://developers.google.com/speed/docs/insights/faq)
-````

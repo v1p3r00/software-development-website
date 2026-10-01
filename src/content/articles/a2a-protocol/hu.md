@@ -48,7 +48,7 @@ Agent A
    A2A
    ↓
 Agent B
-```text
+```
 
 Az egyik agent feladatot adhat a másiknak, információt kérhet, további kontextust küldhet, eredményt kaphat, vagy akár egy hosszabb ideig futó feladat állapotát is követheti.
 
@@ -84,7 +84,7 @@ Egyszerűen:
                 MCP          A2A
                  ↓             ↓
           Tools / Data      Other Agents
-```text
+```
 
 Az MCP például hozzáférést adhat:
 
@@ -111,7 +111,7 @@ Billing Agent
       │ MCP
       ↓
 Billing Database
-```text
+```
 
 ---
 
@@ -155,7 +155,7 @@ Skills:
 
 Endpoint:
 https://billing.example.com/a2a
-```text
+```
 
 Az egyik agent ebből már eldöntheti:
 
@@ -187,7 +187,7 @@ Visszatérítési információ
 Customer Service Agent
   ↓
 Ügyfél
-```text
+```
 
 A Customer Service Agentnek nem kell ismernie a Billing Agent belső működését.
 
@@ -625,4 +625,3 @@ Ez lehet az egyik fontos építőköve annak a világnak, ahol nem egyetlen „m
 * Google Developers Blog: [Announcing the Agent2Agent Protocol](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)
 * Google Developers Blog: [Developer’s Guide to AI Agent Protocols](https://developers.googleblog.com/developers-guide-to-ai-agent-protocols/)
 
-````

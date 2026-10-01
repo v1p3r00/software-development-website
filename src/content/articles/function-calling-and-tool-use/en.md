@@ -16,7 +16,7 @@ User
 AI
 ↓
 Text response
-```text
+```
 
 You ask:
 
@@ -44,7 +44,7 @@ You give the AI:
 
 ```text
 get_weather(city)
-```text
+```
 
 The user asks:
 
@@ -58,7 +58,7 @@ It can request:
 get_weather({
   "city": "Budapest"
 })
-```text
+```
 
 Your backend executes the function.
 
@@ -69,7 +69,7 @@ The API returns something like:
   "temperature": 18,
   "condition": "rain"
 }
-```text
+```
 
 You send that result back to the AI, which produces the user-facing response.
 
@@ -89,7 +89,7 @@ Weather API
 AI
 ↓
 "It is currently 18 °C and raining in Budapest."
-```text
+```
 
 **The model does not necessarily call the API itself. It requests the tool call; your application executes it.**
 
@@ -109,7 +109,7 @@ For example:
 get_customer(id)
 create_invoice(customer_id, amount)
 send_email(to, subject, body)
-```text
+```
 
 **Tool use** is broader.
 
@@ -139,7 +139,7 @@ Imagine you give an AI three tools:
 get_customer
 get_order
 create_invoice
-```text
+```
 
 The user says:
 
@@ -151,19 +151,19 @@ It may request:
 
 ```text
 get_order(12345)
-```text
+```
 
 The result might contain:
 
 ```text
 customer_id = 678
-```text
+```
 
 The AI can then request:
 
 ```text
 get_customer(678)
-```text
+```
 
 And finally answer:
 
@@ -185,7 +185,7 @@ The database contains:
 customers
 orders
 products
-```text
+```
 
 And you have an AI assistant.
 
@@ -193,7 +193,7 @@ The application exposes:
 
 ```text
 get_order_status(order_id)
-```text
+```
 
 The user asks:
 
@@ -221,7 +221,7 @@ The process could look like this:
 
 6. AI:
    "Your order has already been handed to the courier."
-```text
+```
 
 The important point is that **the AI does not need direct database access**.
 
@@ -237,7 +237,7 @@ Because this:
 AI
 ↓
 Entire database
-```text
+```
 
 would be a poor architecture in many business systems.
 
@@ -253,7 +253,7 @@ Backend
 Authorised query
 ↓
 Database
-```text
+```
 
 The model only gets access to what the tool exposes.
 
@@ -284,7 +284,7 @@ Returns the current status of a customer's order.
 
 Parameters:
 order_id: integer
-```text
+```
 
 The model can then use that information to decide when the tool is relevant.
 
@@ -307,7 +307,7 @@ create_invoice(
     customer_id=123,
     amount=250000
 )
-```text
+```
 
 That does not mean an invoice has been created.
 
@@ -357,7 +357,7 @@ No → another tool
 Yes
 ↓
 Final response
-```text
+```
 
 This loop can run several times.
 
@@ -379,7 +379,7 @@ get_order
 get_product
 check_stock
 create_return_request
-```text
+```
 
 The user asks:
 
@@ -395,7 +395,7 @@ get_product(product_id)
 check_stock(product_id)
 ↓
 AI response
-```text
+```
 
 Then the user says:
 
@@ -405,7 +405,7 @@ Now the system has a tool that performs an action:
 
 ```text
 create_return_request(order_id=8421)
-```text
+```
 
 This is where security becomes particularly important.
 
@@ -433,7 +433,7 @@ Modify information
 DESTRUCTIVE
 ↓
 Delete / financial / irreversible action
-```text
+```
 
 MCP defines tools as executable functions that models can use to retrieve information or perform actions, and the MCP ecosystem also discusses annotations that describe tool behaviour and risk. [Model Context Protocol – Server overview](https://modelcontextprotocol.io/specification/draft/server/index) [MCP – Tool Annotations as Risk Vocabulary](https://blog.modelcontextprotocol.io/posts/2026-03-16-tool-annotations/)
 
@@ -453,7 +453,7 @@ Not:
 AI
 ↓
 DB_ADMIN
-```text
+```
 
 But:
 
@@ -463,7 +463,7 @@ AI
 get_order_status
 ↓
 Only the required data
-```text
+```
 
 The same applies to APIs.
 
@@ -481,7 +481,7 @@ Suppose you have:
 
 ```text
 refund_order(order_id, amount)
-```text
+```
 
 The AI generates:
 
@@ -490,7 +490,7 @@ refund_order(
     order_id=8421,
     amount=999999999
 )
-```text
+```
 
 Your backend should never simply execute that request.
 
@@ -514,7 +514,7 @@ Business validation
 Authorisation
 ↓
 Execution
-```text
+```
 
 ---
 
@@ -541,7 +541,7 @@ Only then:
 USER CONFIRMED
 ↓
 refund_order(...)
-```text
+```
 
 Google's function-calling documentation specifically recommends validating significant actions with the user before execution when they have meaningful consequences. [Google – Function calling](https://ai.google.dev/gemini-api/docs/generate-content/function-calling)
 
@@ -559,7 +559,7 @@ The model might select:
 
 ```text
 delete_order
-```text
+```
 
 But how does it know:
 
@@ -598,7 +598,7 @@ AI Agent ─ Tools ├── Invoicing
                  ├── Warehouse
                  │
                  └── Calendar
-```text
+```
 
 The user can then ask:
 
@@ -624,7 +624,7 @@ Often, a controlled tool is safer:
 find_customer_orders(
     customer_id
 )
-```text
+```
 
 rather than:
 
@@ -632,7 +632,7 @@ rather than:
 execute_sql(
     "SELECT * FROM ..."
 )
-```text
+```
 
 With the first approach, you define exactly what the model can query.
 
@@ -666,7 +666,7 @@ MCP server
 Tools
 ↓
 CRM / Database / API / Files
-```text
+```
 
 MCP is not the AI itself.
 
@@ -691,7 +691,7 @@ Tools:
 - check_stock
 - create_invoice
 - create_support_ticket
-```text
+```
 
 Different AI clients could then use those tools with appropriate permissions.
 
@@ -740,7 +740,7 @@ User → AI Agent ────┼── Invoice Tool
                      Security Layer
                            ↓
                     Business Backend
-```text
+```
 
 The security layer might provide:
 
@@ -802,7 +802,7 @@ AI interprets it
 Next step
 ↓
 Response
-```text
+```
 
 With several tools available, an AI system can coordinate increasingly complex workflows.
 

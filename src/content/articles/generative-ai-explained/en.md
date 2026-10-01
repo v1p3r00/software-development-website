@@ -60,7 +60,7 @@ next token
 ...
   ↓
 finished text
-```text
+```
 
 ---
 
@@ -108,7 +108,7 @@ Simplified:
 "Budapest web development company"
       ↓
 ...
-```text
+```
 
 At each step, there are multiple possible next tokens.
 
@@ -144,7 +144,7 @@ shapes
 details
       ↓
 finished image
-```text
+```
 
 Hugging Face's Diffusers documentation describes diffusion models as systems that progressively denoise random noise to generate outputs such as images and audio. ([Hugging Face](https://huggingface.co/docs/diffusers/en/quicktour))
 
@@ -178,7 +178,7 @@ In simplified form:
      gradual denoising
           ↓
         image
-```text
+```
 
 This does not mean that the model “draws” the office in the same way a human designer would.
 
@@ -240,7 +240,7 @@ speech representation
 audio generation
  ↓
 sound
-```text
+```
 
 There are several approaches to generative audio, and they do not all use exactly the same architecture as image generation.
 
@@ -265,7 +265,7 @@ function
 → instruction
 → condition
 → result
-```text
+```
 
 Transformer-based language models can generate code when they have learned from suitable programming examples and tasks.
 
@@ -304,7 +304,7 @@ The reality is closer to this:
        models       models      generative models
           ↓            ↓            ↓
         code         video      speech / music
-```text
+```
 
 A single application can also combine several models.
 
@@ -425,7 +425,7 @@ verification
 human decision
     ↓
 business result
-```text
+```
 
 **Generative AI becomes much more useful when it is part of a well-designed process rather than a standalone magic box.**
 

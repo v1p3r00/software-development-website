@@ -56,7 +56,7 @@ releváns részek keresése
 LLM + kérdés + talált információ
       ↓
 válasz
-```text
+```
 
 Ezért is praktikus a RAG vállalati környezetben: ha változik egy dokumentum, nem feltétlenül kell újratanítani az egész modellt. A tudásbázist kell frissíteni.
 
@@ -117,7 +117,7 @@ Például:
 3. chunk
 ...
 250. chunk
-```text
+```
 
 A chunk nem feltétlenül egyenlő egy oldallal.
 
@@ -147,7 +147,7 @@ Túl kicsi:
 Jobb:
 „A munkaviszony első évében a szabadság
 igénylésére vonatkozó szabályok...”
-```text
+```
 
 A cél tehát nem egyszerűen az, hogy „daraboljuk fel a PDF-et”.
 
@@ -182,7 +182,7 @@ Egyszerűen:
           ↓ embedding
 
 [0.14, -0.40, 0.75, ...]
-```text
+```
 
 A két kérdés szövege nem azonos.
 
@@ -215,7 +215,7 @@ document = employee-handbook.pdf
 section = szabadság
 version = 2026.03
 access = employees
-```text
+```
 
 A vector database feladata, hogy gyorsan megtalálja azokat a dokumentumrészeket, amelyek jelentésük alapján relevánsak a kérdéshez.
 
@@ -241,7 +241,7 @@ query embedding
 vector search
         ↓
 releváns chunkok
-```text
+```
 
 A rendszer például visszakaphat három releváns részletet:
 
@@ -249,7 +249,7 @@ A rendszer például visszakaphat három releváns részletet:
 1. Szabadság igénylése
 2. Hosszabb távollét szabályai
 3. A szabadság kiadásának feltételei
-```text
+```
 
 Ezekből áll össze az a kontextus, amelyet az LLM megkap.
 
@@ -279,7 +279,7 @@ Prompt + dokumentumrészek
 LLM
   ↓
 Grounded answer
-```text
+```
 
 A „grounded” vagyis megalapozott válasz azt jelenti, hogy a modell a rendelkezésére bocsátott forrásokra támaszkodva készíti el a választ.
 
@@ -318,7 +318,7 @@ releváns bekezdések
 LLM
    ↓
 „A jelenlegi szabályzat szerint...”
-```text
+```
 
 A kolléga pedig egy normál beszélgetéshez hasonló választ kap.
 
@@ -348,7 +348,7 @@ chunkolás
 vector database frissítése
       ↓
 AI már az új információt találja
-```text
+```
 
 Nincs szükség arra, hogy a teljes LLM-et újratanítsd.
 
@@ -401,6 +401,7 @@ A retrieval éppen azt oldja meg, hogy:
 **csak azt a kis részt adjuk át a modellnek, amely az adott kérdéshez valószínűleg releváns.**
 
 A Google Cloud is kiemeli, hogy a RAG csökkentheti a modellnek átadott tokenmennyiséget olyan esetekben, amikor a teljes tudásbázis nem férne bele hatékonyan a context window-ba.
+
 [https://cloud.google.com/use-cases/retrieval-augmented-generation](https://cloud.google.com/use-cases/retrieval-augmented-generation)
 
 ---
@@ -440,6 +441,7 @@ Nagyon fontos:
 * és az LLM.
 
 A Google saját RAG-dokumentációja is kiemeli, hogy a retrieval relevanciája kritikus: ha a rendszer irreleváns információt talál, a generált válasz akkor is lehet hibás, ha egyébként „grounded”.
+
 [https://cloud.google.com/use-cases/retrieval-augmented-generation](https://cloud.google.com/use-cases/retrieval-augmented-generation)
 
 ---
@@ -464,6 +466,7 @@ Nem szeretnéd, hogy egy egyszerű kérdés miatt egy alkalmazott olyan dokument
 Ezért production RAG esetén az identity és access management nem opcionális extra.
 
 Az AWS útmutatója is külön kiemeli a felhasználói jogosultságok és a finomhangolt hozzáférés-kezelés fontosságát vállalati RAG-rendszereknél.
+
 [https://docs.aws.amazon.com/prescriptive-guidance/latest/retrieval-augmented-generation-options/what-is-rag.html](https://docs.aws.amazon.com/prescriptive-guidance/latest/retrieval-augmented-generation-options/what-is-rag.html)
 
 ---
@@ -602,4 +605,3 @@ A jó megoldás azonban nem ott kezdődik, hogy kiválasztunk egy vector databas
 * AWS: [Understanding Retrieval Augmented Generation](https://docs.aws.amazon.com/prescriptive-guidance/latest/retrieval-augmented-generation-options/what-is-rag.html)
 * AWS: [Retrievers for RAG workflows](https://docs.aws.amazon.com/prescriptive-guidance/latest/retrieval-augmented-generation-options/rag-custom-retrievers.html)
 
-````

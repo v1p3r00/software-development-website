@@ -46,7 +46,7 @@ One virtual server
 Website
       ↓
 Database
-```text
+```
 
 Or much more complex:
 
@@ -62,7 +62,7 @@ Server 1     Server 2
    Database
         ↓
      Backup
-```text
+```
 
 So the word “cloud” alone does not tell you how complex or expensive a system is.
 
@@ -81,7 +81,7 @@ Hosting provider
 Website  Shop   Website
    A       B        C
 └───────┴───────┴───────┘
-```text
+```
 
 You normally do not need to manage the server yourself.
 
@@ -123,7 +123,7 @@ VPS
 ├── Spring Boot
 ├── PostgreSQL
 └── Redis
-```text
+```
 
 A VPS gives you much more control than traditional shared hosting.
 
@@ -197,7 +197,7 @@ Object storage
 Backups
    ↓
 Cloud backup
-```text
+```
 
 ### Advantages
 
@@ -234,7 +234,7 @@ Physical server
        ↓
 
    Your system
-```text
+```
 
 This gives you much greater control over physical resources than shared hosting.
 
@@ -281,7 +281,7 @@ Office
 │    └── Database
 │
 └── Backup
-```text
+```
 
 At first, this can look inexpensive.
 
@@ -376,7 +376,7 @@ For example:
 
 ```text
 RPO = 1 hour
-```text
+```
 
 This roughly means that in a serious incident, you are prepared to lose up to the previous hour of data.
 
@@ -386,7 +386,7 @@ For example:
 
 ```text
 RTO = 4 hours
-```text
+```
 
 The target is to have the system operational again within four hours of a failure.
 
@@ -415,7 +415,7 @@ Infrastructure
 + incident handling
 + recovery
 = real cost
-```text
+```
 
 A VPS may cost only a modest amount each month.
 
@@ -435,13 +435,13 @@ Imagine an online shop launches with:
 
 ```text
 100 visitors / day
-```text
+```
 
 A year later:
 
 ```text
 5,000 visitors / day
-```text
+```
 
 With traditional infrastructure, you have to plan capacity in advance.
 
@@ -611,7 +611,7 @@ Dedicated server
 Specialised local / regulated environment?
         ↓
 On-premise / Hybrid
-```text
+```
 
 And there is one more important rule:
 
@@ -659,4 +659,3 @@ Most small businesses do not need their own server infrastructure. In many cases
 - Microsoft Learn: [Unified hybrid and multicloud operations](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/hybrid/toolchain)
 - Microsoft Learn: [Hosting applications on Azure](https://learn.microsoft.com/en-us/azure/developer/intro/hosting-apps-on-azure)
 - DigitalOcean: [Backups Pricing](https://docs.digitalocean.com/products/backups/details/pricing/)
-````

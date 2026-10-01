@@ -46,7 +46,7 @@ Agent A
    A2A
    ↓
 Agent B
-```text
+```
 
 One agent can delegate a task, request information, exchange context, receive a result or track a longer-running task.
 
@@ -82,7 +82,7 @@ A simple picture:
                 MCP          A2A
                  ↓             ↓
           Tools / Data      Other Agents
-```text
+```
 
 MCP can give an agent access to:
 
@@ -109,7 +109,7 @@ Billing Agent
       │ MCP
       ↓
 Billing Database
-```text
+```
 
 ---
 
@@ -153,7 +153,7 @@ Skills:
 
 Endpoint:
 https://billing.example.com/a2a
-```text
+```
 
 The calling agent can now decide:
 
@@ -185,7 +185,7 @@ Refund information
 Customer Service Agent
   ↓
 Customer
-```text
+```
 
 The Customer Service Agent does not need to know how the Billing Agent works internally.
 
@@ -214,7 +214,7 @@ A tool might look like:
 
 ```text
 get_customer(id)
-```text
+```
 
 An agent may instead:
 
@@ -256,7 +256,7 @@ input-required
 working
    ↓
 completed
-```text
+```
 
 The A2A specification treats tasks as stateful units of work with associated messages and results. ([A2A Protocol – Key Concepts](https://a2a-protocol.org/latest/topics/key-concepts/))
 
@@ -309,7 +309,7 @@ Travel Agent
    ├── A2A → Hotel Agent
    │
    └── A2A → Calendar Agent
-```text
+```
 
 ### 1. Travel Agent
 
@@ -337,7 +337,7 @@ Flight Agent
 Airline API
     ↓
 Flight data
-```text
+```
 
 ### 3. Hotel Agent
 
@@ -361,7 +361,7 @@ Hotel Agent
 Calendar Agent
       ↓
 Available dates
-```text
+```
 
 ### 5. The main agent assembles the result
 
@@ -392,7 +392,7 @@ A larger enterprise system might look like this:
          MCP         MCP         MCP
           ↓           ↓           ↓
         CRM         Tickets       ERP
-```text
+```
 
 A2A can handle communication between the agents.
 
@@ -427,7 +427,7 @@ For example:
 09:03 → Waiting for external system
 09:05 → 60% complete
 09:08 → Completed
-```text
+```
 
 The client does not necessarily need to remain blocked while the remote agent works.
 
@@ -446,7 +446,7 @@ Skills:
 - calculate_tax
 - explain_tax_rule
 - validate_tax_data
-```text
+```
 
 It does not need to know:
 
@@ -503,7 +503,7 @@ Billing Agent
      ├── MCP → Invoice Database
      ├── MCP → ERP
      └── MCP → Payment API
-```text
+```
 
 The roles are now clear.
 
@@ -529,7 +529,7 @@ One Agent
 MCP Tools
  ↓
 Result
-```text
+```
 
 A multi-agent architecture becomes more interesting when:
 
@@ -551,7 +551,7 @@ Multiple agents:
  Finance agent → ERP
  Support agent → tickets
  Legal agent → documents”
-```text
+```
 
 The second architecture also introduces more complexity.
 
@@ -575,7 +575,7 @@ An agent can discover another agent, learn about its capabilities, delegate work
              MCP           MCP
               ↓             ↓
             Tools         Tools
-```text
+```
 
 This is no longer a simple chatbot architecture.
 
@@ -602,7 +602,7 @@ Agent A
               │
               ├── MCP → own tools
               └── A2A → Agent C
-```text
+```
 
 **MCP connects an agent to its capabilities. A2A connects an agent to other agents.**
 
@@ -622,4 +622,3 @@ That distinction is likely to become increasingly important as AI systems move f
 - A2A Protocol: [Protocol Specification](https://a2a-protocol.org/dev/specification/)
 - Google Developers Blog: [Announcing the Agent2Agent Protocol](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)
 - Google Developers Blog: [Developer’s Guide to AI Agent Protocols](https://developers.googleblog.com/developers-guide-to-ai-agent-protocols/)
-````

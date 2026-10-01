@@ -22,7 +22,7 @@ export default function ScrollProgress() {
   return (
     <>
       {/* thin top progress bar (all viewports) */}
-      <div aria-hidden className="fixed inset-x-0 top-0 z-50 h-px bg-line">
+      <div aria-hidden className="fixed inset-x-0 top-0 z-50 h-px bg-line" style={{ viewTransitionName: 'scroll-bar' }}>
         <div
           className="h-px bg-accent transition-[width] duration-150 ease-linear"
           style={{ width: `${progress * 100}%` }}

@@ -144,7 +144,7 @@ Example
 Evidence / source
 ↓
 Related questions
-```text
+```
 
 Not because this is an “AI hack”.
 
@@ -167,7 +167,7 @@ Basic plan: €125 / month
 Users: maximum 10
 Implementation: 3–5 working days
 Support: email
-```text
+```
 
 The second version is easier for people to scan.
 
@@ -428,7 +428,7 @@ Content processing
 Answer generation
 ↓
 Citations
-```text
+```
 
 The exact pipeline varies by system and much of it is not public.
 
@@ -548,7 +548,7 @@ Citation / content use
 AI-driven traffic
         ↓
 Business outcome
-```text
+```
 
 Several of the first steps have been good web practice for years.
 

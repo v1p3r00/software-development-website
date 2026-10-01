@@ -59,7 +59,7 @@ A €250 monthly subscription becomes:
 
 ```text
 €250 × 12 × 5 = €15,000
-```text
+```
 
 And that may not include:
 
@@ -331,7 +331,7 @@ Subscription
 + support
 + switching costs
 = total cost
-```text
+```
 
 ### Custom software
 
@@ -345,7 +345,7 @@ Planning
 + security updates
 + further development
 = total cost
-```text
+```
 
 TCO exists precisely to bring one-off and ongoing costs, as well as direct and indirect costs, into the same calculation. :contentReference[oaicite:13]{index=13}
 
@@ -366,7 +366,7 @@ Over five years:
 + €1,250
 + €2,500
 = €26,250
-```text
+```
 
 Now imagine a custom system costing:
 
@@ -383,7 +383,7 @@ Over five years:
 + (€200 × 60)
 + (€175 × 60)
 = €43,250
-```text
+```
 
 **In this example, the custom system is still more expensive after five years.**
 
@@ -418,7 +418,7 @@ annual manual labour
 + lost time
 + integration costs
 + subscriptions
-```text
+```
 
 **The cheapest software is not necessarily the solution with the lowest total cost.**
 

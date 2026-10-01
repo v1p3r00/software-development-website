@@ -44,7 +44,7 @@ Egy virtuális szerver
 Weboldal
       ↓
 Adatbázis
-```text
+```
 
 De lehet nagyon összetett is:
 
@@ -60,7 +60,7 @@ Server 1     Server 2
    Adatbázis
         ↓
      Backup
-```text
+```
 
 Ezért a „cloud” önmagában még nem mondja meg, mennyire összetett vagy drága egy rendszer.
 
@@ -79,7 +79,7 @@ Hosting szolgáltató
 Weboldal Webshop Weboldal
    A        B        C
 └───────┴───────┴───────┘
-```text
+```
 
 Általában nincs szükséged szerveradminisztrációra.
 
@@ -121,7 +121,7 @@ VPS
 ├── Spring Boot
 ├── PostgreSQL
 └── Redis
-```text
+```
 
 A VPS lényegében nagyobb kontrollt ad, mint egy klasszikus shared hosting.
 
@@ -195,7 +195,7 @@ Object storage
 Backups
    ↓
 Cloud backup
-```text
+```
 
 is lehet az architektúra.
 
@@ -234,7 +234,7 @@ Fizikai szerver
        ↓
 
    A te rendszered
-```text
+```
 
 Ez jóval nagyobb erőforrás-kontrollt biztosít, mint a shared hosting.
 
@@ -281,7 +281,7 @@ Iroda
 │    └── Adatbázis
 │
 └── Backup
-```text
+```
 
 Elsőre olcsónak tűnhet.
 
@@ -664,4 +664,3 @@ A legtöbb kisvállalkozásnak nem saját szerverparkra van szüksége. Sok eset
 * Microsoft Learn: [Hosting applications on Azure](https://learn.microsoft.com/en-us/azure/developer/intro/hosting-apps-on-azure)
 * DigitalOcean: [Backups Pricing](https://docs.digitalocean.com/products/backups/details/pricing/)
 
-````

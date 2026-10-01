@@ -45,7 +45,7 @@ Keyword / predefined rule
 Predefined answer
       ↓
 No match → contact option
-```text
+```
 
 That is not necessarily a bad thing.
 
@@ -85,7 +85,7 @@ Query booking system
 Find available appointments
       ↓
 Respond to visitor
-```text
+```
 
 This is where the important shift happens.
 
@@ -126,7 +126,7 @@ Order #12345
 Shipping status
         ↓
 Answer customer
-```text
+```
 
 At this point, a chat window alone is not enough.
 
@@ -173,7 +173,7 @@ A more advanced setup might look like this:
         ↓           ↓           ↓
      Customer     Calendar     Order
       data         data        status
-```text
+```
 
 In this model, the AI is effectively a natural-language interface to the systems behind the business.
 
@@ -227,7 +227,7 @@ Uncertainty / complex issue
 Human handoff
       ↓
 Staff member continues
-```text
+```
 
 This is particularly important for complaints, unusual orders or situations where the answer could have financial or legal consequences.
 
@@ -333,7 +333,7 @@ Provides information
 “When are you open?”
      ↓
 “We are open Monday to Friday, 9–5.”
-```text
+```
 
 An AI assistant can instead work like this:
 
@@ -351,7 +351,7 @@ Performs an action if required
 Checks the result
      ↓
 Responds
-```text
+```
 
 The difference is therefore not simply the intelligence of the language model.
 
@@ -378,7 +378,7 @@ Parking
 Address
 Contact
 FAQs
-```text
+```
 
 You do not need to turn every website into an AI platform.
 
@@ -419,7 +419,7 @@ Ask user to confirm
 Create booking
       ↓
 Send confirmation
-```text
+```
 
 That is real business automation.
 
@@ -451,7 +451,7 @@ Sensitive action
 Human approval
       ↓
 System executes
-```text
+```
 
 This prevents the AI from becoming the final authority over every part of the process.
 
@@ -495,4 +495,3 @@ A simple chatbot may be exactly what you need. In other cases, an AI assistant c
 - European Commission: [Making artificial intelligence work for people](https://commission.europa.eu/digital-life/making-artificial-intelligence-work-people_en)
 - OpenAI: [Agents](https://developers.openai.com/api/docs/guides/agents)
 - HubSpot: [Set up and customise the customer agent's handoff process](https://knowledge.hubspot.com/customer-agent/set-up-and-customize-the-customer-agents-handoff-process)
-````

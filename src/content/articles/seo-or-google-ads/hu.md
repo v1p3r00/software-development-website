@@ -58,7 +58,7 @@ Ez fontos különbség:
 SEO → tartalom + technikai munka → organikus megjelenés
 
 Google Ads → költségkeret + hirdetés → fizetett megjelenés → kattintás
-```text
+```
 
 ---
 
@@ -90,7 +90,7 @@ Például:
 
 ```text
 Havi Ads keret → kattintások → érdeklődők → ügyfelek
-```text
+```
 
 Ha CPC-alapú kampányt használsz, a kattintásokért fizetsz. A Google Ads rendszerében a tényleges CPC gyakran alacsonyabb lehet a beállított maximális CPC-nél. ([Google Ads Help – Cost-per-click](https://support.google.com/google-ads/answer/116495))
 
@@ -167,7 +167,7 @@ A folyamat inkább így néz ki:
 
 ```text
 Hirdetés → kattintás → landing page → érdeklődés → kapcsolatfelvétel → értékesítés
-```text
+```
 
 Ha a landing page rossz, a hirdetés lehet bármilyen jó.
 
@@ -235,7 +235,7 @@ Google Ads → gyors forgalom és ajánlatteszt
           mérhető adatok
                 ↓
 SEO → hosszabb távú tartalom és organikus jelenlét
-```text
+```
 
 A Google Ads kampányból megtudhatod, milyen keresésekre és üzenetekre reagálnak az emberek.
 
@@ -261,7 +261,7 @@ Google Ads kampány indulhat például konkrét szolgáltatásokra.
 
 ```text
 Keresés → hirdetés → szolgáltatásoldal → ajánlatkérés
-```text
+```
 
 Mérheted:
 
@@ -414,4 +414,3 @@ A jó stratégia nem attól jó, hogy valamelyik csatornára minél többet köl
 * Google Ads Help: [Cost-per-click (CPC): Definition](https://support.google.com/google-ads/answer/116495)
 * Google: [How ads work on Google Search](https://www.google.com/intl/en_us/search/howsearchworks/our-approach/ads-on-search/)
 
-````

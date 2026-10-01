@@ -64,7 +64,7 @@ Debugging
 Deployment
 ↓
 Maintenance
-```text
+```
 
 With vibe coding, it may look more like:
 
@@ -86,7 +86,7 @@ AI modifies it
 Test
 ↓
 Repeat
-```text
+```
 
 The difference is not simply that “AI writes the code”.
 
@@ -160,7 +160,7 @@ User feedback
 Changes
 ↓
 MVP
-```text
+```
 
 That can reduce the risk of investing heavily in a product nobody actually wants.
 
@@ -314,7 +314,7 @@ Integration:
 
 Audit:
 - log every status change
-```text
+```
 
 **The better you understand the problem, the more useful the AI becomes.**
 
@@ -468,7 +468,7 @@ Rather than completely blind vibe coding, a safer workflow looks like:
 8. Staging
         ↓
 9. Production
-```text
+```
 
 AI can do a very large amount of work inside this process.
 
@@ -557,7 +557,7 @@ MVP
 Professional development
 ↓
 Production system
-```text
+```
 
 **One of AI's biggest benefits may not be replacing developers. It may be making the first working version dramatically faster and cheaper to create.**
 
@@ -591,13 +591,13 @@ Previously:
 
 ```text
 Human → code
-```text
+```
 
 Increasingly:
 
 ```text
 Human → specification → AI → code → tests → human verification
-```text
+```
 
 And with more advanced agentic tools:
 
@@ -617,7 +617,7 @@ Testing
 Pull request
 ↓
 Human review
-```text
+```
 
 The question is therefore becoming less:
 

@@ -44,7 +44,7 @@ CRM or business system
 Automatic confirmation
    ↓
 Sales / customer management
-```text
+```
 
 In this model, the website is not the end of the process.
 
@@ -98,7 +98,7 @@ AI identifies the topic
 Answer based on company information
    ↓
 If necessary → hand over to a person
-```text
+```
 
 A good implementation does not try to pretend to be human in every situation.
 
@@ -124,7 +124,7 @@ Form
 Email to owner
  ↓
 Manual reply
-```text
+```
 
 With an integrated system:
 
@@ -138,7 +138,7 @@ Automatic confirmation
 Sales task
  ↓
 Follow-up reminder
-```text
+```
 
 One of the benefits of CRM integration is that a lead does not have to remain buried in an inbox. HubSpot, for example, supports forms embedded on external websites that can sync submissions directly to its CRM, where businesses can manage contacts and trigger follow-up automation. [HubSpot – Forms on an external site](https://knowledge.hubspot.com/forms/set-up-and-style-your-form-on-an-external-site)
 
@@ -181,7 +181,7 @@ Booking confirmed
 Automatic confirmation
  ↓
 Reminder
-```text
+```
 
 Google's documentation also describes ways local businesses can provide business details and, through related booking integrations, support bookings and other actions in the Search and Maps ecosystem. [Google Search Central – Local Business structured data](https://developers.google.com/search/docs/appearance/structured-data/local-business)
 
@@ -223,7 +223,7 @@ Payment
 Booking confirmed
  ↓
 Automatic email
-```text
+```
 
 You do not necessarily need to build your own payment system.
 
@@ -265,7 +265,7 @@ Quote
 Negotiation
  ↓
 Customer
-```text
+```
 
 CRM integration becomes particularly useful when a business receives dozens or hundreds of enquiries rather than just a handful.
 
@@ -410,7 +410,7 @@ For example:
 6. AI
    ↓
 7. 3D / personalisation / advanced features
-```text
+```
 
 This is not a mandatory order for every business.
 
@@ -442,7 +442,7 @@ Website
  ├── AI
  ├── Customer support
  └── Internal business systems
-```text
+```
 
 At the same time, Google Search is evolving in how it presents and uses web content, including AI-powered search experiences. Google says there is no separate set of “AI SEO” requirements for these features: the same fundamentals still matter, including technically accessible pages, useful and reliable content, good page experience and appropriate structured data. [Google Search Central – AI features and your website](https://developers.google.com/search/docs/appearance/ai-features)
 

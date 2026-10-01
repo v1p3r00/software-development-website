@@ -7,6 +7,8 @@ import { site } from '../data/site';
 import { useActiveSection } from '../hooks/useMisc';
 import { useTheme } from '../hooks/useTheme';
 import LanguageSwitcher from './LanguageSwitcher';
+import { usePageTransition } from '../lib/pageTransition';
+import { ArticlesPage } from '../pages/lazy';
 import { Arrow, cx } from './ui';
 
 function Monogram({ compact }: { compact: boolean }) {
@@ -28,6 +30,8 @@ function Monogram({ compact }: { compact: boolean }) {
 export default function Navigation({ onOpenPalette }: { onOpenPalette: () => void }) {
   const { t, lp } = useI18n();
   const { theme, toggle } = useTheme();
+  const { link } = usePageTransition();
+  const toArticles = link(lp('/articles/'), 'slide', { prepare: ArticlesPage.preload });
   const [compact, setCompact] = useState(false);
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
@@ -61,6 +65,8 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
 
   return (
     <header
+      // stays put above the page during route transitions
+      style={{ viewTransitionName: 'site-header' }}
       className={cx(
         'fixed inset-x-0 top-0 z-50 border-b transition-all duration-500 ease-tech',
         compact
@@ -114,6 +120,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
           })}
           <Link
             to={lp('/articles/')}
+            onClick={toArticles}
             data-cursor="follow"
             className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[11px] uppercase tracking-tech"
           >
@@ -214,7 +221,10 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
           ))}
           <Link
             to={lp('/articles/')}
-            onClick={() => setOpen(false)}
+            onClick={(e) => {
+              setOpen(false);
+              toArticles(e);
+            }}
             className="flex items-baseline justify-between border-b border-line py-4 font-display text-2xl font-extrabold uppercase tracking-tight last:border-b-0"
           >
             {t.nav.articles}

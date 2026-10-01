@@ -57,7 +57,7 @@ retrieve relevant sections
 LLM + question + retrieved information
       ↓
 answer
-```text
+```
 
 This is particularly useful in business environments because when a document changes, you can update the knowledge base rather than retraining the entire language model.
 
@@ -118,7 +118,7 @@ chunk 2
 chunk 3
 ...
 chunk 250
-```text
+```
 
 A chunk does not necessarily mean one page.
 
@@ -148,7 +148,7 @@ Too small:
 Better:
 “During the first year of employment, annual leave
 must be requested according to the following rules...”
-```text
+```
 
 The goal is therefore not simply to split a document into pieces.
 
@@ -183,7 +183,7 @@ In simplified form:
           ↓ embedding
 
 [0.14, -0.40, 0.75, ...]
-```text
+```
 
 The two questions do not use exactly the same words.
 
@@ -216,7 +216,7 @@ document = employee-handbook.pdf
 section = annual-leave
 version = 2026.03
 access = employees
-```text
+```
 
 The vector database is designed to make it efficient to find stored information that is semantically relevant to a query.
 
@@ -242,7 +242,7 @@ query embedding
 vector search
         ↓
 relevant chunks
-```text
+```
 
 The system might retrieve:
 
@@ -250,7 +250,7 @@ The system might retrieve:
 1. Annual leave requests
 2. Rules for extended absence
 3. Conditions for taking annual leave
-```text
+```
 
 Those pieces become the context that the LLM can use to answer the question.
 
@@ -280,7 +280,7 @@ Prompt + document sections
 LLM
   ↓
 Grounded answer
-```text
+```
 
 A “grounded” answer is one where the model has been given relevant source material and is expected to base its response on that context.
 
@@ -319,7 +319,7 @@ relevant paragraphs
 LLM
    ↓
 “According to the current policy...”
-```text
+```
 
 The employee gets a conversational answer.
 
@@ -349,7 +349,7 @@ new embeddings
 update vector database
       ↓
 AI retrieves the new information
-```text
+```
 
 There is no need to retrain the entire LLM.
 
@@ -377,7 +377,7 @@ external searchable knowledge
 context
    ↓
 generated answer
-```text
+```
 
 The difference is that in a company RAG system the external knowledge might be your private documentation, whereas in a search product it can be information retrieved from the web.
 
@@ -423,7 +423,7 @@ wrong chunk
 LLM
        ↓
 wrong or irrelevant answer
-```text
+```
 
 This is why **RAG quality is not determined by the LLM alone.**
 
@@ -517,7 +517,7 @@ document
 → retrieval
 → LLM
 → answer
-```text
+```
 
 A production system may look more like this:
 
@@ -543,7 +543,7 @@ LLM
 Grounding / citations
  ↓
 Answer
-```text
+```
 
 So building a useful RAG system is not simply a matter of “putting a PDF next to ChatGPT”.
 
@@ -569,7 +569,7 @@ good retrieval
 LLM
        ↓
 AI powered by your knowledge
-```text
+```
 
 The real value is often not in creating yet another chatbot.
 
@@ -599,4 +599,3 @@ But a good solution does not start by choosing a vector database.
 - Google: [What happened with AI Overviews and next steps](https://blog.google/products-and-platforms/products/search/ai-overviews-update-may-2024/)
 - AWS: [Understanding Retrieval Augmented Generation](https://docs.aws.amazon.com/prescriptive-guidance/latest/retrieval-augmented-generation-options/what-is-rag.html)
 - AWS: [Retrievers for RAG workflows](https://docs.aws.amazon.com/prescriptive-guidance/latest/retrieval-augmented-generation-options/rag-custom-retrievers.html)
-````

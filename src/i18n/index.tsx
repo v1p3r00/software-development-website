@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { en } from './en';
@@ -6,6 +6,7 @@ import { hu } from './hu';
 import type { Dict } from './en';
 import type { L10n, Lang } from '../data/projects';
 import { langOfPath, localePath } from './paths';
+import { captureMorph, playMorph, prefetchMorphFonts } from '../lib/morph/engine';
 
 const dicts: Record<Lang, Dict> = { en, hu };
 const STORAGE_KEY = 'dm.lang';
@@ -42,9 +43,21 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, [lang]);
 
+  // letter-morph between languages: glyphs are measured before the switch (setLang)
+  // and animated once every component has committed the new text — this layout
+  // effect runs after the children's, before the browser paints.
+  useLayoutEffect(() => {
+    playMorph();
+  }, [lang]);
+
+  useEffect(() => {
+    prefetchMorphFonts();
+  }, [pathname]);
+
   const setLang = useCallback(
     (l: Lang) => {
       if (l === lang) return;
+      captureMorph();
       navigate(`${localePath(pathname, l)}${search}${hash}`, { replace: true });
     },
     [lang, pathname, search, hash, navigate],

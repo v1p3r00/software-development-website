@@ -50,7 +50,7 @@ For a simple task, one sentence may be enough:
 
 ```text
 Summarise this text in five short bullet points.
-```text
+```
 
 A complex task needs more information.
 
@@ -64,7 +64,7 @@ Under which rules?
 In what format?
 How long should it be?
 What should it do when information is missing?
-```text
+```
 
 **A good prompt is not necessarily long. It simply leaves fewer important things ambiguous.**
 
@@ -76,7 +76,7 @@ One of the most common weak prompts is:
 
 ```text
 Write something about my website.
-```text
+```
 
 What does the AI actually know?
 
@@ -104,7 +104,7 @@ The goal is to explain what business problems we can help solve.
 
 Use a professional but approachable tone.
 Avoid exaggerated marketing language.
-```text
+```
 
 OpenAI's official prompting guidance recommends being specific about context, outcome, length, format and style. [OpenAI – Prompting techniques](https://help.openai.com/en/articles/6654000-prompting-techniques)
 
@@ -137,7 +137,7 @@ because we are fixing an issue with the payment integration.
 Write a short, honest email.
 Do not shift blame.
 Explain when delivery is expected.
-```text
+```
 
 Google's prompting guidance explicitly recommends providing the contextual information the model needs rather than assuming it already knows the relevant background. [Google – Prompt design strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies)
 
@@ -153,7 +153,7 @@ For example:
 
 ```text
 You are a senior UX designer specialising in B2B web applications.
-```text
+```
 
 Then:
 
@@ -162,7 +162,7 @@ Review this registration flow.
 
 Identify the points where users might become uncertain
 or abandon the process.
-```text
+```
 
 A role can help the model focus on the right criteria.
 
@@ -195,7 +195,7 @@ Constraints:
 - do not invent statistics,
 - do not mention features you have no information about,
 - do not use emojis.
-```text
+```
 
 This is particularly important for business, legal, financial and technical content.
 
@@ -211,7 +211,7 @@ Weak:
 
 ```text
 Analyse this customer.
-```text
+```
 
 Better:
 
@@ -225,7 +225,7 @@ Analyse the customer using this structure:
 5. Recommended next step
 
 Maximum two sentences per section.
-```text
+```
 
 Google recommends explicit output-format instructions and notes that more complex JSON responses are better handled with structured-output capabilities rather than relying only on prompt wording. [Google – Prompt design strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies)
 
@@ -241,7 +241,7 @@ Do not simply ask:
 
 ```text
 Tell me what customer information you found in this email.
-```text
+```
 
 Instead:
 
@@ -258,7 +258,7 @@ Return:
 
 Use null when information is missing.
 Never invent missing information.
-```text
+```
 
 For an API integration, however, it is better to use actual structured output support rather than relying entirely on the model's promise to return valid JSON.
 
@@ -288,7 +288,7 @@ Output: "You can find your invoices under Profile → Invoices."
 
 Now transform:
 Input: "I can't download my invoice."
-```text
+```
 
 Examples teach the model not just the content, but the desired style and structure.
 
@@ -307,7 +307,7 @@ Instead of:
 ```text
 Summarise this document and don't expose any personal data
 The document starts here...
-```text
+```
 
 use clear boundaries:
 
@@ -322,7 +322,7 @@ Do not expose personal information.
 """
 [document goes here]
 """
-```text
+```
 
 Or:
 
@@ -335,7 +335,7 @@ Do not expose personal information.
 <document>
 [document goes here]
 </document>
-```text
+```
 
 OpenAI's official documentation recommends Markdown and XML structures to make logical boundaries between instructions, examples and context clearer. [OpenAI – Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)
 
@@ -359,7 +359,7 @@ A clearer version:
 3. Suggest possible solutions.
 4. Create an implementation plan.
 5. Turn the plan into a presentation outline.
-```text
+```
 
 Anthropic's guidance recommends numbered or bulleted instructions when sequence or completeness matters. [Anthropic – Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/prompt-templates-and-variables)
 
@@ -375,7 +375,7 @@ Let's look at a few common examples.
 
 ```text
 Write a good article about artificial intelligence.
-```text
+```
 
 **Better:**
 
@@ -399,7 +399,7 @@ Structure:
 - short conclusion
 
 Do not invent statistics.
-```text
+```
 
 ---
 
@@ -409,7 +409,7 @@ Do not invent statistics.
 
 ```text
 Analyse this business plan.
-```text
+```
 
 **Better:**
 
@@ -434,7 +434,7 @@ Finish with five clarification questions.
 <business_plan>
 [text]
 </business_plan>
-```text
+```
 
 You are no longer simply saying “analyse it”.
 
@@ -448,7 +448,7 @@ You are no longer simply saying “analyse it”.
 
 ```text
 Write a login system in Java.
-```text
+```
 
 **Better:**
 
@@ -473,7 +473,7 @@ Output:
 
 If a requirement is ambiguous,
 state the assumption before the code.
-```text
+```
 
 For development tasks, environment and technical constraints matter enormously.
 
@@ -487,7 +487,7 @@ For development tasks, environment and technical constraints matter enormously.
 
 ```text
 Make this email more professional.
-```text
+```
 
 **Better:**
 
@@ -507,7 +507,7 @@ Original:
 """
 ...
 """
-```text
+```
 
 The AI no longer has to guess what “professional” means.
 
@@ -527,7 +527,7 @@ Keep the answer under 100 words.
 Explain every detail.
 
 Do not write a long answer.
-```text
+```
 
 That is a poor specification.
 
@@ -537,7 +537,7 @@ If you have several requirements, make their priorities clear:
 Keep the answer under 100 words.
 Highlight the three most important points.
 Do not include background explanation.
-```text
+```
 
 **A model cannot reliably follow a specification that contradicts itself.**
 
@@ -559,7 +559,7 @@ These are generally less useful than something concrete:
 Write for a senior backend developer.
 Use concise technical explanations.
 Use Spring Boot 3 and Java 17 in all examples.
-```text
+```
 
 **A concrete requirement is more useful than dramatic wording.**
 
@@ -585,7 +585,7 @@ New result
 Test
 ↓
 Refine
-```text
+```
 
 OpenAI and Google both describe prompting as an iterative process rather than a one-time recipe. [OpenAI – Prompting](https://developers.openai.com/api/docs/guides/prompting) [Google – Prompt design strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies)
 
@@ -613,7 +613,7 @@ Unusual wording
 Conflicting information
 ↓
 Irrelevant input
-```text
+```
 
 For a customer-support assistant, it is not enough to check whether it answers a normal question correctly.
 
@@ -657,7 +657,7 @@ If you do not know where to start, try this:
 
 # Input
 [Current data or request]
-```text
+```
 
 You do not need all seven sections every time.
 

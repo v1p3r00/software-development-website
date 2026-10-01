@@ -32,7 +32,7 @@ A böngésző elküldi a kérést, de sokáig vár az első válaszra.
 Böngésző → szerver → adatbázis → alkalmazás → HTML
                          ↑
                     hosszú várakozás
-```text
+```
 
 ### Lassú a böngésző
 
@@ -42,7 +42,7 @@ A szerver már elküldte az oldalt, de a böngészőnek túl sok JavaScriptet, C
 Szerver → HTML + JS + CSS → böngésző → feldolgozás → használható oldal
                                       ↑
                                   túl sok munka
-```text
+```
 
 ### Lassúak az erőforrások
 
@@ -201,7 +201,7 @@ Backend
 HTML / JSON
    ↓
 Böngésző
-```text
+```
 
 A felhasználó ebből csak annyit lát, hogy „nem történik semmi”.
 
@@ -514,4 +514,3 @@ Nézd meg a PageSpeed Insights eredményét, azonosítsd a legnagyobb problémá
 * web.dev: [Getting started with measuring Web Vitals](https://web.dev/articles/vitals-measurement-getting-started)
 * Google for Developers: [PageSpeed Insights FAQ](https://developers.google.com/speed/docs/insights/faq)
 
-````

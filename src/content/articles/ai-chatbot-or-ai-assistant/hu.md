@@ -45,7 +45,7 @@ Kulcsszó / előre megírt szabály
 Előre meghatározott válasz
       ↓
 Ha nincs találat → kapcsolatfelvétel
-```text
+```
 
 Ez nem feltétlenül rossz.
 
@@ -85,7 +85,7 @@ Foglalási rendszer lekérdezése
 Szabad időpontok
       ↓
 Válasz a látogatónak
-```text
+```
 
 Itt történik a fontos váltás.
 
@@ -126,7 +126,7 @@ Rendelés #12345
 Szállítási státusz
         ↓
 Válasz az ügyfélnek
-```text
+```
 
 Ehhez már nem elég egy chatbotablak.
 
@@ -173,7 +173,7 @@ Egy komolyabb megoldás inkább így néz ki:
         ↓          ↓          ↓
       Ügyfél-    Naptár     Rendelés
        adatok     adatok      státusz
-```text
+```
 
 Az AI ebben a rendszerben tulajdonképpen egy intelligens kezelőfelület.
 
@@ -227,7 +227,7 @@ Bizonytalanság / összetett ügy
 Emberhez továbbítás
       ↓
 Ügyintéző folytatja
-```text
+```
 
 Ez különösen fontos reklamációknál, összetett rendeléseknél vagy olyan esetekben, ahol pénzügyi vagy jogi következménye lehet a válasznak.
 
@@ -333,7 +333,7 @@ Információt ad
 „Mikor vagytok nyitva?”
      ↓
 „Hétfőtől péntekig 9–17 óráig.”
-```text
+```
 
 Ezzel szemben:
 
@@ -351,7 +351,7 @@ Szükség esetén műveletet hajt végre
 Ellenőrzi az eredményt
      ↓
 Válaszol
-```text
+```
 
 A különbség tehát nem pusztán a nyelvi modell intelligenciája.
 
@@ -496,4 +496,3 @@ Egy egyszerű chatbot lehet a megfelelő megoldás. Más esetben viszont egy CRM
 * OpenAI: [Agents](https://developers.openai.com/api/docs/guides/agents)
 * HubSpot: [Set up and customise the customer agent's handoff process](https://knowledge.hubspot.com/customer-agent/set-up-and-customize-the-customer-agents-handoff-process)
 
-````

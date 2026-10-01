@@ -28,7 +28,7 @@ AI alkalmazás
 ┌──────────────┬──────────────┬──────────────┐
 │ CRM          │ Adatbázis    │ Fájlrendszer │
 └──────────────┴──────────────┴──────────────┘
-```text
+```
 
 ---
 
@@ -75,7 +75,7 @@ A legegyszerűbb felállás:
            │
            ↓
      Külső rendszer
-```text
+```
 
 A **client** nem maga az AI.
 
@@ -121,7 +121,7 @@ search_customer
 check_stock
 create_invoice
 send_email
-```text
+```
 
 Az AI megkapja a toolok leírását és a szükséges paramétereket.
 
@@ -153,7 +153,7 @@ Eredmény
 AI modell
    ↓
 Válasz a felhasználónak
-```text
+```
 
 Az MCP specifikáció szerint a kliens `tools/list` segítségével felfedezheti az elérhető toolokat, majd `tools/call` segítségével hívhatja meg őket. A tool definíciója tartalmazhat nevet, leírást és bemeneti, illetve kimeneti sémát is. ([MCP Tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools))
 
@@ -183,7 +183,7 @@ company://policies/refund
 company://products/catalog
 company://customers/48152
 file:///project/README.md
-```text
+```
 
 Az AI-alkalmazás ezeket felhasználhatja a kontextus felépítéséhez.
 
@@ -206,7 +206,7 @@ review-code
 summarise-customer
 analyse-sales
 prepare-meeting
-```text
+```
 
 A prompt tartalmazhat paramétereket is.
 
@@ -217,7 +217,7 @@ review-code
   ↓
 language = Java
 code = ...
-```text
+```
 
 Ez nem ugyanaz, mint amikor a modell automatikusan meghív egy toolt.
 
@@ -246,7 +246,7 @@ Resources:
 Prompts:
 - prepare_quote
 - analyse_order
-```text
+```
 
 A felhasználó ezt írja:
 
@@ -268,7 +268,7 @@ company policy resource
 prepare_quote prompt
   ↓
 AI elkészíti az ajánlatot
-```text
+```
 
 Ha az ajánlat elkészítése egy műveletet is igényel, az AI újabb toolt hívhat.
 
@@ -295,7 +295,7 @@ CRM
  ├── Custom AI integration
  ├── IDE integration
  └── Agent integration
-```text
+```
 
 MCP-vel a cél inkább:
 
@@ -308,7 +308,7 @@ MCP Server
   ├── AI Host B
   ├── AI Host C
   └── Saját alkalmazás
-```text
+```
 
 Ez nem jelenti azt, hogy minden integráció automatikusan kompatibilis lesz.
 
@@ -332,7 +332,7 @@ Company MCP Server
 ├── Documents
 ├── Product database
 └── Reporting
-```text
+```
 
 Ezt több MCP-kompatibilis host is használhatja.
 
@@ -357,7 +357,7 @@ delete_customer
 transfer_money
 send_invoice
 execute_sql
-```text
+```
 
 már egészen más kockázatot jelent.
 
@@ -536,4 +536,3 @@ Egy jól megtervezett MCP server lehet egy szabványos réteg a CRM, ERP, adatb�
 * Model Context Protocol: [TypeScript SDK](https://ts.sdk.modelcontextprotocol.io/v2/)
 * Model Context Protocol: [Python SDK – Prompts](https://py.sdk.modelcontextprotocol.io/servers/prompts/)
 
-````

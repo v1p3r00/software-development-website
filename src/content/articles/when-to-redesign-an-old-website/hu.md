@@ -165,7 +165,7 @@ Próbáld végig a legfontosabb ügyfélutat:
 
 ```text
 Google → kezdőoldal → szolgáltatás → referencia → kapcsolatfelvétel
-```text
+```
 
 Ha ezen az útvonalon felesleges akadályok vannak, érdemes a struktúrát újragondolni.
 
@@ -233,13 +233,13 @@ Ha például ez az oldalad:
 
 ```text
 https://pelda.hu/szolgaltatasok/webfejlesztes
-```text
+```
 
 és az új weboldalon egyszerűen erre cseréled:
 
 ```text
 https://pelda.hu/webfejlesztes
-```text
+```
 
 akkor a két URL nem ugyanaz.
 
@@ -267,13 +267,13 @@ A Google azt javasolja, hogy a régi URL-ekről szerveroldali tartós átirány�
 
 ```text
 Régi URL → 301 redirect → megfelelő új URL
-```text
+```
 
 Nem pedig:
 
 ```text
 Régi URL → kezdőoldal
-```text
+```
 
 A Google kifejezetten óva int attól, hogy sok, egymástól független régi oldalt egyszerűen az új weboldal kezdőlapjára irányítsunk. Ez a felhasználóknak is zavaró lehet, és egyes esetekben soft 404-ként kezelhető. ([developers.google.com](https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes))
 

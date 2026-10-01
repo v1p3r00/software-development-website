@@ -28,7 +28,7 @@ AI application
 ┌──────────────┬──────────────┬──────────────┐
 │ CRM          │ Database     │ File system  │
 └──────────────┴──────────────┴──────────────┘
-```text
+```
 
 ---
 
@@ -73,7 +73,7 @@ The simplest architecture looks like this:
            │
            ↓
      External system
-```text
+```
 
 The **client** is not the AI model.
 
@@ -119,7 +119,7 @@ search_customer
 check_stock
 create_invoice
 send_email
-```text
+```
 
 The AI receives descriptions of these tools and their required parameters.
 
@@ -151,7 +151,7 @@ Result
 AI model
    ↓
 Answer to user
-```text
+```
 
 According to the MCP specification, a client can discover available tools through `tools/list` and invoke them with `tools/call`. Tool definitions can contain a name, description and input and output schemas. ([MCP Tools](https://modelcontextprotocol.io/specification/2026-07-28/server/tools))
 
@@ -181,7 +181,7 @@ company://policies/refund
 company://products/catalog
 company://customers/48152
 file:///project/README.md
-```text
+```
 
 An AI application can use these resources when building the context for a task.
 
@@ -204,7 +204,7 @@ review-code
 summarise-customer
 analyse-sales
 prepare-meeting
-```text
+```
 
 A prompt can have arguments:
 
@@ -213,7 +213,7 @@ review-code
   ↓
 language = Java
 code = ...
-```text
+```
 
 This is different from the model automatically deciding to call a tool.
 
@@ -242,7 +242,7 @@ Resources:
 Prompts:
 - prepare_quote
 - analyse_order
-```text
+```
 
 The user asks:
 
@@ -264,7 +264,7 @@ company policy resource
 prepare_quote prompt
   ↓
 AI prepares the quotation
-```text
+```
 
 If preparing the quotation requires an additional action, the model can call another tool.
 
@@ -291,7 +291,7 @@ CRM
  ├── Custom AI integration
  ├── IDE integration
  └── Agent integration
-```text
+```
 
 With MCP, the architecture can instead look like:
 
@@ -304,7 +304,7 @@ MCP Server
   ├── AI Host B
   ├── AI Host C
   └── Custom application
-```text
+```
 
 This does not mean every integration automatically becomes compatible.
 
@@ -328,7 +328,7 @@ Company MCP Server
 ├── Documents
 ├── Product database
 └── Reporting
-```text
+```
 
 Multiple MCP-compatible hosts can then use it.
 
@@ -353,7 +353,7 @@ delete_customer
 transfer_money
 send_invoice
 execute_sql
-```text
+```
 
 is a very different matter.
 
@@ -373,7 +373,7 @@ AI → full ERP admin
 
 Better:
 AI → only required tools
-```text
+```
 
 Use the smallest practical set of permissions.
 
@@ -414,7 +414,7 @@ Issue invoice
 
 Transfer money
 → mandatory human approval
-```text
+```
 
 ---
 
@@ -454,7 +454,7 @@ Result
 New decision
  ↓
 Next tool
-```text
+```
 
 MCP can provide the **standardised access layer for those tools and data sources**.
 
@@ -471,7 +471,7 @@ MCP Server
   ├── API
   ├── Files
   └── Internal systems
-```text
+```
 
 That is why MCP is increasingly relevant to agentic systems.
 
@@ -507,7 +507,7 @@ A typical enterprise architecture might look like:
              ┌─────────────┼─────────────┐
              ↓             ↓             ↓
             CRM           ERP        Database
-```text
+```
 
 The technology itself is not what makes the architecture good.
 
@@ -533,4 +533,3 @@ But the protocol does not remove the need for good architecture.
 - Model Context Protocol: [Security Best Practices](https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices)
 - Model Context Protocol: [TypeScript SDK](https://ts.sdk.modelcontextprotocol.io/v2/)
 - Model Context Protocol: [Python SDK – Prompts](https://py.sdk.modelcontextprotocol.io/servers/prompts/)
-````

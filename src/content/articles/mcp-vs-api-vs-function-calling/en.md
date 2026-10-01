@@ -34,7 +34,7 @@ For example, an online shop might expose:
 
 ```text
 GET /api/orders/48152
-```text
+```
 
 The client sends a request and the server returns a response:
 
@@ -47,7 +47,7 @@ GET /api/orders/48152
   "id": 48152,
   "status": "shipped"
 }
-```text
+```
 
 An API is not an AI technology.
 
@@ -72,7 +72,7 @@ Suppose your application contains a function:
 
 ```text
 getOrder(orderId)
-```text
+```
 
 You can tell the model that this function exists and describe the parameters it expects.
 
@@ -89,7 +89,7 @@ getOrder
 {
   "orderId": "48152"
 }
-```text
+```
 
 Your application executes the function and sends the result back to the model.
 
@@ -115,7 +115,7 @@ Result
 AI model
     ↓
 Final response
-```text
+```
 
 **Function calling is therefore a mechanism that lets a model request structured actions from the application around it.**
 
@@ -138,7 +138,7 @@ AI application
       ↓
 ┌─────┼─────┬─────────┐
 CRM  ERP  Database  Files
-```text
+```
 
 MCP is not another database or another type of REST API.
 
@@ -186,7 +186,7 @@ Backend
 Database
    ↓
 72 units
-```text
+```
 
 No AI is required.
 
@@ -202,7 +202,7 @@ We give the model a function:
 
 ```text
 checkStock(productId)
-```text
+```
 
 The user asks:
 
@@ -215,7 +215,7 @@ checkStock
 {
   "productId": "X"
 }
-```text
+```
 
 Your application executes the function.
 
@@ -231,7 +231,7 @@ Backend function
 REST API
  ↓
 Database
-```text
+```
 
 This is an important point:
 
@@ -266,7 +266,7 @@ check_stock
 Backend / API
    ↓
 Database
-```text
+```
 
 The MCP server could expose:
 
@@ -279,7 +279,7 @@ product_id: string
 
 Output:
 available: number
-```text
+```
 
 An MCP-compatible client can discover the tool and make it available to the model.
 
@@ -305,7 +305,7 @@ For example:
           Business API
                  ↓
              Database
-```text
+```
 
 Or:
 
@@ -318,7 +318,7 @@ Your backend
  ├── REST API
  ├── Database
  └── External services
-```text
+```
 
 Or:
 
@@ -326,7 +326,7 @@ Or:
 AI Host A ─┐
 AI Host B ─┼→ MCP Server → API → Database
 AI Host C ─┘
-```text
+```
 
 **So the useful question is not “API or MCP?”**
 
@@ -350,7 +350,7 @@ REST API
 Spring Boot
       ↓
 MariaDB
-```text
+```
 
 React does not need to know how MariaDB works.
 
@@ -372,7 +372,7 @@ AI
  ├── check_stock
  ├── create_quote
  └── search_orders
-```text
+```
 
 Your application owns those functions.
 
@@ -407,7 +407,7 @@ For example:
              ┌───────────┼───────────┐
              ↓           ↓           ↓
            AI App      Agent       IDE
-```text
+```
 
 Instead of building a separate integration for every AI client, you can expose a standardised MCP layer.
 
@@ -425,7 +425,7 @@ React
 Spring Boot API
   ↓
 MariaDB
-```text
+```
 
 Now you want an AI customer-service agent.
 
@@ -438,7 +438,7 @@ GET /orders/{id}
 GET /customers/{id}
 GET /products/{id}
 POST /refunds
-```text
+```
 
 ### Function calling
 
@@ -449,7 +449,7 @@ get_order
 get_customer
 get_product
 request_refund
-```text
+```
 
 ### MCP
 
@@ -467,7 +467,7 @@ MCP Server
    Business API
        ↓
     Database
-```text
+```
 
 Now the roles are clear:
 
@@ -480,7 +480,7 @@ Function calling
 
 MCP
 → standard AI-oriented interface for tools and context
-```text
+```
 
 ---
 
@@ -569,7 +569,7 @@ MCP
 ↓
 “How can AI applications discover and use standardised
 tools and data sources?”
-```text
+```
 
 Once you separate those layers, the architecture becomes much easier to reason about.
 
@@ -611,4 +611,3 @@ Once you understand the three layers, designing an AI agent or enterprise AI arc
 - OpenAI: [Using tools](https://developers.openai.com/api/docs/guides/tools)
 - OpenAI: [MCP servers](https://developers.openai.com/api/docs/guides/tools-connectors-mcp)
 - OpenAI: [Functions for Agents](https://developers.openai.com/api/docs/guides/agents-api/tools/functions)
-````

@@ -60,7 +60,7 @@ következő token
 ...
   ↓
 kész szöveg
-```text
+```
 
 ---
 
@@ -106,7 +106,7 @@ Leegyszerűsítve:
 "Budapesti webfejlesztő cégünk"
       ↓
 ...
-```text
+```
 
 Minden lépésnél több lehetséges következő token közül kell választania.
 
@@ -142,7 +142,7 @@ körvonalak
 részletek
       ↓
 kész kép
-```text
+```
 
 A Hugging Face Diffusers dokumentációja szerint a diffusion modellek véletlenszerű zajból kiindulva, fokozatos denoising, vagyis zajcsökkentés segítségével hoznak létre kimenetet. ([Hugging Face](https://huggingface.co/docs/diffusers/en/quicktour))
 
@@ -176,7 +176,7 @@ Leegyszerűsítve:
      fokozatos denoising
           ↓
         kép
-```text
+```
 
 Ez nem azt jelenti, hogy a modell „megrajzolja” az irodát úgy, ahogy egy grafikus tenné.
 
@@ -235,7 +235,7 @@ hang reprezentációja
 hanggenerálás
   ↓
 audio
-```text
+```
 
 A modern rendszerekben többféle architektúra létezik, és a hanggenerálás sem feltétlenül ugyanazzal a módszerrel történik, mint a képgenerálás.
 
@@ -260,7 +260,7 @@ function
 → utasítás
 → feltétel
 → eredmény
-```text
+```
 
 A szöveggeneráló Transformer-modellek képesek programkódot is generálni, ha a tanításuk során megfelelő kódpéldákat és feladatokat tanultak.
 
@@ -297,7 +297,7 @@ A valóság inkább egy összetett rendszer:
    modellek      modellek     generatív modellek
         ↓            ↓            ↓
       kód         videó      beszéd / zene
-```text
+```
 
 Ráadásul egyetlen alkalmazás több modellt is használhat.
 
@@ -411,7 +411,7 @@ ellenőrzés
 emberi döntés
     ↓
 üzleti eredmény
-```text
+```
 
 **A generatív AI akkor válik igazán hasznossá, amikor nem önálló „varázsdobozként”, hanem egy jól megtervezett folyamat részeként használod.**
 

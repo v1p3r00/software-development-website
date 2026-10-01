@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useI18n } from './i18n';
 import { Route, Routes } from 'react-router-dom';
 import Navigation from './components/Navigation';
@@ -9,13 +9,13 @@ import ScrollProgress from './components/ScrollProgress';
 import TechnicalCursor from './components/TechnicalCursor';
 import Home from './pages/Home';
 import ProjectDetail from './pages/ProjectDetail';
-// the article pages (and the Markdown renderer) load only when visited
-const Articles = lazy(() => import('./pages/Articles'));
-const Article = lazy(() => import('./pages/Article'));
+import { ArticlePage, ArticlesPage } from './pages/lazy';
+import { useRouteCommitSignal } from './lib/pageTransition';
 
 export default function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { t } = useI18n();
+  useRouteCommitSignal();
 
   return (
     <div className="grain relative min-h-screen bg-bg">
@@ -35,8 +35,8 @@ export default function App() {
             {/* every route also exists under /hu for the Hungarian version */}
             <Route path="/hu?" element={<Home />} />
             <Route path="/hu?/project/:id" element={<ProjectDetail />} />
-            <Route path="/hu?/articles" element={<Articles />} />
-            <Route path="/hu?/articles/:slug" element={<Article />} />
+            <Route path="/hu?/articles" element={<ArticlesPage />} />
+            <Route path="/hu?/articles/:slug" element={<ArticlePage />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </Suspense>

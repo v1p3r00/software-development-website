@@ -41,7 +41,7 @@ id | name              | category | price
 1  | Trail Runner      | shoes    | 45000
 2  | Mountain Boot     | shoes    | 68000
 3  | Road Runner       | shoes    | 39000
-```text
+```
 
 És ezt kérdezed:
 
@@ -50,7 +50,7 @@ SELECT *
 FROM products
 WHERE category = 'shoes'
 AND price < 50000;
-```text
+```
 
 Ez nagyon pontos.
 
@@ -81,7 +81,7 @@ Például:
 „Vízálló túracipő hosszú hegyi utakhoz”
           ↓
 [0.12, -0.44, 0.81, 0.17, ...]
-```text
+```
 
 Ezt a vektort el lehet tárolni egy adatbázisban.
 
@@ -96,7 +96,7 @@ Termék A
 
                   ●
               Termék C
-```text
+```
 
 A vector database feladata tehát nem egyszerűen az, hogy „számokat tároljon”.
 
@@ -122,7 +122,7 @@ vector search
 legközelebbi vektorok
         ↓
 releváns dokumentumok
-```text
+```
 
 Ha például egy belső tudásbázisban keresel:
 
@@ -180,7 +180,7 @@ content
 category
 created_at
 embedding
-```text
+```
 
 A klasszikus adatokat és az embeddinget ugyanabban az adatbázisban tárolhatod.
 
@@ -201,7 +201,7 @@ orders
 documents
 users
 permissions
-```text
+```
 
 És szeretnél hozzá AI-alapú dokumentumkeresést.
 
@@ -219,7 +219,7 @@ PostgreSQL
      ├── metadata
      ├── dokumentumok
      └── embeddings
-```text
+```
 
 A pgvector egyik fontos előnye éppen az, hogy a vektorokat a PostgreSQL többi adatával együtt lehet kezelni, és megmaradnak a PostgreSQL olyan képességei, mint a JOIN-ok és az ACID-tranzakciók. ([github.com](https://github.com/pgvector/pgvector))
 
@@ -276,7 +276,7 @@ price < 500000
 in_stock = true
         ↓
 releváns találatok
-```text
+```
 
 A Qdrant dokumentációja külön kiemeli, hogy a vektoros keresés önmagában nem tud minden üzleti feltételt reprezentálni, ezért metadata alapján történő filteringre is szükség van. ([qdrant.tech](https://qdrant.tech/documentation/search/filtering/))
 
@@ -318,7 +318,7 @@ stock > 0
         ↓
 
 végső találatok
-```text
+```
 
 **Az AI nem váltja ki a hagyományos adatbázis-logikát. A kettőt gyakran együtt érdemes használni.**
 
@@ -355,7 +355,7 @@ Ezért használható **hybrid search**, amely kombinálhatja a szemantikus és a
                   rangsorolás
                        ↓
                     találatok
-```text
+```
 
 A Qdrant dokumentációja szerint a hybrid search dense és sparse keresési eredményeket kombinálhat, így egyszerre használható szemantikus hasonlóság és pontos kulcsszóegyezés. ([qdrant.tech](https://qdrant.tech/documentation/search/text-search/hybrid-search/))
 
@@ -416,7 +416,7 @@ releváns dokumentumrészek
 LLM
      ↓
 válasz
-```text
+```
 
 Ezért a vector database sok RAG-rendszerben nem maga az AI.
 
@@ -444,7 +444,7 @@ FROM products
 WHERE category = 'shirt'
   AND colour = 'black'
   AND price BETWEEN 30000 AND 50000;
-```text
+```
 
 Ugyanez igaz például:
 
@@ -486,6 +486,7 @@ PostgreSQL
 Ez egy nagyon kényelmes architektúra lehet egy meglévő üzleti alkalmazásban.
 
 A pgvector támogat exact és approximate nearest-neighbour keresést is; az approximate kereséshez többek között HNSW és IVFFlat indexek állnak rendelkezésre.
+
 [https://github.com/pgvector/pgvector](https://github.com/pgvector/pgvector)
 
 ---
@@ -651,4 +652,3 @@ A jó architektúra nem attól lesz modern, hogy minél több AI-komponenst tart
 * Qdrant: [Hybrid Search](https://qdrant.tech/documentation/search/text-search/hybrid-search/)
 * Qdrant: [Hybrid and Multi-Stage Queries](https://qdrant.tech/documentation/search/hybrid-queries/)
 
-````

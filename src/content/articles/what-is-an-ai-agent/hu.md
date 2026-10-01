@@ -68,7 +68,7 @@ Ajánlat létrehozása
 Emberi jóváhagyás?
   ↓
 Ajánlat elküldése
-```text
+```
 
 Nem feltétlenül egy előre megírt, merev workflow minden egyes lépése határozza meg ezt. Az agent képes lehet a rendelkezésére álló információ és eszközök alapján kiválasztani a következő műveletet.
 
@@ -147,7 +147,7 @@ Model újraértékeli a helyzetet
 Újabb tool?
    ├── Igen → vissza a toolhoz
    └── Nem → eredmény
-```text
+```
 
 Ez azért fontos, mert egy agent nem feltétlenül tudja előre, hány lépésre lesz szüksége.
 
@@ -223,7 +223,7 @@ Termék: X
 Kért mennyiség: 50
 Készlet: 72
 → teljesíthető
-```text
+```
 
 ### 4. Kiszámítja az ajánlatot
 
@@ -242,7 +242,7 @@ Lehet például egy szabály:
 ```text
 500 000 Ft alatt → automatikus küldés
 500 000 Ft felett → vezetői jóváhagyás
-```text
+```
 
 ### 6. Emberi jóváhagyás
 
@@ -280,7 +280,7 @@ Emberi jóváhagyás
 E-mail küldés
   ↓
 CRM frissítés
-```text
+```
 
 Ez már valódi üzleti folyamat automatizálása.
 
@@ -356,7 +356,7 @@ Közepes kockázat
 
 Magas kockázat
 → emberi jóváhagyás
-```text
+```
 
 Az OpenAI agent dokumentációja is külön kezeli a guardraileket és a human-in-the-loop jóváhagyást, különösen érzékeny vagy visszafordíthatatlan műveleteknél. ([OpenAI](https://developers.openai.com/api/docs/guides/agents/guardrails-approvals))
 
@@ -380,7 +380,7 @@ Például:
 3. Válasz előkészítése
 4. Ember ellenőrzi
 5. Küldés
-```text
+```
 
 Ha ez stabilan működik, lehet továbblépni:
 
@@ -391,7 +391,7 @@ Ha ez stabilan működik, lehet továbblépni:
 4. Agent elkészíti a választ
 5. Alacsony kockázat → automatikus küldés
 6. Magas kockázat → emberi jóváhagyás
-```text
+```
 
 **Az agent nem egyszerűen egy „okosabb chatbot”. Inkább egy AI-val vezérelt szoftveres munkafolyamat, amely képes információt gyűjteni, döntéseket hozni és műveleteket végrehajtani.**
 

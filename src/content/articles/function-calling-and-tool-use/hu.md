@@ -16,7 +16,7 @@ Felhasználó
 AI
 ↓
 Szöveges válasz
-```text
+```
 
 Megkérdezed:
 
@@ -44,7 +44,7 @@ Az AI-nak megadod:
 
 ```text
 get_weather(city)
-```text
+```
 
 A felhasználó pedig ezt kérdezi:
 
@@ -58,7 +58,7 @@ Ehelyett kérheti:
 get_weather({
   "city": "Budapest"
 })
-```text
+```
 
 A backend ezt végrehajtja.
 
@@ -69,7 +69,7 @@ Az API visszaadja például:
   "temperature": 18,
   "condition": "rain"
 }
-```text
+```
 
 Ezután az eredményt visszaadod az AI-nak, amely elkészíti a felhasználónak szóló választ.
 
@@ -89,7 +89,7 @@ Időjárás API
 AI
 ↓
 "Budapesten jelenleg 18 °C és esős idő van."
-```text
+```
 
 **A modell tehát nem maga hívja meg az API-t. A modell kéri az eszköz használatát, az alkalmazás pedig végrehajtja.**
 
@@ -109,7 +109,7 @@ Például:
 get_customer(id)
 create_invoice(customer_id, amount)
 send_email(to, subject, body)
-```text
+```
 
 A **tool use** ennél szélesebb fogalom.
 
@@ -139,7 +139,7 @@ Tegyük fel, hogy három eszközt adsz neki:
 get_customer
 get_order
 create_invoice
-```text
+```
 
 A felhasználó ezt mondja:
 
@@ -151,13 +151,13 @@ Valószínűleg:
 
 ```text
 get_order(12345)
-```text
+```
 
 Ezután az eredmény alapján megkérheti az alkalmazást:
 
 ```text
 get_customer(678)
-```text
+```
 
 Majd ezek után válaszolhat:
 
@@ -179,7 +179,7 @@ Van egy adatbázis:
 customers
 orders
 products
-```text
+```
 
 És van egy AI-asszisztensed.
 
@@ -191,7 +191,7 @@ A rendszer rendelkezésére áll egy tool:
 
 ```text
 get_order_status(order_id)
-```text
+```
 
 A folyamat:
 
@@ -215,7 +215,7 @@ A folyamat:
 
 6. AI:
    "A rendelésedet már átadtuk a futárnak."
-```text
+```
 
 A lényeg, hogy **az AI nem kap közvetlen hozzáférést az adatbázishoz**.
 
@@ -231,7 +231,7 @@ Mert ez:
 AI
 ↓
 teljes adatbázis
-```text
+```
 
 nagyon rossz architektúra lenne.
 
@@ -247,7 +247,7 @@ Backend
 engedélyezett lekérdezés
 ↓
 Database
-```text
+```
 
 Így a modell csak azt tudja megtenni, amit a tool lehetővé tesz.
 
@@ -278,7 +278,7 @@ Returns the current status of a customer's order.
 
 Parameters:
 order_id: integer
-```text
+```
 
 Ez alapján a modell képes lehet felismerni, mikor érdemes használni.
 
@@ -301,7 +301,7 @@ create_invoice(
     customer_id=123,
     amount=250000
 )
-```text
+```
 
 De ez még nem jelenti azt, hogy számla létrejött.
 
@@ -351,7 +351,7 @@ Nem → újabb tool
 Igen
 ↓
 Végső válasz
-```text
+```
 
 Ez a ciklus akár többször is lefuthat.
 
@@ -373,7 +373,7 @@ get_order
 get_product
 check_stock
 create_return_request
-```text
+```
 
 A felhasználó:
 
@@ -389,7 +389,7 @@ get_product(product_id)
 check_stock(product_id)
 ↓
 AI válasz
-```text
+```
 
 Ha pedig a felhasználó ezt mondja:
 
@@ -399,7 +399,7 @@ akkor megjelenik egy **műveletet végrehajtó tool**:
 
 ```text
 create_return_request(order_id=8421)
-```text
+```
 
 És itt válik igazán fontossá a biztonság.
 
@@ -427,7 +427,7 @@ Adat módosítása
 DESTRUCTIVE
 ↓
 Törlés / pénzügyi / visszafordíthatatlan művelet
-```text
+```
 
 Az MCP specifikációjában a tools olyan végrehajtható funkciók, amelyekkel a modellek műveleteket végezhetnek vagy információt kérhetnek le. Az MCP ökoszisztéma külön foglalkozik a toolok viselkedésének és kockázatainak jelölésével is. [Model Context Protocol – Server overview](https://modelcontextprotocol.io/specification/draft/server/index) [MCP – Tool Annotations as Risk Vocabulary](https://blog.modelcontextprotocol.io/posts/2026-03-16-tool-annotations/)
 
@@ -447,7 +447,7 @@ Ne:
 AI
 ↓
 DB_ADMIN
-```text
+```
 
 Hanem:
 
@@ -457,7 +457,7 @@ AI
 get_order_status
 ↓
 csak a szükséges adat
-```text
+```
 
 Ugyanez API-knál.
 
@@ -475,7 +475,7 @@ Tegyük fel, hogy van:
 
 ```text
 refund_order(order_id, amount)
-```text
+```
 
 Az AI ezt generálja:
 
@@ -484,7 +484,7 @@ refund_order(
     order_id=8421,
     amount=999999999
 )
-```text
+```
 
 A backendnek nem szabad egyszerűen végrehajtania.
 
@@ -508,7 +508,7 @@ Business validation
 Authorisation
 ↓
 Execution
-```text
+```
 
 ---
 
@@ -535,7 +535,7 @@ Csak ezután:
 USER CONFIRMED
 ↓
 refund_order(...)
-```text
+```
 
 A Google function-calling dokumentációja is azt javasolja, hogy jelentős következménnyel járó műveleteknél a function call végrehajtása előtt validáljuk a hívást a felhasználóval. [Google – Function calling](https://ai.google.dev/gemini-api/docs/generate-content/function-calling)
 
@@ -588,7 +588,7 @@ AI Agent ─ Tools ├── Számlázó
                  ├── Raktár
                  │
                  └── Naptár
-```text
+```
 
 A felhasználó pedig természetes nyelven kérdezhet:
 
@@ -614,7 +614,7 @@ Sok esetben jobb egy kontrollált tool:
 find_customer_orders(
     customer_id
 )
-```text
+```
 
 mint:
 
@@ -622,7 +622,7 @@ mint:
 execute_sql(
     "SELECT * FROM ..."
 )
-```text
+```
 
 Az elsőnél te határozod meg, hogy mit lehet lekérdezni.
 
@@ -656,7 +656,7 @@ MCP Server
 Tools
 ↓
 CRM / Database / API / Files
-```text
+```
 
 Az MCP tehát nem maga az AI.
 
@@ -681,7 +681,7 @@ Tools:
 - check_stock
 - create_invoice
 - create_support_ticket
-```text
+```
 
 Ezt aztán megfelelő jogosultságokkal különböző AI-kliensek használhatják.
 
@@ -730,7 +730,7 @@ User → AI Agent ────┼── Invoice Tool
                      Security Layer
                            ↓
                     Business Backend
-```text
+```
 
 A biztonsági réteg feladata lehet:
 
@@ -792,7 +792,7 @@ AI értelmezi
 Következő lépés
 ↓
 Válasz
-```text
+```
 
 És ha több tool áll rendelkezésére, az AI egyre összetettebb munkafolyamatokat is koordinálhat.
 

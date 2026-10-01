@@ -37,13 +37,14 @@ A látogató általában oldalakat böngész, információt keres, majd valamily
 
 ```text
 Google → weboldal → szolgáltatás megismerése → kapcsolatfelvétel
-```text
+```
 
 Egy weboldal ettől még lehet nagyon összetett. Lehet többnyelvű, tartalmazhat blogot, animációkat, kapcsolatfelvételi űrlapot, időpontfoglalást vagy akár külső rendszerek integrációját is.
 
 A lényeg inkább az, hogy **az oldal fő feladata az információ átadása és a látogató terelése egy üzleti cél felé.**
 
 A webes technológiák alapvetően platformfüggetlenek, és egy megfelelően elkészített weboldal különböző eszközökön és operációs rendszereken használható. Az MDN dokumentációja is kiemeli a web egyik fontos előnyét: a tartalom URL-en keresztül elérhető, megosztható és keresőmotorok számára is hozzáférhető.  
+
 [MDN – What is a progressive web app?](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/What_is_a_progressive_web_app)
 
 ---
@@ -67,16 +68,18 @@ Egy webshopban ezért már nem elég megmutatni a termékeket. A rendszernek kez
 
 ```text
 Termék → kosár → pénztár → fizetés → rendelés → visszaigazolás
-```text
+```
 
 Ettől válik lényegessé az úgynevezett checkout, vagyis a vásárlási folyamat kialakítása.
 
 Ez nem pusztán technikai kérdés. Egy rosszul megtervezett vásárlási folyamat közvetlenül befolyásolhatja, hogy a látogató befejezi-e a vásárlást.
 
 A Baymard Institute 2026-os kutatása szerint a globális átlagos kosárelhagyási arány 70% körül van. Ez nem azt jelenti, hogy egy webshopodban szükségszerűen hasonló arányt fogsz látni, és a kutatás jelentős része amerikai és nemzetközi e-kereskedelmi környezetet vizsgál. A szám inkább arra világít rá, hogy a vásárlás utolsó néhány lépése üzletileg is fontos UX-terület.  
+
 [Baymard Institute – Reasons for Cart Abandonment](https://baymard.com/research-articles/ecommerce-checkout-usability-report-and-benchmark)
 
 A Baymard kutatása arra is rámutat, hogy a túl hosszú vagy bonyolult checkout sok esetben elkerülhető akadályt jelenthet.  
+
 [Baymard Institute – Checkout UX](https://baymard.com/research/checkout-usability)
 
 **Egy webshop tehát nem egyszerűen egy szép termékkatalógus. Egy értékesítési folyamat teljes online leképezése.**
@@ -107,7 +110,7 @@ Egy egyszerű példa:
 
 ```text
 Ügyfél belép → kiválaszt egy szolgáltatást → időpontot foglal → rendszer ellenőrzi az elérhetőséget → visszaigazolás
-```text
+```
 
 Itt már nem egy egyszerű weboldalról beszélünk.
 
@@ -194,13 +197,13 @@ Például egy egyszerű folyamat:
 
 ```text
 Ajánlatkérés → e-mail → Excel → munkatárs feldolgozza → újabb e-mail → státuszfrissítés
-```text
+```
 
 Ezt egy egyedi rendszer akár így is kezelheti:
 
 ```text
 Ajánlatkérés → rendszer → automatikus feladat → felelős → státusz → ügyfél értesítése
-```text
+```
 
 A különbség nem feltétlenül az, hogy az egyik „szebb”.
 

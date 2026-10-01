@@ -52,7 +52,7 @@ Adat / eredmény
 API
    ↓
 Weboldal
-```text
+```
 
 A weboldalnak nem kell ismernie a másik rendszer teljes belső működését.
 
@@ -82,7 +82,7 @@ Fizetés
 Sikeres / sikertelen eredmény
   ↓
 Webshop
-```text
+```
 
 A fejlesztői integrációban az API segítségével történhet kommunikáció a fizetési rendszerrel.
 
@@ -146,7 +146,7 @@ Számlázó
 Szállító rendszer
    ↓
 CRM
-```text
+```
 
 API-kal és megfelelő integrációkkal:
 
@@ -157,7 +157,7 @@ Webshop
    ├──→ Számlázás
    ├──→ Szállítás
    └──→ CRM
-```text
+```
 
 Ez nem azt jelenti, hogy minden esetben mindent automatikusan össze kell kötni.
 
@@ -185,7 +185,7 @@ PDF letöltése
 NAV megnyitása
    ↓
 Adatok kézi feltöltése
-```text
+```
 
 A megfelelően kialakított rendszerben a számlázóprogram gép-gép kapcsolat segítségével továbbíthatja a szükséges adatokat.
 
@@ -221,7 +221,7 @@ Címke
 Tracking szám
    ↓
 Webshop / ügyfél
-```text
+```
 
 Így az ügyfél akár automatikusan megkaphatja a csomagkövetési információt.
 
@@ -252,7 +252,7 @@ Munkatárs
 Kézi adatbevitel
    ↓
 CRM
-```text
+```
 
 API-integrációval:
 
@@ -264,7 +264,7 @@ CRM API
 Új érdeklődő
    ↓
 Automatikus folyamat
-```text
+```
 
 A HubSpot például API-kon keresztül lehetővé teszi CRM-objektumok kezelését és szinkronizálását más rendszerekkel. [HubSpot – API Reference](https://developers.hubspot.com/docs/reference/api/overview)
 
@@ -300,7 +300,7 @@ CRM ←→ Integráció ←→ Számlázás
        Szállítás
           ↕
        Fizetés
-```text
+```
 
 **Az API lehetővé teszi, hogy a különböző rendszerek együtt dolgozzanak anélkül, hogy mindegyiket újra kellene építeni.**
 
@@ -430,7 +430,7 @@ Kézi adatbevitel
 → ember
 → másolás
 → nagyobb hibakockázat
-```text
+```
 
 Minél több adat mozog a vállalkozásban, annál fontosabbá válik, hogy ezt hogyan mozgatjuk.
 
@@ -470,7 +470,7 @@ Automatizálási igény
 API + integráció
    ↓
 Skálázhatóbb folyamat
-```text
+```
 
 Ezért érdemes már egy új szoftver kiválasztásakor gondolni arra, hogyan fog működni a rendszer akkor, ha a vállalkozás két-három év múlva nagyobb lesz.
 

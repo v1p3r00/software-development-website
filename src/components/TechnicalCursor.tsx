@@ -60,7 +60,7 @@ export default function TechnicalCursor() {
       ref={dotRef}
       aria-hidden
       className="pointer-events-none fixed left-0 top-0 z-[70] hidden lg:block"
-      style={{ opacity: visible ? 1 : 0, transition: 'opacity .2s linear' }}
+      style={{ opacity: visible ? 1 : 0, transition: 'opacity .2s linear', viewTransitionName: 'tech-cursor' }}
     >
       <div className="relative -translate-x-1/2 -translate-y-1/2">
         {/* crosshair */}

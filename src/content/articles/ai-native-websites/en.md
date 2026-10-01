@@ -69,7 +69,7 @@ Structured content
 APIs and business operations
   ↓
 AI agent
-```text
+```
 
 Traditional web development has focused heavily on the first two layers.
 
@@ -110,7 +110,7 @@ Contract: monthly
 Users: maximum 10
 Support: email
 Implementation: 3 working days
-```text
+```
 
 The machine does not necessarily benefit from more elegant language.
 
@@ -146,7 +146,7 @@ Product
 ├── availability
 ├── rating
 └── URL
-```text
+```
 
 Google describes structured data as a standardised format for providing explicit clues about the meaning of page content, and recommends JSON-LD where practical. [Google Search Central – Introduction to structured data markup](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data)
 
@@ -181,7 +181,7 @@ GET /api/products/123
 GET /api/products?category=frames
 GET /api/availability?product=123
 POST /api/orders
-```text
+```
 
 The website presents information to people.
 
@@ -226,7 +226,7 @@ check_stock
 get_delivery_options
 create_quote
 book_appointment
-```text
+```
 
 That is much closer to an agent-ready system than a conventional website.
 
@@ -253,7 +253,7 @@ Business system
    ├── stock
    ├── orders
    └── appointments
-```text
+```
 
 But an important distinction remains:
 
@@ -277,7 +277,7 @@ Agent ↔ Tool / Data
 
 A2A
 Agent ↔ Agent
-```text
+```
 
 The official A2A documentation describes it as an open standard for communication and collaboration between independent AI agents, including task delegation and exchanging results. MCP, by contrast, focuses on connecting agents to tools, data and other context. [A2A Protocol – Overview](https://a2a-protocol.org/latest/)
 
@@ -309,7 +309,7 @@ Online picture-frame shop serving European customers.
 - /shipping
 - /returns
 - /faq
-```text
+```
 
 This can be useful for systems that explicitly support the format.
 
@@ -339,7 +339,7 @@ An agent may benefit more from:
 
 ```text
 [Place order]
-```text
+```
 
 than from an icon whose meaning depends heavily on visual interpretation.
 
@@ -378,7 +378,7 @@ Create order           ?
 Make payment           ???
  ↓
 Issue refund           ???
-```text
+```
 
 Not every operation should have the same authorisation level.
 
@@ -438,7 +438,7 @@ Cart
 Checkout
 ↓
 Payment
-```text
+```
 
 A possible future workflow:
 
@@ -458,7 +458,7 @@ Check conditions
 User approval
 ↓
 Order
-```text
+```
 
 In this model, the website is no longer just a user interface.
 

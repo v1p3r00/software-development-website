@@ -62,7 +62,7 @@ Hibajavítás
 Telepítés
 ↓
 Karbantartás
-```text
+```
 
 Vibe coding esetén a folyamat inkább:
 
@@ -84,7 +84,7 @@ AI módosítja
 Teszt
 ↓
 Ismétlés
-```text
+```
 
 A különbség nem pusztán az, hogy „az AI megírja a kódot”.
 
@@ -158,7 +158,7 @@ Felhasználói visszajelzés
 Módosítás
 ↓
 MVP
-```text
+```
 
 Ez jelentősen csökkentheti annak kockázatát, hogy sok pénzt költesz egy olyan termékre, amelyet később senki nem akar használni.
 
@@ -310,7 +310,7 @@ Integráció:
 
 Audit:
 - minden státuszváltozás naplózása
-```text
+```
 
 **Minél pontosabban érted a problémát, annál hasznosabb lesz az AI is.**
 
@@ -466,7 +466,7 @@ A teljesen vak vibe coding helyett egy biztonságosabb folyamat:
 8. Staging
         ↓
 9. Production
-```text
+```
 
 Az AI közben nagyon sok munkát elvégezhet.
 
@@ -555,7 +555,7 @@ MVP
 Szakmai fejlesztés
 ↓
 Éles rendszer
-```text
+```
 
 **Az AI egyik legnagyobb értéke nem feltétlenül az, hogy kiváltja a fejlesztőt. Hanem az, hogy olcsóbban és gyorsabban lehet eljutni az első működő verzióig.**
 
@@ -589,13 +589,13 @@ Régen:
 
 ```text
 Ember → kód
-```text
+```
 
 Egyre inkább:
 
 ```text
 Ember → specifikáció → AI → kód → teszt → emberi ellenőrzés
-```text
+```
 
 És az agentikus eszközök fejlődésével:
 
@@ -615,7 +615,7 @@ Tesztelés
 Pull request
 ↓
 Emberi ellenőrzés
-```text
+```
 
 A kérdés ezért egyre kevésbé az lesz:
 

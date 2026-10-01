@@ -36,7 +36,7 @@ next token
 next token
    ↓
 answer
-```text
+```
 
 The model uses the context available to it to predict which tokens should come next.
 
@@ -76,7 +76,7 @@ Complex problem
 → more planning / checking
 → slower answer
 → potentially better result
-```text
+```
 
 Research literature increasingly uses the term test-time scaling for techniques that allocate additional computation during inference to improve problem solving. This can involve different strategies, including generating multiple candidates, comparing them, verifying intermediate results or searching through possible solution paths. ([arxiv.org](https://arxiv.org/abs/2608.04001))
 
@@ -140,7 +140,7 @@ Consider alternatives
 Check
   ↓
 Final answer
-```text
+```
 
 The actual implementation differs between models, and not every reasoning model uses exactly the same technique.
 
@@ -188,7 +188,7 @@ High reasoning
 → more compute
 → potentially more expensive
 → useful for complex tasks
-```text
+```
 
 For a customer-service chatbot, for example, it may be important to return an answer almost immediately.
 
@@ -220,7 +220,7 @@ identify problems
 possible causes
        ↓
 recommended actions
-```text
+```
 
 The more relationships the system has to consider, the more useful additional reasoning may become.
 
@@ -262,7 +262,7 @@ check
 next step
  ↓
 final result
-```text
+```
 
 The more steps a workflow contains, the more valuable reasoning can become.
 
@@ -357,7 +357,7 @@ Increasingly:
 better model
 + more inference-time compute
 → stronger problem solving
-```text
+```
 
 Test-time scaling is still an active research area, and different approaches can have different costs, performance characteristics and failure modes. ([arxiv.org](https://arxiv.org/abs/2608.04001))
 

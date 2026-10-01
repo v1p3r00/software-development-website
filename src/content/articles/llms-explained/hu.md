@@ -54,7 +54,7 @@ tokenizálás
 számokká alakítás
         ↓
 LLM
-```text
+```
 
 **A modell tehát nem közvetlenül a mondatokat „olvassa”, hanem azok numerikus reprezentációjával dolgozik.**
 
@@ -80,7 +80,7 @@ Például:
                            következő token?
                                       ↓
                               "indul"
-```text
+```
 
 A modell nem egyszer tanulja meg ezt, hanem óriási mennyiségű példán keresztül folyamatosan módosítja a belső paramétereit.
 
@@ -144,7 +144,7 @@ következő token valószínűségei
 ...
   ↓
 kész válasz
-```text
+```
 
 A Hugging Face Transformers dokumentációja is hasonló folyamatot mutat: a bemenet tokenizálása után a modell generálja a tokeneket, amelyeket végül visszaalakít szöveggé. ([Hugging Face](https://huggingface.co/docs/transformers/quicktour))
 
@@ -182,7 +182,7 @@ aktuális kérdés
    context window
         ↓
        LLM
-```text
+```
 
 A nagyobb context window tehát nem egyszerűen azt jelenti, hogy „okosabb” a modell.
 
@@ -312,7 +312,7 @@ CRM / adatbázis / dokumentumok
 LLM
         ↓
 válasz vagy művelet
-```text
+```
 
 **A valódi üzleti érték sokszor nem magában az LLM-ben, hanem az LLM és a vállalati rendszerek összekapcsolásában van.**
 

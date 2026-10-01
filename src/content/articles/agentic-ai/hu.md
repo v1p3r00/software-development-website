@@ -30,7 +30,7 @@ Kérdés
 AI modell
   ↓
 Válasz
-```text
+```
 
 Ha azt kérdezed:
 
@@ -73,7 +73,7 @@ Következő lépés megtervezése
 Ellenőrzés
  ↓
 Feladat kész / emberi segítség
-```text
+```
 
 Az OpenAI agent dokumentációja ezt agent loopként kezeli: a modell dönt, szükség esetén toolt hív, megkapja az eredményt, majd folytatja a folyamatot, amíg el nem jut egy valódi befejezési ponthoz. ([OpenAI](https://developers.openai.com/api/docs/guides/agents/running-agents))
 
@@ -100,7 +100,7 @@ Az agent felbonthatja például:
 6. Készíts összefoglalót
 7. Ellenőrizd a forrásokat
 8. Készítsd el a végső riportot
-```text
+```
 
 Nem feltétlenül pontosan ezt a tervet választja.
 
@@ -179,7 +179,7 @@ Lépés 2
 Lépés 3
  ↓
 Kész
-```text
+```
 
 Ha a második lépés hibázik, a folyamat általában leáll.
 
@@ -197,7 +197,7 @@ AI elemzi az eredményt
 Másik megoldás?
  ├── Igen → új tool / új próbálkozás
  └── Nem → emberi segítség
-```text
+```
 
 Az Anthropic az agent működését hasonló önirányított ciklusként írja le: az agent tervez, cselekszik, megfigyeli az eredményt, módosítja a megközelítését, majd ismétel. ([Anthropic](https://www.anthropic.com/research/trustworthy-agents))
 
@@ -233,7 +233,7 @@ Order → #48152
 Status → shipped
 Courier → XYZ
 Tracking → 123456
-```text
+```
 
 ### 3. Lekérdezi a futárszolgálatot
 
@@ -245,7 +245,7 @@ Az eredmény:
 Last update:
 Package arrived at regional depot
 Delay: 2 days
-```text
+```
 
 ### 4. Újratervezi a választ
 
@@ -274,7 +274,7 @@ Elveszett csomag
 
 Pénzvisszatérítés
 → jóváhagyás szükséges
-```text
+```
 
 **Az agent nem attól lesz jó, hogy mindent megcsinálhat. Attól lesz használható, hogy tudja, melyik esetben meddig mehet el.**
 
@@ -307,7 +307,7 @@ Nagy összegű ajánlat kiküldése
 
 Pénz visszautalása
 → Ember
-```text
+```
 
 Az ember így nem minden lépést ellenőriz, csak azokat, amelyeknél ennek valódi értéke van.
 
@@ -401,7 +401,7 @@ Bejön az adat
 → adatbázis
 → e-mail
 → kész
-```text
+```
 
 akkor egy hagyományos, determinisztikus workflow gyakran egyszerűbb és kiszámíthatóbb.
 
@@ -414,7 +414,7 @@ Bejön a feladat
 → több lehetséges út van
 → az eredménytől függ a következő lépés
 → bizonyos esetekben ember kell
-```text
+```
 
 akkor már lehet értelme agentic megközelítésben gondolkodni.
 
@@ -440,7 +440,7 @@ Egy vállalkozásnak nem feltétlenül kell rögtön teljesen autonóm agentet �
 5. Ember jóváhagyja a kritikus műveleteket
    ↓
 6. Több folyamat válik autonómabbá
-```text
+```
 
 Közben mérni kell a hibákat is.
 

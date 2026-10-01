@@ -38,7 +38,7 @@ Invoicing system
 Invoice created
    ↓
 CRM updated
-```text
+```
 
 The two systems do not necessarily have to communicate directly.
 
@@ -70,7 +70,7 @@ POST /invoices
   "email": "peter@example.com",
   "amount": 125000
 }
-```text
+```
 
 The invoicing system processes the request and returns a response.
 
@@ -116,7 +116,7 @@ POST /webhooks/order-created
 Integration
     ↓
 CRM + invoicing
-```text
+```
 
 Make describes webhooks as HTTPS requests that can trigger a scenario when data arrives. Webhooks can be used as immediate triggers rather than repeatedly polling a service for new information. [Make – Webhooks](https://help.make.com/webhooks?v=2)
 
@@ -153,7 +153,7 @@ Update CRM
 Create invoice
    ↓
 Send email
-```text
+```
 
 Zapier can receive webhook requests from external systems and also send webhook requests to external URLs and APIs. [Zapier – Trigger Zaps from webhooks](https://help.zapier.com/hc/en-us/articles/8496288690317-Trigger-Zaps-from-webhooks) · [Zapier – Send webhooks in Zap workflows](https://help.zapier.com/hc/en-us/articles/8496326446989-Send-webhooks-in-Zap-workflows)
 
@@ -175,7 +175,7 @@ This is simple:
 
 ```text
 New order → CRM → email
-```text
+```
 
 But this is considerably more complex:
 
@@ -189,7 +189,7 @@ New order
  → update CRM
  → retry on failure
  → notify someone if it still fails
-```text
+```
 
 At this point, it is worth considering whether a more controlled custom integration would make more sense.
 
@@ -219,7 +219,7 @@ SFTP / upload
 Other system
  ↓
 Import
-```text
+```
 
 This is less sophisticated than a real-time API integration, but that does not necessarily make it a bad solution.
 
@@ -245,7 +245,7 @@ Data transformation
 CRM API
        ↓
 Invoicing API
-```text
+```
 
 This can make sense when:
 
@@ -288,7 +288,7 @@ File-based integration
     ↓ no
 
 Custom development
-```text
+```
 
 For a simple CRM → email workflow, Make or Zapier may be perfectly adequate.
 
@@ -328,7 +328,7 @@ Imagine that the shop sends:
 
 ```text
 Order #12345
-```text
+```
 
 The invoicing system receives it and creates the invoice.
 
@@ -360,7 +360,7 @@ Attempt 2 → failed
 wait
         ↓
 Attempt 3 → successful
-```text
+```
 
 The retry strategy should be controlled.
 
@@ -403,7 +403,7 @@ Online shop
 Make
    ↓
 CRM
-```text
+```
 
 In another situation, using Zapier or Make may introduce too many compromises.
 
@@ -457,7 +457,7 @@ CRM ───── ERP
 Shop ──────── Invoicing
  │             │
  └──── API ────┘
-```text
+```
 
 The more connections you have, the more places there are to maintain, monitor and update.
 
@@ -491,4 +491,3 @@ If the integration is business-critical, however, simply making the data move is
 - Microsoft Learn: [Microservices assessment and readiness](https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/microservices-assessment)
 - AWS Prescriptive Guidance: [Asynchronous communication](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-integrating-microservices/asynchronous.html)
 - AWS Prescriptive Guidance: [Publish-subscribe pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/publish-subscribe.html)
-````

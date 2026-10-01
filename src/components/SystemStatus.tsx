@@ -20,6 +20,7 @@ export default function SystemStatus() {
     <div
       className="fixed bottom-4 left-4 z-40 hidden transition-all duration-500 ease-tech lg:block"
       style={{
+        viewTransitionName: 'system-status',
         opacity: shown ? 1 : 0,
         transform: shown ? 'translateY(0)' : 'translateY(8px)',
         pointerEvents: shown ? 'auto' : 'none',

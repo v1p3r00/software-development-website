@@ -32,7 +32,7 @@ Egy webshop például rendelkezhet ilyen végponttal:
 
 ```text
 GET /api/orders/48152
-```text
+```
 
 A kliens elküldi a kérést, a szerver pedig választ ad:
 
@@ -45,7 +45,7 @@ GET /api/orders/48152
   "id": 48152,
   "status": "shipped"
 }
-```text
+```
 
 Az API önmagában nem AI-technológia.
 
@@ -70,7 +70,7 @@ Tegyük fel, hogy van egy Java metódusod:
 
 ```text
 getOrder(orderId)
-```text
+```
 
 A modellnek megadhatod, hogy létezik egy ilyen funkció, és milyen paramétereket vár.
 
@@ -87,7 +87,7 @@ getOrder
 {
   "orderId": "48152"
 }
-```text
+```
 
 A te alkalmazásod végrehajtja a függvényt, majd visszaadja az eredményt a modellnek.
 
@@ -113,7 +113,7 @@ Eredmény
 AI modell
     ↓
 Végső válasz
-```text
+```
 
 **A function calling tehát egy olyan mechanizmus, amellyel a modell strukturáltan kérheti az alkalmazásodtól egy funkció végrehajtását.**
 
@@ -136,7 +136,7 @@ AI alkalmazás
       ↓
 ┌─────┼─────┬─────────┐
 CRM  ERP  Database  Files
-```text
+```
 
 Az MCP tehát nem egy újabb adatbázis vagy API.
 
@@ -182,7 +182,7 @@ Backend
 Database
    ↓
 72 db
-```text
+```
 
 Itt nincs szükség AI-ra.
 
@@ -198,7 +198,7 @@ A modell rendelkezésére bocsátunk egy funkciót:
 
 ```text
 checkStock(productId)
-```text
+```
 
 A felhasználó ezt írja:
 
@@ -211,7 +211,7 @@ checkStock
 {
   "productId": "X"
 }
-```text
+```
 
 A saját backendünk végrehajtja a funkciót.
 
@@ -227,7 +227,7 @@ Backend function
 REST API
  ↓
 Database
-```text
+```
 
 Ez fontos felismerés:
 
@@ -262,7 +262,7 @@ check_stock
 Backend / API
    ↓
 Database
-```text
+```
 
 Az MCP server például publikálhatja:
 
@@ -275,7 +275,7 @@ product_id: string
 
 Output:
 available: number
-```text
+```
 
 Az MCP-kompatibilis kliens fel tudja fedezni a toolt, és a modell számára elérhetővé teheti.
 
@@ -301,7 +301,7 @@ Például:
           Business API
                  ↓
              Database
-```text
+```
 
 Vagy egy másik architektúrában:
 
@@ -314,7 +314,7 @@ Saját backend
  ├── REST API
  ├── Database
  └── Külső szolgáltatások
-```text
+```
 
 Vagy:
 
@@ -322,7 +322,7 @@ Vagy:
 AI Host A ─┐
 AI Host B ─┼→ MCP Server → API → Database
 AI Host C ─┘
-```text
+```
 
 **Ezért nem érdemes úgy gondolkodni, hogy „API vagy MCP?”**
 
@@ -346,7 +346,7 @@ REST API
 Spring Boot
       ↓
 MariaDB
-```text
+```
 
 A Reactnek nem kell tudnia, hogyan működik a MariaDB.
 
@@ -368,7 +368,7 @@ AI
  ├── check_stock
  ├── create_quote
  └── search_orders
-```text
+```
 
 A funkciókat a saját alkalmazásod kontrollálja.
 
@@ -403,7 +403,7 @@ Például:
              ┌───────────┼───────────┐
              ↓           ↓           ↓
            AI App      Agent       IDE
-```text
+```
 
 Ahelyett, hogy minden AI-klienshez külön integrációt építenél, egy szabványos MCP-réteget alakíthatsz ki.
 
@@ -423,7 +423,7 @@ React
 Spring Boot API
   ↓
 MariaDB
-```text
+```
 
 Szeretnél egy AI ügyfélszolgálati agentet.
 
@@ -436,7 +436,7 @@ GET /orders/{id}
 GET /customers/{id}
 GET /products/{id}
 POST /refunds
-```text
+```
 
 ### Function calling
 
@@ -447,7 +447,7 @@ get_order
 get_customer
 get_product
 request_refund
-```text
+```
 
 ### MCP
 
@@ -465,7 +465,7 @@ MCP Server
    Business API
        ↓
     Database
-```text
+```
 
 Így a rétegek szerepe világos:
 
@@ -606,4 +606,3 @@ Ha ezt a három réteget külön kezeled, sokkal könnyebb lesz megtervezni egy 
 * OpenAI: [MCP servers](https://developers.openai.com/api/docs/guides/tools-connectors-mcp)
 * OpenAI: [Functions for Agents](https://developers.openai.com/api/docs/guides/agents-api/tools/functions)
 
-````

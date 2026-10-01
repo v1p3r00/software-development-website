@@ -49,7 +49,7 @@ embedding
 embedding
         ↓
 [0.20, -0.39, 0.69, 0.11, ...]
-```text
+```
 
 A valós embeddingek ennél sokkal több dimenzióból állhatnak, és az egyes számok önmagukban általában nem értelmezhetők úgy, hogy „ez a szám a jelszót jelenti”.
 
@@ -71,7 +71,7 @@ Egy pontnak lehet például két koordinátája:
 A = (2, 3)
 B = (5, 4)
 C = (-2, 6)
-```text
+```
 
 Ezeket a pontokat el tudjuk helyezni egy térképen.
 
@@ -91,7 +91,7 @@ Egy szöveg egy nagyon sokdimenziós térben kap egy pozíciót.
 
           ● ●
                  más témájú szövegek
-```text
+```
 
 A valós rendszerben ezt nem tudjuk egyszerűen lerajzolni, mert az embeddingnek sok dimenziója lehet.
 
@@ -146,7 +146,7 @@ A vektor
 
 kis szög → hasonló irány
 nagy szög → kevésbé hasonló irány
-```text
+```
 
 A cosine similarity matematikailag a két vektor közötti szög koszinuszán alapul:
 
@@ -229,7 +229,7 @@ query embedding
 hasonlóság keresése
    ↓
 legközelebbi dokumentumok
-```text
+```
 
 A rendszer így a jelentés alapján találhat releváns információt.
 
@@ -260,7 +260,7 @@ Termék C
 „Vízálló bakancs hegyi túrákhoz”
         ↓
 embedding
-```text
+```
 
 Ha a felhasználó olyan terméket néz, amelynek embeddingje közel van egy másik termékéhez, az egyik jel lehet arra, hogy a két termék tartalmilag hasonló.
 
@@ -289,7 +289,7 @@ Például egy ügyfélszolgálati rendszerben előfordulhat:
 „Nem sikerül bejelentkeznem.”
 
 „Nem enged be a rendszer.”
-```text
+```
 
 Szövegesen különböznek.
 
@@ -332,7 +332,7 @@ query embedding
 hasonlósági keresés
         ↓
 Top 10 találat
-```text
+```
 
 A Sentence Transformers például közvetlenül támogat szemantikus keresést embeddingek között, és a dokumentációja szerint cosine similarity használható alapértelmezett score-ként. ([sbert.net](https://www.sbert.net/docs/package_reference/util/retrieval.html))
 
@@ -379,7 +379,7 @@ Embedding modell
 vektor
    ↓
 keresés / hasonlóság / klaszterezés
-```text
+```
 
 Ezután egy LLM akár felhasználhatja a megtalált információt.
 
@@ -397,7 +397,7 @@ releváns dokumentumok
 LLM
  ↓
 válasz
-```text
+```
 
 **Az embedding tehát sokszor az AI-rendszer keresési rétege, nem maga a válaszadó.**
 
@@ -454,7 +454,7 @@ Embedding
 ├── dokumentumcsoportosítás
 ├── hasonló ügyek keresése
 └── tartalomfelderítés
-```text
+```
 
 Ezért találkozol az embedding fogalmával szinte minden komolyabb AI-alapú keresési rendszerben.
 

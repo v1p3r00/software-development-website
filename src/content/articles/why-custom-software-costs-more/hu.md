@@ -59,7 +59,7 @@ Egy havi 100 000 Ft-os előfizetés:
 
 ```text
 100 000 × 12 × 5 = 6 000 000 Ft
-```text
+```
 
 És ebben még nincs benne:
 
@@ -326,7 +326,7 @@ Előfizetés
 + támogatás
 + switching cost
 = teljes költség
-```text
+```
 
 ### Egyedi szoftver
 
@@ -340,7 +340,7 @@ Tervezés
 + biztonsági frissítések
 + továbbfejlesztés
 = teljes költség
-```text
+```
 
 A TCO célja éppen az, hogy az egyszeri és folyamatos, közvetlen és közvetett költségeket együtt lásd. :contentReference[oaicite:6]{index=6}
 
@@ -361,7 +361,7 @@ Tegyük fel, hogy egy kész alkalmazás:
 + 500 000
 + 1 000 000
 = 10 500 000 Ft
-```text
+```
 
 Egy egyedi rendszer például:
 
@@ -378,7 +378,7 @@ Egy egyedi rendszer például:
 + (80 000 × 60)
 + (70 000 × 60)
 = 18 500 000 Ft
-```text
+```
 
 **Ebben a példában az egyedi rendszer öt év alatt is drágább.**
 
@@ -409,7 +409,7 @@ Ezért érdemes kiszámolni:
 + elvesztett idő
 + integrációk költsége
 + előfizetések
-```text
+```
 
 **A legolcsóbb szoftver nem feltétlenül a legalacsonyabb teljes költségű megoldás.**
 

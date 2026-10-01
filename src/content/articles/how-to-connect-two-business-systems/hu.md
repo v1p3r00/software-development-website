@@ -38,7 +38,7 @@ Számlázó
 Számla elkészül
    ↓
 CRM frissül
-```text
+```
 
 Az integráció azonban nem feltétlenül jelenti azt, hogy a két rendszer közvetlenül kommunikál egymással.
 
@@ -70,7 +70,7 @@ POST /invoices
   "email": "peter@example.com",
   "amount": 125000
 }
-```text
+```
 
 A számlázó feldolgozza a kérést, majd választ ad.
 
@@ -116,7 +116,7 @@ POST /webhooks/order-created
 Integráció
     ↓
 Számlázó + CRM
-```text
+```
 
 A Make dokumentációja szerint a webhookok HTTPS-en keresztül adatot küldhetnek, és az érkező kérés azonnal elindíthat egy folyamatot. [Make – Webhooks](https://help.make.com/webhooks?v=2)
 
@@ -155,7 +155,7 @@ CRM frissítése
 Számlázás
    ↓
 E-mail küldése
-```text
+```
 
 A Zapier webhookokon keresztül külső rendszerekből is képes workflow-t indítani, illetve külső API-k felé is tud adatot küldeni. [Zapier – Trigger Zaps from webhooks](https://help.zapier.com/hc/en-us/articles/8496288690317-Trigger-Zaps-from-webhooks)
 
@@ -177,7 +177,7 @@ Például egy ilyen folyamat még egyszerű:
 
 ```text
 Új rendelés → CRM → e-mail
-```text
+```
 
 De ez már egészen más:
 
@@ -191,7 +191,7 @@ De ez már egészen más:
  → CRM frissítése
  → hiba esetén újrapróbálkozás
  → sikertelenség esetén értesítés
-```text
+```
 
 Itt már érdemes megvizsgálni, hogy nem jobb-e egy kontrolláltabb egyedi integráció.
 
@@ -221,7 +221,7 @@ SFTP / feltöltés
 Másik rendszer
  ↓
 Import
-```text
+```
 
 Ez kevésbé elegáns, mint egy valós idejű API-integráció, de ettől még lehet teljesen megfelelő.
 
@@ -492,4 +492,3 @@ Ha viszont az integráció üzletileg kritikus, nem elég azt megoldani, hogy �
 * AWS Prescriptive Guidance: [Asynchronous communication](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-integrating-microservices/asynchronous.html)
 * AWS Prescriptive Guidance: [Publish-subscribe pattern](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/publish-subscribe.html)
 
-````

@@ -58,7 +58,7 @@ AI-agent
 Toolok
 ↓
 Eredmény
-```text
+```
 
 Egy multi-agent rendszer:
 
@@ -72,7 +72,7 @@ Felhasználó → Orchestrator
                   ├── Finance agent
                   │
                   └── Technical agent
-```text
+```
 
 Az orchestrator, vagyis koordinátor feladata lehet eldönteni:
 
@@ -103,7 +103,7 @@ Az egyetlen agentnek ezt kellene tudnia:
 - technikai hibák
 - szerződések
 - szállítás
-```text
+```
 
 Ehhez rengeteg instrukció és tool tartozhat.
 
@@ -116,7 +116,7 @@ Triage Agent
     ├── Billing Agent
     ├── Technical Support Agent
     └── Product Agent
-```text
+```
 
 Az Order Agent például csak a rendelésekkel foglalkozik.
 
@@ -142,7 +142,7 @@ User → Manager ─────┼── Finance Agent
                     ├── Technical Agent
                     │
                     └── Writer Agent
-```text
+```
 
 A manager kapja a felhasználó kérését.
 
@@ -164,7 +164,7 @@ Technical Agent
 
 Writer Agent
 → végső összefoglaló
-```text
+```
 
 Ezután a manager összerakja az eredményeket.
 
@@ -186,7 +186,7 @@ Triage Agent
 Technical Support Agent
 ↓
 Billing Agent
-```text
+```
 
 Például:
 
@@ -198,7 +198,7 @@ A Triage Agent felismeri, hogy először számlázási probléma van:
 Triage
 ↓
 Billing Agent
-```text
+```
 
 A Billing Agent pedig később továbbadhatja:
 
@@ -206,7 +206,7 @@ A Billing Agent pedig később továbbadhatja:
 Billing
 ↓
 Technical Support
-```text
+```
 
 Az OpenAI Agents SDK ezt handoffnak nevezi: az execution control átkerül a specialistához. [OpenAI – Orchestration and handoffs](https://developers.openai.com/api/docs/guides/agents/orchestration)
 
@@ -232,7 +232,7 @@ Pénzügyi elemzés
 Technikai elemzés
 ↓
 Összefoglaló
-```text
+```
 
 Ez egymás után történik.
 
@@ -247,7 +247,7 @@ User → Orchestrator ── Pénzügyi elemzés
              └── Technikai elemzés
                        ↓
                    Összesítés
-```text
+```
 
 A négy részfeladat bizonyos esetekben egymástól függetlenül elvégezhető.
 
@@ -309,7 +309,7 @@ Research ─────┐
 Finance ──────┤
 Product ──────┼→ Manager → Végső jelentés
 Risk ─────────┘
-```text
+```
 
 A manager nem feltétlenül végzi el ezeket a feladatokat.
 
@@ -332,7 +332,7 @@ Segíts technikai problémákban.
 Kezeld a CRM-et.
 Küldj e-maileket.
 ...
-```text
+```
 
 Ehhez rengeteg tool is társul.
 
@@ -348,7 +348,7 @@ Feladataid:
 
 Nem küldhetsz ki számlát
 felhasználói jóváhagyás nélkül.
-```text
+```
 
 Ez sokkal szűkebb.
 
@@ -412,7 +412,7 @@ User
 1 agent
 ↓
 Answer
-```text
+```
 
 Egy multi-agent megoldás:
 
@@ -426,7 +426,7 @@ Manager
 Manager
 ↓
 Answer
-```text
+```
 
 Akár négyszer vagy még többször is meghívhatod a modellt.
 
@@ -454,7 +454,7 @@ Agent B
 Agent C
 ↓
 Manager
-```text
+```
 
 minden lépés egymás után történik, a válaszidő könnyen megnő.
 
@@ -468,7 +468,7 @@ Manager ├── Agent B
         └── Agent C
              ↓
           Manager
-```text
+```
 
 a három feladat párhuzamosan futhat.
 
@@ -486,7 +486,7 @@ Egyetlen agent hibája:
 Agent
 ↓
 Hibás döntés
-```text
+```
 
 Multi-agent esetén:
 
@@ -502,7 +502,7 @@ rossz összesítés
 Agent B
 ↓
 rossz következő döntés
-```text
+```
 
 Lehetnek olyan hibák is, amelyek egyetlen agentnél nem léteznek:
 
@@ -532,7 +532,7 @@ Agent
 Context
 ↓
 Tool
-```text
+```
 
 Multi-agent rendszernél el kell döntened, mit kapjon a következő agent.
 
@@ -554,7 +554,7 @@ Manager
 3 fontos megállapítás
 ↓
 Finance Agent
-```text
+```
 
 Ha túl sok adatot továbbítasz, nő a költség és a zaj.
 
@@ -582,7 +582,7 @@ Summarizer
 
 Complex analyst
 → erősebb modell
-```text
+```
 
 Nem minden részfeladat igényel ugyanakkora „intelligenciát”.
 
@@ -616,7 +616,7 @@ Billing Agent
 
 Admin Agent
 → kritikus műveletek
-```text
+```
 
 Nem kell mindegyiknek ugyanazt a hozzáférést adnod.
 
@@ -642,7 +642,7 @@ Manager Agent
 MCP
       ↓
 CRM / ERP / Database
-```text
+```
 
 Vagy különböző specialisták saját toolkészletet kaphatnak:
 
@@ -893,7 +893,7 @@ A fontosabb változás inkább az, hogy **különböző képességeket lehet kom
 
 Egy vállalkozásnak lehet:
 
-````text
+```text
 Customer Agent
 Finance Agent
 Sales Agent

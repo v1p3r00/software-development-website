@@ -69,7 +69,7 @@ The basic difference looks like this:
 SEO → content + technical work → organic visibility
 
 Google Ads → budget + advertising → paid visibility → clicks
-```text
+```
 
 ---
 
@@ -106,7 +106,7 @@ For example:
 
 ```text
 Monthly Ads budget → clicks → enquiries → customers
-```text
+```
 
 With CPC bidding, you pay for clicks, and the actual CPC can be lower than your maximum CPC bid. ([Google Ads Help – Cost-per-click](https://support.google.com/google-ads/answer/116495))
 
@@ -183,7 +183,7 @@ The journey looks more like:
 
 ```text
 Ad → click → landing page → interest → enquiry → sale
-```text
+```
 
 If the landing page is poor, a good advert cannot fix the entire process.
 
@@ -255,7 +255,7 @@ Google Ads → quick traffic and offer testing
              useful data
                   ↓
 SEO → longer-term content and organic visibility
-```text
+```
 
 Your Ads campaigns can reveal which searches, offers and messages attract attention.
 
@@ -281,7 +281,7 @@ You could run Google Ads for specific services.
 
 ```text
 Search → advert → service page → enquiry
-```text
+```
 
 You could then measure:
 
@@ -325,7 +325,7 @@ For example:
 → 20 enquiries
 → 5 customers
 → €8,000 revenue
-```text
+```
 
 That tells you much more than the advertising spend on its own.
 
@@ -427,4 +427,3 @@ A good strategy is not the one that spends the most money on one channel. **It i
 - Google Ads: [Reach the Right Customers with Search Ad Campaigns](https://business.google.com/en-all/ad-solutions/search/)
 - Google Ads Help: [Cost-per-click (CPC): Definition](https://support.google.com/google-ads/answer/116495)
 - Google: [How ads work on Google Search](https://www.google.com/intl/en_us/search/howsearchworks/our-approach/ads-on-search/)
-````

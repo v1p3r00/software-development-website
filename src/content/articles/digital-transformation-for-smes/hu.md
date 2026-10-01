@@ -106,7 +106,7 @@ Ajánlat készítése
 E-mail az ügyfélnek
 ↓
 CRM frissítése
-```text
+```
 
 Automatizált folyamat:
 
@@ -120,7 +120,7 @@ Automatikus feladat
 Ajánlati sablon
 ↓
 Értesítés az értékesítőnek
-```text
+```
 
 Nem kell hozzá feltétlenül egy teljesen új vállalati rendszer.
 
@@ -158,7 +158,7 @@ Webshop
 Új rendelés
    ↓
 Számlázó
-```text
+```
 
 De lehet összetettebb:
 
@@ -170,7 +170,7 @@ Integrációs réteg
    ├── Számlázó
    ├── Készletkezelő
    └── E-mail rendszer
-```text
+```
 
 **Az integráció célja nem az, hogy minél több rendszert kapcsoljunk össze, hanem hogy megszüntessük a felesleges kézi adatmozgatást.**
 
@@ -239,7 +239,7 @@ AI szolgáltatás
 Saját üzleti alkalmazás
      =
 Egy összefüggő rendszer
-```text
+```
 
 Ez sokszor ésszerűbb, mint minden funkciót saját fejlesztésként létrehozni.
 
@@ -313,7 +313,7 @@ Egy egyszerű pontozás is elegendő lehet:
 Hatás × Gyakoriság × Időmegtakarítás
 -------------------------------
           Megvalósítási költség
-```text
+```
 
 Ez nem pontos pénzügyi modell.
 
@@ -341,7 +341,7 @@ Például:
 Ajánlatkérések feldolgozása: 15 perc / ügyfél
 20 ügyfél / hét
 = 5 óra / hét
-```text
+```
 
 **Utána**
 
@@ -349,7 +349,7 @@ Ajánlatkérések feldolgozása: 15 perc / ügyfél
 Automatizált előfeldolgozás: 3 perc / ügyfél
 20 ügyfél / hét
 = 1 óra / hét
-```text
+```
 
 Heti négy óra megtakarítás már éves szinten is jelentős mennyiségű munkaidő.
 
@@ -385,7 +385,7 @@ Ajánlat elkészítése → 15 perc
 
 Eredmény:
 → 67% időmegtakarítás
-```text
+```
 
 Így már nem az a kérdés, hogy „jó lett-e az új rendszer”.
 
@@ -427,7 +427,7 @@ Ha most kezded, egy ilyen sorrend jó kiindulópont lehet:
 6. AI
           ↓
 7. Egyedi szoftver
-```text
+```
 
 Nem kötelező mind a hét lépést végigjárni.
 

@@ -72,7 +72,7 @@ Create quote
 Human approval?
   ↓
 Send quote
-```text
+```
 
 This does not necessarily have to be a rigid, pre-programmed workflow. Depending on the architecture, the agent can select the next action based on the current state, available information and available tools.
 
@@ -154,7 +154,7 @@ Model evaluates the situation again
 Another tool?
    ├── Yes → back to the tool
    └── No → final result
-```text
+```
 
 This matters because an agent does not necessarily know in advance how many steps a task will require.
 
@@ -230,7 +230,7 @@ Product: X
 Requested quantity: 50
 Available stock: 72
 → order can be fulfilled
-```text
+```
 
 ### 4. It calculates the quotation
 
@@ -251,7 +251,7 @@ The company might define a simple policy:
 ```text
 Below €1,000 → automatic sending
 Above €1,000 → manager approval
-```text
+```
 
 ### 6. Human approval
 
@@ -289,7 +289,7 @@ Human approval
 Email sent
   ↓
 CRM updated
-```text
+```
 
 That is business process automation with an agent.
 
@@ -367,7 +367,7 @@ Medium risk
 
 High risk
 → human approval
-```text
+```
 
 OpenAI's current documentation separates automatic guardrails from human-in-the-loop approvals, particularly for sensitive or irreversible actions. ([OpenAI](https://developers.openai.com/api/docs/guides/agents/guardrails-approvals))
 
@@ -391,7 +391,7 @@ For example:
 3. Prepare response
 4. Human reviews
 5. Send
-```text
+```
 
 Once that works reliably, the process can evolve:
 
@@ -402,7 +402,7 @@ Once that works reliably, the process can evolve:
 4. Agent prepares response
 5. Low risk → send automatically
 6. High risk → request human approval
-```text
+```
 
 **An AI agent is not simply a “smarter chatbot”. It is an AI-powered software workflow that can gather information, make decisions and perform actions to achieve a goal.**
 
