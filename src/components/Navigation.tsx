@@ -8,7 +8,7 @@ import { useActiveSection } from '../hooks/useMisc';
 import { useTheme } from '../hooks/useTheme';
 import LanguageSwitcher from './LanguageSwitcher';
 import { usePageTransition } from '../lib/pageTransition';
-import { ArticlesPage } from '../pages/lazy';
+import { ArticlesPage, InterviewPage } from '../pages/lazy';
 import { Arrow, cx } from './ui';
 
 function Monogram({ compact }: { compact: boolean }) {
@@ -62,6 +62,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
     { id: 'contact', label: t.nav.contact },
   ];
   const onArticles = stripLang(pathname).startsWith('/articles');
+  const onInterview = stripLang(pathname).startsWith('/interview');
 
   return (
     <header
@@ -131,6 +132,22 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
               className={cx(
                 'absolute -bottom-0.5 left-0 h-px bg-accent transition-all duration-300 ease-tech',
                 onArticles ? 'w-full' : 'w-0 group-hover:w-full',
+              )}
+            />
+          </Link>
+          <Link
+            to={lp('/interview/')}
+            onClick={() => InterviewPage.preload()}
+            data-cursor="follow"
+            className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[11px] uppercase tracking-tech"
+          >
+            <span className={cx('transition-colors', onInterview ? 'text-text' : 'text-muted group-hover:text-text')}>
+              {t.nav.interview}
+            </span>
+            <span
+              className={cx(
+                'absolute -bottom-0.5 left-0 h-px bg-accent transition-all duration-300 ease-tech',
+                onInterview ? 'w-full' : 'w-0 group-hover:w-full',
               )}
             />
           </Link>
@@ -230,6 +247,16 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             {t.nav.articles}
             <span className="font-mono text-2xs tracking-tech text-accent">
               [{String(items.length + 1).padStart(2, '0')}]
+            </span>
+          </Link>
+          <Link
+            to={lp('/interview/')}
+            onClick={() => setOpen(false)}
+            className="flex items-baseline justify-between border-b border-line py-4 font-display text-2xl font-extrabold uppercase tracking-tight last:border-b-0"
+          >
+            {t.nav.interview}
+            <span className="font-mono text-2xs tracking-tech text-accent">
+              [{String(items.length + 2).padStart(2, '0')}]
             </span>
           </Link>
           <div className="mt-4 flex items-center justify-between">

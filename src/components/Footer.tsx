@@ -53,6 +53,13 @@ export default function Footer() {
             >
               {t.nav.articles}
             </Link>
+            <Link
+              to={lp('/interview/')}
+              data-cursor="follow"
+              className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
+            >
+              {t.nav.interview}
+            </Link>
           </nav>
 
           <div className="flex gap-2">

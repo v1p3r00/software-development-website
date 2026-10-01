@@ -1,0 +1,3470 @@
+### Q1
+LEVEL: junior
+TOPIC: Components & templates
+TYPE: behavior
+QUESTION: What is displayed on the screen with the following Angular component template?
+CODE:
+title = 'Angular';
+ENDCODE
+A) Angular
+B) title
+C) {{ title }}
+D) Nothing, because the property is not defined as a signal
+ANSWER: A
+EXPLANATION: Angular interpolation reads the current value of the component's `title` property and displays it in the template. Using a signal is not required; Angular templates can also read regular component properties. The most common incorrect answer is tempting because modern Angular examples often use signals, but traditional property binding is still fully supported.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: Data binding
+TYPE: output
+QUESTION: What will the button label be with the following Angular template?
+CODE:
+export class AppComponent {
+  label = 'Save';
+}
+ENDCODE
+
+<button [textContent]="label"></button>
+ENDCODE
+A) `label`
+B) `{{ label }}`
+C) `Save`
+D) An empty button
+ANSWER: C
+EXPLANATION: `[textContent]` property binding directly sets the DOM element's `textContent` property to the component's `label` value, so the button displays `Save`. The most common incorrect answer is tempting because interpolation and property binding have similar purposes, but here a DOM property is being assigned directly.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: Directives
+TYPE: behavior
+QUESTION: What does the following template do in Angular?
+CODE:
+<p [class.active]="isActive">Profile</p>
+ENDCODE
+A) The `active` class is always added
+B) The `active` class is present only when `isActive` is truthy
+C) The `active` class is present only when `isActive` is falsy
+D) Angular throws an error because `ngClass` is required for class binding
+ANSWER: B
+EXPLANATION: `[class.active]` controls the presence of a single CSS class. When `isActive` is truthy, the `active` class is added; when it is falsy, the class is removed. The most common incorrect answer is tempting because older Angular code often uses `ngClass`, even though direct class binding is simpler when controlling a single class.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: Pipes
+TYPE: output
+QUESTION: What is displayed in the template if `name` is `angular`?
+CODE:
+name = 'angular';
+ENDCODE
+
+<p>{{ name | uppercase }}</p>
+ENDCODE
+A) angular
+B) Angular
+C) ANGULAR
+D) `uppercase`
+ANSWER: C
+EXPLANATION: Angular's built-in `uppercase` pipe converts the string to uppercase, so the result is `ANGULAR`. The pipe applies the transformation to the value displayed by the template. The most common incorrect answer is tempting because the pipe does not modify the component's `name` property itself; it only transforms the value for display.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: Dependency injection
+TYPE: theory
+QUESTION: What happens when a service with `providedIn: 'root'` is injected into an Angular component's constructor?
+CODE:
+@Injectable({ providedIn: 'root' })
+export class LoggerService {}
+
+@Component({
+  selector: 'app-root',
+  template: ''
+})
+export class AppComponent {
+  constructor(private logger: LoggerService) {}
+}
+ENDCODE
+A) Angular cannot create the service without an explicit provider
+B) Angular resolves the service through the root injector
+C) The service is created only if the template uses it
+D) The service automatically gets a separate instance for each component
+ANSWER: B
+EXPLANATION: `providedIn: 'root'` registers the service with the root injector, allowing Angular's dependency injection mechanism to resolve it for the component. This typically results in an application-wide singleton instance. The most common incorrect answer is tempting because many DI examples also contain an explicit `providers` array, but that is not required when using `providedIn: 'root'`.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Services & providers
+TYPE: scenario
+QUESTION: A service is declared in a component's `providers` array. What is the most important consequence?
+CODE:
+@Component({
+  selector: 'app-user',
+  template: '',
+  providers: [UserService]
+})
+export class UserComponent {}
+ENDCODE
+A) The entire application uses the same instance
+B) The service disables the root injector
+C) The component can receive its own service instance through its injector
+D) The service works only in SSR environments
+ANSWER: C
+EXPLANATION: A provider declared on a component creates a provider in the component's injector hierarchy, so that component and its relevant injection subtree can receive its own `UserService` instance. This differs from a root-level provider. The most common incorrect answer is tempting because services are often used as singletons, but the provider scope determines their instance and lifetime.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: Lifecycle hooks
+TYPE: behavior
+QUESTION: When does `ngOnInit()` run for a component?
+CODE:
+export class UserComponent implements OnInit {
+  ngOnInit() {
+    console.log('init');
+  }
+}
+ENDCODE
+A) On every change detection cycle
+B) Once after the component instance has been initialized
+C) Every time the template is re-rendered
+D) Only when the component is destroyed
+ANSWER: B
+EXPLANATION: `ngOnInit` is part of the component initialization lifecycle and runs once for a given component instance. It is not part of every change detection cycle. The most common incorrect answer is tempting because `ngOnInit` occurs around the initial rendering, but it is not a general-purpose rendering callback.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Change detection & OnPush
+TYPE: trap
+QUESTION: What does using the `OnPush` change detection strategy on a component mean?
+CODE:
+@Component({
+  selector: 'app-user',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '{{ user.name }}'
+})
+export class UserComponent {
+  @Input() user!: User;
+}
+ENDCODE
+A) The component is never checked by change detection again
+B) The component is checked only when the entire application restarts
+C) Angular checks the component under conditions such as an input reference change, an event handled by the component, or an appropriate reactive notification
+D) `OnPush` works only in production builds
+ANSWER: C
+EXPLANATION: `OnPush` does not permanently disable change detection. Angular can check an `OnPush` component when, among other things, an input reference changes, an event handled by the component occurs, or modern reactive primitives such as signals notify Angular of a relevant change. The most common incorrect answer is tempting because `OnPush` does reduce unnecessary checks, but it does not mean the component is completely excluded from change detection.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: Signals
+TYPE: output
+QUESTION: What is displayed in the template when using the following Angular signals?
+CODE:
+count = signal(2);
+
+doubleCount = computed(() => this.count() * 2);
+ENDCODE
+
+<p>{{ doubleCount() }}</p>
+ENDCODE
+A) 2
+B) 4
+C) `doubleCount`
+D) Angular template error
+ANSWER: B
+EXPLANATION: `count()` returns the signal's current value, which is 2. The `computed` signal multiplies it by two, so `doubleCount()` returns 4. The most common incorrect answer is tempting because there is no explicit initial value in the `computed` declaration, but its value is calculated by the derivation function.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: RxJS & Observables
+TYPE: behavior
+QUESTION: What happens with the following Observable?
+CODE:
+const numbers$ = of(1, 2, 3);
+
+numbers$.subscribe(value => console.log(value));
+ENDCODE
+A) Only 3 is logged
+B) The Observable emits a single value that is an array
+C) 1, then 2, then 3 are logged
+D) Nothing happens because Observables can only be used for HTTP requests
+ANSWER: C
+EXPLANATION: `of(1, 2, 3)` produces three consecutive emissions, so the subscriber runs three times with 1, then 2, then 3. An Observable is a general abstraction for a stream of values, whether synchronous or asynchronous. The most common incorrect answer is tempting because multiple values can easily be confused with a single array value.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: HttpClient & interceptors
+TYPE: scenario
+QUESTION: You want to automatically add an Authorization header to every HTTP request in an Angular application. Which solution is most appropriate?
+CODE:
+GET /api/users
+Authorization: Bearer <token>
+ENDCODE
+A) Manually add the header in every component
+B) Use an HttpInterceptor
+C) Create a pipe
+D) Modify the Router configuration
+ANSWER: B
+EXPLANATION: An HTTP interceptor provides a centralized place to modify requests, such as adding an Authorization header. This avoids duplicating the same logic for every HttpClient call. The most common incorrect answer is tempting because the header does appear on each individual request, but it should not be duplicated across components.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: Routing & guards
+TYPE: behavior
+QUESTION: What is the primary purpose of an Angular route guard?
+CODE:
+export const authGuard: CanActivateFn = () => {
+  return isLoggedIn();
+};
+ENDCODE
+A) Applying CSS styles
+B) Transforming HTTP responses
+C) Determining whether navigation to a route is allowed
+D) Compiling component templates
+ANSWER: C
+EXPLANATION: A route guard participates in the routing lifecycle and can determine whether navigation is allowed, redirected, or otherwise handled. A common use case is protecting routes that require authentication. The most common incorrect answer is tempting because authentication often involves services and HTTP requests, but the guard's direct responsibility is controlling navigation.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: Forms
+TYPE: output
+QUESTION: What will the component's current value be if the user types `Budapest` into the input?
+CODE:
+name = '';
+
+ENDCODE
+
+<input [(ngModel)]="name">
+<p>{{ name }}</p>
+ENDCODE
+A) It remains an empty string
+B) `Budapest`
+C) `name`
+D) `undefined`
+ANSWER: B
+EXPLANATION: Two-way `ngModel` binding connects the input's value with the component's `name` property. When the user types `Budapest`, that value is assigned to the property, and the interpolation displays the same value. The most common incorrect answer is tempting because the input initially contains an empty value, but two-way binding keeps the property synchronized with subsequent user input.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: Standalone components
+TYPE: theory
+QUESTION: Which statement about a standalone Angular component is correct?
+CODE:
+@Component({
+  selector: 'app-user',
+  standalone: true,
+  imports: [CommonModule],
+  template: '<p>Users</p>'
+})
+export class UserComponent {}
+ENDCODE
+A) It must be declared in an NgModule `declarations` array
+B) It cannot use other Angular directives or pipes
+C) It can directly manage the imports required by its own template
+D) It can only be used in unit tests
+ANSWER: C
+EXPLANATION: A standalone component can declare the components, directives, and pipes required by its template in its own `imports` array. It therefore does not need to be declared in an NgModule's `declarations` array. The most common incorrect answer is tempting because the classic Angular architecture relied heavily on NgModules.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: Components & templates
+TYPE: debug
+QUESTION: A component template does not render the following `UserComponent`, and Angular reports that `app-user` is an unknown element during template compilation. The component is standalone. What is the most likely cause?
+CODE:
+@Component({
+  selector: 'app-page',
+  standalone: true,
+  template: '<app-user></app-user>'
+})
+export class PageComponent {}
+ENDCODE
+A) The selector name must be `user-component`
+B) `UserComponent` has not been added to the `PageComponent` `imports` list
+C) Standalone components cannot use other components
+D) `templateUrl` must always be used instead of `template`
+ANSWER: B
+EXPLANATION: In a standalone component, standalone components used by the template must be explicitly imported through the `imports` array. If `UserComponent` is missing there, Angular cannot resolve the `app-user` element. The most common incorrect answer is tempting because, in classic NgModule-based applications, declarations and imports were managed at a different architectural level.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: Data binding
+TYPE: output
+QUESTION: What happens when the user clicks the button in the following code?
+CODE:
+count = 0;
+
+increment() {
+  this.count++;
+}
+ENDCODE
+
+<button (click)="increment()">+</button>
+<p>{{ count }}</p>
+ENDCODE
+A) The `count` value increases by one and the template updates
+B) `count` changes only after the page is reloaded
+C) The event handler works only for keyboard events
+D) Angular does not allow methods to be called from event bindings
+ANSWER: A
+EXPLANATION: The `(click)` event binding connects the button's click event to the component's `increment()` method. The method increments `count`, and Angular's change detection updates the template accordingly. The most common incorrect answer is tempting because there is no explicit rendering call after changing the component property, but Angular handles the update.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: Directives
+TYPE: behavior
+QUESTION: What is the difference between the following two Angular bindings?
+CODE:
+<div [class.active]="isActive"></div>
+<div [style.color]="textColor"></div>
+ENDCODE
+A) Both modify the same CSS class
+B) The first controls the presence of a CSS class, while the second controls an inline style property value
+C) The first accepts only strings, while the second accepts only booleans
+D) Both work only without a component property
+ANSWER: B
+EXPLANATION: `[class.active]` toggles a specific CSS class, while `[style.color]` sets the DOM element's `style.color` property. They are two different binding mechanisms. The most common incorrect answer is tempting because both affect visual appearance, but they operate on different DOM properties.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: Pipes
+TYPE: trap
+QUESTION: The following template needs to display an object in JSON format. Which pipe should be used?
+CODE:
+user = {
+  name: 'Anna',
+  age: 30
+};
+ENDCODE
+
+<pre>{{ user | json }}</pre>
+ENDCODE
+A) `object`
+B) `stringify`
+C) `json`
+D) `serialize`
+ANSWER: C
+EXPLANATION: Angular's built-in `json` pipe displays an object's JSON-like textual representation, which is particularly useful for debugging. The most common incorrect answer is tempting because in JavaScript we often use `JSON.stringify()` directly, but Angular provides a built-in pipe for this purpose in templates.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: Lifecycle hooks
+TYPE: scenario
+QUESTION: A component receives a value through an `@Input()` and needs to react whenever that input value changes. Which lifecycle hook is the most direct choice?
+CODE:
+@Input() user!: User;
+ENDCODE
+A) `ngOnDestroy`
+B) `ngAfterViewInit`
+C) `ngOnChanges`
+D) `ngDoCheck`
+ANSWER: C
+EXPLANATION: `ngOnChanges` provides information about changes to input properties and exposes the previous and current values through the `SimpleChanges` object. It is specifically designed for this use case. The most common incorrect answer is tempting because `ngDoCheck` can also be used to inspect changes, but it is much more general and can easily lead to unnecessary work.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Signals
+TYPE: behavior
+QUESTION: What happens when the following signal is updated using `set()`?
+CODE:
+count = signal(0);
+
+increase() {
+  this.count.set(this.count() + 1);
+}
+ENDCODE
+A) The signal receives a new value, and reactive Angular consumers that read it can be notified of the change
+B) `set()` only modifies a local variable and Angular does not detect it
+C) The signal's value always remains `0`
+D) `set()` can only be used with Observables
+ANSWER: A
+EXPLANATION: `set()` assigns a new value to the signal. Angular's signal-based reactivity tracks which consumers read the signal, allowing the relevant reactive consumers to update. The most common incorrect answer is tempting because `set()` looks like an ordinary JavaScript property assignment, but it is part of the signal's reactive system.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: RxJS & Observables
+TYPE: output
+QUESTION: What does the following code log?
+CODE:
+of(1, 2, 3)
+  .pipe(map(x => x * 10))
+  .subscribe(x => console.log(x));
+ENDCODE
+A) 1, 2, 3
+B) 10, 20, 30
+C) 0, 1, 2
+D) 30
+ANSWER: B
+EXPLANATION: The RxJS `map` operator transforms each emission individually: 1 becomes 10, 2 becomes 20, and 3 becomes 30. The subscriber then receives these values in sequence. The most common incorrect answer is tempting because JavaScript's `Array.map()` also performs transformations, but here the operation is being applied to Observable emissions.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: HttpClient & interceptors
+TYPE: debug
+QUESTION: A component makes the following HTTP request. The developer expects the JSON object returned by the backend to automatically become a `User` instance with its own methods. Why is this assumption incorrect?
+CODE:
+interface User {
+  name: string;
+}
+
+this.http.get<User>('/api/user').subscribe(user => {
+  console.log(user.name);
+});
+ENDCODE
+A) Angular's HttpClient cannot handle JSON
+B) A TypeScript interface automatically creates a runtime class
+C) The generic type helps with compile-time type checking but does not instantiate a runtime class
+D) HttpClient can only handle string responses
+ANSWER: C
+EXPLANATION: The `get<User>()` generic parameter primarily provides TypeScript compile-time information. It does not transform the JSON returned by the server into an actual `User` class instance, and an interface does not exist at runtime. The most common incorrect answer is tempting because the code explicitly contains the `User` type, which can make it look like a runtime conversion is taking place.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: Routing & guards
+TYPE: scenario
+QUESTION: The following guard is attached to a route. The user is not logged in. What happens when the user attempts to navigate to the route?
+CODE:
+export const authGuard: CanActivateFn = () => {
+  return false;
+};
+ENDCODE
+
+{
+  path: 'admin',
+  canActivate: [authGuard],
+  loadComponent: () => import('./admin.component')
+}
+ENDCODE
+A) Navigation to the `admin` route is not allowed
+B) Angular automatically navigates to the `/login` route
+C) `AdminComponent` is always loaded but not displayed
+D) The guard's result is used only for logging
+ANSWER: A
+EXPLANATION: When a `CanActivate` guard returns `false`, navigation to that route is canceled. The guard does not automatically redirect to `/login`; an explicit redirect decision or additional navigation logic is required for that behavior. The most common incorrect answer is tempting because redirecting unauthenticated users to a login page is a very common guard pattern.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: Forms
+TYPE: scenario
+QUESTION: In a reactive form, you want to make the email field required. Which solution is correct?
+CODE:
+this.form = new FormGroup({
+  email: new FormControl('', Validators.required)
+});
+ENDCODE
+A) `new FormControl('', required: true)`
+B) `new FormControl('', Validators.required)`
+C) `new FormControl('', RequiredValidator())`
+D) `new FormControl('', { required: true })`
+ANSWER: B
+EXPLANATION: In Reactive Forms, validators can be provided as the second argument to a `FormControl`, for example `Validators.required`. This is a reference to the validator function. The most common incorrect answer is tempting because configuration objects often use syntax such as `required: true`, but the Reactive Forms validator API works differently.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: Standalone components
+TYPE: production
+QUESTION: In a new Angular application, you are using standalone components. You want to use an `@if` block in the template. The following code runs in an Angular 17+ environment. Which statement is correct?
+CODE:
+@Component({
+  standalone: true,
+  template: `
+    @if (isLoggedIn) {
+      <p>Logged in</p>
+    }
+  `
+})
+export class HeaderComponent {
+  isLoggedIn = true;
+}
+ENDCODE
+A) `@if` works only in components declared in an NgModule
+B) `@if` always requires the `NgIf` directive to be imported separately
+C) `@if` is part of Angular's modern built-in control flow syntax
+D) `@if` works only during SSR
+ANSWER: C
+EXPLANATION: Starting with Angular 17, `@if` is part of Angular's modern built-in control flow syntax and can be used directly in templates without the classic `*ngIf` directive. It can also be used in standalone components. The most common incorrect answer is tempting because earlier Angular versions typically used `*ngIf` for conditional rendering and required the corresponding directive to be available.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: Components & templates
+TYPE: output
+QUESTION: What is displayed in the template with the following component?
+CODE:
+@Component({
+  selector: 'app-user',
+  template: `
+    <h2>{{ user.name }}</h2>
+    @if (user.isAdmin) {
+      <span>Admin</span>
+    }
+  `
+})
+export class UserComponent {
+  user = {
+    name: 'Anna',
+    isAdmin: false
+  };
+}
+ENDCODE
+A) Only the `Admin` text
+B) `Anna`, followed by `Admin`
+C) Nothing
+D) Only `Anna`
+ANSWER: D
+EXPLANATION: The interpolation displays the value of `user.name`, so `Anna` is rendered. The `@if` condition is `false`, so the `Admin` text is not added to the DOM. The most common incorrect answer is tempting because it is easy to confuse the conditional block with something that affects the entire template.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: Data binding
+TYPE: behavior
+QUESTION: What happens in the following code when the user changes the selected option?
+CODE:
+selectedColor = 'red';
+ENDCODE
+
+<select [(ngModel)]="selectedColor">
+  <option value="red">Red</option>
+  <option value="blue">Blue</option>
+</select>
+ENDCODE
+A) The `selectedColor` value is automatically updated to the selected `value`
+B) The `selectedColor` value always remains `red`
+C) `ngModel` works only with input elements
+D) The template changes, but the component property does not
+ANSWER: A
+EXPLANATION: Two-way `ngModel` binding connects the select's current value with the `selectedColor` property. If the user selects the `blue` option, the property becomes `blue`. The most common incorrect answer is tempting because the initial value is `red`, but two-way binding also propagates subsequent changes back to the component.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: Directives
+TYPE: debug
+QUESTION: A developer creates a custom attribute directive, but the directive is not recognized on the elements. What is most likely missing from the following standalone component?
+CODE:
+@Directive({
+  selector: '[appHighlight]',
+  standalone: true
+})
+export class HighlightDirective {}
+
+@Component({
+  selector: 'app-page',
+  standalone: true,
+  template: '<p appHighlight>Text</p>'
+})
+export class PageComponent {}
+ENDCODE
+A) The directive must be changed to an `@Pipe`
+B) `HighlightDirective` must be added to the component's `imports` array
+C) The directive name must be changed to `highlight`
+D) `[appHighlight]` must be used instead of `appHighlight` in the template
+ANSWER: B
+EXPLANATION: In a standalone component, a standalone directive used by the template must be explicitly made available through the component's `imports` array. The `[appHighlight]` selector is correct, and `appHighlight` is valid syntax when applying the attribute directive in the template. The most common incorrect answer is tempting because the selector declaration contains square brackets, but that does not mean they are required when using the directive.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Pipes
+TYPE: edgecase
+QUESTION: What happens with the following template if `price` is `null`?
+CODE:
+price: number | null = null;
+ENDCODE
+
+<p>{{ price | currency:'EUR' }}</p>
+ENDCODE
+A) Angular always displays `0 EUR`
+B) The template compilation fails
+C) The currency pipe produces no displayed value
+D) The pipe automatically converts the `null` value to a string
+ANSWER: C
+EXPLANATION: Angular's `CurrencyPipe` returns `null` for a `null` input rather than producing a currency-formatted value, so the paragraph has no displayed currency value. The most common incorrect answer is tempting because business applications often convert missing numeric values to zero or another default, but the pipe does not do that automatically.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Dependency injection
+TYPE: scenario
+QUESTION: In a standalone component, you want a service instance that is scoped to this component and its descendant injection subtree. Which solution is most appropriate?
+CODE:
+@Component({
+  standalone: true,
+  selector: 'app-editor',
+  template: '',
+  providers: [EditorStateService]
+})
+export class EditorComponent {}
+ENDCODE
+A) The service must be created with `providedIn: 'root'`
+B) The service must be stored in a global variable
+C) The service should be provided in the `EditorComponent` `providers` array
+D) The service must be registered as a pipe
+ANSWER: C
+EXPLANATION: The component's `providers` array creates a component-level provider scope. This allows `EditorComponent` to receive its own `EditorStateService` instance, which can also be inherited by appropriate descendants in the injector hierarchy. The most common incorrect answer is tempting because `providedIn: 'root'` is the most common pattern for application-wide services.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: Services & providers
+TYPE: behavior
+QUESTION: Two different components inject the same `providedIn: 'root'` service. What is the typical result?
+CODE:
+@Injectable({ providedIn: 'root' })
+export class CounterService {
+  count = 0;
+}
+ENDCODE
+A) Each component receives a separate `CounterService` instance
+B) The service gets a new instance on every change detection cycle
+C) The service belongs only to the first component
+D) Both components can use the same root-level service instance
+ANSWER: D
+EXPLANATION: A `providedIn: 'root'` provider belongs to the root injector, so the same service instance is typically returned for such injections throughout the application. This means the `count` state can be shared between the two components. The most common incorrect answer is tempting because each component has its own constructor injection, but that does not automatically mean a separate service instance.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: Lifecycle hooks
+TYPE: trap
+QUESTION: A component needs to perform cleanup work in its `ngOnDestroy()` method. When does Angular call this method?
+CODE:
+export class TimerComponent implements OnDestroy {
+  ngOnDestroy() {
+    console.log('destroy');
+  }
+}
+ENDCODE
+A) When the component instance is removed from the Angular view
+B) Whenever an input value changes
+C) After every HTTP request
+D) During every change detection cycle of the application
+ANSWER: A
+EXPLANATION: `ngOnDestroy` runs when Angular destroys and removes the component instance. It is commonly used to clean up subscriptions, timers, or other resources. The most common incorrect answer is tempting because changes to component state can coincide with lifecycle activity, but `ngOnDestroy` specifically belongs to the destruction phase.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Change detection & OnPush
+TYPE: output
+QUESTION: What happens in the following case if the parent component uses `OnPush` and mutates the same object reference?
+CODE:
+user = { name: 'Anna' };
+
+rename() {
+  this.user.name = 'Béla';
+}
+ENDCODE
+A) The object reference is automatically replaced
+B) The `name` property changes, but the reference remains the same
+C) Angular always creates a new object
+D) TypeScript reports an error
+ANSWER: B
+EXPLANATION: `this.user.name = 'Béla'` mutates a property of the object, but the `user` reference itself remains unchanged. This is particularly important with `OnPush`, where a reference-based input change does not automatically detect such an in-place mutation. The most common incorrect answer is tempting because the property value really does change, but the object reference remains identical.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: Signals
+TYPE: behavior
+QUESTION: What is the correct way to increment the value of the writable signal in the following code?
+CODE:
+count = signal(10);
+ENDCODE
+A) `count.value++`
+B) `count = count + 1`
+C) `count.update(value => value + 1)`
+D) `count.increment()`
+ANSWER: C
+EXPLANATION: A writable signal can be updated using the `set()` or `update()` API. `update()` is particularly useful when the new value depends on the previous value. The most common incorrect answer is tempting because a regular JavaScript property can be modified with `++`, but a signal uses its function-based API.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: RxJS & Observables
+TYPE: scenario
+QUESTION: You subscribe to an HTTP Observable in a component. The Observable emits a response once and then completes. Which statement is correct about this subscription?
+CODE:
+this.http.get<User>('/api/user').subscribe(user => {
+  console.log(user);
+});
+ENDCODE
+A) The subscription is created, and after the HTTP request the Observable typically completes
+B) The Observable starts a new HTTP request during every change detection cycle
+C) The Observable remains active indefinitely
+D) `subscribe()` works only if `unsubscribe()` is also called
+ANSWER: A
+EXPLANATION: HTTP Observables returned by Angular's HttpClient typically emit one response and then complete. Therefore, for a single HTTP request, the subscription does not remain active indefinitely. The most common incorrect answer is tempting because subscription lifecycle management is important for many RxJS streams, but HTTP Observables are typically finite streams.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: HttpClient & interceptors
+TYPE: debug
+QUESTION: An interceptor wants to modify an HTTP request, but the developer attempts to change the request object directly. What is the correct approach?
+CODE:
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  req.headers.set('Authorization', 'Bearer token');
+  return next(req);
+};
+ENDCODE
+A) The request object must always be modified using `JSON.parse()`
+B) The request should be cloned, and the modified instance should be passed on
+C) The request must be recreated using `new Request()`
+D) An interceptor cannot modify requests
+ANSWER: B
+EXPLANATION: Angular's `HttpRequest` API is immutable, so modifications are typically made using `clone()`. For example, headers can be provided on a cloned request, and that modified request should then be passed to the `next` handler. The most common incorrect answer is tempting because `headers.set()` looks like a mutation, but the immutable request model means a modified request instance must be created.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: Routing & guards
+TYPE: behavior
+QUESTION: A route configuration contains `path: 'users/:id'`. Which URL matches this route?
+CODE:
+{
+  path: 'users/:id',
+  component: UserComponent
+}
+ENDCODE
+A) `/users`
+B) `/users/`
+C) `/users/42`
+D) `/user?id=42`
+ANSWER: C
+EXPLANATION: `:id` represents a dynamic route parameter, so a URL such as `/users/42` matches the route, with `id` having the value `42`. The query-parameter URL `/user?id=42` uses a different routing mechanism. The most common incorrect answer is tempting because both approaches can carry identifier-like data, but path parameters and query parameters are different concepts.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: Forms
+TYPE: debug
+QUESTION: The following code is executed in a reactive form. What will the form status be?
+CODE:
+this.form = new FormGroup({
+  username: new FormControl('', Validators.required)
+});
+ENDCODE
+A) `VALID`
+B) `PENDING`
+C) `DISABLED`
+D) `INVALID`
+ANSWER: D
+EXPLANATION: The initial value of the `username` control is an empty string, while `Validators.required` requires it to have a value. Therefore, the control and consequently the form are `INVALID`. The most common incorrect answer is tempting because the form is successfully created and usable, but successful creation and valid state are two separate concepts.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: Standalone components
+TYPE: theory
+QUESTION: Which statement correctly describes one advantage of standalone components?
+CODE:
+@Component({
+  standalone: true,
+  selector: 'app-dashboard',
+  imports: [UserComponent, DatePipe],
+  template: `
+    <app-user></app-user>
+    {{ today | date }}
+  `
+})
+export class DashboardComponent {
+  today = new Date();
+}
+ENDCODE
+A) The component cannot use dependency injection
+B) Template dependencies can be declared directly in the component's import list
+C) The component can only be used with lazy loading
+D) A standalone component cannot contain a template
+ANSWER: B
+EXPLANATION: A standalone component's `imports` property allows the components, directives, and pipes used by its template to be associated directly with the component. This reduces the need for NgModule-based configuration. The most common incorrect answer is tempting because standalone components are frequently used with lazy-loaded routes, but that is not their only use case.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: Performance
+TYPE: performance
+QUESTION: The following code is used in a template. Why can this be a performance concern?
+CODE:
+<div>{{ calculateTotal() }}</div>
+ENDCODE
+A) Angular does not allow methods to be called from templates
+B) The method runs only once during the entire application lifecycle
+C) The method may be executed multiple times during change detection
+D) The method automatically runs in a Web Worker
+ANSWER: C
+EXPLANATION: A method called from a template expression may be evaluated multiple times during change detection. If `calculateTotal()` performs an expensive calculation, this can cause unnecessary CPU usage. The most common incorrect answer is tempting because the method call looks like a single template expression, but evaluating template expressions is part of the change detection process.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: Components & templates
+TYPE: trap
+QUESTION: You want to emit an event from a child component to its parent using `@Output()`. Which solution is correct?
+CODE:
+@Output() saved = new EventEmitter<void>();
+
+save() {
+  this.saved.emit();
+}
+ENDCODE
+A) The parent template can use `(saved)="onSaved()"`
+B) The parent template must use `[saved]="onSaved()"`
+C) `EventEmitter` can only be used for HTTP events
+D) The child component must call `subscribe()` instead of `emit()`
+ANSWER: A
+EXPLANATION: The parent component can handle an `@Output()` event in its template using event binding such as `(saved)="onSaved()"`. The child emits the event using `emit()`. The most common incorrect answer is tempting because square brackets are also Angular binding syntax, but parentheses are used for event binding.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: Data binding
+TYPE: output
+QUESTION: What will the button's `disabled` state be in the following component?
+CODE:
+isSaving = true;
+ENDCODE
+
+<button [disabled]="isSaving">Save</button>
+ENDCODE
+A) The button will be enabled
+B) The button will be disabled
+C) The button will become disabled only after it is clicked
+D) The `[disabled]` binding is rendered as a string
+ANSWER: B
+EXPLANATION: `[disabled]` property binding sets the DOM button's `disabled` property to the value of `isSaving`. Since the value is `true`, the button is disabled. The most common incorrect answer is tempting because the `disabled` HTML attribute has special boolean semantics, but property binding directly controls the DOM property.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: Directives
+TYPE: behavior
+QUESTION: What is `@HostListener` used for in an Angular directive?
+CODE:
+@Directive({
+  selector: '[appHighlight]',
+  standalone: true
+})
+export class HighlightDirective {
+  @HostListener('mouseenter')
+  onMouseEnter() {
+    console.log('enter');
+  }
+}
+ENDCODE
+A) Converting the host element into another component
+B) Listening for events from the host element within the directive
+C) Making the directive an HTTP interceptor
+D) Automatically converting the directive into a pipe
+ANSWER: B
+EXPLANATION: `@HostListener` allows a directive to listen for events associated with its host element. In the example, `onMouseEnter()` runs when the `mouseenter` event occurs. The most common incorrect answer is tempting because directives can modify host-element behavior, but `@HostListener` specifically provides event handling.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: Pipes
+TYPE: behavior
+QUESTION: What is the main difference between a pure and an impure Angular pipe?
+CODE:
+@Pipe({
+  name: 'example',
+  pure: false
+})
+export class ExamplePipe implements PipeTransform {
+  transform(value: string) {
+    return value;
+  }
+}
+ENDCODE
+A) An impure pipe runs only during SSR
+B) A pure pipe cannot accept arguments
+C) An impure pipe cannot be used in templates
+D) An impure pipe may be reevaluated more frequently when changes occur, so it should be used carefully from a performance perspective
+ANSWER: D
+EXPLANATION: A pure pipe, which is the default, is reevaluated only when its input changes by reference or primitive value. An impure pipe can instead be reevaluated more frequently during change detection, which can be expensive. The most common incorrect answer is tempting because the pure versus impure distinction may appear to affect only pipe functionality, but it can have significant performance consequences.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: Dependency injection
+TYPE: edgecase
+QUESTION: What does the following dependency injection declaration mean?
+CODE:
+constructor(@Optional() private logger: LoggerService) {}
+ENDCODE
+A) `LoggerService` must exist, otherwise the application stops
+B) Angular attempts to inject it only in production builds
+C) If no provider is available, the value can be `null` instead of producing the usual DI error
+D) The service automatically becomes `providedIn: 'root'`
+ANSWER: C
+EXPLANATION: `@Optional()` tells Angular's dependency injection system that a missing dependency should not necessarily be treated as a DI error. If no suitable provider exists, the dependency can be `null`. The most common incorrect answer is tempting because a missing provider normally causes a dependency injection error, but `Optional` specifically relaxes that requirement.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: Services & providers
+TYPE: scenario
+QUESTION: You want to inject one service into another service. Which approach fits Angular's dependency injection model?
+CODE:
+@Injectable({ providedIn: 'root' })
+export class UserService {
+  constructor(private api: ApiService) {}
+}
+ENDCODE
+A) `ApiService` must always be accessed through a global variable
+B) Angular's dependency injection system can resolve `ApiService` through the constructor
+C) A service cannot depend on another service
+D) Only components can use dependency injection
+ANSWER: B
+EXPLANATION: In Angular's dependency injection system, an injectable service can receive dependencies just like a component can. If `ApiService` is available as a provider, Angular can resolve it when creating `UserService`. The most common incorrect answer is tempting because dependency injection is often demonstrated through component constructors, but injectable objects can also depend on one another.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: Lifecycle hooks
+TYPE: scenario
+QUESTION: A component needs to access a DOM element or child component using `@ViewChild`. After which lifecycle point is the view initialization guaranteed to have occurred?
+CODE:
+@ViewChild('input') input!: ElementRef<HTMLInputElement>;
+ENDCODE
+A) `ngOnDestroy`
+B) `ngOnChanges`
+C) `ngAfterViewInit`
+D) `constructor`
+ANSWER: C
+EXPLANATION: The `ngAfterViewInit` lifecycle hook runs after the component's view has been initialized. It is therefore a typical place to work with view child elements that are only available after view creation. The most common incorrect answer is tempting because the constructor runs earlier, but the view has not yet been initialized at that point.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: Change detection & OnPush
+TYPE: scenario
+QUESTION: A signal read by the template of an `OnPush` component changes. What is the important consequence?
+CODE:
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '{{ count() }}'
+})
+export class CounterComponent {
+  count = signal(0);
+}
+ENDCODE
+A) A signal change cannot affect an `OnPush` component
+B) Signals work only when the component uses Default change detection
+C) The signal change becomes visible only after a full page refresh
+D) Angular can track the signal read as a reactive dependency and update the component appropriately
+ANSWER: D
+EXPLANATION: Angular tracks signals read by a template reactively. When such a signal changes, the relevant `OnPush` component can be scheduled for an appropriate update, so the developer does not need to switch the component back to Default change detection. The most common incorrect answer is tempting because `OnPush` can seem highly restrictive, but signals are designed to integrate naturally with this model.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: RxJS & Observables
+TYPE: trap
+QUESTION: What happens with the following code?
+CODE:
+const observable$ = new Observable<number>(subscriber => {
+  subscriber.next(1);
+  subscriber.next(2);
+});
+
+console.log('before');
+
+observable$.subscribe(value => console.log(value));
+
+console.log('after');
+ENDCODE
+A) `before`, then `1`, `2`, then `after` are logged
+B) `before`, then `after`, and later `1`, `2` are logged
+C) Only `after` is logged
+D) The Observable automatically becomes asynchronous
+ANSWER: A
+EXPLANATION: The Observable executor runs when `subscribe()` is called, and this example contains no timer, Promise, or other asynchronous operation. Therefore, the order is `before`, `1`, `2`, `after`. The most common incorrect answer is tempting because Observables are frequently used for asynchronous data streams, but an Observable itself does not automatically make an operation asynchronous.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Performance
+TYPE: production
+QUESTION: An Angular list contains hundreds of items and is updated frequently. With the following `@for` usage, you want to reduce unnecessary DOM reuse or recreation costs. If every item has a stable, unique `id`, which solution is most appropriate?
+CODE:
+@for (user of users; track user.id) {
+  <app-user [user]="user" />
+}
+ENDCODE
+A) Remove the `track` expression
+B) Use `track $index` in every case
+C) Use `track user.id` as a stable unique identifier
+D) Create a new `User` object for every item
+ANSWER: C
+EXPLANATION: The `track` expression in `@for` helps Angular identify which data items correspond to which DOM representations. Using a stable, unique `id` allows Angular to reuse existing DOM structures more efficiently when the list changes. The most common incorrect answer is tempting because the index is always readily available, but in dynamically changing lists it does not represent the stable identity of an item.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: Testing
+TYPE: scenario
+QUESTION: In a unit test for a standalone Angular component, you want to verify that the component renders its title correctly. Which approach is most appropriate?
+CODE:
+@Component({
+  standalone: true,
+  template: '<h1>{{ title }}</h1>'
+})
+export class HeaderComponent {
+  title = 'Dashboard';
+}
+ENDCODE
+A) Directly call the component constructor and then inspect the DOM
+B) Read the component's HTML file as text
+C) Configure `TestBed` by placing the component in the `declarations` array
+D) Configure `TestBed` with `imports: [HeaderComponent]`, then call `createComponent()` and `detectChanges()`
+ANSWER: D
+EXPLANATION: For standalone components, the component under test can be provided in the `imports` array of `TestBed.configureTestingModule()`. `createComponent()` creates the component, while `detectChanges()` runs the relevant change detection process so the DOM can be inspected. Directly calling the constructor is tempting because it seems simple, but by itself it does not create an Angular-managed view or rendered DOM.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: SSR & hydration
+TYPE: scenario
+QUESTION: An Angular application uses server-side rendering (SSR). You want to access `window.localStorage` directly while a component is being initialized. What is the most important problem?
+CODE:
+@Component({
+  selector: 'app-settings',
+  template: ''
+})
+export class SettingsComponent {
+  theme = window.localStorage.getItem('theme');
+}
+ENDCODE
+A) `localStorage` can only be used in standalone components
+B) The `window` object may not be available in the server-side JavaScript environment
+C) SSR automatically copies every localStorage value to the server
+D) `localStorage.getItem()` always returns a Promise
+ANSWER: B
+EXPLANATION: With SSR, component code can also execute in a server environment, where the browser-specific `window` object generally does not exist. Browser-specific operations should be handled with appropriate platform checks or browser-only rendering callbacks. The incorrect assumption is tempting because localStorage is always available in a traditional client-side Angular application, but that does not make it available during server-side execution.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: Components & templates
+TYPE: output
+QUESTION: What is displayed in the following Angular 17+ template?
+CODE:
+@Component({
+  standalone: true,
+  template: `
+    @switch (status) {
+      @case ('loading') {
+        <p>Loading...</p>
+      }
+      @case ('success') {
+        <p>Completed</p>
+      }
+      @default {
+        <p>Unknown</p>
+      }
+    }
+  `
+})
+export class StatusComponent {
+  status = 'success';
+}
+ENDCODE
+A) `Completed`
+B) `Loading...`
+C) `Unknown`
+D) All three texts
+ANSWER: A
+EXPLANATION: `@switch` compares the current value of `status` with the individual `@case` values. Since `status` is `success`, only the corresponding block is rendered, so `Completed` is displayed. The `@default` block is tempting because it acts as a fallback, but it is used only when none of the cases match.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: Data binding
+TYPE: trap
+QUESTION: What will the DOM `value` property of the input element be after the first render of the following template?
+CODE:
+@Component({
+  standalone: true,
+  template: `
+    <input #searchInput value="Angular">
+    <p>{{ searchInput.value }}</p>
+  `
+})
+export class SearchComponent {}
+ENDCODE
+A) `undefined`
+B) `searchInput`
+C) `Angular`
+D) An empty string
+ANSWER: C
+EXPLANATION: The `#searchInput` template reference variable refers to the input DOM element. `searchInput.value` reads the element's current value, which is `Angular` after the initial render. `undefined` is tempting because the variable is not declared on the component class, but a template reference variable exists within the template's own scope.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: Directives
+TYPE: output
+QUESTION: How many list items are rendered by the following Angular 17+ template?
+CODE:
+@Component({
+  standalone: true,
+  template: `
+    <ul>
+      @for (item of items; track item.id) {
+        @if (item.active) {
+          <li>{{ item.name }}</li>
+        }
+      }
+    </ul>
+  `
+})
+export class ListComponent {
+  items = [
+    { id: 1, name: 'A', active: true },
+    { id: 2, name: 'B', active: false },
+    { id: 3, name: 'C', active: true }
+  ];
+}
+ENDCODE
+A) 3
+B) 1
+C) 0
+D) 2
+ANSWER: D
+EXPLANATION: `@for` processes all three items, but the nested `@if` renders an `li` only for items where `active` is `true`. Therefore, `A` and `C` are displayed, for a total of two list items. Three is tempting because the loop really does iterate three times, but the conditional block allows rendering in only two cases.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: Forms
+TYPE: behavior
+QUESTION: In a reactive form, you perform the following operation. What happens to the `name` FormControl value?
+CODE:
+const form = new FormGroup({
+  name: new FormControl('Anna'),
+  age: new FormControl(25)
+});
+
+form.patchValue({
+  name: 'Peter'
+});
+ENDCODE
+A) `name` becomes `Peter`, while `age` remains unchanged
+B) An error occurs because every field must be provided
+C) Both field values become `null`
+D) `patchValue()` works only with template-driven forms
+ANSWER: A
+EXPLANATION: `patchValue()` allows partial updates to form values. In this example, only `name` changes to `Peter`, while `age` remains 25. An error caused by a missing field is tempting because `setValue()` requires the complete FormGroup value structure, whereas `patchValue()` does not.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Routing & guards
+TYPE: scenario
+QUESTION: In an Angular component, you want to observe the current route's `id` parameter so that it also updates when the router reuses the same component with a different parameter. Which approach is appropriate?
+CODE:
+{
+  path: 'products/:id',
+  component: ProductComponent
+}
+ENDCODE
+A) Call `window.location.reload()` on every navigation
+B) Use the `ActivatedRoute.paramMap` Observable
+C) A route parameter can only be read in the component constructor
+D) Recreate the `Router` service for every navigation
+ANSWER: B
+EXPLANATION: The `ActivatedRoute.paramMap` Observable can emit a new value when the parameters of the current route change. This allows the component to react to navigation such as `/products/1` to `/products/2` without reloading the page. Using a snapshot is tempting because it provides the current parameter value very simply, but by itself it does not observe subsequent changes.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: HttpClient & interceptors
+TYPE: output
+QUESTION: What happens in the following code if the server responds with HTTP status 404 and no interceptor transforms the response?
+CODE:
+this.http.get('/api/missing').subscribe({
+  next: value => console.log('success'),
+  error: err => console.log('error')
+});
+ENDCODE
+A) `success` is logged
+B) Nothing happens
+C) `error` is logged
+D) Both `success` and `error` are logged
+ANSWER: C
+EXPLANATION: By default, Angular's HttpClient treats unsuccessful HTTP status codes as errors, so a 404 response is delivered to the subscription's `error` callback. The `next` callback does not run for that failed response. The success case is tempting because the server technically returned an HTTP response, but HttpClient routes unsuccessful status codes through the error channel.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: Testing
+TYPE: debug
+QUESTION: In a component unit test, you change one of the component's properties, but the DOM still shows the old value. What is the most obvious next step?
+CODE:
+const fixture = TestBed.createComponent(HeaderComponent);
+
+fixture.detectChanges();
+
+fixture.componentInstance.title = 'Updated';
+
+// DOM assertion follows
+ENDCODE
+A) Clear the entire TestBed environment
+B) Recompile the component with the TypeScript compiler
+C) Reload the browser
+D) Call `fixture.detectChanges()` again
+ANSWER: D
+EXPLANATION: After directly changing a component property in a test, another `fixture.detectChanges()` call is typically required to update the template. The DOM can then reflect the new value. Recreating the component is tempting because the initial render is also associated with fixture creation, but running change detection on the existing fixture is sufficient.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: SSR & hydration
+TYPE: theory
+QUESTION: What is the primary purpose of hydration in a server-rendered Angular application?
+A) Immediately delete all server-rendered HTML and create a new DOM
+B) Reuse the DOM structure created by the server when initializing the client-side Angular application
+C) Disable all HTTP requests in the browser
+D) Run TypeScript directly in the browser without compilation
+ANSWER: B
+EXPLANATION: During hydration, Angular connects the client-side application to the HTML produced on the server and, where possible, reuses the existing DOM structure. This can reduce unnecessary DOM recreation and visual flickering. Full re-rendering is tempting because traditional client-side bootstrapping has Angular build the DOM itself, whereas hydration is specifically designed to avoid unnecessary recreation of the server-rendered DOM.
+###END
+
+### Q61
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: output
+QUESTION: In what order are the values logged when the following RxJS code runs? Assume all required RxJS operators are imported.
+CODE:
+const source$ = of(1, 2, 3, 4);
+
+source$
+  .pipe(
+    filter(x => x % 2 === 0),
+    map(x => x * 3),
+    take(1)
+  )
+  .subscribe(console.log);
+ENDCODE
+A) 6
+B) 6, 12
+C) 3, 6, 9, 12
+D) 12
+ANSWER: A
+EXPLANATION: `filter` allows only even values through, so 2 is the first value passed to `map`. `map` multiplies it by three, producing 6. `take(1)` completes the subscription after the first emitted value, so 4 never reaches the subscriber. Seeing both 6 and 12 is tempting because both values satisfy the filter condition, but `take(1)` limits the number of emissions to one.
+###END
+
+### Q62
+LEVEL: medior
+TOPIC: Signals
+TYPE: output
+QUESTION: What values are logged to the console by the end of the following code?
+CODE:
+const count = signal(2);
+
+const doubled = computed(() => {
+  console.log('computed');
+  return count() * 2;
+});
+
+console.log(doubled());
+count.set(3);
+count.set(4);
+console.log(doubled());
+ENDCODE
+A) `computed` runs three times, and the logged values are 4 and 8
+B) `computed` runs once, and the logged values are 4 and 4
+C) `computed` runs twice, and the logged values are 4 and 8
+D) `computed` runs four times, and the logged values are 4 and 6
+ANSWER: C
+EXPLANATION: `computed` signals are lazy and memoized. The first `doubled()` read calculates 4 and logs `computed`. The two `set()` calls invalidate the cached result but do not force immediate recomputation. The next read calculates 8 from the current `count` value of 4, so the computation runs twice in total. Three computations are tempting because two signal updates occur, but a `computed` does not immediately recompute on every update.
+###END
+
+### Q63
+LEVEL: medior
+TOPIC: Change detection & OnPush
+TYPE: scenario
+QUESTION: An `OnPush` child component receives an object through an `@Input()`. The parent mutates a property of the same object in a click handler, while the child renders only the input. The child receives no other update notification. Which change ensures that the reference-based input change is detected?
+CODE:
+@Component({
+  selector: 'app-parent',
+  template: `
+    <button (click)="rename()">Rename</button>
+    <app-profile [user]="user" />
+  `
+})
+export class ParentComponent {
+  user = { id: 1, name: 'Anna' };
+
+  rename() {
+    this.user.name = 'Peter';
+  }
+}
+ENDCODE
+A) Rename the `rename()` method to `update()`
+B) Declare the child's `@Input()` property with the `private` modifier
+C) Freeze the `user` object using `Object.freeze()`
+D) Create a new object reference, for example `this.user = { ...this.user, name: 'Peter' }`
+ANSWER: D
+EXPLANATION: Changing the reference is the reliable way to make an `OnPush` input change detectable. The object spread creates a new object whose `name` property is already `Peter`, so Angular can detect a new input reference. Direct property mutation is tempting because the JavaScript object's contents really do change, but the unchanged object reference is not sufficient for reference-based `OnPush` input checking.
+###END
+
+### Q64
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: output
+QUESTION: What is logged by the following code?
+CODE:
+const subject = new BehaviorSubject<number>(10);
+
+subject.next(20);
+
+subject.subscribe(value => {
+  console.log(value);
+});
+
+subject.next(30);
+ENDCODE
+A) 10, 20, 30
+B) 20, 30
+C) Only 30
+D) 10, 30
+ANSWER: B
+EXPLANATION: A `BehaviorSubject` stores its current value and immediately emits that value to a new subscriber. At the time of subscription, the latest value is 20, so that is emitted first. Then `next(30)` produces another emission. Seeing 10 is tempting because it is the initial value passed to the constructor, but it had already been replaced before the subscription.
+###END
+
+### Q65
+LEVEL: medior
+TOPIC: Forms
+TYPE: debug
+QUESTION: The following `setValue()` call is made on a reactive form. What is the result?
+CODE:
+const form = new FormGroup({
+  firstName: new FormControl('Anna'),
+  lastName: new FormControl('Smith')
+});
+
+form.setValue({
+  firstName: 'Peter'
+} as any);
+ENDCODE
+A) `lastName` automatically becomes an empty string
+B) Only `firstName` changes, with no error
+C) A runtime error occurs because `setValue()` expects the complete value structure
+D) `setValue()` ignores the call
+ANSWER: C
+EXPLANATION: `FormGroup.setValue()` requires the supplied object to contain values for all required controls in the form. `lastName` is missing, so a runtime error occurs. `as any` bypasses TypeScript's compile-time checking, but it does not change Angular's runtime validation. A partial update is tempting because `patchValue()` does support this behavior, whereas `setValue()` does not.
+###END
+
+### Q66
+LEVEL: medior
+TOPIC: Dependency injection
+TYPE: behavior
+QUESTION: The following provider configuration is used in an Angular application. What happens when a component requests a `LoggerService` dependency?
+CODE:
+providers: [
+  LoggerService,
+  {
+    provide: LoggerService,
+    useClass: AdvancedLoggerService
+  }
+]
+ENDCODE
+A) The later provider takes precedence, so an `AdvancedLoggerService` instance is provided
+B) Angular injects two separate instances simultaneously
+C) A compilation error occurs because of the duplicate provider
+D) The first provider always takes precedence
+ANSWER: A
+EXPLANATION: For a normal, non-multi provider, a later provider for the same token overrides the earlier provider in the same provider configuration. Therefore, resolving the `LoggerService` token results in an `AdvancedLoggerService` instance, assuming the class is otherwise injectable. A compilation error is tempting because duplicate configuration is prohibited in some systems, but Angular DI supports provider overriding.
+###END
+
+### Q67
+LEVEL: medior
+TOPIC: HttpClient & interceptors
+TYPE: scenario
+QUESTION: You trigger an HTTP request whenever a search field changes. When a new search term arrives, you want the subscription to the previous in-flight request to be canceled so that only the latest search result is processed. Which RxJS operator is most appropriate?
+CODE:
+searchControl.valueChanges.pipe(
+  debounceTime(300),
+  distinctUntilChanged(),
+  // missing operator
+);
+ENDCODE
+A) `mergeMap`
+B) `concatMap`
+C) `exhaustMap`
+D) `switchMap`
+ANSWER: D
+EXPLANATION: `switchMap` unsubscribes from the previous inner Observable when a new outer emission arrives and subscribes to the new one. With Angular HttpClient, this can also result in cancellation of the previous in-flight HTTP request. `mergeMap` is tempting because it is useful for concurrent asynchronous operations, but it does not automatically cancel previous search subscriptions.
+###END
+
+### Q68
+LEVEL: medior
+TOPIC: Routing & guards
+TYPE: scenario
+QUESTION: A route guard should redirect unauthenticated users to `/login`. Which approach best fits the Angular Router's recommended behavior?
+CODE:
+export const authGuard: CanActivateFn = () => {
+  const router = inject(Router);
+  const auth = inject(AuthService);
+
+  if (auth.isAuthenticated()) {
+    return true;
+  }
+
+  // What should be returned here?
+};
+ENDCODE
+A) `return false`, because this automatically redirects to the login page
+B) `return router.parseUrl('/login')`
+C) `return undefined`
+D) `return true`, then perform the redirect in the component
+ANSWER: B
+EXPLANATION: A guard can return a `UrlTree`, which the Router treats as a redirect decision. `router.parseUrl('/login')` creates the appropriate `UrlTree`, avoiding the need for imperative navigation. Returning `false` is tempting because it does prevent activation of the protected route, but it does not by itself redirect the user to the login page.
+###END
+
+### Q69
+LEVEL: medior
+TOPIC: State management (NgRx)
+TYPE: theory
+QUESTION: In an application using the NgRx Store, you want to add a new user to the state. Which approach follows the fundamental NgRx state management model?
+A) The component directly modifies the Store's internal state object
+B) The component directly calls the reducer and then stores the result
+C) The component dispatches an action, which the reducer uses to produce a new state
+D) The Store automatically observes all component properties
+ANSWER: C
+EXPLANATION: In NgRx Store, state changes are described by actions, and reducers calculate a new state from the current state and the action. This creates a predictable, unidirectional data flow. Direct state mutation is tempting because the state can be viewed as a regular JavaScript object, but it violates the immutable state management model used by NgRx.
+###END
+
+### Q70
+LEVEL: medior
+TOPIC: Performance
+TYPE: performance
+QUESTION: A large Angular page needs to display thousands of rows, but the user can see only around twenty at a time. Which solution can most effectively reduce the number of rendered DOM elements while keeping the entire list scrollable?
+A) Create a separate `setTimeout()` for every row
+B) Hide all rows using `display: none`
+C) Put every row into a separate Angular component without virtualization
+D) Use virtual scrolling, for example with the Angular CDK
+ANSWER: D
+EXPLANATION: Virtual scrolling renders only the items in the visible range and its immediate buffer while allowing the user to scroll through the entire list. This can significantly reduce DOM size and rendering costs. Using `display: none` is tempting because it visually hides the elements, but they still remain in the DOM.
+###END
+
+### Q71
+LEVEL: medior
+TOPIC: Services & providers
+TYPE: behavior
+QUESTION: What does `useExisting` do in the following provider configuration?
+CODE:
+providers: [
+  PrimaryLoggerService,
+  {
+    provide: LoggerService,
+    useExisting: PrimaryLoggerService
+  }
+]
+ENDCODE
+A) The `LoggerService` token refers to the same instance as `PrimaryLoggerService`
+B) `LoggerService` receives a new instance for every injection
+C) `useExisting` creates a new `LoggerService` instance
+D) The two services work only if they have the same class name
+ANSWER: A
+EXPLANATION: `useExisting` creates an alias to an existing provider token, so resolving `LoggerService` and `PrimaryLoggerService` returns the same object instance within that injector. This differs from `useClass`, which can create a separate provider instance. Creating a new instance is tempting because two different tokens appear in the configuration, but an alias does not create a new instance.
+###END
+
+### Q72
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: output
+QUESTION: What is the output of the following RxJS code?
+CODE:
+const source$ = of(1, 2, 3);
+
+source$
+  .pipe(
+    scan((acc, value) => acc + value, 0)
+  )
+  .subscribe(console.log);
+ENDCODE
+A) 6
+B) 0, 1, 3, 6
+C) 1, 3, 6
+D) 1, 2, 3
+ANSWER: C
+EXPLANATION: `scan` emits the current accumulated value after each emission. Starting with 0, it first adds 1, then 2, and finally 3. Therefore, the emitted values are 1, 3, and 6. A single result of 6 is tempting because the `reduce` operator would emit the accumulated result only after the stream completes, whereas `scan` emits intermediate results as well.
+###END
+
+### Q73
+LEVEL: medior
+TOPIC: Forms
+TYPE: edgecase
+QUESTION: A reactive form has a disabled `age` control. What will `form.value` and `form.getRawValue()` return?
+CODE:
+const form = new FormGroup({
+  name: new FormControl('Anna'),
+  age: new FormControl({ value: 30, disabled: true })
+});
+
+console.log(form.value);
+console.log(form.getRawValue());
+ENDCODE
+A) Both contain the `age` field
+B) `form.value` excludes `age`, while `getRawValue()` includes it
+C) Both exclude the `age` field
+D) `getRawValue()` throws an error for a disabled control
+ANSWER: B
+EXPLANATION: For an enabled `FormGroup`, the `value` property normally contains only the values of enabled controls. `getRawValue()` includes disabled controls as well. Including all fields is tempting because the `age` control does exist and has a value, but its disabled state affects the form's aggregated value.
+###END
+
+### Q74
+LEVEL: medior
+TOPIC: Testing
+TYPE: scenario
+QUESTION: In a service unit test, you want to verify an HTTP request without making a real network call. Which approach fits the modern Angular testing API?
+CODE:
+TestBed.configureTestingModule({
+  providers: [
+    provideHttpClient(),
+    provideHttpClientTesting(),
+    UserService
+  ]
+});
+ENDCODE
+A) Start a real backend server for every unit test
+B) Override the global `window.fetch` in every test
+C) Use `RouterTestingHarness` to mock HTTP requests
+D) Inject `HttpTestingController` and verify the request using `expectOne()`
+ANSWER: D
+EXPLANATION: `provideHttpClientTesting()` configures a testing HTTP backend, while `HttpTestingController` allows requests to be intercepted, inspected, and given mock responses. `expectOne()` can be used to verify that the expected request was made. Starting a real backend is tempting because it can be appropriate for integration tests, but it introduces an unnecessary external dependency into an isolated unit test.
+###END
+
+### Q75
+LEVEL: medior
+TOPIC: SSR & hydration
+TYPE: production
+QUESTION: In an Angular application using SSR and hydration, a component directly modifies the DOM before hydration. As a result, the server-rendered HTML and the structure expected by the client differ. What can happen?
+CODE:
+@Component({
+  selector: 'app-banner',
+  template: `
+    <div>
+      <span>Welcome</span>
+    </div>
+  `
+})
+export class BannerComponent {
+  constructor() {
+    if (typeof document !== 'undefined') {
+      document.querySelector('app-banner div')
+        ?.appendChild(document.createElement('p'));
+    }
+  }
+}
+ENDCODE
+A) Hydration automatically ignores all differences
+B) Hydration always completely restarts the server-side application
+C) A hydration mismatch error can occur because the DOM structure differs from what Angular expects
+D) Direct DOM manipulation is guaranteed to make hydration faster
+ANSWER: C
+EXPLANATION: During hydration, Angular attempts to connect the client-side view to the DOM structure produced by the server. If direct or external DOM manipulation changes that structure before hydration, the expected node structure may differ from the actual DOM, resulting in a hydration mismatch. Automatic correction is tempting because frameworks handle many DOM updates themselves, but matching structures are fundamental to successful hydration.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: State management (NgRx)
+TYPE: scenario
+QUESTION: In an NgRx-based application, a component needs to display a list of users stored in the store. What is the most idiomatic approach?
+A) Read the state through a selector from the `Store` instance and consume the result as an Observable or signal
+B) Directly modify the store's internal state object whenever the component changes
+C) Directly manipulate the component instance from the reducer
+D) Have a service maintain a separate local copy for each component instead of using the store
+ANSWER: A
+EXPLANATION: In NgRx, components typically read state through selectors, keeping state access declarative and centrally managed. Direct state mutation bypasses the reducer-based state flow and breaks the architecture's core principles. A local service copy would also undermine the benefits of centralized state management.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: Dependency injection
+TYPE: edgecase
+QUESTION: What happens if you inject a token in a service constructor for which there is no provider, and you do not use `@Optional()`?
+A) Angular passes `undefined`
+B) Angular throws a DI error because no provider can be found for the token
+C) Angular automatically creates a new instance of the token
+D) Angular throws an error only in a production build
+ANSWER: B
+EXPLANATION: For a required dependency, Angular reports an error when the injector cannot find a suitable provider for the token. With `@Optional()`, a missing dependency can instead be handled, with the result being `null`. Angular cannot automatically instantiate an arbitrary token without an appropriate provider.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: Standalone components
+TYPE: debug
+QUESTION: The following standalone component uses a custom `HighlightDirective` in its template, but at runtime Angular reports that the element or directive is unknown. What is the most likely cause?
+CODE:
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [],
+  template: `<p appHighlight>Hello</p>`
+})
+export class DemoComponent {}
+ENDCODE
+A) The directive must always be declared in an NgModule
+B) `standalone: true` cannot be used with custom directives
+C) The directive must be imported into the component's `imports` array if it is a standalone directive
+D) The directive can only be used inside a component template
+ANSWER: C
+EXPLANATION: With a standalone component, its direct template dependencies must be declared in the `imports` array. If `HighlightDirective` is standalone, for example, `imports: [HighlightDirective]` is required. The standalone architecture specifically allows such dependencies to be declared without an NgModule.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: Change detection & OnPush
+TYPE: trap
+QUESTION: An `OnPush` component contains the following template:
+CODE:
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <button (click)="count = count + 1">{{ count }}</button>
+  `
+})
+export class CounterComponent {
+  count = 0;
+}
+ENDCODE
+What happens when the button is clicked?
+A) The component does not update because `OnPush` disables change detection
+B) The template updates only when the parent component changes an input
+C) Angular throws an error because fields cannot be modified in an `OnPush` component
+D) An event handled by the component can trigger change detection, so the displayed value updates
+ANSWER: D
+EXPLANATION: `OnPush` does not disable change detection. A DOM event handled within the component can mark the component for checking, so the new `count` value is rendered.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Signals
+TYPE: output
+QUESTION: What is the output of the following code?
+CODE:
+const firstName = signal('Anna');
+const lastName = signal('Kovacs');
+
+const fullName = computed(() => `${firstName()} ${lastName()}`);
+
+console.log(fullName());
+lastName.set('Nagy');
+console.log(fullName());
+ENDCODE
+A) `Anna Kovacs`, then `Anna Nagy`
+B) `Anna Kovacs`, then `Anna Kovacs`
+C) `undefined`, then `Anna Nagy`
+D) `Anna Nagy`, then `Anna Nagy`
+ANSWER: A
+EXPLANATION: A `computed` automatically tracks the signals that are read during its computation. On the first read, the last name is `Kovacs`; after the signal changes, the next read uses the new `Nagy` value.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: scenario
+QUESTION: You want to trigger HTTP requests from a search field's `valueChanges` Observable so that the result of an earlier, still-running search cannot overwrite the result of a newer search. Which RxJS operator is best suited to this behavior?
+A) `mergeMap`
+B) `switchMap`
+C) `concatMap`
+D) `reduce`
+ANSWER: B
+EXPLANATION: `switchMap` unsubscribes from the previous inner Observable when a new outer value arrives, so for search scenarios only the latest request remains relevant. In contrast, `mergeMap` can allow previous requests to continue in parallel.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: HttpClient & interceptors
+TYPE: debug
+QUESTION: What is the problem with the following interceptor implementation?
+CODE:
+intercept(req: HttpRequest<unknown>, next: HttpHandler) {
+  req.headers.set('Authorization', 'Bearer token');
+  return next.handle(req);
+}
+ENDCODE
+A) The `Authorization` header can only be used with GET requests
+B) The interceptor cannot modify an `HttpRequest` object in place
+C) `next.handle()` accepts only a Promise instead of an Observable
+D) `HttpHeaders` is always empty inside an interceptor
+ANSWER: B
+EXPLANATION: `HttpRequest` and `HttpHeaders` use immutable APIs, so `set()` does not modify the existing object in place. A modified request can typically be created with `req.clone({ setHeaders: { Authorization: 'Bearer token' } })`, and the clone should then be passed to the next handler.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: Routing & guards
+TYPE: scenario
+QUESTION: A route should only be accessible to users who have an admin role. Where should this check preferably be implemented?
+A) In a route guard that checks authorization before navigation
+B) Exclusively in the admin component's `ngOnInit()` method
+C) In the global `main.ts` file
+D) In the route component's CSS file
+ANSWER: A
+EXPLANATION: A route guard participates in the navigation process and can allow or deny access before the route is activated. A check inside the component happens too late to provide route-level protection by itself.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: Forms
+TYPE: edgecase
+QUESTION: What happens with the following reactive form?
+CODE:
+const form = new FormGroup({
+  name: new FormControl('Anna'),
+  age: new FormControl(30)
+});
+
+form.patchValue({
+  name: 'Peter',
+  unknownField: true
+});
+ENDCODE
+A) The entire form becomes invalid
+B) A runtime exception is thrown because of the unknown field
+C) `unknownField` is added to the form
+D) `name` is updated, while the unknown field is ignored by the `FormGroup`
+ANSWER: D
+EXPLANATION: `patchValue()` is designed for partial updates and ignores properties that do not exist in the form structure. Therefore, `name` becomes `Peter`, while `age` remains unchanged.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: Performance
+TYPE: performance
+QUESTION: An Angular page needs to display several thousand records in a long list. Which approach can significantly reduce the number of elements present in the DOM at the same time?
+A) Use a separate `setInterval()` for every item
+B) Create a separate service instance for every list item
+C) Use virtual scrolling, which renders only a subset of the visible items
+D) Use `JSON.stringify()` for the list items in the template
+ANSWER: C
+EXPLANATION: Virtual scrolling keeps only the elements needed for the current viewport active in the DOM, reducing rendering and memory overhead for large lists. The other approaches do not meaningfully reduce the number of DOM elements.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: Testing
+TYPE: scenario
+QUESTION: In an Angular test for a standalone component, the component template uses another standalone component. How should that dependency be handled in the TestBed configuration?
+A) Add the used component to the `imports` array
+B) Always provide the used component under `providers`
+C) Put the used component in the `declarations` array
+D) A standalone component cannot use another component in tests
+ANSWER: A
+EXPLANATION: For standalone components, template dependencies are managed through `imports`, so the test should follow the same dependency structure. `providers` is intended for dependency injection tokens, while `declarations` is not the primary configuration mechanism for standalone components.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: SSR & hydration
+TYPE: trap
+QUESTION: An Angular application renders its initial HTML using SSR and then uses hydration. Why can it be problematic if a component directly modifies the DOM with a `document.querySelector()` call during `ngOnInit()`?
+A) Because `document` exists only in TypeScript
+B) Because the DOM is always completely immutable
+C) Because the selector only works with standalone components
+D) Because the server-generated DOM and the structure expected by the client can diverge, causing hydration problems
+ANSWER: D
+EXPLANATION: During hydration, Angular attempts to reuse the DOM generated on the server. Manual DOM manipulation can change the structure or state Angular expects, potentially causing mismatches and hydration errors.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: Services & providers
+TYPE: behavior
+QUESTION: What does the following provider configuration provide?
+CODE:
+providers: [
+  LoggerService,
+  {
+    provide: AuditLogger,
+    useExisting: LoggerService
+  }
+]
+ENDCODE
+A) Two separate `LoggerService` instances are created
+B) `AuditLogger` and `LoggerService` refer to the same `LoggerService` instance
+C) `AuditLogger` automatically inherits from `LoggerService`
+D) `AuditLogger` cannot be injected
+ANSWER: B
+EXPLANATION: `useExisting` creates an alias to an existing provider instance. Therefore, resolving the `AuditLogger` token returns the same `LoggerService` instance rather than creating a new one.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: Components & templates
+TYPE: output
+QUESTION: What is rendered in the template?
+CODE:
+@Component({
+  template: `
+    <p>{{ user.name }}</p>
+    <p>{{ user.address.city }}</p>
+  `
+})
+export class UserComponent {
+  user = {
+    name: 'Anna',
+    address: {
+      city: 'Budapest'
+    }
+  };
+}
+ENDCODE
+A) Only `Anna`
+B) Only `Budapest`
+C) `Anna`, then `Budapest`
+D) `undefined`, then `undefined`
+ANSWER: C
+EXPLANATION: The interpolations read the nested property values from the provided object. Since both properties exist, the two paragraphs display `Anna` and `Budapest`, respectively.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Pipes
+TYPE: behavior
+QUESTION: Why can using a custom impure pipe be a performance problem in a large list?
+A) Because an impure pipe runs only once
+B) Because an impure pipe cannot accept arguments
+C) Because an impure pipe only works on the server
+D) Because an impure pipe can be reevaluated more frequently during change detection
+ANSWER: D
+EXPLANATION: Impure pipes are not restricted to running only when their input reference changes, so they can execute more frequently during change detection. With large datasets, this can result in a significant amount of unnecessary computation.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Lifecycle hooks
+TYPE: behavior
+QUESTION: An `@Input()` value changes during the lifetime of a component. Which lifecycle hook is appropriate for processing input changes?
+A) `ngOnChanges`
+B) `ngAfterViewInit`
+C) `ngOnDestroy`
+D) `ngAfterContentChecked`
+ANSWER: A
+EXPLANATION: `ngOnChanges` runs when Angular-managed input properties change and provides access to both the previous and current values. The other hooks are associated with different lifecycle events.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: Data binding
+TYPE: output
+QUESTION: What text is displayed?
+CODE:
+@Component({
+  template: `
+    <input [value]="name">
+    <p>{{ name }}</p>
+  `
+})
+export class ProfileComponent {
+  name = 'Anna';
+}
+ENDCODE
+A) `Anna` is displayed in both the input and the paragraph
+B) `Anna` is displayed only in the input
+C) `Anna` is displayed only in the paragraph
+D) No value is displayed in either location
+ANSWER: A
+EXPLANATION: The property binding sets the input's `value` property to the component's `name` value, while interpolation displays the same property in the paragraph. However, without two-way binding, user input does not automatically write the value back to the component.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: Directives
+TYPE: behavior
+QUESTION: You use the following in a custom attribute directive:
+CODE:
+@HostListener('mouseenter')
+onMouseEnter() {
+  this.isHovered = true;
+}
+ENDCODE
+What is the primary purpose of `@HostListener`?
+A) Listening for events occurring on the directive's host element
+B) Creating new DOM elements
+C) Disabling automatic dependency injection for the directive
+D) Removing CSS classes from the host element
+ANSWER: A
+EXPLANATION: `@HostListener` allows a directive to respond to DOM events associated with its host element. The event handler can, for example, update state or trigger other UI behavior.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: State management (NgRx)
+TYPE: theory
+QUESTION: What is the primary responsibility of a reducer in an NgRx state management system?
+A) Executing HTTP requests directly
+B) Producing the new state from an action and the current state
+C) Managing component lifecycle hooks
+D) Dynamically registering routes
+ANSWER: B
+EXPLANATION: A reducer is a pure function that determines the new state from the current state and an action. Side-effecting operations such as HTTP requests are typically handled in effects.
+NOTE: Corrected the TOPIC from `NgRx` to `State management (NgRx)` to match the required TOPIC list.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: output
+QUESTION: What is printed to the console?
+CODE:
+of(1, 2, 3)
+  .pipe(
+    map(x => x * 2),
+    filter(x => x > 2)
+  )
+  .subscribe(x => console.log(x));
+ENDCODE
+A) `1`, `2`, `3`
+B) `2`, `4`, `6`
+C) `4`, `6`
+D) `6`
+ANSWER: C
+EXPLANATION: `map` first produces 2, 4, and 6. `filter` removes 2 because it is not greater than 2, leaving 4 and 6.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: Forms
+TYPE: behavior
+QUESTION: What is the difference between `setValue()` and `patchValue()` for a `FormGroup`?
+A) `setValue()` accepts only string values
+B) `patchValue()` always validates the entire form
+C) The two methods work exactly the same way
+D) `setValue()` expects values matching the complete form structure, while `patchValue()` also supports partial updates
+ANSWER: D
+EXPLANATION: `setValue()` expects a value that matches the complete form structure and can report an error when required fields are missing. `patchValue()` accepts a partial object and updates only the specified controls.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: Performance
+TYPE: production
+QUESTION: You are rendering records with stable, unique backend IDs in an `@for` loop. Which approach helps Angular track the items efficiently?
+A) `track item.id`
+B) `track Math.random()`
+C) `track JSON.stringify(item) + Date.now()`
+D) Omit `track` in all cases
+ANSWER: A
+EXPLANATION: A stable, unique identifier allows Angular to determine which DOM elements correspond to the same data items. A random or changing identifier prevents Angular from benefiting from that tracking optimization.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: HttpClient & interceptors
+TYPE: scenario
+QUESTION: In an application, you want to centrally log errors from all HTTP responses, such as 500 responses. Where is this best implemented?
+A) Separately in every component template
+B) In every `subscribe()` call using the same error-handling code
+C) In an HTTP interceptor, where the response/error stream can be handled centrally
+D) In CSS files
+ANSWER: C
+EXPLANATION: An interceptor provides a central point for cross-cutting HTTP concerns such as logging, error handling, and authentication. This reduces duplicated HTTP-specific logic across components.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: Routing & guards
+TYPE: behavior
+QUESTION: A route parameter changes from `/users/1` to `/users/2` while the application is running, without recreating the same route component. Which approach allows the component to react to the change?
+A) Rely only on the one-time execution of `ngOnInit()`
+B) Observe the `ActivatedRoute.paramMap` Observable or use its corresponding reactive API
+C) Fully reload the page on every parameter change
+D) Treat the route parameter as a CSS variable
+ANSWER: B
+EXPLANATION: The same route component instance can be reused when route parameters change, so one-time initialization is not necessarily sufficient. Reactively observing route parameters ensures that the component responds to the new ID.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: State management (NgRx)
+TYPE: scenario
+QUESTION: In an NgRx application, an effect starts an HTTP request in response to a `loadUsers` action. After a successful response, which approach fits the NgRx action flow?
+A) The effect directly modifies the store state object
+B) The effect creates a new action that is processed by the reducer
+C) The effect directly modifies component properties
+D) The effect ignores the HTTP response because the reducer performs the network request
+ANSWER: B
+EXPLANATION: An effect handles side effects such as HTTP requests and typically dispatches a new action based on the successful result. The reducer processes that action and produces the new state as part of an immutable state transition.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: Signals
+TYPE: behavior
+QUESTION: What happens in the following code when the `count` signal changes?
+CODE:
+const count = signal(1);
+
+effect(() => {
+  console.log('count:', count());
+});
+
+count.set(2);
+count.set(3);
+ENDCODE
+A) The effect never runs because signals can only be observed from templates
+B) The effect runs only after the first `set()`
+C) The effect runs only when it is called manually
+D) The effect reruns reactively when the value of the signal it reads changes
+ANSWER: D
+EXPLANATION: `effect()` automatically tracks the signals that are read during its execution. Because the effect reads `count()`, changes to that signal cause the effect to rerun.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: edgecase
+QUESTION: What happens with the following Observable?
+CODE:
+const source$ = new Observable(subscriber => {
+  subscriber.next(1);
+  subscriber.complete();
+  subscriber.next(2);
+});
+
+source$.subscribe({
+  next: value => console.log(value),
+  complete: () => console.log('done')
+});
+ENDCODE
+A) `1` is printed, followed by `done`; the later `next(2)` is ignored
+B) `1`, `done`, and `2` are printed
+C) Only `done` is printed
+D) The Observable throws a runtime error because of the second `next()`
+ANSWER: A
+EXPLANATION: Once the Observable calls `complete()`, it is closed, so subsequent `next()` notifications are not delivered to the subscriber. No further values are emitted after completion.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: Components & templates
+TYPE: scenario
+QUESTION: A parent component passes an object to a child through an `@Input()` property. The parent keeps the same object reference and changes only one of its properties. What is the main issue when using `OnPush`?
+A) `@Input()` automatically deep-clones the object
+B) The child always receives a new instance on every change detection cycle
+C) Mutating a property of the object does not change the object reference
+D) An `OnPush` component cannot receive `@Input()` values
+ANSWER: C
+EXPLANATION: `OnPush` input checking primarily relies on reference changes. If the same object reference is retained, mutating an internal property does not constitute a new input reference; using an immutable update, such as creating a new object, makes the change explicit.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: Dependency injection
+TYPE: scenario
+QUESTION: You want a service to be available only to a specific component and its children, while other components can use their own instances. Where should the provider be declared?
+A) In the component's `providers` array
+B) Always with `providedIn: 'root'`
+C) In the global `window` object
+D) In an arbitrary CSS file
+ANSWER: A
+EXPLANATION: A provider declared at the component level belongs to that component's injector, making its instance available to the component and the injector hierarchy below it. This avoids a global singleton scope when a local lifecycle is required.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: Services & providers
+TYPE: edgecase
+QUESTION: What does a `useFactory` provider do in Angular's dependency injection system?
+CODE:
+providers: [
+  {
+    provide: API_URL,
+    useFactory: () => 'https://api.example.com'
+  }
+]
+ENDCODE
+A) Angular automatically sends an HTTP request to the URL
+B) When the `API_URL` token is resolved, the value returned by the factory becomes the injected value
+C) The factory can only be used in unit tests
+D) The `API_URL` token must always return a class instance
+ANSWER: B
+EXPLANATION: `useFactory` allows a provider's value to be produced by a factory function. When `API_URL` is injected, Angular invokes the factory and provides its return value as the dependency.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: Lifecycle hooks
+TYPE: edgecase
+QUESTION: In a component, you want to access an element referenced by `@ViewChild` after the view has been initialized. Why should you not rely on `ngOnInit()` for this?
+A) `ngOnInit()` always runs twice
+B) `@ViewChild` can only be used in services
+C) The component is automatically destroyed after `ngOnInit()`
+D) The component's view may not yet be fully initialized at that point
+ANSWER: D
+EXPLANATION: `ngOnInit()` is associated with component initialization, while view children become available later in the lifecycle. `ngAfterViewInit()` is the appropriate lifecycle point for initialization that depends on the component's view.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Change detection & OnPush
+TYPE: behavior
+QUESTION: What happens to an `OnPush` component when a signal read in its template changes?
+A) Angular marks the component that read the signal as eligible for checking
+B) The component updates only after a full page reload
+C) The signal change notifies only services
+D) The signal change is completely ignored because of `OnPush`
+ANSWER: A
+EXPLANATION: When a signal is read in a component's template, Angular tracks that dependency. When the signal changes, the component can be marked for checking, allowing the new value to be rendered even with the `OnPush` strategy.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: Pipes
+TYPE: output
+QUESTION: What is rendered in the template?
+CODE:
+@Component({
+  template: `
+    <p>{{ name | uppercase }}</p>
+    <p>{{ price | number:'1.2-2' }}</p>
+  `
+})
+export class ProductComponent {
+  name = 'Angular';
+  price = 12.5;
+}
+ENDCODE
+A) `angular` and `12.5`
+B) `ANGULAR` and `12`
+C) `Angular` and `12.50`
+D) `ANGULAR` and `12.50`
+ANSWER: D
+EXPLANATION: The `uppercase` pipe converts the string to uppercase. `number:'1.2-2'` displays at least one integer digit and exactly two decimal places, so the result is `12.50`.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: Forms
+TYPE: behavior
+QUESTION: In a reactive form, you want to react to changes in a `FormControl` value. Which API is most appropriate?
+A) `control.eventsOnly`
+B) `control.valueChanges`
+C) `control.onValueChanged`
+D) `control.formChanges`
+ANSWER: B
+EXPLANATION: The `valueChanges` Observable emits whenever the control's value changes and can be further processed with RxJS operators. It is one of the core reactive APIs of Angular reactive forms.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: Routing & guards
+TYPE: scenario
+QUESTION: From a guard, you want to redirect the user to a login page when they are not authorized. Which approach best fits Angular's routing model?
+A) The guard always returns `true`, and the component performs the redirect
+B) The guard directly calls `window.location.reload()`
+C) The guard returns a `UrlTree` for the redirect
+D) The guard modifies a CSS class on the route element
+ANSWER: C
+EXPLANATION: A guard can return a `UrlTree`, allowing Angular to navigate to the specified route instead of continuing with the current navigation. This is cleaner than handling the redirect from the component or through direct browser APIs.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: HttpClient & interceptors
+TYPE: behavior
+QUESTION: Why is it useful to pass a modified request created with `req.clone()` from an HTTP interceptor?
+A) Because the original `HttpRequest` is immutable
+B) Because `clone()` automatically sends a new HTTP request
+C) Because interceptors can only accept cloned objects
+D) Because `clone()` disables HTTP error handling
+ANSWER: A
+EXPLANATION: Angular's `HttpRequest` API is immutable, so a modified clone must be created instead of mutating the existing request. The clone represents the modified request within the same HTTP request pipeline.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: Standalone components
+TYPE: scenario
+QUESTION: In a standalone component, you want to use Angular Router directives such as `routerLink`. What is required?
+A) The entire application must be reconfigured using NgModules
+B) The appropriate standalone import providing the router directives must be added to the component's `imports` array
+C) `routerLink` can only be used from a service
+D) A standalone component automatically imports all Angular directives
+ANSWER: B
+EXPLANATION: In a standalone component, directives used in the template are explicit template dependencies. The appropriate router import must therefore be provided, for example through the required router directives or an appropriate router export.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: State management (NgRx)
+TYPE: scenario
+QUESTION: A selector derives a computed value from multiple state fields. Why is using a selector preferable to performing the calculation manually in the component?
+A) A selector automatically sends HTTP requests
+B) A selector changes how the reducer works
+C) A selector completely disables change detection
+D) A selector declaratively encapsulates state-derived query logic and can also provide memoization
+ANSWER: D
+EXPLANATION: A selector separates state-query and derived-value logic from components. Appropriate NgRx selectors can use memoization, avoiding unnecessary recalculations when their inputs have not changed.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: scenario
+QUESTION: In a stream, you want to map every incoming value to an inner Observable while allowing previous inner Observables to continue running in parallel when new values arrive. Which operator is appropriate?
+A) `switchMap`
+B) `exhaustMap`
+C) `mergeMap`
+D) `takeUntil`
+ANSWER: C
+EXPLANATION: `mergeMap` can create an inner Observable subscription for each outer value, allowing them to run concurrently. This is appropriate when you do not want a new value to cancel previous inner operations.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: Performance
+TYPE: performance
+QUESTION: You call the same expensive method multiple times in a component template. Why can this be a problem?
+A) Angular can only use the method's first result
+B) A method called from a template always creates a separate service
+C) The method is automatically converted into a Promise
+D) The method can run multiple times during change detection, causing the expensive computation to be repeated
+ANSWER: D
+EXPLANATION: Methods called from templates can be reevaluated during change detection. If the computation is expensive and appears in multiple places, this can cause significant unnecessary CPU usage; a reactive or memoized approach may be more appropriate.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: Testing
+TYPE: debug
+QUESTION: In a component test, you change a component property, but the expected DOM change does not appear immediately. What might be missing from the test?
+A) A new `TestBed.configureTestingModule()` before every assertion
+B) Creating a new component instance after every property change
+C) A required `fixture.detectChanges()` call after the change
+D) A full browser reload
+ANSWER: C
+EXPLANATION: After programmatically changing component state, the test needs to run change detection if you want to verify the resulting DOM update. `fixture.detectChanges()` runs the relevant template checking again.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: SSR & hydration
+TYPE: edgecase
+QUESTION: Why is it important to avoid directly using browser-specific global APIs in code that may also execute on the server in an SSR Angular application?
+A) Because browser APIs are slower on the server
+B) Because browser globals such as `window` or `localStorage` may not exist in the server-side environment
+C) Because SSR automatically disables TypeScript
+D) Because hydration consists exclusively of CSS
+ANSWER: B
+EXPLANATION: During SSR, the same application code can execute in a server-side environment where browser global objects are unavailable. Platform-specific logic may therefore require Angular-specific platform checks or an appropriate lifecycle API.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: Directives
+TYPE: scenario
+QUESTION: You want to change the background color of a host element using an attribute directive in Angular. Which approach best fits the role of a directive?
+A) Convert every child of the host element into a new component
+B) Navigate to the host element using the Angular Router
+C) Use the DOM/style API associated with the host element through an appropriate Angular abstraction in the directive
+D) Always use a pipe instead of a directive
+ANSWER: C
+EXPLANATION: A typical responsibility of an attribute directive is to modify the behavior or presentation of its host element. In Angular, this can be done using APIs such as `ElementRef` and `Renderer2`, while taking the appropriate DOM abstraction and platform compatibility into account.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: Data binding
+TYPE: trap
+QUESTION: What is the key difference between `[value]="name"` and `[(ngModel)]="name"` for an input field?
+A) `[value]` is one-way property binding, while `[(ngModel)]` provides two-way data flow between the component and the field
+B) `[value]` always updates the component property when the user types
+C) `[(ngModel)]` can only be used with reactive forms
+D) The two syntaxes work exactly the same way
+ANSWER: A
+EXPLANATION: `[value]` passes a value from the component to the input but does not by itself write user changes back to the component. `[(ngModel)]` combines value binding with change handling, providing two-way synchronization.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: Components & templates
+TYPE: behavior
+QUESTION: A child component wants to notify its parent component about an event originating from the child. Which Angular mechanism is the traditional and idiomatic solution?
+A) The child directly modifies a private property of the parent
+B) The child uses `@Output()` to emit an event that the parent handles
+C) The child writes the data to the DOM `window` object
+D) The child always communicates with the parent through route navigation
+ANSWER: B
+EXPLANATION: A child component can publish an event using `@Output()`, which the parent can handle through event binding in its template. This provides loosely coupled and well-defined communication between components.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: HttpClient & interceptors
+TYPE: edgecase
+QUESTION: With an `HttpClient` request, you want to handle an error using `catchError` and then continue the Observable chain with a fallback value. Which approach is appropriate?
+A) Return a new Observable from the `catchError` callback
+B) Always return `void` from the `catchError` callback
+C) `catchError` only runs for HTTP 200 responses
+D) `catchError` automatically retries the request
+ANSWER: A
+EXPLANATION: `catchError` can replace a failed Observable with a new Observable, such as `of(fallbackValue)`. This allows the stream to continue with the fallback value when the application's business logic permits it.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: Forms
+TYPE: scenario
+QUESTION: You want to disable a reactive form control so that it is excluded from the `FormGroup.value` result. Which approach is appropriate?
+A) `control.hide()`
+B) `control.disable()`
+C) `control.removeValue()`
+D) `control.excludeFromForm()`
+ANSWER: B
+EXPLANATION: `disable()` deactivates the control, and disabled controls are normally excluded from the parent `FormGroup.value` result. If disabled fields also need to be included, `getRawValue()` can be used.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: Change detection & OnPush
+TYPE: scenario
+QUESTION: In an `OnPush` component, you display data from an Observable using the `async` pipe. Why can the template update even when there is no new `@Input()` reference?
+A) The `async` pipe only updates the root component
+B) The Observable creates a new component on every emission
+C) The `async` pipe notifies Angular's change detection system when new values are emitted
+D) `OnPush` automatically switches to the `Default` strategy in this case
+ANSWER: C
+EXPLANATION: The `async` pipe subscribes to the Observable and notifies Angular when new values are emitted, indicating that the associated view needs to be updated. This allows an `OnPush` component to react to new Observable values.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: scenario
+QUESTION: You want an Observable subscription associated with a component to be automatically terminated when the component is destroyed. Which modern Angular approach is suitable?
+A) Use a separate `setTimeout()` for every Observable
+B) Always omit manual subscription cleanup
+C) Store every subscription in a global variable
+D) Use Angular's `DestroyRef` and `takeUntilDestroyed()`
+ANSWER: D
+EXPLANATION: `takeUntilDestroyed()` ties Observable subscription cleanup to the Angular lifecycle, so the subscription can be automatically terminated when the associated component or injectable context is destroyed. This reduces the need for manual subscription management.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Performance
+TYPE: production
+QUESTION: In a large Angular application, you want to reduce the amount of JavaScript that needs to be loaded at startup. Which approach can help?
+A) Import every component into the root component at once
+B) Add the same large service package to every route
+C) Use more pipes in every template
+D) Apply lazy loading to features or routes that are needed less frequently
+ANSWER: D
+EXPLANATION: Lazy loading allows the code for certain features to be loaded only when it is actually needed. This can reduce the initial bundle size and improve application startup performance.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: Signals
+TYPE: edgecase
+QUESTION: What happens in the following code when `details` is read only conditionally inside the `computed`?
+CODE:
+const showDetails = signal(false);
+const details = signal('Angular');
+
+const text = computed(() =>
+  showDetails() ? details() : 'Hidden'
+);
+
+console.log(text());
+details.set('Signals');
+console.log(text());
+showDetails.set(true);
+console.log(text());
+ENDCODE
+A) The `computed` always recalculates when `details` changes
+B) The `computed` depends only on signals that are actually read, so changing `details` does not invalidate it while `showDetails` is false
+C) The `computed` cannot handle conditional signal dependencies
+D) The `computed` automatically registers every signal as a dependency
+ANSWER: B
+EXPLANATION: A `computed` dynamically tracks the signals that are actually read during a particular computation. While `showDetails()` is false, `details()` is not read, so changing it does not by itself invalidate the computation. Once `showDetails` becomes true, `details` becomes a dependency during the next computation.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: trap
+QUESTION: What is the key difference between an `Observable` and a `Promise` in this respect?
+A) An Observable can emit multiple values over time, while a Promise represents a single eventual result
+B) An Observable is always synchronous, while a Promise is always synchronous
+C) A Promise supports multiple subscribers, while an Observable supports only one
+D) An Observable cannot signal errors
+ANSWER: A
+EXPLANATION: An Observable can emit zero, one, or many values over time, and consumers subscribe to its stream. A Promise represents a single eventual result that either succeeds or fails.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: HttpClient & interceptors
+TYPE: scenario
+QUESTION: An authentication interceptor adds a token to every API request, but you do not want to send the token to an external analytics service. What is the best approach?
+A) Add the token to every request because an interceptor cannot distinguish between them
+B) Put the token in the response body
+C) Determine whether authentication is required based on the request URL or other reliable request metadata
+D) Add the token manually in each component
+ANSWER: C
+EXPLANATION: The interceptor can centrally inspect each request and add the authentication header only to requests targeting your own backend. This reduces the risk of accidentally sending sensitive credentials to an external service.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: Routing & guards
+TYPE: edgecase
+QUESTION: A route resolver starts an HTTP request before navigation. What happens if the Observable returned by the resolver terminates with an error?
+A) Angular automatically considers the navigation successful
+B) The component is always created and receives the data later
+C) Angular ignores the resolver error
+D) The navigation does not complete normally, and the resolver error must be handled
+ANSWER: D
+EXPLANATION: A resolver provides data before the route is activated. If the resolver stream errors, the navigation can fail, so the error should be handled appropriately, for example in the Observable pipeline or the routing architecture.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Forms
+TYPE: debug
+QUESTION: Why is the following reactive forms configuration incorrect if you want to provide both the initial value and a validator for the `name` control?
+CODE:
+const form = new FormGroup({
+  name: new FormControl(
+    'Anna',
+    Validators.required
+  )
+});
+ENDCODE
+A) The configuration is invalid because `FormControl` cannot accept a validator
+B) The configuration is valid; the second `FormControl` constructor argument can be a synchronous validator
+C) `Validators.required` can only be used with template-driven forms
+D) The initial value must always be an object
+ANSWER: B
+EXPLANATION: The first `FormControl` constructor argument can be the initial value, while the second can be a synchronous validator or validator configuration. Therefore, the shown configuration is valid for reactive forms.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: Standalone components
+TYPE: behavior
+QUESTION: What is one of the main benefits of making an Angular component standalone?
+A) The component automatically has access to every npm package
+B) The component cannot use dependency injection
+C) The component's template dependencies can be declared directly in its `imports` array without an NgModule declaration
+D) The component works only in an SSR environment
+ANSWER: C
+EXPLANATION: Standalone components can declare their own template dependencies directly in the `imports` array. This enables a simpler dependency structure and reduces NgModule-based declaration overhead.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: Testing
+TYPE: scenario
+QUESTION: A service uses Angular `HttpClient`, and in a unit test you want to verify the exact URL it requested and then provide a controlled response. Which approach is appropriate?
+A) `HttpTestingController.expectOne()`
+B) `window.fetch.mockRequest()`
+C) `RouterTestingHarness.navigate()`
+D) `fixture.detectChanges()` by itself
+ANSWER: A
+EXPLANATION: `HttpTestingController` allows HTTP requests made during a test to be intercepted and inspected. `expectOne()` can be used to validate the URL and other request properties, after which a controlled response can be provided.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: SSR & hydration
+TYPE: behavior
+QUESTION: What is one of the main goals of hydration in an Angular SSR application?
+A) Completely remove and rerender the HTML generated by the server
+B) Convert CSS files into JavaScript
+C) Automatically migrate the backend database
+D) Reuse the DOM created by the server and connect it to the client-side Angular application
+ANSWER: D
+EXPLANATION: During hydration, Angular reuses the DOM that was already generated on the server and connects it to the client-side application behavior. This avoids a full client-side DOM rerender and can improve the initial loading experience.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: State management (NgRx)
+TYPE: scenario
+QUESTION: In an NgRx reducer, you want to add an item to an array immutably. Which approach fits the role of a reducer?
+A) `state.items.push(action.item)` and return the original state
+B) Modify the database directly from the reducer
+C) Create a new state object in which `items` is a new array containing the additional item
+D) Modify a component property
+ANSWER: C
+EXPLANATION: A reducer should produce a pure and predictable state transition. Instead of mutating the original array, create a new array and state object, for example using the spread operator, so reference-based change detection can work correctly.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: Performance
+TYPE: production
+QUESTION: In a large table, the data for a single row changes frequently while thousands of other rows remain unchanged. Which approach can help avoid unnecessary DOM updates?
+A) Use a separate `setInterval()` for every row
+B) Use a stable `track` identifier for the list and update state immutably
+C) Reload the entire page after every change
+D) Replace every row with the result of `JSON.stringify()`
+ANSWER: B
+EXPLANATION: With a stable tracking key, Angular can more efficiently identify which list items have remained unchanged. Combined with immutable state updates and appropriate tracking, this can reduce unnecessary DOM work.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: Components & templates
+TYPE: edgecase
+QUESTION: What happens with the following template if `user` is initially `null` and later becomes an object?
+CODE:
+<p>{{ user?.profile?.name }}</p>
+ENDCODE
+A) The template immediately throws a runtime error because `user` is null
+B) Angular automatically creates the `user` object
+C) The template can render `undefined` without an error and later display the available name
+D) Optional chaining can only be used in TypeScript files
+ANSWER: C
+EXPLANATION: Optional chaining prevents property access on a null or undefined intermediate value from causing a runtime error. While `user` or `profile` is unavailable, the expression does not render a name; once the value becomes available, the name can be rendered.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: Services & providers
+TYPE: scenario
+QUESTION: You need another service inside a service constructor. What is the idiomatic Angular DI approach?
+A) Instantiate the dependency with the `new` operator in every method
+B) Pass the dependency through CSS
+C) Store the dependency in a global variable
+D) Inject the dependency through the service constructor
+ANSWER: D
+EXPLANATION: With Angular dependency injection, required services are typically obtained through constructor injection or the `inject()` API. This allows the injector to manage the dependency's lifecycle and configuration.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: Directives
+TYPE: scenario
+QUESTION: You want to implement custom structural-directive-like behavior that creates a template based on a condition. Which Angular concepts are most directly related to this?
+A) `TemplateRef` and `ViewContainerRef`
+B) `HttpClient` and `HttpHeaders`
+C) `ActivatedRoute` and `Router`
+D) `FormGroup` and `FormControl`
+ANSWER: A
+EXPLANATION: `TemplateRef` represents the template, while `ViewContainerRef` allows embedded views to be created and managed. These concepts are fundamental to understanding how structural directives work.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Pipes
+TYPE: behavior
+QUESTION: A pure pipe receives an object as input. What typically happens if you modify one of the object's properties but keep the object reference unchanged?
+A) The pipe always runs again
+B) The pipe automatically deep-clones the object
+C) The pipe typically does not run again merely because of the internal property mutation
+D) Angular throws an error because of the mutation
+ANSWER: C
+EXPLANATION: A pure pipe relies on changes to its input values, which for objects generally means a reference change. If the same object reference is retained, mutating an internal property does not by itself necessarily cause the pipe to run again.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: Change detection & OnPush
+TYPE: scenario
+QUESTION: In an `OnPush` component, you render an `@Input()` array. The parent adds an item to the original array using `push()`, but the reference remains unchanged. What is the best approach?
+A) Update the array with a new reference, for example using the spread operator
+B) `OnPush` automatically performs a deep comparison
+C) A new component instance is created after every `push()`
+D) `@Input()` arrays cannot be used with `OnPush` components
+ANSWER: A
+EXPLANATION: With an `OnPush` component, an input reference change is an important signal to Angular. Creating a new array, for example `[...items, newItem]`, produces an explicit reference change that Angular can detect.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: Signals
+TYPE: architecture
+QUESTION: In a complex Angular application, a signal contains shared, long-lived state used by multiple components and services. Which consideration should be taken into account when designing the architecture?
+A) Every signal must be created as a global variable
+B) Signals should always be duplicated separately for each component
+C) Clearly define state ownership and write access, for example by limiting mutation through a service-level API
+D) Signals eliminate the need for services
+ANSWER: C
+EXPLANATION: For shared state, it is important to define which layer owns the state and where it can be modified. A writable signal encapsulated by a service, with a read-only API exposed externally, can provide controlled access to the state.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: production
+QUESTION: In a search flow, the user types rapidly and each value would trigger an HTTP request. The goal is to avoid processing results from earlier searches once a newer search has arrived. Which combination is most appropriate?
+A) `debounceTime` and `switchMap`
+B) `concatMap` and `delay`
+C) `mergeMap` and `scan`
+D) `reduce` and `buffer`
+ANSWER: A
+EXPLANATION: `debounceTime` reduces the number of requests by waiting for a pause in typing, while `switchMap` unsubscribes from the previous inner stream when a new search arrives. Together they are a common solution for autocomplete or search-as-you-type scenarios.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: Performance
+TYPE: architecture
+QUESTION: In a large Angular application, the initial bundle size has grown significantly because rarely used admin functionality is included in the initial bundle. Which architectural approach is appropriate?
+A) Load all admin components eagerly from the root component
+B) Place the admin functionality behind a lazy-loaded route or feature boundary
+C) Convert all admin services into global variables
+D) Copy all admin templates into a single large component
+ANSWER: B
+EXPLANATION: Lazy loading rarely used features prevents their code from being part of the initial load. This can reduce the amount of initial JavaScript and improve startup performance.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: HttpClient & interceptors
+TYPE: production
+QUESTION: An application uses access-token-based authentication. When an API request returns `401 Unauthorized`, the application should attempt to refresh the token and then retry the original request. What is the most important architectural risk in an interceptor-based refresh flow?
+A) An interceptor can never work with Observables
+B) A `401` response always means the user must be logged out immediately
+C) The interceptor automatically handles concurrent refresh requests
+D) Multiple concurrent `401` responses can trigger multiple refresh requests, so the refresh flow must be coordinated
+ANSWER: D
+EXPLANATION: Multiple concurrent requests can receive `401` responses, so a naive implementation may start a separate refresh request for each one. In production, a shared refresh flow often needs to be coordinated so subsequent requests can join the existing refresh operation.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: State management (NgRx)
+TYPE: architecture
+QUESTION: In an NgRx application, a component directly modifies a property of the store state object. Why is this considered problematic?
+A) Because the store can only contain strings
+B) Because it bypasses the action → reducer-based state transition and can make state changes unpredictable
+C) Because the component can no longer use templates
+D) Because NgRx is only intended for handling HTTP requests
+ANSWER: B
+EXPLANATION: NgRx's central state flow is built around explicit state transitions produced by actions and reducers. Direct mutation bypasses this mechanism, makes changes harder to trace, and can violate immutable state-management principles.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: SSR & hydration
+TYPE: production
+QUESTION: In an SSR + hydration Angular application, a component uses different initial data on the server and client, so the DOM generated by the server does not match the content expected by the client. What can happen as a result?
+A) A hydration mismatch or hydration error
+B) Angular automatically renames the components
+C) CSS is automatically disabled
+D) The router deletes every route
+ANSWER: A
+EXPLANATION: Hydration assumes that the client-side application can reconcile with the DOM structure generated by the server. If the initial rendering differs in a non-deterministic way, Angular can detect a hydration mismatch, potentially resulting in an error or unintended rerendering.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: Testing
+TYPE: production
+QUESTION: A complex Angular component test becomes flaky because asynchronous Observables and timers are running. Which approach can help make test timing deterministic?
+A) Call `window.location.reload()` after every asynchronous operation
+B) Globally disable all Observables
+C) Use the appropriate fake-timer/async tools in the Angular testing environment, such as `fakeAsync` and `tick` where appropriate
+D) Run every test with an infinite timeout
+ANSWER: C
+EXPLANATION: `fakeAsync` and `tick` can be used to control certain time-based and asynchronous operations deterministically within a test. The appropriate approach depends on which asynchronous mechanisms the component uses.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: Dependency injection
+TYPE: architecture
+QUESTION: In a large Angular application, multiple features need to provide the same token-based configuration with different values. Which DI approach allows a lower-level injector to override a provider defined at a higher level?
+A) Declare a provider with the same token in the appropriate feature or component injector
+B) Create a new TypeScript interface without a provider
+C) Rename the token in every feature
+D) Modify the dependency directly at runtime
+ANSWER: A
+EXPLANATION: Angular's hierarchical injectors allow a child injector to provide its own value for the same token. Within that injector's scope, the lower-level provider is resolved instead of the higher-level provider.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Routing & guards
+TYPE: architecture
+QUESTION: In a multi-role enterprise application, some routes are accessible only to users with specific permissions. What is the most important consideration when designing the guards?
+A) Guards should implement all business logic and database operations directly
+B) A guard should only manage CSS state
+C) Guards should always perform a full page reload
+D) Guards should serve as well-defined authorization boundaries, while sensitive backend authorization must not rely solely on client-side protection
+ANSWER: D
+EXPLANATION: A route guard is useful for client-side UX and navigation control, but it is not a security boundary by itself because client-side code can be modified or bypassed. The backend must also enforce authorization for sensitive resources.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Components & templates
+TYPE: architecture
+QUESTION: In a large Angular application, a component template contains multiple independent pieces of business logic and complex calculations. What could be a more maintainable approach?
+A) Keep all calculations directly in the template so they run again during every change detection cycle
+B) Put all logic into one enormous component class
+C) Separate presentation and business logic appropriately, for example by using smaller component responsibilities, computed state, or dedicated services
+D) Implement all business logic using CSS selectors
+ANSWER: C
+EXPLANATION: Separating responsibilities in large components improves testability, readability, and maintainability. Instead of performing expensive calculations directly in the template, reactive or memoized state and appropriately encapsulated services can be used.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: Signals
+TYPE: architecture
+QUESTION: In a service, you want to expose the internal writable signal state to consumers as read-only. Which approach is most appropriate?
+CODE:
+private readonly _users = signal<User[]>([]);
+
+readonly users = this._users.asReadonly();
+ENDCODE
+A) Give every component direct access to the writable signal
+B) Convert the signal value to JSON on every read
+C) Expose the writable signal as a read-only signal API using `asReadonly()`
+D) Always use a global variable instead of a signal
+ANSWER: C
+EXPLANATION: `asReadonly()` allows an internal writable signal to be exposed externally through a read-only interface. This keeps state mutation inside the service and provides better encapsulation.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: edgecase
+QUESTION: An Observable emits multiple values and you share it using `shareReplay({ bufferSize: 1, refCount: true })`. What is one important consequence of `refCount: true`?
+A) The upstream subscription can be terminated when the last subscriber unsubscribes
+B) The Observable automatically emits only a single value
+C) The upstream subscription remains active forever
+D) The replay buffer automatically becomes unlimited in size
+ANSWER: A
+EXPLANATION: With `refCount: true`, the shared upstream subscription is tied to the number of active downstream subscribers. When the last subscriber unsubscribes, the upstream subscription can be terminated.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: HttpClient & interceptors
+TYPE: architecture
+QUESTION: You want to handle HTTP errors consistently in an interceptor, but some errors need to be handled at the business level by individual features. Which architecture is most appropriate?
+A) Completely swallow every HTTP error in the interceptor
+B) Automatically convert every error to `null` in the interceptor
+C) Forward all errors directly to the backend
+D) Handle only genuinely cross-cutting concerns in the interceptor and leave feature-specific business error handling to the consumer
+ANSWER: D
+EXPLANATION: An interceptor is an appropriate place for cross-cutting concerns such as logging, authentication, or general transport-level handling. Errors with business-specific meaning are often feature-specific and should therefore be handled by the consumer.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: Performance
+TYPE: architecture
+QUESTION: In an Angular application, much of the UI is needed only after user interaction. Which approach can help reduce the initial rendering cost?
+A) Create every UI section immediately and hide it with CSS
+B) Create or load the required UI only when it is actually needed
+C) Rerender every component using `setInterval()`
+D) Convert all data to `JSON.stringify()` form in advance
+ANSWER: B
+EXPLANATION: Avoiding unnecessary DOM and component-tree creation can reduce initial rendering and change-detection costs. For interaction-driven UI, conditional rendering or lazy loading can be an appropriate strategy.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: State management (NgRx)
+TYPE: architecture
+QUESTION: In an NgRx application, an effect needs to update state based on the result of an HTTP request. Which data flow best fits the NgRx architecture?
+A) Effect → direct state mutation
+B) Component → direct reducer method call
+C) Effect → success action → reducer → new state
+D) Effect → direct DOM manipulation
+ANSWER: C
+EXPLANATION: The effect handles the side effect, such as the HTTP request, and can dispatch an action based on the result. The reducer processes that action as a pure state transition.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: Dependency injection
+TYPE: edgecase
+QUESTION: You configure a `useClass` provider for a token. What happens when the token is injected?
+CODE:
+providers: [
+  {
+    provide: Logger,
+    useClass: ProductionLogger
+  }
+]
+ENDCODE
+A) Angular uses a `ProductionLogger` instance when resolving the `Logger` token
+B) Angular only stores the name of the `Logger` interface
+C) Angular looks for an existing `Logger` instance and never creates a `ProductionLogger` instance
+D) The provider can only be used from templates
+ANSWER: A
+EXPLANATION: `useClass` tells the injector which concrete class to use when resolving the token. Therefore, a `ProductionLogger` instance can be provided for the `Logger` token.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: SSR & hydration
+TYPE: production
+QUESTION: In an Angular SSR application, a component needs to use a browser-specific API only after client-side rendering. Which approach best fits the Angular SSR model?
+A) Call the browser API unconditionally from the constructor
+B) Call the browser API during every server-side render
+C) Call the browser API from CSS
+D) Isolate browser-only execution using an appropriate Angular platform or lifecycle mechanism
+ANSWER: D
+EXPLANATION: With SSR, component code can also run on the server, so unconditionally using browser-only APIs can cause errors. Client-side execution should be isolated using Angular's appropriate platform and lifecycle mechanisms.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: Routing & guards
+TYPE: architecture
+QUESTION: In an application, resolvers load data required by routes, but some API requests can take several seconds. What is the main trade-off?
+A) A resolver always makes the API request faster
+B) Navigation can wait for resolver data, so a slow resolver can increase navigation latency
+C) A resolver always runs in the background after navigation
+D) A resolver disables Angular change detection
+ANSWER: B
+EXPLANATION: The purpose of a resolver is to make required data available before the route is activated. As a result, a slow resolver can directly affect navigation time, so not every data-loading operation needs to be implemented as a resolver.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Testing
+TYPE: architecture
+QUESTION: In a complex component test, you want to avoid real backend HTTP requests while still testing the component's real `HttpClient` flow. What is the best approach?
+A) Connect the test to the real production backend
+B) Comment out all HTTP calls
+C) Use Angular's HTTP testing infrastructure and provide controlled responses for the requests
+D) Replace every component method with an empty mock
+ANSWER: C
+EXPLANATION: Angular's HTTP testing infrastructure allows the real `HttpClient` pipeline to be tested without network access. This makes it possible to deterministically verify request URLs, methods, bodies, and different response scenarios.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: Change detection & OnPush
+TYPE: architecture
+QUESTION: A large component tree uses the `OnPush` strategy, but a global service frequently mutates objects without changing their references. Why is this problematic from an architectural perspective?
+A) `OnPush` automatically deep-clones all objects
+B) `OnPush` supports only primitive values
+C) Services are not allowed to mutate objects
+D) Because change detection relies on references, internal mutations can cause hidden or difficult-to-trace UI update problems
+ANSWER: D
+EXPLANATION: `OnPush` works well with immutable state updates, where a change produces a new reference. Mutating an object in place does not provide the same clear change signal, which can lead to difficult-to-diagnose behavior in a large component tree.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: production
+QUESTION: In a stream, an operation can fail, but you want the outer stream to remain active so that subsequent outer values can still be processed. Where should `catchError` typically be placed for a `switchMap`-style inner stream?
+A) Inside the appropriate inner Observable so that an inner error does not necessarily terminate the outer stream
+B) Always in the application's top-level `subscribe()` call
+C) Before `map()` in every case
+D) `catchError` cannot be used with `switchMap`
+ANSWER: A
+EXPLANATION: If `catchError` handles the error inside the inner Observable created by `switchMap`, the inner stream can be replaced while the outer stream remains capable of receiving new values. If error handling is placed at the end of the entire pipeline, the outer stream can also terminate.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: Signals
+TYPE: architecture
+QUESTION: Multiple components read a signal-based state, but only one service should be allowed to modify it. Which design provides the best encapsulation?
+A) Give every component access to the writable signal
+B) Keep the writable signal private in the service and expose only a read-only signal or methods externally
+C) Store the signal value as a global `window` property
+D) Create a separate copy of the same state in every component
+ANSWER: B
+EXPLANATION: Separating the internal writable signal from external read-only access establishes a clear ownership model. Components can observe the state while mutation rights remain with the service.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: Performance
+TYPE: production
+QUESTION: In an Angular application, a large, complex template contains several expensive calculations that are repeated with the same inputs. Which approach can reduce unnecessary recalculations?
+A) Run every calculation using `setInterval()`
+B) Convert every result to a string
+C) Use reactive or memoized derived state, for example with appropriate `computed` values
+D) Switch the entire application to `Default` change detection
+ANSWER: C
+EXPLANATION: Memoized derived state allows a calculation to be invalidated and recomputed only when its relevant inputs change. This can reduce expensive calculations that would otherwise be repeatedly performed from the template.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: HttpClient & interceptors
+TYPE: edgecase
+QUESTION: An interceptor applies a retry mechanism to HTTP errors. Why is it dangerous to automatically retry every error indefinitely?
+A) Because HTTP requests can never be idempotent
+B) Because retry always disables the timeout
+C) Because an interceptor cannot use RxJS operators
+D) It can cause infinite retry loops, unnecessary load, or unintended repeated side effects
+ANSWER: D
+EXPLANATION: Not every error is transient, and not every HTTP operation is safe to repeat. A retry strategy should consider a bounded retry count, appropriate error filtering, backoff, and whether the operation is idempotent.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: State management (NgRx)
+TYPE: architecture
+QUESTION: An NgRx selector derives a complex list from a large state object. The selector creates a new array on every evaluation, even when the relevant inputs have not changed. What can be the consequence?
+A) Angular automatically destroys the selector
+B) Unnecessary recalculations and reference changes can trigger additional rendering or downstream processing
+C) NgRx automatically modifies the database
+D) The reducer can no longer receive actions
+ANSWER: B
+EXPLANATION: A new array reference on every evaluation can appear as a change to consumers even when it represents the same data. Memoized selectors and stable derived state can help avoid this unnecessary work.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: Dependency injection
+TYPE: architecture
+QUESTION: In an enterprise Angular application, you want to use the same interface-like abstraction with multiple implementations in different environments. Why can an `InjectionToken` be appropriate for this?
+A) Because an `InjectionToken` can serve as a runtime token for dependencies that do not have a runtime class token
+B) Because an `InjectionToken` automatically sends HTTP requests
+C) Because an `InjectionToken` replaces the TypeScript compiler
+D) Because every `InjectionToken` automatically behaves as a singleton regardless of scope
+ANSWER: A
+EXPLANATION: A TypeScript interface does not exist at runtime and therefore cannot itself serve as a DI token. An `InjectionToken` provides a stable runtime identifier that can be associated with different providers in different environments or injectors.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: Routing & guards
+TYPE: security
+QUESTION: An admin route guard checks whether the user has an admin role. Why is this alone insufficient to protect admin API endpoints?
+A) Because guards only work in production builds
+B) Because a guard cannot protect routes
+C) Because client-side code can be modified or bypassed, so the backend must also enforce authorization
+D) Because admin roles exist only in CSS
+ANSWER: C
+EXPLANATION: A route guard provides client-side navigation control but is not a trusted security boundary. An attacker can modify or bypass client-side code, so authorization for sensitive API operations must also be enforced on the server.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: Testing
+TYPE: architecture
+QUESTION: A component test verifies too many internal implementation details, so even a simple refactor causes many tests to fail. What would be a more maintainable testing strategy?
+A) Test every private property directly
+B) Fully mock the component's internal methods
+C) Delete all tests and rely only on manual testing
+D) Primarily test observable behavior, user interactions, and the component's public contract
+ANSWER: D
+EXPLANATION: Behavior-focused tests are less coupled to implementation details, so internal refactoring is less likely to break them. Tests should primarily verify what the component guarantees to its consumers or users.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: SSR & hydration
+TYPE: production
+QUESTION: In an SSR + hydration application, a component generates a random ID in the template on every render. Why can this be problematic?
+A) Randomness automatically disables the Router
+B) The server and client can produce different render results, which can lead to a hydration mismatch
+C) Templates cannot contain strings
+D) SSR cannot render components
+ANSWER: B
+EXPLANATION: If the server and client generate different random values from the same initial state, the rendered DOM can differ. During hydration, such non-deterministic initial output can result in a mismatch.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: Components & templates
+TYPE: architecture
+QUESTION: A large component handles the business logic of several different features, making it difficult to test. What is one of the most important refactoring goals?
+A) Combine all logic into a single template expression
+B) Make the component larger by adding more helper methods
+C) Separate responsibilities into smaller components and appropriate services
+D) Turn all of the component's dependencies into global variables
+ANSWER: C
+EXPLANATION: Components and services with focused responsibilities are easier to test and maintain. Separating responsibilities reduces implicit coupling and creates clearer boundaries.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: production
+QUESTION: In a component, the same cold Observable is consumed by multiple independent `subscribe()` calls, and each subscription triggers a separate HTTP request. What can be an appropriate solution if you want to share the same result between consumers?
+A) Start a new HTTP request before every subscription
+B) Use `shareReplay` with appropriate cache/replay semantics
+C) Increase the number of subscriptions
+D) Repeat every HTTP request using `setInterval()`
+ANSWER: B
+EXPLANATION: A cold Observable can trigger a separate execution for each subscriber. With appropriately configured `shareReplay`, the source result can be shared among multiple consumers while controlling replay behavior.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Performance
+TYPE: production
+QUESTION: A dashboard contains multiple independent widgets that refresh at different times. Which architectural approach can help prevent a change in one widget from unnecessarily affecting a large component tree?
+A) Handle every widget in a single massive component
+B) Rerender the entire page after every update
+C) Use a global `setInterval()` for every widget
+D) Split widgets into well-isolated components and use local or targeted reactive state
+ANSWER: D
+EXPLANATION: Well-isolated components and targeted reactive state allow a change to trigger work primarily in the relevant part of the UI. This can reduce unnecessary change-detection and rendering costs, especially in large dashboards.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: Signals
+TYPE: production
+QUESTION: You modify a signal inside an `effect()` that is also read by the same effect. Why should this be handled carefully?
+A) Because signals can never be modified from an effect
+B) Because every effect automatically sends an HTTP request
+C) Because it can create a reactive cycle or repeated effect executions if the mutation causes another dependency change
+D) Because effects can only be called from templates
+ANSWER: C
+EXPLANATION: Effects are primarily intended for synchronizing reactive state with external side effects, not for deriving state. If an effect modifies one of its own dependencies, it can create a difficult-to-follow reactive feedback loop, so `computed()` is generally more appropriate for derived state.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: HttpClient & interceptors
+TYPE: security
+QUESTION: An interceptor automatically adds an `Authorization` header to every HTTP request. Why can this be a security concern?
+A) Because the Authorization header cannot be used with HTTPS
+B) Because the token could accidentally be sent to an external origin that does not need it
+C) Because the interceptor only sees POST requests
+D) Because Angular automatically deletes the token after every request
+ANSWER: B
+EXPLANATION: If the interceptor does not properly restrict which origins or endpoints receive the credential, the token could be sent to an unintended recipient as sensitive data. Explicitly validating the request destination is therefore an important part of auth-interceptor design.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: State management (NgRx)
+TYPE: architecture
+QUESTION: In an NgRx application, a feature state contains too much unrelated UI state and domain data in a single monolithic structure. What can be one consequence?
+A) NgRx automatically normalizes all data
+B) The reducer automatically splits the state into services
+C) Actions can no longer be used
+D) State ownership, selectors, testing, and isolating changes can become more difficult
+ANSWER: D
+EXPLANATION: An overly monolithic state structure can create tight coupling and difficult-to-follow dependencies. Structuring state around logical feature or domain boundaries can improve maintainability and isolated testing.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: Signals
+TYPE: architecture
+QUESTION: In an Angular application, a service manages internal state using a Signal. Components only need to read the state and must not modify it. Which API design is the most appropriate?
+CODE:
+private readonly _user = signal<User | null>(null);
+
+readonly user = this._user.asReadonly();
+ENDCODE
+A) Components should receive the writable signal directly so they can use it more flexibly.
+B) The writable signal should be kept private, and the state should be exposed through a read-only signal.
+C) Signals should always be replaced with BehaviorSubject in services.
+D) The signal value should be exposed through a getter because a signal cannot be passed to a component.
+ANSWER: B
+EXPLANATION: The state owner keeps the writable signal, while consumers receive only the read-only interface provided by `asReadonly()`. This reduces the possibility of accidental state mutation and provides a clearer ownership model. Exposing the writable signal directly may seem attractive because it is simple, but it gives consumers broader mutation permissions than necessary.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: production
+QUESTION: A search field triggers an HTTP request for every change. Previous search results are no longer relevant once the user enters a new search term. Which solution best expresses this semantics?
+CODE:
+this.searchControl.valueChanges.pipe(
+  debounceTime(300),
+  distinctUntilChanged(),
+  switchMap(term => this.http.get<Result[]>(`/api/search?q=${term}`))
+);
+ENDCODE
+A) `mergeMap`, because every search must always be completed.
+B) `concatMap`, because searches must be processed in their original order.
+C) `exhaustMap`, because the first search is more important than the others.
+D) `switchMap`, because switching to a new search can terminate the previous inner subscription.
+ANSWER: D
+EXPLANATION: `switchMap` switches to the current inner Observable whenever a new outer value arrives, so previous search results are no longer forwarded downstream. This fits a latest-value-wins search model well. `mergeMap` may seem appropriate because it starts every HTTP request, but an older response could then arrive later and overwrite a newer result.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: SSR & hydration
+TYPE: production
+QUESTION: In an Angular application using SSR and hydration, the following template generates a new identifier on every render. Why can this be problematic?
+CODE:
+<div [attr.data-id]="Math.random()">
+  {{ title }}
+</div>
+ENDCODE
+A) `Math.random()` can only be used in TypeScript files.
+B) Hydration automatically removes all dynamic attributes.
+C) The browser cannot execute the template because of the random value.
+D) A different value can be generated on the server and in the browser, which can cause a mismatch between the server DOM and the DOM expected by the client.
+ANSWER: D
+EXPLANATION: With SSR, the template is first rendered on the server, and the client then attempts to reuse the existing DOM during hydration. If a non-deterministic value differs, the server-rendered and client-rendered states may not match. The problem may seem harmless because the random attribute is valid HTML by itself, but deterministic initial DOM is important for hydration.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Performance
+TYPE: architecture
+QUESTION: A complex dashboard contains several independent widgets. A state change in one widget currently causes a significant portion of the dashboard to be recalculated. Which architectural approach can most effectively reduce unnecessary work?
+A) Split the widgets into smaller components, use local reactive state, and limit updates to the affected areas.
+B) Manually call `ApplicationRef.tick()` after every state change.
+C) Put the state of all widgets into one large object.
+D) Use getters in every template so Angular can optimize automatically.
+ANSWER: A
+EXPLANATION: Smaller component boundaries and targeted reactive state allow a change to activate only the UI areas that are actually affected. This can significantly reduce rendering and computation costs, especially in large dashboards. Explicitly triggering a global tick may seem attractive because it guarantees an update, but it can initiate unnecessarily broad work.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: HttpClient & interceptors
+TYPE: security
+QUESTION: An interceptor automatically adds the `Authorization` header to every HTTP request. However, the application also calls external analytics APIs. What is the most important security concern?
+CODE:
+intercept(req: HttpRequest<unknown>, next: HttpHandler) {
+  return next.handle(
+    req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${this.token}`
+      }
+    })
+  );
+}
+ENDCODE
+A) The `Authorization` header cannot be sent over HTTPS.
+B) The token may be sent to an external origin that has no need for this authentication information.
+C) An interceptor can only modify GET requests.
+D) Using `clone()` automatically sends the request twice.
+ANSWER: B
+EXPLANATION: A global interceptor may not know whether a target system is a trusted backend or an external service. The Authorization header should therefore be added only to appropriately targeted requests, for example based on the origin or explicit request metadata. HTTPS protects the data in transit, but it does not make sending a token to an unintended destination appropriate.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: State management (NgRx)
+TYPE: architecture
+QUESTION: An NgRx feature state stores data belonging to several independent domains in a single large object. Components also know the internal structure of the state directly. What problem can arise over time?
+A) The reducer can no longer be used with TypeScript.
+B) NgRx automatically loses all state.
+C) The state will only be available during SSR.
+D) Strong coupling can make it harder to modify, test, and separate features.
+ANSWER: D
+EXPLANATION: An overly centralized state model that exposes internal structure increases coupling between components and the state management layer. Proper feature separation and access through selectors generally produce a more maintainable model. A single large state object may seem simpler because it initially requires less boilerplate, but the dependencies can quickly become difficult to manage.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Dependency injection
+TYPE: edgecase
+QUESTION: In the Angular DI hierarchy, both a parent injector and a child injector provide a service for the same token. A child component injects that token. Which provider is used?
+A) The child injector's provider, because the injection lookup starts in the local injector context and proceeds upward through the hierarchy.
+B) The root injector's provider in every case.
+C) Both instances are automatically merged into a single shared instance.
+D) Angular randomly chooses between the two providers.
+ANSWER: A
+EXPLANATION: During dependency resolution, Angular searches the appropriate local injector context first, so a provider in the child injector can override a provider at a higher level. This enables feature- or component-level customization. The root provider may seem like the natural choice because many services use `providedIn: 'root'`, but that does not prevent a local override.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Routing & guards
+TYPE: security
+QUESTION: An Angular application uses a route guard to prevent non-admin users from opening the `/admin` route. However, the backend API does not check admin authorization. What is the correct conclusion?
+A) The guard alone provides sufficient server-side access protection.
+B) The guard causes the backend to automatically know the user's permissions.
+C) The backend must also enforce authorization because a client-side guard is not a security boundary.
+D) The admin route must be completely removed from the Angular application.
+ANSWER: C
+EXPLANATION: A route guard controls client-side navigation, but client code and network requests cannot be treated as a trusted security boundary. The backend must enforce authorization for every protected resource. A guard is useful as a UX and navigation layer, but it does not replace server-side authorization.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: Testing
+TYPE: architecture
+QUESTION: When testing a complex component, the test directly checks private fields and internal methods of the component. Why can this be a poor long-term testing strategy?
+A) Private fields cannot exist in Angular components.
+B) The tests become too tightly coupled to implementation details, so an internal refactoring can unnecessarily break many tests.
+C) TestBed supports only public properties.
+D) Private methods are always slower than public methods.
+ANSWER: B
+EXPLANATION: Tests based on behavior and the public contract are generally more stable because they do not depend on which internal fields or methods the component uses to implement its behavior. An internal refactoring can therefore occur without necessarily requiring test changes. Checking implementation details may seem attractive because it provides more detailed control, but it creates strong coupling between the test and the implementation.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: Signals
+TYPE: trap
+QUESTION: We want to derive a value from other signals. Why is it preferable to use `computed()` rather than modifying another signal inside an `effect()` for this purpose?
+CODE:
+readonly firstName = signal('Anna');
+readonly lastName = signal('Kovacs');
+
+readonly fullName = computed(
+  () => `${this.firstName()} ${this.lastName()}`
+);
+ENDCODE
+A) `computed()` is specifically designed to declare derived state and automatically tracks its dependencies.
+B) `effect()` cannot read signals.
+C) `computed()` does not react to signal changes.
+D) `effect()` can only be used for HTTP requests.
+ANSWER: A
+EXPLANATION: `computed()` declaratively describes state derived from other signals, and Angular automatically tracks the dependencies that are read. This is cleaner and less error-prone than manually maintaining another signal inside an effect. An effect may seem appropriate because it can react to changes, but it is primarily intended for side effects rather than maintaining derived state.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: edgecase
+QUESTION: An outer Observable starts multiple HTTP requests using `switchMap`. However, an HTTP Observable error terminates the entire search stream. Which structure allows later searches to continue after an individual HTTP error?
+CODE:
+this.search$.pipe(
+  switchMap(term =>
+    this.http.get<Result[]>(`/api/search?q=${term}`).pipe(
+      catchError(() => of([]))
+    )
+  )
+);
+ENDCODE
+A) `catchError` should be removed completely.
+B) `catchError` should only be used during application bootstrap.
+C) `catchError` should be placed after the entire stream so that every error automatically restarts it.
+D) `catchError` should be placed inside the inner Observable so the individual HTTP error is handled with a replacement value while the outer stream can continue.
+ANSWER: D
+EXPLANATION: The inner `catchError` replaces the specific HTTP request with a fallback Observable such as an empty result, so the outer `search$` stream does not terminate because of that HTTP error. Later search values can therefore start new inner Observables. Placing `catchError` at the outer level may seem convenient because it centralizes error handling, but the outer stream can then complete.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: Performance
+TYPE: production
+QUESTION: A large list performs a complex calculation for every item, and the result changes only when a few input signals change. What is the most appropriate solution?
+A) Execute the calculation again during every template render.
+B) Refresh the calculation periodically using `setInterval()`.
+C) Start a separate HTTP request for every item.
+D) Memoize the derived value with appropriate dependencies, for example using `computed()`, so it is recalculated only when relevant inputs change.
+ANSWER: D
+EXPLANATION: Memoized derived state allows Angular to recalculate only when an actual dependency changes. This is particularly useful for expensive calculations and large lists. Recalculating the value during every template check may seem simple because it requires no separate state management, but it can cause unnecessary CPU work.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: HttpClient & interceptors
+TYPE: edgecase
+QUESTION: An interceptor starts an access-token refresh when it receives a 401 response. Within a short period, five requests also receive 401 responses. What is the typical production problem if every 401 starts its own refresh request?
+A) Angular disables all HTTP requests.
+B) Multiple refresh requests may run concurrently, leading to race conditions and inconsistent token state.
+C) The refresh token is automatically deleted.
+D) HttpClient does not support requests initiated from interceptors.
+ANSWER: B
+EXPLANATION: When multiple requests receive 401 responses concurrently, multiple refresh flows can start without coordination. They may complete in different orders and cause conflicting token state or unnecessary network traffic. Starting a refresh immediately for every error may seem simple locally, but it is not a safe state-management model under concurrent requests.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: Routing & guards
+TYPE: production
+QUESTION: An Angular route resolver waits for a slow backend operation. What happens to navigation while the resolver Observable has not produced its result?
+A) Navigation can wait for the resolver to complete, so a slow resolver can delay route activation.
+B) The router activates the route immediately and inserts the data later.
+C) The resolver automatically runs on a background thread, so it has no effect on navigation.
+D) A resolver can return only static data.
+ANSWER: A
+EXPLANATION: A resolver is used to load data required before route activation, so a slow or never-completing Observable can directly affect navigation. This makes appropriate timeout, error, and loading strategies important. Immediate route activation may seem intuitive because much data loading happens at the component level, but resolvers participate in a different navigation lifecycle.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: SSR & hydration
+TYPE: production
+QUESTION: In an SSR application, a component uses a browser-only API during initialization. Why must this be handled carefully?
+A) Browser APIs only work in production builds.
+B) All browser APIs are automatically mocked during SSR.
+C) In a server-side rendering environment, objects such as `window` or `localStorage` may not exist.
+D) Hydration automatically transfers browser global objects to the server.
+ANSWER: C
+EXPLANATION: Server-side rendering does not run in a browser environment, so browser-specific global objects may not be available. Browser-only operations should be tied to an appropriate platform or rendering lifecycle. Assuming that browser APIs are automatically mocked may seem reasonable because they are naturally available in the client-side Angular environment, but that assumption is not valid for SSR.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Change detection & OnPush
+TYPE: edgecase
+QUESTION: An `OnPush` component receives an object as an input. The parent modifies an internal property of the same object without creating a new reference. Why might the expected child update not occur?
+CODE:
+user = { name: 'Anna' };
+
+rename() {
+  this.user.name = 'Peter';
+}
+ENDCODE
+A) `OnPush` components can accept only primitive input values.
+B) Angular automatically converts input objects into immutable objects.
+C) The child component can render again only if the input object is handled with `Object.freeze()`.
+D) The reference remains unchanged, so `OnPush` input-change detection does not behave the same way as it does with a new object reference.
+ANSWER: D
+EXPLANATION: A key optimization of `OnPush` is detecting input changes based on references. If the same object remains in place, mutating an internal property does not create a new input reference. Creating a new object, for example with the spread operator, provides a clearer change signal. `freeze()` may seem like a solution because it can prevent mutation, but it does not itself solve change propagation.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: architecture
+QUESTION: A cold Observable starts the same expensive data-loading operation from multiple components. Which RxJS strategy can be used so that active subscribers share the same result?
+A) `shareReplay`
+B) `delay`
+C) `scan`
+D) `pairwise`
+ANSWER: A
+EXPLANATION: `shareReplay` allows a cold Observable to be shared among multiple subscribers while also replaying buffered values to new subscribers. The appropriate configuration depends on the desired subscription lifecycle and caching behavior. `delay` may seem relevant because it modifies Observable timing, but it does not share the subscription.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: Dependency injection
+TYPE: architecture
+QUESTION: In an application, we want to inject a service based on a TypeScript interface. Why is a separate DI token typically required?
+A) A TypeScript interface does not remain as a runtime construct that Angular can use as a DI token.
+B) The interface is automatically converted into a service instance during the build.
+C) Angular allows only abstract classes as DI tokens.
+D) An interface always results in slower DI resolution.
+ANSWER: A
+EXPLANATION: A TypeScript interface has no runtime representation after compilation that Angular's DI system can use for resolution. An `InjectionToken`, for example, can serve as the runtime token. An interface may seem sufficient because it perfectly describes the contract for TypeScript's type system, but the DI runtime mechanism requires an actual token.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: State management (NgRx)
+TYPE: edgecase
+QUESTION: An NgRx selector creates a new array on every evaluation, even when the source state has not changed semantically. What can be the consequence?
+CODE:
+export const selectActiveUsers = createSelector(
+  selectUsers,
+  users => users.filter(user => user.active)
+);
+ENDCODE
+A) The reducer is automatically destroyed.
+B) NgRx disables selector memoization.
+C) A selector cannot return an array.
+D) A new reference can be created, potentially causing unnecessary downstream recalculations or component updates.
+ANSWER: D
+EXPLANATION: The array created by the selector can have a new reference whenever the selector actually recalculates. If the derived result is semantically unchanged but the reference is new, downstream consumers may interpret it as a change. `filter()` may seem like a natural solution because it simply produces the desired data, but reference stability also needs to be considered.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: Testing
+TYPE: production
+QUESTION: A component depends on timing involving an Observable. The test must verify the time-based behavior deterministically without actually waiting. Which Angular testing technique is appropriate?
+A) Use `console.log()` to inspect the timing.
+B) Use `fakeAsync` and `tick()` to control the progression of virtual time.
+C) Create an infinite `setTimeout()` loop in the test.
+D) Remove all timing from the production code.
+ANSWER: B
+EXPLANATION: `fakeAsync` and `tick()` allow a test to simulate the passage of time in a controlled environment, so timer-based behavior can be verified quickly and deterministically. This reduces the risk of flakiness caused by real-time delays. Real `setTimeout` calls may seem simpler because they resemble production behavior, but they can make tests slow and unstable.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Components & templates
+TYPE: architecture
+QUESTION: An Angular component spanning thousands of lines handles presentation, business rules, HTTP calls, state transformation, and complex form logic at the same time. What is the most important architectural problem?
+A) The component uses too few lifecycle hooks.
+B) Every piece of data in the template must be read from a signal.
+C) Too many responsibilities are concentrated in one component, making it harder to test, reuse, and modify.
+D) Components must not contain business logic.
+ANSWER: C
+EXPLANATION: Concentrating too many responsibilities in a single component creates strong coupling and makes maintenance difficult. Separating presentation, domain logic, state management, and infrastructure into appropriate boundaries can improve testability and localize changes. Completely prohibiting business logic would be too strict because smaller UI-specific decisions can naturally remain in a component.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Signals
+TYPE: production
+QUESTION: An effect reacts to a signal change and then modifies that same signal. Why can this be architecturally dangerous?
+CODE:
+const count = signal(0);
+
+effect(() => {
+  const value = count();
+  count.set(value + 1);
+});
+ENDCODE
+A) It can create a reactive feedback loop, so `computed()` is generally more appropriate for derived state.
+B) An effect cannot read signals.
+C) `set()` always shuts down the Angular application.
+D) An effect can only be created from an HTTP interceptor.
+ANSWER: A
+EXPLANATION: The effect reads the `count` signal and then modifies that same signal, which can trigger another reaction and lead to a feedback loop or otherwise difficult-to-follow reactive behavior. For derived state, `computed()` is generally a cleaner model. Writing to a signal is not inherently forbidden, but writing back to state that the effect itself reads must be designed carefully.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: Performance
+TYPE: production
+QUESTION: An Angular application's initial load time is too high because code for a rarely used admin interface is included in the initial bundle. Which architectural solution is appropriate?
+A) Insert the admin code into every component template.
+B) Load the feature lazily so it is downloaded only when its route or functionality is actually needed.
+C) Import the admin module again in every service.
+D) Combine the entire application into a single large standalone component.
+ANSWER: B
+EXPLANATION: Lazy loading can keep rarely used feature code out of the initial load, so the admin interface is downloaded only when needed. This can reduce the initial JavaScript cost, especially in large applications. Loading the admin code eagerly may seem simpler because it avoids a later network request, but it unnecessarily increases the initial cost.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: production
+QUESTION: In an Observable stream, we want to ensure that the subscription is properly terminated when the component is destroyed. Which modern Angular solution fits this requirement well?
+CODE:
+this.searchControl.valueChanges.pipe(
+  debounceTime(300),
+  takeUntilDestroyed(this.destroyRef)
+).subscribe(value => {
+  this.search(value);
+});
+ENDCODE
+A) Every subscription must be manually unsubscribed using `setTimeout()`.
+B) Subscriptions do not need to be managed because every Observable completes automatically.
+C) All RxJS operators must be removed from the component.
+D) `DestroyRef` and `takeUntilDestroyed()` can tie the subscription lifecycle to the component's destruction.
+ANSWER: D
+EXPLANATION: `takeUntilDestroyed()` ties the Observable subscription lifecycle to Angular's destruction lifecycle, allowing the stream to be terminated automatically when the component is destroyed. This reduces the possibility of errors caused by manual subscription management. Assuming automatic completion may seem tempting because some Observables do complete on their own, but long-lived streams such as `valueChanges` may remain active.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: SSR & hydration
+TYPE: architecture
+QUESTION: In an Angular SSR + hydration application, the server and client use different initial data for the same component. The server HTML displays a product price of 10,000 HUF, while the client's first render displays 12,000 HUF. Why is this particularly problematic during hydration?
+A) Hydration works only when all data is static.
+B) The client must reload the entire HTML document.
+C) Angular cannot perform HTTP requests during hydration.
+D) A mismatch between the server-rendered DOM and the initial structure/value expected by the client can lead to a hydration mismatch or rerendering issue.
+ANSWER: D
+EXPLANATION: Hydration assumes that the DOM created by the server corresponds to what the client expects from the same initial state. If the initial data differs, Angular cannot reliably reuse the server-rendered DOM. The differing data may seem harmless because the client could later display the correct value, but the initial match is important for hydration.
+###END

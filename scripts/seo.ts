@@ -19,6 +19,7 @@ import { hu } from '../src/i18n/hu.ts';
 import { localePath } from '../src/i18n/paths.ts';
 import { articlePath, isoDate, isPublished, parseArticle } from '../src/content/frontmatter.ts';
 import { clip, siteGraph } from '../src/lib/seo-shared.ts';
+import { tracks } from '../src/data/interview/tracks.ts';
 
 type Lang = 'en' | 'hu';
 
@@ -153,6 +154,20 @@ function pages(root: string): Page[] {
       description: t.seo.articlesDescription,
       noindex: !articles.some((a) => isPublished(articleDate(a))),
     });
+
+    list.push({ path: at('/interview/'), lang, alternates: both('/interview/'), title: t.seo.interviewTitle, description: t.seo.interviewDescription });
+    for (const tr of tracks) {
+      // only tracks whose question set is in the build
+      if (!fs.existsSync(path.join(root, `src/data/interview/${tr.id}.${lang}.json`))) continue;
+      const bare = `/interview/${tr.id}/`;
+      list.push({
+        path: at(bare),
+        lang,
+        alternates: both(bare),
+        title: t.seo.interviewTrackTitle.replace('{name}', tr.title[lang]),
+        description: clip(t.seo.interviewTrackDescription.replace('{name}', tr.title[lang]).replace('{text}', tr.text[lang])),
+      });
+    }
 
     for (const a of articles) {
       // a page per language the article is written in

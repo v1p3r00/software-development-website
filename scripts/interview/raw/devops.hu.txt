@@ -1,0 +1,2837 @@
+### Q1
+LEVEL: junior
+TOPIC: CI/CD pipelines
+TYPE: theory
+QUESTION: Egy CI pipeline célja, hogy minden pull request esetén automatikusan ellenőrizze a kódot. Melyik megközelítés biztosítja legjobban, hogy hibás kód ne jusson el a merge-ig?
+A) A pipeline csak a production deploy után fusson le
+B) A pipeline fusson le a pull request ellenőrzésekor, és sikertelen quality/test stage esetén blokkolja a merge-t
+C) A fejlesztő manuálisan futtassa lokálisan a teszteket, majd jelezze az eredményt
+D) A pipeline csak a merge után fusson, hogy ne lassítsa a fejlesztést
+ANSWER: B
+EXPLANATION: A CI pipeline-nak a merge előtt kell visszajelzést adnia, és a kötelező ellenőrzések sikertelensége esetén célszerű blokkolni a merge-et. Így a hibás változtatás már a közös branch-be kerülés előtt láthatóvá válik. A production utáni ellenőrzés túl késői, a kizárólag manuális tesztelés pedig nem reprodukálható és könnyen kimarad. A production deploy utáni futtatás azért csábító, mert egyszerűbbnek tűnik a pipeline, de nem akadályozza meg a hibás kód bekerülését.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: Docker & containers
+TYPE: behavior
+QUESTION: Mit eredményez az alábbi parancs, ha a `nginx:alpine` image még nincs letöltve a gépen?
+CODE:
+docker run -d --name web nginx:alpine
+ENDCODE
+A) Létrehoz egy konténert, de nem indítja el
+B) Hibát ad, mert az image-et előzetesen kézzel le kell tölteni
+C) Letölti az image-et, létrehozza a konténert, majd háttérben elindítja
+D) Production módban futtatja az Nginx-et
+ANSWER: C
+EXPLANATION: A `docker run` szükség esetén automatikusan letölti a lokálisan hiányzó image-et, majd abból létrehozza és elindítja a konténert. A `-d` detached módban futtatja a konténert. Az image előzetes `docker pull` parancsa ezért nem kötelező. Azért csábító az előzetes letöltést kötelezőnek gondolni, mert a `docker pull` valóban használható külön lépésként CI pipeline-okban és deploymenteknél.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: Dockerfile best practices
+TYPE: output
+QUESTION: Melyik Dockerfile-részlet eredményez kisebb és általában biztonságosabb runtime image-et egy Node.js alkalmazás számára?
+A)
+CODE:
+FROM node:22
+COPY . /app
+WORKDIR /app
+RUN npm install
+CMD ["npm", "start"]
+ENDCODE
+B)
+CODE:
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y nodejs npm
+COPY . /app
+WORKDIR /app
+RUN npm install
+CMD ["npm", "start"]
+ENDCODE
+C)
+CODE:
+FROM node:22
+USER root
+COPY . /app
+WORKDIR /app
+RUN npm install
+CMD ["npm", "start"]
+ENDCODE
+D)
+CODE:
+FROM node:22-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY . .
+USER node
+CMD ["node", "server.js"]
+ENDCODE
+ANSWER: D
+EXPLANATION: Az Alpine-alapú image jellemzően kisebb, a `npm ci` reprodukálhatóbb telepítést biztosít lockfile használatakor, a production függőségek külön kezelhetők, a `USER node` pedig csökkenti annak kockázatát, hogy az alkalmazás rootként fusson. A `package*.json` külön másolása a Docker cache hatékonyabb használatát is segíti. A rootként futtatás azért csábító, mert sok konténer alapértelmezésben root felhasználót használ, és így kezdetben kevesebb jogosultsági problémával találkozhatunk.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: Kubernetes core objects
+TYPE: behavior
+QUESTION: Egy Kubernetes `Deployment` kívánt állapota 3 pod futtatása. Mi történik általában, ha az egyik pod váratlanul leáll?
+A) A Deployment automatikusan létrehoz egy új podot, hogy fenntartsa a kívánt példányszámot
+B) A teljes Deployment leáll
+C) A Kubernetes megvárja a következő deploymentet
+D) A Service automatikusan létrehoz egy új Deploymentet
+ANSWER: A
+EXPLANATION: A Deployment a ReplicaSeten keresztül biztosítja, hogy a kívánt számú pod példánya rendelkezésre álljon. Ha egy pod megszűnik, a vezérlősík új példány létrehozásával próbálja helyreállítani a kívánt állapotot. A Service önmagában nem felelős podok létrehozásáért. Azért csábító a Service-t okolni, mert a Service biztosít hálózati elérést a podokhoz, de nem workload-controller.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: Kubernetes networking & storage
+TYPE: scenario
+QUESTION: Egy alkalmazás podja újraindul, és a konténerben korábban létrehozott fájlok eltűnnek. Az alkalmazásnak olyan adatot kell tárolnia, amelynek meg kell maradnia a pod újraindítása után is. Mi a megfelelő megoldás?
+A) Több `containerPort` megadása
+B) Persistent storage, például PersistentVolumeClaim használata
+C) Több replica indítása ugyanazzal az ephemeral filesystemmel
+D) A Service típusának `NodePort`-ra állítása
+ANSWER: B
+EXPLANATION: A konténer writable filesysteme és az ephemeral pod storage nem alkalmas tartós üzleti adatok megbízható tárolására. Kubernetesben tartós adatokhoz tipikusan PersistentVolumeClaim-en keresztül csatolt storage használható. A `NodePort` csak hálózati elérést biztosít, nem teszi tartóssá a fájlokat. Azért csábító több replika használata, mert redundanciát adhat, de az nem oldja meg önmagában a perzisztens adattárolást.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Helm
+TYPE: theory
+QUESTION: Mire szolgál elsősorban a Helm egy Kubernetes környezetben?
+A) Kubernetes node-ok operációs rendszerének frissítésére
+B) Docker image-ek fordítására
+C) Kubernetes erőforrások csomagolására, konfigurálására és telepítésére
+D) A Kubernetes API Server helyettesítésére
+ANSWER: C
+EXPLANATION: A Helm chartokba szervezheti a Kubernetes manifesteket, és templating segítségével különböző környezetekhez eltérő konfigurációt adhat. A Helm release-ek kezelését is támogatja. Nem Docker build eszköz és nem helyettesíti a Kubernetes API Servert. Azért csábító a Helm-et általános Kubernetes runtime-ként értelmezni, mert a deployment folyamatban központi szerepet tölthet be, de maga nem a cluster vezérlősíkja.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: output
+QUESTION: Mit fog tenni a Terraform a következő konfiguráció esetén, ha az erőforrás még nem létezik?
+CODE:
+resource "example_server" "web" {
+  name = "web-01"
+  size = "small"
+}
+ENDCODE
+A) Csak kiírja a konfigurációt, de nem hoz létre semmit
+B) Automatikusan törli az összes meglévő erőforrást
+C) Docker konténert indít `web-01` néven
+D) A provider implementációja alapján létrehozza az `example_server.web` erőforrást
+ANSWER: D
+EXPLANATION: A Terraform deklaratív konfigurációból desired state-et készít, majd a provider segítségével létrehozza a konfigurációban deklarált erőforrást, ha az még nincs jelen. A tényleges műveletet normál esetben `terraform plan`, majd `terraform apply` során hajtjuk végre. A resource blokk önmagában nem Docker-specifikus. Azért csábító azt gondolni, hogy Terraform bármilyen erőforrást közvetlenül létrehoz, mert a konfiguráció absztrakt, de a konkrét megvalósítást a provider végzi.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Cloud fundamentals
+TYPE: theory
+QUESTION: Egy alkalmazásnak változó terhelés mellett automatikusan több compute kapacitásra van szüksége. Melyik cloud-képesség kezeli közvetlenül ezt az igényt?
+A) Auto scaling
+B) DNS caching
+C) Object versioning
+D) Static IP reservation
+ANSWER: A
+EXPLANATION: Az autoscaling a terhelés vagy előre meghatározott szabályok alapján növelheti vagy csökkentheti a futtatott compute példányok számát vagy kapacitását. A DNS, object storage versioning és statikus IP-cím más problémákat kezel. Azért csábító a statikus IP-t választani, mert az infrastruktúra stabilitásához kapcsolódik, de önmagában nem biztosít skálázást.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: Networking & DNS
+TYPE: output
+QUESTION: Egy kliens a `api.example.com` domainhez fordul. A DNS rendszerben ennek a hostname-nek egy szerver IP-címére mutató rekordja van. Melyik rekordtípus szolgál erre a célra IPv4 esetén?
+A) MX
+B) CNAME
+C) TXT
+D) A
+ANSWER: D
+EXPLANATION: Az `A` rekord egy hostname-et IPv4-címhez rendel. Az `AAAA` rekord IPv6-címhez használható. Az MX levelezési célpontot, a TXT pedig tetszőleges szöveges DNS-információt tárolhat. A CNAME másik hostname-re mutató alias. Azért csábító a CNAME-et választani, mert az is hostname-ek közötti leképezést biztosít, de nem közvetlenül IPv4-címet tárol.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: Monitoring & observability
+TYPE: scenario
+QUESTION: Egy webalkalmazás válaszideje hirtelen megnőtt. Melyik mérőszám ad közvetlen információt arról, hogy a felhasználói kérések milyen gyorsan teljesülnek?
+A) CPU hőmérséklet
+B) Request latency
+C) Disk inode count
+D) Container image size
+ANSWER: B
+EXPLANATION: A request latency közvetlenül azt méri, mennyi idő alatt teljesül egy kérés. Production monitoringban gyakran percentiliseket, például p95 vagy p99 latency-t is figyelünk, mert az átlag elrejtheti a lassú kéréseket. A CPU, inode-ok és image méret más problémákhoz adhatnak információt. Azért csábító a CPU-t választani, mert magas CPU-terhelés okozhat lassulást, de a CPU önmagában nem méri a felhasználói válaszidőt.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: Logging
+TYPE: behavior
+QUESTION: Egy konténeres alkalmazás stdout-ra írja a logokat. Miért előnyös ez az alapértelmezett Docker/Kubernetes környezetben?
+A) A logok automatikusan SQL adatbázisba kerülnek
+B) A stdout minden esetben megakadályozza a konténer leállását
+C) A container runtime és a platform logging rendszere könnyebben összegyűjtheti és továbbíthatja ezeket
+D) A stdout garantálja, hogy a logok örökre megmaradnak
+ANSWER: C
+EXPLANATION: Konténeres környezetben a stdout és stderr használata lehetővé teszi, hogy a runtime vagy a cluster logging infrastruktúrája egységesen gyűjtse és továbbítsa az alkalmazás kimenetét. A tartósságot külön logging infrastruktúra és retention policy biztosítja. Azért csábító az örök megőrzést feltételezni, mert a logok láthatók például a `kubectl logs` segítségével, de ez nem jelent korlátlan retentiont.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: SRE & incident management
+TYPE: scenario
+QUESTION: Production incident történik, és egy fontos API nem elérhető. Mi legyen az elsődleges cél az incident kezdeti szakaszában?
+A) Azonnal átírni az összes érintett komponens architektúráját
+B) A szolgáltatás hatásának csökkentése és a rendszer stabilizálása
+C) A teljes incident postmortem megírása
+D) Az összes monitoring alert kikapcsolása
+ANSWER: B
+EXPLANATION: Incident közben elsődleges a felhasználói hatás és az üzleti kár csökkentése, valamint a rendszer stabilizálása. A mélyebb root cause analysis és a tartós javítás jellemzően az incident kontrollálása után következik. Azért csábító rögtön a teljes architektúrát javítani, mert a probléma okát szeretnénk végleg megszüntetni, de ez akut outage alatt további kockázatot jelenthet.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: Deployment strategies
+TYPE: theory
+QUESTION: Egy rolling deployment során egy új alkalmazásverzió fokozatosan váltja fel a régi példányokat. Mi ennek egyik fontos előnye?
+A) A teljes szolgáltatásnak nem kell feltétlenül egyszerre leállnia
+B) A deploymenthez soha nincs szükség health checkekre
+C) Az új verzió garantáltan hibamentes lesz
+D) A régi verzió minden esetben azonnal törlődik
+ANSWER: A
+EXPLANATION: Rolling deploymentnél a régi és az új példányok átmenetileg párhuzamosan is futhatnak, így megfelelő konfiguráció mellett elkerülhető a teljes szolgáltatás leállása. A health checkek továbbra is fontosak, és a rolling deployment nem garantálja, hogy az új verzió hibamentes. Azért csábító a teljes leállás elkerülését garantáltnak tekinteni, mert ez a stratégia erre törekszik, de rossz readiness, kapacitás vagy konfiguráció mellett lehet kiesés.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: Secrets & security
+TYPE: trap
+QUESTION: Egy alkalmazásnak adatbázis-jelszóra van szüksége. Melyik megoldás a leginkább megfelelő production környezetben?
+A) A jelszó hardcode-olása a forráskódban
+B) A jelszó commitolása egy privát Git repositoryba
+C) A jelszó beírása a Docker image-be
+D) Secret management rendszer használata, amelyből futáskor kapja meg az alkalmazás
+ANSWER: D
+EXPLANATION: Production környezetben a titkokat célszerű dedikált secret management rendszerben kezelni, megfelelő hozzáférés-szabályozással, rotációval és auditálással. Kubernetesben például Secret objektum használható, bár önmagában nem jelent teljes körű titkosítási és secret-management megoldást. A privát repository sem tekinthető biztonságos secret store-nak. Azért csábító a privát Git repository, mert a hozzáférést korlátozni lehet, de a Git historyból egy egyszer bekerült titok később is visszakereshető.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: GitOps
+TYPE: theory
+QUESTION: Mi jellemző leginkább a GitOps megközelítésre?
+A) Production környezetben kizárólag manuálisan futtatott parancsokat használ
+B) A desired state Gitben van verziózva, és egy automatizmus összehangolja vele a futó környezetet
+C) Git csak a fejlesztői dokumentáció tárolására szolgál
+D) A Kubernetes API Server helyett kizárólag Git működteti a clustert
+ANSWER: B
+EXPLANATION: GitOpsban a Git jellemzően a deklaratív desired state forrása, és egy reconciler vagy controller folyamatosan próbálja a futó rendszert ehhez igazítani. Ez auditálható változásokat és jól követhető konfigurációt tesz lehetővé. Git nem helyettesíti a Kubernetes API Servert. Azért csábító a manuális deploymentet GitOpsnak nevezni, mert a deployment konfigurációja Gitben lehet, de az önmagában még nem biztosít automatikus reconciliationt.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: Scripting & automation
+TYPE: output
+QUESTION: Mi lesz a kimenete az alábbi Bash scriptnek?
+CODE:
+#!/bin/bash
+
+name="DevOps"
+
+if [ "$name" = "DevOps" ]; then
+  echo "match"
+else
+  echo "no match"
+fi
+ENDCODE
+A) match
+B) no match
+C) DevOps
+D) Syntax error
+ANSWER: A
+EXPLANATION: A változó értéke `DevOps`, és a `[ "$name" = "DevOps" ]` feltétel igaz, ezért az `if` ágban lévő `echo "match"` fut le. Az idézőjelek használata különösen fontos lehet üres vagy szóközt tartalmazó változóértékeknél. Azért csábító a syntax errort választani, mert a Bash `[` valójában egy parancs, és a szintaxisa érzékeny a szóközökre.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: CI/CD pipelines
+TYPE: output
+QUESTION: Egy CI pipeline-ban az alábbi stage-ek vannak. Melyik sorrendben futnak le ugyanazon jobon belül?
+CODE:
+stages:
+  - test
+  - build
+  - deploy
+
+job_test:
+  stage: test
+
+job_build:
+  stage: build
+
+job_deploy:
+  stage: deploy
+ENDCODE
+A) `deploy`, majd `build`, majd `test`
+B) A jobok mindig teljesen véletlenszerű sorrendben futnak
+C) `test`, majd `build`, majd `deploy`
+D) A jobok neve alapján alfabetikus sorrendben futnak
+ANSWER: C
+EXPLANATION: A deklarált stage-sorrend határozza meg a pipeline szakaszainak sorrendjét: először a `test`, utána a `build`, végül a `deploy` stage következik. A konkrét CI rendszer párhuzamosíthatja az azonos stage-ben lévő jobokat. Azért csábító az alfabetikus sorrend, mert a jobok neve alapján könnyű lenne intuitív sorrendet feltételezni, de a stage-ek deklarált sorrendje az irányadó.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: Docker & containers
+TYPE: debug
+QUESTION: Egy fejlesztő az alábbi paranccsal indít egy konténert, majd a böngészőből nem éri el az alkalmazást a host `localhost:8080` címén. Mi hiányzik a parancsból?
+CODE:
+docker run my-app
+ENDCODE
+A) `docker stop`
+B) `docker exec`
+C) `docker build`
+D) Port mapping, például `-p 8080:8080`
+ANSWER: D
+EXPLANATION: A konténerben futó alkalmazás portja önmagában nem feltétlenül érhető el a hoston. A `-p 8080:8080` például a host 8080-as portját a konténer 8080-as portjához köti. Ehhez az alkalmazásnak megfelelően kell figyelnie a konténer hálózati interfészén is. Azért csábító a `docker build` használata, mert az image elkészítéséhez szükséges, de a már elkészült image hálózati publikálását nem oldja meg.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: Dockerfile best practices
+TYPE: performance
+QUESTION: Miért előnyös az alábbi Dockerfile-részletben először csak a dependency fájlokat bemásolni?
+CODE:
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+ENDCODE
+A) Mert így az alkalmazás mindig rootként fog futni
+B) Mert a dependency telepítési layer újrahasznosítható, ha csak a source code változik
+C) Mert a `COPY . .` ettől automatikusan törli a node_modules könyvtárat
+D) Mert ettől az image automatikusan több CPU-t kap
+ANSWER: B
+EXPLANATION: Docker layer caching esetén, ha a `package.json` és lockfile nem változik, a `RUN npm ci` layer cache-ből felhasználható, így egy pusztán source-code módosítás miatt nem kell újratelepíteni a dependency-ket. Ez jelentősen gyorsíthatja a buildet. A `COPY . .` nem automatikusan törli a már telepített függőségeket. Azért csábító a cache szerepét figyelmen kívül hagyni, mert a Dockerfile ugyanúgy működik cache nélkül is, csak lassabban.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Kubernetes core objects
+TYPE: output
+QUESTION: Mit határoz meg elsősorban a következő Kubernetes manifest?
+CODE:
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  LOG_LEVEL: "info"
+ENDCODE
+A) Egy PersistentVolume-ot
+B) Egy Kubernetes Secretet titkosított jelszóval
+C) Egy konfigurációs adatokat tároló ConfigMapet
+D) Egy új Deploymentet
+ANSWER: C
+EXPLANATION: A manifest `kind: ConfigMap`, ezért egy ConfigMap erőforrást deklarál. A `data` mezőben például konfigurációs értékek tárolhatók, amelyeket podok környezeti változóként vagy fájlként is felhasználhatnak. A ConfigMap nem Secret és nem Deployment. Azért csábító Secretnek gondolni, mert mindkettő konfigurációs adatokat adhat a podoknak, de érzékeny adatok kezelésére külön Secret-mechanizmus szolgál.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: Kubernetes networking & storage
+TYPE: behavior
+QUESTION: Egy Kubernetes Service `ClusterIP` típusú. Melyik állítás írja le helyesen?
+A) Alapértelmezés szerint csak a Kubernetes clusteren belül biztosít elérést a Service mögötti podokhoz
+B) Automatikusan létrehoz egy internetes load balancert
+C) A Service minden node-on külön VM-et indít
+D) A Service PersistentVolumeClaimet hoz létre
+ANSWER: A
+EXPLANATION: A `ClusterIP` a Kubernetes cluster belső hálózatán elérhető virtuális IP-t biztosít a Service számára, és a hozzá tartozó selector alapján továbbítja a forgalmat a megfelelő endpointokhoz. Külső eléréshez más Service-típus vagy ingress/gateway megoldás használható. Azért csábító a LoadBalancer működését feltételezni, mert cloud környezetben egy Service valóban képes cloud load balancert létrehozni megfelelő típussal, de a ClusterIP önmagában nem ezt teszi.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: Terraform
+TYPE: scenario
+QUESTION: Egy Terraform projektben módosítasz egy resource konfigurációján. Miért hasznos a `terraform plan` futtatása az `apply` előtt?
+A) Mert végrehajtja a módosításokat productionben
+B) Mert törli a Terraform state-et
+C) Mert új Terraform providert telepít minden alkalommal
+D) Mert megmutatja, milyen változtatásokat tervez a Terraform végrehajtani
+ANSWER: D
+EXPLANATION: A `terraform plan` összeveti a konfigurációt a Terraform state-tel és a provider által ismert aktuális állapottal, majd előállít egy tervezett változáslistát. Ez lehetővé teszi, hogy az infrastruktúra módosítása előtt ellenőrizd a várható hatást. A `plan` normál esetben nem hajtja végre a változtatásokat. Azért csábító végrehajtásnak tekinteni, mert a Terraform már ekkor részletesen megjeleníti a tervezett erőforrás-módosításokat.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: Networking & DNS
+TYPE: trap
+QUESTION: Egy alkalmazás HTTP-n keresztül elér egy másik szolgáltatást `api.example.com` néven. A DNS feloldás sikeres, de a kapcsolat mégsem jön létre. Mit bizonyít biztosan a sikeres DNS-feloldás?
+A) Azt, hogy a TCP kapcsolat biztosan létrejött
+B) Azt, hogy a célalkalmazás biztosan egészséges
+C) Azt, hogy a hostname feloldható a megfelelő IP-címre
+D) Azt, hogy a HTTP kérés sikeresen feldolgozásra kerül
+ANSWER: C
+EXPLANATION: A sikeres DNS-feloldás azt bizonyítja, hogy a hostname-hez egy IP-cím meghatározható, de nem garantálja a TCP kapcsolat, a TLS handshake vagy az alkalmazásszintű HTTP kérés sikerét. Ezek további hálózati és alkalmazási lépések. Azért csábító a sikeres HTTP kapcsolatot feltételezni, mert a DNS a felhasználó által látott hostname része, de a névfeloldás csak egy korai lépés a kommunikációban.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: Monitoring & observability
+TYPE: scenario
+QUESTION: Egy Kubernetes alkalmazás podjai folyamatosan újraindulnak, és a monitoring szerint a konténer exit code-ja `137`. Mi lehet ennek tipikus oka?
+A) DNS rekord lejárt
+B) A processzt SIGKILL-lel leállították, gyakran memóriahiány miatt
+C) A Docker image neve túl hosszú
+D) A Service selector nem talál podot
+ANSWER: B
+EXPLANATION: A `137` tipikusan `128 + 9`, vagyis SIGKILL által megszakított processzre utal. Kubernetesben ennek gyakori oka az OOMKilled állapot, amikor a konténer túllépi a rendelkezésére álló memóriahatárt vagy node-szintű memóriahiány lép fel. A pontos okot például a pod státuszában és eseményeiben kell ellenőrizni. Azért csábító más Kubernetes objektumokra gyanakodni, mert a pod újraindulása cluster-szintű problémának tűnhet, miközben az exit code közvetlenül a processz leállítására utal.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: Secrets & security
+TYPE: production
+QUESTION: Egy Docker image build során az alábbi Dockerfile használatos. Mi a legfontosabb biztonsági probléma?
+CODE:
+FROM alpine:3.20
+WORKDIR /app
+COPY . .
+ENV DB_PASSWORD="SuperSecret123"
+CMD ["./app"]
+ENDCODE
+A) A `WORKDIR` használata biztonsági sérülékenységet okoz
+B) Az Alpine image nem használható production környezetben
+C) A secret bekerülhet az image konfigurációjába és rétegeibe, ezért nem megfelelő módon van kezelve
+D) A `CMD` mindig törli az environment variable-öket
+ANSWER: C
+EXPLANATION: Az `ENV DB_PASSWORD=...` érzékeny adatot épít be az image metadata/configuration részébe, és az image illetve build artifactek továbbadásával a secret kiszivároghat. Productionben jobb secret management megoldást használni, és a secretet futáskor injektálni megfelelő hozzáférés-szabályozással. Az Alpine önmagában nem jelenti azt, hogy egy image productionre alkalmatlan. Azért csábító az environment variable használata, mert runtime konfigurációra általánosan bevett módszer, de a Dockerfile-ban hardcode-olt secret nem ugyanaz, mint egy biztonságosan runtime-injektált secret.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: CI/CD pipelines
+TYPE: debug
+QUESTION: Egy CI pipeline-ban a tesztek sikeresen lefutnak, de a build job azonnal sikertelen lesz az alábbi Bash parancs miatt. Mi lehet a probléma?
+CODE:
+#!/bin/bash
+set -e
+
+npm test
+echo "Tests passed"
+npm run build
+ENDCODE
+A) A `set -e` miatt az `npm run build` soha nem futhat le
+B) Az `echo` parancs törli a CI környezeti változókat
+C) A `npm test` mindig leállítja a shellt sikeres futás esetén
+D) Ha az `npm run build` nem nulla exit code-dal tér vissza, a `set -e` miatt a script hibával leáll
+ANSWER: D
+EXPLANATION: A `set -e` arra utasítja a Bash-t, hogy álljon le, amikor egy parancs nem nulla exit code-dal tér vissza, bizonyos shell-szabályok alól vannak kivételek. Ha a build parancs hibával tér vissza, a script leáll és a CI job sikertelen lesz. Azért csábító azt gondolni, hogy a `set -e` megakadályozza a build futását, mert valóban módosítja a shell hibakezelését, de csak tényleges hibás exit code esetén szakítja meg a futást.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: Docker & containers
+TYPE: behavior
+QUESTION: Mi történik, ha egy konténerben futó fő processz kilép, miközben nincs más, hosszú ideig futó processz a konténerben?
+A) A Docker automatikusan új fő processzt választ
+B) A konténer általában leáll
+C) A konténer automatikusan átalakul image-é
+D) A konténer minden esetben újraindul
+ANSWER: B
+EXPLANATION: A konténer életciklusa alapvetően a PID 1-ként futó fő processzhez kötődik. Ha ez a processz kilép, a konténer normál esetben leáll, kivéve ha egy restart policy vagy külső orchestrator újraindítja. Azért csábító az automatikus újraindulást feltételezni, mert Docker Compose vagy Kubernetes valóban képes újraindítani a konténereket, de ez külön konfigurált viselkedés.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: Dockerfile best practices
+TYPE: performance
+QUESTION: Egy Docker image buildje nagyon lassú, és a fejlesztő minden módosítás után több száz dependency-t újratelepít. Melyik változtatás javíthatja leginkább a build cache használatát?
+A)
+CODE:
+COPY . .
+RUN npm ci
+ENDCODE
+B)
+CODE:
+RUN npm ci
+COPY . .
+ENDCODE
+C)
+CODE:
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+ENDCODE
+D)
+CODE:
+COPY package.json package-lock.json ./
+COPY . .
+RUN npm ci
+ENDCODE
+ANSWER: C
+EXPLANATION: A dependency fájlok külön másolása azt eredményezi, hogy a dependency-installációs layer csak akkor invalidálódik, amikor a dependency deklarációk változnak. Puszta source-code módosítás esetén a `RUN npm ci` layer újrahasznosítható. Azért csábító az összes fájlt először bemásolni, mert egyszerűbb Dockerfile-nak tűnik, de minden source-code változás cache invalidációt okozhat.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Kubernetes core objects
+TYPE: output
+QUESTION: Egy pod manifestben az alábbi `resources` konfiguráció szerepel. Mit jelent a `requests` mező?
+CODE:
+resources:
+  requests:
+    cpu: "250m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+ENDCODE
+A) A scheduler számára jelzi a pod által igényelt minimális erőforrás-mennyiséget
+B) Garantálja, hogy a processz pontosan ennyi CPU-t használ
+C) A pod maximális memóriahasználatát definiálja
+D) A Kubernetes automatikusan ennyi erőforrást fog lefoglalni minden node-on
+ANSWER: A
+EXPLANATION: A resource request azt jelzi a scheduler számára, hogy mekkora erőforrás-kapacitást kell figyelembe venni a pod elhelyezésekor. A limit ezzel szemben a használat felső korlátját határozza meg az adott resource-ra vonatkozó szabályok szerint. A request nem azt jelenti, hogy az alkalmazás pontosan ennyit fog használni. Azért csábító a requestet maximális használatként értelmezni, mert mindkét érték CPU- és memória-erőforrásokhoz kapcsolódik.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Kubernetes networking & storage
+TYPE: debug
+QUESTION: Egy Kubernetes Service nem továbbít forgalmat a podokhoz. A Service selectorja és a pod labeljei között az alábbi eltérés látható. Mi a probléma?
+CODE:
+Service:
+  selector:
+    app: backend
+
+Pod:
+  labels:
+    app: api
+ENDCODE
+A) A podnak mindig `app: service` labellel kell rendelkeznie
+B) A Service csak `NodePort` esetén használhat selectort
+C) A selector és a pod labelje nem egyezik, ezért a Service nem találja meg a podot
+D) A label értéke kizárólag Kubernetes namespace lehet
+ANSWER: C
+EXPLANATION: A Service selector alapján választja ki a hozzá tartozó podokat. Mivel a Service `app: backend` labelt keres, a pod pedig `app: api` labellel rendelkezik, nem lesz megfelelő endpoint. A selector és a label kulcs-érték kombinációjának kompatibilisnek kell lennie. Azért csábító a `NodePort`-ra gyanakodni, mert az is Service-típus, de a selector működése ettől nem változik.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: Helm
+TYPE: output
+QUESTION: Egy Helm chart `values.yaml` fájlja a következőt tartalmazza. Mi lesz a `ConfigMap` értéke, ha a chartot alapértelmezett értékekkel telepítik?
+CODE:
+values.yaml:
+replicaCount: 2
+
+config:
+  logLevel: "info"
+
+ConfigMap template:
+data:
+  LOG_LEVEL: {{ .Values.config.logLevel | quote }}
+ENDCODE
+A) `LOG_LEVEL: "2"`
+B) `LOG_LEVEL: "info"`
+C) `LOG_LEVEL: null`
+D) A Helm hibát jelez, mert a `quote` nem használható YAML-ban
+ANSWER: B
+EXPLANATION: A template a `.Values.config.logLevel` értékét olvassa ki, amely az alapértelmezett values fájlban `"info"`. A `quote` gondoskodik arról, hogy a renderelt érték idézőjelek között jelenjen meg. A `replicaCount` ettől független érték. Azért csábító a `2` választása, mert az a values fájl másik top-level értéke, de a template kifejezetten a `config.logLevel` útvonalat használja.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: output
+QUESTION: Mit jelent a Terraformban az alábbi referencia?
+CODE:
+resource "aws_instance" "web" {
+  ami           = "ami-123"
+  instance_type = "t3.micro"
+}
+
+output "server_id" {
+  value = aws_instance.web.id
+}
+ENDCODE
+A) Az AWS instance teljes konfigurációját másolja az outputba
+B) Új AWS instance-t hoz létre kizárólag az output miatt
+C) Az instance privát IP-címét adja vissza
+D) Az adott `aws_instance.web` resource `id` attribútumát teszi outputtá
+ANSWER: D
+EXPLANATION: A `aws_instance.web.id` egy resource attribútumára mutató Terraform referencia, az output pedig ezt az értéket teszi elérhetővé a Terraform outputjaként. Ez nem hoz létre külön resource-t. Azért csábító a privát IP-címre gondolni, mert az instance hálózati adatai is gyakori outputok, de itt kifejezetten az `id` attribútum szerepel.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Cloud fundamentals
+TYPE: scenario
+QUESTION: Egy cloudban futó alkalmazás adataihoz nagyon nagy mennyiségű, ritkán módosított fájlt kell tárolni, például képeket és backupokat. Melyik szolgáltatási modell illeszkedik leginkább ehhez?
+A) Object storage
+B) Dedicated CPU VM
+C) DNS resolver
+D) Load balancer
+ANSWER: A
+EXPLANATION: Az object storage nagy mennyiségű fájl és blob tárolására készült, és jellemzően jól skálázható, tartós és költséghatékony megoldás ilyen adatokhoz. Egy VM vagy load balancer más célra szolgál. Azért csábító a VM-et választani, mert azon közvetlenül lehet fájlokat kezelni, de nagy mennyiségű statikus objektumnál az object storage általában erre optimalizált.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: Networking & DNS
+TYPE: debug
+QUESTION: Egy szerverről a `example.com` hostname feloldása sikeres, de a `example.com:443` címre történő kapcsolat timeoutol. Melyik hibakeresési következtetés a legpontosabb?
+A) A DNS biztosan hibás
+B) A TLS tanúsítvány biztosan lejárt
+C) A DNS feloldás működése nem bizonyítja, hogy a TCP/443 kapcsolat engedélyezett és elérhető
+D) A domain biztosan nem létezik
+ANSWER: C
+EXPLANATION: A sikeres DNS-feloldás azt mutatja, hogy a hostname IP-címre fordítható, de nem igazolja a TCP port elérhetőségét. Firewall, security group, routing, network policy vagy a céloldali szolgáltatás is okozhat timeoutot. Azért csábító a DNS hibára gyanakodni, mert a hiba ugyanazon hostname használata közben jelentkezik, de a DNS és a TCP kapcsolat külön réteg.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: Monitoring & observability
+TYPE: theory
+QUESTION: Miért hasznos egy API monitoringjánál a p95 latency-t az átlagos latency mellett figyelni?
+A) A p95 mindig pontosan a leglassabb request idejét mutatja
+B) A p95 segít megmutatni, milyen latency alatt teljesül a kérések nagy része, és kevésbé rejti el a lassabb kéréseket, mint az átlag
+C) A p95 kizárólag a CPU-használatot méri
+D) A p95 automatikusan kijavítja a lassú requesteket
+ANSWER: B
+EXPLANATION: A p95 azt az értéket jelenti, amely alatt a mérések körülbelül 95%-a található az adott mérési ablakban. Emiatt jól láthatóvá teheti a tail latency romlását, amelyet egy átlagos érték könnyen elfedhet. Nem a leglassabb requestet jelenti. Azért csábító a maximumként értelmezni, mert mindkettő a lassú kérésekre érzékeny, de a p95 nem a szélsőértéket jelenti.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: Logging
+TYPE: debug
+QUESTION: Egy alkalmazás productionben minden requestnél több sor részletes debug logot ír, és emiatt jelentősen nő a log storage és ingestion költsége. Mi a legjobb első lépés?
+A) Minden logolást teljesen kikapcsolni
+B) A logokat kizárólag a fejlesztő laptopjára küldeni
+C) Minden log sort warning szintűre állítani
+D) Megfelelő log level konfigurációt és retention/sampling stratégiát kialakítani
+ANSWER: D
+EXPLANATION: A logging mennyiségét kontrollált log level, retention és szükség esetén sampling segítségével kell kezelni úgy, hogy a diagnosztikához szükséges információ megmaradjon. A teljes logging kikapcsolása productionben jelentősen rontaná a hibakereshetőséget. Azért csábító mindent kikapcsolni, mert az azonnal csökkenti a költséget, de közben megszünteti a fontos diagnosztikai jeleket.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: SRE & incident management
+TYPE: scenario
+QUESTION: Egy on-call engineer olyan alertet kap, amely rendszeresen riaszt, de a szolgáltatás felhasználói szempontból működőképes marad. Mi a legjobb hosszú távú megközelítés?
+A) Az alertet automatikusan figyelmen kívül hagyni
+B) Az alertet minden alkalommal manuálisan acknowledge-olni
+C) Megvizsgálni az alert okát és úgy módosítani a thresholdot vagy az alert feltételét, hogy valódi user impactre jelezzen
+D) Minden monitoringot kikapcsolni
+ANSWER: C
+EXPLANATION: A gyakori, de nem hasznos riasztások alert fatigue-hez vezetnek, és növelik annak kockázatát, hogy egy valódi incidentet figyelmen kívül hagynak. Érdemes megvizsgálni, hogy az alert valódi service-level problémát jelez-e, majd ennek megfelelően finomítani a feltételt. Azért csábító minden alkalommal acknowledge-olni, mert az gyorsan megszünteti az aktuális zajt, de a kiváltó problémát nem oldja meg.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: Deployment strategies
+TYPE: scenario
+QUESTION: Egy új verziót csak a forgalom kis részére szeretnél fokozatosan kiadni, miközben a többi felhasználó a stabil verziót használja. Melyik deployment stratégia illik ehhez?
+A) Canary deployment
+B) Recreate deployment
+C) Big-bang deployment
+D) Manual rollback
+ANSWER: A
+EXPLANATION: Canary deploymentnél az új verzió először a forgalom vagy felhasználók kisebb részét kapja, majd pozitív megfigyelések esetén fokozatosan növelhető a részesedése. Ez csökkentheti egy hibás release kezdeti hatását. A recreate stratégia tipikusan a régi példányok leállítása után indítja az újakat. Azért csábító a recreate-et választani, mert az is egy új verzió bevezetését jelenti, de nem biztosít fokozatos forgalomátirányítást.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: Secrets & security
+TYPE: behavior
+QUESTION: Miért nem tekinthető megfelelő védelemnek az, ha egy érzékeny konfigurációs fájlt egyszerűen hozzáadunk a `.gitignore` fájlhoz?
+A) Mert a `.gitignore` csak bináris fájlokra vonatkozik
+B) Mert a Git automatikusan feltölti az ignorált fájlokat
+C) Mert a `.gitignore` kizárólag productionben működik
+D) Mert a `.gitignore` megakadályozza a véletlen követést, de nem távolítja el azt a repository historyból, ha korábban már commitolták
+ANSWER: D
+EXPLANATION: A `.gitignore` azt szabályozza, hogy a Git mely új vagy nem követett fájlokat hagyja figyelmen kívül. Ha egy secretet már commitoltak, attól még a korábbi commitokban megmaradhat. Ilyenkor a secret rotációja és szükség esetén a repository history megfelelő tisztítása is szükséges. Azért csábító a `.gitignore`-t teljes secret-védelemként kezelni, mert megelőzheti a jövőbeni véletlen commitot, de nem visszamenőleges megoldás.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: GitOps
+TYPE: scenario
+QUESTION: Egy GitOps-alapú Kubernetes környezetben egy admin közvetlenül módosít egy Deploymentet a clusterben, de a Git repositoryban nem változik semmi. Mi történhet egy reconciliation után?
+A) A GitOps rendszer szükségszerűen törli az egész clustert
+B) A GitOps rendszer visszaállíthatja a Deploymentet a Gitben deklarált desired state-re
+C) A Kubernetes API Server automatikusan commitolja a módosítást Gitbe
+D) A Deployment örökre változatlan marad, mert GitOps csak a Git pushokat figyeli
+ANSWER: B
+EXPLANATION: GitOps reconciliation esetén a controller összeveti a futó állapotot a Gitben tárolt desired state-tel, és drift esetén visszaállíthatja a konfigurációt a deklarált állapotra. A konkrét viselkedés az adott GitOps eszköztől és konfigurációjától függ. Azért csábító azt feltételezni, hogy a clusterben végzett kézi módosítás tartós marad, mert az azonnal láthatóvá válik, de reconciliation során a deklaratív forrásállapot az irányadó.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: Scripting & automation
+TYPE: output
+QUESTION: Mi lesz az alábbi Bash script kimenete?
+CODE:
+#!/bin/bash
+
+for env in dev test prod; do
+  echo "$env"
+done
+ENDCODE
+A) `prod`, majd `test`, majd `dev`
+B) Csak `dev`
+C) `dev`, majd `test`, majd `prod`
+D) Syntax error
+ANSWER: C
+EXPLANATION: A `for` ciklus a megadott lista elemein a deklarált sorrendben iterál, ezért három külön sorban `dev`, `test`, majd `prod` jelenik meg. A shell nem rendezi automatikusan a listát. Azért csábító a fordított sorrend, mert deployment környezeteknél gyakran productiont tekintjük a végső célnak, de a ciklus pontosan a megadott sorrendet követi.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: CI/CD pipelines
+TYPE: scenario
+QUESTION: Egy pipeline-ban a unit tesztek sikeresek, de az image build meghiúsul. Miért érdemes a buildet külön CI stage-ként kezelni?
+A) Mert a build mindig gyorsabb a teszteknél
+B) Mert így a Docker engine automatikusan productionre deployol
+C) Mert a build soha nem függ a source code-tól
+D) Mert a teszt sikeressége nem garantálja, hogy a tényleges deployolható artifact/image sikeresen előállítható
+ANSWER: D
+EXPLANATION: A unit tesztek a kód bizonyos viselkedését ellenőrzik, de nem feltétlenül fedik le a Docker buildet, dependency resolutiont, image konfigurációt vagy más packaging problémákat. A build külön ellenőrzése biztosítja, hogy ténylegesen előállítható legyen a következő deployment lépés artifactja. Azért csábító a sikeres unit tesztet elegendőnek tekinteni, mert azok gyakran a pipeline első fontos quality gate-jei, de nem fednek le minden build-time hibát.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: Docker & containers
+TYPE: edgecase
+QUESTION: Egy alkalmazás konténerben `localhost:8080` címen figyel. Egy másik konténer ugyanazon Docker networkön próbálja elérni az első alkalmazást. Miért nem működik a `localhost:8080` használata a második konténerből?
+A) Mert a `localhost` a második konténer saját network namespace-ére mutat
+B) Mert Docker networkön tilos 8080-as portot használni
+C) Mert a localhost mindig a host gépet jelenti
+D) Mert a konténerek között kizárólag UDP használható
+ANSWER: A
+EXPLANATION: Minden konténer saját network namespace-szel rendelkezik, ezért a `localhost` az adott konténer saját hálózati stackjére mutat. Egy másik konténer eléréséhez annak container name vagy Docker DNS által feloldható service neve és megfelelő port használható. Azért csábító azt gondolni, hogy a localhost a host gépet jelenti, mert böngészőből vagy host shellből való használatkor a localhost gyakran a saját gépünket jelenti.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: Dockerfile best practices
+TYPE: trap
+QUESTION: Miért célszerű `.dockerignore` fájlt használni egy Docker build contextben?
+A) Automatikusan titkosítja a Docker image-et
+B) Meghatározza, mely fájlok kerüljenek ki a build contextből, csökkentve a felesleges adatok továbbítását és a véletlen bekerülés kockázatát
+C) Megakadályozza, hogy a container rootként fusson
+D) Automatikusan optimalizálja a CPU-használatot
+ANSWER: B
+EXPLANATION: A `.dockerignore` segítségével kizárhatók például a `.git` könyvtár, lokális dependency-k, build outputok vagy más szükségtelen fájlok a build contextből. Ez csökkentheti a build context méretét és a véletlen érzékeny fájlbevitel kockázatát. Nem titkosítja az image-et és nem módosítja a container felhasználóját. Azért csábító az image titkosítására gondolni, mert biztonsági célokat is szolgálhat, de a funkciója elsősorban a build context szűrése.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: Kubernetes core objects
+TYPE: behavior
+QUESTION: Mi történik tipikusan, ha egy Kubernetes `Pod` containerének `livenessProbe`-ja ismételten sikertelen?
+A) A Service automatikusan törlődik
+B) A Deployment mindig azonnal törli az egész namespace-t
+C) A kubelet a hibás konténert újraindíthatja
+D) A Kubernetes automatikusan új Docker image-et buildel
+ANSWER: C
+EXPLANATION: A liveness probe azt jelzi, hogy a konténer processze továbbra is életképes-e. Ismételt sikertelenség esetén a kubelet a konténert újraindíthatja az alkalmazott restart policy és probe konfiguráció alapján. A readiness probe ezzel szemben elsősorban azt jelzi, hogy a pod fogadhat-e forgalmat. Azért csábító a Deployment törlésére gondolni, mert a Deployment kezeli a podok kívánt állapotát, de a liveness reakciója közvetlenül a konténer újraindításához kapcsolódik.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: Kubernetes networking & storage
+TYPE: scenario
+QUESTION: Egy alkalmazásnak egy konfigurációs fájlt kell több pod számára elérhetővé tenni, és a fájl nem tartalmaz érzékeny adatot. Melyik Kubernetes objektum a legmegfelelőbb erre?
+A) ConfigMap
+B) Secret
+C) ServiceAccount
+D) PersistentVolumeClaim
+ANSWER: A
+EXPLANATION: A ConfigMap nem érzékeny konfigurációs adatok, például properties vagy konfigurációs fájlok podokba történő injektálására használható. Secret érzékeny adatokhoz, ServiceAccount identitás és API-hozzáférés kezeléséhez, PersistentVolumeClaim pedig tartós storage igényléséhez való. Azért csábító a Secret használata, mert az is konfigurációt adhat a podnak, de nem érzékeny adatok esetén a ConfigMap a megfelelő modell.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: Helm
+TYPE: debug
+QUESTION: Egy Helm template renderelésekor a következő hiba jelenik meg: `nil pointer evaluating interface`. A template ezt tartalmazza:
+CODE:
+env:
+  LOG_LEVEL: {{ .Values.app.logging.level | quote }}
+ENDCODE
+A `values.yaml` fájlban nincs `app.logging` struktúra. Mi a legvalószínűbb ok?
+A) A `quote` mindig null pointer hibát okoz
+B) A Helm nem támogat nested values struktúrákat
+C) A YAML parser minden hiányzó értéket automatikusan stringgé alakít
+D) A template olyan nested value-t próbál elérni, amely nincs definiálva
+ANSWER: D
+EXPLANATION: A template az `app.logging.level` nested értéket próbálja feloldani, miközben a szükséges struktúra hiányzik a valuesból. Megoldás lehet megfelelő default érték definiálása, a values struktúra biztosítása vagy biztonságosabb template logika használata. Azért csábító a `quote`-ot hibáztatni, mert közvetlenül a value után szerepel a template-ben, de a probléma a hiányzó nested value feloldása.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: edgecase
+QUESTION: Miért veszélyes ugyanazt az infrastruktúra-erőforrást két külön Terraform state-ből kezelni?
+A) Mert Terraform egyáltalán nem támogat több state-et
+B) Mert mindkét state automatikusan ugyanazt a state fájlt fogja használni
+C) Mert a két state külön-külön azt hiheti, hogy ő kezeli az erőforrást, ami driftet és ütköző változtatásokat okozhat
+D) Mert a Terraform automatikusan törli a resource-t a második state létrehozásakor
+ANSWER: C
+EXPLANATION: A Terraform state tartja nyilván, hogy mely infrastruktúra-erőforrások tartoznak az adott konfiguráció kezeléséhez. Ha ugyanazt a valós erőforrást több state próbálja kezelni, a state-ek eltérő képet alkothatnak, és egymás változtatásait felülírhatják vagy félreértelmezhetik. Azért csábító azt gondolni, hogy a Terraform ezt automatikusan megakadályozza, mert a state központi szerepet tölt be, de a külön state-ek önálló kezelési határokat jelentenek.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: Cloud fundamentals
+TYPE: scenario
+QUESTION: Egy alkalmazásnak több availability zone-ban kell futnia, hogy egyetlen zóna kiesése ne állítsa le teljesen a szolgáltatást. Melyik architekturális megközelítés támogatja ezt a célt?
+A) Az összes példány egyetlen availability zone-ba helyezése
+B) Több példány elhelyezése több availability zone-ban, megfelelő load balancinggel
+C) Egyetlen nagy VM használata minden redundancia nélkül
+D) A DNS TTL értékének nullára állítása
+ANSWER: B
+EXPLANATION: Több availability zone használata csökkenti annak kockázatát, hogy egyetlen zóna kiesése teljes szolgáltatáskimaradást okozzon. Több példány és megfelelő forgalomelosztás szükséges ahhoz, hogy a megmaradó zónák át tudják venni a forgalmat. Azért csábító egyetlen nagy VM-et választani, mert egyszerűbb és erősebb gépnek tűnik, de ez továbbra is single point of failure lehet.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Networking & DNS
+TYPE: output
+QUESTION: Egy Linux szerveren az alábbi parancs fut le:
+CODE:
+curl -I https://example.com
+ENDCODE
+Mit kér le a `curl` alapértelmezett működéséhez képest az `-I` opció?
+A) Csak a HTTP response headereket kéri le
+B) Letölti a teljes HTML body-t és figyelmen kívül hagyja a headereket
+C) DNS rekordokat kérdez le közvetlenül
+D) TCP kapcsolat nélkül küld HTTP kérést
+ANSWER: A
+EXPLANATION: A `curl -I` HEAD kérést használ, amelynek célja a response headereinek lekérése a resource bodyjának letöltése nélkül. Ez hasznos lehet például HTTP státuszkód, content type vagy cache headerek gyors ellenőrzésére. Azért csábító a teljes HTML letöltését feltételezni, mert a `curl` alapértelmezésben valóban a response bodyját is kiírhatja, de az `-I` ezt a HEAD viselkedésre módosítja.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: CI/CD pipelines
+TYPE: behavior
+QUESTION: Egy CI pipeline-ban egy job sikeresen létrehoz egy `build/app.tar.gz` fájlt, majd egy következő jobnak szüksége van erre a fájlra. Mi a megfelelő megoldás, ha a két job külön CI runneren is futhat?
+A) A második job mindig ugyanazt a workspacet kapja
+B) A fájlt artifactként kell elmenteni és a következő jobban letölteni
+C) A fájlt csak a Git commit message-ben kell megadni
+D) A fájlt elegendő a pipeline logjában kiírni
+ANSWER: B
+EXPLANATION: Külön runner esetén a következő job nem feltétlenül ugyanazt a fájlrendszert vagy workspacet használja. A CI artifact mechanizmusa arra szolgál, hogy egy job által létrehozott fájlokat a pipeline későbbi jobjai számára megőrizze és átadja. Azért csábító a közös workspace feltételezése, mert lokális futtatásnál ez természetesnek tűnik, de CI környezetben a jobok gyakran izolált környezetben futnak.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: Docker & containers
+TYPE: output
+QUESTION: Mi történik az alábbi paranccsal?
+CODE:
+docker run --rm alpine echo "hello"
+ENDCODE
+A) Létrehoz egy image-et `hello` néven
+B) Elindít egy háttérben futó Alpine konténert
+C) Elindítja a konténert, kiírja a `hello` szöveget, majd a konténert eltávolítja
+D) Hibát ad, mert az Alpine nem tud shell parancsot futtatni
+ANSWER: C
+EXPLANATION: A Docker létrehozza és elindítja az Alpine konténert, majd az `echo` processz lefutása után a konténer leáll. A `--rm` azt eredményezi, hogy a leállt konténert a Docker automatikusan eltávolítja. Azért csábító háttérben futó konténert feltételezni, mert a `docker run` konténert indít, de itt nincs `-d`, és a fő processz rövid idő alatt befejeződik.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: Kubernetes core objects
+TYPE: scenario
+QUESTION: Egy Kubernetes Deploymentben 3 replica van beállítva, de egy rolling update során az új verzió egyik podja nem válik Ready állapotúvá. Melyik mechanizmus segíthet abban, hogy a Deployment ne tekintse sikeresnek túl korán az új podot?
+A) `readinessProbe`
+B) `containerPort`
+C) `metadata.name`
+D) `restartPolicy`
+ANSWER: A
+EXPLANATION: A readiness probe azt jelzi, hogy az alkalmazás készen áll-e forgalmat fogadni. A Deployment a pod readiness állapotát is figyelembe veszi a rollout során, így egy nem Ready pod nem tekinthető megfelelően szolgálatba állt példánynak. A `containerPort` dokumentálja vagy segíti a port konfigurációját, de önmagában nem ellenőrzi az alkalmazás állapotát. Azért csábító a `restartPolicy`, mert hibás podok újraindításával kapcsolatos, de nem azt jelzi, hogy az alkalmazás kész-e forgalmat fogadni.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: Kubernetes networking & storage
+TYPE: output
+QUESTION: Egy PersistentVolumeClaim az alábbi módon van definiálva. Mit jelent a `10Gi` érték a `requests.storage` alatt?
+CODE:
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+ENDCODE
+A) A pod maximális memóriahasználata 10 GiB
+B) A PVC legalább 10 GiB kapacitású storage-t kér
+C) A PVC pontosan 10 GiB hálózati sávszélességet kér
+D) A container CPU limitje 10 GiB lesz
+ANSWER: B
+EXPLANATION: A `requests.storage` a PersistentVolumeClaim által igényelt storage kapacitást jelenti. A Kubernetes megfelelő PersistentVolume-ot vagy dinamikusan provisionált storage-ot kereshet ehhez az igényhez. Nem memória- vagy CPU-beállítás. Azért csábító a memóriahasználattal összekeverni, mert a Kubernetes más resource-oknál is használ `requests` mezőt, de itt a `storage` kulcs határozza meg az erőforrás típusát.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: Helm
+TYPE: behavior
+QUESTION: Egy Helm chartban ugyanazt a chartot `dev` és `prod` környezetben is használni szeretnéd, de eltérő replica számra van szükség. Mi a legjobb megoldás?
+A) Külön chartot kell létrehozni minden környezethez
+B) A Kubernetes API Server forráskódját kell módosítani
+C) A replica számot hardcode-olni kell a Deployment template-ben
+D) A replica számot values segítségével paraméterezni, majd környezetenként eltérő values fájlt használni
+ANSWER: D
+EXPLANATION: A Helm values mechanizmusa lehetővé teszi, hogy ugyanaz a chart különböző konfigurációkkal legyen telepítve. Például `values-dev.yaml` és `values-prod.yaml` eltérő replica számot definiálhat, miközben a template közös marad. Azért csábító külön chartokat létrehozni, mert elsőre egyszerűnek tűnik a környezetek teljes szétválasztása, de ez jelentős konfigurációs duplikációhoz vezethet.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: debug
+QUESTION: Egy Terraform konfigurációban egy változó nincs definiálva, mégis a következő referencia szerepel:
+CODE:
+resource "example_server" "web" {
+  name = var.server_name
+}
+ENDCODE
+A Terraform hibát jelez a konfiguráció feldolgozásakor. Mi hiányzik valószínűleg?
+A) Egy Kubernetes Deployment
+B) Egy Dockerfile
+C) Egy `variable "server_name"` deklaráció vagy más érvényes variable definíció
+D) Egy `terraform destroy` parancs
+ANSWER: C
+EXPLANATION: A `var.server_name` egy input variable-re hivatkozik. Ha ilyen változó nincs deklarálva vagy a konfigurációban más módon nem érhető el megfelelően, Terraform hibát jelez. A variable deklaráció például `variable "server_name" {}` lehet. Azért csábító egy `terraform destroy` futtatására gondolni, mert a Terraform state-ben lévő erőforrásokkal kapcsolatos hibák is gyakoriak, de ez a probléma konfigurációs referenciahiba.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Cloud fundamentals
+TYPE: theory
+QUESTION: Egy alkalmazás egy cloud VM-en fut, és a VM elvesztése után az alkalmazás állapota nem állítható helyre. Melyik fogalom írja le legjobban ezt a problémát?
+A) Single point of failure
+B) Horizontal scaling
+C) CDN caching
+D) Infrastructure tagging
+ANSWER: A
+EXPLANATION: Ha egyetlen komponens kiesése az egész szolgáltatás kiesését okozza, az adott komponens single point of failure. Több példány, több availability zone vagy más redundáns architektúra csökkentheti ezt a kockázatot. Azért csábító a horizontal scalingre gondolni, mert több példány valóban javíthatja a rendelkezésre állást, de maga a probléma megnevezése a single point of failure.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: Networking & DNS
+TYPE: output
+QUESTION: Egy DNS rekord TTL értéke 300 másodperc. Mit jelent ez tipikusan?
+A) A DNS szerver pontosan 300 DNS rekordot tárol
+B) A rekord csak 300 kliens számára használható
+C) A rekord minden 300 másodpercben automatikusan megváltozik
+D) A resolverek tipikusan legfeljebb körülbelül 300 másodpercig cache-elhetik a rekordot a TTL alapján
+ANSWER: D
+EXPLANATION: A TTL, vagy Time To Live, azt jelzi a DNS cache-elők számára, hogy egy rekordot mennyi ideig tekinthetnek érvényesnek cache-ben. A 300 másodperces TTL nem garantálja, hogy minden kliens pontosan 5 perc után újra lekérdezi a rekordot, de ez az általános cache-elési irányelv. Azért csábító a pontos 5 perces frissítésre gondolni, mert a TTL időértéket ad meg, de a DNS cache-elés viselkedése nem egy globális időzítő.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: Monitoring & observability
+TYPE: performance
+QUESTION: Egy Linux szerveren a CPU utilization tartósan 95%, miközben az alkalmazás latencyje normális. Mi a legpontosabb következtetés?
+A) Az alkalmazás biztosan hibás
+B) A CPU magas kihasználtsága önmagában nem bizonyítja, hogy a felhasználók problémát tapasztalnak
+C) A rendszernek azonnal le kell állnia
+D) A DNS biztosan túlterhelt
+ANSWER: B
+EXPLANATION: A magas CPU-használat fontos technikai jel, de önmagában nem bizonyítja a user-facing problémát. Ha a latency, error rate és throughput megfelelő, a rendszer akár szándékosan is magas CPU-kihasználtság mellett működhet. Azért csábító az alkalmazást hibásnak tekinteni, mert a 95% magasnak tűnik, de egyetlen infrastructure metricből nem lehet teljes szolgáltatásállapotot megállapítani.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: Scripting & automation
+TYPE: output
+QUESTION: Mi lesz az alábbi Bash parancs kimenete, ha a `file.txt` létezik?
+CODE:
+if [ -f file.txt ]; then
+  echo "exists"
+fi
+ENDCODE
+A) `exists`
+B) `file.txt`
+C) `true`
+D) Nem ír ki semmit
+ANSWER: A
+EXPLANATION: A `-f` teszt azt ellenőrzi, hogy a megadott path egy létező regular file-e. Ha `file.txt` létezik és normál fájl, az `if` feltétele igaz lesz, ezért az `exists` jelenik meg. Azért csábító a `true` választani, mert a feltétel logikailag igaz, de a script nem az igazságértéket írja ki, hanem explicit módon az `exists` szöveget.
+###END
+
+### Q61
+LEVEL: medior
+TOPIC: CI/CD pipelines
+TYPE: production
+QUESTION: Egy monorepo több alkalmazást tartalmaz. Egyetlen backend módosítása után a teljes repository minden frontendjének és backendjének tesztje lefut, ezért a pipeline 40 percig tart. Mi a legjobb irány a pipeline optimalizálására?
+A) Minden tesztet production deploy után futtatni
+B) Véletlenszerűen kihagyni a tesztek egy részét
+C) Dependency graph vagy changed-path alapú execution használata, hogy csak az érintett komponensek ellenőrzése fusson
+D) A CI runner CPU-jának csökkentése
+ANSWER: C
+EXPLANATION: Monorepo esetén a changed-path vagy dependency graph alapú pipeline-ok képesek meghatározni, mely komponenseket érinti egy változás, és ennek megfelelően futtatni a szükséges ellenőrzéseket. Ez a tesztbiztonság megtartása mellett csökkentheti a pipeline időt. Azért csábító véletlenszerűen kihagyni teszteket, mert az azonnal gyorsít, de kiszámíthatatlanul csökkenti a confidence szintet.
+###END
+
+### Q62
+LEVEL: medior
+TOPIC: Docker & containers
+TYPE: performance
+QUESTION: Egy Java alkalmazás Docker image-e 1,8 GB méretű, miközben a futtatásához csak egy JRE és néhány alkalmazásfájl szükséges. Melyik megközelítés csökkentheti érdemben az image méretét?
+A) Minden buildnél további package-ek telepítése
+B) Multi-stage build használata, amelyben a build környezetet és a runtime image-et szétválasztod
+C) Az alkalmazás teljes source repositoryjának runtime image-ben tartása
+D) Több `RUN apt-get update` parancs hozzáadása
+ANSWER: B
+EXPLANATION: Multi-stage builddel a fordításhoz szükséges JDK, build toolok és egyéb dependency-k külön builder stage-ben maradhatnak, miközben a végső image csak a futtatáshoz szükséges artifactokat és runtime komponenseket tartalmazza. Ez jelentősen csökkentheti az image méretét és attack surface-ét. Azért csábító több package telepítése, mert a build környezetben szükség lehet rájuk, de ezek runtime image-ben történő megtartása felesleges.
+###END
+
+### Q63
+LEVEL: medior
+TOPIC: Dockerfile best practices
+TYPE: debug
+QUESTION: Egy Docker build során a fejlesztő azt látja, hogy a `.env` fájl bekerül az image-be, annak ellenére, hogy az alkalmazásnak runtime környezeti változóként lenne szüksége a konfigurációra. A repositoryban a `.dockerignore` jelenleg üres. Mi a legjobb megoldás?
+A) A `.env` fájlt `.dockerignore`-ba tenni, és az érzékeny konfigurációt runtime secret/config mechanizmussal biztosítani
+B) A `.env` fájlt `RUN cat .env` paranccsal törölni a build végén
+C) A `.env` fájlt base64-be kódolni a Dockerfile-ban
+D) A `.env` fájlt egy másik image layerbe másolni
+ANSWER: A
+EXPLANATION: Ha a `.env` nem része a buildnek, célszerű kizárni a build contextből, és a runtime konfigurációt megfelelő secret vagy configuration injection mechanizmussal átadni. Egy fájl későbbi törlése nem feltétlenül távolítja el annak tartalmát a korábbi image layerből. A base64 csak kódolás, nem titkosítás. Azért csábító a későbbi `rm` használata, mert a végső filesystemben eltűnhet a fájl, de az image historyban vagy korábbi layerben továbbra is jelen lehet.
+###END
+
+### Q64
+LEVEL: medior
+TOPIC: Kubernetes core objects
+TYPE: scenario
+QUESTION: Egy Deployment frissítése után az új podok Running állapotúak, de a Service nem küld nekik forgalmat. A `kubectl get pods` szerint minden pod Running, de nem Ready. Mi a legvalószínűbb ok?
+A) A Deployment neve túl hosszú
+B) A Service biztosan törlődött
+C) A podoknak nincs containerPort értékük
+D) A readiness probe vagy az alkalmazás readiness állapota nem engedi, hogy a pod endpointként használható legyen
+ANSWER: D
+EXPLANATION: A `Running` állapot azt jelzi, hogy a pod fut, de nem garantálja, hogy készen áll forgalmat fogadni. A readiness állapot hatással van arra, hogy a pod bekerül-e a Service használható endpointjai közé. A `containerPort` deklaráció önmagában nem feltétele a Service működésének. Azért csábító a `Running` állapotot egészségesnek tekinteni, mert a státusz első pillantásra azt sugallja, hogy a konténer működik, de Kubernetesben a Running és Ready külön fogalmak.
+###END
+
+### Q65
+LEVEL: medior
+TOPIC: Kubernetes networking & storage
+TYPE: edgecase
+QUESTION: Egy Kubernetes alkalmazásnak egy shared filesystemre van szüksége, amelyet egyszerre több node-on futó pod is írhat. Melyik access mode illeszkedik ehhez a követelményhez?
+A) ReadWriteOnce
+B) ReadOnlyMany
+C) ReadWriteMany
+D) WriteOnceReadMany
+ANSWER: C
+EXPLANATION: A `ReadWriteMany` access mode olyan storage-t jelent, amely több node-ról is mountolható írási jogosultsággal, feltéve hogy az adott storage backend támogatja ezt. A `ReadWriteOnce` tipikusan egyetlen node-ról teszi lehetővé az írást, míg a `ReadOnlyMany` több node-ról olvasható, de nem írható. Azért csábító a `ReadWriteOnce` választása, mert a névben szereplő write jogosultság miatt megfelelőnek tűnik, de az egyetlen node korlátozás nem felel meg a követelménynek.
+###END
+
+### Q66
+LEVEL: medior
+TOPIC: Helm
+TYPE: debug
+QUESTION: Egy Helm chart telepítésekor egy template-ben egy számként használt érték stringként kerül a Kubernetes manifestbe, és egy validációs hiba jelenik meg. A values fájlban ez szerepel:
+CODE:
+replicaCount: "3"
+ENDCODE
+Mi lehet a megfelelő javítás?
+A) A `replicaCount` értékét numerikus értékként tárolni, például `3`-ként, és a template-ben megfelelően kezelni a típust
+B) Minden Kubernetes resource-ot Secretre cserélni
+C) A Helm release-t törölni minden deploy előtt
+D) A YAML teljes indentationjét két szóközről négyre változtatni
+ANSWER: A
+EXPLANATION: A YAML-ban az idézőjelek miatt a `"3"` stringként jelenik meg, míg a `3` numerikus érték. Ha a Kubernetes mező egész számot vár, a template-nek és a values típusának ennek megfelelőnek kell lennie. A konkrét template és Helm rendering szabályai is számítanak, ezért szükség esetén explicit típuskonverzió használható. Azért csábító az indentationt hibáztatni, mert YAML-nál gyakoriak az indentation hibák, de itt a probléma az érték típusa.
+###END
+
+### Q67
+LEVEL: medior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: behavior
+QUESTION: Egy Terraform resource konfigurációjában megváltoztatod egy olyan attribútum értékét, amelyet a provider csak resource replacementtel tud kezelni. Mi történhet `terraform plan` során?
+A) Terraform mindig figyelmen kívül hagyja a változást
+B) Terraform csak egy log üzenetet ír ki
+C) Terraform automatikusan módosítja a resource-t inplace, provider támogatástól függetlenül
+D) A plan jelezheti, hogy a meglévő resource-t le kell cserélni
+ANSWER: D
+EXPLANATION: Bizonyos resource attribútumok módosítása esetén a provider replacementet írhat elő, amit a Terraform plan tipikusan destroy/create vagy create/destroy jellegű változásként jelez. A pontos lifecycle a resource és provider implementációjától függ. Azért csábító az inplace módosítást feltételezni, mert deklaratív konfigurációban csak egyetlen értéket változtattunk, de az infrastruktúra API-ja nem minden attribútumot tud helyben módosítani.
+###END
+
+### Q68
+LEVEL: medior
+TOPIC: Cloud fundamentals
+TYPE: scenario
+QUESTION: Egy alkalmazás stateless, és hirtelen megnövekedett HTTP forgalmat kap. A csapat gyorsan több azonos példányt szeretne futtatni. Melyik skálázási stratégia illeszkedik ehhez?
+A) Vertical scaling, vagyis egyetlen gép jelentős megerősítése
+B) Horizontal scaling, vagyis további példányok indítása és a forgalom elosztása
+C) DNS rekordok törlése
+D) A log retention csökkentése
+ANSWER: B
+EXPLANATION: Stateless alkalmazásoknál a horizontal scaling különálló példányok hozzáadásával növelheti a kiszolgálási kapacitást, megfelelő load balancing mellett. Vertical scaling egy meglévő példány erőforrásainak növelését jelenti, ami más trade-offokat eredményez. Azért csábító a vertical scaling, mert egy nagyobb gép gyorsan növelheti a kapacitást, de nem használja ki a stateless architektúra egyszerű példányszám-növelési lehetőségét.
+###END
+
+### Q69
+LEVEL: medior
+TOPIC: Networking & DNS
+TYPE: performance
+QUESTION: Egy belső szolgáltatás DNS feloldása minden request előtt történik, és a latency jelentősen megnőtt. Melyik megközelítés csökkentheti a DNS lookupok költségét?
+A) Minden requesthez új DNS szervert létrehozni
+B) A DNS TTL-t minden esetben nullára állítani
+C) Megfelelő DNS caching használata az alkalmazásban vagy a hálózati rétegben
+D) A DNS rekordokat teljesen eltávolítani
+ANSWER: C
+EXPLANATION: DNS cachinggel egy már feloldott névhez nem kell minden requestnél új upstream DNS queryt végrehajtani. A cache megfelelő TTL mellett csökkentheti a latencyt és a DNS infrastruktúra terhelését. A TTL nullára állítása éppen növelheti a lookupok számát. Azért csábító a nullás TTL, mert gyors DNS változásokat tesz lehetővé, de performance szempontból gyakran ellentétes hatású.
+###END
+
+### Q70
+LEVEL: medior
+TOPIC: Monitoring & observability
+TYPE: production
+QUESTION: Egy API-nál a CPU, memória és network metric-ek normálisak, de a felhasználók magas latencyt és időszakos hibákat tapasztalnak. Melyik observability megközelítés segíthet leginkább az egyes requestek útjának feltárásában több service-en keresztül?
+A) Distributed tracing
+B) A hostname megváltoztatása
+C) A container image méretének csökkentése
+D) A DNS TTL növelése
+ANSWER: A
+EXPLANATION: Distributed tracing lehetővé teszi egy request útjának követését több service-en, spanekkel és timing információkkal. Ez segíthet azonosítani, hogy egy lassulás vagy hiba melyik downstream komponenshez kapcsolódik. A hagyományos infrastructure metric-ek önmagukban ezt a request-szintű összefüggést nem feltétlenül mutatják meg. Azért csábító továbbra is CPU- vagy memóriahibát keresni, mert ezek klasszikus performance metric-ek, de normális infrastruktúra-metricák mellett is lehet alkalmazásszintű bottleneck.
+###END
+
+### Q71
+LEVEL: medior
+TOPIC: Logging
+TYPE: scenario
+QUESTION: Egy microservice rendszerben egy request több service-en halad keresztül, és egy production hibát kell visszakövetni. Melyik logging megoldás segíti leginkább az összetartozó logbejegyzések összekapcsolását?
+A) Minden service különböző timestamp formátumot használ
+B) Minden requesthez ugyanazt a statikus log message-t írni
+C) A logokat kizárólag lokális fájlba írni
+D) Correlation ID vagy trace ID továbbítása és strukturált logolása
+ANSWER: D
+EXPLANATION: Egy közös correlation ID vagy trace ID lehetővé teszi, hogy ugyanahhoz a requesthez tartozó logokat több service logjaiból össze lehessen kapcsolni. Strukturált logokkal ezek az azonosítók és egyéb mezők hatékonyan kereshetők. Azért csábító csak timestamp alapján összekapcsolni a logokat, mert minden requestnek van időpontja, de párhuzamos requestek és clock skew miatt ez megbízhatatlan.
+###END
+
+### Q72
+LEVEL: medior
+TOPIC: SRE & incident management
+TYPE: scenario
+QUESTION: Egy szolgáltatás SLO-ja szerint a sikeres requestek arányának 99,9%-nak kell lennie egy adott időablakban. Az aktuális mérés 99,7%. Mi a legfontosabb következtetés?
+A) A rendszer biztosan teljesen leállt
+B) Az SLO jelenleg nem teljesül
+C) Az SLO automatikusan megváltozik 99,7%-ra
+D) A 0,2 százalékpont különbség figyelmen kívül hagyható, mert 99% felett van
+ANSWER: B
+EXPLANATION: Ha az SLO 99,9% és a mért érték 99,7% ugyanazon mérési definíció és időablak mellett, akkor az aktuális teljesítmény az SLO alatt van. Ez önmagában nem mondja meg, hogy milyen remediation szükséges, de jelzi, hogy a célérték nem teljesül. Azért csábító a 99% feletti értéket elegendőnek tekinteni, mert önmagában magasnak tűnik, de az SLO konkrét célértékéhez kell viszonyítani.
+###END
+
+### Q73
+LEVEL: medior
+TOPIC: Deployment strategies
+TYPE: edgecase
+QUESTION: Egy új API verziót rolling deploymenttel vezetsz be. Az új verzió megváltoztatja egy endpoint request/response formátumát úgy, hogy a régi és új verzió nem kompatibilis egymással. Miért lehet ez veszélyes rolling deployment esetén?
+A) A rolling deployment automatikusan kikapcsolja a load balancert
+B) A Kubernetes nem tud egyszerre két image taget futtatni
+C) Az átmeneti időszakban régi és új példányok egyszerre szolgálhatnak ki requesteket, így inkompatibilis kliensek vagy service-ek hibázhatnak
+D) A rolling deployment mindig törli az adatbázist
+ANSWER: C
+EXPLANATION: Rolling deployment során az új és régi verziók egy ideig párhuzamosan futhatnak. Ha az API contract nem backward- vagy forward-compatible, ugyanazon rendszer különböző példányai eltérő protokollt várhatnak, ami runtime hibákat okozhat. Ilyenkor backward-compatible API evolution, megfelelő sequencing vagy más deployment stratégia szükséges. Azért csábító a Kubernetes hibájára gondolni, mert a deployment során két verzió jelenik meg, de a valódi probléma az alkalmazások közötti contract inkompatibilitása.
+###END
+
+### Q74
+LEVEL: medior
+TOPIC: Secrets & security
+TYPE: production
+QUESTION: Egy Kubernetes Secretet használó alkalmazásnál egy fejlesztő `kubectl get secret db-credentials -o yaml` paranccsal ellenőrzi a production Secret tartalmát. Miért jelent ez biztonsági kockázatot?
+A) A Secret objektumok nem tartalmazhatnak adatot
+B) A parancs automatikusan törli a Secretet
+C) A YAML formátum nem használható Kubernetes Secret esetén
+D) A Secret értékei a manifestben base64 formában jelenhetnek meg, ami kódolás, nem valódi titkosítás
+ANSWER: D
+EXPLANATION: A Kubernetes Secret `data` mezőjében az értékek tipikusan base64-encoded formában jelennek meg. A base64 nem titkosítás, ezért aki hozzáfér a Secret értékéhez, egyszerűen vissza tudja dekódolni. Productionben a hozzáféréseket szigorúan korlátozni kell, és érdemes megfelelő secret-management, encryption-at-rest és audit megoldásokat használni. Azért csábító a base64-et titkosításnak tekinteni, mert az érték olvashatatlan szövegnek látszik, de visszafordítható encodingról van szó.
+###END
+
+### Q75
+LEVEL: medior
+TOPIC: GitOps
+TYPE: debug
+QUESTION: Egy GitOps controller folyamatosan visszaállít egy Kubernetes Deployment kézi módosítását. A fejlesztő minden alkalommal közvetlenül a clusterben módosítja a replica számot. Mi a helyes GitOps-alapú megközelítés?
+A) A kívánt replica számot a Gitben lévő deklarációban kell módosítani, majd a GitOps reconciliationre bízni az alkalmazást
+B) A GitOps controllert minden deployment előtt le kell állítani
+C) A Kubernetes API Servert kell megakadályozni a Deployment módosításában
+D) A változtatást csak a podon belül kell végrehajtani
+ANSWER: A
+EXPLANATION: GitOps környezetben a Gitben deklarált desired state a konfiguráció forrása. Ha a replica számnak tartósan változnia kell, azt a repositoryban kell módosítani, majd a controller reconciliation útján a cluster állapotának is követnie kell ezt. A kézi cluster-módosítás driftet okoz, amelyet a controller visszaállíthat. Azért csábító a GitOps controllert leállítani, mert így a kézi változtatás azonnal megmarad, de ezzel éppen a reconciliation egyik alapvető előnyét veszítjük el.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: CI/CD pipelines
+TYPE: scenario
+QUESTION: Egy CI pipeline-ban a dependency-k telepítése minden futáskor 8 percet vesz igénybe, miközben a lockfile ritkán változik. Melyik megoldás csökkentheti leginkább a pipeline futási idejét anélkül, hogy a dependency-k telepítését teljesen kihagyná?
+A) A dependency-k telepítésének eredményét CI cache-ben tárolni megfelelő cache key használatával
+B) A lockfile törlése minden pipeline elején
+C) A dependency-k telepítésének hibáit figyelmen kívül hagyni
+D) A teszteket productionben futtatni
+ANSWER: A
+EXPLANATION: A CI cache-ben a dependency-k lokális telepítési eredménye megőrizhető, így változatlan lockfile mellett nem feltétlenül kell mindent újra letölteni. A cache key-t célszerű a dependency-definíciókhoz kötni, hogy változás esetén invalidálódjon. A lockfile törlése rontaná a reprodukálhatóságot, a hibák figyelmen kívül hagyása pedig biztonsági és stabilitási problémákat okozna. Azért csábító a lockfile törlése, mert új dependency resolution történik, de ez éppen a cache-elhetőséget és a reprodukálhatóságot rontja.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: Docker & containers
+TYPE: debug
+QUESTION: Egy konténerben futó alkalmazás folyamatosan újraindul. A `docker ps` szerint a konténer néhány másodperc után `Exited` állapotba kerül. Mi legyen az első hasznos hibakeresési lépés?
+A) Azonnal új image-et buildelni
+B) A host operációs rendszerét újratelepíteni
+C) Megnézni a konténer logjait és exit code-ját, például `docker logs` és `docker inspect` segítségével
+D) Véletlenszerűen növelni a konténer memória limitjét
+ANSWER: C
+EXPLANATION: A konténer logjai és exit code-ja gyorsan megmutathatja, hogy az alkalmazás hibával áll-e le, hiányzó konfiguráció van-e, vagy más runtime probléma történt. A `docker inspect` további állapot- és konfigurációs információkat adhat. Új image buildelése bizonyíték nélkül találgatás lenne. Azért csábító azonnal több memóriát adni, mert az újraindulás lehet OOM-probléma következménye, de ezt először érdemes ellenőrizni.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: Dockerfile best practices
+TYPE: performance
+QUESTION: Egy Dockerfile-ban az alábbi két lépés szerepel:
+CODE:
+RUN apt-get update
+RUN apt-get install -y curl
+ENDCODE
+Miért lehet problémás ez a production image build szempontjából?
+A) A `curl` soha nem telepíthető Dockerben
+B) A package index és a telepítés külön layerben történik, ami cache és image hygiene szempontból problémákat okozhat
+C) A Docker automatikusan törli az `apt` konfigurációját
+D) Az `apt-get update` csak Kubernetesben használható
+ANSWER: B
+EXPLANATION: Az `apt-get update` által létrehozott package index és az `apt-get install` külön layerben történik. Cache-elés miatt előfordulhat, hogy egy későbbi build régi package indexet használ, miközben az install lépés cache-ből kerül elő. Gyakori best practice az update és install egyetlen `RUN` lépésben történő végrehajtása, majd a felesleges package listák eltávolítása. Azért csábító külön lépésekre bontani, mert a Dockerfile így olvashatóbbnak tűnik, de a layer caching miatt ez nem mindig kívánatos.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: Kubernetes core objects
+TYPE: behavior
+QUESTION: Egy Kubernetes Deploymentben a `strategy` alapértelmezett rolling update. Mi a fő szerepe a `maxUnavailable` és `maxSurge` beállításoknak?
+A) A podok CPU- és memóriahasználatát korlátozzák
+B) A Service hálózati portjait konfigurálják
+C) Meghatározzák a Secret objektumok retention idejét
+D) Szabályozzák, hogy rollout közben hány pod lehet elérhetetlen, illetve hány extra pod indulhat a kívánt replicaszám felett
+ANSWER: D
+EXPLANATION: A `maxUnavailable` azt korlátozza, hogy a rollout során hány példány lehet egyszerre unavailable, míg a `maxSurge` azt szabályozza, hány extra pod létezhet a kívánt replicaszám felett. Ezekkel a deployment kapacitás és rendelkezésre állás közötti trade-off hangolható. Azért csábító resource limitekre gondolni, mert a beállítások a podok viselkedését szabályozzák, de nem CPU- vagy memória limitek.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Kubernetes networking & storage
+TYPE: debug
+QUESTION: Egy podból egy másik pod IP-címén keresztül elérhető egy alkalmazás, de a Kubernetes Service DNS-nevén keresztül nem. Mi legyen az első vizsgálandó terület?
+A) A Service selectorja, a Service objektum állapota és a cluster DNS működése
+B) A container image mérete
+C) A node CPU architektúrája
+D) A PersistentVolume kapacitása
+ANSWER: A
+EXPLANATION: Ha közvetlenül a pod IP-címe elérhető, de a Service neve nem, akkor érdemes ellenőrizni, hogy a Service létezik-e, megfelelő selectorral rendelkezik-e, vannak-e hozzá endpointok, illetve működik-e a cluster DNS. A storage és image méret nem magyarázza közvetlenül a Service DNS problémáját. Azért csábító a DNS-t önmagában hibáztatni, mert hostname-ről van szó, de egy hibás selector vagy endpointlista is okozhat Service-elérési problémát.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: Helm
+TYPE: scenario
+QUESTION: Egy Helm chartban egy értéket titkos adatként használnak, és a fejlesztő azt közvetlenül a `values.yaml` fájlba írja. Mi a legfontosabb probléma?
+A) A Helm nem támogat string típusú values értékeket
+B) A `values.yaml` mindig törlődik install után
+C) A secret bekerülhet a source repositoryba és Helm artifactokba, ezért nem megfelelő helyen van kezelve
+D) A Helm automatikusan titkosít minden values fájlt
+ANSWER: C
+EXPLANATION: A `values.yaml` általában source-controlled konfiguráció része, ezért érzékeny secret közvetlen beírása azt eredményezheti, hogy a secret Gitben vagy más artifactban megjelenik. Productionben dedikált secret management, titkosított secret storage vagy megfelelő external secret mechanizmus használható. Azért csábító a values fájlba írni, mert technikailag egyszerű és a Helm template azonnal hozzáfér, de ez nem teszi biztonságossá a secret tárolását.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: scenario
+QUESTION: Egy csapat Terraformot használ production infrastruktúrához, és több engineer egyszerre indíthat `terraform apply` műveletet ugyanarra a környezetre. Mi a legfontosabb védelem?
+A) Minden engineer saját lokális state fájlt használjon
+B) Remote state backend használata lockinggal, amely koordinálja a state módosítását
+C) A Terraform state teljes kikapcsolása
+D) A `terraform plan` használatának tiltása
+ANSWER: B
+EXPLANATION: Közös remote state backend és megfelelő locking megakadályozhatja, hogy párhuzamos apply műveletek ugyanazt a state-et inkompatibilisen módosítsák. A pontos locking képesség backendfüggő. Lokális, egymástól független state-ek nem oldják meg a közös infrastruktúra koordinációját. Azért csábító minden engineernek saját state-et adni, mert csökkenti a közvetlen ütközéseket, de valójában több state ugyanazon infrastruktúra kezelésénél driftet és ownership problémákat okozhat.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: Cloud fundamentals
+TYPE: behavior
+QUESTION: Egy alkalmazás load balancer mögött fut több példányban. Az egyik instance meghibásodik. Miért fontos a load balancer health checkje?
+A) Automatikusan új image-et buildel a hibás instance-ból
+B) Megváltoztatja az alkalmazás source code-ját
+C) A hibás instance-t kiválaszthatja a forgalomelosztásból, amíg nem egészséges
+D) Automatikusan növeli minden instance CPU-ját
+ANSWER: C
+EXPLANATION: A health check lehetővé teszi, hogy a load balancer felismerje, ha egy backend nem képes megfelelően kiszolgálni a forgalmat, és eltávolítsa azt az aktív routingból. Ez csökkenti annak esélyét, hogy a felhasználók hibás instance-hoz kerüljenek. Azért csábító autoscalingre gondolni, mert az instance kiesése után valóban lehet szükség új kapacitásra, de a health check elsődleges feladata a forgalom megfelelő példányokra irányítása.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: Networking & DNS
+TYPE: scenario
+QUESTION: Egy kliens HTTPS kapcsolata néha lassú, és a DNS lookup is mérhető időt vesz igénybe. A DNS TTL növelése milyen trade-offot jelenthet?
+A) Kevesebb DNS query és alacsonyabb lookup overhead, de a DNS változások lassabban propagálhatnak a cache-ek miatt
+B) Több DNS query és mindig gyorsabb failover
+C) A TLS handshake teljesen megszűnik
+D) A DNS rekord automatikusan titkosítva lesz
+ANSWER: A
+EXPLANATION: Hosszabb TTL esetén a resolverek hosszabb ideig használhatják a cache-elt rekordot, így csökkenhet a DNS lookupok száma és overheadje. Ugyanakkor egy DNS módosítás vagy failover változás lassabban jelenhet meg minden kliensnél, mert a korábbi értékek tovább maradhatnak cache-ben. Azért csábító kizárólag performance javulást látni benne, mert a cache csökkenti a lookupokat, de a gyors változás és failover rovására mehet.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: Monitoring & observability
+TYPE: debug
+QUESTION: Egy alkalmazásnál a request rate változatlan, az error rate nő, miközben a CPU és memória normális. Melyik következő lépés a leginkább célravezető?
+A) A node-ok azonnali újraindítása
+B) A logok, trace-ek és alkalmazásszintű metrikák vizsgálata, különösen az error típusok és downstream dependency-k alapján
+C) A DNS TTL nullára állítása
+D) A Docker image újrabuildelése változtatás nélkül
+ANSWER: B
+EXPLANATION: Ha az infrastruktúra resource metricái normálisak, de az alkalmazásszintű error rate nő, érdemes a requesteket, error típusokat, trace-eket és downstream dependency-ket vizsgálni. A probléma lehet például adatbázis, külső API, konfiguráció vagy alkalmazáslogikai hiba. Azért csábító a node újraindítása, mert gyors és néha átmenetileg megszüntethet tüneteket, de bizonyíték nélkül nem deríti fel a kiváltó okot.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: Logging
+TYPE: performance
+QUESTION: Egy nagy forgalmú service-ben minden request teljes request bodyját és response bodyját logolják productionben. Mi lehet ennek jelentős hátránya?
+A) A logok automatikusan leállítják a HTTP szervert
+B) A logging semmilyen CPU-t nem használ
+C) A teljes body logolása növelheti az I/O-t, CPU-t, storage-ot és adatvédelmi kockázatot
+D) A request body logolása automatikusan tömöríti a response-t
+ANSWER: C
+EXPLANATION: Nagy forgalomnál a teljes request és response body logolása jelentős I/O- és CPU-terhelést, nagyobb storage- és ingestion-költséget, valamint érzékeny adatok véletlen naplózásának kockázatát okozhatja. Célszerű strukturált, célzott loggingot és szükség esetén samplinget alkalmazni. Azért csábító mindent logolni, mert ez maximális diagnosztikai részletességet ad, de productionben a költség és adatvédelmi hatás jelentős lehet.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: SRE & incident management
+TYPE: production
+QUESTION: Egy production incident során a csapat megtalálja a hibás konfigurációt, amely közvetlenül okozza az outage-ot. Miért lehet mégis fontos később a root cause analysis?
+A) Mert a közvetlen hibát soha nem szabad javítani
+B) Mert az RCA célja kizárólag egy konkrét engineer hibáztatása
+C) Mert az RCA mindig automatikusan megjavítja a production rendszert
+D) Mert a közvetlen kiváltó ok mellett azt is érdemes megérteni, milyen rendszerbeli feltételek tették lehetővé a hibát és hogyan előzhető meg az ismétlődés
+ANSWER: D
+EXPLANATION: Az RCA nem csak azt keresi, hogy melyik konfigurációs érték volt hibás, hanem azt is, hogy miért kerülhetett hibás érték productionbe, miért nem észlelte korábban a rendszer, és milyen kontrollok akadályozhatják meg az ismétlődést. Ez segíthet tesztek, review-k, deployment guardok vagy monitoring javításában. Azért csábító egyetlen emberi hibára redukálni az incidenst, mert az könnyen azonosítható, de ritkán ad tartós rendszerbeli megelőzést.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: Deployment strategies
+TYPE: scenario
+QUESTION: Egy csapat blue-green deploymentet használ. Mi ennek egyik fontos jellemzője?
+A) Két külön környezet vagy deployment verzió áll rendelkezésre, és a forgalom egy váltással az új környezetre irányítható
+B) Az új verzió mindig ugyanazon podokon indul el
+C) Az új verzió csak a production adatbázis másolatán futhat
+D) A deployment során nincs szükség rollback lehetőségre
+ANSWER: A
+EXPLANATION: Blue-green deploymentnél két, egymástól elkülönített környezet vagy deployment állhat rendelkezésre. Az új verziót a passzív környezetben validálhatják, majd a forgalmat az új környezetre irányítják. Ez gyors visszaállítást is lehetővé tehet, ha a régi környezet változatlanul rendelkezésre áll. Azért csábító a rolling deploymenttel azonosnak tekinteni, mert mindkettő verzióváltást tesz lehetővé downtime nélkül vagy minimális downtime mellett, de a két stratégia eltérő infrastruktúra-modellt használ.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: Secrets & security
+TYPE: edgecase
+QUESTION: Egy CI pipeline secretje véletlenül bekerült egy job logjába. A pipeline ezután sikeresen lefutott. Mi legyen a megfelelő reakció?
+A) Semmit nem kell tenni, mert a pipeline sikeres volt
+B) Csak törölni kell a logot, a secret változatlan maradhat
+C) A secretet kompromittáltnak kell tekinteni, rotálni vagy revoke-olni kell, és ellenőrizni kell a további hozzáférést
+D) A secretet ugyanazzal az értékkel újra be kell commitolni
+ANSWER: C
+EXPLANATION: Ha egy secret megjelenik egy CI logban, azt kompromittáltnak kell tekinteni, mert a loghoz hozzáférő személy vagy rendszer megszerezhette. A megfelelő reakció a secret rotációja vagy revoke-olása, a log exposure kezelése és az érintett hozzáférések auditálása. A log törlése önmagában nem bizonyítja, hogy a secretet senki nem látta. Azért csábító csak a logot törölni, mert így megszűnik a látható bizonyíték, de a már kiszivárgott credential ettől nem válik érvénytelenné.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: GitOps
+TYPE: behavior
+QUESTION: Egy GitOps repositoryban egy Kubernetes Deployment image tagje `1.4.2`-ről `1.4.3`-ra változik, majd commit és merge történik. Mi történik egy tipikus GitOps rendszerben?
+A) A GitOps controller érzékeli a desired state változását, és reconciliation során alkalmazhatja az új image-et
+B) A Git repository automatikusan új Docker image-et buildel GitOps nélkül is
+C) A Kubernetes minden esetben új clustert hoz létre
+D) A változás csak akkor hat productionre, ha egy engineer manuálisan `kubectl apply`-t futtat
+ANSWER: A
+EXPLANATION: Tipikus GitOps modellben a controller figyeli a repository desired state változásait, és reconciliation során a cluster állapotát az új konfigurációhoz igazítja. A konkrét build folyamat külön CI pipeline feladata lehet. Azért csábító a manuális `kubectl apply` szükségességét feltételezni, mert hagyományos deploymentnél ez gyakori lépés, de GitOpsban éppen a reconciliation automatizálja ezt.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Scripting & automation
+TYPE: debug
+QUESTION: Az alábbi Bash scriptnek egy hibánál le kell állnia, de mégis folytatja a futást:
+CODE:
+#!/bin/bash
+
+set -e
+
+grep "ERROR" application.log
+echo "Continuing deployment"
+ENDCODE
+Mi lehet az egyik fontos oka annak, hogy a script nem a várt módon viselkedik?
+A) A `grep` sikeres találat esetén mindig 1-es exit code-dal tér vissza
+B) A `set -e` kizárólag Pythonban működik
+C) Az `echo` automatikusan kikapcsolja a `set -e`-t
+D) A `grep` exit code-ja 1 lehet akkor is, ha technikai hiba nincs, csak nincs találat, ezért a `set -e` miatt ez hibának számíthat
+ANSWER: D
+EXPLANATION: A `grep` tipikusan 0-val tér vissza találat esetén, 1-gyel, ha nincs találat, és 2 vagy más nem nulla értékkel hiba esetén. Emiatt a `set -e` mellett egy egyszerű "nincs találat" eset is megszakíthatja a scriptet, noha az nem feltétlenül technikai hiba. Azért csábító a `grep` nem nulla exit code-ját automatikusan hibának tekinteni, mert sok shell parancsnál a nem nulla érték valóban hibát jelent, de a `grep` esetében az exit status része a normál keresési eredménynek.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: CI/CD pipelines
+TYPE: scenario
+QUESTION: Egy deployment pipeline-ban a buildelt artifact neve mindig `app-latest.tar.gz`, ezért egy későbbi pipeline nem tudja egyértelműen megállapítani, pontosan melyik build artifactját használja. Mi lenne jobb megoldás?
+A) Minden artifactot ugyanazzal a névvel tárolni
+B) Az artifactot immutable, egyedi build azonosítóval verziózni, például commit SHA vagy build number alapján
+C) Az artifact nevét minden deployment előtt kézzel átírni
+D) A régi artifactokat automatikusan felülírni
+ANSWER: B
+EXPLANATION: Immutable és egyértelmű artifact verziózással pontosan meghatározható, melyik build került deploymentre. Commit SHA, build number vagy más immutable verzióazonosító használható. Ez javítja a traceabilityt és a rollback reprodukálhatóságát. Azért csábító a `latest` használata, mert egyszerű és nem kell verziószámot kezelni, de pontos release azonosításra nem alkalmas.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: Docker & containers
+TYPE: edgecase
+QUESTION: Egy konténerből DNS név alapján elérhető egy másik konténer ugyanazon Docker networkön. Mi teszi ezt lehetővé tipikusan?
+A) A Docker beépített network DNS szolgáltatása
+B) A host `/etc/hosts` fájlja minden konténerben automatikusan azonos
+C) A container image neve automatikusan globális DNS rekordot hoz létre az interneten
+D) A Docker minden containerhez nyilvános IP-címet rendel
+ANSWER: A
+EXPLANATION: A Docker user-defined networkök beépített DNS resolutiont biztosítanak a hálózaton részt vevő konténerek számára, így a megfelelő container vagy service név alapján elérhetők. Ez nem jelenti azt, hogy a container nyilvános DNS rekordot vagy internetes IP-címet kap. Azért csábító a host `/etc/hosts` fájljára gondolni, mert hostname mappinget tartalmazhat, de a konténerek közötti Docker DNS külön mechanizmus.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: Kubernetes core objects
+TYPE: performance
+QUESTION: Egy Kubernetes clusterben egy Deployment podjai folyamatosan új node-okra kerülnek, mert az egyik node túlterhelt, miközben a többi node kevésbé terhelt. Melyik Kubernetes mechanizmus segíthet a podok elhelyezésének finomhangolásában?
+A) Secret rotation
+B) Container image tagging
+C) Affinity, anti-affinity vagy topology spread constraints
+D) ConfigMap reload
+ANSWER: C
+EXPLANATION: Affinity, anti-affinity és topology spread constraints segítségével szabályozható, hogy a podok milyen node-okon vagy topológiai tartományokban helyezkedjenek el. Ezekkel például szétoszthatók a replikák failure domainök között, vagy preferálható bizonyos node pool. Azért csábító kizárólag autoscalingre gondolni, mert a túlterhelés kapacitásproblémának tűnhet, de az elhelyezési szabályok is jelentősen befolyásolhatják a terheléseloszlást.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: Kubernetes networking & storage
+TYPE: debug
+QUESTION: Egy Kubernetes Ingress konfiguráció helyesnek tűnik, de a hostnév HTTP kérései `404` választ adnak. A backend Service közvetlenül elérhető a clusterből. Mi lehet az egyik első vizsgálandó probléma?
+A) A PersistentVolume túl nagy
+B) Az Ingress controller nem fut, vagy az Ingress resource nem a megfelelő controllerhez tartozik
+C) A pod image-e túl kicsi
+D) A Service nem használhat ClusterIP típust
+ANSWER: B
+EXPLANATION: Ha a backend Service közvetlenül működik, érdemes ellenőrizni, hogy az Ingress controller fut-e, figyeli-e az adott Ingress resource-t, és helyesen dolgozza-e fel a host/path szabályokat. Az Ingress resource önmagában nem feltétlenül implementálja a forgalomkezelést; szükség van egy megfelelő controllerre vagy gateway implementációra. Azért csábító a Service típust hibáztatni, mert az Ingress mögött Service található, de a ClusterIP Service teljesen megfelelő backend lehet.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: Helm
+TYPE: output
+QUESTION: Egy Helm template az alábbi kódot tartalmazza:
+CODE:
+{{- if .Values.enabled }}
+replicas: 3
+{{- end }}
+ENDCODE
+A `values.yaml` fájlban `enabled: false` szerepel. Mi lesz a template ezen részének eredménye?
+A) A `replicas: 3` sor nem kerül bele a renderelt manifestbe
+B) A Helm automatikusan `replicas: 0` értéket ír
+C) A Helm mindig `replicas: 3` értéket renderel
+D) A Helm syntax errorral leáll, mert boolean értéket nem lehet `if` feltételben használni
+ANSWER: A
+EXPLANATION: A Helm template `if` feltétele csak akkor rendereli a blokkot, ha az érték truthy a Helm template logikája szerint. A `false` érték esetén a blokk kimarad a renderelt outputból. Azért csábító a `replicas: 3` megjelenését feltételezni, mert a template-ben fizikailag szerepel ez a sor, de a conditional rendering ezt csak megfelelő érték mellett generálja.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: scenario
+QUESTION: Egy Terraform modul több környezetben is használatos, de environmentenként más régiót és instance size-ot kell megadni. Mi a legjobb megközelítés?
+A) Minden környezethez teljesen külön modult másolni
+B) A modulban hardcode-olni az összes régiót és méretet
+C) A Terraform state-et kézzel szerkeszteni minden deployment előtt
+D) A modul input variable-jeivel paraméterezni a környezetfüggő értékeket
+ANSWER: D
+EXPLANATION: A modul input variable-jei lehetővé teszik, hogy ugyanaz a modul különböző környezetekben eltérő konfigurációval legyen használható. Így a reusable infrastruktúra-logika egy helyen marad, míg a környezetspecifikus paraméterek a modul hívásakor adhatók meg. Azért csábító a teljes modul másolása, mert egyszerűen el lehet benne helyezni az adott környezet értékeit, de hosszú távon jelentős duplikációt és driftet okozhat.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: Cloud fundamentals
+TYPE: edgecase
+QUESTION: Egy cloud alkalmazás egyetlen availability zone-ban fut, de a database egy managed multi-zone szolgáltatás. A csapat azt állítja, hogy az alkalmazás teljesen high-availability. Miért nem feltétlenül igaz ez?
+A) A managed database soha nem lehet high-availability
+B) Az alkalmazásréteg továbbra is single point of failure lehet, ha az egyetlen availability zone kiesik
+C) A multi-zone database automatikusan leállítja az alkalmazást
+D) A load balancer miatt egyetlen zone mindig elegendő
+ANSWER: B
+EXPLANATION: A database redundanciája nem teszi automatikusan redundánssá az alkalmazásréteget. Ha az application tier egyetlen availability zone-ban fut, annak kiesése továbbra is teljes szolgáltatáskimaradást okozhat. Azért csábító a teljes rendszert high-availabilitynek tekinteni, mert egy kritikus komponens már redundáns, de a teljes architektúra minden releváns failure domainjét vizsgálni kell.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: Networking & DNS
+TYPE: debug
+QUESTION: Egy alkalmazás IPv4-en működik, de IPv6-képes hálózaton időszakosan hosszú timeout után érhető csak el. A DNS rekordok között van `AAAA` rekord is. Mi lehet az egyik lehetséges probléma?
+A) Az IPv6 útvonal vagy firewall konfiguráció hibás, miközben az IPv4 útvonal működik
+B) Az `A` rekord automatikusan törli az `AAAA` rekordot
+C) A DNS TTL mindig megakadályozza az IPv6 kapcsolatot
+D) Az IPv6 használata kizárólag UDP-n keresztül lehetséges
+ANSWER: A
+EXPLANATION: Ha van `AAAA` rekord, egy IPv6-képes kliens megpróbálhat IPv6-on kapcsolódni. Ha az IPv6 routing, firewall vagy a szolgáltatás IPv6 bindingja hibás, a kapcsolat timeoutolhat, miközben IPv4-en működik. Dual-stack környezetben ezért mindkét protokoll útvonalát külön ellenőrizni kell. Azért csábító a DNS TTL-re gyanakodni, mert a probléma DNS rekorddal együtt jelentkezik, de a sikeres rekordfeloldás nem garantálja az IPv6 hálózati elérést.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: Monitoring & observability
+TYPE: production
+QUESTION: Egy service error rate-je 0,1%-ról 2%-ra emelkedik, miközben a request rate is jelentősen nő. Melyik megközelítés segít jobban eldönteni, hogy a hiba valószínűleg load-related probléma-e?
+A) Csak a service hostname-jét ellenőrizni
+B) Csak a container image digestjét összehasonlítani
+C) A hibaarányt és latencyt a request rate-tel együtt idősorban vizsgálni, valamint load növekedéshez kapcsolódó resource és dependency metricákat keresni
+D) Az összes alertet kikapcsolni, hogy csökkenjen a zaj
+ANSWER: C
+EXPLANATION: A request rate, error rate, latency és resource/dependency metricák időbeli korrelációja segíthet felismerni, hogy a hibák a terhelés növekedésével együtt jelentek-e meg. Ez nem bizonyítja önmagában a root cause-t, de erős diagnosztikai jel lehet további vizsgálathoz. Azért csábító csak az image digestet ellenőrizni, mert egy release is okozhat hibát, de a terhelés és a hibák időbeli kapcsolata fontos kontextust ad.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: CI/CD pipelines
+TYPE: scenario
+QUESTION: Egy CI pipeline-ban a unit tesztek és az integration tesztek egymástól függetlenül futtathatók, és egyik sem használja a másik eredményét. Mi a legjobb megközelítés a futási idő csökkentésére?
+A) A két tesztkészlet párhuzamos futtatása külön jobokban
+B) Az integration tesztek teljes elhagyása
+C) A teszteket production környezetben futtatni
+D) Minden tesztet ugyanabba a shell scriptbe tenni
+ANSWER: A
+EXPLANATION: Ha két tesztkészlet egymástól független, külön CI jobokban párhuzamosan futtathatók, így a teljes pipeline időtartama közelíthet a hosszabbik job futási idejéhez ahelyett, hogy összeadódna a két idő. Azért csábító egyetlen scriptbe tenni mindent, mert egyszerűbbnek tűnik a vezérlés, de ez jellemzően soros végrehajtást eredményez.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: Docker & containers
+TYPE: behavior
+QUESTION: Egy Linux konténerben futó alkalmazás PID 1-ként indul. Miért lehet fontos, hogy az alkalmazás vagy az entrypoint megfelelően kezelje a Unix jeleket?
+A) Mert a PID 1 automatikusan root jogosultságú
+B) Mert a konténer mindig ugyanazon a hoston marad
+C) Mert a konténer leállításakor a runtime jelet küld a fő processznek, és a megfelelő signal handling szükséges a graceful shutdownhoz
+D) Mert a PID 1 kizárólag hálózati kapcsolatokat kezel
+ANSWER: C
+EXPLANATION: Konténer leállításakor a runtime jellemzően jelet küld a konténer fő processzének, ezért a megfelelő signal handling lehetővé teszi a kapcsolatok lezárását, a folyamatban lévő műveletek befejezését és a rendezett leállást. Azért csábító a PID 1-et automatikusan root processzként kezelni, mert a speciális PID 1 szerep fontos, de a PID szám önmagában nem határozza meg a Unix felhasználói jogosultságokat.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: Dockerfile best practices
+TYPE: scenario
+QUESTION: Egy production Docker image buildje minden alkalommal ugyanazt a dependency verziót kell hogy előállítsa. Melyik megoldás javítja leginkább a build reprodukálhatóságát?
+A) Mindig a `latest` dependency verziót használni
+B) Dependency lockfile és lehetőség szerint immutable base image referencia, például digest használata
+C) A dependency-k verzióinak teljes elhagyása
+D) Minden build előtt törölni a package cache-t és újra feloldani a verziókat
+ANSWER: B
+EXPLANATION: A lockfile rögzíti a dependency-fákat és verziókat, míg egy base image digest pontosan azonosítja a használt image-t. Együtt jelentősen javítják annak esélyét, hogy ugyanaz a forrás ugyanazt az image-et állítsa elő. Azért csábító a `latest` használata, mert mindig frissnek tűnik, de a változó tag nem garantálja ugyanazt a build bemenetet.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: Kubernetes core objects
+TYPE: behavior
+QUESTION: Egy Kubernetes Deployment `replicas: 3` értékkel rendelkezik, de csak két pod fut. A clusterben van elegendő kapacitás. Mi történik normál esetben?
+A) A Deployment automatikusan `replicas: 2` értékre módosítja magát
+B) A Service törli az egyik futó podot
+C) A ConfigMap létrehoz egy új podot
+D) A Deployment controller megpróbálja helyreállítani a kívánt három replika állapotát
+ANSWER: D
+EXPLANATION: A Deployment desired state-je három replika, ezért a controller folyamatos reconciliation során megpróbálja a tényleges állapotot ehhez igazítani. Ha egy pod eltűnik vagy nem létezik, a controller a megfelelő ReplicaSeten keresztül új pod létrehozását kezdeményezi. Azért csábító azt feltételezni, hogy a Deployment alkalmazkodik a jelenlegi két podhoz, mert a Kubernetes aktuális állapotot figyel, de a reconciliation célja éppen a kívánt állapot helyreállítása.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: Kubernetes networking & storage
+TYPE: scenario
+QUESTION: Egy Kubernetes StatefulSet podjaihoz stabil hálózati identitás szükséges, és minden replika saját perzisztens storage-ot használna. Melyik Kubernetes megoldás illeszkedik ehhez leginkább?
+A) StatefulSet Headless Service-szel és per-pod PersistentVolumeClaim-ekkel
+B) Egyetlen ConfigMap minden pod számára
+C) DaemonSet és egy közös `emptyDir`
+D) Egyetlen statikus Pod manifest
+ANSWER: A
+EXPLANATION: A StatefulSet stabil pod identitást biztosít, a Headless Service pedig lehetővé teszi a podok stabil DNS-alapú elérését. A `volumeClaimTemplates` segítségével minden replika saját PersistentVolumeClaim-et kaphat. Azért csábító egy közös `emptyDir` használata, mert egyszerű storage-megoldásnak tűnik, de az `emptyDir` pod-életciklushoz kötött és nem biztosít perzisztenciát.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: Helm
+TYPE: scenario
+QUESTION: Egy Helm chartot több környezetben deployolnak. A base `values.yaml` tartalmaz alapértékeket, míg egy environment-specifikus values fájl módosít néhányat. Mi történik tipikusan, ha mindkettőt megadják?
+A) A Helm véletlenszerűen választ a két érték közül
+B) A base `values.yaml` minden esetben felülírja az environment-specifikus fájlt
+C) A később megadott values fájl értékei felülírhatják az alapértékeket
+D) A Helm minden értéket automatikusan stringgé alakít
+ANSWER: C
+EXPLANATION: Több values fájl használatakor a később megadott fájlok magasabb prioritásúak lehetnek az alapértelmezett értékeknél, így környezetenként felülírhatók a szükséges konfigurációk. A pontos eredő érték a Helm values precedence szabályaitól és az esetleges `--set` paraméterektől is függ. Azért csábító az alapfájlt tekinteni végső forrásnak, mert az tartalmazza a chart default konfigurációját, de az override-ok éppen ennek módosítására szolgálnak.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: behavior
+QUESTION: Egy Terraform konfigurációban ugyanazt az erőforrást dinamikusan több elem alapján kell létrehozni, és az egyes példányokat stabil kulcsokkal szeretnék azonosítani. Melyik meta-argumentum illeszkedik erre jobban?
+A) `depends_on`
+B) `for_each`
+C) `provider`
+D) `lifecycle`
+ANSWER: B
+EXPLANATION: A `for_each` collection vagy map elemei alapján külön resource instance-okat hozhat létre, és a példányokat stabil kulcsokkal azonosítja. Ez különösen hasznos, ha az erőforrásoknak név vagy más tartós azonosító alapján kell kezelhetőknek lenniük. Azért csábító a `count`, ha csak több példány létrehozására gondolunk, de indexalapú azonosítása bizonyos változásoknál kevésbé stabil lehet.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: Cloud fundamentals
+TYPE: scenario
+QUESTION: Egy alkalmazásnak privát subnetben kell futnia, de egy külső API-t is el kell érnie az interneten keresztül. Melyik architektúra lehet megfelelő?
+A) Az alkalmazásnak közvetlenül public IP-címet adni minden példányon
+B) Az alkalmazást internet nélkül futtatni
+C) Az összes security control eltávolítása
+D) Privát subnetben futtatni az alkalmazást, és kontrollált outbound internetkapcsolatot biztosítani például NAT gatewayen keresztül
+ANSWER: D
+EXPLANATION: Privát subnetben az alkalmazás nem kap közvetlenül publikus inbound elérést, miközben egy megfelelően kialakított NAT-alapú outbound útvonal lehetővé teszi külső szolgáltatások elérését. A pontos megoldás cloud providertől és hálózati topológiától függ. Azért csábító minden instance-nak public IP-t adni, mert az egyszerűvé teszi az internetelérést, de ezzel jelentősen növelhető a támadási felület.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: Networking & DNS
+TYPE: scenario
+QUESTION: Egy kliens TCP kapcsolatot tud létrehozni egy szerverrel, de a HTTPS kérés TLS handshake hibával leáll. Mit bizonyít ez a helyzetről?
+A) A DNS biztosan hibás
+B) A TCP kapcsolat létrejött, de a TLS rétegben további probléma van
+C) Az alkalmazás HTTP-n biztosan hibátlan
+D) A szervernek nincs IP-címe
+ANSWER: B
+EXPLANATION: A sikeres TCP handshake azt mutatja, hogy a kliens és a szerver között a TCP kapcsolat létrejött. Ezután a TLS handshake külön rétegben történik, ahol például tanúsítvány-, protokoll- vagy SNI-kompatibilitási probléma léphet fel. Azért csábító a DNS-t hibáztatni, mert a HTTPS elérés hostname-en keresztül történik, de a sikeres TCP kapcsolat már fontos bizonyíték arra, hogy az alapvető hálózati útvonal működik.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: Monitoring & observability
+TYPE: scenario
+QUESTION: Egy HTTP API-nál az átlagos latency 100 ms, miközben a p99 latency 4 másodperc. Mit jelezhet ez leginkább?
+A) Minden request pontosan 100 ms alatt teljesül
+B) A rendszernek nincs latency problémája
+C) A requestek kis része jelentősen lassabb a tipikus requesteknél
+D) A CPU minden esetben 99%-on működik
+ANSWER: C
+EXPLANATION: A p99 azt jelzi, hogy a requestek körülbelül 99%-a a megadott percentilisértéknél gyorsabb, míg egy kisebb hányad ennél is lassabb lehet. A 4 másodperces p99 tehát jelentős tail latencyt jelezhet annak ellenére, hogy az átlag 100 ms. Azért csábító az átlag alapján jónak tekinteni a rendszert, mert az összes requestre egyetlen összefoglaló számot ad, de elrejtheti a lassú kéréseket.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: Logging
+TYPE: scenario
+QUESTION: Egy microservice architektúrában több service ugyanahhoz a requesthez tartozó logokat írja. Melyik megoldás segíti leginkább egy konkrét request végigkövetését?
+A) Minden service külön, véletlenszerű request ID-t generál
+B) Csak a timestampet logolni
+C) Minden logszintet ERROR-ra állítani
+D) Konzisztens correlation vagy trace ID továbbítása a service-ek között és annak strukturált logolása
+ANSWER: D
+EXPLANATION: Egy közös correlation vagy trace ID lehetővé teszi, hogy ugyanahhoz a requesthez tartozó eseményeket több service logjaiból összekapcsoljuk. Ez különösen hasznos distributed systemek hibakeresésénél. Azért csábító csak timestamp alapján keresni, mert az minden logban rendelkezésre állhat, de párhuzamos requestek és clock skew miatt nem elég megbízható az egyedi korrelációhoz.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: SRE & incident management
+TYPE: scenario
+QUESTION: Egy service SLO-ja 99,9% availability, de az aktuális időszakban 99,95%-os értéket mérnek. Mit jelent ez?
+A) Az SLO teljesül, mert a mért availability magasabb a célértéknél
+B) Az SLO megsértésre került
+C) A rendszernek pontosan 0,05% downtime-ja van minden hónapban
+D) Az SLO automatikusan 99,99%-ra változik
+ANSWER: A
+EXPLANATION: A 99,95%-os mért availability meghaladja a 99,9%-os SLO célértéket, ezért az adott mérési időszakban a szolgáltatás teljesítette az SLO-t. Ez nem jelenti azt, hogy minden jövőbeli időszakban is teljesülni fog. Azért csábító az SLO megsértését feltételezni, mert a 0,05 százalékpontos eltérés kicsinek tűnhet, de az SLO egy konkrét célértékhez viszonyít.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: Deployment strategies
+TYPE: scenario
+QUESTION: Egy új alkalmazásverziót először csak a felhasználók 5%-ának szeretnének elérhetővé tenni, miközben a régi verzió a forgalom többi részét kezeli. Melyik deployment stratégia illik ehhez?
+A) Recreate deployment
+B) Canary deployment
+C) Big-bang deployment
+D) Database-only deployment
+ANSWER: B
+EXPLANATION: Canary deployment esetén az új verzió először a forgalom egy kisebb részét kapja, így a viselkedése és metrikái kontrollált környezetben figyelhetők. Ha megfelelően működik, a forgalom fokozatosan növelhető. Azért csábító a teljes rollout, mert egyszerűbbnek tűnik az üzemeltetés, de azzal minden felhasználó egyszerre ki lenne téve az új verzió esetleges hibáinak.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: Secrets & security
+TYPE: scenario
+QUESTION: Egy alkalmazásnak csak egyetlen S3 objektumot kell olvasnia egy adott bucketből. Melyik IAM megközelítés felel meg leginkább a least privilege elvnek?
+A) Admin jogosultság adása az alkalmazásnak
+B) Az egész cloud account olvasási jogosultságának megadása
+C) Csak a szükséges objektumhoz vagy erőforráshoz szükséges minimális read jogosultság biztosítása
+D) Minden alkalmazás ugyanazt a root credentialt használja
+ANSWER: C
+EXPLANATION: A least privilege azt jelenti, hogy az identitás csak a feladat végrehajtásához szükséges minimális jogosultságokat kapja. Ha az alkalmazásnak egyetlen objektum olvasása szükséges, nem indokolt teljes bucket- vagy account-szintű jogosultságot adni. Azért csábító admin jogosultságot használni, mert az azonnal megoldja a hozzáférési problémákat, de szükségtelenül nagy támadási felületet biztosít.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: GitOps
+TYPE: scenario
+QUESTION: Egy GitOps controller folyamatosan visszaállít egy Kubernetes objektumot egy korábbi konfigurációra, miután egy engineer manuálisan módosította a clustert. Mi magyarázza ezt a viselkedést?
+A) A GitOps reconciliation a Gitben definiált desired state-et tekinti forrásnak, és a driftet visszaállíthatja
+B) A Kubernetes véletlenszerűen módosítja a manifesteket
+C) A Docker daemon automatikusan felülírja a Kubernetes objektumokat
+D) A Git repository minden commit után törli a clustert
+ANSWER: A
+EXPLANATION: GitOpsban a Gitben tárolt desired state az egyik elsődleges konfigurációs forrás, a controller pedig folyamatosan egyezteti ezzel a cluster állapotát. Emiatt egy manuális változtatás driftet hozhat létre, amelyet a reconciliation később visszaállíthat. Azért csábító a manuális cluster módosítást tartós változtatásnak tekinteni, mert azonnal látható hatása lehet, de GitOpsban ez gyakran eltér a deklarált desired state-től.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: Scripting & automation
+TYPE: debug
+QUESTION: Az alábbi Bash scriptben egy változó szóközt tartalmazó fájlnevet is tárolhat:
+CODE:
+FILE="my report.txt"
+cat $FILE
+ENDCODE
+Miért problémás a script?
+A) A `cat` csak numerikus fájlneveket támogat
+B) A változó nincs idézőjelek között, ezért a shell word splitting miatt a fájlnév több argumentumra bontható
+C) A Bash nem támogat szóközt fájlnevekben
+D) A változó értékét kötelező single quote-tal definiálni
+ANSWER: B
+EXPLANATION: A `$FILE` idézőjelek nélküli használatakor a shell word splittinget végezhet, így a `my report.txt` két külön argumentummá válhat. A `cat "$FILE"` megőrzi a teljes fájlnevet egyetlen argumentumként. Azért csábító elhagyni az idézőjeleket, mert egyszerű változóértékeknél működni látszik, de whitespace-t és speciális karaktereket tartalmazó inputnál hibás lehet.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: CI/CD pipelines
+TYPE: debug
+QUESTION: Egy CI pipeline-ban a build job sikeres, de a deploy job nem találja a build során létrehozott fájlt. A két job külön runneren fut. Mi lehet a probléma?
+A) A CI runner automatikusan megosztja az összes lokális fájlt
+B) A build artifact soha nem lehet fájl
+C) A deploy job ugyanazon a shell processzen fut
+D) A fájlt explicit artifactként kell publikálni és a következő jobban letölteni vagy átadni
+ANSWER: D
+EXPLANATION: Külön runner esetén a workspace fájljai általában nem garantáltan léteznek a következő jobban. A build outputot ezért CI artifactként kell publikálni, majd a deploy jobban megfelelő módon letölteni. Azért csábító azt feltételezni, hogy a fájl ott marad, mert egyetlen gépen futó pipeline-nál ez működhet, de a distributed CI execution más lifecycle-t jelent.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: Docker & containers
+TYPE: performance
+QUESTION: Egy Docker konténerben futó alkalmazás nagyon sok fájlt ír és töröl rövid idő alatt. Melyik megoldás segíthet, ha az adatoknak nem kell perzisztensnek lenniük, és a storage I/O overheadet szeretnék csökkenteni?
+A) Minden fájlt külön Docker image layerbe tenni
+B) Minden fájlt base64 formátumban tárolni
+C) A megfelelő esetben tmpfs mount használata a gyors, nem perzisztens adatokhoz
+D) A container image méretének megduplázása
+ANSWER: C
+EXPLANATION: A tmpfs memóriában tárolja az adatokat, ezért megfelelő esetben gyors lehet ideiglenes adatokhoz és elkerülheti a hagyományos storage I/O egy részét. Ugyanakkor a memória korlátozott, és a tartalom a konténer újraindításakor vagy eltávolításakor elveszhet. Azért csábító az image méretét növelni, mert több helyet biztosítana, de az image rétegek nem runtime ideiglenes storage-ként szolgálnak.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: Dockerfile best practices
+TYPE: debug
+QUESTION: Egy Dockerfile buildje során egy build-time secretet használnak, majd az image elkészülése után a fájlt törlik. Miért nem feltétlenül biztonságos ez?
+A) A Docker soha nem enged fájlt törölni image build közben
+B) A secretet kizárólag Kubernetes képes tárolni
+C) A secret minden esetben a host `/etc/passwd` fájljába kerül
+D) A secret egy korábbi image layerben továbbra is megmaradhat, még akkor is, ha egy későbbi layerben törlik
+ANSWER: D
+EXPLANATION: A Docker image rétegei immutable jellegűek, ezért egy fájl eltávolítása egy későbbi layerben nem feltétlenül távolítja el annak tartalmát a korábbi layerből. Build secret kezelésére ezért dedikált build secret mechanizmust, például BuildKit secret mountot érdemes használni. Azért csábító a törlés után biztonságosnak tekinteni az image-et, mert a végső filesystemben a fájl már nem látható, de az előző layer továbbra is tartalmazhatja.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: Kubernetes core objects
+TYPE: edgecase
+QUESTION: Egy Kubernetes podnak `requests.cpu: 500m` és `limits.cpu: 1` van beállítva. Melyik állítás helyes?
+A) A pod mindig pontosan 500m CPU-t használ
+B) A pod soha nem használhat 500m-nél többet
+C) A request elsősorban scheduling szempontból jelzi a szükséges CPU-t, míg a limit a használat felső korlátját határozza meg
+D) A request és limit mindig ugyanazt jelenti
+ANSWER: C
+EXPLANATION: A CPU request a scheduler számára fontos erőforrásigényt jelez, míg a CPU limit meghatározza, hogy a konténer mennyi CPU-időt használhat legfeljebb az adott konfiguráció szerint. A request nem garantálja, hogy a processz pontosan annyit használ, és nem feltétlenül korlátozza a runtime CPU-használatot erre az értékre. Azért csábító a requestet felső korlátnak tekinteni, mert mindkettő CPU-val kapcsolatos beállítás, de eltérő szerepük van.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: Kubernetes networking & storage
+TYPE: scenario
+QUESTION: Egy PersistentVolumeClaim eredetileg 10Gi méretet kért, de később 20Gi-ra szeretnék növelni. Mi a megfelelő első ellenőrzés?
+A) Hogy a használt StorageClass és storage backend támogatja-e a volume expansiont
+B) Hogy a Pod neve pontosan 10 karakter hosszú-e
+C) Hogy a Service ClusterIP típust használ-e
+D) Hogy a ConfigMap tartalmaz-e storage kulcsot
+ANSWER: A
+EXPLANATION: A PVC bővítése csak akkor lehetséges a megfelelő módon, ha a használt storage class és backend támogatja a volume expansiont. Támogatás esetén a PVC mérete módosítható, és a Kubernetes valamint a CSI driver végrehajthatja a szükséges storage műveleteket. Azért csábító közvetlenül a PV méretét módosítani, mert az reprezentálja a tényleges storage-ot, de a PVC és StorageClass által meghatározott folyamatot kell követni.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: Helm
+TYPE: debug
+QUESTION: Egy Helm chart telepítésekor egy template hibát ad, mert egy opcionális konfigurációs rész hiányzik. Melyik megközelítés segíthet robusztusabbá tenni a template-et?
+A) Minden opcionális érték kötelezővé tétele dokumentáció nélkül
+B) `default` vagy megfelelő conditional logika használata a hiányzó értékek kezelésére
+C) A Helm template engine teljes kikapcsolása
+D) Az összes values fájl törlése
+ANSWER: B
+EXPLANATION: A Helm template-ekben a `default`, conditional logika és megfelelő value-struktúra segítségével biztonságosan kezelhetők opcionális konfigurációk. Ez csökkentheti a hiányzó értékekből eredő renderelési hibákat. Azért csábító minden értéket kötelezővé tenni, mert így elkerülhető a hiányzó konfiguráció, de ezzel megszűnik az opcionális konfiguráció rugalmassága.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: scenario
+QUESTION: Egy meglévő, manuálisan létrehozott cloud erőforrást Terraform segítségével szeretnének kezelni anélkül, hogy azonnal újra létrehoznák. Mi a megfelelő megközelítés?
+A) A resource blokkot teljesen elhagyni
+B) Az erőforrást törölni, majd `terraform apply` segítségével újra létrehozni
+C) A meglévő erőforrást Terraform state-be importálni, majd a konfigurációt hozzáigazítani
+D) A Terraform state-et kézzel átírni véletlenszerű értékekre
+ANSWER: C
+EXPLANATION: Terraform importtal egy már létező infrastruktúra-erőforrás bekerülhet a Terraform state kezelésébe. Ezután a konfigurációt össze kell hangolni a tényleges infrastruktúrával, hogy a következő plan ne próbáljon szükségtelen változtatásokat végrehajtani. Azért csábító újra létrehozni az erőforrást, mert tiszta Terraform ownershipet adna, de ez downtime-ot vagy adatvesztést is okozhat.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: Cloud fundamentals
+TYPE: behavior
+QUESTION: Egy cloud load balancer több availability zone-ban futó backendek között osztja el a forgalmat. Mi az egyik fő előnye ennek a topológiának?
+A) Minden backend automatikusan admin jogosultságot kap
+B) Egyetlen availability zone kiesése esetén is maradhat elérhető backend kapacitás más zone-okban
+C) A DNS-re többé nincs szükség
+D) A database automatikusan statelesssé válik
+ANSWER: B
+EXPLANATION: Több availability zone használata csökkentheti annak kockázatát, hogy egyetlen zone kiesése az egész szolgáltatást elérhetetlenné tegye, feltéve hogy a többi komponens és a routing is megfelelően redundáns. Ez egy fontos failure-domain alapú high-availability minta. Azért csábító azt gondolni, hogy a load balancer önmagában garantálja a magas rendelkezésre állást, de az egész architektúrának megfelelően redundánsnak kell lennie.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Networking & DNS
+TYPE: edgecase
+QUESTION: Egy `/24` IPv4 hálózatot két azonos méretű subnetre szeretnének felosztani. Melyik prefix biztosítja a két egyenlő méretű subnetet?
+A) `/25`
+B) `/26`
+C) `/27`
+D) `/28`
+ANSWER: A
+EXPLANATION: Egy `/24` hálózatból egy prefixszel hosszabb, `/25` hálózatok hozhatók létre, így két azonos méretű subnet keletkezik. IPv4-ben egy `/25` összesen 128 címet tartalmaz, bár a ténylegesen kiosztható címek száma a konkrét környezettől függ. Azért csábító a `/26` választása, mert az is a `/24` felosztása, de abból négy egyenlő méretű subnet jönne létre, nem kettő.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: CI/CD pipelines
+TYPE: performance
+QUESTION: Egy CI pipeline-ban ugyanazokat a dependency-ket több, egymással párhuzamosan futó job is letölti. Mi lehet egy hatékony megoldás a redundáns letöltések csökkentésére?
+A) Minden job számára külön dependency verziót választani
+B) Megfelelően megosztott vagy CI által kezelt dependency cache használata
+C) A dependency-k telepítésének teljes kihagyása
+D) A jobok párhuzamosságának teljes megszüntetése
+ANSWER: B
+EXPLANATION: Megfelelő cache-stratégia esetén több job újrahasználhatja a már letöltött dependency-ket, csökkentve a hálózati forgalmat és a buildidőt. A cache key-nek figyelembe kell vennie a dependency-definíciók változását. Azért csábító megszüntetni a párhuzamosságot, mert így elkerülhetők az egyidejű letöltések, de ezzel elveszne a párhuzamos execution előnye is.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: Docker & containers
+TYPE: debug
+QUESTION: Egy Docker konténerben futó processz váratlanul `SIGTERM` jelet kap, de az alkalmazás nem végez graceful shutdown-t. Melyik területet érdemes elsőként ellenőrizni?
+A) A container image registry régióját
+B) A Docker image tag hosszát
+C) Az entrypointot, a processz PID 1 szerepét és a signal forwarding működését
+D) A container hostname DNS TTL-jét
+ANSWER: C
+EXPLANATION: A konténer fő processze különleges PID 1 szerepet tölt be, ezért az entrypoint és a processzmodell meghatározhatja, hogy a jelek megfelelően eljutnak-e az alkalmazáshoz. Shell wrapper vagy nem megfelelő processzkezelés megakadályozhatja a várt signal forwardingot. Azért csábító az image registryt vizsgálni, mert a probléma containerindítással kapcsolatosnak tűnhet, de a runtime signal handling sokkal közvetlenebb terület.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: Dockerfile best practices
+TYPE: scenario
+QUESTION: Egy Docker image build során egy nagy build toolchainre csak a fordítási lépésekhez van szükség, a runtime alkalmazásnak már nincs rá szüksége. Melyik megoldás csökkentheti jelentősen a végső image méretét?
+A) Multi-stage build használata, ahol a build és runtime stage különválik
+B) A build toolchain telepítését a runtime image-ben is megtartani
+C) Minden build artifactot tömörítetlenül többször bemásolni
+D) A base image méretének növelése
+ANSWER: A
+EXPLANATION: Multi-stage buildnél a fordításhoz szükséges eszközök egy build stage-ben maradhatnak, míg a végső image-be csak a futtatáshoz szükséges artifactok kerülnek. Ez csökkentheti a méretet és a támadási felületet is. Azért csábító a toolchain megtartása, mert egyszerűbb Dockerfile-t eredményezhet, de productionben felesleges komponenseket tartalmazna.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: Kubernetes core objects
+TYPE: scenario
+QUESTION: Egy Deployment új verziójának rolloutja elindul, de az új podok nem válnak Ready állapotúvá. A régi podok közben továbbra is futnak. Miért lehet ez kívánatos viselkedés?
+A) Mert a Deployment figyelmen kívül hagyja a readiness állapotot
+B) Mert a Service automatikusan leállítja az összes régi podot
+C) Mert a Kubernetes nem tud új podot létrehozni régi pod mellett
+D) Mert a rolling update a readiness feltételeket is figyelembe veheti, így elkerülheti, hogy nem Ready podok kapjanak forgalmat
+ANSWER: D
+EXPLANATION: A Deployment rollout során a readiness állapot fontos annak meghatározásában, hogy az új podok mikor tekinthetők használhatónak. Ez segíthet megakadályozni, hogy egy még nem működő verzió túl korán kapjon forgalmat, miközben a régi példányok továbbra is kiszolgálhatnak. Azért csábító azt várni, hogy a rollout azonnal lecseréli a régi podokat, mert a verzióváltás gyorsnak tűnik, de a rendelkezésre állás védelme fontos része a rolling update működésének.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Kubernetes networking & storage
+TYPE: behavior
+QUESTION: Egy Kubernetes Service mögött egyetlen pod sem található, mert a selector nem egyezik egyetlen pod labeljével sem. Mi történik tipikusan?
+A) A Service automatikusan létrehoz egy megfelelő podot
+B) A Service létezhet, de nem lesz hozzá megfelelő backend endpoint
+C) A Kubernetes törli a Service objektumot
+D) A Service automatikusan módosítja a selectorát
+ANSWER: B
+EXPLANATION: A Service selector alapján választja ki a hozzá tartozó podokat. Ha nincs egyező pod, akkor nem lesz megfelelő backend endpoint, ezért a Service-en keresztüli forgalom nem jut el alkalmazáshoz. Azért csábító azt várni, hogy a Service létrehozza a hiányzó podot, mert a Service egy alkalmazás elérését biztosítja, de nem workload controller.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: Helm
+TYPE: debug
+QUESTION: Egy Helm chart template-jében ugyanaz a konfiguráció több helyen is szerepel, és a chart karbantartása nehézkessé válik. Melyik megoldás javíthatja a struktúrát?
+A) Minden template-et egyetlen több ezer soros fájlba összevonni
+B) Az összes konfigurációt hardcode-olni
+C) Reusable named template-eket vagy helper template-eket definiálni és azokat újrahasználni
+D) A values fájlok teljes megszüntetése
+ANSWER: C
+EXPLANATION: Helm helper template-ekkel közös rendering logika, például label-ek vagy resource naming szabályok központilag definiálhatók és több manifestből újrahasználhatók. Ez csökkenti a duplikációt és könnyebbé teszi a chart karbantartását. Azért csábító mindent egy fájlba tenni, mert így egy helyen látható a teljes konfiguráció, de a nagy template-ek nehezebben tesztelhetők és karbantarthatók.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: scenario
+QUESTION: Egy Terraform resource esetén egy attribútum megváltoztatása a provider dokumentációja szerint csak új resource létrehozásával oldható meg. Mit jelezhet ez a Terraform planben?
+A) A resource biztosan változtatás nélkül marad
+B) A Terraform mindig csak in-place módosítást végez
+C) A state automatikusan törlődik
+D) A Terraform replacement műveletet tervezhet a resource újralétrehozásával
+ANSWER: D
+EXPLANATION: Ha egy provider egy attribútumot replacementet igénylő változásként kezel, a Terraform plan destroy/create vagy ennek megfelelő replacement műveletet jelezhet. Ez fontos lehet adatvesztés, downtime vagy dependency-k miatt, ezért az apply előtt érdemes ellenőrizni a tervet. Azért csábító in-place módosítást feltételezni, mert sok cloud erőforrás támogat ilyen változtatást, de ez provider- és resource-specifikus.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: Cloud fundamentals
+TYPE: scenario
+QUESTION: Egy cloud alkalmazás adatbázisa érzékeny adatokat tartalmaz, és az adatbázist nem szeretnék közvetlenül az internetről elérhetővé tenni. Melyik architektúra illeszkedik ehhez?
+A) Az adatbázist privát hálózati szegmensben tartani, és csak a szükséges application tierből engedélyezni az elérést
+B) Public IP-t adni az adatbázisnak és erős jelszót használni
+C) Minden internetes IP-címről engedélyezni a 5432-es portot
+D) Az adatbázist ugyanabba a public subnetbe tenni, mint a load balancert
+ANSWER: A
+EXPLANATION: Az adatbázis privát hálózati szegmensben tartása és az application tierre korlátozott hálózati hozzáférés csökkenti a közvetlen internetes támadási felületet. A pontos megoldás security groupoktól, network ACL-ektől és cloud szolgáltatótól függ. Azért csábító a public IP és erős jelszó kombinációja, mert egyszerűen elérhetővé teszi az adatbázist, de feleslegesen növeli a hálózati kitettséget.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: Networking & DNS
+TYPE: debug
+QUESTION: Egy DNS lookup sikeresen visszaad egy IP-címet, de az alkalmazás TCP kapcsolata timeoutol. Melyik állítás a legpontosabb?
+A) A DNS biztosan rossz IP-címet adott vissza
+B) A TCP kapcsolat biztosan működik, mert a DNS működött
+C) A hostname feloldása sikeres volt, de routing, firewall, security group vagy a céloldali service további hibája is okozhatja a timeoutot
+D) A DNS lookup sikeressége automatikusan engedélyezi a TCP forgalmat
+ANSWER: C
+EXPLANATION: A DNS resolution csak azt mutatja, hogy a hostname feloldható egy címre. A TCP kapcsolat létrejöttéhez ezen túl megfelelő routingra, firewall szabályokra, listening service-re és szükség esetén security group engedélyekre is szükség van. Azért csábító a DNS-t tekinteni a teljes kapcsolat bizonyítékának, mert a kliens először valóban DNS-t használ, de a névfeloldás és a TCP connectivity külön problématerület.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: Monitoring & observability
+TYPE: performance
+QUESTION: Egy Prometheus-szerű metrics rendszerben egy HTTP metrikához a következő labelt adták hozzá: `user_id`. A rendszer forgalma nagyon nagy, és több millió különböző user van. Mi lehet ennek jelentős problémája?
+A) A metrics neve automatikusan megváltozik
+B) A magas cardinality miatt nagyszámú time series jöhet létre, ami jelentős memória- és storage-terhelést okozhat
+C) A metric automatikusan logokká alakul
+D) A Prometheus nem tud HTTP metrikákat tárolni
+ANSWER: B
+EXPLANATION: Minden különböző labelkombináció külön time series-t eredményezhet, ezért egy nagy cardinalityjú `user_id` label több millió series létrehozásához vezethet. Ez jelentős memória-, storage- és query-költséget okozhat. Azért csábító user ID-t labelként használni, mert nagyon részletes aggregációt tesz lehetővé, de metrics rendszerekben a magas cardinality komoly üzemeltetési probléma.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: Logging
+TYPE: production
+QUESTION: Egy production service logjai egyetlen nagy szöveges stringként tartalmazzák a timestampet, severityt, request ID-t és egyéb adatokat. Miért lehet előnyösebb strukturált, például JSON logokat használni?
+A) Mert a JSON logok soha nem tartalmazhatnak hibát
+B) Mert a strukturált mezők alapján könnyebben lehet keresni, szűrni és aggregálni
+C) Mert a JSON automatikusan titkosítja a logokat
+D) Mert a structured logging megszünteti a storage költséget
+ANSWER: B
+EXPLANATION: Strukturált logging esetén a timestamp, severity, request ID és egyéb mezők külön adatként kezelhetők, így a log aggregation rendszerek hatékonyabban tudnak szűrni és aggregálni. Ez javítja az automatizált elemzést és az observability workflow-kat. Azért csábító a strukturált formátumot automatikus titkosításként értelmezni, mert gépileg feldolgozhatóbb, de a struktúra önmagában nem biztosít biztonságot.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: SRE & incident management
+TYPE: scenario
+QUESTION: Egy service error budgetje az adott időszak nagy részében elfogyott, de a csapat mégis jelentős új feature release-t tervez productionbe. Miért lehet ez SRE szempontból kockázatos?
+A) Mert az error budget kizárólag pénzügyi költségkeret
+B) Mert az error budget csak fejlesztői fizetések mérésére szolgál
+C) Mert az error budget jelzi a megengedett megbízhatósági kockázatot, ezért annak elhasználása mellett érdemes lehet a reliability munkát előnyben részesíteni
+D) Mert az error budget automatikusan leállítja a CI pipeline-t
+ANSWER: C
+EXPLANATION: Az error budget az SLO alapján azt fejezi ki, mekkora megbízhatósági hibakeret áll rendelkezésre az adott időszakban. Ha ennek jelentős része már elfogyott, további kockázatos változtatások növelhetik az SLO megsértésének esélyét, ezért sok SRE gyakorlat a reliability javítását részesíti előnyben. Azért csábító kizárólag pénzügyi keretként értelmezni, mert a budget szó erre utal, de itt a szolgáltatás megbízhatóságáról van szó.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: Deployment strategies
+TYPE: behavior
+QUESTION: Egy alkalmazás rolling deployment során régi és új verziójú podokat is futtat egy ideig. Melyik alkalmazásszintű tulajdonság segíti leginkább az ilyen deployment biztonságát?
+A) Az, hogy az új verzió csak IPv6-on kommunikál
+B) Az, hogy minden adatbázis kapcsolatot újraindít minden request után
+C) Az, hogy a deployment alatt minden régi podot azonnal törölnek
+D) Visszafelé kompatibilis API- és adatmodell-változtatások, amelyek lehetővé teszik a verziók ideiglenes együttélését
+ANSWER: D
+EXPLANATION: Rolling deployment során az új és régi verzió átmenetileg egyszerre lehet aktív, ezért fontos, hogy az API-k és adatstruktúrák kompatibilisek legyenek ebben az átmeneti állapotban. Gyakori minta az expand-and-contract megközelítés adatbázis-migrációknál. Azért csábító azonnal törölni a régi podokat, mert így megszűnik a verziók együttélésének problémája, de ez megszünteti a rolling deployment egyik fontos előnyét.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Secrets & security
+TYPE: edgecase
+QUESTION: Egy CI pipeline-ban egy secretet environment variable-ként adnak át egy shell commandnak. Melyik gyakorlat csökkenti leginkább annak kockázatát, hogy a secret véletlenül megjelenjen a logban?
+A) A secretet minden command után kiírni ellenőrzésként
+B) A secret értékét command line argumentumként átadni mindenhol
+C) A secretet strukturáltan és szükség szerint file vagy stdin segítségével átadni, valamint a CI secret masking és logging szabályait használni
+D) A secretet commitolni a repositoryba, hogy minden job elérhesse
+ANSWER: C
+EXPLANATION: A secret közvetlen command line argumentumként való átadása bizonyos környezetekben process listingben vagy debug outputban is megjelenhet. Biztonságosabb lehet támogatott secret injectiont, file mountot vagy stdin-t használni, miközben a CI rendszer secret masking funkcióját is megfelelően konfigurálják. Azért csábító mindent command line argumentumként átadni, mert egyszerű és könnyen olvasható, de növelheti a credential exposure kockázatát.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: GitOps
+TYPE: debug
+QUESTION: Egy GitOps controller szerint a clusterben lévő resource-ok egy része nincs már jelen a Gitben, mégis továbbra is futnak a clusterben. Melyik GitOps funkció lehet releváns ennek kezelésére?
+A) Prune vagy orphaned resource kezelés, amely eltávolíthatja a már nem deklarált resource-okat a megfelelő konfiguráció mellett
+B) Docker image garbage collection kikapcsolása
+C) DNS TTL növelése
+D) Kubernetes node-ok átnevezése
+ANSWER: A
+EXPLANATION: Sok GitOps rendszer támogat prune vagy orphaned resource kezelést, amely a Gitben már nem deklarált objektumok eltávolítását teszi lehetővé a megfelelő beállítások mellett. Ezt óvatosan kell használni, mert egy hibás repository-változás nem kívánt törlésekhez vezethet. Azért csábító a node-okkal vagy DNS-sel foglalkozni, mert a cluster állapotáról van szó, de a probléma közvetlenül a desired state és a tényleges resource-ok eltéréséhez kapcsolódik.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: CI/CD pipelines
+TYPE: architecture
+QUESTION: Egy nagy monorepo CI pipeline-ja több száz service-t tartalmaz. Egy commit általában csak néhány service-t érint, de a teljes repository buildje és tesztelése több órát vesz igénybe. Melyik architekturális megközelítés skálázza legjobban a CI-t?
+A) Minden commitnál minden service teljes rebuildje és tesztelése
+B) A CI teljes kikapcsolása a monorepo miatt
+C) Minden service manuális deploymentje
+D) Dependency graph és changed-path elemzés alapján csak az érintett service-ek és azok függőségi körének validálása, megfelelő full validation stratégia mellett
+ANSWER: D
+EXPLANATION: Egy dependency graph és changed-path alapú CI képes meghatározni, mely komponensek érintettek közvetlenül vagy közvetetten, így a legtöbb commitnál elkerülhető a teljes repository újrabuildelése. A kritikus repository-szintű ellenőrzéseket továbbra is érdemes megtartani, például időszakos teljes buildet vagy release előtti full validationt. Azért csábító mindent mindig újraépíteni, mert ez egyszerű és konzervatív, de nagy monorepóknál jelentős és sokszor felesleges költséget okoz.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: Docker & containers
+TYPE: production
+QUESTION: Egy production konténer root felhasználóként fut, miközben az alkalmazásnak nincs szüksége privilegizált műveletekre. Melyik változtatás csökkentheti a konténer kompromittálása esetén a lehetséges hatást?
+A) Non-root user használata és a szükséges Linux capability-k minimalizálása
+B) A root password beállítása az image-ben
+C) Az összes Linux capability hozzáadása
+D) A privileged container használata
+ANSWER: A
+EXPLANATION: A non-root futtatás és a szükségtelen Linux capability-k elvétele csökkentheti a privilege escalation és a container escape bizonyos kockázatait. Ez defense-in-depth megközelítés, nem abszolút biztonsági garancia. Azért csábító a privileged mód, mert egyes runtime problémákat egyszerűen megszüntet, de közben jelentősen növeli a konténer jogosultságait.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: Kubernetes core objects
+TYPE: scenario
+QUESTION: Egy Kubernetes clusterben egy kritikus workload replikái ugyanazon a fizikai failure domainen koncentrálódnak. A domain kiesésekor az összes replika egyszerre elérhetetlenné válik. Melyik megoldás segíthet ennek megelőzésében?
+A) A podok image tagjének módosítása
+B) Topology spread constraints vagy megfelelő anti-affinity használata a replikák failure domainek közötti elosztására
+C) A ConfigMap méretének növelése
+D) A container port megváltoztatása
+ANSWER: B
+EXPLANATION: Topology spread constraints és anti-affinity segítségével a replikák különböző node-ok vagy failure domainek között oszthatók el. Így egyetlen node-, zone- vagy más topológiai hiba kisebb eséllyel érinti az összes példányt egyszerre. Azért csábító a pod image-ével vagy portjával foglalkozni, mert ezek könnyen látható pod-konfigurációk, de nem befolyásolják a fizikai elhelyezést.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: Kubernetes networking & storage
+TYPE: scenario
+QUESTION: Egy Kubernetesben futó stateful adatbázis workload esetén egyetlen PersistentVolume használata miatt a pod új node-ra ütemezésekor storage attach problémák jelentkeznek. Melyik architekturális kérdést kell elsősorban megvizsgálni?
+A) A ConfigMap kulcsainak sorrendjét
+B) A container image tag formátumát
+C) A storage backend access mode-ját, topology támogatását és a workload által igényelt mobilitást
+D) A Service ClusterIP címének hosszát
+ANSWER: C
+EXPLANATION: Stateful workloadoknál a storage hozzáférési modellje, az access mode, a storage topology és a volume node-ok közötti áthelyezhetősége meghatározó lehet. Nem minden storage backend támogat azonos attach vagy multi-node működést. Azért csábító csak a pod schedulinget hibáztatni, mert az új node-on jelentkezik a probléma, de a storage lifecycle és topology gyakran a valódi korlát.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: Helm
+TYPE: architecture
+QUESTION: Egy nagy Helm chart több tucat microservice-t kezel, és a csapatok szeretnék a service-eket egymástól függetlenül verziózni és telepíteni. Melyik megközelítés csökkentheti leginkább a chart couplingot?
+A) Minden service minden változásakor az összes manifest kézi szerkesztése
+B) Minden service konfigurációját egyetlen óriási template-be tenni
+C) Az összes service ugyanazt a fix image taget használja
+D) Külön, újrahasználható chartok vagy subchartok alkalmazása világos dependency-kel és jól definiált values interfészekkel
+ANSWER: D
+EXPLANATION: Külön chartok vagy jól definiált subchartok segítségével a service-ek verziózása és release-e jobban elkülöníthető. A values interfészek és explicit dependency-k világossá teszik, milyen konfigurációs szerződések vannak a komponensek között. Azért csábító egyetlen nagy template-t fenntartani, mert központilag minden konfiguráció elérhető, de ez erős couplingot és nehezebb release-kezelést eredményez.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: architecture
+QUESTION: Egy nagy Terraform kódbázisban több team különböző infrastruktúra-komponenseket kezel, de közös erőforrásokat is használnak. Melyik state-stratégia segíthet csökkenteni a blast radius-t?
+A) Egyetlen óriási state használata minden környezethez és minden teamhez
+B) Minden engineer saját, egymástól független state-et használjon
+C) Logikailag és ownership alapján több kisebb state-re bontani az infrastruktúrát, világos dependency-kel és remote state interfészekkel
+D) A state fájlok teljes megszüntetése
+ANSWER: C
+EXPLANATION: Több, ownership és lifecycle alapján kialakított state csökkentheti annak kockázatát, hogy egy hibás változtatás az egész infrastruktúrát érintse. A komponensek közötti kapcsolatokat explicit módon kell kezelni, például outputokon és megfelelő interfészeken keresztül. Azért csábító egyetlen state-et használni, mert egyszerűbbnek tűnik az erőforrások kezelése, de nagy szervezeteknél nagyobb lockolási és blast-radius problémákat okozhat.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: Cloud fundamentals
+TYPE: scenario
+QUESTION: Egy globálisan használt alkalmazásnál a felhasználók földrajzi helytől függően eltérő latencyt tapasztalnak. Az alkalmazás jelenleg egyetlen régióban fut. Melyik architekturális irány csökkentheti a földrajzi latencyt?
+A) Az alkalmazás több földrajzi régióban történő futtatása és megfelelő globális traffic routing használata
+B) Az adatbázis portjának megváltoztatása
+C) A container image méretének növelése
+D) A DNS cache teljes kikapcsolása
+ANSWER: A
+EXPLANATION: Több régióban futó deployment és megfelelő globális routing lehetővé teheti, hogy a felhasználókhoz földrajzilag közelebbi régió szolgálja ki a kéréseket. A megoldás azonban komplexitást hoz, különösen stateful komponenseknél, adatkonzisztencia, failover és deployment szempontból. Azért csábító csak a DNS cache-t kikapcsolni, mert a routing DNS-en keresztül történhet, de a DNS lookup overhead csökkentése vagy növelése önmagában nem oldja meg a hálózati távolságot.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: Monitoring & observability
+TYPE: architecture
+QUESTION: Egy nagy distributed rendszerben több ezer service és endpoint működik. A monitoring rendszer túl sok alacsony értékű alertet generál, miközben fontos user-facing hibák néha elvesznek a zajban. Melyik megközelítés javíthatja leginkább az observability architektúrát?
+A) Minden metricre külön alertet létrehozni
+B) Minden alert severityjét ERROR-ra állítani
+C) SLI/SLO-alapú, user impactre fókuszáló alertinget kialakítani, és a tüneteket valamint dependency-ket megfelelően korrelálni
+D) Az összes alert teljes kikapcsolása
+ANSWER: C
+EXPLANATION: Nagy rendszereknél az alertingnek elsősorban olyan eseményekre kell fókuszálnia, amelyek user impactet vagy SLO-kockázatot jeleznek. SLI-k, SLO-k és megfelelő dependency correlation segítségével csökkenthető a zaj és javítható a valóban fontos problémák észlelhetősége. Azért csábító minden metricre külön alertet tenni, mert így látszólag semmi nem marad felügyelet nélkül, de ez alert fatigue-hoz vezethet.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: SRE & incident management
+TYPE: production
+QUESTION: Egy kritikus incident során a technikai csapat egyszerre próbálja megoldani a hibát, kommunikálni az ügyfelekkel és koordinálni a vezetőséget. Miért lehet hasznos külön incident command szerepeket kialakítani?
+A) Mert így senkinek nem kell a technikai hibával foglalkoznia
+B) Mert a felelősségi körök szétválasztása csökkentheti a koordinációs terhelést, és biztosíthatja, hogy a technikai helyreállítás mellett a kommunikáció és a döntéshozatal is kezelve legyen
+C) Mert az incident commander automatikusan hozzáfér minden production secrethez
+D) Mert így minden incident automatikusan gyorsabban megoldódik
+ANSWER: B
+EXPLANATION: Incident command struktúrában a technikai helyreállítás, a kommunikáció és az operatív koordináció külön szerepkörökre osztható. Ez csökkentheti a context switchinget és egyértelműbbé teheti a döntési felelősséget nagyobb incidenseknél. Azért csábító azt feltételezni, hogy az incident commander mindenhez hozzáfér, mert koordinációs szerepe van, de ez nem jelent automatikus jogosultságbővítést.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Deployment strategies
+TYPE: architecture
+QUESTION: Egy kritikus alkalmazás adatbázis-sémája olyan változást igényel, amelyet az új és a régi alkalmazásverzió egyszerre nem tud kezelni. A csapat zero-downtime deploymentet szeretne. Melyik megközelítés lehet megfelelő?
+A) Az adatbázis azonnali, inkompatibilis migrációja a deployment első lépéseként
+B) Az új alkalmazás azonnali rolloutja a régi verzió leállításával
+C) Expand-and-contract vagy hasonló kompatibilitási stratégia, ahol először kompatibilis sémaváltozás történik, majd később kerül sor a régi struktúra eltávolítására
+D) A database migration teljes kihagyása
+ANSWER: C
+EXPLANATION: Zero-downtime deploymentnél az új és régi alkalmazásverzió átmenetileg együtt futhat, ezért az adatbázis-sémának is kompatibilisnek kell lennie ezzel az átmeneti állapottal. Az expand-and-contract stratégia először hozzáadja az új struktúrát úgy, hogy a régi verzió továbbra is működjön, majd az alkalmazás átállása után eltávolítható a régi struktúra. Azért csábító azonnal végrehajtani az inkompatibilis migrációt, mert így egyszerűbbnek tűnik a schema transition, de ez downtime-ot vagy runtime hibákat okozhat.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: CI/CD pipelines
+TYPE: architecture
+QUESTION: Egy nagy monorepóban több száz szolgáltatás található, és egy commit csak néhány szolgáltatást érint. A teljes repository buildelése és tesztelése több órát venne igénybe. Melyik megközelítés csökkenti leginkább a CI futási idejét úgy, hogy közben megmarad a módosításokhoz kapcsolódó függő komponensek ellenőrzése?
+A) Dependency graph alapján csak a módosított és tranzitívan érintett komponensek pipeline-jainak futtatása
+B) Minden commitnál csak a unit tesztek futtatása, a többi tesztet pedig hetente egyszer
+C) A teljes repository buildelése, de minden teszt párhuzamos futtatása ugyanazon a runneren
+D) A módosított fájlok alapján minden esetben pontosan egyetlen pipeline futtatása
+ANSWER: A
+EXPLANATION: A dependency graph-alapú megközelítés a közvetlenül módosított komponensek mellett azokat a függő komponenseket is ellenőrzi, amelyekre a változás hatással lehet. Ez jelentősen csökkentheti a CI munkát anélkül, hogy figyelmen kívül hagyná a valódi függőségi kapcsolatokat. A teljes repository minden alkalommal történő buildelése egyszerűbb, de nagy monorepóknál feleslegesen sok erőforrást használ. A csak módosított fájlokra épülő döntés viszont kihagyhat tranzitívan érintett komponenseket.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: Docker & containers
+TYPE: behavior
+QUESTION: Egy konténerben futó alkalmazás rendszeresen zombie processzeket halmoz fel. Az alkalmazás nem PID 1-ként fut, hanem egy shell script indítja el a tényleges alkalmazásfolyamatot. Mi a legfontosabb javítás?
+A) Több CPU limitet kell adni a konténernek
+B) Biztosítani kell, hogy egy megfelelő init process vagy megfelelő PID 1 kezelje és reapelje a child processzeket
+C) A konténert privileged módban kell futtatni
+D) A Docker image-et nagyobb alapimage-re kell cserélni
+ANSWER: B
+EXPLANATION: A PID 1 speciális szerepet tölt be Linuxon: többek között a hozzá tartozó orphan processzek kezelésében és a child processzek reapelésében is szerepe van. Egy megfelelő init, például tini, vagy megfelelően megírt PID 1 megakadályozhatja a zombie processzek felhalmozódását. A CPU, a privileged mód és az alapimage mérete nem oldja meg a processzkezelési problémát.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: Dockerfile best practices
+TYPE: performance
+QUESTION: Egy Docker image buildje nagyon lassú, mert a projekt forráskódjának minden kisebb módosítása után több gigabájtnyi dependency telepítése újra lefut. Az alábbi Dockerfile-részletet használod:
+CODE:
+FROM node:22-alpine
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm ci
+
+CMD ["node", "server.js"]
+ENDCODE
+Mi a legfontosabb optimalizáció?
+A) A `CMD` helyett shell formátumú `CMD` használata
+B) Az alapimage lecserélése Debianra
+C) A lockfile és package manifest fájlok külön bemásolása, majd a dependency telepítése a forráskód bemásolása előtt
+D) Az `npm ci` parancs lecserélése `npm install` parancsra
+ANSWER: C
+EXPLANATION: Ha először csak a package manifest és lockfile kerül a build contextből a megfelelő layerbe, akkor a dependency-installációs layer cache-elhető marad, amíg ezek a fájlok nem változnak. A forráskód későbbi módosítása így nem invalidálja a dependency layer cache-ét. Az `npm install` használata nem javítja a Docker layer cache-elést, a shell form pedig nem kapcsolódik a build teljesítményéhez.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: Kubernetes core objects
+TYPE: architecture
+QUESTION: Egy Kubernetes Deployment 20 replika esetén garantálni szeretné, hogy egy rolling update során legalább 18 régi vagy új Pod mindig elérhető maradjon, miközben legfeljebb 4 extra Pod futhat a kívánt replikaértéken felül. Melyik konfiguráció fejezi ki ezt?
+A) `maxUnavailable: 4` és `maxSurge: 2`
+B) `maxUnavailable: 0` és `maxSurge: 4`
+C) `maxUnavailable: 10%` és `maxSurge: 20%`
+D) `maxUnavailable: 2` és `maxSurge: 4`
+ANSWER: D
+EXPLANATION: 20 replika mellett a `maxUnavailable: 2` legfeljebb két Pod ideiglenes elérhetetlenségét engedi, így legalább 18 elérhető maradhat. A `maxSurge: 4` legfeljebb négy extra Pod létrehozását engedi a kívánt 20 fölött. A `maxUnavailable: 0` ennél szigorúbb feltételt jelentene, míg a százalékos értékek nem ezt a konkrét 18/4 kombinációt adják.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: Kubernetes networking & storage
+TYPE: edgecase
+QUESTION: Egy StatefulSet Podjai különböző node-okon futnak, és egy alkalmazás ugyanazt a fájlrendszert szeretné egyidejűleg írható módon használni több Podból. A PVC `ReadWriteOnce` access mode-dal készült. Mi a legfontosabb probléma?
+A) A `ReadWriteOnce` általában nem azt a szemantikát biztosítja, hogy több node-ról egyszerre írható legyen ugyanaz a volume
+B) A StatefulSet soha nem használhat PVC-t
+C) A Kubernetes csak `ReadOnlyMany` volume-okat támogat
+D) A `ReadWriteOnce` automatikusan több node között replikálja az adatokat
+ANSWER: A
+EXPLANATION: A `ReadWriteOnce` alapvetően egy node-hoz kötött írási hozzáférési modellt jelent, és nem ugyanaz, mint a több node-ról egyidejűleg írható `ReadWriteMany`. A pontos viselkedés a storage backend és CSI driver képességeitől is függ. A StatefulSet kifejezetten gyakran használ per-Pod persistent volume-okat, és a Kubernetes többféle access mode-ot támogat.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: Helm
+TYPE: debug
+QUESTION: Egy Helm chart több környezetben kerül telepítésre. A production környezetben kötelezővé szeretnéd tenni egy érték megadását, mert alapértelmezett érték használata biztonsági problémát okozhat. Melyik megközelítés a legalkalmasabb?
+A) Az értéket kommentként dokumentálni a `values.yaml` fájlban
+B) A template-ben `required` használata, hogy hiányzó értéknél a renderelés hibával álljon le
+C) A production values fájlban üres stringet megadni
+D) A Helm chart telepítése után egy Kubernetes Secretben manuálisan létrehozni az értéket
+ANSWER: B
+EXPLANATION: A Helm `required` függvénye explicit módon hibát eredményez, ha a szükséges érték nincs megadva, így a hibás konfiguráció már renderelés vagy telepítés előtt felismerhető. A dokumentáció önmagában nem kényszerít ki validációt, az üres string pedig nem feltétlenül jelent érvényes konfigurációt. A telepítés utáni manuális módosítás GitOps és deklaratív működés mellett különösen problémás.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: architecture
+QUESTION: Egy vállalat Terraformot használ, és három különálló csapat kezeli a hálózatot, az adatbázisokat és az alkalmazási infrastruktúrát. Az egyik közös state fájl miatt egy alkalmazási változtatás során a teljes infrastruktúra lockolódik. Melyik architekturális megközelítés indokolt?
+A) Minden csapatnak ugyanazt a state fájlt kell használnia, de gyakrabban kell apply-t futtatni
+B) Minden resource-ot egyetlen nagy Terraform modulba kell mozgatni
+C) A state-eket logikai ownership és lifecycle alapján több, jól definiált stackre kell bontani
+D) A state locking teljes kikapcsolása megoldja az ownership problémát
+ANSWER: C
+EXPLANATION: Több, ownership és lifecycle alapján kialakított Terraform state csökkenti a blast radius-t, a lockolási konfliktusokat és a csapatok közötti közvetlen couplingot. A state locking kikapcsolása párhuzamos módosításoknál race conditionöket és state corruption kockázatot növelhet. A nagyobb közös state és a monolitikus modul nem oldja meg az alapvető ownership problémát.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: Cloud fundamentals
+TYPE: architecture
+QUESTION: Egy globálisan használt webalkalmazás egyetlen régióban fut. A követelmény az, hogy egy teljes cloud régió kiesése esetén is szolgáltatást nyújtson. Melyik architekturális változás kezeli közvetlenül ezt a követelményt?
+A) Több instance indítása ugyanabban az Availability Zone-ban
+B) Nagyobb instance típus használata
+C) Több Availability Zone használata ugyanabban a régióban
+D) Az alkalmazás és az adatfüggőségek megfelelő replikációjával több régióban futó deployment kialakítása
+ANSWER: D
+EXPLANATION: Egy teljes régió kiesése ellen a workloadnak és a kritikus adatfüggőségeknek is régiók közötti redundanciára van szükségük. Több instance vagy több Availability Zone ugyanabban a régióban regionális szintű kiesést nem kezel. A több régiós architektúra önmagában sem elég, ha a stateful függőségek nem képesek megfelelően átváltani vagy replikálódni.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Networking & DNS
+TYPE: debug
+QUESTION: Egy szolgáltatás DNS neve több kliensről egy régi IP-címre oldódik fel még jóval azután, hogy az authoritative DNS szerveren módosítottad a rekordot. Az új rekord TTL értéke 60 másodperc. Mi lehet a legvalószínűbb magyarázat?
+A) A DNS rekordok soha nem cache-elődnek
+B) A kliensek vagy köztes resolverek még egy korábban lekért rekordot cache-elhetnek, amelynek eredeti TTL-je magasabb volt
+C) Az A rekord csak TCP kapcsolatoknál működik
+D) Az authoritative DNS szerver csak HTTP kérések után frissíti a rekordot
+ANSWER: B
+EXPLANATION: A TTL az adott DNS válasz cache-elési idejére vonatkozik, és egy korábban lekért rekord a régi TTL alapján maradhat cache-ben. Az új TTL nem visszamenőlegesen módosítja a már cache-elt válaszok lejárati idejét. A DNS rekordok UDP-n és szükség esetén TCP-n is működhetnek, de ez nem magyarázza a régi IP-címet.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: Monitoring & observability
+TYPE: performance
+QUESTION: Egy API-nál az átlagos latency 80 ms-ról 85 ms-ra nőtt, miközben a p99 latency 400 ms-ról 2,5 másodpercre ugrott. A request rate és a CPU terhelés közel változatlan. Mi a legfontosabb következtetés?
+A) A szolgáltatás teljesítménye lényegében változatlan, mert az átlag csak kismértékben nőtt
+B) A CPU biztosan túlterhelt
+C) A latency probléma csak a monitoring rendszer hibája lehet
+D) A tail latency jelentősen romlott, ezért a lassú kérésekhez kapcsolódó downstream függőségeket, hibákat és trace-eket kell vizsgálni
+ANSWER: D
+EXPLANATION: A p99 nagy ugrása azt jelzi, hogy a kérések leglassabb része jelentősen romlott, miközben az átlag ezt elrejtheti. Ez gyakran csak bizonyos downstream hívásoknál, adatbázis-műveleteknél vagy ritka contention helyzetekben jelenik meg. A CPU változatlansága nem zár ki más teljesítményproblémákat, ezért a trace-ek és dependency latency-k vizsgálata indokolt.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: Logging
+TYPE: architecture
+QUESTION: Egy több tucat microservice-ből álló rendszerben egy felhasználói kérés több szolgáltatáson halad keresztül. Incident során gyorsan meg kell találni, hogy melyik downstream service okozta a késést. Melyik logging/observability megoldás támogatja legjobban ezt?
+A) Minden logbejegyzésben strukturált formában következetesen továbbadott correlation/trace ID használata
+B) Minden service saját, egymástól független timestamp formátumot használ
+C) Csak az ERROR szintű logok gyűjtése
+D) A logok teljes kikapcsolása productionben a teljesítmény javítása érdekében
+ANSWER: A
+EXPLANATION: A közös correlation vagy trace ID lehetővé teszi, hogy ugyanazon request eseményei több szolgáltatás logjaiból összekapcsolhatók legyenek. Strukturált logokkal ez nagy mennyiségű adat esetén is hatékonyan kereshető. Az eltérő timestamp formátumok, a csak error logok vagy a logging teljes kikapcsolása megnehezíti az end-to-end hibakeresést.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: SRE & incident management
+TYPE: scenario
+QUESTION: Egy production incident során több csapat párhuzamosan próbál javításokat végrehajtani, miközben senki nem koordinálja, hogy melyik változtatás milyen hatással jár. Mi az incident command egyik legfontosabb célja ilyen helyzetben?
+A) Minden technikai döntést kizárólag egyetlen fejlesztőre delegálni
+B) Az incident kommunikációját a helyreállítás utánra halasztani
+C) Egyértelmű szerepek, koordináció és döntési felelősség kialakítása az incident alatt
+D) A deployment folyamat teljes leállítása minden környezetben
+ANSWER: C
+EXPLANATION: Az incident command célja többek között a koordináció, a szerepek tisztázása, a kommunikáció és a döntési folyamat rendezése, hogy a technikai csapatok párhuzamosan, de kontrolláltan dolgozhassanak. Nem az a cél, hogy minden technikai döntést egyetlen ember hozzon meg, és a kommunikációt sem célszerű az incident végére hagyni.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: Deployment strategies
+TYPE: production
+QUESTION: Egy adatbázis-séma módosítását és egy új alkalmazásverziót úgy kell bevezetni, hogy a rolling deployment során a régi és az új alkalmazásverzió egy ideig párhuzamosan fusson. Melyik megközelítés a legbiztonságosabb?
+A) Először kizárólag az új alkalmazást deployolni, majd utólag módosítani az adatbázist
+B) Olyan backward-compatible schema változtatást alkalmazni, amelyet a régi és az új alkalmazásverzió is képes kezelni
+C) Az adatbázis tábláját törölni, majd az új verzióval újra létrehozni
+D) A régi és új alkalmazásverziót külön adatbázisokra irányítani migration nélkül
+ANSWER: B
+EXPLANATION: Az expand-and-contract jellegű migration biztosítja, hogy az átmeneti állapotban mindkét alkalmazásverzió működőképes maradjon. Például új mező először hozzáadható úgy, hogy a régi verzió figyelmen kívül hagyja, majd az új verzió fokozatosan átállhat rá. Destruktív schema változtatás rolling deployment közben kompatibilitási hibát vagy adatvesztést okozhat.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: Secrets & security
+TYPE: architecture
+QUESTION: Egy CI/CD rendszerben egy production cloud credentialre van szükség a deploy lépéshez. A cél az, hogy a credential hosszú életű secretként ne legyen a CI rendszerben tárolva. Melyik megoldás felel meg leginkább ennek a célnak?
+A) A credentialt titkosított ZIP fájlban a repositoryban tárolni
+B) A credentialt Base64 formátumban environment variable-ként commitolni
+C) Ugyanazt a hosszú életű access key-t minden pipeline számára használni
+D) Rövid életű, federált identitást használni, amely a CI workload identitásából vagy OIDC tokenjéből származik
+ANSWER: D
+EXPLANATION: A workload identity federation és az OIDC-alapú rövid életű credentialek csökkentik a hosszú életű titkok kezelésének és kompromittálódásának kockázatát. A Base64 nem titkosítás, a repositoryban tárolt credential pedig kompromittálódhat. Egy közös hosszú életű access key blast radius-a is jelentős.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: GitOps
+TYPE: behavior
+QUESTION: Egy GitOps rendszerben a clusterben egy Deployment replikaértékét manuálisan 10-ről 20-ra állítják. A Gitben továbbra is 10 szerepel, és a GitOps controller normálisan működik. Mi várható?
+A) A controller a következő reconciliation során várhatóan visszaállítja a deklarált 10-es állapotot
+B) A clusterben beállított 20 replika automatikusan módosítja a Git repositoryt
+C) A GitOps controller leáll, mert a manual change mindig fatal error
+D) A Deployment törlődik, mert a Git állapota és a cluster állapota eltér
+ANSWER: A
+EXPLANATION: A GitOps modellben a Gitben deklarált kívánt állapot a forrás, a controller pedig reconciliation során megpróbálja ehhez igazítani a cluster tényleges állapotát. A pontos viselkedés függhet a controller konfigurációjától és attól, hogy az adott mezőt milyen módon kezeli, de az elvárt GitOps működés a drift visszarendezése.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: Scripting & automation
+TYPE: edgecase
+QUESTION: Egy Bash scriptben egy API hívás JSON választ ad vissza, amelyben egy felhasználó neve tartalmazhat szóközt, idézőjelet és Unicode karaktereket. Mi a legbiztonságosabb megközelítés a JSON mező feldolgozására?
+A) `echo $response | cut -d '"' -f 4` használata
+B) A teljes JSON választ whitespace alapján feldarabolni
+C) Egy JSON parser, például `jq`, használata
+D) A JSON string minden idézőjelét egyszerű `sed` cserével eltávolítani
+ANSWER: C
+EXPLANATION: A JSON strukturált adat, ezért JSON parserrel kell feldolgozni, amely helyesen kezeli az escape-eket, whitespace-t és Unicode karaktereket. Egyszerű stringdarabolás könnyen hibás eredményt adhat érvényes, de összetettebb JSON esetén. Az idézőjelek eltávolítása pedig adatvesztést vagy érvénytelen JSON-t eredményezhet.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: CI/CD pipelines
+TYPE: security
+QUESTION: Egy CI pipeline buildje során egy harmadik féltől származó action vagy plugin futtatódik, amely módosíthatja a workspace fájljait és hozzáférhet bizonyos pipeline credentialekhez. Melyik megközelítés csökkenti legjobban a supply-chain kockázatot?
+A) Minden külső action automatikus frissítése a legújabb verzióra
+B) A külső action használatának engedélyezése minden repositoryban korlátozás nélkül
+C) A credentialek minden pipeline lépés számára automatikus elérhetővé tétele
+D) A dependency/action verziójának pinelése megbízható referenciára, minimális jogosultság és kontrollált frissítési folyamat alkalmazása
+ANSWER: D
+EXPLANATION: A supply-chain támadások egyik kockázata, hogy egy külső dependency vagy action kompromittált verziója pipeline jogosultságokhoz férhet hozzá. A verziók kontrollált pinelése, a minimális jogosultság és a frissítések ellenőrzése csökkenti ezt a kockázatot. A korlátlan automatikus frissítés és a minden lépésnek adott credentialek növelik a blast radius-t.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: Kubernetes networking & storage
+TYPE: architecture
+QUESTION: Egy Kubernetes alkalmazásnak egy másik namespace-ben futó szolgáltatást kell elérnie stabil DNS néven. A cél az, hogy a kliens ne függjön a Pod IP-címektől. Melyik megoldás a megfelelő?
+A) A Pod IP-címek hardcode-olása az alkalmazás konfigurációjába
+B) Kubernetes Service létrehozása, amely stabil service discovery nevet biztosít a backend Podokhoz
+C) Minden Podhoz statikus public IP-címet rendelni
+D) A Deployment nevét használni közvetlenül DNS hostnévként
+ANSWER: B
+EXPLANATION: A Kubernetes Service stabil virtuális végpontot és DNS nevet biztosít, miközben a mögöttes Podok cserélődhetnek. Más namespace-ből a Service teljes DNS neve is használható. A Pod IP-k dinamikusak lehetnek, ezért hardcode-olásuk nem stabil service discovery mechanizmus.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: Monitoring & observability
+TYPE: scenario
+QUESTION: Egy webalkalmazásban a CPU és memória metrikák normálisak, mégis nő a felhasználók által tapasztalt latency. A distributed tracing azt mutatja, hogy a késés egy külső payment provider hívásában jelentkezik. Mi a legcélszerűbb következő lépés?
+A) A webserver CPU limitjének azonnali megduplázása
+B) Az összes application log törlése a disk usage csökkentéséhez
+C) A teljes Kubernetes cluster újraindítása
+D) A downstream dependency latency, timeout, retry és error metrikáinak vizsgálata, majd megfelelő timeout/circuit-breaking stratégia kialakítása
+ANSWER: D
+EXPLANATION: A trace közvetlenül egy downstream dependencyhez lokalizálja a latency problémát, ezért annak timeoutjait, hibáit, retry viselkedését és elérhetőségét kell vizsgálni. A CPU vagy a teljes cluster újraindítása nem kezeli a bizonyítottan külső dependencyhez kapcsolódó problémát. A túlzott retry ráadásul tovább terhelheti a hibás downstream rendszert.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: Terraform
+TYPE: trap
+QUESTION: Egy Terraform erőforrás konfigurációjában egy olyan mezőt módosítasz, amelyet az adott provider dokumentációja szerint `ForceNew` vagy replacement-et igénylő attribútumként kezel. Mi várható a `terraform plan` során?
+A) Terraform mindig csak helyben módosítja az erőforrást
+B) Terraform figyelmen kívül hagyja a mező változását
+C) Terraform automatikusan módosítja az attribútumot, függetlenül a provider korlátaitól
+D) Terraform replacement műveletet jelezhet, amely az erőforrás megsemmisítését és újralétrehozását jelenti
+ANSWER: D
+EXPLANATION: Ha a provider egy attribútum módosítását replacementhez köti, Terraform nem tudja azt in-place módosítással alkalmazni, ezért a planben destroy/create vagy replace jellegű változás jelenhet meg. A tényleges lifecycle és a replacement részletei provider- és resource-specifikusak. Ez production környezetben különösen fontos, mert downtime-ot vagy adatvesztési kockázatot okozhat.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: Cloud fundamentals
+TYPE: performance
+QUESTION: Egy stateless webalkalmazás terhelése kiszámíthatatlanul változik, és a csúcsidőszakokban gyorsan több compute kapacitásra van szükség. Melyik skálázási stratégia illeszkedik legjobban ehhez a problémához?
+A) Horizontális skálázás automatikus scalinggel a terheléshez igazodva
+B) Egyetlen, folyamatosan nagyobb instance használata
+C) A database instance méretének növelése minden traffic spike esetén
+D) A log retention növelése a compute kapacitás helyett
+ANSWER: A
+EXPLANATION: Stateless alkalmazásnál a workload több példányra osztható, ezért a horizontal autoscaling jól illeszkedik változó terheléshez. A vertikális skálázás egyetlen instance méretéhez köt, és kevésbé rugalmas gyorsan változó forgalomnál. A database méretezése vagy a log retention nem oldja meg közvetlenül a web compute kapacitás problémáját.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Networking & DNS
+TYPE: debug
+QUESTION: Egy szolgáltatás TCP portja elérhető egy belső hálózatról, de TLS kapcsolat felépítésekor a kliens certificate validation hibát kap. A TCP kapcsolat sikeresen létrejön. Mit bizonyít ez?
+A) A szerver tanúsítványa biztosan érvényes
+B) A DNS név biztosan a megfelelő hostra mutat
+C) A hálózati kapcsolat a TCP handshake szintjéig működik, de ez nem igazolja a TLS handshake vagy certificate validation sikerét
+D) A HTTP alkalmazási protokoll biztosan működik
+ANSWER: C
+EXPLANATION: A sikeres TCP kapcsolat csak azt mutatja, hogy a kliens el tudta érni a megadott IP-címet és portot, és létrejött a TCP kapcsolat. A TLS handshake később történik, és külön ellenőrzéseket, például certificate chain, hostname és trust validationt tartalmazhat. A TCP sikeréből nem következik a HTTP vagy TLS helyes működése.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: SRE & incident management
+TYPE: scenario
+QUESTION: Egy szolgáltatás SLO-ja 99,9% availability, de egy hónap alatt az error budget nagy részét már felhasználták. Közben új feature-ök fejlesztése is folyamatosan zajlik. Mi az SRE szemléletének megfelelő reakció?
+A) Az SLO-t automatikusan 99%-ra kell csökkenteni
+B) Az összes feature fejlesztést végleg le kell állítani
+C) Figyelmen kívül kell hagyni az error budgetet, mert az csak egy metrika
+D) A remaining error budget alapján mérlegelni kell a release kockázatot és szükség esetén reliability workre kell fókuszálni
+ANSWER: D
+EXPLANATION: Az error budget a release velocity és a reliability közötti trade-off objektívebb kezelésére szolgál. Ha a budget nagy része elfogyott, további változtatások kockázatát érdemes csökkenteni, és nagyobb hangsúlyt helyezni a megbízhatóság javítására. Ez nem jelenti automatikusan az összes fejlesztés leállítását vagy az SLO önkényes módosítását.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: Deployment strategies
+TYPE: architecture
+QUESTION: Egy nagy forgalmú alkalmazás új verzióját először a forgalom 1%-ára szeretnéd kiengedni, majd sikeres megfigyelés után fokozatosan növelni a részesedést. Melyik deployment stratégia felel meg ennek?
+A) Recreate deployment
+B) Canary deployment
+C) Big-bang deployment
+D) Database-only deployment
+ANSWER: B
+EXPLANATION: Canary deploymentnél az új verzió kezdetben csak a forgalom egy kis részét kapja, így a rendszer viselkedése kontrollált körülmények között figyelhető meg. Sikeres mérési eredmények esetén a forgalom fokozatosan növelhető. A recreate egyszerre vált verziót, míg a big-bang deployment nem biztosít fokozatos forgalomátirányítást.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: Secrets & security
+TYPE: production
+QUESTION: Egy production incident során kiderül, hogy egy cloud access key bekerült egy nyilvános Git repositoryba. A commitot később eltávolították, és a repository jelenlegi állapotában már nem látható. Mi a legfontosabb azonnali teendő?
+A) A credentialt azonnal vissza kell vonni vagy rotálni, majd meg kell vizsgálni a lehetséges felhasználását
+B) Elég force-push segítségével eltávolítani a commitot
+C) Elég a repositoryt private-ra állítani
+D) Elég a `.gitignore` fájlhoz hozzáadni a credential fájlnevét
+ANSWER: A
+EXPLANATION: Egy már publikált credentialt kompromittáltnak kell tekinteni, ezért az elsődleges intézkedés a visszavonás vagy rotáció, valamint a használatának ellenőrzése. A Git history módosítása nem teszi megbízhatóan semmissé azt, hogy a secret korábban hozzáférhető volt. A private repository vagy `.gitignore` sem vonja vissza a már kiszivárgott credentialt.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: CI/CD pipelines
+TYPE: security
+QUESTION: Egy CI rendszerben egy pull requestből származó, nem megbízható kód futtatható teszteket indít, miközben a pipeline hozzáférhet production deployment credentialekhez. Melyik architekturális megközelítés csökkenti leginkább a kompromittálódás kockázatát?
+A) A pull request pipeline-ok számára kizárólag izolált, rövid életű környezetet biztosítani, és a production credentialeket elkülöníteni a nem megbízható build lépésektől
+B) Minden pull requestnek ugyanazt a production credentialt biztosítani, de csak read-only repository jogosultsággal
+C) A credentialeket Base64-re kódolni, mielőtt environment variable-ként átadjuk
+D) A pull request pipeline-okban kikapcsolni a teszteket, hogy ne fusson nem megbízható kód
+ANSWER: A
+EXPLANATION: A pull requestből származó kódot potenciálisan nem megbízhatónak kell tekinteni, ezért nem célszerű production credentialekkel vagy érzékeny környezettel összekötni. Az izoláció és a rövid életű jogosultságok csökkentik a blast radius-t. A Base64 nem biztonsági kontroll, a tesztek kikapcsolása pedig nem oldja meg a pipeline biztonsági problémáját.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: Docker & containers
+TYPE: edgecase
+QUESTION: Egy konténerben futó alkalmazás `SIGTERM` után nem áll le megfelelően, és a Kubernetes végül `SIGKILL`-t küld neki. A konténer image entrypointja shell formátumú, és a shell fut PID 1-ként. Mi lehet a probléma?
+A) A konténer nem támogatja a SIGTERM jelet
+B) A shell lehet PID 1, és nem biztos, hogy megfelelően továbbítja a jelet a tényleges alkalmazásfolyamatnak
+C) A Kubernetes kizárólag SIGKILL jelet tud küldeni
+D) A Docker csak akkor továbbít jeleket, ha a konténer privileged módban fut
+ANSWER: B
+EXPLANATION: Shell-form entrypoint esetén előfordulhat, hogy a shell lesz a konténer PID 1 folyamata, miközben az alkalmazás child processként fut. Ha a shell nem továbbítja megfelelően a jeleket, az alkalmazás nem kapja meg időben a SIGTERM-et, és a graceful shutdown nem történik meg. Az exec-form entrypoint vagy megfelelő init process használata segíthet a probléma elkerülésében.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: Dockerfile best practices
+TYPE: security
+QUESTION: Egy production image-ben egy build során privát package registryhez tartozó credentialre van szükség. Melyik megoldás akadályozza meg legjobban, hogy a credential bekerüljön a Docker image layer historyjába?
+A) A credentialt `ARG` segítségével átadni, majd a build végén törölni
+B) A credentialt egy `ENV` változóban beállítani, majd `unset`-tel eltávolítani
+C) Build secret mechanizmust használni, amely a credentialt csak a szükséges build lépés számára teszi elérhetővé
+D) A credentialt egy külön fájlba írni, majd ugyanabban a `RUN` utasításban törölni
+ANSWER: C
+EXPLANATION: A Docker BuildKit build secret mechanizmusa lehetővé teszi, hogy az érzékeny adat csak a szükséges build lépés számára legyen hozzáférhető anélkül, hogy normál image layerként bekerülne. Az `ARG`, `ENV` vagy egy korábbi layerben létrehozott fájl törlése nem tekinthető megbízható módszernek a secret eltávolítására az image historyból.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Kubernetes core objects
+TYPE: architecture
+QUESTION: Egy Kubernetes Deployment rolloutja során az új Podok elindulnak, de az alkalmazás csak hosszú inicializáció után képes forgalmat fogadni. A régi Podokat nem szeretnéd túl korán lecserélni. Melyik megoldás illeszkedik legjobban ehhez?
+A) A container `command` értékének módosítása
+B) A Deployment replikaértékének nullára állítása minden rollout előtt
+C) Csak CPU limitet beállítani az új Podokra
+D) Megfelelő readiness probe és rollout paraméterek használata, hogy csak forgalomra kész Podok számítsanak elérhetőnek
+ANSWER: D
+EXPLANATION: A readiness probe azt jelzi, hogy az alkalmazás mikor képes ténylegesen forgalmat fogadni. A Deployment rollout paraméterei, például a `maxUnavailable` és `maxSurge`, ezzel együtt szabályozhatják, mennyire agresszívan cserélődjenek a régi Podok. A puszta container indítás nem jelenti azt, hogy az alkalmazás már kész a forgalom fogadására.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: Kubernetes networking & storage
+TYPE: architecture
+QUESTION: Egy Kubernetes alkalmazásnak nagy mennyiségű adatot kell tartósan tárolnia, és a Pod újraindítása vagy másik node-ra ütemezése után is elérhetőnek kell lennie. Melyik megoldás illeszkedik legjobban ehhez?
+A) A Pod lokális ephemeral storage használata
+B) Az adatokat a container filesystemében tárolni persistent volume nélkül
+C) Az adatokat a Pod IP-címéhez kötni
+D) Megfelelő StorageClass által biztosított PersistentVolumeClaim használata
+ANSWER: D
+EXPLANATION: A PersistentVolumeClaim deklarálja a szükséges tartós storage-igényt, amelyet egy megfelelő StorageClass dinamikusan is biztosíthat. Így a storage életciklusa elválasztható a Pod életciklusától. Az ephemeral storage és a container filesystem nem biztosít megfelelő tartósságot Pod-újraindítás vagy újraütemezés esetén.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: Helm
+TYPE: debug
+QUESTION: Egy Helm chartban ugyanazt a chartot több környezetben használod, de productionben más image repositoryt és más erőforráslimiteket kell alkalmazni. Melyik megközelítés tartja legjobban karban a chartot?
+A) Külön chartot létrehozni minden környezethez, azonos template-ek másolásával
+B) Környezetenként külön values fájlokat használni, miközben a közös template-eket egy chartban tartod
+C) Production esetén a template-eket kézzel módosítani deploy előtt
+D) Minden környezethez külön Git repositoryban tárolni ugyanazokat a Kubernetes manifesteket
+ANSWER: B
+EXPLANATION: A közös chart template-jei a Kubernetes struktúrát és logikát tartalmazhatják, míg a környezetfüggő értékeket külön values fájlok adhatják meg. Ez csökkenti a duplikációt és lehetővé teszi az environment-specifikus konfiguráció kezelését. A template-ek kézi módosítása és a teljes chartok vagy manifestek duplikálása driftet és karbantartási problémákat okoz.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: edgecase
+QUESTION: Egy Terraform konfigurációban egy `count` segítségével kezelt erőforrások példánycímei egy bemeneti lista indexein alapulnak. Ha a lista elejére új elemet szúrsz be, több meglévő erőforrás is megsemmisítésre és újralétrehozásra kerülne. Mi okozza ezt?
+A) A Terraform minden `count` erőforrást minden apply során újra létrehoz
+B) A provider nem támogatja a listákat
+C) Az indexalapú példánycímek megváltoztak, ezért a Terraform eltérő resource instance-okat lát
+D) A Terraform state nem tartalmaz resource instance címeket
+ANSWER: C
+EXPLANATION: Ha a `count` segítségével létrehozott resource példányok címei listaindexeken alapulnak, egy új elem beszúrása több meglévő elem indexét is eltolhatja. A Terraform ezeket eltérő resource instance címekként értelmezi, ezért replacement műveleteket tervezhet. Az ilyen nem kívánt változások csökkenthetők stabil, szemantikailag értelmes kulcsok használatával, például `for_each` esetén map kulcsokkal.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Cloud fundamentals
+TYPE: architecture
+QUESTION: Egy alkalmazásnak magas rendelkezésre állást kell biztosítania egy régión belül, miközben egyetlen Availability Zone teljes kiesését is túl kell élnie. Melyik architektúra felel meg leginkább ennek?
+A) Több alkalmazásinstance legalább két Availability Zone-ban, megfelelő load balancinggel és redundáns függőségekkel
+B) Egyetlen nagy instance egyetlen Availability Zone-ban
+C) Több instance ugyanabban az Availability Zone-ban
+D) Egy nagyobb adatbázisinstance használata az alkalmazás redundanciája nélkül
+ANSWER: A
+EXPLANATION: Egy Availability Zone kiesése ellen a workloadot több failure domain között kell elosztani. A load balancer a forgalmat a rendelkezésre álló példányokhoz irányíthatja, miközben a kritikus stateful függőségeket is megfelelően redundánssá kell tenni. Több instance ugyanabban az AZ-ban továbbra is egyetlen failure domainhez kötött.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: Networking & DNS
+TYPE: performance
+QUESTION: Egy belső DNS resolver nagyon sok ismétlődő lekérdezést kap ugyanazokra a hostnevekre, miközben a rekordok ritkán változnak. Melyik megoldás csökkentheti leginkább a resolver és az authoritative DNS szerverek terhelését?
+A) A DNS rekordok TTL értékének nullára állítása
+B) A DNS cache kikapcsolása
+C) Minden kliensnél az IP-címek kézi konfigurálása
+D) Megfelelően magas, a változási gyakorisághoz illeszkedő TTL és hatékony resolver caching használata
+ANSWER: D
+EXPLANATION: A megfelelő TTL lehetővé teszi, hogy a resolverek hosszabb ideig cache-eljék a ritkán változó válaszokat, így kevesebb lekérdezés jut el az authoritative szerverekig. A túl alacsony TTL vagy a cache kikapcsolása éppen növeli a DNS forgalmat. A kézi IP-konfiguráció nem skálázható és elveszíti a DNS service discovery előnyeit.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: Monitoring & observability
+TYPE: architecture
+QUESTION: Egy microservice rendszerben az infrastruktúra metrikái alapján minden komponens egészségesnek tűnik, mégis egyre több felhasználói request lassul le. Melyik observability megközelítés segít leginkább a probléma lokalizálásában?
+A) Csak host CPU és memória metrikák további gyűjtése
+B) Distributed tracing és service-level metrikák használata a request útvonalának követésére
+C) A log retention csökkentése
+D) Az összes metrika aggregálása egyetlen globális CPU metrikává
+ANSWER: B
+EXPLANATION: A distributed tracing képes megmutatni, hogy egy request mely komponensek között halad, és hol tölt el jelentős időt. A service-level metrikák segítségével a latency, error rate és throughput is komponensenként vizsgálható. A pusztán infrastruktúra-szintű metrikák nem feltétlenül mutatják meg az alkalmazási request path problémáit.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: Logging
+TYPE: security
+QUESTION: Egy production alkalmazás strukturált JSON logokat ír, és egyes requestekben érzékeny felhasználói adat is előfordul. Mi a legfontosabb logging biztonsági alapelv?
+A) Minden request teljes body-ját változtatás nélkül logolni
+B) Minden logot korlátlan ideig megtartani
+C) Csak a szükséges adatokat logolni, érzékeny mezőket maszkolni vagy redaktálni, és megfelelő retentiont alkalmazni
+D) A loggingot teljesen kikapcsolni productionben
+ANSWER: C
+EXPLANATION: A production logoknak diagnosztikai értéket kell biztosítaniuk anélkül, hogy szükségtelenül érzékeny adatokat tárolnának. PII, tokenek, jelszavak és egyéb secret értékek maszkolása vagy elhagyása csökkenti az adatvédelmi és biztonsági kockázatot. A korlátlan retention és a teljes request body logolása növeli a blast radius-t egy esetleges loghozzáférési incidens során.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: SRE & incident management
+TYPE: scenario
+QUESTION: Egy kritikus production incident során az on-call engineer megtalálja a valószínű technikai hibát, de közben több érintett csapatnak és üzleti stakeholdernek rendszeres státuszfrissítésre van szüksége. Mi a megfelelő működési modell?
+A) Az on-call engineer minden kommunikációt maga végezzen, és közben állítsa le a hibakeresést
+B) Senki ne kommunikáljon, amíg nincs teljes root cause
+C) Csak az üzleti vezetők kapjanak frissítést
+D) Külön incident communication szerepkör kezelje a stakeholder kommunikációt, miközben a technikai csapat a helyreállításon dolgozik
+ANSWER: D
+EXPLANATION: Az incident command struktúrában a kommunikáció és a technikai helyreállítás külön szerepkörökre osztható. Így a technikai csapat koncentrálhat a diagnosztikára és mitigációra, miközben az érintettek rendszeres, konzisztens információt kapnak. A root cause megtalálása nem szükséges ahhoz, hogy hasznos státuszfrissítést adjunk.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: Deployment strategies
+TYPE: architecture
+QUESTION: Egy új alkalmazásverzió adatmodellje nem kompatibilis a régivel, és az alkalmazásnak nincs lehetősége arra, hogy a két verziót hosszabb ideig párhuzamosan támogassa. Melyik stratégia csökkentheti leginkább a kompatibilitási problémát?
+A) Olyan deploymentet használni, amely biztosítja, hogy a régi és új verzió ne szolgáljon ugyanazon adatmodellen egyszerre, megfelelő koordinált migrationnel
+B) Véletlenszerűen lecserélni a Podokat rolling update során
+C) A schema migrationt teljesen kihagyni
+D) A régi és új alkalmazásverziót ugyanazon adatbázisra irányítani minden kompatibilitási terv nélkül
+ANSWER: A
+EXPLANATION: Ha a két verzió adatmodellje inkompatibilis, a párhuzamos futtatás különösen veszélyes. Olyan deployment stratégia szükséges, amely kontrollálja, mikor vált az alkalmazás és mikor történik a schema migration, miközben a szükséges downtime-ot vagy izolációt tudatosan kezelik. A véletlenszerű rolling csere nem oldja meg a kompatibilitási problémát.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: Secrets & security
+TYPE: edgecase
+QUESTION: Egy Kubernetes Secret objektumot használó alkalmazásban a secret értéke base64-kódolt formában jelenik meg a manifestben. Egy fejlesztő azt állítja, hogy emiatt a secret titkosítva van. Mi a helyes értelmezés?
+A) A base64 automatikusan AES-256 titkosítást jelent
+B) A base64 csak kódolás; a valódi védelmet például encryption at rest, megfelelő RBAC és biztonságos secret management biztosíthatja
+C) A base64 erősebb, mint a TLS
+D) A base64 miatt a Kubernetes Secret soha nem kerülhet be az API server audit logjaiba
+ANSWER: B
+EXPLANATION: A base64 visszafejthető kódolás, nem kriptográfiai védelem. Kubernetes környezetben a secret védelméhez több kontroll együtt szükséges, például megfelelő RBAC, az adatbázis encryption at rest konfigurációja és biztonságos hozzáférés-kezelés. A manifestben látható base64 érték önmagában nem tekinthető titkosnak.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: GitOps
+TYPE: architecture
+QUESTION: Egy GitOps környezetben egy clusterben futó workload image tagje automatikusan változik egy külső rendszer miatt, miközben a Git repository továbbra is a korábbi taget deklarálja. Mi a legfontosabb probléma?
+A) A GitOps rendszer automatikusan elveszíti a Kubernetes API elérését
+B) A Kubernetes nem támogat image tageket
+C) A cluster állapota eltér a deklarált Git állapottól, ezért a reconciliation visszaállíthatja vagy felülírhatja a külső változást
+D) A Git repository automatikusan módosítja magát minden cluster változáskor
+ANSWER: C
+EXPLANATION: A GitOps rendszerben a deklarált Git állapot és a cluster tényleges állapota közötti eltérés driftet jelenthet. Ha a controller folyamatos reconciliationt végez, a külső módosítást felülírhatja. A változtatás helyes GitOps kezelése az, hogy a kívánt új állapot bekerüljön a deklaratív forrásba vagy egy erre kialakított image-update folyamatba.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Scripting & automation
+TYPE: performance
+QUESTION: Egy Bash automation script több ezer fájlon futtat egy külső parancsot fájlonként külön processzként. A futásidő elfogadhatatlanul hosszú. Melyik optimalizáció lehet a leghatékonyabb?
+A) Minden fájlnál újabb shellt indítani
+B) A command kimenetét teljes egészében többször újra feldolgozni
+C) A fájlokat mindig egyenként, soros `sleep` segítségével feldolgozni
+D) A műveletet batch-elni vagy olyan eszközt használni, amely több fájlt képes egyetlen processzindítással kezelni
+ANSWER: D
+EXPLANATION: Több ezer processz indításának overheadje jelentős lehet, ezért a batch feldolgozás vagy több input egyetlen processznek történő átadása jelentősen csökkentheti az overheadet. A felesleges shell indítások és a szándékos késleltetések tovább növelik a futási időt. A pontos optimalizáció az alkalmazott commandtól és az adatmennyiségtől függ.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: CI/CD pipelines
+TYPE: performance
+QUESTION: Egy CI pipeline-ban öt egymástól független teszt suite van, amelyek mindegyike 10 percig fut. Nincs közöttük adatfüggőség, és öt külön runner rendelkezésre áll. Mi csökkenti leginkább a teljes wall-clock időt?
+A) A suite-ok párhuzamos futtatása külön runnereken
+B) Az összes suite egymás utáni futtatása egy runneren
+C) A tesztek futtatása előtt minden dependency cache törlése
+D) A pipeline minden lépésének ugyanabba a containerbe kényszerítése
+ANSWER: A
+EXPLANATION: Független teszt suite-ok esetén a párhuzamos végrehajtás a teljes wall-clock időt a leghosszabb egyedi suite futási ideje közelébe csökkentheti, ha elegendő runner áll rendelkezésre. A soros végrehajtás nagyjából összeadja a futási időket. A cache törlése és a mesterségesen közös container használata nem gyorsítja ezt a workloadot.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: Kubernetes networking & storage
+TYPE: edgecase
+QUESTION: Egy Kubernetes Service mögött futó Podok egészségesnek tűnnek, de a Service-en keresztül nem érkezik hozzájuk forgalom. A Podok közvetlen IP-címén keresztül működik az alkalmazás. Melyik ellenőrzés a legfontosabb első lépés?
+A) A node-ok hostname-jének megváltoztatása
+B) A Service selectorának és a Pod labeljeinek összehasonlítása, majd az Endpoints vagy EndpointSlice állapotának ellenőrzése
+C) A Podok CPU limitjének nullára állítása
+D) Az image registry credentialjének rotálása
+ANSWER: B
+EXPLANATION: Ha a Pod közvetlenül elérhető, de a Service-en keresztül nem, az egyik legfontosabb gyanú a Service és a Podok közötti selection vagy endpoint probléma. A selector nem megfelelő labeljei miatt a Service nem kap megfelelő backend endpointokat. Az EndpointSlice vagy endpoints állapot közvetlenül megmutathatja, hogy vannak-e kiválasztott backendek.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: Helm
+TYPE: architecture
+QUESTION: Egy szervezet több csapat által karbantartott Helm chartokat használ. Az egyik közös chart változtatása után több alkalmazás egyszerre törik el, mert nem kompatibilis módon változott egy values struktúra. Melyik megközelítés csökkenti leginkább az ilyen couplingot?
+A) Minden chartban teljesen megszüntetni a values fájlokat
+B) Minden alkalmazást ugyanarra a chartverzióra kényszeríteni automatikus frissítéssel
+C) Stabil chartverziók és explicit values interface-ek használata, kompatibilitási változtatások kontrollált verziózásával
+D) A chartok minden deploy előtt kézzel történő módosítása
+ANSWER: C
+EXPLANATION: A stabil, verziózott chart interface lehetővé teszi, hogy a fogyasztók kontrolláltan frissítsenek, és a breaking changes ne jelenjenek meg automatikusan minden alkalmazásnál. A values struktúra gyakorlatilag egy konfigurációs API-ként viselkedhet, ezért annak kompatibilitását is kezelni kell. Az automatikus közös frissítés növeli a blast radius-t.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: Infrastructure as Code (Terraform)
+TYPE: architecture
+QUESTION: Egy Terraform erőforrás kézzel módosult a cloud konzolban, és a következő `terraform plan` driftet jelez. A kézi módosítás nem volt szándékos. Mi a megfelelő általános eljárás?
+A) Figyelmen kívül hagyni a driftet, mert Terraform a következő apply során mindig automatikusan törli az erőforrást
+B) Ellenőrizni a drift okát, eldönteni, hogy a kívánt állapotot a Terraform konfiguráció vagy a külső módosítás képviselje, majd ennek megfelelően korrigálni a konfigurációt és az infrastruktúrát
+C) Azonnal törölni a Terraform state fájlt
+D) Kikapcsolni a Terraform plan futtatását, hogy a drift ne jelenjen meg
+ANSWER: B
+EXPLANATION: A drift önmagában fontos információ: azt jelzi, hogy a tényleges infrastruktúra eltér a deklarált állapottól. Először meg kell érteni, mi okozta, majd a kívánt source of truth alapján kell rendezni a konfigurációt és az infrastruktúrát. A state törlése nem oldja meg a konfiguráció és a valós infrastruktúra közötti eltérést.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Cloud fundamentals
+TYPE: architecture
+QUESTION: Egy cloudban futó stateless alkalmazás előtt load balancer található, az adatbázis viszont csak egyetlen példányban fut. Az alkalmazásréteg több Availability Zone-ban redundáns. Melyik állítás pontos?
+A) A teljes rendszer automatikusan multi-region HA
+B) Az adatbázis redundanciája nélkül a teljes rendszer minden failure domain kiesését képes túlélni
+C) A load balancer önmagában garantálja az adatbázis rendelkezésre állását
+D) Az alkalmazásréteg redundáns lehet, de az egyetlen adatbázispéldány továbbra is kritikus single point of failure lehet
+ANSWER: D
+EXPLANATION: A stateless application tier több Availability Zone-ban való futtatása javítja annak rendelkezésre állását, de az egyetlen adatbázispéldány továbbra is korlátozhatja a teljes rendszer elérhetőségét. A load balancer nem teszi automatikusan redundánssá a stateful dependency-ket. A teljes rendszer availability célját ezért minden kritikus komponensre külön kell vizsgálni.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Monitoring & observability
+TYPE: edgecase
+QUESTION: Egy Prometheus-alapú monitoring rendszerben egy új metric minden requesthez egyedi `user_id` és `request_id` labelt kap. Néhány nap múlva jelentősen megnő a Prometheus memóriahasználata. Mi a legvalószínűbb probléma?
+A) A magas cardinality miatt nagyon sok egyedi time series jön létre
+B) A Prometheus nem képes integer értékeket tárolni
+C) A label neve túl rövid
+D) A CPU metric túl kevés mintát tartalmaz
+ANSWER: A
+EXPLANATION: A magas cardinality azt jelenti, hogy nagyon sok egyedi labelkombináció és ezáltal time series jön létre. A request ID különösen veszélyes label, mert gyakorlatilag minden request új sorozatot hozhat létre. Ez jelentősen növelheti a memória- és storage-igényt, ezért magas cardinalityjú azonosítókat általában nem célszerű metric labelként használni.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: Logging
+TYPE: architecture
+QUESTION: Egy distributed systemben az application logok és a tracing rendszer külön-külön működnek, ezért incident során nehéz egy trace spanhoz megtalálni a kapcsolódó logbejegyzéseket. Melyik megoldás javítja leginkább az összekapcsolhatóságot?
+A) Minden logból eltávolítani a timestampet
+B) A trace- és span-azonosítókat strukturált logmezőként rögzíteni
+C) Csak az ERROR logokat megtartani
+D) Minden service saját, véletlenszerű request ID-t generáljon
+ANSWER: B
+EXPLANATION: A trace ID és span ID strukturált logmezőként történő rögzítése lehetővé teszi a logok és tracing adatok közvetlen összekapcsolását. Ez jelentősen felgyorsítja a distributed requestek hibakeresését. Az eltérő, egymással nem összekapcsolható azonosítók vagy a timestamp eltávolítása inkább rontja a diagnosztikát.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: Deployment strategies
+TYPE: production
+QUESTION: Egy új verzió canary deploymentje során a technikai metrikák normálisak, de a canary által kiszolgált felhasználóknál jelentősen nő a business-level error rate. Mi a megfelelő következő lépés?
+A) Azonnal 100%-ra növelni az új verzió forgalmát, mert az infrastruktúra egészséges
+B) Figyelmen kívül hagyni a business metrikát, és csak CPU alapján dönteni
+C) A canary forgalmát vissza kell venni vagy meg kell állítani, majd az érintett üzleti folyamatot és release változásait vizsgálni
+D) Az adatbázis teljes törlésével újraindítani a rolloutot
+ANSWER: C
+EXPLANATION: A deployment sikerességét nem csak infrastruktúra-metrikák alapján kell értékelni. Ha a felhasználói vagy business-level hibák romlanak, a canary kontrollált visszaállítása vagy megállítása indokolt, miközben meg kell keresni a változás és az üzleti hiba közötti kapcsolatot. A normális CPU- és memóriaértékek nem bizonyítják az alkalmazás üzleti helyességét.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: Secrets & security
+TYPE: architecture
+QUESTION: Egy nagy szervezet több Kubernetes clusterben futtat workloadokat, és a secretkezelést központilag szeretné megoldani úgy, hogy az alkalmazások ne tartalmazzanak statikus credentialeket a Git repositoryban. Melyik architektúra biztosít megfelelő irányt?
+A) Minden secretet plaintext formában Gitben tárolni, mert a repositoryhoz csak fejlesztők férnek hozzá
+B) Minden clusterben ugyanazt a hosszú életű credentialt hardcode-olni
+C) A secret értékeket ConfigMap objektumokban tárolni
+D) Központi secret manager és workload identity alapú hozzáférés használata, megfelelő RBAC-kal és rövid életű credentialekkel
+ANSWER: D
+EXPLANATION: A központi secret manager lehetővé teszi az érzékeny adatok elkülönített kezelését, rotációját és auditálását, míg a workload identity csökkenti a statikus credentialek szükségességét. A Kubernetes RBAC tovább korlátozhatja, hogy mely workloadok mely secrethez férhetnek hozzá. A Gitben tárolt plaintext secret, a közös hosszú életű credential és a ConfigMap nem biztosít megfelelő secretkezelést.
+###END

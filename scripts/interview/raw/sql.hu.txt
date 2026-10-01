@@ -1,0 +1,3152 @@
+### Q1
+LEVEL: junior
+TOPIC: SELECT & filtering
+TYPE: output
+QUESTION: Mi lesz az eredmény PostgreSQL-ben az alábbi lekérdezés futtatásakor?
+CODE:
+SELECT name
+FROM employees
+WHERE salary > 1000000;
+ENDCODE
+A) Csak azoknak a dolgozóknak a neve jelenik meg, akiknek a fizetése 1 000 000-nál nagyobb
+B) Azoknak a dolgozóknak a neve jelenik meg, akiknek a fizetése legalább 1 000 000
+C) Minden dolgozó neve megjelenik, majd a fizetés szerint szűr
+D) Hibát kapunk, mert a WHERE nem használható numerikus értékkel
+ANSWER: A
+EXPLANATION: A `>` szigorúan nagyobb értéket jelent, ezért pontosan az 1 000 000 feletti fizetésű dolgozók kerülnek az eredménybe. A `>=` ezzel szemben az 1 000 000 értéket is tartalmazná. A gyakori rossz válasz azért csábító, mert interjúhelyzetben könnyű összekeverni a `>` és `>=` operátorokat.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: SELECT & filtering
+TYPE: output
+QUESTION: Mit ad vissza az alábbi PostgreSQL-lekérdezés?
+CODE:
+SELECT name
+FROM employees
+ORDER BY salary DESC
+LIMIT 3;
+ENDCODE
+A) A három legalacsonyabb fizetésű dolgozó nevét
+B) A három legmagasabb fizetésű dolgozó nevét
+C) Minden dolgozó nevét fizetés szerint csökkenő sorrendben
+D) Az első három dolgozót név szerint rendezve
+ANSWER: B
+EXPLANATION: A `DESC` csökkenő sorrendbe rendezi a fizetéseket, így a legnagyobb értékek kerülnek előre, a `LIMIT 3` pedig csak az első három sort tartja meg. A gyakori rossz válasz azért csábító, mert a `LIMIT` önmagában valóban csak a sorok számát korlátozza, de nem határozza meg, mely sorok kerülnek kiválasztásra.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: SELECT & filtering
+TYPE: trap
+QUESTION: Mi a probléma az alábbi lekérdezéssel, ha az a cél, hogy a 18 és 30 év közötti dolgozókat válassza ki?
+CODE:
+SELECT *
+FROM employees
+WHERE age >= 18 OR age <= 30;
+ENDCODE
+A) Az `OR` helyett `AND` szükséges
+B) Az `age` oszlop nem használható WHERE feltételben
+C) A feltételt `BETWEEN 18 AND 30` formában kötelező megadni
+D) A lekérdezés csak a 18 és 30 év alatti dolgozókat adja vissza
+ANSWER: A
+EXPLANATION: Az `age >= 18 OR age <= 30` gyakorlatilag minden nem NULL életkort elfogad, mert bármely szám vagy legalább 18, vagy legfeljebb 30. A kívánt tartományhoz `age >= 18 AND age <= 30`, illetve egyszerűbben `age BETWEEN 18 AND 30` használható. A gyakori rossz válasz azért csábító, mert a természetes nyelvben az „18 vagy 30 közötti” könnyen félrevezető lehet.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: JOINs
+TYPE: output
+QUESTION: Az alábbi táblák esetén hány sort ad vissza az INNER JOIN?
+CODE:
+employees
+id | name | department_id
+1  | Anna | 10
+2  | Béla | 20
+3  | Csilla | 30
+
+departments
+id | name
+10 | IT
+20 | HR
+
+SELECT e.name, d.name
+FROM employees e
+JOIN departments d ON d.id = e.department_id;
+ENDCODE
+A) 1
+B) 2
+C) 3
+D) 0
+ANSWER: B
+EXPLANATION: Az INNER JOIN csak azokat az employees sorokat tartja meg, amelyekhez található megfelelő departments sor. Anna department_id-ja 10, Béla értéke 20, ezekhez van pár; Csilla 30-as értékéhez nincs. A gyakori rossz válasz azért csábító, mert az employees táblában három sor található, de az INNER JOIN nem őrzi meg automatikusan a nem illeszkedő sorokat.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: NULL handling
+TYPE: trap
+QUESTION: Melyik feltétel választja ki helyesen azokat a dolgozókat, akiknek nincs megadva telefonszámuk?
+CODE:
+SELECT *
+FROM employees
+WHERE phone_number IS NULL;
+ENDCODE
+A) `phone_number = NULL`
+B) `phone_number == NULL`
+C) `phone_number IS NULL`
+D) `phone_number <> NULL`
+ANSWER: C
+EXPLANATION: SQL-ben a NULL nem egy konkrét érték, hanem ismeretlen vagy hiányzó értéket reprezentál, ezért összehasonlító operátorokkal nem ellenőrizhető. Az `IS NULL` kifejezés kifejezetten a NULL állapotot vizsgálja. A gyakori rossz válasz azért csábító, mert programozási nyelvekben sokan megszokták a null értékkel való közvetlen összehasonlítást.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Aggregation & GROUP BY
+TYPE: output
+QUESTION: Mit ad vissza az alábbi lekérdezés?
+CODE:
+SELECT department_id, COUNT(*)
+FROM employees
+GROUP BY department_id;
+ENDCODE
+A) Egyetlen sort az összes dolgozó számával
+B) Minden dolgozóhoz egy külön COUNT értéket
+C) Csak a legtöbb dolgozóval rendelkező departmentet
+D) Departmentenként egy sort és az adott department dolgozóinak számát
+ANSWER: D
+EXPLANATION: A `GROUP BY department_id` azonos department értékű sorokat csoportosítja, a `COUNT(*)` pedig minden csoport sorainak számát adja vissza. Így minden departmenthez külön eredménysor tartozik. A gyakori rossz válasz azért csábító, mert a `COUNT(*)` gyakran teljes táblára alkalmazva valóban egyetlen értéket ad.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: SELECT & filtering
+TYPE: behavior
+QUESTION: Melyik állítás írja le helyesen a DISTINCT működését?
+CODE:
+SELECT DISTINCT department_id
+FROM employees;
+ENDCODE
+A) Csak az első department_id-t tartja meg
+B) Az ismétlődő department_id értékeket egyetlen példányra csökkenti
+C) Automatikusan ABC sorrendbe rendezi az eredményt
+D) Csak a NULL értékeket távolítja el
+ANSWER: B
+EXPLANATION: A `DISTINCT` az eredményhalmaz duplikált sorait szűri ki. Egyetlen oszlop kiválasztásakor ez azt jelenti, hogy egy department_id csak egyszer jelenik meg, még akkor is, ha több dolgozó tartozik hozzá. A gyakori rossz válasz azért csábító, mert a duplikátumok eltávolítása könnyen összekeverhető a rendezéssel.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: JOINs
+TYPE: behavior
+QUESTION: Mi történik egy LEFT JOIN esetén, ha a bal oldali táblának nincs megfelelő sora a jobb oldali táblában?
+CODE:
+SELECT e.name, d.name
+FROM employees e
+LEFT JOIN departments d ON d.id = e.department_id;
+ENDCODE
+A) A bal oldali sor teljesen eltűnik
+B) A teljes lekérdezés hibával leáll
+C) A bal oldali sor megmarad, a jobb oldali oszlopok pedig NULL értéket kapnak
+D) A rendszer automatikusan INNER JOIN-ra vált
+ANSWER: C
+EXPLANATION: A LEFT JOIN minden bal oldali sort megtart, függetlenül attól, hogy található-e hozzá illeszkedő jobb oldali sor. Ha nincs találat, a jobb oldali tábla oszlopai NULL értéket kapnak. A gyakori rossz válasz azért csábító, mert az INNER JOIN viselkedése alapján sokan feltételezik, hogy illeszkedés nélkül a sor kiesik.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: NULL handling
+TYPE: output
+QUESTION: Mi lesz az eredmény az alábbi adatok esetén?
+CODE:
+employees
+name  | bonus
+Anna  | 100
+Béla  | NULL
+Csilla| 200
+
+SELECT COUNT(bonus)
+FROM employees;
+ENDCODE
+A) 3
+B) 2
+C) 1
+D) NULL
+ANSWER: B
+EXPLANATION: A `COUNT(oszlop)` csak a nem NULL értékeket számolja. Anna és Csilla bonus értéke ismert, Béla értéke NULL, ezért az eredmény 2. A `COUNT(*)` ugyanebben a példában 3 lenne. A gyakori rossz válasz azért csábító, mert a táblában három sor van, de az oszlopszintű COUNT figyelembe veszi a NULL értékeket.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: Aggregation & GROUP BY
+TYPE: trap
+QUESTION: PostgreSQL-ben miért hibás vagy problémás az alábbi lekérdezés?
+CODE:
+SELECT department_id, name, COUNT(*)
+FROM employees
+GROUP BY department_id;
+ENDCODE
+A) A COUNT nem használható GROUP BY mellett
+B) A `name` oszlopot nem aggregáljuk és nem szerepel a GROUP BY-ban
+C) A department_id nem szerepelhet GROUP BY-ban
+D) PostgreSQL-ben minden SELECT kötelezően ORDER BY-t igényel
+ANSWER: B
+EXPLANATION: Csoportosított lekérdezésben minden kiválasztott oszlopnak vagy aggregált kifejezésnek kell lennie, vagy a GROUP BY részeként kell szerepelnie. Egy departmenthez több név is tartozhat, ezért a `name` önmagában nem határozható meg egyértelműen. A gyakori rossz válasz azért csábító, mert a COUNT és GROUP BY együtt teljesen szabályos SQL-minta.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: Subqueries & CTEs
+TYPE: scenario
+QUESTION: A cél azoknak a dolgozóknak a kiválasztása, akiknek a fizetése nagyobb az összes dolgozó átlagfizetésénél. Melyik lekérdezés helyes?
+CODE:
+SELECT *
+FROM employees
+WHERE salary > (
+    SELECT AVG(salary)
+    FROM employees
+);
+ENDCODE
+A) A bemutatott lekérdezés
+B) `WHERE salary > AVG(salary)`
+C) `WHERE salary > MAX(AVG(salary))`
+D) `WHERE salary > GROUP BY AVG(salary)`
+ANSWER: A
+EXPLANATION: Az al-lekérdezés egyetlen aggregált értéket, az átlagfizetést állítja elő, amit a külső lekérdezés minden dolgozó fizetésével össze tud hasonlítani. Aggregált függvényt közvetlenül WHERE-ben ilyen formában nem lehet használni. A gyakori rossz válasz azért csábító, mert logikailag egyszerűnek tűnik az AVG közvetlen használata a WHERE feltételben.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: Data types & dates
+TYPE: behavior
+QUESTION: PostgreSQL-ben mit eredményez az alábbi kifejezés, ha `birth_date` DATE típusú?
+CODE:
+SELECT birth_date + INTERVAL '1 year'
+FROM employees;
+ENDCODE
+A) Egy egész számot, amely a születési évhez ad egyet
+B) A dátum szöveggé alakítását
+C) A birth_date értékhez egy évnyi intervallum hozzáadását
+D) SQL szintaktikai hibát, mert DATE-hez nem adható INTERVAL
+ANSWER: C
+EXPLANATION: PostgreSQL-ben DATE vagy TIMESTAMP értékhez INTERVAL adható, így az eredmény egy dátum/idő jellegű érték lesz, amelyhez egy évnyi intervallumot adtunk. Ez különbözik attól, amikor egyszerűen egy egész számot adunk egy dátumhoz. A gyakori rossz válasz azért csábító, mert más SQL-dialektusok dátumaritmetikája eltérhet.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: DML & upserts
+TYPE: behavior
+QUESTION: PostgreSQL-ben mire használható az `ON CONFLICT DO NOTHING` egy INSERT végén?
+CODE:
+INSERT INTO users (email, name)
+VALUES ('anna@example.com', 'Anna')
+ON CONFLICT (email) DO NOTHING;
+ENDCODE
+A) Konfliktus esetén frissíti a meglévő sort
+B) Konfliktus esetén törli a meglévő sort
+C) Konfliktus esetén hibát dob és mindig rollbackel
+D) Konfliktus esetén nem hajt végre beszúrást az adott sorra
+ANSWER: D
+EXPLANATION: Az `ON CONFLICT (email) DO NOTHING` azt mondja PostgreSQL-nek, hogy az emailhez kapcsolódó egyedi konfliktus esetén hagyja ki az adott INSERT-et. A meglévő sor változatlan marad. A gyakori rossz válasz azért csábító, mert az `ON CONFLICT` kifejezést sokan automatikusan UPSERT-frissítéshez társítják, pedig a `DO NOTHING` nem módosít.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: Constraints & keys
+TYPE: scenario
+QUESTION: Egy `users` táblában minden felhasználó email címének egyedinek kell lennie. Melyik adatbázis-kényszer felel meg ennek legjobban?
+CODE:
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    email TEXT NOT NULL,
+    name TEXT
+);
+ENDCODE
+A) `UNIQUE(email)`
+B) `CHECK(email <> '')`
+C) `FOREIGN KEY(email)`
+D) `DEFAULT(email)`
+ANSWER: A
+EXPLANATION: A UNIQUE constraint adatbázisszinten garantálja, hogy ugyanaz az email érték ne szerepeljen többször a kulcsban. A `NOT NULL` önmagában csak a hiányzó értékeket tiltja, az egyediséget nem. A gyakori rossz válasz azért csábító, mert a CHECK segítségével is lehet egyszerű szabályokat kikényszeríteni, de az nem az egyediség megfelelő eszköze.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: SELECT & filtering
+TYPE: edgecase
+QUESTION: Mit ad vissza az alábbi lekérdezés, ha az `age` oszlop NULL értékeket is tartalmaz?
+CODE:
+SELECT *
+FROM employees
+WHERE age <> 30;
+ENDCODE
+A) Minden sort, kivéve azokat, ahol age pontosan 30
+B) A 30 év feletti és a 30 év alatti dolgozókat, de a NULL értékűeket is
+C) A 30-tól eltérő ismert életkorú dolgozókat; a NULL értékű sorok nem kerülnek vissza
+D) Csak a NULL értékű sorokat
+ANSWER: C
+EXPLANATION: A NULL összehasonlítása nem TRUE, hanem UNKNOWN eredményt ad a háromértékű SQL-logikában. A WHERE csak azokat a sorokat tartja meg, amelyek feltétele TRUE, ezért az `age <> 30` nem választja ki a NULL értékű sorokat. A gyakori rossz válasz azért csábító, mert a NULL-t sokan úgy kezelik, mintha egy külön, minden más értéktől eltérő konkrét érték lenne.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: SQL injection & security
+TYPE: production
+QUESTION: Egy webalkalmazás felhasználó által megadott nevet keres adatbázisban. Melyik megoldás csökkenti megfelelően az SQL injection kockázatát?
+CODE:
+String sql = "SELECT * FROM users WHERE name = ?";
+ENDCODE
+A) A felhasználói input minden `'` karakterének törlése
+B) Paraméterezett lekérdezés használata prepared statementtel
+C) A felhasználói input uppercase-re alakítása
+D) A SQL-lekérdezés végére komment hozzáadása
+ANSWER: B
+EXPLANATION: A paraméterezett lekérdezésnél a felhasználói érték adatként kerül továbbításra, nem pedig a SQL utasítás szerkezetének részeként. Egyszerű karakterhelyettesítéssel nem lehet megbízhatóan lefedni az SQL minden lehetséges szintaktikai és kódolási esetét. A gyakori rossz válasz azért csábító, mert néhány egyszerű támadási példát valóban meg lehet akadályozni karakterek szűrésével, de ez nem általános biztonsági megoldás.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: SQL vs NoSQL
+TYPE: scenario
+QUESTION: Egy alkalmazás adatai erősen strukturáltak, sok táblát érintő tranzakciókban módosulnak, és fontos a referenciális integritás. Melyik megközelítés illeszkedik természetesebben ehhez a követelményhez?
+CODE:
+Rendszerkövetelmények:
+- összetett JOIN-ok
+- foreign key kapcsolatok
+- ACID tranzakciók
+- konzisztens, strukturált adatok
+ENDCODE
+A) Relációs SQL adatbázis
+B) Kizárólag key-value adatbázis
+C) Kizárólag dokumentumorientált adatbázis
+D) Fájlrendszerben tárolt JSON fájlok
+ANSWER: A
+EXPLANATION: A relációs adatbázisok természetes módon támogatják a táblák közötti kapcsolatokat, a foreign key-ket, a JOIN-okat és a tranzakciós integritást. Ez nem azt jelenti, hogy NoSQL rendszerrel technikailag lehetetlen lenne hasonló rendszert építeni, hanem azt, hogy a követelmények közvetlenül a relációs modell erősségeire épülnek. A gyakori rossz válasz azért csábító, mert a NoSQL rendszerek rugalmas sémája sok modern alkalmazásnál előnyös lehet.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: Indexes
+TYPE: performance
+QUESTION: Van egy nagy `orders` táblád, és a lekérdezések gyakran ezt használják:
+CODE:
+SELECT *
+FROM orders
+WHERE customer_id = 12345;
+ENDCODE
+Melyik index lehet közvetlenül hasznos ehhez a feltételhez?
+A) Index a `created_at` oszlopon
+B) Index a `status` oszlopon
+C) Index a `customer_id` oszlopon
+D) Index egy teljesen másik táblán
+ANSWER: C
+EXPLANATION: A `customer_id` oszlopra épített index lehetővé teheti, hogy az adatbázis hatékonyabban keresse meg az adott ügyfélhez tartozó sorokat, különösen nagy tábla esetén. Az optimalizáló természetesen a statisztikák és a lekérdezés várható költsége alapján dönt arról, hogy ténylegesen használja-e. A gyakori rossz válasz azért csábító, mert bármely index „gyorsításnak” tűnhet, de az indexnek relevánsnak kell lennie a keresési feltételhez.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: Views, procedures & triggers
+TYPE: behavior
+QUESTION: Mi történik általában egy PostgreSQL VIEW lekérdezésekor?
+CODE:
+CREATE VIEW active_users AS
+SELECT id, name
+FROM users
+WHERE active = true;
+ENDCODE
+A) A VIEW minden létrehozáskor automatikusan fizikailag lemásolja az összes sort egy új táblába
+B) A VIEW csak egy indexet hoz létre a users táblán
+C) A VIEW letiltja a users tábla módosítását
+D) A VIEW egy névvel ellátott lekérdezést biztosít, amelyen keresztül az aktív felhasználók lekérdezhetők
+ANSWER: D
+EXPLANATION: A hagyományos VIEW logikailag egy tárolt lekérdezés-definíció, amelyet később táblához hasonlóan lehet lekérdezni. Nem azonos automatikusan egy materializált nézettel, amely fizikailag tárolt eredményt is fenntarthat. A gyakori rossz válasz azért csábító, mert a VIEW a felhasználó számára sokszor úgy viselkedik, mint egy tábla.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Transactions & isolation levels
+TYPE: scenario
+QUESTION: Mi a tranzakció alapvető célja az alábbi műveletsorban?
+CODE:
+BEGIN;
+
+UPDATE accounts
+SET balance = balance - 100
+WHERE id = 1;
+
+UPDATE accounts
+SET balance = balance + 100
+WHERE id = 2;
+
+COMMIT;
+ENDCODE
+A) Annak biztosítása, hogy a két módosítás egy logikai egységként legyen véglegesítve
+B) Az UPDATE műveletek automatikus SELECT-té alakítása
+C) Az adatok automatikus indexelése
+D) A két UPDATE közötti kapcsolat megszüntetése
+ANSWER: A
+EXPLANATION: A tranzakció lehetővé teszi, hogy a két módosítás együtt kerüljön véglegesítésre. Ha a tranzakciót a COMMIT előtt megfelelően rollbackeljük, a módosítások visszavonhatók. A gyakori rossz válasz azért csábító, mert a tranzakció fogalma sokszor összekeveredik azzal, hogy milyen konkrét SQL műveleteket hajtunk végre benne.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: Normalization & schema design
+TYPE: scenario
+QUESTION: Egy `orders` táblában minden sorban ismétlődik a vásárló neve, email címe és telefonszáma. Egy vásárlónak sok rendelése lehet. Melyik megoldás csökkenti leginkább az ilyen ismétlődő adatokból származó redundanciát?
+CODE:
+orders:
+order_id | customer_name | customer_email | customer_phone | total
+
+Egy customer több ordert is létrehozhat.
+ENDCODE
+A) Minden oszlopot VARCHAR(1000) típusúra állítani
+B) A customer adatokat külön customers táblába helyezni, és az orders táblában customer_id-t tárolni
+C) Az orders táblát egyetlen JSON oszloppá alakítani
+D) A customer nevet minden rendelésnél újra elmenteni, de indexet létrehozni rá
+ANSWER: B
+EXPLANATION: A customer és order adatok különválasztása megszünteti a vásárlói adatok szükségtelen ismétlését, miközben a customer_id foreign key-ként kapcsolatot biztosíthat. Ez csökkenti az update és delete anomáliák kockázatát is. A gyakori rossz válasz azért csábító, mert egy index javíthat bizonyos lekérdezéseken, de nem szünteti meg az adatredundanciát.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: Constraints & keys
+TYPE: theory
+QUESTION: Mi a legfontosabb szerepe egy PRIMARY KEY constraintnek?
+A) Biztosítja, hogy minden sor azonosítója egyedi legyen, és az érték ne legyen NULL
+B) Automatikusan minden más oszlopot is egyedivé tesz
+C) Megakadályozza az összes DELETE műveletet
+D) Kötelezően növekvő egész számot hoz létre
+ANSWER: A
+EXPLANATION: A PRIMARY KEY egy táblán belül egyértelműen azonosítja a sorokat, ezért az értékek egyediek és nem NULL értékűek lehetnek. Nem feltétlenül kell egész számnak lennie, és az automatikus növelés külön mechanizmus, például identity vagy sequence. A gyakori rossz válasz azért csábító, mert az adatbázisokban gyakran `id` nevű, automatikusan növekvő egész számot választanak elsődleges kulcsként.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: DML & upserts
+TYPE: debug
+QUESTION: Miért nem működik az alábbi PostgreSQL-lekérdezés a várt UPSERT-ként, ha a `users.email` oszlopon UNIQUE constraint van?
+CODE:
+INSERT INTO users (email, name)
+VALUES ('anna@example.com', 'Anna')
+ON CONFLICT (email)
+DO UPDATE SET name = name;
+ENDCODE
+A) Az ON CONFLICT csak DELETE mellett használható
+B) Az email oszlop nem lehet UNIQUE
+C) A `name = name` kifejezés nem hivatkozik egyértelműen a kívánt új értékre; a beszúrt értékhez tipikusan `EXCLUDED.name` használható
+D) A PostgreSQL nem támogat UPSERT műveletet
+ANSWER: C
+EXPLANATION: Az `ON CONFLICT DO UPDATE` részben az aktuálisan meglévő célrekord és a beszúrás által előállított új rekord különböző szerepet kap. A beszúrandó értékekre az `EXCLUDED` pszeudotáblán keresztül lehet hivatkozni, például `SET name = EXCLUDED.name`. A gyakori rossz válasz azért csábító, mert a `name = name` első pillantásra úgy nézhet ki, mintha az új értéket rendelné a meglévő oszlophoz.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: Query plans & optimization
+TYPE: performance
+QUESTION: PostgreSQL-ben melyik eszközzel lehet részletes információt kapni arról, hogyan tervezi és hajtja végre az adatbázis a lekérdezést?
+CODE:
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT *
+FROM orders
+WHERE customer_id = 12345;
+ENDCODE
+A) `DESCRIBE ONLY`
+B) `SHOW EXECUTION`
+C) `TRACE QUERY`
+D) `EXPLAIN (ANALYZE, BUFFERS)`
+ANSWER: D
+EXPLANATION: Az `EXPLAIN` megmutatja a lekérdezés végrehajtási tervét, az `ANALYZE` pedig a lekérdezés tényleges végrehajtásával kapcsolatos mérési adatokat is biztosít; a `BUFFERS` további bufferhasználati információt ad. Az ANALYZE miatt a lekérdezés ténylegesen végrehajtódik, ezért production környezetben körültekintően kell használni módosító SQL esetén. A gyakori rossz válasz azért csábító, mert más adatbázisrendszerekben vagy eszközökben létezhetnek hasonló nevű diagnosztikai parancsok.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: JOINs
+TYPE: trap
+QUESTION: Mi lesz az eredmény, ha a `WHERE` feltételben a jobb oldali tábla oszlopára teszünk feltételt egy LEFT JOIN után?
+CODE:
+SELECT e.name, d.name
+FROM employees e
+LEFT JOIN departments d
+    ON d.id = e.department_id
+WHERE d.name = 'IT';
+ENDCODE
+A) Minden employee megmarad, és a nem IT departmentek NULL értéket kapnak
+B) Gyakorlatilag csak azok a sorok maradnak, amelyekhez létezik és IT nevű department
+C) A lekérdezés mindig szintaktikai hibát ad
+D) A LEFT JOIN automatikusan minden departmentet többszöröz
+ANSWER: B
+EXPLANATION: A LEFT JOIN először megtartja a bal oldali sorokat, de a WHERE feltétel ezután csak azokat engedi tovább, amelyeknél `d.name = 'IT'` TRUE. Azok a sorok, amelyekhez nincs department, `d.name = NULL` értéket kapnak, ezért nem felelnek meg a WHERE feltételnek. Emiatt a lekérdezés eredménye ebből a szempontból az INNER JOIN viselkedéséhez hasonló. A gyakori rossz válasz azért csábító, mert a LEFT JOIN kulcsszó alapján könnyű azt feltételezni, hogy a bal oldali sorok minden körülmények között megmaradnak.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: SELECT & filtering
+TYPE: output
+QUESTION: Mi lesz az eredmény az alábbi PostgreSQL-lekérdezésnél?
+CODE:
+SELECT name
+FROM employees
+WHERE salary BETWEEN 800000 AND 1000000;
+ENDCODE
+A) Azoknak a dolgozóknak a neve, akiknek a fizetése 800 000 és 1 000 000 között van, a két határértéket is beleértve
+B) Csak azoknak a dolgozóknak a neve, akiknek a fizetése pontosan 800 000 vagy 1 000 000
+C) Azoknak a dolgozóknak a neve, akiknek a fizetése 800 000 és 1 000 000 között van, a határértékek nélkül
+D) Azoknak a dolgozóknak a neve, akiknek a fizetése 800 000 alatt vagy 1 000 000 felett van
+ANSWER: A
+EXPLANATION: A `BETWEEN` SQL-ben inkluzív, vagyis a megadott alsó és felső határértéket is tartalmazza. A kifejezés logikailag megfelel az `salary >= 800000 AND salary <= 1000000` feltételnek. A gyakori rossz válasz azért csábító, mert más programozási nyelvekben és tartománykezelési konvenciókban gyakoriak a kizáró felső határok.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: JOINs
+TYPE: output
+QUESTION: Mit ad vissza az alábbi lekérdezés, ha egy employee-hez több matching sor tartozik a másik táblában?
+CODE:
+SELECT e.id, p.project_id
+FROM employees e
+JOIN project_assignments p
+    ON p.employee_id = e.id;
+ENDCODE
+A) Minden employee pontosan egyszer jelenik meg
+B) Egy employee annyiszor jelenhet meg, ahány matching project_assignments sora van
+C) Csak azok az employee-k jelennek meg, akiknek pontosan egy assignmentjük van
+D) A JOIN automatikusan összesíti az assignmenteket
+ANSWER: B
+EXPLANATION: A JOIN nem tömöríti automatikusan a matching sorokat. Ha egy employee-hez három matching assignment tartozik, akkor az employee három eredménysorban jelenhet meg, mindegyikhez a megfelelő `project_id` értékkel. A gyakori rossz válasz azért csábító, mert az employee azonosítója ugyanaz marad, ezért könnyű azt feltételezni, hogy az adatbázis automatikusan egyetlen sorba vonja össze.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: NULL handling
+TYPE: output
+QUESTION: Mi lesz az eredmény az alábbi PostgreSQL-lekérdezésnél, ha az `employees` táblában a `department_id` értékei `10`, `NULL` és `20`?
+CODE:
+SELECT COUNT(DISTINCT department_id)
+FROM employees;
+ENDCODE
+A) 3
+B) 1
+C) 2
+D) NULL
+ANSWER: C
+EXPLANATION: A `COUNT(DISTINCT department_id)` a különböző, nem NULL értékeket számolja. A 10 és 20 két különböző érték, míg a NULL nem kerül bele a COUNT által számolt értékek közé. A gyakori rossz válasz azért csábító, mert a DISTINCT önmagában megtartaná a NULL-t is az eredményhalmazban, de a COUNT(oszlop) nem számolja a NULL értékeket.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Aggregation & GROUP BY
+TYPE: output
+QUESTION: Mely dolgozói részlegek jelennek meg az alábbi lekérdezés eredményében?
+CODE:
+SELECT department_id, COUNT(*)
+FROM employees
+GROUP BY department_id
+HAVING COUNT(*) >= 3;
+ENDCODE
+A) Minden department, amely legalább egy dolgozót tartalmaz
+B) Csak az a department, amely pontosan három dolgozót tartalmaz
+C) Minden department, amely legfeljebb három dolgozót tartalmaz
+D) Azok a departmentek, amelyekben legalább három dolgozó van
+ANSWER: D
+EXPLANATION: A `GROUP BY` létrehozza a departmentenkénti csoportokat, a `HAVING` pedig ezeket a csoportokat szűri. A `COUNT(*) >= 3` ezért azokat a departmenteket tartja meg, amelyek legalább három sort tartalmaznak. A gyakori rossz válasz azért csábító, mert könnyű a `HAVING` feltételt úgy értelmezni, mintha csak a pontosan három elemet tartalmazó csoportokat választaná ki.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Subqueries & CTEs
+TYPE: behavior
+QUESTION: Mi a fő különbség a következő két lekérdezés között?
+CODE:
+SELECT *
+FROM employees
+WHERE department_id IN (
+    SELECT id
+    FROM departments
+    WHERE location = 'Budapest'
+);
+
+SELECT e.*
+FROM employees e
+JOIN departments d
+    ON d.id = e.department_id
+WHERE d.location = 'Budapest';
+ENDCODE
+A) Az első mindig gyorsabb, a második mindig lassabb
+B) Az első nem használhat indexet
+C) Az első és a második logikailag azonos eredményt adhat, bár a végrehajtási terv eltérhet
+D) A második csak egy employee-t adhat vissza
+ANSWER: C
+EXPLANATION: A két lekérdezés ugyanazt a logikai célt fejezi ki: a budapesti departmenthez tartozó employee-k kiválasztását. A PostgreSQL optimalizálója a megfelelő esetekben hasonló végrehajtási tervre is átalakíthatja őket, ezért önmagában a subquery használata nem jelenti azt, hogy a lekérdezés lassabb. A gyakori rossz válasz azért csábító, mert az SQL-szintaxis különbözősége könnyen azt a benyomást kelti, hogy a két forma teljesen eltérő teljesítményű.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: Data types & dates
+TYPE: output
+QUESTION: PostgreSQL-ben mi lesz a következő kifejezés eredménye?
+CODE:
+SELECT DATE '2026-01-15' + 10;
+ENDCODE
+A) `2026-01-25`
+B) `2026-01-15 10:00:00`
+C) `2026-01-05`
+D) Hibát kapunk, mert DATE-hez nem adható egész szám
+ANSWER: A
+EXPLANATION: PostgreSQL-ben egy egész szám DATE értékhez adása napokat jelent. Tíz napot hozzáadva 2026. január 15-höz 2026. január 25. keletkezik. A gyakori rossz válasz azért csábító, mert a dátumhoz hozzáadott szám jelentése SQL-dialektusonként eltérhet, és más környezetben más szintaxis lehet szükséges.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: Constraints & keys
+TYPE: scenario
+QUESTION: Egy `orders` táblában minden rendelésnek egy létező customerhez kell tartoznia. Melyik constraint biztosítja ezt adatbázisszinten?
+CODE:
+CREATE TABLE orders (
+    id BIGINT PRIMARY KEY,
+    customer_id BIGINT
+);
+ENDCODE
+A) `CHECK(customer_id > 0)`
+B) `FOREIGN KEY(customer_id) REFERENCES customers(id)`
+C) `UNIQUE(customer_id)`
+D) `DEFAULT customer_id`
+ANSWER: B
+EXPLANATION: A foreign key biztosítja, hogy a `customer_id` érték csak olyan érték lehessen, amely megfelel a hivatkozott `customers` tábla megfelelő kulcsának, a constraint által meghatározott szabályok szerint. A CHECK csak a saját sor értékére vonatkozó feltételt ellenőrizheti, az egyediséget pedig a UNIQUE biztosítja. A gyakori rossz válasz azért csábító, mert a pozitív customer_id ellenőrzése hasznos validáció lehet, de nem bizonyítja, hogy az adott customer ténylegesen létezik.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Indexes
+TYPE: trap
+QUESTION: Egy nagy táblán létrehozol egy indexet egy olyan oszlopra, amelyben szinte minden sorban ugyanaz az érték szerepel. Melyik állítás a legpontosabb?
+CODE:
+CREATE INDEX idx_orders_status
+ON orders(status);
+ENDCODE
+A) Az index minden lekérdezést automatikusan jelentősen felgyorsít
+B) Az index miatt a status oszlop automatikusan UNIQUE lesz
+C) Az index garantáltan rosszabbá teszi minden SELECT teljesítményét
+D) Az index hasznossága korlátozott lehet, mert a nagyon alacsony szelektivitás miatt az optimizer inkább más hozzáférési utat választhat
+ANSWER: D
+EXPLANATION: Ha egy oszlopnak nagyon kevés különböző értéke van, egy egyszerű index kevés sort tud hatékonyan elkülöníteni egymástól. PostgreSQL az adatok eloszlása és a várható költség alapján dönthet például egy sequential scan mellett. A gyakori rossz válasz azért csábító, mert az index általánosan teljesítménynövelő eszköznek tűnik, de minden indexnek van fenntartási költsége és nem minden keresési feltételnél előnyös.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: DML & upserts
+TYPE: debug
+QUESTION: Mi történik az alábbi PostgreSQL utasításban, ha nincs olyan `id` érték, amely megfelel a WHERE feltételnek?
+CODE:
+UPDATE employees
+SET salary = salary * 1.1
+WHERE id = 999999;
+ENDCODE
+A) Minden employee fizetése 10%-kal nő
+B) A lekérdezés automatikusan INSERT-et hajt végre
+C) 0 sor módosul
+D) Az adatbázis minden esetben hibát dob
+ANSWER: C
+EXPLANATION: Az UPDATE csak azokat a sorokat módosítja, amelyek megfelelnek a WHERE feltételnek. Ha nincs ilyen sor, az utasítás sikeresen lefuthat, de nulla sort módosít. A gyakori rossz válasz azért csábító, mert egy UPDATE utasítás sikeres lefutását könnyű összekeverni azzal, hogy legalább egy sort biztosan módosított.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: SELECT & filtering
+TYPE: output
+QUESTION: Mit ad vissza az alábbi lekérdezés, ha `name` értékei között vannak NULL-ok?
+CODE:
+SELECT name
+FROM employees
+WHERE name IS NOT NULL
+ORDER BY name ASC;
+ENDCODE
+A) Csak a NULL értékű neveket
+B) Minden nevet, NULL értékekkel együtt
+C) Csak a nem NULL neveket, növekvő sorrendben
+D) Csak a nem NULL neveket, csökkenő sorrendben
+ANSWER: C
+EXPLANATION: Az `IS NOT NULL` eltávolítja azokat a sorokat, ahol a `name` NULL. Az `ORDER BY name ASC` a megmaradó értékeket növekvő sorrendbe rendezi. A gyakori rossz válasz azért csábító, mert az ASC és DESC iránya könnyen felcserélhető, különösen gyors interjúkérdésnél.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: JOINs
+TYPE: scenario
+QUESTION: Egy employee-hez tartozó összes assignmentet szeretnéd látni, akkor is, ha az employee-nek még nincs egyetlen assignmentje sem. Melyik JOIN-t kell választani?
+CODE:
+SELECT e.id, a.project_id
+FROM employees e
+LEFT JOIN project_assignments a
+    ON a.employee_id = e.id;
+ENDCODE
+A) LEFT JOIN
+B) INNER JOIN
+C) CROSS JOIN
+D) SELF JOIN
+ANSWER: A
+EXPLANATION: A LEFT JOIN minden employee sort megtart, és azoknál, akikhez nincs assignment, az assignment oldal oszlopai NULL értékűek lesznek. Az INNER JOIN ezzel szemben elhagyná azokat az employee-ket, akikhez nincs matching assignment. A gyakori rossz válasz azért csábító, mert az INNER JOIN a leggyakrabban használt JOIN típus, de nem őrzi meg a nem illeszkedő bal oldali sorokat.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: Aggregation & GROUP BY
+TYPE: output
+QUESTION: Melyik eredmény adja meg helyesen az egyes departmentek átlagfizetését?
+CODE:
+SELECT department_id, AVG(salary)
+FROM employees
+GROUP BY department_id;
+ENDCODE
+A) Egyetlen globális átlagfizetés departmentenkénti azonosító nélkül
+B) Departmentenként egy átlagfizetés
+C) Minden employee fizetését háromszorozva
+D) Csak a legmagasabb átlagfizetésű department
+ANSWER: B
+EXPLANATION: A `GROUP BY department_id` külön csoportot képez minden departmenthez, az `AVG(salary)` pedig az adott csoport fizetéseinek átlagát számítja ki. Így departmentenként egy aggregált eredmény születik. A gyakori rossz válasz azért csábító, mert az AVG csoportosítás nélkül valóban egyetlen globális átlagot adna vissza.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: Subqueries & CTEs
+TYPE: output
+QUESTION: Mit ad vissza az alábbi lekérdezés?
+CODE:
+SELECT name
+FROM employees
+WHERE department_id IN (
+    SELECT id
+    FROM departments
+    WHERE location = 'Budapest'
+);
+ENDCODE
+A) Csak a budapesti departmentek nevét
+B) Minden employee nevét, függetlenül a departmenttől
+C) Azokat az employee neveket, akik budapesti locationnel rendelkező departmenthez tartoznak
+D) Csak azokat az employee-ket, akiknek nincs departmentjük
+ANSWER: C
+EXPLANATION: A belső lekérdezés először visszaadja azoknak a departmenteknek az azonosítóit, amelyek location értéke Budapest. A külső lekérdezés azokat az employee-ket választja ki, akiknek a `department_id` értéke szerepel ebben a halmazban. A gyakori rossz válasz azért csábító, mert a subquery eredményében szereplő `id` könnyen összetéveszthető az employee azonosítójával.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: SQL injection & security
+TYPE: production
+QUESTION: Egy alkalmazás dinamikusan állítja össze az SQL-t így:
+CODE:
+String sql = "SELECT * FROM users WHERE name = '" + userInput + "'";
+ENDCODE
+Mi a legfontosabb probléma ezzel a megoldással?
+A) A lekérdezés nem használhat string típusú oszlopot
+B) A SQL csak PostgreSQL-ben működik
+C) Az összeillesztett SQL mindig lassabb lesz, mint bármely prepared statement
+D) A felhasználói input az SQL szerkezetének részévé válhat, ami SQL injection sérülékenységet okozhat
+ANSWER: D
+EXPLANATION: A user input közvetlenül bekerül az SQL szövegébe, ezért egy megfelelően kialakított bemenet módosíthatja a lekérdezés jelentését. A megfelelő megoldás paraméterezett query használata. A gyakori rossz válasz azért csábító, mert a string concatenation önmagában működőképes SQL-t tud létrehozni normál bemenet esetén, de ez nem teszi biztonságossá.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: Views, procedures & triggers
+TYPE: theory
+QUESTION: Mi a legfontosabb különbség egy hagyományos VIEW és egy materialized view között PostgreSQL-ben?
+A) A hagyományos VIEW nem tartalmazhat WHERE feltételt
+B) A materialized view nem kérdezhető le SELECT-tel
+C) A materialized view fizikailag tárolja a lekérdezés eredményét, amelyet külön frissíteni lehet
+D) A hagyományos VIEW mindig gyorsabb, mint a materialized view
+ANSWER: C
+EXPLANATION: A hagyományos VIEW egy lekérdezés definícióját reprezentálja, míg a materialized view a lekérdezés eredményét fizikailag is tárolja. A materialized view eredménye a létrehozás vagy frissítés időpontjától függően elavulhat, ezért azt külön frissíteni kell. A gyakori rossz válasz azért csábító, mert a materialized view fizikai tárolása könnyen összekeverhető egy normál táblával.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: Transactions & isolation levels
+TYPE: behavior
+QUESTION: Mi történik egy PostgreSQL tranzakcióban az alábbi utasítás után?
+CODE:
+BEGIN;
+
+UPDATE accounts
+SET balance = balance - 100
+WHERE id = 1;
+
+ROLLBACK;
+ENDCODE
+A) A módosítás végleges marad
+B) A módosítás visszavonódik
+C) Az UPDATE automatikusan új tranzakciót indít
+D) A ROLLBACK csak SELECT műveleteket von vissza
+ANSWER: B
+EXPLANATION: A ROLLBACK visszavonja az aktuális tranzakcióban végrehajtott, még nem commitált módosításokat. Így az account egyenlege visszaáll a tranzakció előtti állapotra. A gyakori rossz válasz azért csábító, mert az UPDATE már végrehajtódott és ezért elsőre úgy tűnhet, hogy az adatbázisban végleges változás történt.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: Data types & dates
+TYPE: edgecase
+QUESTION: PostgreSQL-ben mi történik az alábbi kifejezéssel?
+CODE:
+SELECT DATE '2024-02-29' + INTERVAL '1 year';
+ENDCODE
+A) Mindig `2025-02-29` lesz az eredmény
+B) Syntax error keletkezik, mert a 2024 szökőév
+C) Az eredmény automatikusan NULL lesz
+D) Egy érvényes 2025-ös dátum/idő érték keletkezik; a naptári aritmetika kezeli, hogy 2025 nem szökőév
+ANSWER: D
+EXPLANATION: Az INTERVAL-alapú dátumaritmetika naptári szabályokat követ, ezért a nem létező 2025. február 29. helyett érvényes dátum/idő eredmény jön létre. Ez jó példa arra, hogy dátumoknál nem mindig érdemes egyszerű nap-számlálásként gondolkodni. A gyakori rossz válasz azért csábító, mert a dátum évszámának egyszerű lecserélése valóban egy nem létező dátumot eredményezne.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: Indexes
+TYPE: performance
+QUESTION: Miért nem érdemes automatikusan minden oszlopra indexet létrehozni egy nagy táblában?
+A) Az indexek csak SELECT lekérdezésekben használhatók
+B) Az indexek tárhelyet foglalnak, és INSERT/UPDATE/DELETE műveleteknél fenntartási költséget okoznak
+C) PostgreSQL egyszerre csak egy indexet engedélyez táblánként
+D) Az indexek minden esetben lassabbá teszik a SELECT lekérdezéseket
+ANSWER: B
+EXPLANATION: Minden index külön struktúrát és tárhelyet igényel, amelyet az adat módosításakor is karban kell tartani. Túl sok vagy rosszul megválasztott index ezért ronthatja az írási teljesítményt és növelheti a tárhelyigényt. A gyakori rossz válasz azért csábító, mert az indexet elsősorban SELECT-optimalizációs eszközként tanulják, miközben az írási műveletekre is közvetlen hatással van.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: Normalization & schema design
+TYPE: scenario
+QUESTION: Az alábbi struktúrában egy employee több telefonszámmal rendelkezhet. Melyik modell illeszkedik jobban a relációs normalizációhoz?
+CODE:
+employees
+id | name | phone1 | phone2 | phone3
+ENDCODE
+A) Egy külön employee_phones táblában employee_id és phone_number oszlopok használata
+B) A phone1, phone2 és phone3 oszlopok számának növelése 100-ra
+C) Az összes telefonszám egyetlen vesszővel elválasztott TEXT mezőben
+D) Minden telefonszámot külön employees rekordként tárolni
+ANSWER: A
+EXPLANATION: A többértékű attribútumok külön kapcsolódó táblába helyezése természetes relációs modell: egy employee-hez tetszőleges számú phone rekord tartozhat. Így nincs szükség fix számú phone oszlopra, és az adatok egyszerűbben kezelhetők. A gyakori rossz válasz azért csábító, mert néhány fix mező egyszerűnek tűnik, de hamar skálázhatatlanná és nehezen lekérdezhetővé válik.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: SELECT & filtering
+TYPE: algorithm
+QUESTION: Egy olyan lekérdezést szeretnél írni, amely csak azokat az employee-ket adja vissza, akiknek a fizetése 1 000 000 és 2 000 000 közötti, és aktívak. Melyik feltétel helyes?
+A) `WHERE salary >= 1000000 AND salary <= 2000000 AND active = true`
+B) `WHERE salary >= 1000000 OR salary <= 2000000 AND active = true`
+C) `WHERE salary BETWEEN 1000000 OR 2000000 AND active = true`
+D) `WHERE salary > 1000000 AND salary < 2000000 OR active = true`
+ANSWER: A
+EXPLANATION: A feltétel három követelményt kapcsol össze AND operátorral: az alsó és felső fizetési határt, valamint az aktív státuszt. Így csak azok a sorok maradnak meg, amelyek mindhárom feltételnek megfelelnek. A gyakori rossz válasz azért csábító, mert az AND és OR keverésekor az SQL operátorprecedencia miatt a lekérdezés egészen más eredményt adhat, mint amit a természetes nyelvű megfogalmazás sugall.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: JOINs
+TYPE: output
+QUESTION: Mi történik az alábbi CROSS JOIN esetén, ha az első tábla 3, a második pedig 4 sort tartalmaz?
+CODE:
+SELECT *
+FROM employees e
+CROSS JOIN departments d;
+ENDCODE
+A) 7 sor keletkezik
+B) 12 sor keletkezik
+C) 4 sor keletkezik
+D) 3 sor keletkezik
+ANSWER: B
+EXPLANATION: A CROSS JOIN kartézián szorzatot képez: az első tábla minden sora párosul a második tábla minden sorával. Három employee és négy department ezért 3 × 4, azaz 12 eredménysort ad. A gyakori rossz válasz azért csábító, mert a JOIN szó miatt könnyű azt feltételezni, hogy csak matching kapcsolatok alapján jönnek létre sorok.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: NULL handling
+TYPE: trap
+QUESTION: Melyik feltétellel lehet kiválasztani azokat a sorokat, ahol a `bonus` értéke vagy 100, vagy NULL?
+A) `WHERE bonus = 100 OR bonus = NULL`
+B) `WHERE bonus IN (100, NULL)`
+C) `WHERE bonus = 100 OR bonus IS NULL`
+D) `WHERE bonus BETWEEN 100 AND NULL`
+ANSWER: C
+EXPLANATION: A NULL ellenőrzéséhez `IS NULL` szükséges, míg a 100 konkrét érték összehasonlítható az `=` operátorral. Ezért a két feltételt OR kapcsolattal kell kombinálni. A gyakori rossz válasz azért csábító, mert az `IN` intuitívan úgy tűnhet, mintha egy listában a NULL is normál összehasonlítható érték lenne.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: DML & upserts
+TYPE: scenario
+QUESTION: Egy employee fizetését 10%-kal szeretnéd megemelni minden olyan sorban, amelynek a department_id értéke 20. Melyik utasítás végzi ezt?
+A) `UPDATE employees SET salary = 1.10 WHERE department_id = 20;`
+B) `UPDATE employees SET salary = salary * 0.10 WHERE department_id = 20;`
+C) `UPDATE employees SET salary = salary + 10 WHERE department_id = 20;`
+D) `UPDATE employees SET salary = salary * 1.10 WHERE department_id = 20;`
+ANSWER: D
+EXPLANATION: A meglévő fizetés 110%-ára kell módosítani az értéket, ezért `salary * 1.10` a megfelelő kifejezés. A `salary * 0.10` csak az eredeti fizetés 10%-át hagyná meg. A gyakori rossz válasz azért csábító, mert a 10%-os emelés kifejezésben szereplő „10%” könnyen ahhoz vezet, hogy csak 0.10-zel szorozzuk az eredeti értéket.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: Constraints & keys
+TYPE: edgecase
+QUESTION: Egy táblában az alábbi constraint található. Melyik érték beszúrása ütközik vele?
+CODE:
+CREATE TABLE products (
+    id BIGSERIAL PRIMARY KEY,
+    sku TEXT UNIQUE
+);
+ENDCODE
+A) Egy új sor `sku = 'ABC-123'` értékkel, ha az adatbázisban már létezik egy másik sor ugyanezzel a `sku` értékkel
+B) Egy új sor NULL sku értékkel
+C) Egy új sor eltérő sku értékkel
+D) Egy új sor azonos nevű producttal, de eltérő sku-val
+ANSWER: A
+EXPLANATION: A UNIQUE constraint megakadályozza, hogy ugyanaz a nem NULL érték többször szerepeljen az adott oszlopban. PostgreSQL-ben egy egyszerű UNIQUE constraint több NULL értéket is engedhet, mert a NULL értékeket nem tekinti egymással egyenlőnek. A gyakori rossz válasz azért csábító, mert az egyediséget könnyű összekeverni a NOT NULL követelménnyel.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Query plans & optimization
+TYPE: production
+QUESTION: Egy production adatbázisban egy gyakran futó SELECT hirtelen jelentősen lelassul. Mi lenne az egyik legjobb első lépés a probléma vizsgálatára?
+A) Azonnal törölj minden indexet
+B) Azonnal emeld meg az adatbázis szerver RAM-ját
+C) Vizsgáld meg a lekérdezés aktuális execution planjét, például EXPLAIN segítségével, és hasonlítsd össze a várható és tényleges költségeket
+D) Cseréld le a relációs adatbázist NoSQL adatbázisra
+ANSWER: C
+EXPLANATION: Egy lassulás okát először mérni és diagnosztizálni érdemes. Az execution plan megmutathatja többek között, hogy milyen scaneket, join stratégiákat és indexeket használ az optimizer, illetve hol keletkezik jelentős költség. A gyakori rossz válasz azért csábító, mert hardveres vagy architekturális változtatás látványosnak tűnik, de bizonyíték nélkül könnyen rossz problémát old meg.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: SELECT & filtering
+TYPE: output
+QUESTION: Mit ad vissza az alábbi PostgreSQL-lekérdezés?
+CODE:
+SELECT name
+FROM employees
+ORDER BY salary DESC, name ASC
+LIMIT 5;
+ENDCODE
+A) Az öt legmagasabb fizetésű employee nevét; azonos fizetés esetén név szerint növekvő sorrendben
+B) Az öt legalacsonyabb fizetésű employee nevét
+C) Minden employee-t név szerint rendezve, majd az első ötöt
+D) Az öt legmagasabb fizetésű employee-t, azonos fizetés esetén név szerint csökkenő sorrendben
+ANSWER: A
+EXPLANATION: Az első rendezési kulcs a `salary DESC`, ezért a legmagasabb fizetések kerülnek előre. Ha két sor fizetése azonos, a második kulcs, `name ASC`, dönti el a sorrendet. Ezután a `LIMIT 5` csak az első öt sort tartja meg. A gyakori rossz válasz azért csábító, mert könnyű csak az első `ORDER BY` kifejezésre figyelni, és figyelmen kívül hagyni a másodlagos rendezést.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: SELECT & filtering
+TYPE: behavior
+QUESTION: Mi történik az alábbi lekérdezésnél PostgreSQL-ben, ha a `name` oszlop szövegeket tartalmaz?
+CODE:
+SELECT name
+FROM employees
+WHERE name LIKE 'Ann%';
+ENDCODE
+A) Csak az pontosan `Ann` nevű employee-ket választja ki
+B) Azokat a neveket választja ki, amelyek `Ann` karakterlánccal kezdődnek
+C) Azokat a neveket választja ki, amelyek `Ann` karakterlánccal végződnek
+D) Azokat a neveket választja ki, amelyek pontosan három karakter hosszúak
+ANSWER: B
+EXPLANATION: A `%` SQL wildcard tetszőleges számú karaktert reprezentál, beleértve a nulla karaktert is. Ezért az `Ann%` minden olyan stringre illeszkedik, amely `Ann`-nel kezdődik. A gyakori rossz válasz azért csábító, mert a `%` jelentése könnyen összekeverhető azzal, hogy csak egy vagy pontosan meghatározott számú karaktert helyettesít.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: JOINs
+TYPE: trap
+QUESTION: Az alábbi lekérdezésben egy employee-hez több project assignment tartozhat. Mi lehet az eredmény egyik fontos következménye?
+CODE:
+SELECT e.id, e.name
+FROM employees e
+JOIN project_assignments p
+    ON p.employee_id = e.id
+WHERE p.project_id IN (10, 20);
+ENDCODE
+A) Minden employee legfeljebb egyszer jelenhet meg
+B) A JOIN automatikusan DISTINCT-té válik
+C) Ugyanaz az employee többször is megjelenhet, ha több matching assignmentje van
+D) Csak az employee tábla első sora jelenik meg
+ANSWER: C
+EXPLANATION: Ha egy employee-hez például mind a 10-es, mind a 20-as projecthez tartozik assignment, a JOIN két matching sort eredményezhet ugyanahhoz az employee-hez. A JOIN nem távolítja el automatikusan a duplikált eredménysorokat. A gyakori rossz válasz azért csábító, mert az eredményben csak az employee oszlopai szerepelnek, ezért úgy tűnhet, mintha a JOIN automatikusan egyedi employee-listát készítene.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: NULL handling
+TYPE: edgecase
+QUESTION: Mi lesz az eredmény az alábbi kifejezésnél PostgreSQL-ben?
+CODE:
+SELECT COALESCE(NULL, NULL, 42, 100);
+ENDCODE
+A) NULL
+B) 100
+C) Hibát kapunk, mert több NULL nem szerepelhet
+D) 42
+ANSWER: D
+EXPLANATION: A `COALESCE` balról jobbra haladva az első nem NULL értéket adja vissza. Az első két érték NULL, ezért a 42 lesz az eredmény, és a 100 már nem kerül kiválasztásra. A gyakori rossz válasz azért csábító, mert a COALESCE utolsó argumentumát könnyű alapértelmezett értékként értelmezni, miközben valójában az első nem NULL érték számít.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: Aggregation & GROUP BY
+TYPE: trap
+QUESTION: Mi a különbség a `WHERE` és a `HAVING` használata között az alábbi lekérdezésben?
+CODE:
+SELECT department_id, COUNT(*)
+FROM employees
+WHERE active = true
+GROUP BY department_id
+HAVING COUNT(*) >= 5;
+ENDCODE
+A) A WHERE a csoportosítás után, a HAVING előtte fut
+B) A WHERE az egyedi sorokat szűri a csoportosítás előtt, a HAVING pedig a létrejött csoportokat szűri
+C) A WHERE és a HAVING ebben az esetben mindig teljesen azonos
+D) A HAVING csak ORDER BY mellett használható
+ANSWER: B
+EXPLANATION: A `WHERE active = true` először kiszűri az inaktív employee-ket. Ezután történik a csoportosítás, majd a `HAVING COUNT(*) >= 5` azokat a department-csoportokat tartja meg, amelyekben legalább öt aktív employee maradt. A gyakori rossz válasz azért csábító, mert mindkét klauzula szűrésre szolgál, de eltérő szinten működnek.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: Subqueries & CTEs
+TYPE: behavior
+QUESTION: Mit jelent az alábbi lekérdezésben a `EXISTS`?
+CODE:
+SELECT e.id, e.name
+FROM employees e
+WHERE EXISTS (
+    SELECT 1
+    FROM project_assignments p
+    WHERE p.employee_id = e.id
+);
+ENDCODE
+A) Csak azt ellenőrzi, hogy a subquery legalább egy sort talál-e az aktuális employee-hez
+B) A subquery összes sorát hozzáadja az employee eredményéhez
+C) Megszámolja az assignmenteket, és csak pontosan egyet enged
+D) A subquery által visszaadott 1 értéket beszúrja az employee táblába
+ANSWER: A
+EXPLANATION: Az `EXISTS` azt vizsgálja, hogy a belső lekérdezés legalább egy sort visszaad-e az aktuális külső sorhoz kapcsolódóan. Nem az a lényeg, hogy a subquery milyen értéket választ ki, ezért az `SELECT 1` tipikus forma. A gyakori rossz válasz azért csábító, mert a subqueryben szereplő `1` könnyen úgy tűnhet, mintha annak konkrét értéke bekerülne az eredménybe.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Data types & dates
+TYPE: output
+QUESTION: Mi lesz a következő PostgreSQL-lekérdezés eredménye?
+CODE:
+SELECT DATE '2026-03-31' - DATE '2026-03-01';
+ENDCODE
+A) `30`
+B) `31`
+C) `29`
+D) Egy INTERVAL érték
+ANSWER: A
+EXPLANATION: PostgreSQL-ben két DATE kivonása egész számot, a két dátum közötti napok számát adja. Március 1. és március 31. között 30 nap van. A gyakori rossz válasz azért csábító, mert TIMESTAMP értékek kivonása esetén INTERVAL eredmény keletkezik, míg DATE esetén egész napok száma.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: DML & upserts
+TYPE: behavior
+QUESTION: Mi történik az alábbi DELETE utasítással?
+CODE:
+DELETE FROM employees
+WHERE active = false;
+ENDCODE
+A) Csak az első inaktív employee törlődik
+B) Minden employee törlődik
+C) Minden olyan employee törlődik, amelynek `active` értéke false
+D) Az inaktív employee-k csak NULL értékűvé válnak
+ANSWER: C
+EXPLANATION: A DELETE a WHERE feltételnek megfelelő összes sort törli, nem csak egyetlen rekordot. A `WHERE active = false` ezért minden ilyen sorra vonatkozik. A gyakori rossz válasz azért csábító, mert egyes ORM API-kban egyetlen objektum törlése gyakori művelet, míg SQL-ben a DELETE alapértelmezés szerint minden matching sort érint.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: Constraints & keys
+TYPE: scenario
+QUESTION: Egy `employee_projects` táblában ugyanaz az employee ugyanahhoz a projekthez legfeljebb egyszer tartozhat. Melyik constraint fejezi ki közvetlenül ezt a szabályt?
+CODE:
+CREATE TABLE employee_projects (
+    employee_id BIGINT,
+    project_id BIGINT
+);
+ENDCODE
+A) `PRIMARY KEY(employee_id)`
+B) `UNIQUE(employee_id, project_id)`
+C) `CHECK(employee_id <> project_id)`
+D) `FOREIGN KEY(employee_id, project_id)`
+ANSWER: B
+EXPLANATION: A két oszlop kombinációjára létrehozott UNIQUE constraint garantálja, hogy ugyanaz az employee-project pár ne szerepelhessen többször. Egyetlen employee_id-re tett PRIMARY KEY viszont megakadályozná, hogy ugyanaz az employee több különböző projekthez is tartozzon. A gyakori rossz válasz azért csábító, mert az employee_id egyedi azonosítónak tűnhet, de ebben a modellben a kapcsolatot a két érték együtt azonosítja.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: SQL vs NoSQL
+TYPE: scenario
+QUESTION: Egy alkalmazásban minden termékhez különböző, gyakran változó attribútumok tartozhatnak, és az alkalmazás jellemzően egy teljes termékdokumentumot olvas vagy ír egyszerre. Melyik modell lehet természetes választás?
+A) Dokumentumorientált NoSQL adatbázis
+B) Kötelezően normalizált relációs séma, minden attribútumhoz külön tábla
+C) Kizárólag CSV fájlok használata
+D) Kizárólag key-value tároló, strukturált érték nélkül
+ANSWER: A
+EXPLANATION: A dokumentumorientált adatbázisok természetesen kezelhetnek olyan rekordokat, amelyeknek eltérő vagy változó struktúrájú attribútumaik vannak, és egy dokumentumként olvashatók vagy írhatók. Ez nem jelenti azt, hogy minden ilyen rendszerhez NoSQL szükséges; a konkrét lekérdezési, konzisztencia- és tranzakciós követelmények döntőek. A gyakori rossz válasz azért csábító, mert a relációs normalizáció sok esetben jó alapértelmezés, de nem minden adatmodellnél optimális.
+###END
+
+### Q61
+LEVEL: medior
+TOPIC: Window functions
+TYPE: output
+QUESTION: Mit ad vissza az alábbi PostgreSQL-lekérdezés?
+CODE:
+SELECT
+    name,
+    salary,
+    RANK() OVER (ORDER BY salary DESC) AS salary_rank
+FROM employees;
+ENDCODE
+A) Minden employee-hez egy egyedi, hézagmentes sorszámot rendel
+B) Csak a legmagasabb fizetésű employee-t adja vissza
+C) Fizetés szerint rangsorol, és az azonos fizetésű employee-k azonos rangot kapnak, amely után lehetnek kihagyott rangszámok
+D) Departmentenként külön rangsorol
+ANSWER: C
+EXPLANATION: A `RANK()` azonos értékek esetén azonos rangot ad, és a következő rangnál kihagyás keletkezhet. Például 100, 100, 90 esetén a rangok 1, 1, 3 lesznek. A `ROW_NUMBER()` ezzel szemben minden sornak egyedi sorszámot adna. A gyakori rossz válasz azért csábító, mert a ranking függvények könnyen összekeverhetők egymással.
+###END
+
+### Q62
+LEVEL: medior
+TOPIC: Window functions
+TYPE: scenario
+QUESTION: Egy departmentenkénti legmagasabb fizetésű employee-t szeretnéd kiválasztani, miközben az eredményben az employee teljes sora megmarad. Melyik megközelítés alkalmas erre PostgreSQL-ben?
+CODE:
+SELECT *
+FROM (
+    SELECT
+        e.*,
+        ROW_NUMBER() OVER (
+            PARTITION BY department_id
+            ORDER BY salary DESC
+        ) AS rn
+    FROM employees e
+) ranked
+WHERE rn = 1;
+ENDCODE
+A) `GROUP BY department_id` önmagában
+B) `ROW_NUMBER()` használata `PARTITION BY department_id` mellett, majd `rn = 1` szűrése
+C) `COUNT(*)` használata salary szerint
+D) `ORDER BY salary DESC LIMIT 1` minden további logika nélkül
+ANSWER: B
+EXPLANATION: A `PARTITION BY department_id` departmentenként külön ablakot hoz létre, az `ORDER BY salary DESC` pedig a legmagasabb fizetésű employee-t helyezi az első pozícióba. A `ROW_NUMBER()` segítségével ezt az első sort választjuk ki minden partitionből. A gyakori rossz válasz azért csábító, mert a GROUP BY valóban képes departmentenként aggregálni, de nem tartja meg automatikusan a teljes, kiválasztott employee sort.
+###END
+
+### Q63
+LEVEL: medior
+TOPIC: Window functions
+TYPE: behavior
+QUESTION: Mi a különbség a `ROW_NUMBER()` és a `RANK()` között, ha több employee fizetése azonos?
+A) A `ROW_NUMBER()` azonos értékeknél is egyedi sorszámot ad, míg a `RANK()` azonos rangot adhat
+B) A `RANK()` mindig egyedi sorszámot ad, a `ROW_NUMBER()` pedig azonos rangokat
+C) Mindkettő minden esetben pontosan ugyanazt az értéket adja
+D) A `ROW_NUMBER()` csak aggregációval használható
+ANSWER: A
+EXPLANATION: A `ROW_NUMBER()` minden eredménysornak külön sorszámot rendel az ablakon belüli sorrend alapján. A `RANK()` azonos ORDER BY értékek esetén azonos rangot ad, és emiatt rangszámok kimaradhatnak. A gyakori rossz válasz azért csábító, mert mindkét függvény ranking jellegű, de eltérő üzleti jelentést hordoznak.
+###END
+
+### Q64
+LEVEL: medior
+TOPIC: Query plans & optimization
+TYPE: performance
+QUESTION: Egy lekérdezés `WHERE customer_id = 123` feltételt használ, de PostgreSQL-ben a planner mégis sequential scan-t választ egy nagy táblán. Melyik magyarázat lehet teljesen ésszerű?
+CODE:
+SELECT *
+FROM orders
+WHERE customer_id = 123;
+ENDCODE
+A) PostgreSQL soha nem használ indexet WHERE feltételekhez
+B) Az indexek csak JOIN-ok esetén működnek
+C) A planner hibás, ezért mindig kényszeríteni kell az index használatát
+D) A feltétel sok sort választhat ki, ezért a sequential scan becsült költsége alacsonyabb lehet az index használatánál
+ANSWER: D
+EXPLANATION: Az optimizer költségalapú döntést hoz. Ha a `customer_id = 123` nagyon sok sort talál, az index használata és a sok random heap access drágább lehet, mint a tábla folyamatos bejárása. A gyakori rossz válasz azért csábító, mert nagy táblánál intuitívan az index használata tűnik mindig gyorsabbnak, pedig az index szelektivitása és a lekérdezés által visszaadott sorok aránya is számít.
+###END
+
+### Q65
+LEVEL: medior
+TOPIC: Indexes
+TYPE: performance
+QUESTION: Egy PostgreSQL lekérdezés gyakran ilyen feltételt használ:
+CODE:
+SELECT *
+FROM users
+WHERE lower(email) = 'anna@example.com';
+ENDCODE
+Melyik megoldás lehet közvetlenül hasznos ennek a feltételnek az indexelésében?
+A) Index a `name` oszlopon
+B) Expression index a `lower(email)` kifejezésre
+C) Index a `created_at` oszlopon
+D) Egy UNIQUE constraint a `name` oszlopon
+ANSWER: B
+EXPLANATION: A lekérdezés nem közvetlenül az `email` oszlopot hasonlítja össze, hanem a `lower(email)` kifejezés eredményét. PostgreSQL-ben expression index hozható létre erre a kifejezésre, így az optimizer megfelelő körülmények között felhasználhatja. A gyakori rossz válasz azért csábító, mert az email oszlop indexelése hasonló célnak tűnik, de az indexelt kifejezésnek illeszkednie kell a keresési feltételhez.
+###END
+
+### Q66
+LEVEL: medior
+TOPIC: Transactions & isolation levels
+TYPE: scenario
+QUESTION: Két konkurens tranzakció ugyanazt a sort olvassa, majd mindkettő módosítani próbálja. Melyik PostgreSQL viselkedés jellemző READ COMMITTED alatt egy egyszerű UPDATE esetén?
+A) Mindkét UPDATE mindig csendben felülírja a másikat
+B) Egyik tranzakció sem várakozik, mert az UPDATE-k mindig optimisták
+C) Az egyik UPDATE zárolhatja a sort, a másik pedig várakozhat, amíg az első tranzakció befejeződik
+D) A READ COMMITTED automatikusan SERIALIZABLE viselkedést biztosít
+ANSWER: C
+EXPLANATION: PostgreSQL-ben az UPDATE egy sor módosításakor sor-szintű zárolási mechanizmust használ, és konkurens módosítás esetén a másik tranzakció várakozhat az első tranzakció eredményére. A pontos viselkedés függ a műveletektől és a tranzakciók időzítésétől is. A gyakori rossz válasz azért csábító, mert a READ COMMITTED alacsonyabb izolációs szint, de ez nem jelenti azt, hogy egyáltalán nincs locking.
+###END
+
+### Q67
+LEVEL: medior
+TOPIC: Locking & deadlocks
+TYPE: scenario
+QUESTION: Két tranzakció az alábbi sorrendben módosít két külön sort. Miért alakulhat ki deadlock?
+CODE:
+-- Transaction 1
+BEGIN;
+UPDATE accounts SET balance = balance - 10 WHERE id = 1;
+UPDATE accounts SET balance = balance + 10 WHERE id = 2;
+
+-- Transaction 2
+BEGIN;
+UPDATE accounts SET balance = balance - 20 WHERE id = 2;
+UPDATE accounts SET balance = balance + 20 WHERE id = 1;
+ENDCODE
+A) Mert minden UPDATE automatikusan deadlockot okoz
+B) Mert a két tranzakció egymás által tartott zárolásra várhat: az egyik az 1-es, a másik a 2-es sort birtokolja
+C) Mert a BEGIN utasítás tiltja a második UPDATE-t
+D) Mert a PostgreSQL nem támogat több tranzakciót
+ANSWER: B
+EXPLANATION: Az első tranzakció először az 1-es sort, a második először a 2-es sort zárolhatja. Ha ezután mindkettő a másik által tartott sorra vár, ciklikus várakozás jön létre, ami deadlock. PostgreSQL ezt észlelheti és az egyik tranzakciót megszakíthatja. A gyakori rossz válasz azért csábító, mert a deadlockot könnyű összekeverni azzal, hogy egyetlen UPDATE önmagában veszélyes.
+###END
+
+### Q68
+LEVEL: medior
+TOPIC: Subqueries & CTEs
+TYPE: algorithm
+QUESTION: Egy lekérdezésben ugyanazt az összetett részlekérdezést több helyen szeretnéd használni. Melyik megoldás teszi a lekérdezés logikai szerkezetét általában átláthatóbbá?
+A) Az összes logikát egyetlen nagyon hosszú WHERE feltételbe írni
+B) Minden részlekérdezést lemásolni minden felhasználási helyre
+C) A teljes lekérdezést stored procedure-be rejteni
+D) Egy CTE (`WITH`) használata az összetett részlekérdezés névvel ellátására
+ANSWER: D
+EXPLANATION: A CTE lehetővé teszi, hogy egy részlekérdezést névvel definiálj, majd a fő lekérdezésben hivatkozz rá, ami gyakran jelentősen javítja az olvashatóságot és karbantarthatóságot. A CTE használata önmagában nem garantál jobb teljesítményt, ezért a strukturális előnyt nem szabad összekeverni az optimalizációval. A gyakori rossz válasz azért csábító, mert a logika procedure-be helyezése is elrejtheti a részleteket, de ettől a lekérdezés felépítése nem feltétlenül lesz átláthatóbb.
+###END
+
+### Q69
+LEVEL: medior
+TOPIC: Aggregation & GROUP BY
+TYPE: trap
+QUESTION: Mi történik az alábbi lekérdezésnél, ha egy department minden employee-je `salary = NULL`?
+CODE:
+SELECT department_id, AVG(salary)
+FROM employees
+GROUP BY department_id;
+ENDCODE
+A) Az AVG értéke 0 lesz
+B) A department teljesen eltűnik az eredményből
+C) Az AVG eredménye NULL lesz az adott departmentnél
+D) A PostgreSQL hibát dob
+ANSWER: C
+EXPLANATION: Az AVG figyelmen kívül hagyja a NULL értékeket. Ha egy adott csoportban nincs egyetlen nem NULL salary sem, akkor nincs mit átlagolni, ezért az aggregáció eredménye NULL lesz. A gyakori rossz válasz azért csábító, mert üzleti logikában gyakran 0-val helyettesítik a hiányzó számértékeket, de az SQL aggregáció ezt nem teszi meg automatikusan.
+###END
+
+### Q70
+LEVEL: medior
+TOPIC: JOINs
+TYPE: debug
+QUESTION: Az alábbi lekérdezés célja az összes employee megjelenítése, valamint az IT departmenthez tartozó adatok, ha léteznek. Miért nem teljesül ez a cél?
+CODE:
+SELECT e.name, d.name
+FROM employees e
+LEFT JOIN departments d
+    ON d.id = e.department_id
+WHERE d.name = 'IT';
+ENDCODE
+A) A LEFT JOIN szintaktikailag nem használható department táblával
+B) A WHERE feltétel kizárja a NULL department értékű sorokat, így az eredmény gyakorlatilag az IT-hoz illeszkedő sorokra korlátozódik
+C) Az ON feltétel mindig figyelmen kívül marad LEFT JOIN esetén
+D) A WHERE feltétel minden employee-t duplikál
+ANSWER: B
+EXPLANATION: A LEFT JOIN ugyan megtartja a nem illeszkedő employee sorokat, de a WHERE feltétel ezután csak a `d.name = 'IT'` értéket TRUE-ként kiértékelő sorokat engedi tovább. Ha nincs department, `d.name` NULL, ezért a sor kiesik. Ha a feltétel célja az IT adatok illesztése a bal oldali sorok megtartása mellett, a feltételt tipikusan az ON feltételbe kell helyezni. A gyakori rossz válasz azért csábító, mert a LEFT JOIN kulcsszó önmagában azt sugallhatja, hogy a bal oldali sorok minden további feltételtől függetlenül megmaradnak.
+###END
+
+### Q71
+LEVEL: medior
+TOPIC: Window functions
+TYPE: output
+QUESTION: Mit ad vissza az alábbi lekérdezés a `salary` értékekre, ha azok 100, 100 és 80?
+CODE:
+SELECT
+    salary,
+    DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+FROM employees;
+ENDCODE
+A) 1, 1, 2
+B) 1, 2, 3
+C) 1, 1, 3
+D) 3, 3, 1
+ANSWER: A
+EXPLANATION: A `DENSE_RANK()` azonos értékeknek azonos rangot ad, és nem hagy ki rangszámot a következő különböző értéknél. A 100-as értékek ezért 1-es rangot kapnak, a 80 pedig 2-est. A gyakori rossz válasz azért csábító, mert a `RANK()` ugyanezen adatoknál 1, 1, 3 eredményt adna, ezért a két függvény könnyen összekeverhető.
+###END
+
+### Q72
+LEVEL: medior
+TOPIC: Query plans & optimization
+TYPE: production
+QUESTION: Egy lekérdezés productionben néha gyors, néha nagyon lassú, ugyanazzal a SQL-lel. Melyik vizsgálat lehet különösen hasznos annak megértéséhez, hogy a planner miért választ eltérő vagy nem megfelelő tervet?
+A) Az adatbázis összes táblájának törlése és újralétrehozása
+B) Az összes index törlése és a query újrafuttatása
+C) Az execution plan, a statisztikák és az adateloszlás vizsgálata
+D) A SELECT lecserélése DELETE-re
+ANSWER: C
+EXPLANATION: A planner döntései a táblák méretére, statisztikákra, értékeloszlásra és a lekérdezés paramétereire is támaszkodhatnak. Az `EXPLAIN (ANALYZE, BUFFERS)` és az adatbázis statisztikáinak vizsgálata segíthet feltárni, hogy becslési probléma, adateloszlás vagy más körülmény okozza-e a változó teljesítményt. A gyakori rossz válasz azért csábító, mert az indexek törlése látványos kísérlet, de diagnosztikai alap nélkül inkább ronthatja a rendszert.
+###END
+
+### Q73
+LEVEL: medior
+TOPIC: Transactions & isolation levels
+TYPE: scenario
+QUESTION: Két egymást követő SELECT ugyanazon tranzakción belül fut READ COMMITTED izoláció mellett. Egy másik tranzakció közben commitol egy módosítást. Mi történhet?
+A) A második SELECT új statement snapshotot használhat, ezért már láthatja a másik tranzakció által commitolt módosítást
+B) A tranzakció teljes időtartama alatt ugyanaz a snapshot garantált
+C) A második SELECT mindig látja a módosítást, még akkor is, ha a másik tranzakció nem commitolt
+D) A READ COMMITTED teljesen letilt minden konkurens tranzakciót
+ANSWER: A
+EXPLANATION: PostgreSQL READ COMMITTED izolációban minden statement saját snapshotot kaphat. Emiatt egy később induló SELECT már láthat olyan adatot, amelyet egy másik tranzakció időközben commitolt, miközben a korábbi SELECT még nem látta. A gyakori rossz válasz azért csábító, mert sokan a tranzakció fogalmát automatikusan egyetlen, teljes tranzakcióra érvényes snapshothoz kötik.
+###END
+
+### Q74
+LEVEL: medior
+TOPIC: Normalization & schema design
+TYPE: scenario
+QUESTION: Egy `orders` táblában minden rendelésnél tárolod a `customer_id` mellett a `customer_email` értéket is, miközben az email cím a customers táblában már megtalálható. Mi lehet ennek egyik fő problémája?
+A) A customer_id soha nem használható foreign key-ként
+B) Az adatbázis automatikusan törli a duplikált email címeket
+C) Az orders tábla nem használhat indexeket
+D) Update anomaly alakulhat ki, ha az email megváltozik, de nem minden duplikált példány frissül
+ANSWER: D
+EXPLANATION: Ugyanannak az információnak több helyen történő tárolása inkonzisztenciához vezethet. Ha a customer email címe megváltozik, de egyes order rekordokban a régi érték marad, az adatbázis két különböző értéket tart ugyanahhoz az ügyfélhez. A gyakori rossz válasz azért csábító, mert a redundáns oszlop lekérdezéskor kényelmesebbnek tűnhet, miközben hosszú távon karbantartási problémát okoz.
+###END
+
+### Q75
+LEVEL: medior
+TOPIC: SQL injection & security
+TYPE: production
+QUESTION: Egy API endpoint dinamikusan engedi kiválasztani, hogy melyik oszlop szerint történjen a rendezés. A felhasználó a `sortColumn` értékét közvetlenül a SQL stringbe helyezheti. Mi a megfelelő biztonságos megközelítés?
+A) A sortColumn értékét egyszerűen idézőjelek közé kell tenni
+B) A sortColumn értékét SQL kommentté kell alakítani
+C) A megengedett oszlopneveket egy szerveroldali allowlist alapján validálni, és csak validált azonosítót használni
+D) A sortColumn értékét kisbetűssé alakítani
+ANSWER: C
+EXPLANATION: A column name vagy más SQL identifier nem kezelhető ugyanúgy prepared statement paraméterként, mint egy adatérték. Ezért a kliens által küldött értéket előre meghatározott, engedélyezett oszlopnevekhez kell kötni, és csak validált értéket szabad az SQL struktúrájába beilleszteni. A gyakori rossz válasz azért csábító, mert az idézőjelek vagy karakterátalakítások látszólag „tisztítják” a bemenetet, de nem jelentenek megbízható identifier-validációt.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: SELECT & filtering
+TYPE: output
+QUESTION: Mit ad vissza az alábbi PostgreSQL-lekérdezés, ha a `salary` értékek 500, 700 és 900?
+CODE:
+SELECT name
+FROM employees
+WHERE salary > 500
+  AND salary < 900;
+ENDCODE
+A) Az 500, 700 és 900 fizetésű employee-ket
+B) Csak a 500 és 900 fizetésű employee-ket
+C) Csak a 700 fizetésű employee-t
+D) A 700 és 900 fizetésű employee-ket
+ANSWER: C
+EXPLANATION: A két feltétel egyszerre érvényesül, és mindkettő szigorú összehasonlítás. Ezért az 500 és 900 kizáródik, a 700 viszont megfelel mindkét feltételnek. A gyakori rossz válasz azért csábító, mert könnyű elfelejteni, hogy a `>` és `<` nem tartalmazza a határértékeket.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: JOINs
+TYPE: behavior
+QUESTION: Mi történik, ha egy LEFT JOIN jobb oldalán olyan feltételt helyezel az `ON` részbe, amely nem teljesül?
+CODE:
+SELECT e.id, d.name
+FROM employees e
+LEFT JOIN departments d
+    ON d.id = e.department_id
+   AND d.location = 'Budapest';
+ENDCODE
+A) Az employee sor eltűnik
+B) Az employee sor megmarad, de a department oszlopai NULL értékűek lehetnek
+C) A LEFT JOIN automatikusan INNER JOIN-ná válik
+D) A teljes query hibával leáll
+ANSWER: B
+EXPLANATION: A LEFT JOIN minden bal oldali employee sort megtart. Ha a department ID egyezik, de a `location = 'Budapest'` feltétel nem teljesül, nincs matching jobb oldali sor, ezért a department oszlopai NULL értéket kapnak. A gyakori rossz válasz azért csábító, mert a feltétel meghiúsulása könnyen összekeverhető azzal, hogy a bal oldali sor is kiesik.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: NULL handling
+TYPE: edgecase
+QUESTION: Mi lesz az alábbi PostgreSQL-kifejezés eredménye?
+CODE:
+SELECT NULLIF(10, 10);
+ENDCODE
+A) 10
+B) 0
+C) FALSE
+D) NULL
+ANSWER: D
+EXPLANATION: A `NULLIF(a, b)` NULL-t ad vissza, ha az `a` és `b` érték egyenlő. Ha nem egyenlők, az első értéket adja vissza. Itt a két 10 egyenlő, ezért az eredmény NULL. A gyakori rossz válasz azért csábító, mert a NULLIF nevét könnyű úgy értelmezni, mintha csak egy speciális boolean összehasonlítást végezne.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: Aggregation & GROUP BY
+TYPE: output
+QUESTION: Mit ad vissza az alábbi lekérdezés?
+CODE:
+SELECT department_id, SUM(salary)
+FROM employees
+GROUP BY department_id
+ORDER BY SUM(salary) DESC
+LIMIT 1;
+ENDCODE
+A) A legnagyobb összfizetéssel rendelkező departmentet és annak összfizetését
+B) A legmagasabb egyéni fizetésű employee departmentjét
+C) Minden departmentet az összfizetésével
+D) A legkisebb összfizetéssel rendelkező departmentet
+ANSWER: A
+EXPLANATION: A GROUP BY departmentenként kiszámítja a fizetések összegét, az ORDER BY pedig ezeket csökkenő sorrendbe rendezi. A LIMIT 1 ezután csak a legnagyobb összegű csoportot tartja meg. A gyakori rossz válasz azért csábító, mert a legmagasabb egyéni fizetés és a legnagyobb department-szintű összfizetés két külön fogalom.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Subqueries & CTEs
+TYPE: debug
+QUESTION: Mi a probléma az alábbi lekérdezéssel, ha az a cél, hogy az átlagfizetés feletti employee-ket válassza ki?
+CODE:
+SELECT *
+FROM employees
+WHERE salary > (
+    SELECT department_id, AVG(salary)
+    FROM employees
+    GROUP BY department_id
+);
+ENDCODE
+A) Az AVG nem használható subqueryben
+B) A GROUP BY mindig tiltott subqueryben
+C) A subquery több sort és több oszlopot adhat vissza, miközben a `>` skaláris összehasonlításhoz egyetlen értéket vár
+D) A salary oszlop nem használható WHERE feltételben
+ANSWER: C
+EXPLANATION: A `>` után álló skaláris subquerynek egyetlen összehasonlítható értéket kell visszaadnia. A bemutatott subquery departmentenként több sort és két oszlopot adhat vissza, ezért nem felel meg ennek a szerkezetnek. A gyakori rossz válasz azért csábító, mert az AVG és GROUP BY kombináció önmagában teljesen érvényes SQL.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: Window functions
+TYPE: output
+QUESTION: Mit eredményez az alábbi lekérdezés, ha egy department employee-fizetései 100, 80 és 60?
+CODE:
+SELECT
+    name,
+    salary,
+    SUM(salary) OVER (
+        PARTITION BY department_id
+    ) AS department_total
+FROM employees;
+ENDCODE
+A) Minden employee saját fizetését kapja eredményül
+B) Minden employee mellett ugyanaz a department-szintű fizetésösszeg jelenik meg
+C) Csak departmentenként egy employee jelenik meg
+D) A fizetések csökkenő sorrendben kerülnek összegzésre
+ANSWER: B
+EXPLANATION: A `PARTITION BY department_id` departmentenként határozza meg az ablakot. Az ablakon belüli `SUM` minden sorhoz ugyanazt a department-összeget rendeli, így a példában minden employee mellett 240 jelenik meg. A gyakori rossz válasz azért csábító, mert a SUM aggregációt sokan kizárólag GROUP BY-jal társítják, miközben window functionként az eredeti sorok megmaradnak.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: Indexes
+TYPE: scenario
+QUESTION: Egy lekérdezés rendszeresen ezt használja:
+CODE:
+SELECT *
+FROM orders
+WHERE customer_id = 42
+ORDER BY created_at DESC
+LIMIT 20;
+ENDCODE
+Melyik index lehet különösen alkalmas ennek a lekérdezésnek a támogatására?
+A) `CREATE INDEX ON orders(status);`
+B) `CREATE INDEX ON orders(created_at);`
+C) `CREATE INDEX ON orders(customer_id);`
+D) `CREATE INDEX ON orders(customer_id, created_at DESC);`
+ANSWER: D
+EXPLANATION: A kombinált index először a `customer_id` alapján szűr, majd a `created_at DESC` szerinti sorrendet is támogatja. Ez különösen hasznos lehet a LIMIT 20 miatt, mert az adatbázisnak nem feltétlenül kell az összes matching sort feldolgoznia. A gyakori rossz válasz azért csábító, mert az egyoszlopos customer_id index valóban hasznos lehet, de nem támogatja ugyanilyen közvetlenül a szűrést és a rendezést együtt.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: Query plans & optimization
+TYPE: performance
+QUESTION: Miért lehet problémás az alábbi lekérdezés egy nagy PostgreSQL táblán, ha `created_at` indexelve van?
+CODE:
+SELECT *
+FROM orders
+WHERE DATE(created_at) = DATE '2026-09-01';
+ENDCODE
+A) A DATE függvény használata mindig syntax errort okoz
+B) Az indexelt oszlopon alkalmazott függvény miatt a sima `created_at` index nem feltétlenül használható hatékonyan
+C) A WHERE feltétel nem használhat DATE típust
+D) A PostgreSQL automatikusan törli az indexet
+ANSWER: B
+EXPLANATION: A lekérdezés nem közvetlenül a `created_at` értékét hasonlítja, hanem a `DATE(created_at)` kifejezést. Egy hagyományos `created_at` index ezért nem feltétlenül tud hatékony index scan-t biztosítani. Gyakran jobb lehet egy megfelelő dátumtartomány használata, például `created_at >= ... AND created_at < ...`. A gyakori rossz válasz azért csábító, mert az index jelenléte önmagában azt sugallhatja, hogy minden WHERE feltételnél automatikusan használható.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: Transactions & isolation levels
+TYPE: scenario
+QUESTION: Melyik jelenséget akadályozza meg a PostgreSQL REPEATABLE READ izolációja a READ COMMITTED-hez képest egy tranzakción belül?
+A) A konkurens INSERT-ek létezését minden körülmények között
+B) Mindenféle lock használatát
+C) Azt, hogy ugyanazon tranzakció későbbi statementjei új, később commitolt adatokat lássanak ugyanazon snapshot helyett
+D) Az összes deadlock lehetőségét
+ANSWER: C
+EXPLANATION: PostgreSQL-ben REPEATABLE READ esetén a tranzakció egy konzisztens snapshotból dolgozik, így ugyanazon tranzakción belül a későbbi lekérdezések nem váltanak át új statement snapshotra úgy, mint READ COMMITTED alatt. Ez nem jelenti azt, hogy minden konkurens módosítás blokkolva van vagy hogy deadlock lehetetlen. A gyakori rossz válasz azért csábító, mert a magasabb izolációs szintet könnyű úgy értelmezni, mintha minden konkurenciát teljesen letiltana.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: Locking & deadlocks
+TYPE: behavior
+QUESTION: Mi a tipikus oka annak, hogy egy adatbázis deadlockot észlel?
+A) Egy tranzakció túl sok sort olvas
+B) Egyetlen SELECT túl lassan fut
+C) Egy index túl nagy méretű
+D) Két vagy több tranzakció olyan zárolási ciklust hoz létre, amelyben mindegyik egy másik által tartott erőforrásra vár
+ANSWER: D
+EXPLANATION: Deadlock akkor alakulhat ki, amikor a tranzakciók egymás által tartott erőforrásokra várnak, így egyik sem tud továbblépni. A ciklikus várakozás az alapvető ismertetőjele. PostgreSQL képes a deadlock detektálására és az egyik tranzakció megszakítására. A gyakori rossz válasz azért csábító, mert egy lassú vagy nagy lekérdezés valóban okozhat lock waitet, de önmagában nem deadlock.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: Normalization & schema design
+TYPE: scenario
+QUESTION: Egy `employees` táblában minden employee sorban tárolod a department nevét és a department vezetőjének nevét. Miért lehet ez normalizációs szempontból problémás?
+A) A department név és vezető ismétlődése update anomalyhoz vezethet
+B) A TEXT típus nem tárolhat neveket
+C) A department vezetőjének neve nem lehet NULL
+D) Az employees táblában nem lehet idegen kulcs
+ANSWER: A
+EXPLANATION: A departmenthez tartozó információkat minden employee rekordban megismételni redundanciát okoz. Ha például megváltozik a department vezetője, minden kapcsolódó employee sort frissíteni kellene, és egy kihagyott frissítés inkonzisztens állapothoz vezethet. A gyakori rossz válasz azért csábító, mert a redundáns adatok elsőre egyszerűbb lekérdezéseket eredményezhetnek.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: Constraints & keys
+TYPE: scenario
+QUESTION: Egy `payments` táblában a `amount` értékének mindig pozitívnak kell lennie. Melyik constraint fejezi ki ezt legközvetlenebbül?
+CODE:
+CREATE TABLE payments (
+    id BIGINT PRIMARY KEY,
+    amount NUMERIC(12,2)
+);
+ENDCODE
+A) `UNIQUE(amount)`
+B) `FOREIGN KEY(amount)`
+C) `CHECK(amount > 0)`
+D) `DEFAULT(amount)`
+ANSWER: C
+EXPLANATION: A CHECK constraint közvetlenül az adott sor `amount` értékére vonatkozó feltételt kényszeríti ki. A UNIQUE az ismétlődést tiltja, a FOREIGN KEY másik tábla értékéhez kapcsol, a DEFAULT pedig csak alapértelmezett értéket ad meg. A gyakori rossz válasz azért csábító, mert a constraint fogalma általánosan adatvalidációhoz kapcsolódik, de különböző constraint típusok különböző szabályokat biztosítanak.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: DML & upserts
+TYPE: scenario
+QUESTION: PostgreSQL-ben egy meglévő rekordot szeretnél frissíteni, ha az email már létezik, egyébként pedig beszúrni. Melyik megoldás felel meg ennek?
+CODE:
+INSERT INTO users (email, name)
+VALUES ('anna@example.com', 'Anna')
+ON CONFLICT (email)
+DO UPDATE SET name = EXCLUDED.name;
+ENDCODE
+A) A bemutatott UPSERT
+B) `DELETE` majd `SELECT`
+C) `SELECT` majd mindig `INSERT`
+D) `UPDATE` majd mindig `DELETE`
+ANSWER: A
+EXPLANATION: Az `ON CONFLICT (email)` a megadott egyedi kulcs vagy index konfliktusát kezeli. Konfliktus esetén a `DO UPDATE` fut le, és az `EXCLUDED.name` a beszúrásra javasolt új értéket jelenti. Ha nincs konfliktus, az INSERT történik meg. A gyakori rossz válasz azért csábító, mert az alkalmazásoldali SELECT-then-INSERT logika egyszerűnek tűnik, de konkurens tranzakciók mellett race conditiont okozhat.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: Views, procedures & triggers
+TYPE: scenario
+QUESTION: Egy audit táblába automatikusan szeretnéd rögzíteni, hogy egy `employees` rekord módosult. Melyik adatbázis-mechanizmus alkalmas arra, hogy az UPDATE eseményhez automatikusan kapcsolódjon egy művelet?
+A) VIEW
+B) TRIGGER
+C) INDEX
+D) FOREIGN KEY
+ANSWER: B
+EXPLANATION: A trigger egy meghatározott adatbázis-eseményhez, például INSERT, UPDATE vagy DELETE művelethez kapcsolható automatikus logikát tesz lehetővé. Így egy UPDATE után audit rekord készíthető. A gyakori rossz válasz azért csábító, mert a VIEW is egyfajta absztrakciót biztosít az adatok felett, de önmagában nem eseménykezelő mechanizmus.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Data types & dates
+TYPE: trap
+QUESTION: PostgreSQL-ben melyik típus a megfelelőbb, ha egy esemény pontos időpontját szeretnéd tárolni és az értéket időzónafüggetlenül, abszolút időpontként szeretnéd kezelni?
+A) `TEXT`
+B) `DATE`
+C) `TIMESTAMP WITHOUT TIME ZONE`
+D) `TIMESTAMP WITH TIME ZONE`
+ANSWER: D
+EXPLANATION: PostgreSQL-ben a `timestamp with time zone` típus, röviden `timestamptz`, az időpontot egy abszolút időpontként kezeli, és megjelenítéskor az aktuális session időzónájának megfelelő reprezentációt adhat. A `timestamp without time zone` nem tartalmaz időzóna-információt és nem ugyanazt a szemantikát biztosítja. A gyakori rossz válasz azért csábító, mert a típus neve alapján sokan azt feltételezik, hogy a `timestamptz` szó szerint egy időzóna-nevet is eltárol az érték részeként.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: SQL injection & security
+TYPE: production
+QUESTION: Miért nem elegendő egy webalkalmazásban csak frontend oldalon validálni az SQL-lel kapcsolatos felhasználói inputot?
+A) Mert a frontend validáció mindig lassabb
+B) Mert a kliensoldali ellenőrzés megkerülhető, ezért a szerveroldali SQL-hozzáférésnek önmagában is biztonságosnak kell lennie
+C) Mert SQL injection csak mobilalkalmazásokban fordul elő
+D) Mert a backend nem képes stringeket feldolgozni
+ANSWER: B
+EXPLANATION: A kliensoldali kódot a felhasználó kontrollálhatja vagy megkerülheti, ezért nem tekinthető biztonsági határnak. A szerveroldali adatbázis-hozzáférésnek paraméterezett queryket, megfelelő authorizationt és egyéb biztonsági kontrollokat kell használnia. A gyakori rossz válasz azért csábító, mert a frontend validáció valóban javíthatja a felhasználói élményt, de ez nem helyettesíti a backend biztonsági ellenőrzéseit.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: SQL vs NoSQL
+TYPE: scenario
+QUESTION: Egy rendszerben sok, egymástól függő pénzügyi rekordot kell konzisztensen módosítani egy tranzakcióban, és az adatok közötti kapcsolatokat JOIN-okkal gyakran elemzik. Melyik megközelítés illeszkedik természetesebben ehhez?
+A) Relációs SQL adatbázis
+B) Kizárólag dokumentumorientált NoSQL
+C) Kizárólag cache rendszer
+D) Egyszerű szövegfájlok
+ANSWER: A
+EXPLANATION: A relációs SQL adatbázisok erősen támogatják a tranzakciókat, a referenciális kapcsolatokat és a JOIN-alapú lekérdezéseket. Más adatbázisok is képesek összetett tranzakciós vagy kapcsolati minták egy részének kezelésére, de a követelmények közvetlenül a relációs modell erősségeire épülnek. A gyakori rossz válasz azért csábító, mert a NoSQL rendszerek skálázási előnyei sok modern rendszerben fontosak, de önmagukban nem teszik őket megfelelőbbé minden workloadra.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: Query plans & optimization
+TYPE: debug
+QUESTION: Egy lekérdezésnél az `EXPLAIN` jelentősen kevesebb sort becsül, mint amennyit az `EXPLAIN ANALYZE` ténylegesen feldolgoz. Mit jelezhet ez?
+A) A SQL szintaktikailag biztosan hibás
+B) Az adatbázis nem használhat indexet
+C) A planner cardinality becslései pontatlanok lehetnek, például elavult vagy nem megfelelő statisztikák miatt
+D) Az UPDATE művelet nem commitolódott
+ANSWER: C
+EXPLANATION: Az optimizer becsült sorainak és a tényleges soroknak a nagy eltérése cardinality estimation problémára utalhat. Ennek oka lehet többek között elavult statisztika, erősen ferde adateloszlás vagy összetett oszlopfüggőség. Az eltérés rossz join- vagy scan-stratégia választásához is vezethet. A gyakori rossz válasz azért csábító, mert a jelentős teljesítménykülönbség könnyen úgy tűnhet, mintha magával a SQL-lel lenne alapvető probléma.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: Window functions
+TYPE: algorithm
+QUESTION: Egy employee aktuális fizetését szeretnéd összehasonlítani ugyanazon department előző fizetési rekordjával egy időbeli sorozatban. Melyik window function alkalmas közvetlenül az előző sor értékének elérésére?
+A) `LEAD()`
+B) `LAG()`
+C) `RANK()`
+D) `NTILE()`
+ANSWER: B
+EXPLANATION: A `LAG()` az aktuális sorhoz képest egy korábbi sort tesz elérhetővé az ablak sorrendje alapján. Például `LAG(salary) OVER (PARTITION BY employee_id ORDER BY effective_from)` használható az előző időpontban érvényes fizetés elérésére. A `LEAD()` ezzel szemben egy későbbi sort ad. A gyakori rossz válasz azért csábító, mert a LAG és LEAD páros neve és működése szimmetrikus, ezért könnyű felcserélni őket.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: Aggregation & GROUP BY
+TYPE: scenario
+QUESTION: Egy reportban csak azokat a departmenteket szeretnéd visszaadni, ahol az employee-k átlagfizetése meghaladja az 1 500 000 értéket. Melyik SQL szerkezet a megfelelő?
+A) `WHERE AVG(salary) > 1500000`
+B) `GROUP BY AVG(salary) HAVING department_id`
+C) `ORDER BY AVG(salary) > 1500000`
+D) `GROUP BY department_id HAVING AVG(salary) > 1500000`
+ANSWER: D
+EXPLANATION: Az átlagfizetés aggregált érték, ezért a csoportosítás után a `HAVING` segítségével kell szűrni. A `GROUP BY department_id` létrehozza a department-csoportokat, az `AVG(salary)` pedig ezek átlagát számítja ki. A gyakori rossz válasz azért csábító, mert a WHERE is szűrőfeltétel, de az aggregált eredményekre nem használható ilyen formában.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: Indexes
+TYPE: scenario
+QUESTION: Egy PostgreSQL táblán gyakran futtatod:
+CODE:
+SELECT *
+FROM users
+WHERE last_name = 'Smith'
+  AND first_name = 'John';
+ENDCODE
+Melyik index lehet általában megfelelőbb, ha ezt a kombinált keresést gyakran használod?
+A) `CREATE INDEX ON users(last_name, first_name);`
+B) `CREATE INDEX ON users(first_name);`
+C) `CREATE INDEX ON users(id);`
+D) `CREATE INDEX ON users(created_at);`
+ANSWER: A
+EXPLANATION: A kombinált index mindkét keresési feltételt közvetlenül támogatja. A B-tree index oszlopsorrendje számít, ezért a `last_name, first_name` sorrend a két egyenlőségi feltételhez megfelelő lehet. Egyetlen first_name index is használható lehet, de kevésbé célzott erre a konkrét kombinációra. A gyakori rossz válasz azért csábító, mert egyetlen releváns oszlop indexelése is javíthat bizonyos eseteken, de a két oszlopos kereséshez a kombinált index gyakran jobb illeszkedés.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: Transactions & isolation levels
+TYPE: edgecase
+QUESTION: PostgreSQL-ben mi történhet, ha egy tranzakció SERIALIZABLE izoláció mellett olyan konkurens módosításokkal találkozik, amelyek sértik a tranzakciók biztonságos sorosíthatóságát?
+A) A PostgreSQL mindig automatikusan merge-öli a tranzakciókat
+B) A PostgreSQL garantáltan figyelmen kívül hagyja a konkurens módosítást
+C) A tranzakció serialization failure hibával megszakadhat, és az alkalmazásnak újra kell próbálnia
+D) A SERIALIZABLE minden lockot kikapcsol
+ANSWER: C
+EXPLANATION: SERIALIZABLE izoláció esetén PostgreSQL biztosítja, hogy a sikeresen commitolt tranzakciók eredménye megfeleljen valamilyen soros végrehajtásnak. Ha ez nem biztosítható, egy tranzakció serialization failure hibával megszakadhat. Az alkalmazásnak ilyen esetben tipikusan retry stratégiát kell alkalmaznia. A gyakori rossz válasz azért csábító, mert a SERIALIZABLE név alapján úgy tűnhet, hogy az adatbázis minden konkurenciát blokkol, pedig a rendszer optimista módon is megszakíthat tranzakciókat.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: Views, procedures & triggers
+TYPE: behavior
+QUESTION: Melyik állítás írja le helyesen a PostgreSQL trigger és a stored procedure közötti alapvető különbséget?
+A) A trigger mindig manuálisan meghívott SELECT
+B) A trigger egy meghatározott adatbázis-eseményhez automatikusan kapcsolódhat, míg egy procedure-t explicit módon kell meghívni
+C) A procedure csak SELECT utasításokat tartalmazhat
+D) A trigger nem módosíthat adatot
+ANSWER: B
+EXPLANATION: A trigger egy eseményhez, például INSERT, UPDATE vagy DELETE művelethez kapcsolható, és az esemény bekövetkezésekor automatikusan végrehajtható. A procedure-t az alkalmazás vagy más SQL kód explicit módon hívja meg. A pontos képhez hozzátartozik, hogy PostgreSQL-ben a functionök és procedure-ök eltérő hívási és tranzakciós szemantikával rendelkeznek. A gyakori rossz válasz azért csábító, mert mindkét mechanizmus szerveroldali kódot képes futtatni.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: SQL injection & security
+TYPE: production
+QUESTION: Egy backend SQL injection ellen prepared statementet használ az értékekhez. Miért lehet még mindig veszélyes közvetlenül a felhasználótól származó `ORDER BY` oszlopnevet az SQL stringbe illeszteni?
+A) Mert az ORDER BY mindig lassú
+B) Mert az oszlopnevek soha nem használhatók ORDER BY-ban
+C) Mert prepared statement csak SELECT esetén működik
+D) Mert a SQL identifier nem ugyanúgy paraméterezhető, mint egy adatérték, ezért az ellenőrizetlen input módosíthatja a SQL szerkezetét
+ANSWER: D
+EXPLANATION: A prepared statement paraméterei adatértékekre szolgálnak, nem tetszőleges SQL identifier vagy szintaktikai elem helyettesítésére. Ezért a rendezési oszlopot például egy szerveroldali allowlistből kell kiválasztani. A gyakori rossz válasz azért csábító, mert a prepared statement használata után könnyű azt hinni, hogy az egész SQL string automatikusan biztonságossá vált.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: SQL vs NoSQL
+TYPE: production
+QUESTION: Egy webalkalmazásban a felhasználói profilok rugalmas szerkezetűek, viszont a rendszerben külön kell kezelni a számlázási tranzakciókat, amelyekhez erős konzisztencia, foreign key-k és összetett JOIN-ok szükségesek. Melyik architekturális megközelítés lehet indokolt?
+A) Minden adatot kötelezően ugyanabba a NoSQL adatbázisba helyezni
+B) Minden adatot kizárólag relációs táblákban, JSON-támogatás nélkül tárolni
+C) A profiladatokhoz és a tranzakciós adatokhoz eltérő tárolási modellt használni, ha a követelmények ezt indokolják
+D) Az adatbázis helyett minden adatot memóriában tárolni
+ANSWER: C
+EXPLANATION: Nem szükséges minden adatot ugyanazzal a perzisztenciamodellel kezelni. A rugalmas profiladatokhoz egy dokumentumorientált modell illeszkedhet, míg a tranzakciós, erősen kapcsolt adatokhoz egy relációs adatbázis lehet megfelelőbb. Az ilyen polyglot persistence megközelítés azonban extra üzemeltetési és konzisztenciakezelési komplexitást is bevezet. A gyakori rossz válasz azért csábító, mert egyetlen adatbázis technológia egyszerűbbnek tűnik üzemeltetési szempontból, de nem feltétlenül illeszkedik minden adattípus eltérő követelményeihez.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: SELECT & filtering
+TYPE: edgecase
+QUESTION: Mi lesz az alábbi PostgreSQL-lekérdezés eredménye, ha az `age` értékek között 18, 25 és NULL szerepel?
+CODE:
+SELECT COUNT(*)
+FROM employees
+WHERE age >= 18;
+ENDCODE
+A) 3
+B) 2
+C) 1
+D) NULL
+ANSWER: B
+EXPLANATION: A 18 és 25 értékek megfelelnek a feltételnek, a NULL viszont nem eredményez TRUE értéket az összehasonlításban, ezért kiesik. A COUNT(*) a fennmaradó két sort számolja meg. A gyakori rossz válasz azért csábító, mert a NULL-t könnyű úgy kezelni, mintha egy speciális numerikus érték lenne.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: JOINs
+TYPE: scenario
+QUESTION: Egy employee több projekten is dolgozhat. Ha az employee-ket a projekt-hozzárendeléseikkel INNER JOINolod, és egy employee-hez három matching projekt tartozik, hány eredménysor keletkezhet az adott employee számára?
+A) Egy
+B) Nulla
+C) Kettő
+D) Három
+ANSWER: D
+EXPLANATION: Egy JOIN eredménysora a matching kombinációkból jön létre. Ha ugyanahhoz az employee-hez három matching assignment sor tartozik, az employee adatai három eredménysorban jelenhetnek meg. A gyakori rossz válasz azért csábító, mert az employee egyetlen entitás, miközben a JOIN az adatbázisban tárolt matching sorokat kombinálja.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: NULL handling
+TYPE: behavior
+QUESTION: Mi a különbség a `COALESCE` és a `NULLIF` alapvető működése között?
+A) A COALESCE több érték közül az első nem-NULL értéket választja, míg a NULLIF egyenlőség esetén NULL-t ad
+B) Mindkettő mindig NULL-t ad vissza, ha az első argumentum NULL
+C) A NULLIF több argumentum közül az első nem-NULL értéket választja
+D) A COALESCE csak numerikus értékeken működik
+ANSWER: A
+EXPLANATION: A COALESCE tetszőleges számú kifejezésből az első nem-NULL értéket adja vissza. A NULLIF két kifejezést hasonlít össze, és ha egyenlők, NULL-t ad vissza, egyébként az első értéket. A gyakori rossz válasz azért csábító, mert mindkét függvény szorosan kapcsolódik a NULL-kezeléshez.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: Aggregation & GROUP BY
+TYPE: trap
+QUESTION: Mi történik az alábbi lekérdezéssel PostgreSQL-ben?
+CODE:
+SELECT department_id, name, COUNT(*)
+FROM employees
+GROUP BY department_id;
+ENDCODE
+A) Minden employee neve automatikusan az első csoportosított név lesz
+B) A COUNT(*) figyelmen kívül hagyja a name oszlopot
+C) A lekérdezés hibát ad, mert a `name` nincs aggregálva és nincs benne a GROUP BY-ban
+D) A PostgreSQL automatikusan hozzáadja a name oszlopot a GROUP BY-hoz
+ANSWER: C
+EXPLANATION: A GROUP BY eredményében minden kiválasztott oszlopnak vagy csoportosító kifejezésnek, vagy aggregált kifejezésnek kell lennie. A `name` egyik kategóriába sem tartozik ebben a lekérdezésben, ezért PostgreSQL hibát jelez. A gyakori rossz válasz azért csábító, mert egyes adatbázisok eltérő GROUP BY-viselkedése zavart okozhat.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: Subqueries & CTEs
+TYPE: scenario
+QUESTION: Egy CTE-t szeretnél használni azért, hogy először kiszámítsd a departmentenkénti átlagfizetést, majd erre az eredményre építs egy további lekérdezést. Melyik szerkezet felel meg ennek?
+A) `WITH department_avg AS (...) SELECT ... FROM department_avg`
+B) `CREATE INDEX department_avg AS (...)`
+C) `GROUP BY department_avg WITH (...)`
+D) `HAVING department_avg AS (...)`
+ANSWER: A
+EXPLANATION: A WITH részben definiált CTE egy elnevezett lekérdezési eredmény, amelyet az azt követő SQL statement felhasználhat. Ez jól strukturálja a több lépésből álló lekérdezéseket. A gyakori rossz válasz azért csábító, mert a CTE szintaktikája több SQL objektum, például view vagy index szintaxisára emlékeztethet.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: Window functions
+TYPE: algorithm
+QUESTION: Egy departmenten belül szeretnéd kiszámítani az employee-k futó fizetésösszegét `hire_date` szerinti sorrendben. Melyik megoldás illeszkedik ehhez?
+A) `SUM(salary) GROUP BY department_id ORDER BY hire_date`
+B) `SUM(salary) OVER (PARTITION BY department_id ORDER BY hire_date)`
+C) `SUM(salary) HAVING department_id ORDER BY hire_date`
+D) `SUM(salary) DISTINCT department_id`
+ANSWER: B
+EXPLANATION: A windowed SUM a departmenten belül, a `hire_date` szerinti sorrend alapján képes futó aggregátumot előállítani. A GROUP BY ezzel szemben a részletes employee sorokat egyetlen csoportszintű sorra aggregálná. A gyakori rossz válasz azért csábító, mert a SUM és a GROUP BY együtt gyakori aggregációs minta, de itt az eredeti sorokat is meg kell tartani.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Indexes
+TYPE: performance
+QUESTION: Egy táblán van egy `status` oszlop, amelynek értékei az esetek 99%-ában `ACTIVE`, és csak 1%-ban `INACTIVE`. Miért dönthet úgy a PostgreSQL planner, hogy nem használ indexet egy `WHERE status = 'ACTIVE'` lekérdezéshez?
+A) Mert PostgreSQL-ben TEXT oszlopokra nem lehet indexet készíteni
+B) Mert a WHERE feltétel automatikusan letiltja az indexeket
+C) Mert az indexek csak PRIMARY KEY esetén használhatók
+D) Mert az érték nagyon alacsony szelektivitása miatt a táblaszintű scan olcsóbb lehet
+ANSWER: D
+EXPLANATION: Ha a lekérdezés a sorok nagyon nagy részét visszaadja, az indexen keresztüli sok heap-hozzáférés drágább lehet, mint egy szekvenciális scan. Az optimizer költségbecslés alapján dönthet úgy, hogy a seq scan hatékonyabb. A gyakori rossz válasz azért csábító, mert az index jelenléte könnyen azt az elvárást kelti, hogy minden WHERE feltételnél automatikusan előnyt jelent.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: Query plans & optimization
+TYPE: scenario
+QUESTION: Egy nagy táblán egy JOIN lekérdezés jelentősen lassabb lett, miután az adatmennyiség többszörösére nőtt. Mi legyen az egyik első technikai vizsgálati lépés?
+A) Azonnal NoSQL adatbázisra váltani
+B) Az összes index törlése
+C) Az aktuális execution plan és a becsült/tényleges sorszámok vizsgálata
+D) A JOIN-ok teljes tiltása
+ANSWER: C
+EXPLANATION: Az execution plan megmutathatja, hogy az optimizer milyen join és scan stratégiát választott, valamint hogy mennyire pontosak a cardinality becslések. Az adatmennyiség növekedése megváltoztathatja a költségmodellt és a megfelelő tervet is. A gyakori rossz válasz azért csábító, mert nagy teljesítményromlásnál könnyű azonnal technológiaváltásban gondolkodni, mielőtt a konkrét bottlenecket azonosítanánk.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: Transactions & isolation levels
+TYPE: scenario
+QUESTION: Két UPDATE ugyanazon tranzakción belül sikeresen lefut, majd a tranzakció ROLLBACK-et hajt végre. Mi történik normál tranzakciós táblák esetén?
+A) Csak a második UPDATE kerül visszagörgetésre
+B) Mindkét UPDATE módosítása visszagörgetésre kerül
+C) Egyik UPDATE sem volt hatással az adatokra
+D) Az első UPDATE automatikusan commitolódik
+ANSWER: B
+EXPLANATION: A tranzakció célja, hogy az abba tartozó adatbázis-műveleteket egyetlen atomi egységként kezelje. ROLLBACK esetén a tranzakción belüli még nem commitolt módosítások visszaállnak. A gyakori rossz válasz azért csábító, mert az UPDATE statementek külön futnak, de a tranzakció szempontjából ugyanahhoz az atomi egységhez tartoznak.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: Locking & deadlocks
+TYPE: production
+QUESTION: Két tranzakció ugyanazokat a két sort módosítja, de ellentétes sorrendben: az egyik először az 1-es, majd a 2-es sort zárolja, a másik először a 2-est, majd az 1-est. Melyik megközelítés csökkenti a deadlock kockázatát?
+A) Mindkét tranzakcióban ugyanazt a konzisztens zárolási sorrendet használni
+B) Minden tranzakciót hosszabb ideig nyitva tartani
+C) Véletlenszerű sorrendet választani
+D) A tranzakciók közötti várakozást növelni
+ANSWER: A
+EXPLANATION: A konzisztens lock acquisition order megszünteti az ilyen típusú ciklikus várakozás egyik alapvető okát. Ha minden tranzakció ugyanabban a sorrendben szerzi meg a szükséges lockokat, kisebb az esélye az egymásra váró ciklus kialakulásának. A gyakori rossz válasz azért csábító, mert a várakozás szabályozása hatással lehet a lockokra, de nem oldja meg a hibás zárolási sorrendből fakadó ciklust.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: Normalization & schema design
+TYPE: scenario
+QUESTION: Egy `orders` táblában minden rendeléshez vesszővel elválasztva tárolod a termékazonosítókat egyetlen `product_ids` oszlopban. Mi a fő probléma ezzel a relációs modellben?
+A) A VARCHAR típus nem használható rendeléseknél
+B) Az oszlopban túl kevés karakter lehet
+C) A lista nem reprezentál természetes módon különálló relációs sorokat, ezért nehéz lesz rájuk constraintet, JOIN-t és hatékony lekérdezést építeni
+D) A PRIMARY KEY automatikusan törlődik
+ANSWER: C
+EXPLANATION: A vesszővel elválasztott lista több értéket kényszerít egyetlen mezőbe, ami sérti az atomi értékekre épülő relációs modell elvét. Egy külön order-item kapcsolótábla természetesebben reprezentálja a rendelés és a termék kapcsolatát, és lehetővé teszi a megfelelő foreign key-k használatát. A gyakori rossz válasz azért csábító, mert kis rendszerekben a lista egyszerűnek tűnhet, de később jelentős lekérdezési és integritási problémákat okoz.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: Constraints & keys
+TYPE: edgecase
+QUESTION: PostgreSQL-ben mi a lényeges különbség a PRIMARY KEY és egy sima UNIQUE constraint között?
+A) A PRIMARY KEY enged NULL értéket, a UNIQUE soha
+B) A PRIMARY KEY nem lehet indexelve
+C) A UNIQUE mindig csak egyetlen sort engedélyez
+D) A PRIMARY KEY egy táblának legfeljebb egy lehet, és a kulcsértékek nem lehetnek NULL-ok
+ANSWER: D
+EXPLANATION: A PRIMARY KEY egy tábla elsődleges azonosítója, és a benne szereplő oszlopok nem lehetnek NULL értékűek. Egy táblának egy primary key constraintje lehet, míg több UNIQUE constraint is definiálható. A gyakori rossz válasz azért csábító, mert mindkét constraint egyediséget biztosít, de a PRIMARY KEY további szemantikai szerepet is betölt.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: DML & upserts
+TYPE: debug
+QUESTION: Mi a kockázata az alábbi alkalmazáslogikának konkurens környezetben, ha az `email` UNIQUE?
+CODE:
+SELECT id
+FROM users
+WHERE email = 'anna@example.com';
+
+-- Ha nincs találat, INSERT következik.
+ENDCODE
+A) Nincs kockázat, mert a SELECT automatikusan lockolja a nem létező sort
+B) Race condition alakulhat ki, mert két tranzakció egyszerre láthatja, hogy nincs rekord, majd mindkettő INSERT-et próbálhat
+C) A SELECT mindig deadlockot okoz
+D) A UNIQUE constraint automatikusan elrejti az egyik tranzakciót
+ANSWER: B
+EXPLANATION: A SELECT és az azt követő INSERT külön lépés, ezért két konkurens tranzakció ugyanarra a „nincs ilyen rekord” állapotra juthat. Az UNIQUE constraint végül megakadályozza a duplikációt, de az egyik INSERT hibával vagy konfliktussal találkozhat. PostgreSQL-ben erre tipikusan az `INSERT ... ON CONFLICT` vagy megfelelő tranzakciós kezelés használható. A gyakori rossz válasz azért csábító, mert az UNIQUE constraint valóban védi az integritást, de nem teszi automatikussá az alkalmazáslogikát.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: Views, procedures & triggers
+TYPE: scenario
+QUESTION: Mikor lehet előnyös egy materialized view egy hagyományos view-val szemben?
+A) Ha az eredmény számítása drága, ritkán változik, és a lekérdezési sebesség fontosabb az azonnali frissességnél
+B) Ha minden SELECT-et automatikusan tranzakcióvá szeretnél alakítani
+C) Ha meg akarod akadályozni az összes INSERT műveletet
+D) Ha egyáltalán nincs szükség tárolt eredményre
+ANSWER: A
+EXPLANATION: A materialized view fizikailag tárolja a lekérdezés eredményét, ezért az olvasás gyorsabb lehet egy drága számítás újra elvégzésénél. Cserébe az eredményt frissíteni kell, ezért nem feltétlenül tükrözi azonnal az alapul szolgáló adatokat. A gyakori rossz válasz azért csábító, mert a materialized view és a normál view egyaránt lekérdezési absztrakciót biztosít, de eltérő frissességi és tárolási szemantikával rendelkeznek.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: Data types & dates
+TYPE: output
+QUESTION: Mi az eredménye az alábbi PostgreSQL-kifejezésnek?
+CODE:
+SELECT DATE '2026-03-31' - DATE '2026-03-01';
+ENDCODE
+A) `30`
+B) `31`
+C) `1 month`
+D) `NULL`
+ANSWER: A
+EXPLANATION: PostgreSQL-ben két DATE kivonása egész napokban kifejezett különbséget ad. 2026. március 1. és március 31. között 30 nap van. A gyakori rossz válasz azért csábító, mert a két dátum ugyanabban a hónapban van, és a naptári napok számlálása könnyen összekeverhető a két dátum közötti eltelt idővel.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: SQL injection & security
+TYPE: production
+QUESTION: Egy alkalmazás minden felhasználónak ugyanazzal a teljes adatbázis-jogosultsággal kapcsolódik. Mi a fő biztonsági probléma ezzel?
+A) A SELECT lekérdezések lassabbak lesznek
+B) Az indexek nem működnek megfelelően
+C) Egy SQL injection vagy alkalmazásszintű kompromittálódás esetén a támadó túl széles adatbázis-hozzáférést kaphat
+D) A tranzakciók automatikusan SERIALIZABLE szintre váltanak
+ANSWER: C
+EXPLANATION: A least privilege elv szerint az alkalmazás adatbázis-felhasználójának csak a szükséges jogosultságokkal kell rendelkeznie. Ha egy kompromittált alkalmazáskapcsolat teljes adatbázis-hozzáférést kap, a támadás hatása jelentősen nagyobb lehet. A gyakori rossz válasz azért csábító, mert a jogosultságok elsősorban adminisztratív beállításnak tűnhetnek, miközben közvetlenül korlátozzák egy kompromittált kapcsolat lehetőségeit.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: SQL vs NoSQL
+TYPE: scenario
+QUESTION: Egy workload döntően key-value jellegű: egy ismert kulcs alapján kell nagyon gyorsan egy egyszerű értéket lekérni, és nincs szükség összetett JOIN-okra. Melyik modell lehet természetes választás?
+A) Key-value NoSQL adatbázis
+B) Kötelezően normalizált relációs séma több JOIN-nal
+C) Szöveges CSV-fájlok
+D) Adatbázis nélküli memóriahasználat minden perzisztencia nélkül
+ANSWER: A
+EXPLANATION: A key-value modell közvetlenül támogatja az ismert kulcs alapján történő egyszerű hozzáférést, és bizonyos workloadoknál hatékonyan skálázható. A relációs adatbázis is képes key-value jellegű hozzáférésre, de a követelmény itt kifejezetten kevés kapcsolatot és egyszerű kulcs-alapú olvasást ír le. A gyakori rossz válasz azért csábító, mert a relációs adatbázis általános célú és sok esetben megfelelő, de nem minden workload igényli ugyanazt az adatmodellt.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: Query plans & optimization
+TYPE: performance
+QUESTION: Egy indexelt oszlopra írt WHERE feltétel paraméterezett queryben időnként eltérő teljesítményt mutat különböző paraméterértékekkel. Mi lehet ennek egyik oka?
+A) A SQL nyelv nem támogat paramétereket
+B) Minden paraméterérték automatikusan ugyanazt az execution plant kapja
+C) Az indexelt oszlop értéke mindig egyenletesen oszlik el
+D) A különböző értékek eltérő számú sort adhatnak vissza, ezért az optimális execution plan is eltérhet
+ANSWER: D
+EXPLANATION: Az adatok eloszlása miatt két különböző paraméterérték nagyon eltérő cardinalityt eredményezhet. Egy ritka értéknél egy index scan, egy nagyon gyakori értéknél pedig egy seq scan lehet kedvezőbb. A prepared statement használata nem jelenti azt, hogy minden paraméterértékhez azonos költségű terv lenne optimális. A gyakori rossz válasz azért csábító, mert ugyanaz a SQL szerkezet ugyanolyannak tűnik, miközben az adateloszlás jelentősen változhat.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: Transactions & isolation levels
+TYPE: scenario
+QUESTION: Mi a fő különbség a COMMIT és a ROLLBACK között egy tranzakció végén?
+A) A COMMIT véglegesíti a tranzakció módosításait, míg a ROLLBACK visszavonja a még nem commitolt módosításokat
+B) Mindkettő pontosan ugyanazt csinálja
+C) A COMMIT csak SELECT esetén használható
+D) A ROLLBACK automatikusan új tranzakciót indít minden adatbázisban
+ANSWER: A
+EXPLANATION: A COMMIT sikeresen lezárja a tranzakciót és véglegesíti annak módosításait. A ROLLBACK ezzel szemben elveti a tranzakción belüli még nem commitolt változásokat. A gyakori rossz válasz azért csábító, mert mindkét utasítás tranzakciólezáró művelet, de ellentétes hatásúak.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: Locking & deadlocks
+TYPE: edgecase
+QUESTION: Mi történhet, ha egy tranzakció hosszú ideig nyitva marad, miközben módosított sorokat tart lock alatt?
+A) A lockok mindig azonnal felszabadulnak minden UPDATE után
+B) Más tranzakciók blokkolódhatnak, ha ugyanazokat az erőforrásokat szeretnék módosítani
+C) A PostgreSQL automatikusan commitolja a tranzakciót
+D) A lockok csak SELECT esetén léteznek
+ANSWER: B
+EXPLANATION: A tranzakcióhoz kapcsolódó módosítási lockok jellemzően a tranzakció végéig fennmaradnak. Egy hosszú tranzakció ezért más tranzakciók számára lock waitet és throughput-csökkenést okozhat. A gyakori rossz válasz azért csábító, mert egy UPDATE statement befejezése után a statement maga már véget ért, de a tranzakcióhoz tartozó lockok még fennmaradhatnak.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: Indexes
+TYPE: scenario
+QUESTION: Egy query `WHERE email = '...'` feltétellel keres felhasználót, és az `email` értékek egyediek. Melyik index lehet a legtermészetesebb választás?
+A) Index az `id` oszlopon
+B) Index a `created_at` oszlopon
+C) B-tree index az `email` oszlopon
+D) Index egy teljesen másik, nem használt oszlopon
+ANSWER: C
+EXPLANATION: Az egyenlőségi kereséshez egy B-tree index természetes és általánosan hatékony választás. Mivel az email értékek egyediek, a keresés várhatóan nagyon szelektív lesz. A gyakori rossz válasz azért csábító, mert az elsődleges kulcs indexe általában már létezik, de az nem segíti közvetlenül az email alapján történő keresést.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: Subqueries & CTEs
+TYPE: behavior
+QUESTION: Mi a lényeges különbség az `EXISTS` és a `IN` között az alábbi minták esetén?
+CODE:
+SELECT *
+FROM employees e
+WHERE EXISTS (
+    SELECT 1
+    FROM assignments a
+    WHERE a.employee_id = e.id
+);
+ENDCODE
+A) Az EXISTS csak numerikus oszlopokon működik
+B) Az EXISTS azt vizsgálja, hogy van-e legalább egy matching sor, és az eredmény szempontjából nem szükséges a subquery összes értékét materializálni
+C) Az EXISTS mindig lassabb, mint az IN
+D) Az EXISTS automatikusan JOIN-ná alakítja a queryt
+ANSWER: B
+EXPLANATION: Az EXISTS logikai létezésvizsgálatot végez: azt ellenőrzi, hogy a korrelált subquery legalább egy sort talál-e. Az optimizer a konkrét tervet ettől függetlenül különböző módokon valósíthatja meg, ezért nem igaz, hogy az EXISTS mindig lassabb vagy gyorsabb az IN-nél. A gyakori rossz válasz azért csábító, mert az EXISTS szintaxisa subqueryhez kötődik, miközben a végrehajtási stratégia optimizerfüggő.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: DML & upserts
+TYPE: production
+QUESTION: Egy nagy táblából több millió rekordot kell törölni. Miért lehet problémás egyetlen hatalmas DELETE tranzakció?
+A) A DELETE soha nem használhat WHERE feltételt
+B) A DELETE automatikusan törli az egész adatbázist
+C) A WHERE feltétel mindig figyelmen kívül marad
+D) Hosszú ideig tarthat, sok erőforrást és WAL-t használhat, valamint hosszabb ideig tarthat fenn lockokat és növelheti a tranzakciós terhelést
+ANSWER: D
+EXPLANATION: Egy nagyon nagy DELETE jelentős I/O-, WAL- és tranzakciós terhelést okozhat, és hosszú ideig tarthat. A pontos stratégia workloadfüggő; gyakran batch-ekben történő törlés, particionálás vagy más adatkezelési stratégia is szóba jöhet. A gyakori rossz válasz azért csábító, mert egyetlen SQL statement egyszerűbbnek látszik, de a művelet mérete jelentős üzemeltetési következményekkel járhat.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: Data types & dates
+TYPE: edgecase
+QUESTION: PostgreSQL-ben melyik kifejezés alkalmas arra, hogy egy timestamp értékből csak a dátumrészt kapd meg?
+A) `CAST(created_at AS DATE)`
+B) `CAST(created_at AS BOOLEAN)`
+C) `CAST(created_at AS JSON)`
+D) `CAST(created_at AS ARRAY)`
+ANSWER: A
+EXPLANATION: A timestamp DATE típusra castolása eltávolítja az időkomponenst, így csak a naptári dátum marad. Ez különbözik attól, amikor egy timestampet időzóna- vagy formázási művelettel kezelünk. A gyakori rossz válasz azért csábító, mert többféle CAST szintaktika létezik PostgreSQL-ben, de az eredménytípusnak az adott üzleti célt kell tükröznie.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Query plans & optimization
+TYPE: production
+QUESTION: Egy production querynél az `EXPLAIN ANALYZE` jelentős lassulást okoz egy olyan statement esetén, amely adatot is módosít. Miért kell ezzel óvatosnak lenni?
+A) Az EXPLAIN ANALYZE mindig kikapcsolja az indexeket
+B) Az EXPLAIN ANALYZE csak SELECT esetén létezik
+C) Az ANALYZE opció ténylegesen végrehajtja a statementet, ezért egy módosító query valóban módosíthatja az adatokat
+D) Az EXPLAIN mindig automatikusan ROLLBACK-et hajt végre
+ANSWER: C
+EXPLANATION: Az EXPLAIN önmagában a tervet mutatja, míg az EXPLAIN ANALYZE a statement tényleges végrehajtását is elvégzi a runtime statisztikák összegyűjtéséhez. Ez INSERT, UPDATE vagy DELETE esetén valódi adatbázis-módosítást jelenthet, ezért production környezetben különösen körültekintően kell használni. A gyakori rossz válasz azért csábító, mert az EXPLAIN elemző eszköznek tűnik, de az ANALYZE mód tényleges végrehajtást is magában foglal.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: SELECT & filtering
+TYPE: behavior
+QUESTION: Mi történik az alábbi lekérdezésben, ha a `salary` oszlop értékei között NULL is előfordul?
+CODE:
+SELECT name
+FROM employees
+WHERE salary = NULL;
+ENDCODE
+A) A NULL salary-val rendelkező employee-ket adja vissza
+B) Minden employee-t visszaad
+C) Syntax error történik
+D) Egyetlen NULL salary-val rendelkező employee-t sem ad vissza
+ANSWER: D
+EXPLANATION: SQL-ben a NULL nem hasonlítható `=` operátorral. A `salary = NULL` kifejezés eredménye UNKNOWN, ezért a WHERE feltétel nem tekinti megfelelőnek a sort. NULL ellenőrzésére az `IS NULL` használatos. A gyakori rossz válasz azért csábító, mert más programozási nyelvekben a null összehasonlítása természetesnek tűnhet.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: JOINs
+TYPE: edgecase
+QUESTION: Mi történik, ha egy INNER JOIN feltételében NULL értékű oszlopokat hasonlítasz össze az `=` operátorral?
+CODE:
+SELECT *
+FROM employees e
+JOIN assignments a
+  ON e.id = a.employee_id
+ AND e.manager_id = a.manager_id;
+ENDCODE
+A) A NULL = NULL párok automatikusan egyezésnek számítanak
+B) A NULL-t tartalmazó összehasonlítás nem lesz TRUE, ezért az ilyen párok normál `=` összehasonlítással nem matchingelnek
+C) Az INNER JOIN automatikusan NULL-safe összehasonlítást használ
+D) A JOIN minden NULL értéket 0-ra alakít
+ANSWER: B
+EXPLANATION: Az `=` NULL operandussal UNKNOWN eredményt ad, nem TRUE-t, ezért egy NULL manager_id nem fog egyezni egy másik NULL manager_id-vel normál equality join esetén. PostgreSQL-ben NULL-safe összehasonlításhoz például az `IS NOT DISTINCT FROM` használható. A gyakori rossz válasz azért csábító, mert két hiányzó értéket intuitívan azonosnak gondolhatunk.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: Aggregation & GROUP BY
+TYPE: output
+QUESTION: Mi lesz az alábbi lekérdezés eredménye, ha a `salary` értékek 100, 200 és NULL?
+CODE:
+SELECT SUM(salary), COUNT(salary), COUNT(*)
+FROM employees;
+ENDCODE
+A) `300, 3, 3`
+B) `300, 2, 3`
+C) `300, 3, 2`
+D) `NULL, 2, 3`
+ANSWER: B
+EXPLANATION: A SUM figyelmen kívül hagyja a NULL értékeket, így 300-at ad. A COUNT(salary) csak a nem-NULL salary értékeket számolja, ezért 2 az eredmény, míg COUNT(*) minden sort számol, ezért 3. A gyakori rossz válasz azért csábító, mert a COUNT(*) és COUNT(column) közötti különbséget könnyű figyelmen kívül hagyni.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: Subqueries & CTEs
+TYPE: scenario
+QUESTION: Egy lekérdezésben minden olyan employee-t szeretnél kiválasztani, akinek a fizetése magasabb a saját departmentjének átlagánál. Melyik megközelítés alkalmas erre?
+A) Korrelált subquery, amely az aktuális employee departmentjére számít átlagot
+B) Egyetlen globális AVG(salary), department szűrés nélkül
+C) DISTINCT salary használata
+D) ORDER BY salary DESC használata
+ANSWER: A
+EXPLANATION: A feladat employee-nként a hozzá tartozó department átlagát igényli, ezért az átlag számítását az aktuális employee department_id értékéhez kell kötni. Egy globális átlag nem ugyanazt az üzleti feltételt fejezi ki. A gyakori rossz válasz azért csábító, mert az AVG használata önmagában helyesnek tűnik, de a megfelelő csoporthoz kell kapcsolni.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Window functions
+TYPE: output
+QUESTION: Mi történik az alábbi lekérdezésnél, ha egy departmentben három employee fizetése 100, 200 és 300?
+CODE:
+SELECT
+    salary,
+    AVG(salary) OVER (PARTITION BY department_id) AS department_avg
+FROM employees;
+ENDCODE
+A) Csak egy sor jelenik meg 200-as átlaggal
+B) Három sor jelenik meg, mindegyik mellett 100, 200 vagy 300
+C) Három sor jelenik meg, és mindegyik mellett 200-as department átlag szerepel
+D) A GROUP BY hiánya miatt syntax error történik
+ANSWER: C
+EXPLANATION: A window function nem vonja össze a sorokat. A PARTITION BY departmentenként meghatározza az ablakot, az AVG pedig ugyanazt a department-átlagot rendeli minden sorhoz. A három érték átlaga 200, ezért mindhárom sor mellett 200 jelenik meg. A gyakori rossz válasz azért csábító, mert az AVG gyakran GROUP BY mellett jelenik meg, ahol a részletes sorok eltűnnek.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: Indexes
+TYPE: scenario
+QUESTION: Egy PostgreSQL táblán gyakran fut a következő keresés:
+CODE:
+SELECT *
+FROM users
+WHERE lower(email) = lower('Anna@Example.com');
+ENDCODE
+Melyik index illeszkedik közvetlenül ehhez a keresési mintához?
+A) `CREATE INDEX ON users(email);`
+B) `CREATE INDEX ON users(lower(email));`
+C) `CREATE INDEX ON users(id);`
+D) `CREATE INDEX ON users(created_at);`
+ANSWER: B
+EXPLANATION: A lekérdezés a `lower(email)` kifejezés eredményét hasonlítja, ezért egy expression index közvetlenül ezt a kifejezést indexeli. Egy sima email index nem feltétlenül tudja hatékonyan támogatni ezt a formát. A gyakori rossz válasz azért csábító, mert az email oszlop már önmagában relevánsnak tűnik, de az indexelt kifejezésnek illeszkednie kell a lekérdezéshez.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: Query plans & optimization
+TYPE: debug
+QUESTION: Egy query execution planjában egy Nested Loop Join több millió inner-row lookupot végez, és a lekérdezés lassú. Mi lehet az egyik első vizsgálandó ok?
+A) A SQL-ben nincs SELECT
+B) A WHERE feltétel mindig hibás
+C) Az adatbázis nem támogatja a JOIN-okat
+D) A join cardinality vagy az inner oldal hozzáférési stratégiája miatt a Nested Loop túl sok munkát végezhet
+ANSWER: D
+EXPLANATION: A Nested Loop önmagában nem rossz join stratégia, kis inner oldallal vagy megfelelő indexszel kifejezetten hatékony lehet. Ha azonban több millió inner lookup történik, érdemes megvizsgálni a cardinality becsléseket, az indexelést és azt, hogy más join strategy nem lenne-e olcsóbb. A gyakori rossz válasz azért csábító, mert a sok lookup első látásra magát a JOIN típust hibáztatja.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: Transactions & isolation levels
+TYPE: edgecase
+QUESTION: READ COMMITTED izoláció mellett ugyanazon tranzakció két SELECT statementje között egy másik tranzakció commitol egy módosítást. Mit láthat a második SELECT?
+A) Minden esetben pontosan ugyanazt a snapshotot, mint az első SELECT
+B) Soha nem láthatja a másik tranzakció módosítását
+C) A második SELECT az új statement snapshotja miatt láthatja a már commitolt módosítást
+D) A második SELECT automatikusan SERIALIZABLE szintre vált
+ANSWER: C
+EXPLANATION: PostgreSQL READ COMMITTED módban minden statement saját snapshotot kap. Emiatt egy később indított SELECT már láthatja azokat a korábbi módosításokat, amelyek addigra commitolódtak. A gyakori rossz válasz azért csábító, mert sokan a tranzakció teljes időtartamára egyetlen változatlan snapshotot feltételeznek.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: Locking & deadlocks
+TYPE: production
+QUESTION: Egy API endpoint adatbázis-tranzakciót indít, majd hosszú külső HTTP hívást végez, mielőtt commitolna. Miért lehet ez problémás?
+A) A HTTP hívás automatikusan rollbackel minden SQL-t
+B) A tranzakció hosszú ideig tarthat fenn lockokat, növelve a lock wait és contention kockázatát
+C) A PostgreSQL nem enged HTTP hívásokat tranzakcióban
+D) A commit mindig azonnal megtörténik a HTTP hívás előtt
+ANSWER: B
+EXPLANATION: A hosszú tranzakció tovább tarthat fenn módosítási lockokat, és ez más tranzakciókat blokkolhat. Emellett a tranzakciós snapshot, erőforrás-használat és adatbázis-kapcsolat is hosszabb ideig foglalva maradhat. A gyakori rossz válasz azért csábító, mert az üzleti művelet egyetlen logikai folyamatnak tűnik, de a külső hálózati várakozást nem célszerű adatbázis-lockok alatt tartani.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: Normalization & schema design
+TYPE: scenario
+QUESTION: Egy `customer` táblában ugyanazt a címet több különböző oszlopban tárolod: `street`, `city`, `zip`, valamint egy `full_address` szöveget is. Mi lehet a fő probléma?
+A) Redundáns adat tárolása miatt az egyes reprezentációk inkonzisztenssé válhatnak
+B) A PostgreSQL nem támogat több VARCHAR oszlopot
+C) A city oszlop nem lehet TEXT
+D) A ZIP kódot kötelező PRIMARY KEY-ként használni
+ANSWER: A
+EXPLANATION: Ugyanannak az információnak több reprezentációja update anomalyhoz és inkonzisztenciához vezethet. Például a strukturált mezők frissülhetnek, miközben a full_address régi marad. A gyakori rossz válasz azért csábító, mert a redundáns, denormalizált adat időnként kényelmesebb olvasást tesz lehetővé.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: Constraints & keys
+TYPE: scenario
+QUESTION: Egy `order_items` táblában egy rendeléshez ugyanaz a termék csak egyszer szerepelhet. Melyik constraint fejezheti ki ezt közvetlenül?
+CODE:
+CREATE TABLE order_items (
+    order_id BIGINT,
+    product_id BIGINT
+);
+ENDCODE
+A) `CHECK(order_id <> product_id)`
+B) `UNIQUE(order_id, product_id)`
+C) `DEFAULT(order_id, product_id)`
+D) `FOREIGN KEY(order_id, product_id)`
+ANSWER: B
+EXPLANATION: A többoszlopos UNIQUE constraint biztosítja, hogy ugyanaz az order_id és product_id kombináció ne szerepeljen többször. Ez pontosan a kombináció egyediségét fejezi ki. A gyakori rossz válasz azért csábító, mert a foreign key is fontos lehet ebben a modellben, de az referenciális integritást, nem kombinációs egyediséget biztosít.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: DML & upserts
+TYPE: scenario
+QUESTION: PostgreSQL-ben egy UPSERT esetén mit jelent az `EXCLUDED` referencia a `DO UPDATE` részben?
+CODE:
+INSERT INTO products (id, price)
+VALUES (10, 1500)
+ON CONFLICT (id)
+DO UPDATE SET price = EXCLUDED.price;
+ENDCODE
+A) A jelenlegi táblában már meglévő sor teljes tartalmát
+B) A tranzakcióból törölt korábbi sort
+C) A konfliktust okozó index metaadatait
+D) Az INSERT által javasolt, de konfliktus miatt be nem szúrt új sort
+ANSWER: D
+EXPLANATION: Az `EXCLUDED` az INSERT által javasolt új sor értékeihez biztosít hozzáférést a konfliktuskezelés során. Így az UPDATE például átveheti az új price értéket. A gyakori rossz válasz azért csábító, mert az UPDATE a már meglévő rekordot módosítja, de az `EXCLUDED` nem annak jelenlegi értékeit jelenti.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: Views, procedures & triggers
+TYPE: behavior
+QUESTION: Mi a következménye annak, ha egy normál PostgreSQL VIEW mögötti táblában új sor jelenik meg?
+A) A VIEW automatikusan tartalmazza az új sort, ha az megfelel a VIEW lekérdezésének
+B) A VIEW mindig megőrzi a létrehozásakor fennálló eredményt
+C) A VIEW csak újra létrehozás után látja az adatokat
+D) A VIEW automatikusan materialized view-vá válik
+ANSWER: A
+EXPLANATION: Egy normál VIEW a definiáló lekérdezést reprezentálja, nem pedig egy statikus eredményhalmazt tárol. Ezért egy új, megfelelő sor az alapul szolgáló táblában a következő VIEW-lekérdezés eredményében megjelenhet. A gyakori rossz válasz azért csábító, mert a VIEW adatbázis-objektumként tartósan létezik, de ez nem jelenti azt, hogy az eredménye statikusan tárolt lenne.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Data types & dates
+TYPE: edgecase
+QUESTION: Mi a lényeges különbség PostgreSQL-ben a `DATE` és a `TIMESTAMP` között?
+A) A DATE időpontot és időzónát tárol, a TIMESTAMP csak évet
+B) A DATE csak hónapot tárol, a TIMESTAMP csak napot
+C) A DATE naptári dátumot reprezentál időkomponens nélkül, míg a TIMESTAMP dátumot és időpontot is reprezentál
+D) Nincs közöttük szemantikai különbség
+ANSWER: C
+EXPLANATION: A DATE egy naptári dátumot, például 2026-10-01-et reprezentál, időkomponens nélkül. A TIMESTAMP dátumot és időt is tartalmaz. Az időzóna kezeléséhez PostgreSQL-ben külön timestamp with time zone típus használható. A gyakori rossz válasz azért csábító, mert a két típus egyaránt dátumokkal kapcsolatos, de eltérő pontosságot és szemantikát biztosít.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: SQL injection & security
+TYPE: production
+QUESTION: Miért fontos az adatbázis-jogosultságok mellett az alkalmazásszintű authorization is?
+A) Mert az adatbázis nem tudja, hogy egy felhasználó melyik üzleti erőforráshoz férhet hozzá
+B) Mert a PRIMARY KEY-k authorizationt valósítanak meg
+C) Mert az SQL injectiont csak authorization oldhatja meg
+D) Mert a database permissionök mindig teljesen feleslegesek
+ANSWER: A
+EXPLANATION: Az adatbázis jogosultságai tipikusan technikai hozzáférési szinteket szabályoznak, míg az alkalmazás ismeri az üzleti kontextust, például hogy egy felhasználó melyik saját rendelését vagy projektjét láthatja. A két szint egymást kiegészítheti. A gyakori rossz válasz azért csábító, mert a database permissionök biztonsági kontrollt jelentenek, de nem feltétlenül tudják kifejezni az összes üzleti authorization szabályt.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: SELECT & filtering
+TYPE: production
+QUESTION: Egy production API dinamikus filtereket támogat több opcionális mezővel. A fejlesztő minden lehetséges filterkombinációhoz külön SQL stringet generál, és egyes esetekben a feltételek rossz sorrendben vagy duplikáltan kerülnek bele. Mi lenne egy robusztusabb megközelítés?
+A) Minden filtert kötelezővé tenni
+B) Minden queryhez külön táblát létrehozni
+C) A filterekből strukturált predicate-eket építeni paraméterezett értékekkel, miközben az engedélyezett SQL identifier-eket allowlistből választani
+D) A felhasználói inputot közvetlenül az SQL stringbe fűzni
+ANSWER: C
+EXPLANATION: Dinamikus queryknél célszerű külön kezelni a strukturális SQL-elemeket és az adatértékeket. Az értékeket paraméterezni kell, míg dinamikus oszlopneveket vagy rendezési mezőket csak ellenőrzött allowlistből szabad kiválasztani. Ez csökkenti az injection kockázatát és kiszámíthatóbb query-generálást eredményez. A gyakori rossz válasz azért csábító, mert a közvetlen stringépítés egyszerűnek tűnik, de komplex filterezésnél gyorsan hibássá és biztonsági szempontból veszélyessé válhat.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: JOINs
+TYPE: performance
+QUESTION: Egy háromtáblás JOIN query sokkal több sort ad vissza, mint amennyit az üzleti logika vár. Az egyik kapcsolat one-to-many. Mi lehet az egyik legfontosabb vizsgálati pont?
+A) A SELECT kulcsszó hossza
+B) Az alkalmazás logójának mérete
+C) A tranzakció izolációs szintje minden esetben
+D) A JOIN cardinality és annak ellenőrzése, hogy a one-to-many kapcsolatból származó sor-szorzódás megfelel-e a kívánt eredménynek
+ANSWER: D
+EXPLANATION: One-to-many kapcsolatok természetes módon több eredménysort generálhatnak ugyanahhoz a bal oldali entitáshoz. Érdemes minden JOIN lépésnél ellenőrizni a cardinalityt és azt, hogy az üzleti eredmény valóban soronkénti részletezettséget vár-e. A gyakori rossz válasz azért csábító, mert a túl sok eredménysort könnyű adatduplikációnak tekinteni, miközben lehet, hogy a JOIN szemantikája helyes.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: Aggregation & GROUP BY
+TYPE: edgecase
+QUESTION: Egy riportnak departmentenként a teljes payroll mellett azt is meg kell mutatnia, hogy az adott department payrollja mekkora része a teljes vállalati payrollnak. Melyik megközelítés alkalmas erre egyetlen SQL lekérdezésben?
+A) Departmentenkénti aggregáció, majd egy window SUM használata az aggregált eredményen
+B) Csak DISTINCT használata
+C) Csak ORDER BY használata
+D) A department_id eltávolítása a GROUP BY-ból
+ANSWER: A
+EXPLANATION: Először departmentenként kiszámítható a payroll SUM, majd egy windowed SUM segítségével az aggregált sorok összegéből meghatározható a teljes vállalati payroll. Ez lehetővé teszi, hogy a department-szintű és a globális összeg ugyanabban az eredményhalmazban jelenjen meg. A gyakori rossz válasz azért csábító, mert a GROUP BY önmagában képes department-összegeket előállítani, de a teljes összeghez további szintű számítás szükséges.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: Subqueries & CTEs
+TYPE: production
+QUESTION: Egy összetett PostgreSQL query több CTE-t tartalmaz, és a production execution plan alapján az egyik CTE nagy mennyiségű adatot állít elő, amelyből csak néhány sor kerül később felhasználásra. Miért nem szabad automatikusan feltételezni, hogy a CTE mindig materializálódik?
+A) Mert PostgreSQL-ben a CTE szintaktikailag nem létezik
+B) Mert a modern PostgreSQL verziók bizonyos CTE-ket inline-olhatnak, és a planner optimalizálhatja a végrehajtást
+C) Mert minden CTE mindig külön fizikai táblát hoz létre
+D) Mert CTE-ben nem használható WHERE
+ANSWER: B
+EXPLANATION: PostgreSQL modern verzióiban a CTE-k bizonyos esetekben inline-olhatók, így a planner nem feltétlenül kezeli őket kötelező materializációs határként. A `MATERIALIZED` és `NOT MATERIALIZED` lehetőségek explicit kontrollt is biztosíthatnak megfelelő esetekben. A gyakori rossz válasz azért csábító, mert a CTE-t sokan automatikusan ideiglenes, fizikailag tárolt eredményként képzelik el.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: Window functions
+TYPE: algorithm
+QUESTION: Egy employee-t a departmentjén belül a fizetés alapján szeretnél rangsorolni úgy, hogy azonos fizetés esetén az employee-k azonos rangot kapjanak, és ne legyenek kihagyott rangszámok. Melyik window function felel meg ennek?
+A) ROW_NUMBER()
+B) RANK()
+C) LAG()
+D) DENSE_RANK()
+ANSWER: D
+EXPLANATION: A DENSE_RANK az azonos értékeknek azonos rangot ad, és a következő különböző érték rangja nem ugrik át számokat. Például 100, 100, 80 esetén a rangok 1, 1, 2 lesznek. A gyakori rossz válasz azért csábító, mert a RANK is kezeli a holtversenyt, de az utána következő rangszámot kihagyhatja.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: Indexes
+TYPE: performance
+QUESTION: Egy nagy PostgreSQL táblán az alábbi lekérdezés gyakori:
+CODE:
+SELECT id, customer_id, created_at
+FROM orders
+WHERE customer_id = 42
+ORDER BY created_at DESC
+LIMIT 50;
+ENDCODE
+A megfelelő index mellett melyik további technika csökkentheti a heap hozzáférések szükségességét, ha a PostgreSQL képes index-only scan használatára?
+A) Az összes index törlése
+B) Csak a WHERE feltétel eltávolítása
+C) Olyan covering index használata, amely az eredményhez szükséges további oszlopokat is tartalmazza
+D) A LIMIT eltávolítása
+ANSWER: C
+EXPLANATION: Egy megfelelő index, például a `(customer_id, created_at DESC) INCLUDE (id)` struktúra lehetővé teheti, hogy a query az indexből közvetlenül megszerezze a szükséges adatokat. Index-only scan esetén a heaphez való hozzáférés csökkenthető, bár a tényleges használat a visibility map állapotától és a planner döntésétől is függ. A gyakori rossz válasz azért csábító, mert a WHERE és ORDER BY optimalizálása önmagában is fontos, de a SELECT-listában szereplő oszlopok lefedése további előnyt adhat.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: Query plans & optimization
+TYPE: production
+QUESTION: Egy query execution planban egy JOIN-nál a planner becsült sorainak száma 10, miközben az actual rows érték 5 000 000. Miért különösen fontos ez a különbség?
+A) Mert a SQL szabvány tiltja a JOIN használatát
+B) Mert az ilyen cardinality mismatch miatt a planner nagyon rossz join vagy scan stratégiát választhatott
+C) Mert az actual rows mindig hibás érték
+D) Mert az indexek automatikusan használhatatlanná válnak
+ANSWER: B
+EXPLANATION: Az optimizer döntései jelentősen támaszkodnak a cardinality becslésekre. Ha a becslés 10 sor, miközben ténylegesen 5 millió sor érintett, akkor egy kis adatmennyiségre optimális stratégia kerülhet kiválasztásra, amely valós körülmények között nagyon drága. Ilyenkor érdemes többek között a statisztikákat, adateloszlást és korrelációkat vizsgálni. A gyakori rossz válasz azért csábító, mert a nagy eltérés könnyen egyszerűen „hibás execution plan”-nak tűnik, miközben a kiváltó ok a becslési modellben lehet.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: Transactions & isolation levels
+TYPE: scenario
+QUESTION: Egy pénzügyi rendszerben két konkurens tranzakció ugyanazon egyenlegből szeretne pénzt levonni. Miért lehet szükség explicit lockingra vagy megfelelő izolációs stratégiára?
+A) Hogy a SELECT automatikusan indexet hozzon létre
+B) Hogy a tranzakciók ne használhassanak COMMIT-ot
+C) Hogy a JOIN-ok gyorsabban fussanak
+D) Hogy megakadályozható legyen egy olyan lost update vagy race condition, amely inkonzisztens egyenleghez vezethet
+ANSWER: D
+EXPLANATION: Ha két tranzakció ugyanazt a jelenlegi egyenleget olvassa, majd mindkettő abból számít új értéket, megfelelő konkurenciakezelés nélkül elveszhet az egyik módosítás. Pénzügyi műveleteknél ezért az adatmodellnek és az üzleti invariánsoknak megfelelő locking vagy izolációs stratégia szükséges. A gyakori rossz válasz azért csábító, mert a tranzakciók önmagukban ACID tulajdonságokat biztosítanak, de az alkalmazásnak továbbra is helyesen kell kezelnie a konkurens hozzáférést.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Locking & deadlocks
+TYPE: production
+QUESTION: Egy production rendszerben időszakosan deadlockok jelennek meg két különböző service tranzakciói között. A tranzakciók eltérő sorrendben módosítják ugyanazokat az erőforrásokat. Mi lenne egy fontos hosszú távú megoldás?
+A) A deadlock exception teljes figyelmen kívül hagyása
+B) Minden tranzakcióban egységes erőforrás-zárolási sorrend kialakítása és szükség esetén kontrollált retry stratégia használata
+C) Minden adatbázis-index törlése
+D) A tranzakciók időkorlátjának korlátlan növelése
+ANSWER: B
+EXPLANATION: A konzisztens lock ordering csökkenti a ciklikus várakozás kialakulásának esélyét. Mivel a deadlockok megfelelő körülmények között továbbra is előfordulhatnak, a kliensoldali retry is része lehet a robusztus kezelésnek, ha az adott művelet biztonságosan újrapróbálható. A gyakori rossz válasz azért csábító, mert a retry egyszerű workaroundnak tűnhet, de önmagában nem szünteti meg a deadlock kiváltó okát.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Normalization & schema design
+TYPE: architecture
+QUESTION: Egy nagy multi-tenant rendszerben a tenantok többsége azonos sémát használ, de néhány tenantnak jelentősen eltérő, speciális attribútumokra van szüksége. Melyik megközelítés lehet technikailag indokolható a követelményektől függően?
+A) Minden tenant számára teljesen külön adatbázis létrehozása minden esetben
+B) Minden speciális attribútumhoz új oszlop hozzáadása, függetlenül attól, hogy hány tenant használja
+C) Az összes adatot egyetlen TEXT mezőbe serializálni minden validáció nélkül
+D) Stabil, közös mezőket relációs oszlopokban tartani, és a valóban változó, tenant-specifikus attribútumokhoz kontrollált kiegészítő modellt használni, például JSONB-t vagy külön extension táblát
+ANSWER: D
+EXPLANATION: A stabil, gyakran lekérdezett és integritáskritikus mezők számára a normál relációs struktúra jól illeszkedik. Erősen változó, ritka tenant-specifikus attribútumok esetén egy kontrollált JSONB vagy extension-table modell csökkentheti a séma túlzott széttöredezését. A választást a lekérdezési minták, validációs igények, indexelés, adatretenció és tenantizoláció követelményei alapján kell meghozni. A gyakori rossz válasz azért csábító, mert az egységes séma egyszerűnek tűnik, de túl sok ritka oszlop hosszú távon nehezen kezelhető struktúrát eredményezhet.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: Query plans & optimization
+TYPE: performance
+QUESTION: Egy PostgreSQL lekérdezés egy nagyon nagy, időrendben növekvő eseménytáblán fut. A lekérdezés egy szűk időintervallumot kér le, és csak néhány oszlopot használ:
+CODE:
+SELECT created_at, event_type
+FROM events
+WHERE created_at >= TIMESTAMP '2026-09-01 00:00:00'
+  AND created_at < TIMESTAMP '2026-09-02 00:00:00';
+ENDCODE
+Az `events` tábla fizikailag is erősen korrelál a `created_at` értékeivel. Melyik megoldás lehet különösen helytakarékos ilyen hozzáférési mintához?
+A) BRIN index a `created_at` oszlopon
+B) Hash index a `created_at` oszlopon
+C) UNIQUE index a `created_at` oszlopon
+D) Full-text index az `event_type` oszlopon
+ANSWER: A
+EXPLANATION: A BRIN index blokkszintű összefoglaló információt tárol, ezért nagyon nagy, fizikailag jól rendezett táblák esetén rendkívül kis méret mellett képes időtartományokat szűrni. Az erős fizikai korreláció különösen kedvez a BRIN használatának. Azért lehet megtévesztő a B-tree index, mert általánosabb és pontosabb, de ilyen táblaméretnél a BRIN sokkal kisebb indexet eredményezhet.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: Aggregation & GROUP BY
+TYPE: algorithm
+QUESTION: Egy értékesítési riportban régiónként és régión belül országonként is szeretnénk aggregált eredményeket kapni, valamint egy teljes vállalati összesítést. Melyik PostgreSQL-mechanizmus alkalmas hierarchikus aggregációs szintek létrehozására?
+A) `DISTINCT ON`
+B) `ROLLUP`
+C) `LATERAL`
+D) `FILTER`
+ANSWER: B
+EXPLANATION: A `ROLLUP` hierarchikus grouping szinteket hoz létre, például `(region, country)`, majd régiónkénti subtotalokat és végül egy grand total sort. Ez egyetlen aggregációs lekérdezésben képes előállítani a különböző szinteket. Azért lehet megtévesztő a `GROUPING SETS`, mert az is képes több grouping szintet megadni, de a hierarchikus subtotalok természetes kifejezésére a ROLLUP szolgál.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: Locking & deadlocks
+TYPE: production
+QUESTION: Egy adatbázis-alapú job queue-ban több worker ugyanabból a `jobs` táblából vesz fel feldolgozandó feladatokat. Egy workernek nem szabad megvárnia a már lockolt sort, hanem egy másik elérhető feladatot kell választania. Melyik PostgreSQL-megoldás illik ehhez?
+A) `SELECT ... FOR UPDATE`
+B) `SELECT ... FOR SHARE`
+C) `SELECT ... FOR UPDATE SKIP LOCKED`
+D) `LOCK TABLE jobs IN ACCESS EXCLUSIVE MODE`
+ANSWER: C
+EXPLANATION: A `FOR UPDATE SKIP LOCKED` a más tranzakció által már lockolt sorokat kihagyja, így több worker párhuzamosan tud feladatokat felvenni anélkül, hogy ugyanazon lockolt sorra várnának. Ez tipikus adatbázis-alapú queue minta. Azért lehet megtévesztő a sima FOR UPDATE, mert az valóban lockolja a kiválasztott sorokat, de konkurens worker esetén várakozást okozhat.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: Constraints & keys
+TYPE: edgecase
+QUESTION: Egy PostgreSQL rendszerben egy `reservations` táblában ugyanahhoz a `room_id`-hoz nem lehetnek egymást átfedő foglalási időintervallumok. Az intervallumokat `tsrange` típusban tároljuk. Melyik constraint alkalmas közvetlenül ennek az üzleti szabálynak a kikényszerítésére?
+A) `CHECK`
+B) `UNIQUE`
+C) `FOREIGN KEY`
+D) `EXCLUDE`
+ANSWER: D
+EXPLANATION: Az exclusion constraint PostgreSQL-ben képes kifejezni, hogy ugyanahhoz a `room_id` értékhez két `tsrange` ne legyen átfedő. Tipikusan `EXCLUDE USING gist` és az `&&` operátor használható erre. Azért lehet megtévesztő a UNIQUE constraint, mert az egyedi kombinációkat jól kezeli, de két különböző, részben átfedő intervallumot nem tud önmagában tiltani.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: Views, procedures & triggers
+TYPE: behavior
+QUESTION: Egy PostgreSQL triggerfüggvényben egy `UPDATE` művelet előtt szeretnénk módosítani az új sor egyik mezőjét, majd engedni, hogy a módosítás folytatódjon. Melyik megoldás illeszkedik egy `BEFORE ROW` triggerhez?
+A) Az `OLD` rekord módosítása és `RETURN OLD`
+B) A `NEW` rekord módosítása és `RETURN NEW`
+C) `RETURN NULL`, majd az UPDATE automatikus folytatása
+D) `COMMIT` meghívása a triggerfüggvényből
+ANSWER: B
+EXPLANATION: Egy BEFORE ROW triggerben a `NEW` rekord módosítható, majd a módosított `NEW` visszaadásával a módosítás folytatódhat az új értékekkel. A `RETURN NULL` ezzel szemben BEFORE row triggerben az adott sor műveletének kihagyását eredményezheti. Azért lehet megtévesztő az `OLD` használata, mert az is elérhető UPDATE triggerben, de az a módosítás előtti állapotot reprezentálja, nem a mentendő új sort.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: SQL injection & security
+TYPE: production
+QUESTION: Egy webalkalmazás egy keresési mezőből érkező értéket SQL `LIKE` feltételben használ. A lekérdezés paraméterezett, ezért SQL injection ellen védett, de az alkalmazásnak azt is meg kell akadályoznia, hogy a felhasználó tetszőleges `%` és `_` wildcard karakterekkel megváltoztassa a keresés jelentését. Mi szükséges ehhez?
+A) A paramétert HTML-kódolni kell
+B) A paramétert Base64-re kell alakítani
+C) A LIKE pattern speciális karaktereit megfelelően escape-elni, és a lekérdezésben `ESCAPE`-ot használni
+D) A paraméterezést el kell hagyni
+ANSWER: C
+EXPLANATION: A bind paraméter megakadályozza, hogy a bemenet SQL-kóddá váljon, de a LIKE saját wildcard szemantikáját nem szünteti meg. Ha literális `%` vagy `_` karaktereket szeretnénk keresni, ezeket a választott escape karakterrel kell kezelni, és a patternhez megfelelő `ESCAPE` szabályt kell használni. Azért lehet megtévesztő az SQL injection elleni paraméterezést teljes védelemnek tekinteni, mert az SQL injection és a LIKE pattern szemantikája két külön probléma.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: Views, procedures & triggers
+TYPE: production
+QUESTION: Egy PostgreSQL triggernek egy `orders` tábla minden egyes módosított sorára auditbejegyzést kell létrehoznia. Melyik trigger-típus felel meg ennek, ha minden érintett sort külön szeretnénk feldolgozni?
+A) Statement-level trigger
+B) Database-level trigger
+C) Row-level trigger
+D) Session-level trigger
+ANSWER: C
+EXPLANATION: A row-level trigger minden egyes érintett sorra külön lefut, ezért alkalmas arra, hogy például minden UPDATE esetén az adott `OLD` és `NEW` értékekből külön auditbejegyzés készüljön. Egy statement-level trigger ezzel szemben egyszer fut le az egész SQL statementre. Azért lehet megtévesztő a statement-level trigger, mert az is képes reagálni ugyanarra az UPDATE-re, de nem kap minden érintett sorhoz külön trigger-végrehajtást.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: SQL vs NoSQL
+TYPE: scenario
+QUESTION: Egy rendszerben a felhasználói profilok szerkezete gyakran változik, és különböző profilokhoz teljesen eltérő attribútumkészlet tartozhat. Az alkalmazás jellemzően a teljes profilt egyetlen azonosító alapján tölti be, és kevés szükség van több profilmező közötti JOIN-ra. Melyik modell illeszkedhet természetesen ehhez?
+A) Dokumentumorientált NoSQL modell
+B) Kötelezően normalizált, több tucat relációs tábla minden attribútumhoz
+C) Kizárólag key-value modell, amely minden strukturált adatot elveszít
+D) Minden attribútum külön adatbázisban
+ANSWER: A
+EXPLANATION: A dokumentumorientált modell természetesen kezeli a változó szerkezetű profilokat, és az egész profil egy dokumentumként tölthető be azonosító alapján. Ez nem jelenti azt, hogy minden ilyen rendszerhez NoSQL szükséges; a tranzakciós, konzisztencia- és lekérdezési követelmények alapján relációs modell is indokolt lehet. Azért lehet megtévesztő a teljesen normalizált séma, mert az relációs környezetben jól strukturált, de erősen változó és ritkán relációsan lekérdezett attribútumoknál nagyobb séma-komplexitást okozhat.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Data types & dates
+TYPE: edgecase
+QUESTION: PostgreSQL-ben egy `timestamp` oszlopból csak a naptári napot szeretnénk kinyerni úgy, hogy az eredmény `date` típusú legyen. Melyik kifejezés alkalmas erre?
+A) `CAST(created_at AS DATE)`
+B) `created_at AS DATE`
+C) `DATE(created_at, 'UTC')` minden esetben
+D) `created_at::TIMESTAMP WITHOUT TIME ZONE`
+ANSWER: A
+EXPLANATION: A `CAST(created_at AS DATE)` explicit módon a timestampből date típust készít, így az időkomponens elhagyódik. PostgreSQL-ben ugyanez rövidebb `created_at::date` szintaxissal is megadható. Azért lehet megtévesztő az újabb timestamp típusra castolás, mert az megváltoztathatja a típust vagy időzóna-szemantikát, de nem távolítja el a dátumról az időrészt.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: Indexes
+TYPE: edgecase
+QUESTION: Egy PostgreSQL lekérdezés csak azokat a rekordokat keresi, amelyeknél `deleted_at IS NULL`. A táblában a rekordok túlnyomó többsége már töröltnek van jelölve. Melyik index lehet különösen megfelelő, ha az alkalmazás rendszeresen az aktív rekordokat keresi?
+A) `CREATE INDEX idx_items_deleted_at ON items (deleted_at);`
+B) `CREATE INDEX idx_items_active ON items (id) WHERE deleted_at IS NULL;`
+C) `CREATE UNIQUE INDEX idx_items_active ON items (deleted_at);`
+D) `CREATE INDEX idx_items_deleted ON items (deleted_at) WHERE deleted_at IS NOT NULL;`
+ANSWER: B
+EXPLANATION: A partial index csak az aktív, `deleted_at IS NULL` sorokat tartalmazza, ezért az index jelentősen kisebb lehet, és közvetlenül az alkalmazás gyakori hozzáférési mintáját támogatja. Az `id` indexelt értéke mellett a partial predicate határozza meg, mely sorok kerülnek az indexbe. Azért lehet megtévesztő a teljes `deleted_at` index, mert az valóban támogatja az oszlop szerinti keresést, de a sok törölt rekord miatt jóval nagyobb és kevésbé célzott lehet.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: SQL vs NoSQL
+TYPE: scenario
+QUESTION: Egy alkalmazás több millió, egymástól jelentősen eltérő szerkezetű termékprofilt tárol. A legtöbb olvasás egy teljes termékprofil betöltése azonosító alapján, és az attribútumok gyakran változnak terméktípusonként. Melyik adatmodell lehet természetes választás, ha az alkalmazásnak nincs szüksége összetett relációs joinokra az attribútumok között?
+A) Dokumentumorientált NoSQL adatbázis
+B) Csak egyetlen SQL tábla, több száz NULL-os oszloppal
+C) Minden attribútum külön adatbázis
+D) Egyetlen hosszú TEXT mező saját, nem strukturált formátummal
+ANSWER: A
+EXPLANATION: A dokumentumorientált modell természetesen illeszkedhet olyan profilokhoz, amelyek szerkezete terméktípusonként változik, miközben a teljes dokumentum azonosító alapján kerül betöltésre. A pontos választást természetesen a konzisztencia-, lekérdezési-, indexelési- és tranzakciós követelmények is meghatározzák. Azért lehet megtévesztő az egyetlen széles SQL tábla, mert az relációs adatbázisban egyszerűnek tűnhet, de sok opcionális és típusonként eltérő attribútum esetén nehezen kezelhető sémához vezethet.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: SQL injection & security
+TYPE: production
+QUESTION: Egy alkalmazásban a felhasználó kiválaszthatja, hogy egy riport `name`, `created_at` vagy `total` szerint legyen rendezve. A rendezési oszlop SQL-azonosító, ezért nem lehet egyszerű érték-paraméterként kezelni. Mi a megfelelő védelem?
+A) A teljes felhasználói bemenetet Base64-re kódoljuk
+B) HTML-escape-et alkalmazunk az oszlopnévre
+C) A felhasználói értéket változtatás nélkül SQL-be illesztjük
+D) A megengedett értékeket szerveroldali allowlistből előre definiált SQL-azonosítókra képezzük
+ANSWER: D
+EXPLANATION: Az SQL-azonosítókat, például oszlopneveket, nem ugyanúgy lehet bind paraméterként kezelni, mint az adatértékeket. Ezért a bemenetet egy szerveroldali allowlist alapján egy ismert, biztonságos SQL-azonosítóra kell leképezni. Azért lehet megtévesztő a HTML-escape, mert webes környezetben hasznos lehet más típusú támadások ellen, de nem megfelelő SQL injection elleni védelem.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: DML & upserts
+TYPE: behavior
+QUESTION: PostgreSQL-ben egy `INSERT ... RETURNING id` utasítás esetén mit tesz lehetővé a `RETURNING` klauzula?
+A) A beszúrás után automatikusan COMMITolja a tranzakciót
+B) A beszúrt sorok adatait visszaadja az alkalmazásnak, például a generált `id` értéket
+C) A beszúrás előtt kizárólag olvasási tranzakciót indít
+D) Automatikusan létrehoz egy indexet a visszaadott oszlopokon
+ANSWER: B
+EXPLANATION: A `RETURNING` lehetővé teszi, hogy a DML-művelet által érintett sorokból értékeket kapjunk vissza, például egy identity vagy sequence által generált azonosítót. Ez elkerülheti egy külön SELECT szükségességét. Azért lehet megtévesztő automatikus COMMIT-ra gondolni, mert a beszúrás eredménye azonnal visszaadható, de a tranzakció lezárása ettől még külön művelet marad.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: Transactions & isolation levels
+TYPE: edgecase
+QUESTION: Egy hosszú ideig nyitva maradó PostgreSQL tranzakció közben sok más tranzakció módosítja ugyanazt a táblát. Melyik következmény lehet production környezetben releváns?
+A) A hosszú tranzakció automatikusan kikapcsolja az MVCC-t
+B) A hosszú tranzakció bizonyos erőforrásokat és régi verziók takarítását hosszabb ideig befolyásolhatja
+C) A PostgreSQL automatikusan SERIALIZABLE izolációra vált
+D) A tranzakció automatikusan felszabadítja a többi tranzakció lockjait
+ANSWER: B
+EXPLANATION: Hosszú tranzakciók lockokat és más erőforrásokat tarthatnak fenn, PostgreSQL MVCC esetén pedig egy régi snapshot miatt bizonyos régi tuple-verziók takarítása is késhet. Ez növelheti a storage- és contention-problémákat. Azért lehet megtévesztő az automatikus izolációváltás gondolata, mert a hosszú tranzakció valóban hatással lehet a rendszer viselkedésére, de nem változtatja meg automatikusan az izolációs szintet.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: Transactions & isolation levels
+TYPE: behavior
+QUESTION: PostgreSQL `READ COMMITTED` izolációban egy tranzakció két SELECT statementet hajt végre. Egy másik tranzakció a két SELECT között commitol egy módosítást. Miért láthatja a második SELECT a módosított értéket?
+A) Mert a READ COMMITTED kikapcsolja az MVCC-t
+B) Mert minden statement saját snapshotot használ
+C) Mert minden SELECT automatikusan COMMIT-ol
+D) Mert a READ COMMITTED valójában SERIALIZABLE
+ANSWER: B
+EXPLANATION: PostgreSQL READ COMMITTED alatt minden statement a statement indulásakor érvényes snapshotot használ. Emiatt a második SELECT már egy olyan snapshotból olvashat, amely tartalmazza a közben commitolt módosítást. Azért lehet megtévesztő az egész tranzakcióra rögzített snapshot feltételezése, mert más izolációs szinteken hosszabb ideig érvényes snapshot használható.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: SQL vs NoSQL
+TYPE: scenario
+QUESTION: Egy szolgáltatásban a domináns művelet egy stabil kulcs alapján egy teljes érték lekérése vagy frissítése. Nincs szükség JOIN-okra, ad hoc aggregációkra vagy összetett relációkra. Melyik NoSQL modell illeszkedik természetesen ehhez a hozzáférési mintához?
+A) Key-value adatbázis
+B) Gráfadatbázis
+C) Relációs adatbázis kizárólag normalizált JOIN-okkal
+D) Oszloporientált analitikai adattár
+ANSWER: A
+EXPLANATION: A key-value modell közvetlenül a kulcs alapján történő értékelérésre és módosításra épül, ezért jól illeszkedik az egyszerű lookup/update műveletekhez. Más adatbázistípusok is megvalósíthatják ezt, de a leírt hozzáférési minta természetesen megfelel a key-value modellnek. Azért lehet megtévesztő a dokumentumorientált adatbázis, mert az is tud kulcs alapján dokumentumot lekérni, de összetettebb dokumentumstruktúrát céloz.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: Query plans & optimization
+TYPE: performance
+QUESTION: Egy `orders` táblában a lekérdezés csak egyetlen ügyfél rendeléseit kéri, és a `created_at` szerint rendezve az első 20 rekordra van szükség. Az index:
+CODE:
+CREATE INDEX idx_orders_customer_created
+ON orders (customer_id, created_at DESC);
+ENDCODE
+Miért lehet különösen hatékony ez az index a lekérdezéshez?
+A) Mert az index minden adatbázisban automatikusan materialized view-vá válik
+B) Mert a `customer_id` és a `created_at` együtt támogatja a szűrést és a rendezést, így a LIMIT miatt korán megállhat a keresés
+C) Mert a kompozit index minden lehetséges WHERE feltételt automatikusan kezel
+D) Mert a DESC index kizárólag az első 20 rekordot tárolja
+ANSWER: B
+EXPLANATION: A vezető `customer_id` oszlop az egyenlőségi szűrést támogatja, a második `created_at DESC` oszlop pedig az adott ügyfél rekordjainak kívánt sorrendjét. Emiatt a planner megfelelő körülmények között közvetlenül a releváns indexpozíción kezdhet, és a LIMIT miatt kevés rekord után megállhat. Azért lehet megtévesztő az a feltételezés, hogy a kompozit index minden WHERE feltételt támogat, mert az index hatékonysága az oszlopok sorrendjétől és a konkrét hozzáférési mintától függ.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: Normalization & schema design
+TYPE: edgecase
+QUESTION: Egy adatmodellben egy rendeléshez több telefonszámot szeretnének tárolni, ezért az alkalmazás a `phone1`, `phone2`, `phone3` oszlopokat vezeti be. Mi a legfontosabb relációs modellezési probléma ezzel?
+A) Az oszlopok automatikusan foreign key-vé válnak
+B) A telefonszámok nem lehetnek TEXT típusúak
+C) A megoldás feltétlenül gyorsabb lesz minden lekérdezésnél
+D) Ismétlődő csoportot hoz létre, és rögzíti a maximális telefonszámok számát
+ANSWER: D
+EXPLANATION: A `phone1`, `phone2`, `phone3` struktúra ismétlődő csoportot jelent, és a séma implicit módon meghatározza, hogy legfeljebb három telefonszám kezelhető. Egy külön kapcsolódó tábla rugalmasabban és normalizáltabban tudná reprezentálni az egy-a-többhöz kapcsolatot. Azért lehet megtévesztő a több oszlopos megoldás, mert kevés adattal egyszerűnek és kényelmesnek tűnik, de a változó számú érték kezelése hamar nehézkessé válik.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: DML & upserts
+TYPE: edgecase
+QUESTION: PostgreSQL-ben az alábbi UPSERT egy UNIQUE `email` constraintre támaszkodik:
+CODE:
+INSERT INTO users (email, name)
+VALUES ('alice@example.com', 'Alice')
+ON CONFLICT (email)
+DO UPDATE
+SET name = EXCLUDED.name;
+ENDCODE
+Mit jelöl az `EXCLUDED.name` az UPDATE ágban?
+A) A meglévő rekord korábbi `name` értékét
+B) A törlésre kerülő rekord `name` értékét
+C) A users tábla első rekordjának `name` értékét
+D) A konfliktust okozó INSERT által javasolt új sor `name` értékét
+ANSWER: D
+EXPLANATION: Az `EXCLUDED` pszeudotáblából az INSERT által javasolt sor értékei érhetők el az `ON CONFLICT ... DO UPDATE` ágban. Így a példában a már létező, konfliktust okozó rekord `name` értéke `Alice` lesz. Azért lehet megtévesztő a meglévő sor értékére gondolni, mert maga az UPDATE a meglévő rekordot módosítja, de az `EXCLUDED` nem annak jelenlegi állapotát jelenti.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: Views, procedures & triggers
+TYPE: behavior
+QUESTION: Egy PostgreSQL materialized view egy drága aggregáció eredményét tárolja. Az alapul szolgáló táblák módosulnak, de nem fut le `REFRESH MATERIALIZED VIEW`. Mi lesz a következő SELECT eredményével?
+A) A materialized view azonnal tükrözi az alapadatokat
+B) A materialized view automatikusan frissül az első SELECT előtt
+C) A materialized view törlődik
+D) A tárolt eredmény a refreshig változatlan marad
+ANSWER: D
+EXPLANATION: A materialized view fizikailag tárolja a lekérdezés eredményét, ezért az alapul szolgáló táblák változásai nem jelennek meg automatikusan. Az eredményt explicit refresh művelettel kell aktualizálni. Azért lehet megtévesztő a normál view-val összekeverni, mert a normál view lekérdezéskor az aktuális alapadatokból állítja elő az eredményt.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: Views, procedures & triggers
+TYPE: behavior
+QUESTION: Egy normál PostgreSQL view az alábbi lekérdezésre épül:
+CODE:
+CREATE VIEW active_products AS
+SELECT id, name, price
+FROM products
+WHERE active = true;
+ENDCODE
+Egy termék `active` értéke később `false` lesz. Mi történik egy új `SELECT * FROM active_products` során?
+A) A termék továbbra is szerepel, mert a view létrehozásakor rögzítette az eredményt
+B) A termék csak adatbázis-újraindítás után tűnik el
+C) A termék nem fog szerepelni az új eredményben
+D) A view automatikusan materialized view-vá alakul
+ANSWER: C
+EXPLANATION: A normál view nem tárolja külön az eredményhalmazt, hanem a definiált lekérdezési logika alapján az aktuális alapadatokat szolgálja ki. Ezért az `active = false` rekord egy új lekérdezésben már nem felel meg a view feltételének. Azért lehet megtévesztő a korábbi eredményt várni, mert egy materialized view valóban tárolhatja a korábbi eredményt a következő refreshig.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Normalization & schema design
+TYPE: scenario
+QUESTION: Egy rendszerben minden rendeléshez egyetlen `shipping_country` érték tartozik, és az ország nevét jelenleg minden rendelés rekordjában szövegként tárolják. Később az országokhoz további strukturált adatokat, például ISO-kódot és adózási beállításokat is kezelni kell. Melyik modell csökkenti leginkább a redundanciát?
+A) Az ország nevét és minden új attribútumát minden rendelésben megismételjük
+B) Az országadatokat külön `countries` táblába helyezzük, és a rendelés `country_id` foreign key-en keresztül hivatkozik rá
+C) Minden országot külön oszlopban tárolunk az `orders` táblában
+D) Az összes országadatot egyetlen vesszővel elválasztott TEXT mezőben tároljuk
+ANSWER: B
+EXPLANATION: Az ország egy önálló, újrahasznosítható entitás, ezért célszerű külön táblában tárolni az ISO-kódot és a további attribútumokat, majd az orders táblából foreign key-en keresztül hivatkozni rá. Ez csökkenti a redundanciát és központi integritási szabályokat tesz lehetővé. Azért lehet megtévesztő a név közvetlen tárolása, mert egyszerű lekérdezésekhez kényelmes, de minden országadat-módosítást sok rendelésen kellene átvezetni.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: Constraints & keys
+TYPE: production
+QUESTION: Egy `reservations` táblában azt szeretnénk biztosítani, hogy ugyanahhoz a szobához ne lehessen két, egymást átfedő időintervallumra érvényes foglalást létrehozni. PostgreSQL-ben melyik megközelítés képes ezt adatbázis-szinten közvetlenül kikényszeríteni?
+A) CHECK(room_id IS NOT NULL)
+B) Egy egyszerű UNIQUE(room_id, start_time)
+C) EXCLUDE constraint a szobaazonosító és az időintervallum kombinációjára
+D) FOREIGN KEY(room_id, start_time, end_time)
+ANSWER: C
+EXPLANATION: PostgreSQL-ben az exclusion constraint alkalmas olyan szabályok kikényszerítésére, ahol bizonyos értékek vagy tartományok nem lehetnek egymással ütköző állapotban. Egy szoba és egy időtartomány esetén így közvetlenül kifejezhető az átfedő foglalások tiltása. Azért lehet megtévesztő a UNIQUE, mert az egyedi kombinációkat valóban tiltja, de két különböző időpontú, mégis átfedő intervallumot nem tud általánosan felismerni.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: Transactions & isolation levels
+TYPE: scenario
+QUESTION: Egy készletkezelő rendszerben két párhuzamos tranzakció ugyanazt a terméket próbálja lefoglalni. Egyik tranzakció sem engedheti, hogy a készlet negatívvá váljon. Melyik megoldás ad erős adatbázis-szintű védelmet egy egyszerű read-modify-write versenyhelyzettel szemben?
+A) A készletet SELECT-tel kiolvassuk, majd az alkalmazás később UPDATE-eli
+B) A készlet ellenőrzését kizárólag JavaScriptben végezzük
+C) A két tranzakció közé fix `sleep(1)` késleltetést teszünk
+D) A készletsort tranzakcióban megfelelően zároljuk, például `SELECT ... FOR UPDATE` használatával, majd az ellenőrzést és módosítást ugyanabban a tranzakcióban végezzük
+ANSWER: D
+EXPLANATION: A `SELECT ... FOR UPDATE` a kiválasztott sort tranzakciós zárolással védi, így a konkurens módosító tranzakciónak meg kell várnia a lock felszabadítását. Az ellenőrzés és a módosítás ugyanazon tranzakción belül történik, ezért az üzleti döntés és az adatváltozás konzisztensen kezelhető. Azért lehet megtévesztő a kliensoldali ellenőrzés, mert normál működés közben gyorsan és helyesen jelezhet hibát, de konkurens tranzakciók ellen önmagában nem nyújt adatbázis-szintű védelmet.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: Normalization & schema design
+TYPE: architecture
+QUESTION: Egy multi-tenant SaaS rendszerben minden tenant ugyanazokat az alap üzleti entitásokat használja, de néhány tenant további, változó attribútumokat igényel. Melyik megoldás biztosítja legjobban a relációs modell integritását úgy, hogy közben korlátozott rugalmasságot is biztosít?
+A) Minden tenant számára teljesen külön adatbázis-sémát készítünk, még akkor is, ha nincs rá üzemeltetési szükséglet
+B) Minden attribútumot egyetlen szabad formátumú TEXT mezőbe írunk
+C) Az összes üzleti kapcsolatot JSON stringként tároljuk
+D) A stabil, közösen használt attribútumokat normál relációs oszlopokban tartjuk, a valóban változó tenant-specifikus mezőket pedig kontrollált JSONB-ben vagy külön extension táblában kezeljük
+ANSWER: D
+EXPLANATION: A stabil üzleti struktúra relációs oszlopokkal, kulcsokkal és constraint-ekkel jól ellenőrizhető, miközben a valóban változó tenant-specifikus attribútumokhoz korlátozott rugalmasság adható. A JSONB vagy extension tábla használatát érdemes csak olyan adatokra korlátozni, amelyek valóban dinamikusak. Azért lehet megtévesztő a teljesen külön séma, mert erős izolációt adhat, de jelentősen növeli a migrációs, üzemeltetési és karbantartási komplexitást.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: DML & upserts
+TYPE: behavior
+QUESTION: PostgreSQL 15+ esetén egy `MERGE` utasításban egy célrekordhoz egynél több forrásrekord illeszkedik, és a `WHEN MATCHED` ág UPDATE műveletet hajtana végre. Mi történik?
+A) A célrekordot minden illeszkedő forrásrekord egymás után frissíti.
+B) A PostgreSQL automatikusan összevonja az illeszkedő forrásrekordokat.
+C) A művelet hibával leállhat, mert egy célrekordot ugyanazon `MERGE` végrehajtásban egynél több illeszkedő forrásrekord nem frissíthet.
+D) Csak az első forrásrekord kerül feldolgozásra, determinisztikus sorrendben.
+ANSWER: C
+EXPLANATION: PostgreSQL-ben a `MERGE` végrehajtása során egy célrekord nem dolgozható fel többször ugyanabban a `MERGE` utasításban. Ha több forrásrekord illeszkedik ugyanahhoz a célrekordhoz, és a művelet UPDATE vagy DELETE lenne, a végrehajtás hibával megszakadhat. Production környezetben ezért fontos, hogy a `JOIN` feltétel a várt kardinalitást biztosítsa. Azért lehet csábító több frissítést feltételezni, mert egy hagyományos JOIN eredménye valóban több sort is tartalmazhat.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: Query plans & optimization
+TYPE: performance
+QUESTION: Egy PostgreSQL táblán sok UPDATE történik, de az UPDATE-ek többsége olyan oszlopokat módosít, amelyek egyetlen indexben sem szerepelnek. Miért lehet ez teljesítmény szempontjából kedvező?
+A) Az adatbázis ilyenkor egyáltalán nem módosít heap rekordot.
+B) PostgreSQL bizonyos feltételek mellett HOT (Heap-Only Tuple) update-et hajthat végre, így nem kell új indexbejegyzéseket létrehoznia.
+C) Az UPDATE automatikusan SELECT-té alakul.
+D) Az indexek minden UPDATE során automatikusan törlődnek és újraépülnek.
+ANSWER: B
+EXPLANATION: PostgreSQL MVCC-modelljében egy UPDATE új tuple-verziót hoz létre. Ha a módosított oszlopok nem érintik az indexeket, és a szükséges hely rendelkezésre áll ugyanazon heap oldalon, HOT update valósulhat meg, amely csökkentheti az indexfrissítések költségét. A HOT nem garantált minden UPDATE esetén, mert további fizikai feltételeknek is teljesülniük kell. Azért lehet csábító azt gondolni, hogy minden UPDATE automatikusan HOT, mert az indexelt oszlopok változatlansága fontos előfeltétel.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: Views, procedures & triggers
+TYPE: behavior
+QUESTION: Egy PostgreSQL view-ra `WITH CHECK OPTION` van beállítva. Mi a fő célja ennek?
+A) Biztosítja, hogy a view-n keresztül végrehajtott INSERT vagy UPDATE eredménye továbbra is megfeleljen a view szűrési feltételeinek.
+B) Automatikusan materializálja a view eredményét.
+C) Megakadályozza a view olvasását.
+D) Minden módosítást automatikusan trigger nélküli tranzakcióvá alakít.
+ANSWER: A
+EXPLANATION: A `WITH CHECK OPTION` megakadályozza, hogy a view-n keresztül olyan új vagy módosított rekord jöjjön létre, amely már nem felel meg a view meghatározásának. Ez különösen hasznos akkor, amikor a view egy jogosultsági vagy üzleti szűrést reprezentál. Azért lehet csábító a materializált view-val összekeverni, mert mindkettő speciális view-funkciónak tűnhet, de teljesen eltérő problémát oldanak meg.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: SQL injection & security
+TYPE: production
+QUESTION: Egy többtenantos PostgreSQL alkalmazásban azt szeretnéd, hogy az adatbázis maga is kikényszerítse: egy tenant csak a saját sorait láthassa. Melyik PostgreSQL-funkció erre közvetlenül alkalmas?
+A) `CHECK` constraint
+B) `DEFAULT` érték
+C) Row-Level Security (RLS)
+D) `VIEW` kizárólag `ORDER BY` nélkül
+ANSWER: C
+EXPLANATION: A Row-Level Security lehetővé teszi, hogy a PostgreSQL soronként szabályozza, mely rekordokat láthatja vagy módosíthatja egy adott adatbázis-felhasználó vagy szerepkör. Ez erős adatbázis-szintű védelmi réteget ad a tenant izolációjához, de a policy-k helyes kialakítása és tesztelése kritikus. Azért lehet csábító egy sima CHECK constraintet használni, mert az is adatbázis-szintű szabályt jelent, de nem a lekérdezési hozzáférést szabályozza.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: Indexes
+TYPE: performance
+QUESTION: Egy PostgreSQL táblán már létezik egy nagy B-tree index, amelyet egy production rendszer folyamatosan használ. Szeretnéd újraépíteni az indexet úgy, hogy a normál olvasási és írási forgalom a lehető legkevésbé legyen blokkolva. Melyik megközelítés erre szolgál?
+A) `DROP INDEX` majd `CREATE INDEX` kizárólag egyetlen tranzakcióban
+B) `VACUUM FULL`
+C) `CLUSTER`
+D) `REINDEX CONCURRENTLY`
+ANSWER: D
+EXPLANATION: A `REINDEX CONCURRENTLY` lehetővé teszi egy index újraépítését úgy, hogy az indexelési művelet alatt a normál olvasási és írási forgalom számára lényegesen kisebb blokkolást okozzon, mint egy hagyományos újraépítés. Ennek ára a nagyobb erőforrásigény és a hosszabb műveleti idő lehet. Azért lehet csábító egy egyszerű DROP és CREATE megoldás, mert funkcionálisan ugyanazt az új indexet állítja elő, de production forgalomnál a zárolási viselkedés döntő különbség.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: Query plans & optimization
+TYPE: performance
+QUESTION: Egy PostgreSQL lekérdezés nagy mennyiségű adatot aggregál, és az EXPLAIN tervben `HashAggregate` vagy `Hash Join` mellett jelentős ideiglenes lemezhasználat jelenik meg. Melyik beállítás lehet közvetlenül releváns annak vizsgálatakor, hogy a hash művelet rendelkezésére álló memória elegendő-e?
+A) `work_mem`
+B) `statement_timeout`
+C) `search_path`
+D) `timezone`
+ANSWER: A
+EXPLANATION: A `work_mem` hatással van arra, hogy egy lekérdezésen belül egyes műveletek, például sortok és hash-alapú műveletek mennyi memóriát használhatnak, mielőtt ideiglenes lemezterületre kellene spillelniük. A beállítás növelése javíthat bizonyos lekérdezéseken, de túl magas érték sok párhuzamos művelet mellett jelentős memóriafogyasztást okozhat. Azért lehet csábító a statement_timeout módosítása, mert az is lekérdezésteljesítményhez kapcsolódik, de nem növeli a végrehajtási memória keretét.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: SELECT & filtering
+TYPE: performance
+QUESTION: Egy lekérdezésben `UNION` helyett `UNION ALL` használható, mert az alkalmazásnak nincs szüksége a duplikátumok eltávolítására. Miért lehet ez teljesítmény szempontjából előnyös?
+A) A `UNION ALL` automatikusan indexet hoz létre.
+B) A `UNION` mindig csak az első SELECT-et hajtja végre.
+C) A `UNION ALL` nem igényli a kombinált eredmény duplikátumainak eltávolítását, ezért elkerülhet bizonyos sort- vagy hash-alapú deduplikációs költségeket.
+D) A `UNION ALL` minden esetben kevesebb sort ad vissza.
+ANSWER: C
+EXPLANATION: A `UNION` halmazműveletként eltávolítja a duplikátumokat, ami további feldolgozást igényelhet. A `UNION ALL` egyszerűen egymás után adja vissza az eredményhalmazokat, így ha nincs szükség deduplikációra, elkerülhető ez a többletköltség. Azért lehet csábító mindig `UNION`-t használni, mert sok esetben a fejlesztő számára nem látható azonnal, hogy a duplikátum-eltávolításnak végrehajtási költsége van.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Data types & dates
+TYPE: edgecase
+QUESTION: Egy PostgreSQL `date` értékhez hozzáadsz egy hónapot. Miért veszélyes általános szabályként azt feltételezni, hogy az eredeti hónap ugyanazon sorszámú napját kapod?
+A) A PostgreSQL hónapokat mindig 30 naposnak tekinti.
+B) A hónapok eltérő hosszúsága és a hónapvégi dátumok miatt az eredmény nem feltétlenül felel meg egy egyszerű "azonos nap a következő hónapban" elképzelésnek.
+C) A `date` típus nem támogat intervallumokat.
+D) A PostgreSQL minden hónap hozzáadását egy évvel későbbre helyezi.
+ANSWER: B
+EXPLANATION: A hónapok hossza nem egységes, ezért a hónapokkal végzett aritmetika különösen hónapvégi dátumoknál nem kezelhető egyszerű fix nap-számként. Üzleti szabálytól függően explicit módon kell eldönteni, hogyan kezelendő például a január 31. utáni hónap. Azért lehet csábító 30 nappal helyettesíteni a hónapot, mert a dátumokkal végzett egyszerű számításoknál ez rövid ideig működőképesnek tűnhet.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: Normalization & schema design
+TYPE: production
+QUESTION: Egy rendelési rendszerben a termék aktuális nevét közvetlenül az `orders` táblában is tárolod, miközben a termék neve a `products` táblában változhat. Melyik üzleti kérdést kell először tisztázni a séma megtervezésekor?
+A) Azt, hogy az order sorának az aktuális terméknevet vagy a rendelés pillanatában érvényes történeti nevet kell-e megőriznie.
+B) Azt, hogy minden termékhez külön adatbázist kell-e létrehozni.
+C) Azt, hogy a terméknevet hash-elni kell-e.
+D) Azt, hogy minden rendeléshez új products táblát kell-e létrehozni.
+ANSWER: A
+EXPLANATION: A redundáns adat önmagában nem feltétlenül hiba, ha üzletileg történeti snapshotot szeretnénk megőrizni. Például egy számlán szereplő terméknévnek gyakran a számlázás időpontjában érvényes nevet kell tükröznie, nem a később módosított aktuális nevet. Azért lehet csábító minden duplikált adatot automatikusan normalizálni, mert a redundancia gyakran okoz update anomaly problémákat, de a történeti adatok megőrzése legitim denormalizáció lehet.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: Views, procedures & triggers
+TYPE: security
+QUESTION: PostgreSQL-ben egy `SECURITY DEFINER` függvény magasabb jogosultságokkal fut, mint a hívó felhasználó. Miért különösen fontos ilyenkor a `search_path` biztonságos kezelése?
+A) Mert a `search_path` automatikusan kikapcsolja a tranzakciókat.
+B) Mert a `search_path` csak a numerikus típusokra van hatással.
+C) Mert a függvény nem tud SQL-t futtatni `search_path` használata nélkül.
+D) Mert egy nem biztonságosan kontrollált `search_path` lehetővé teheti, hogy a függvény nem várt objektumot oldjon fel, és ezzel a magasabb jogosultságú végrehajtást kihasználják.
+ANSWER: D
+EXPLANATION: A SECURITY DEFINER függvény a tulajdonos jogosultságaival fut, ezért különösen érzékeny a névfeloldásra. Ha a `search_path` nem megfelelően kontrollált, egy támadó bizonyos objektumneveket saját sémában elhelyezve befolyásolhatja, hogy a függvény mely objektumot használja. Biztonságos megoldás például a megfelelően korlátozott `search_path` és a szükséges objektumok explicit schema-qualifikációja. Azért lehet csábító figyelmen kívül hagyni a search_pathot, mert alkalmazásfejlesztésben gyakran csak kényelmi névfeloldási mechanizmusként találkozunk vele.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: Indexes
+TYPE: performance
+QUESTION: Egy PostgreSQL alkalmazásban JSONB oszlopban tárolt adatokra gyakran használsz containment lekérdezéseket, például `data @> '{"status": "active"}'`. Melyik index lehet erre tipikusan megfelelő?
+A) GIN index a JSONB oszlopon
+B) B-tree index kizárólag az egész JSONB szöveges reprezentációjára
+C) Hash index a tábla elsődleges kulcsán
+D) BRIN index egy teljesen független dátumoszlopon
+ANSWER: A
+EXPLANATION: A PostgreSQL GIN indexe jól illeszkedik sok JSONB operátorhoz, köztük containment alapú lekérdezésekhez, mert az összetett értékek elemeiről indexelhető információt tárol. A konkrét workload és operátorok alapján az operator class megválasztása is számíthat. Azért lehet csábító a B-tree használata, mert az általános célú indexelésnél nagyon gyakori, de önmagában egy teljes JSONB érték B-tree indexe nem ugyanarra a lekérdezési mintára optimalizált.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: SQL injection & security
+TYPE: behavior
+QUESTION: Miért nem elegendő kizárólag az alkalmazásban ellenőrizni, hogy egy felhasználó egy adott tenant rekordjához hozzáférhet-e, ha az adatbázis közvetlenül is elérhető több komponensből?
+A) Mert az alkalmazásban soha nem lehet jogosultságot ellenőrizni.
+B) Mert az adatbázis mindig figyelmen kívül hagyja az alkalmazásból érkező feltételeket.
+C) Mert egy másik komponens, hibás lekérdezés vagy kompromittált credential megkerülheti az alkalmazási réteg feltételezését; adatbázis-szintű kontroll, például RLS, további védelmet adhat.
+D) Mert a tenant_id oszlop nem tárolható PostgreSQL-ben.
+ANSWER: C
+EXPLANATION: Az alkalmazási jogosultság-ellenőrzés fontos, de önmagában csak akkor működik, ha minden hozzáférés mindig ugyanazon a megbízható kódúton halad át. Több komponens, adminisztrációs eszköz vagy kompromittált credential esetén adatbázis-szintű védelmek is indokolhatók. Azért lehet csábító kizárólag az alkalmazásban kezelni a jogosultságot, mert ott áll rendelkezésre a legtöbb üzleti kontextus.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: Transactions & isolation levels
+TYPE: edgecase
+QUESTION: PostgreSQL-ben egy hosszú ideig nyitva maradó tranzakció akkor is problémát okozhat, ha éppen nem tart aktív row lockot. Miért?
+A) Mert a PostgreSQL automatikusan SERIALIZABLE izolációra vált.
+B) Mert a régi snapshot megakadályozhatja bizonyos régi tuple-verziók eltávolítását, így MVCC bloatot és VACUUM-problémákat okozhat.
+C) Mert minden SELECT automatikusan kizárólagos táblazárat tart.
+D) Mert a PostgreSQL minden nyitott tranzakciót automatikusan rollbackel.
+ANSWER: B
+EXPLANATION: Az MVCC miatt a még aktív tranzakció által potenciálisan látható régi tuple-verziókat nem lehet egyszerűen eltávolítani. Egy hosszú életű snapshot ezért megakadályozhatja a cleanupot, ami table vagy index bloat növekedéséhez és VACUUM nehézségekhez vezethet. Azért lehet csábító csak a lockokat figyelni, mert a blokkolás közvetlenül látható, míg a snapshotból eredő MVCC-hatás közvetettebb.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: DML & upserts
+TYPE: behavior
+QUESTION: PostgreSQL-ben mi a lényeges különbség a `DELETE` és a `TRUNCATE` között egy nagy tábla teljes kiürítésekor?
+A) A `DELETE` minden esetben gyorsabb.
+B) A `TRUNCATE` soronként végrehajtja ugyanazokat a DELETE műveleteket.
+C) A `DELETE` nem használható tranzakcióban.
+D) A `DELETE` soralapú művelet, míg a `TRUNCATE` táblaszerűen ürít, ezért nagy mennyiségű adat eltávolítására jellemzően más zárolási és trigger-viselkedést biztosít.
+ANSWER: D
+EXPLANATION: A DELETE a sorokat a tranzakciós modell szerint távolítja el, míg a TRUNCATE lényegesen más, táblaszintű mechanizmussal üríti a táblát. A TRUNCATE általában gyorsabb teljes kiürítésnél, de erősebb zárolást igényel, és nem ugyanazokat a row-level DELETE triggereket hajtja végre. Azért lehet csábító a két műveletet teljesen ekvivalensnek tekinteni, mert mindkettő eredménye lehet az, hogy a tábla nem tartalmaz korábbi rekordokat.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: Query plans & optimization
+TYPE: performance
+QUESTION: Egy PostgreSQL lekérdezés párhuzamos végrehajtást használ. Egy saját SQL vagy PL/pgSQL függvény meghívása miatt azonban a párhuzamos terv eltűnik. Mi lehet ennek egyik oka?
+A) A függvény párhuzamos végrehajtásra nem biztonságosként van kezelve.
+B) Minden függvény automatikusan letiltja a parallel query-t.
+C) A PostgreSQL nem támogat függvényeket SELECT-ben.
+D) A párhuzamos végrehajtás csak index nélküli táblákon működik.
+ANSWER: A
+EXPLANATION: PostgreSQL-ben a függvények párhuzamos biztonsági kategóriája befolyásolhatja, hogy a planner használhat-e parallel executiont az adott lekérdezésben. Egy `PARALLEL UNSAFE` függvény jelenléte korlátozhatja vagy megakadályozhatja a párhuzamos tervet. A függvények tehát nem automatikusan tiltják a parallel query-t; a függvény tényleges viselkedése és deklarált tulajdonságai számítanak. Azért lehet csábító minden függvényt párhuzamosan nem biztonságosnak tekinteni, mert a planner konzervatív módon kezeli az ilyen eseteket.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Views, procedures & triggers
+TYPE: behavior
+QUESTION: Miért lehet hasznos egy stored procedure vagy function használata akkor, ha egy összetett adatbázis-műveletet több alkalmazás is ugyanazzal az adatbázis-szabállyal hajt végre?
+A) Mert a procedure automatikusan NoSQL adatbázissá alakítja a táblákat.
+B) Mert a közös adatbázis-oldali logika egyetlen helyen centralizálható, így több kliens ugyanazt a tranzakciós vagy üzleti adatkezelési szabályt használhatja.
+C) Mert a procedure minden SQL lekérdezést indexel.
+D) Mert a procedure használata mindig gyorsabb, mint bármilyen alkalmazásoldali logika.
+ANSWER: B
+EXPLANATION: Adatbázis-oldali procedure vagy function megfelelő esetben központi helyen tarthat olyan tranzakciós és adatkezelési logikát, amelyet több kliensnek konzisztensen kell alkalmaznia. Ez csökkentheti a duplikációt, de növelheti az adatbázisréteg komplexitását és a deploymenthez szükséges koordinációt. Azért lehet csábító a mindig gyorsabb végrehajtást feltételezni, mert a logika közelebb van az adatokhoz, de ez önmagában nem garantál jobb teljesítményt.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: Indexes
+TYPE: behavior
+QUESTION: PostgreSQL-ben mi a `CLUSTER` egyik fontos tulajdonsága egy index alapján rendezett tábla esetén?
+A) Az indexet minden INSERT után automatikusan újraépíti.
+B) A tábla fizikai sorrendjét az index sorrendjéhez igazíthatja, de ezt a fizikai rendezettséget a későbbi módosítások nem tartják fenn automatikusan.
+C) A CLUSTER törli az összes nem használt indexet.
+D) A CLUSTER minden lekérdezést kizárólag index scanre kényszerít.
+ANSWER: B
+EXPLANATION: A `CLUSTER` egy index alapján fizikailag átrendezheti a tábla sorait, ami bizonyos korrelált tartományi lekérdezéseknél javíthatja a locality-t. Ez nem folyamatos karbantartás: későbbi INSERT és UPDATE műveletek fokozatosan megbontják a fizikai rendezettséget. Azért lehet csábító az index működésével azonosnak tekinteni, mert mindkettő rendezett kulcsstruktúrához kapcsolódik, de a CLUSTER a heap fizikai elrendezését módosítja.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: Aggregation & GROUP BY
+TYPE: algorithm
+QUESTION: Egy lekérdezésben ugyanazon `GROUP BY` eredményhalmazon belül szeretnéd kiszámítani az aktív és inaktív rekordok számát külön oszlopokban. Melyik megoldás fejezi ki ezt közvetlenül PostgreSQL-ben?
+A) Két egymásba ágyazott `ORDER BY`
+B) `COUNT(*) FILTER (WHERE status = 'active')` és `COUNT(*) FILTER (WHERE status = 'inactive')`
+C) Két külön `DISTINCT` azonos oszlopokon
+D) `ROW_NUMBER()` kizárólag `PARTITION BY` nélkül
+ANSWER: B
+EXPLANATION: A `FILTER` lehetővé teszi, hogy ugyanazon grouping eredményén több, külön feltétellel rendelkező aggregációt számítsunk. Így az aktív és inaktív rekordok száma ugyanabban a csoportban külön oszlopokként jelenhet meg anélkül, hogy a csoportosítást a status oszlopra is rá kellene tenni. Azért lehet csábító külön GROUP BY csoportokat létrehozni, mert az is képes állapot szerint számolni, de más eredménystruktúrát ad.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: Constraints & keys
+TYPE: edgecase
+QUESTION: Egy adatbázisban azt szeretnéd, hogy egy oszloppár értékei között egy adott üzleti feltétel mindig teljesüljön, például `end_at` ne lehessen korábbi vagy egyenlő `start_at` értéknél. Melyik adatbázis-szintű mechanizmus felel meg legjobban ennek?
+A) CHECK constraint
+B) INDEX kizárólag `start_at` oszlopon
+C) VIEW `ORDER BY`-jal
+D) `ANALYZE`
+ANSWER: A
+EXPLANATION: A CHECK constraint közvetlenül kifejezheti a soron belüli értékek közötti üzleti invariánst, például `CHECK (end_at > start_at)`. Így a szabály minden INSERT és UPDATE esetén az adatbázisban is érvényesül. Azért lehet csábító alkalmazásoldalon ellenőrizni a feltételt, mert ott egyszerűen hozzáférhető az üzleti logika, de más adatbeviteli utak ezt megkerülhetik.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: Transactions & isolation levels
+TYPE: behavior
+QUESTION: Egy PostgreSQL tranzakcióban `SAVEPOINT sp1` után végrehajtasz egy hibás műveletet, majd `ROLLBACK TO SAVEPOINT sp1` utasítást adsz ki. Mi történik?
+A) Az egész tranzakció commitolódik.
+B) Az egész tranzakció automatikusan rollbackelődik.
+C) A savepoint létrehozása előtti teljes adatbázis-állapot véglegessé válik.
+D) A tranzakció a savepoint utáni állapotváltozásokat visszagörgeti, de a savepoint előtti tranzakciós munkát megtartja.
+ANSWER: D
+EXPLANATION: A SAVEPOINT részleges visszagörgetési pontot biztosít egy tranzakción belül. A `ROLLBACK TO SAVEPOINT` a savepoint létrehozása után végzett műveleteket visszavonja, miközben maga a tranzakció tovább folytatható. Azért lehet csábító az egész tranzakció rollbackjét feltételezni, mert egy normál ROLLBACK valóban minden még nem commitált módosítást visszavon.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Data types & dates
+TYPE: edgecase
+QUESTION: Egy alkalmazás időpontokat tárol PostgreSQL-ben, és a felhasználó lokális időzónájában szeretné megjeleníteni őket. Mi a megfelelő szemlélet?
+A) Minden időpontot VARCHAR-ként kell tárolni, hogy a timezone név is megmaradjon.
+B) Minden időpontot mindig helyi `time` értékként kell tárolni dátum nélkül.
+C) Az abszolút időpontot célszerű megfelelő időbélyeg-típussal tárolni, a megjelenítési timezone-t pedig a lekérdezés vagy session kontextusa alapján kezelni.
+D) A PostgreSQL minden felhasználóhoz automatikusan ugyanazt a lokális időzónát választja.
+ANSWER: C
+EXPLANATION: Ha egy esemény tényleges időpontját kell reprezentálni, azt célszerű abszolút időpontként kezelni, majd a megjelenítéskor a felhasználó kívánt időzónájára konvertálni. Ez elválasztja az esemény időpontját a megjelenítés lokális kontextusától, ami különösen fontos több időzónát használó rendszereknél. Azért lehet csábító a formázott szöveg tárolása, mert az egyszerre látszólag tartalmazza az időpontot és a timezone-információt, de nehezebben kereshető és számolható.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: SELECT & filtering
+TYPE: edgecase
+QUESTION: Egy PostgreSQL lekérdezésben ugyanahhoz az oszlophoz több feltételt szeretnél úgy alkalmazni, hogy az egyik feltétel kizárja azokat a sorokat, amelyek egy másik lekérdezés eredményében szerepelnek. Melyik konstrukció a leginkább robusztus, ha a subquery oszlopa NULL értéket is tartalmazhat?
+A) `NOT IN` minden esetben
+B) `NOT EXISTS`
+C) `<> ALL` minden további megfontolás nélkül
+D) `LEFT JOIN` mindig további feltétel nélkül
+ANSWER: B
+EXPLANATION: A `NOT EXISTS` természetes módon azt vizsgálja, hogy létezik-e megfelelő kapcsolódó sor, és nem szenved attól a háromértékű logikai problémától, amelyet a NULL okozhat a `NOT IN` esetén. Emiatt kizáró feltételeknél gyakran robusztusabb választás, különösen akkor, ha a subquery eredményének NULL-tartalma nem garantáltan kizárt. Azért lehet csábító a NOT IN, mert egyszerű és intuitív módon fejezi ki a "nincs benne" jelentést.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: Views, procedures & triggers
+TYPE: behavior
+QUESTION: Egy audit triggerben az aktuális rekord értékeit szeretnéd elmenteni UPDATE előtt PostgreSQL-ben. Melyik trigger-speciális rekordot kell erre tipikusan használni?
+A) `OLD`
+B) `NEW`
+C) `CURRENT`
+D) `TARGET`
+ANSWER: A
+EXPLANATION: UPDATE trigger esetén az `OLD` a módosítás előtti rekordértékeket reprezentálja, míg a `NEW` a módosítás utáni értékeket tartalmazza. Egy auditnaplóban a korábbi állapot rögzítéséhez ezért az OLD rekord használható. Azért lehet csábító a NEW használata, mert az is az adott UPDATE-hez tartozó teljes rekordot reprezentálja, csak éppen a módosítás utáni állapotot.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: Query plans & optimization
+TYPE: performance
+QUESTION: Egy nagyon nagy, append-only PostgreSQL táblán rendszeresen törölsz vagy módosítasz régi adatokat, miközben egy hosszú életű tranzakció folyamatosan nyitva marad. Melyik hatás lehet ennek következménye?
+A) A hosszú tranzakció mindig automatikusan VACUUM-ot indít.
+B) A hosszú tranzakció miatt a régi tuple-verziók takarítása korlátozott lehet, ami bloat növekedéséhez vezethet.
+C) A PostgreSQL automatikusan minden indexet töröl.
+D) A tranzakció miatt minden új INSERT blokkolódik.
+ANSWER: B
+EXPLANATION: Egy hosszú életű snapshot miatt bizonyos régi MVCC tuple-verziók még szükségesnek tűnhetnek, ezért a VACUUM nem tudja őket azonnal eltávolítani. Hosszú távon ez bloatot és nagyobb tárolási, I/O- illetve teljesítményterhelést okozhat. Azért lehet csábító csak a lock contentiont keresni, mert a hosszú tranzakciók gyakran blokkolási problémákat is okoznak, de a snapshot élettartama önálló MVCC-probléma is lehet.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: SQL vs NoSQL
+TYPE: scenario
+QUESTION: Egy rendszerben a fő adatmodell erősen relációs és tranzakciós, de egyes lekérdezések nagyon gyakran teljes, előre összeállított dokumentumokat kérnek egy adott ügyfélről, és ezek a dokumentumok drága JOIN-okból állnak elő. Melyik megközelítés lehet indokolható nagy terhelés mellett?
+A) A relációs adatmodellt azonnal teljesen NoSQL dokumentummodellre cseréled.
+B) Minden JOIN-ot eltávolítasz az adatbázisból.
+C) Minden dokumentumot kizárólag az alkalmazás memóriájában tárolsz.
+D) A tranzakciós relációs modellt megtartod, és szükség esetén külön read modelt vagy cache-elhető denormalizált reprezentációt vezetsz be a gyakori olvasási mintára.
+ANSWER: D
+EXPLANATION: A tranzakciós modell és az olvasási modell különválasztása lehetővé teszi, hogy a konzisztencia szempontjából fontos adatokat továbbra is relációs modellben kezeld, miközben a nagy volumenű, ismétlődő olvasásokat optimalizált reprezentáció szolgálja ki. Ez lehet materializált read model, cache vagy más denormalizált tárolási réteg, a frissességi követelményektől függően. Azért lehet csábító az egész rendszert NoSQL-re migrálni, mert a dokumentum-alapú olvasási minta természetesen illeszkedhet hozzá, de egyetlen workload miatt a teljes tranzakciós modell lecserélése jelentős új komplexitást hozhat.
+###END

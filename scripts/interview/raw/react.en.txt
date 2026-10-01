@@ -1,0 +1,3995 @@
+### Q1
+LEVEL: junior
+TOPIC: JSX & rendering
+TYPE: output
+QUESTION: What does the following React component render?
+CODE:
+function App() {
+  const name = "Anna";
+  return <h1>Hello, {name}!</h1>;
+}
+ENDCODE
+A) Hello, name!
+B) Hello, Anna!
+C) Hello, {name}!
+D) It throws an error because variables cannot be used in JSX.
+ANSWER: B
+EXPLANATION: Curly braces in JSX allow JavaScript expressions to be evaluated, so the value of the `name` variable, `Anna`, is inserted into the `<h1>` element. The common incorrect answer is tempting because JSX initially looks like HTML, but it is actually syntax that integrates JavaScript expressions.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: Components & props
+TYPE: behavior
+QUESTION: What is rendered when the following component is used?
+CODE:
+function Greeting({ name }) {
+  return <p>Hello, {name}!</p>;
+}
+
+function App() {
+  return <Greeting name="Peter" />;
+}
+ENDCODE
+A) Hello, name!
+B) Hello, undefined!
+C) Hello, Peter!
+D) `Greeting` does not receive props, so it throws an error.
+ANSWER: C
+EXPLANATION: The `name="Peter"` prop is passed to the `Greeting` component, which extracts the `name` value through destructuring in its parameter. Therefore, the rendered text is `Hello, Peter!`. `undefined` is tempting because the component does not explicitly use `props.name`, but destructuring works correctly here.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: State & useState
+TYPE: output
+QUESTION: What is logged to the console after clicking the button once?
+CODE:
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  function handleClick() {
+    setCount(count + 1);
+    console.log(count);
+  }
+
+  return <button onClick={handleClick}>{count}</button>;
+}
+ENDCODE
+A) Always `0`
+B) `1`
+C) `undefined`
+D) React always logs the new state value, so `1`
+ANSWER: A
+EXPLANATION: Calling `setCount` schedules a state update, but within the same event handler execution, the `count` variable still refers to the value from the current render, which is `0`. The next render will have `count` equal to `1`. `1` is tempting because it is natural to assume that the setter immediately changes the variable.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: useEffect & lifecycle
+TYPE: behavior
+QUESTION: When does the following effect run?
+CODE:
+function App() {
+  useEffect(() => {
+    console.log("effect");
+  }, []);
+
+  return <div>Hello</div>;
+}
+ENDCODE
+A) Before every render
+B) After every render
+C) After the first render and then after every state change
+D) After the component mounts, once during that particular mount
+ANSWER: D
+EXPLANATION: An empty dependency array means that the effect has no specified reactive dependencies, so it runs once after the commit for a particular mount. In development Strict Mode, React may perform an additional setup/cleanup cycle as a development-only check, so the console may show more than one execution. “After every render” is tempting because an effect without a dependency array does run after every commit.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: Rules of hooks & custom hooks
+TYPE: debug
+QUESTION: What is the problem with the following code?
+CODE:
+function User({ loggedIn }) {
+  if (loggedIn) {
+    const [name, setName] = useState("Anna");
+    return <p>{name}</p>;
+  }
+
+  return <p>Not logged in</p>;
+}
+ENDCODE
+A) `useState` can only be used in class components.
+B) A Hook must not be called conditionally.
+C) The first argument of `useState` cannot be a string.
+D) A component cannot use a `return` statement.
+ANSWER: B
+EXPLANATION: Hooks must be called in the same order on every render, so they must not be placed inside conditions, loops, or other control-flow paths that can change the number or order of Hook calls. The Hook should be called at the top level of the component, with conditional logic handled afterward. The incorrect approach is tempting because, from a plain JavaScript perspective, it seems natural to create state only when it is needed.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: useRef
+TYPE: behavior
+QUESTION: What happens when the button is clicked twice?
+CODE:
+function App() {
+  const countRef = useRef(0);
+
+  function handleClick() {
+    countRef.current++;
+    console.log(countRef.current);
+  }
+
+  return <button onClick={handleClick}>Click</button>;
+}
+ENDCODE
+A) `1`, then `1`
+B) `0`, then `1`
+C) `1`, then `2`
+D) The component re-renders after every click, so `1`, then `1`
+ANSWER: C
+EXPLANATION: `useRef` preserves the same ref object between renders, and modifying `current` does not itself trigger a re-render. The first click increments the value to `1`, and the second increments it to `2`. `1`, then `1` is tempting because it is easy to confuse a ref with a local variable that is recreated during rendering.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: JSX & rendering
+TYPE: trap
+QUESTION: What is the problem with the following JSX?
+CODE:
+function App() {
+  return (
+    <div>
+      <h1>Hello</h1>
+      <p>World</p>
+    </div>
+  );
+}
+ENDCODE
+A) There is no problem; this is valid JSX.
+B) JSX cannot contain multiple HTML elements.
+C) A `Fragment` must be used instead of the `<div>`.
+D) The `<h1>` and `<p>` elements must be separated with commas.
+ANSWER: A
+EXPLANATION: JSX requires a single root element, and the `<div>` provides exactly that; it can contain any number of children such as the `<h1>` and `<p>`. Using a Fragment would be an optional alternative if an extra DOM element is not desired. Requiring a Fragment is tempting because it is frequently used as a wrapper in React examples.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Components & props
+TYPE: edgecase
+QUESTION: What is rendered if the `title` prop is not provided?
+CODE:
+function Card({ title = "Default" }) {
+  return <h2>{title}</h2>;
+}
+
+function App() {
+  return <Card />;
+}
+ENDCODE
+A) An empty `<h2>` element
+B) `undefined`
+C) `null`
+D) `Default`
+ANSWER: D
+EXPLANATION: The destructuring default value is used when the prop value is `undefined`, so `title` becomes `Default`. This is different from explicitly passing `null`. An empty element is tempting because it is easy to assume that a missing prop automatically becomes an empty string.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: State & useState
+TYPE: output
+QUESTION: What will the button display after one click?
+CODE:
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  function handleClick() {
+    setCount(count + 1);
+    setCount(count + 1);
+  }
+
+  return <button onClick={handleClick}>{count}</button>;
+}
+ENDCODE
+A) `0`
+B) `1`
+C) `2`
+D) React throws an error because the state is updated twice.
+ANSWER: B
+EXPLANATION: Both setters calculate their next value from the `count` value captured by the same render, so both schedule `0 + 1`. React processes the updates, but they do not automatically become `2`. To perform two increments reliably, the functional form can be used, for example `setCount(c => c + 1)` twice. `2` is tempting because two setter calls can intuitively look like two sequential increments.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: useEffect & lifecycle
+TYPE: debug
+QUESTION: What is the most important problem with the following effect?
+CODE:
+function User({ userId }) {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetch(`/api/users/${userId}`)
+      .then(res => res.json())
+      .then(setUser);
+  }, []);
+
+  return <div>{user?.name}</div>;
+}
+ENDCODE
+A) `fetch` cannot be used inside an effect.
+B) `setUser` cannot be passed as a promise callback.
+C) `userId` is missing from the dependency list, so the effect does not respond to changes in it.
+D) An effect must always have a `return` statement.
+ANSWER: C
+EXPLANATION: `userId` is a reactive value used by the effect, so changes to it should cause the effect to run again and fetch the corresponding user's data. With an empty dependency array, the effect runs during a mount but does not re-run when `userId` changes. Not having a `return` statement is not an error because cleanup is only necessary when there is something to clean up.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: Rules of hooks & custom hooks
+TYPE: theory
+QUESTION: Which statement correctly describes the basic rule for calling React Hooks?
+CODE:
+ENDCODE
+A) Hooks can only be called from event handlers.
+B) Hooks can only be called from class components.
+C) Hooks can be called from any JavaScript function as long as its name starts with `use`.
+D) Hooks must be called at the top level of a component or custom Hook, not conditionally or inside loops.
+ANSWER: D
+EXPLANATION: React relies on the order in which Hooks are called to correctly associate state and other Hook data with a component render. Therefore, Hook calls must remain in a stable order across renders. The idea that the `use` prefix alone makes any function a valid Hook context is tempting, but the naming convention by itself does not make arbitrary Hook usage valid.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: useRef
+TYPE: scenario
+QUESTION: You want to focus a DOM input element when a button is clicked. Which approach is correct?
+CODE:
+function Search() {
+  const inputRef = useRef(null);
+
+  function focusInput() {
+    inputRef.current?.focus();
+  }
+
+  return (
+    <>
+      <input ref={inputRef} />
+      <button onClick={focusInput}>Focus</button>
+    </>
+  );
+}
+ENDCODE
+A) `inputRef.current?.focus()` is the correct approach.
+B) `inputRef.value.focus()` is the correct approach.
+C) `setInputRef(input => input.focus())` is required.
+D) A DOM element cannot be accessed directly from React.
+ANSWER: A
+EXPLANATION: The `ref` prop places the DOM node into `inputRef.current` when the element is mounted. The button handler can therefore call the DOM element's `focus()` method directly. `inputRef.value.focus()` is tempting because form values and refs are easy to confuse, but a ref object does not have that structure.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: useMemo & useCallback
+TYPE: performance
+QUESTION: When can using `useMemo` be justified?
+CODE:
+const filtered = useMemo(
+  () => expensiveFilter(items, search),
+  [items, search]
+);
+ENDCODE
+A) It should always be used around every calculation.
+B) When a calculation is expensive and it is useful to avoid recalculating it when the same inputs are used.
+C) To make state persist after a page refresh.
+D) To prevent effects from running.
+ANSWER: B
+EXPLANATION: `useMemo` memoizes a calculated value, so with appropriate dependencies, an expensive calculation can be skipped when its inputs have not changed. It is not a general state-persistence mechanism and does not disable effects. “Memoize everything” is tempting because memoization initially looks like an automatic performance improvement, but it also has overhead and should be used when it provides a measurable or meaningful benefit.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: Context
+TYPE: behavior
+QUESTION: What happens if a component reads a Context value using `useContext(ThemeContext)` and the Provider's value changes?
+CODE:
+const ThemeContext = createContext("light");
+
+function App() {
+  const [theme, setTheme] = useState("light");
+
+  return (
+    <ThemeContext.Provider value={theme}>
+      <Toolbar />
+    </ThemeContext.Provider>
+  );
+}
+ENDCODE
+A) The component using the Context receives the new value and may re-render.
+B) It only receives the new value after a full page reload.
+C) A Context value cannot change at runtime.
+D) It only updates if the component explicitly calls `setState`.
+ANSWER: A
+EXPLANATION: When a Context Provider's value changes, its consumers receive the new value and can re-render accordingly. The consumer does not need to manage its own state for this to happen. A full page reload is tempting to assume because Context is often used for global, relatively static configuration, but it can also represent values that change at runtime.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: Reconciliation & keys
+TYPE: trap
+QUESTION: Why is using a `key` important when rendering a list in React?
+CODE:
+function TodoList({ todos }) {
+  return (
+    <ul>
+      {todos.map(todo => (
+        <li key={todo.id}>{todo.text}</li>
+      ))}
+    </ul>
+  );
+}
+ENDCODE
+A) `key` is used exclusively for applying CSS styles.
+B) `key` ensures that every element is automatically memoized.
+C) `key` helps React determine which list item instances correspond to each other during updates.
+D) `key` prevents list items from re-rendering.
+ANSWER: C
+EXPLANATION: A `key` provides stable identity among siblings, helping React track which elements were preserved, inserted, removed, or changed. It does not automatically memoize a component and does not prevent re-renders. Confusing keys with memoization is common because both are often discussed in the context of rendering performance.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: Forms
+TYPE: scenario
+QUESTION: Which approach implements a controlled input in React?
+CODE:
+function Form() {
+  const [email, setEmail] = useState("");
+
+  return (
+    <input
+      value={email}
+      onChange={e => setEmail(e.target.value)}
+    />
+  );
+}
+ENDCODE
+A) The browser exclusively manages the input value.
+B) The input is always uncontrolled if `useState` is used in the component.
+C) The `value` prop can only be used with checkboxes.
+D) React state controls the input value, while `onChange` updates that state.
+ANSWER: D
+EXPLANATION: With a controlled input, React state is the source of truth for the current value, and the `value` prop reflects that state in the input. The `onChange` handler updates the state, keeping the UI and state synchronized. Confusing this with uncontrolled behavior is tempting because the browser's native input state still exists, but in controlled mode React explicitly controls the value.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: Performance optimization
+TYPE: behavior
+QUESTION: A parent component's state changes. What happens by default to a child component that does not use `React.memo`?
+CODE:
+function Child({ name }) {
+  console.log("Child render");
+  return <p>{name}</p>;
+}
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <>
+      <button onClick={() => setCount(c => c + 1)}>+</button>
+      <Child name="Anna" />
+    </>
+  );
+}
+ENDCODE
+A) The child never re-renders because the `name` prop has not changed.
+B) The child can re-render when the parent re-renders.
+C) The child only re-renders if it has its own state.
+D) The child only renders during the initial mount.
+ANSWER: B
+EXPLANATION: When the parent re-renders, its child components can also re-render unless something such as memoization prevents that work. `React.memo` combined with stable props can reduce unnecessary child renders in appropriate cases. Assuming that unchanged props automatically prevent rendering is tempting because it is easy to think React always compares every child prop and skips the child automatically.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: State management
+TYPE: scenario
+QUESTION: A simple component needs to manage the value of one input and one boolean UI state. What is the most reasonable default approach?
+CODE:
+ENDCODE
+A) Immediately introduce an external global state management library.
+B) Store all state in `useRef`.
+C) Use local React state, such as `useState`.
+D) Store all state in URL query parameters.
+ANSWER: C
+EXPLANATION: When state belongs to a single component or a small part of the component tree, local `useState` is generally a simple and appropriate solution. External state management can be justified when state is shared across many distant components or has more complex coordination requirements. Introducing a global store immediately is tempting because it can be useful in larger applications, but not every piece of state needs to be global.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: TypeScript with React
+TYPE: scenario
+QUESTION: Which TypeScript typing correctly describes a component that requires a `name` string prop?
+CODE:
+ENDCODE
+A) `function User({ name }: { name: string }) { return <div>{name}</div>; }`
+B) `function User({ name }: string) { return <div>{name}</div>; }`
+C) `function User(name: string) { return <div>{name}</div>; }`
+D) `function User({ name }: { name: number }) { return <div>{name}</div>; }`
+ANSWER: A
+EXPLANATION: A component receives a props object, so when destructuring the parameter, the object structure must be typed as `{ name: string }`. The second and third forms do not correctly describe the props object structure, while the `number` type does not match the required string prop.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Accessibility
+TYPE: scenario
+QUESTION: Which approach correctly provides alternative text for an image used as an icon?
+CODE:
+ENDCODE
+A) `<img src="/save.svg" title="Save" />`
+B) `<img src="/save.svg" alt="Save" />`
+C) `<img src="/save.svg" label="Save" />`
+D) `<img src="/save.svg" text="Save" />`
+ANSWER: B
+EXPLANATION: The `alt` attribute provides alternative text for images, which can be read by screen readers and used when the image cannot be displayed. `title` does not replace appropriate use of `alt`. `title` is tempting because it can appear as a visual tooltip, but that is not equivalent to accessible alternative text.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: Data fetching & race conditions
+TYPE: scenario
+QUESTION: A component fetches data based on `userId`. The user quickly switches from `userId=1` to `userId=2`. What problem can occur if both requests run concurrently and every response simply calls `setUser`?
+CODE:
+useEffect(() => {
+  fetch(`/api/users/${userId}`)
+    .then(res => res.json())
+    .then(data => setUser(data));
+}, [userId]);
+ENDCODE
+A) React automatically guarantees that the older request can never overwrite the newer result.
+B) `fetch` always runs synchronously.
+C) The older request can return later and overwrite the newer user's data if the race condition is not handled properly.
+D) The dependency array prevents either request from running.
+ANSWER: C
+EXPLANATION: Network responses do not necessarily arrive in the same order in which requests were started. As a result, a response for the first user can arrive later and write stale data into state. This can be handled with an `AbortController` in the cleanup process or another request-lifecycle strategy. Assuming React automatically prevents this is tempting because React manages rendering lifecycles, but it does not control the completion order of individual network requests.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: Error boundaries
+TYPE: theory
+QUESTION: What is the primary purpose of an Error Boundary in a React application?
+CODE:
+ENDCODE
+A) To catch errors occurring during rendering in a component subtree and display a fallback UI.
+B) To automatically fix all JavaScript syntax errors.
+C) To automatically retry failed backend HTTP requests.
+D) To automatically catch every promise rejection.
+ANSWER: A
+EXPLANATION: An Error Boundary allows certain errors occurring in a React component subtree during rendering to be handled by displaying fallback UI instead of leaving the failure unhandled. It is not a general-purpose JavaScript error fixer or HTTP retry mechanism. Assuming it automatically handles promise rejections is tempting because Error Boundaries are broadly associated with error handling, but their scope is more specific.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: Testing (React Testing Library)
+TYPE: scenario
+QUESTION: You want to test a button's text and user-accessible behavior with React Testing Library. Which query best matches a user-centric approach?
+CODE:
+render(<button>Save</button>);
+ENDCODE
+A) `container.querySelector("button")`
+B) `screen.getByTestId("save-button")`
+C) `screen.getByText("button")`
+D) `screen.getByRole("button", { name: "Save" })`
+ANSWER: D
+EXPLANATION: `getByRole` uses the semantic role and accessible name available to the user, making it a strong fit for React Testing Library's user-centric approach and accessibility-oriented testing. A DOM selector or test ID can work technically, but it models user-visible behavior less directly.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: JSX & rendering
+TYPE: output
+QUESTION: What is rendered by the following component?
+CODE:
+function App() {
+  const items = ["A", "B", "C"];
+
+  return (
+    <ul>
+      {items.map(item => <li key={item}>{item}</li>)}
+    </ul>
+  );
+}
+ENDCODE
+A) A single `<li>` element containing the text `ABC`
+B) Three `<li>` elements: `A`, `B`, and `C`
+C) Three `<li>` elements, each containing `undefined`
+D) An error occurs because `map()` cannot be used in JSX.
+ANSWER: B
+EXPLANATION: `map()` creates a JSX `<li>` element for each item, and React renders the resulting array as children. Therefore, three list items containing `A`, `B`, and `C` are rendered. A single `ABC` result is tempting because `map()` is often thought of simply as an array transformation, but here each iteration produces a separate React element.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: Reconciliation & keys
+TYPE: edgecase
+QUESTION: Why can using the array index as a `key` be problematic for a list whose items can be inserted or reordered?
+CODE:
+function TodoList({ todos }) {
+  return todos.map((todo, index) => (
+    <TodoItem key={index} todo={todo} />
+  ));
+}
+ENDCODE
+A) Because the index is always a string.
+B) Because React does not allow an index to be used as a key.
+C) Because when an item is inserted or reordered, the same index can refer to a different item, which can lead to incorrect component-state identity.
+D) Because using an index is always slower than using a string ID.
+ANSWER: C
+EXPLANATION: When the list order changes, index-based identity can shift. React may therefore associate a component instance that previously represented one item with different data, which can cause surprising behavior, especially when list items contain local state. Using an index is tempting because it is readily available and technically accepted as a `key`, but a stable data identifier is generally preferable for dynamic lists.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: JSX & rendering
+TYPE: output
+QUESTION: What is rendered by the following component?
+CODE:
+function App() {
+  const value = 0;
+
+  return <p>{value || "No data"}</p>;
+}
+ENDCODE
+A) `0`
+B) `false`
+C) `No data`
+D) Nothing
+ANSWER: C
+EXPLANATION: The `||` operator in JavaScript returns the left-hand value only when it is truthy. `0` is falsy, so the result of the expression is `"No data"`. `0` is tempting because the number `0` is indeed rendered by JSX when used by itself, but here the JavaScript `||` operator is evaluated first.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: Components & props
+TYPE: scenario
+QUESTION: What happens when a parent component passes JSX as the `children` prop?
+CODE:
+function Panel({ children }) {
+  return <section>{children}</section>;
+}
+
+function App() {
+  return (
+    <Panel>
+      <p>Hello</p>
+    </Panel>
+  );
+}
+ENDCODE
+A) The `<p>Hello</p>` element becomes the `children` prop of the `Panel` component and is rendered inside the `<section>`.
+B) `children` can only be a string.
+C) The `<p>` element is not rendered because the `children` prop can only be used by class components.
+D) React throws an error because `Panel` did not separately declare the `children` prop.
+ANSWER: A
+EXPLANATION: Content placed between a component's opening and closing JSX tags is automatically passed as the `children` prop. `Panel` renders that content inside the `section`. It is tempting to think that `children` can only be a string because simple examples often pass text this way, but React elements and other renderable values can also be passed as children.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: State & useState
+TYPE: behavior
+QUESTION: What happens when `setUser` is called in the following component?
+CODE:
+function Profile() {
+  const [user, setUser] = useState({
+    name: "Anna",
+    age: 30
+  });
+
+  function birthday() {
+    setUser({ age: user.age + 1 });
+  }
+
+  return <p>{user.name} - {user.age}</p>;
+}
+ENDCODE
+A) `name` is automatically preserved and `age` is incremented by one.
+B) React automatically merges the object fields.
+C) The object remains unchanged because `setUser` only works with primitive values.
+D) Only the `age` field remains in the new state object, so `name` becomes `undefined`.
+ANSWER: D
+EXPLANATION: The `useState` setter does not automatically perform a shallow merge for object state. The new state is exactly `{ age: user.age + 1 }`, so the previous `name` field is gone. To preserve it, you could use something like `{ ...user, age: user.age + 1 }`. Automatic merging is tempting because the old `setState` API for class components had different semantics.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: useEffect & lifecycle
+TYPE: behavior
+QUESTION: What does the cleanup function in the following effect do?
+CODE:
+useEffect(() => {
+  const id = setInterval(() => {
+    console.log("tick");
+  }, 1000);
+
+  return () => clearInterval(id);
+}, []);
+ENDCODE
+A) It creates a new interval every second.
+B) It stops the interval when the component unmounts.
+C) It stops the interval immediately after the effect runs.
+D) The cleanup function only runs if `setInterval` throws an error.
+ANSWER: B
+EXPLANATION: The effect creates an interval, and the returned cleanup function runs when the mount is removed, calling `clearInterval` to release the resource. In development Strict Mode, the effect setup and cleanup may also go through an additional cycle as a development check. Immediate cleanup is tempting because the cleanup function is located directly inside the effect, but React actually invokes it later as part of the effect lifecycle.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Rules of hooks & custom hooks
+TYPE: theory
+QUESTION: Which function can be correctly used as a custom Hook?
+CODE:
+function useOnlineStatus() {
+  const [online, setOnline] = useState(navigator.onLine);
+  return online;
+}
+ENDCODE
+A) It is invalid solely because it does not contain JSX.
+B) It can only be called from a class component.
+C) It can be used as a custom Hook as long as it is called at the top level of a component or another custom Hook.
+D) Because of the `use` prefix, it can automatically be called from anywhere.
+ANSWER: C
+EXPLANATION: A custom Hook is a JavaScript function that can use Hooks and conventionally starts with the `use` prefix. The Rules of Hooks still apply both inside the custom Hook and at the point where it is called. The `use` prefix does not grant general permission to call the function from arbitrary control-flow paths.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: useRef
+TYPE: edgecase
+QUESTION: What is logged after the second render?
+CODE:
+function App() {
+  const renderCount = useRef(0);
+
+  renderCount.current++;
+
+  console.log(renderCount.current);
+
+  return <div>Hello</div>;
+}
+ENDCODE
+A) `1`, then `2`, if the component renders twice.
+B) Always `1`.
+C) `0`, then `1`.
+D) React throws an error because a ref cannot be modified during rendering.
+ANSWER: A
+EXPLANATION: `useRef(0)` preserves the same ref object between renders. During the first render, `current` becomes `1`, and during the second render it becomes `2`. Modifying a ref does not trigger a re-render, but its value can of course be changed during a render that is already taking place. `0`, then `1` is tempting because it is easy to think of the ref as being initialized again on every render.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: useMemo & useCallback
+TYPE: behavior
+QUESTION: What is the difference between `useMemo` and `useCallback` in the following example?
+CODE:
+const value = useMemo(() => calculateValue(data), [data]);
+const handler = useCallback(() => save(data), [data]);
+ENDCODE
+A) Both always return the same type of value.
+B) `useMemo` memoizes the result of a function, while `useCallback` memoizes the function itself.
+C) `useMemo` can only be used for event handlers.
+D) `useCallback` automatically caches the result of `calculateValue`.
+ANSWER: B
+EXPLANATION: `useMemo` memoizes the value calculated by its callback, while `useCallback` preserves a function reference based on its dependencies. This can be useful when passing a callback to a memoized child component. It is tempting to confuse them because both use dependency arrays and both commonly appear in optimizations involving referential stability.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Context
+TYPE: edgecase
+QUESTION: What happens in the following component if there is no `ThemeContext.Provider` above it in the component tree?
+CODE:
+const ThemeContext = createContext("light");
+
+function Toolbar() {
+  const theme = useContext(ThemeContext);
+  return <div>{theme}</div>;
+}
+ENDCODE
+A) `theme` automatically becomes `undefined`.
+B) The component throws an error because every Context requires a Provider.
+C) The component does not render.
+D) `theme` receives the default value specified by `createContext`, which is `"light"`.
+ANSWER: D
+EXPLANATION: If there is no matching Provider above the component, `useContext` uses the default value specified when `createContext` was called. This default is not a global mutable state; it is a fallback value used when no Provider is present. `undefined` is tempting because many JavaScript APIs use `undefined` for missing values, but Context can explicitly define its own default value.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: Reconciliation & keys
+TYPE: output
+QUESTION: What happens if the first item is removed from a list while the `key` is derived from the data?
+CODE:
+function List({ items }) {
+  return items.map(item => (
+    <input key={item.id} defaultValue={item.name} />
+  ));
+}
+ENDCODE
+A) React can use the ID to determine which items remain, so the identity of the remaining items stays stable.
+B) React always creates every input completely from scratch.
+C) The `id` causes the value of every input to be cleared.
+D) `key` only matters for CSS, so it has no effect.
+ANSWER: A
+EXPLANATION: A stable data-derived `key` allows React to identify list-item identity across renders. When an item is removed, the identities of the remaining items can therefore be preserved appropriately. The assumption that every input is recreated is tempting because the list array does receive a different value, but React reconciliation does not simply replace the entire DOM.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: Forms
+TYPE: debug
+QUESTION: What is the problem with the following input if we want it to be a controlled input?
+CODE:
+function Form() {
+  const [name, setName] = useState();
+
+  return (
+    <input
+      value={name}
+      onChange={e => setName(e.target.value)}
+    />
+  );
+}
+ENDCODE
+A) The `onChange` event does not work on inputs.
+B) The `value` prop cannot be set from state.
+C) The input initially receives `undefined`, so it can switch between uncontrolled and controlled modes.
+D) `useState` cannot be used for forms.
+ANSWER: C
+EXPLANATION: Calling `useState()` without an argument initializes the state to `undefined`. As a result, the input can initially be uncontrolled and then become controlled once the state becomes a string, which can cause a React warning. Using `useState("")` is the typical solution. Ignoring the issue is tempting because `undefined` and an empty string can appear visually similar as an initial input value.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: Performance optimization
+TYPE: performance
+QUESTION: A component performs a very expensive calculation on every render, even though the result only depends on changes to an `items` array. Which approach may be appropriate?
+CODE:
+function Report({ items, theme }) {
+  const total = calculateExpensiveTotal(items);
+
+  return <div className={theme}>{total}</div>;
+}
+ENDCODE
+A) The `calculateExpensiveTotal` function must always be moved into `useEffect`.
+B) Using `useMemo(() => calculateExpensiveTotal(items), [items])` may be appropriate.
+C) The result must be stored in `useRef`, with a manual check on every render.
+D) The `theme` state must be removed.
+ANSWER: B
+EXPLANATION: If the calculation is genuinely expensive and its result depends only on `items`, `useMemo` can prevent it from being recalculated merely because `theme` changed. However, `useMemo` is not an automatic guarantee of eliminating rendering costs, and unnecessary memoization can add complexity. Moving it to an effect is tempting because the developer may want to move expensive work “into the background,” but a derived render value is not a side effect.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: State management
+TYPE: scenario
+QUESTION: Two sibling components need to display and modify the same value. What is the idiomatic React approach?
+CODE:
+ENDCODE
+A) Create a separate `useState` instance in both components.
+B) Store the shared value in `useRef` in both components.
+C) Store the shared state directly in the DOM.
+D) Lift the shared state to the nearest common parent and pass it down through props.
+ANSWER: D
+EXPLANATION: When multiple components need shared state, the typical approach is to lift that state to their nearest common parent. The parent becomes the source of truth, while the children receive the value and, when necessary, a setter or callback through props. Separate state instances are tempting because they are locally simple, but they can easily introduce synchronization problems.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: Data fetching & race conditions
+TYPE: debug
+QUESTION: Why can the following code be problematic in production if the component can unmount before the request completes?
+CODE:
+useEffect(() => {
+  fetch("/api/data")
+    .then(res => res.json())
+    .then(data => setData(data));
+}, []);
+ENDCODE
+A) `fetch` can only be called from an event handler.
+B) A promise always resolves synchronously.
+C) It can be useful to manage the request lifecycle, for example with `AbortController`, so that an obsolete request can be cancelled.
+D) The dependency array prevents the fetch from running.
+ANSWER: C
+EXPLANATION: A request that is no longer needed can continue running even if the component's lifecycle ends or the result is no longer relevant. `AbortController` can be used to cancel the fetch during cleanup, which can be useful for resource and lifecycle management. Assuming that fetch always finishes safely is tempting because the browser manages the promise, but the application may still need explicit request lifecycle handling.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: Concurrent features & Suspense
+TYPE: theory
+QUESTION: What is the fundamental role of Suspense in React?
+CODE:
+function App() {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <SomeComponent />
+    </Suspense>
+  );
+}
+ENDCODE
+A) It allows React to display fallback UI for a suspended rendering subtree while the required resource becomes available.
+B) It automatically makes every component faster.
+C) It catches every JavaScript exception.
+D) It can only be used for form validation.
+ANSWER: A
+EXPLANATION: Suspense provides a declarative boundary for rendering work that temporarily cannot continue and can display fallback UI while the necessary resource becomes available. It can be used with lazy-loaded components and, with appropriate React integrations, data-loading scenarios as well. Confusing it with an Error Boundary is tempting because both act as boundaries, but Suspense is not a general-purpose exception handler.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: Server Components & SSR
+TYPE: theory
+QUESTION: Which statement correctly describes a fundamental property of React Server Components?
+CODE:
+ENDCODE
+A) Every Server Component is automatically sent to the client as JavaScript.
+B) A Server Component only runs in the browser.
+C) A Server Component can use server-side resources, and its component code does not necessarily have to be included in the client-side JavaScript bundle.
+D) A Server Component is always the same thing as a Client Component rendered with SSR.
+ANSWER: C
+EXPLANATION: React Server Components can be rendered in a server environment, allowing certain component logic and access to server-side resources to remain outside the client JavaScript bundle. RSC and SSR are not the same concept: SSR is a rendering strategy, while Server Components are a component architecture model. Confusing them is tempting because both involve React rendering on the server.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: Error boundaries
+TYPE: edgecase
+QUESTION: Which situation should not be treated as the primary responsibility of an Error Boundary?
+CODE:
+ENDCODE
+A) Handling a rendering error in a child component with fallback UI.
+B) Isolating an error that occurs while rendering a component tree.
+C) Displaying fallback UI that remains usable after a rendering failure.
+D) Automatically retrying a `fetch()` promise rejection.
+ANSWER: D
+EXPLANATION: Error Boundaries are intended to handle certain rendering errors within the React component tree, not to automatically retry network requests. Fetch errors should be handled explicitly with promise/error handling or an appropriate data-fetching solution. Using an Error Boundary for this is tempting because a network failure is also an “error,” but the two error-handling mechanisms have different scopes.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: Testing (React Testing Library)
+TYPE: scenario
+QUESTION: A component updates visible text when a button is clicked. Which testing approach best matches the philosophy of React Testing Library?
+CODE:
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <>
+      <span>{count}</span>
+      <button onClick={() => setCount(c => c + 1)}>Increment</button>
+    </>
+  );
+}
+ENDCODE
+A) The internal state value should be checked directly.
+B) Find the button as a user would, interact with it, and then verify the visible result.
+C) The component's `setCount` function should be mocked.
+D) React Fiber's internal data should be inspected.
+ANSWER: B
+EXPLANATION: React Testing Library is designed to test component behavior in a way that resembles how users experience the UI. Therefore, it is appropriate to find the button through an accessible query, simulate the user interaction, and then verify the resulting visible value. Testing internal state or React internals is tempting because it can seem more direct technically, but it creates tests that are tightly coupled to implementation details.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: TypeScript with React
+TYPE: debug
+QUESTION: What is the problem with the following TypeScript code?
+CODE:
+type ButtonProps = {
+  disabled: boolean;
+};
+
+function Button({ disabled }: ButtonProps) {
+  return <button disabled={disabled}>Save</button>;
+}
+
+function App() {
+  return <Button />;
+}
+ENDCODE
+A) The `disabled` prop is required, but `App` does not provide it.
+B) `boolean` cannot be used as a React prop.
+C) TypeScript cannot recognize the prop because of destructuring.
+D) The `button` element does not accept boolean values.
+ANSWER: A
+EXPLANATION: The `disabled` field is required in the `ButtonProps` type, so TypeScript reports an error when `<Button />` is used without it. If it should be optional, it can be declared as `disabled?: boolean`. It is tempting to assume that React supplies a default `false` value because a native HTML button is enabled when the `disabled` attribute is absent, but that does not change the TypeScript requirement for the component prop.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: Accessibility
+TYPE: trap
+QUESTION: Which approach is the most semantically appropriate for a UI element that performs an action when clicked?
+CODE:
+ENDCODE
+A) `<div onClick={save}>Save</div>`
+B) `<span onClick={save}>Save</span>`
+C) `<button onClick={save}>Save</button>`
+D) `<p onClick={save}>Save</p>`
+ANSWER: C
+EXPLANATION: When an element triggers a user action, a native `<button>` provides appropriate semantics and keyboard interaction by default. Making a `div` or `span` clickable requires additional accessibility handling, such as an appropriate role, keyboard interaction, and focus management. A `<div>` is tempting because it can be freely styled, but its default semantics and interaction behavior are not those of a button.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: JSX & rendering
+TYPE: output
+QUESTION: What happens with the following JSX?
+CODE:
+function App() {
+  const show = false;
+
+  return (
+    <div>
+      {show && <p>Visible</p>}
+    </div>
+  );
+}
+ENDCODE
+A) The `Visible` text is always displayed.
+B) The `<p>` element is not rendered.
+C) React renders the text `false`.
+D) The JSX contains a syntax error.
+ANSWER: B
+EXPLANATION: The JavaScript `&&` operator returns the left-hand `false` value when `show` is false, and React does not render boolean values as DOM children. Therefore, the `<p>` element does not appear. Rendering `false` as text is tempting because the expression itself evaluates to `false` in JavaScript, but React intentionally does not render boolean children.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: Components & props
+TYPE: edgecase
+QUESTION: What happens when a parent passes an object as a prop in the following example?
+CODE:
+function UserCard({ user }) {
+  return <p>{user.name}</p>;
+}
+
+function App() {
+  const user = { name: "Anna" };
+
+  return <UserCard user={user} />;
+}
+ENDCODE
+A) React automatically converts the object to a string.
+B) The `user` prop value is always `null`.
+C) The `user` prop receives the same object reference that the parent passed.
+D) Objects cannot be passed as React props.
+ANSWER: C
+EXPLANATION: React props are JavaScript values, so objects can be passed as well. The object reference stored in the `user` variable is passed to the child, which can read its `name` property. React does not automatically deep-clone the object. Automatic string conversion is tempting because directly rendering an object in JSX is indeed different from passing an object as a prop.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: State & useState
+TYPE: behavior
+QUESTION: Which approach is safest when the next state value should be calculated from the previous state?
+CODE:
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  function increment() {
+    setCount(prev => prev + 1);
+  }
+
+  return <button onClick={increment}>{count}</button>;
+}
+ENDCODE
+A) `setCount(count + 1)` is always incorrect.
+B) `setCount(prev => prev + 1)` calculates the next state from the previous state value.
+C) `setCount(() => count + 1)` always reads the current state directly from React.
+D) The state should be modified directly with `count++`.
+ANSWER: B
+EXPLANATION: The functional updater form should be used when the next state depends on the previous state. React provides the updater function with the appropriate previous state, allowing multiple state updates to be composed correctly. Directly using `count++` is tempting because it treats state like an ordinary JavaScript variable, but React state should not be mutated directly.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: useEffect & lifecycle
+TYPE: edgecase
+QUESTION: What happens if an object is placed in an effect's dependency list and that object is recreated on every render?
+CODE:
+function App({ userId }) {
+  const options = { userId };
+
+  useEffect(() => {
+    console.log("effect");
+  }, [options]);
+
+  return <div>{userId}</div>;
+}
+ENDCODE
+A) The effect only runs once because `userId` does not change.
+B) The effect never runs.
+C) The effect can run again after every render because `options` is a new object reference on every render.
+D) React automatically performs a deep equality comparison on the `options` object.
+ANSWER: C
+EXPLANATION: React compares such dependency values by reference rather than performing a general deep-equality comparison. Since the `options` object is a new instance on every render, its reference is also new, so the effect can run again. Automatic deep comparison is tempting because the objects contain the same data, but React does not automatically perform this potentially expensive comparison.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: Rules of hooks & custom hooks
+TYPE: debug
+QUESTION: What is the problem with using the following custom Hook this way?
+CODE:
+function useUser(userId) {
+  const [user, setUser] = useState(null);
+
+  return user;
+}
+
+function App({ enabled, userId }) {
+  if (!enabled) {
+    return <p>Disabled</p>;
+  }
+
+  const user = useUser(userId);
+
+  return <p>{user?.name}</p>;
+}
+ENDCODE
+A) A custom Hook cannot use `useState`.
+B) `userId` cannot be an argument to a custom Hook.
+C) A custom Hook cannot return a state value.
+D) The `useUser` Hook is called conditionally, violating the Rules of Hooks.
+ANSWER: D
+EXPLANATION: `useUser` is only called when `enabled` is true, so the order of Hook calls can differ between renders. The Hook must be called at the top level of the component, while the use of its result can be conditional. Conditional invocation is tempting because logically the data is only needed when enabled, but maintaining a stable Hook call order is more important.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Performance optimization
+TYPE: scenario
+QUESTION: In a component rendering a list, you create an inline object prop for every item. Which statement is correct?
+CODE:
+function Item({ style }) {
+  return <div style={style}>Item</div>;
+}
+
+function List() {
+  return (
+    <>
+      <Item style={{ marginTop: 10 }} />
+      <Item style={{ marginTop: 10 }} />
+    </>
+  );
+}
+ENDCODE
+A) The two `style` props are guaranteed to reference the same object.
+B) Inline objects make the JSX syntactically invalid.
+C) The two `style` values are equal in content but are different object references.
+D) React automatically combines the two objects into a single reference.
+ANSWER: C
+EXPLANATION: Each `{ marginTop: 10 }` object literal creates a new object instance, so the two props contain equivalent data but have different references. This can matter when, for example, a memoized child relies on referential prop comparison. Automatic reference sharing is tempting because the objects have identical contents, but in JavaScript each separate object literal creates a distinct object.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: JSX & rendering
+TYPE: edgecase
+QUESTION: What does the following component render?
+CODE:
+function App() {
+  return (
+    <div>
+      {null}
+      {undefined}
+      {false}
+      {"Hello"}
+      {42}
+    </div>
+  );
+}
+ENDCODE
+A) `Hello` and `42`
+B) `null`, `undefined`, `false`, `Hello`, and `42`
+C) Only `Hello`
+D) An error occurs because JSX does not allow `null` and `undefined` values.
+ANSWER: A
+EXPLANATION: React does not render `null`, `undefined`, or boolean children, while strings and numbers are renderable children. Therefore, `Hello` and `42` appear in the DOM. Rendering all values is tempting because each expression has a value in JavaScript, but React treats renderable children differently.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: Components & props
+TYPE: behavior
+QUESTION: What happens in the following component when the `name` prop is explicitly passed as `null`?
+CODE:
+function Greeting({ name = "Guest" }) {
+  return <p>{name}</p>;
+}
+
+function App() {
+  return <Greeting name={null} />;
+}
+ENDCODE
+A) `Guest` is rendered.
+B) An empty `<p>` is rendered.
+C) `null` is rendered as text.
+D) `name` remains `null`, and React renders nothing inside the `<p>`.
+ANSWER: D
+EXPLANATION: A destructuring default value is used only when the value is `undefined`, not when `null` is explicitly passed. Therefore, `name` remains `null`, and React renders no child for that value. `Guest` is tempting because the prop does have a default value when it is omitted, but explicitly passing `null` is different.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: State & useState
+TYPE: output
+QUESTION: What is logged to the console after the first click?
+CODE:
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  function handleClick() {
+    setCount(prev => {
+      console.log("updater", prev);
+      return prev + 1;
+    });
+  }
+
+  return <button onClick={handleClick}>{count}</button>;
+}
+ENDCODE
+A) `updater 1`
+B) `updater 0`
+C) Nothing, because the updater only runs after the next render.
+D) `updater undefined`
+ANSWER: B
+EXPLANATION: The updater function receives the previous state value as part of React processing the state update. On the first click, that value is `0`, so the console logs `updater 0`, and the new state becomes `1`. `updater 1` is tempting because it is easy to think of the updater as receiving the already-updated state rather than the previous state.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: useEffect & lifecycle
+TYPE: edgecase
+QUESTION: What happens to the following effect when the `count` value changes?
+CODE:
+function App() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    console.log("effect", count);
+
+    return () => {
+      console.log("cleanup", count);
+    };
+  }, [count]);
+
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+ENDCODE
+A) Only the new effect runs; cleanup never runs.
+B) The cleanup receives the new `count` value.
+C) The previous effect's cleanup runs, then the new effect runs with the new `count` value.
+D) The effect only runs during the first render.
+ANSWER: C
+EXPLANATION: When a dependency changes, React runs the cleanup for the previous effect and then runs the new effect with the values from the current render. The cleanup closure retains the `count` value from the previous render, while the new effect sees the new value. Assuming the cleanup receives the new value is tempting because the same effect code handles both phases, but they belong to different render closures.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: Rules of hooks & custom hooks
+TYPE: debug
+QUESTION: What is the issue with the following code?
+CODE:
+function useLogger() {
+  const [value, setValue] = useState(0);
+
+  function log() {
+    console.log(value);
+  }
+
+  return log;
+}
+
+function App() {
+  const log = useLogger();
+
+  return <button onClick={log}>Log</button>;
+}
+ENDCODE
+A) A custom Hook cannot return a function.
+B) The code is valid, and the `log` callback sees the `value` associated with the current render.
+C) `console.log` can only be used inside an effect.
+D) `useLogger` cannot use state.
+ANSWER: B
+EXPLANATION: A custom Hook can return a function, and that function closes over the `value` associated with the render in which it was created. The code does not violate the Rules of Hooks. Looking for an error is tempting because custom Hooks are often thought of as returning state or JSX, but they can expose arbitrary APIs.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: useRef
+TYPE: scenario
+QUESTION: When is `useRef` more appropriate than `useState`?
+CODE:
+ENDCODE
+A) When changing the value should cause the component to re-render.
+B) When a value should persist between renders, but changing it by itself does not require a UI update.
+C) When a value must automatically be sent to the server.
+D) When state needs to be shared between multiple components.
+ANSWER: B
+EXPLANATION: A ref is useful for mutable values that need to persist between renders without causing a re-render when they change, such as DOM references or storing a previous value. State, by contrast, is appropriate for data whose changes should be reflected in the rendered UI. Using `useRef` for all state is tempting because it avoids re-renders, but that is precisely why it is inappropriate for values the UI needs to react to.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Context
+TYPE: performance
+QUESTION: What can be a performance consequence of a Context Provider creating a new object for its `value` on every render?
+CODE:
+function App() {
+  const [count, setCount] = useState(0);
+
+  const value = {
+    count,
+    reset: () => setCount(0)
+  };
+
+  return (
+    <AppContext.Provider value={value}>
+      <Toolbar />
+    </AppContext.Provider>
+  );
+}
+ENDCODE
+A) Context consumers only update when `count` changes.
+B) Context automatically uses deep equality to determine whether the object changed.
+C) Because the object reference is new, the Context value can be considered new on every such parent render, potentially causing unnecessary consumer re-renders.
+D) The Provider prevents the parent from re-rendering.
+ANSWER: C
+EXPLANATION: The `value` object is a new instance on every render, so its reference can differ from the previous value even when some of its contents have not changed. This can cause unnecessary re-renders of Context consumers. In appropriate cases, `useMemo` and a stable callback can help. Assuming deep equality is used is tempting because the object contents may be unchanged, but React does not automatically perform a deep comparison.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: Reconciliation & keys
+TYPE: trap
+QUESTION: What is the most important problem with the following list?
+CODE:
+function Users({ users }) {
+  return users.map(user => (
+    <UserRow key={Math.random()} user={user} />
+  ));
+}
+ENDCODE
+A) `Math.random()` cannot return a number.
+B) The `key` can change on every render, so React cannot maintain stable identity for the list items.
+C) React does not allow a number to be used as a `key`.
+D) The list only works if the `key` is a string.
+ANSWER: B
+EXPLANATION: `Math.random()` can produce a new value on every render, so even the same data item does not retain a stable `key`. React can therefore treat list items as having new identities, causing unnecessary DOM and component work and potentially losing state. It is tempting because uniqueness appears to be guaranteed, but stability is equally important.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: Forms
+TYPE: scenario
+QUESTION: You want to manage a checkbox's checked state with React state. Which approach is correct?
+CODE:
+function Terms() {
+  const [accepted, setAccepted] = useState(false);
+
+  return (
+    <input
+      type="checkbox"
+      checked={accepted}
+      onChange={e => setAccepted(e.target.checked)}
+    />
+  );
+}
+ENDCODE
+A) Use the `checked` prop and `e.target.checked` in the `onChange` handler.
+B) Store the checkbox state in the `value` prop, and `e.target.value` is always a boolean.
+C) Checkbox state can only be managed with `useRef`.
+D) The `checked` prop cannot be used in React.
+ANSWER: A
+EXPLANATION: For a controlled checkbox, the boolean state is passed through the `checked` prop, while `e.target.checked` provides the new boolean value from the event. The `value` property does not represent whether the checkbox is checked, and its value is not a boolean by default. Using `value` is tempting because it is the most common controlled property for text inputs.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: TypeScript with React
+TYPE: scenario
+QUESTION: Which typing is appropriate for a component that expects an optional `className` string and a required `children` prop?
+CODE:
+ENDCODE
+A) `type Props = { className: string; children: string };`
+B) `type Props = { className?: number; children?: React.ReactNode };`
+C) `type Props = { className?: string; children: React.ReactNode };`
+D) `type Props = { className: boolean; children: JSX.Element };`
+ANSWER: C
+EXPLANATION: `className` can be an optional string, so `className?: string` is appropriate. `children` is typically typed as `React.ReactNode` because it can be a string, number, fragment, multiple elements, or another renderable value. `children: string` is tempting because many simple components receive text, but React children are much broader than strings.
+###END
+
+### Q61
+LEVEL: medior
+TOPIC: JSX & rendering
+TYPE: behavior
+QUESTION: What happens with the following code?
+CODE:
+function App() {
+  const items = [1, 2, 3];
+
+  return (
+    <div>
+      {items.map(item => {
+        <span>{item}</span>;
+      })}
+    </div>
+  );
+}
+ENDCODE
+A) The three numbers are rendered next to each other.
+B) React shows a warning because the `key` is missing, but the elements are still rendered.
+C) JSX automatically turns the element inside the block body into a return value.
+D) None of the `<span>` elements are rendered because an arrow function with a block body does not implicitly return the element.
+ANSWER: D
+EXPLANATION: An arrow function with a block body does not use an implicit return. The `{ <span>...</span>; }` body contains no `return`, so every `map` iteration returns `undefined` and there are no renderable list elements. Assuming an implicit return is tempting because the same short arrow-function syntax does implicitly return an expression when parentheses are used instead.
+###END
+
+### Q62
+LEVEL: medior
+TOPIC: Components & props
+TYPE: scenario
+QUESTION: You pass a callback to a component as a prop. Which statement is true about the following code?
+CODE:
+function Child({ onSave }) {
+  return <button onClick={onSave}>Save</button>;
+}
+
+function Parent() {
+  const save = () => {
+    console.log("saved");
+  };
+
+  return <Child onSave={save} />;
+}
+ENDCODE
+A) The `save` function receives a new reference on every render.
+B) The `save` reference is guaranteed to remain stable.
+C) React automatically memoizes the callback prop using `useCallback`.
+D) The child can only invoke the callback if it receives it through Context.
+ANSWER: A
+EXPLANATION: Every time `Parent` renders, the arrow function expression creates a new function object, so the `save` reference is not stable. This can matter when the child is wrapped in `React.memo`, because the changed callback reference can cause another render. Assuming the reference is automatically stable is tempting because the callback performs the same operation, but separately created functions have different references in JavaScript.
+###END
+
+### Q63
+LEVEL: medior
+TOPIC: State & useState
+TYPE: edgecase
+QUESTION: What happens with the following state update?
+CODE:
+function App() {
+  const [user, setUser] = useState({
+    name: "Anna",
+    settings: {
+      darkMode: false
+    }
+  });
+
+  function enableDarkMode() {
+    setUser({
+      ...user,
+      settings: {
+        ...user.settings,
+        darkMode: true
+      }
+    });
+  }
+
+  return <p>{String(user.settings.darkMode)}</p>;
+}
+ENDCODE
+A) The entire `user` object is lost, and only `settings` remains.
+B) `name` and `settings.darkMode` are both preserved, while `darkMode` becomes `true`.
+C) The nested `settings` object is automatically deep-merged.
+D) The state is not updated because nested objects cannot be used with `useState`.
+ANSWER: B
+EXPLANATION: The outer spread preserves `name` and the other top-level properties, while the nested `settings` spread preserves the other settings fields and replaces `darkMode` with the new value. React does not perform an automatic deep merge; the desired structure must be created explicitly. Assuming automatic deep merging is tempting because the resulting code resembles a merge operation, but the spread operators are performing the copying level by level.
+###END
+
+### Q64
+LEVEL: medior
+TOPIC: useEffect & lifecycle
+TYPE: debug
+QUESTION: Why is the following effect potentially problematic?
+CODE:
+function Search({ query }) {
+  useEffect(() => {
+    document.title = `Search: ${query}`;
+  });
+
+  return <div>{query}</div>;
+}
+ENDCODE
+A) An effect cannot modify `document.title`.
+B) `query` cannot be used inside an effect.
+C) The effect runs after every commit even though it only needs to run when `query` changes.
+D) `document.title` can only be modified from a Server Component.
+ANSWER: C
+EXPLANATION: Without a dependency array, the effect runs after every commit. If the goal is only to respond to changes in `query`, using `[query]` as the dependency list avoids rerunning the effect for renders where the query has not changed. Omitting the dependency array is tempting because it guarantees access to the latest value, but it also performs the work after every commit.
+###END
+
+### Q65
+LEVEL: medior
+TOPIC: Rules of hooks & custom hooks
+TYPE: algorithm
+QUESTION: A custom Hook manages adding and removing a window event listener. Which implementation best matches the Hook lifecycle?
+CODE:
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  return width;
+}
+ENDCODE
+A) Add the event listener on every render without cleanup.
+B) Register the event listener in an effect and remove the same handler reference in the cleanup.
+C) `removeEventListener` automatically removes every `resize` listener.
+D) A custom Hook cannot have side effects.
+ANSWER: B
+EXPLANATION: The effect registers a specific handler reference, and the cleanup passes that exact same reference to `removeEventListener`. This ties the listener's lifecycle to the component's mount/unmount lifecycle. Omitting cleanup is tempting because the listener appears to “just work,” but repeated registrations can cause memory leaks and multiple callback executions.
+###END
+
+### Q66
+LEVEL: medior
+TOPIC: useRef
+TYPE: scenario
+QUESTION: In a component, you want to compare the previous render's `count` value with the current value. Which approach is appropriate?
+CODE:
+function Counter({ count }) {
+  const previousCount = useRef();
+
+  useEffect(() => {
+    previousCount.current = count;
+  }, [count]);
+
+  return (
+    <p>
+      Previous: {String(previousCount.current)}, Current: {count}
+    </p>
+  );
+}
+ENDCODE
+A) `useRef` can preserve a previous value between renders without causing a new render when the ref is updated.
+B) `useRef` automatically contains the previous render's value during rendering.
+C) `useRef` can only be used for DOM elements.
+D) Updating a ref inside an effect always causes a new render.
+ANSWER: A
+EXPLANATION: The ref value persists between renders, and the effect stores the current `count` so it can be read during the next render. Importantly, during render the ref still contains the previous stored value, and it is updated after the effect runs. Assuming automatic previous-value tracking is tempting because a ref is persistent storage, but the developer must control when its value is updated.
+###END
+
+### Q67
+LEVEL: medior
+TOPIC: useMemo & useCallback
+TYPE: performance
+QUESTION: What is the most important consideration when using `useCallback` in the following example?
+CODE:
+const handleSelect = useCallback(
+  item => {
+    onSelect(item, filter);
+  },
+  [onSelect, filter]
+);
+ENDCODE
+A) `useCallback` guarantees that the function will never change.
+B) The dependencies ensure that the callback uses the current `onSelect` and `filter` values and only receives a new reference when necessary.
+C) The dependency array should always be empty for callbacks.
+D) `useCallback` always makes component rendering faster.
+ANSWER: B
+EXPLANATION: The callback's closure depends on `onSelect` and `filter`, so both need to be included as dependencies. If either changes, the callback may receive a new reference, preventing it from capturing stale values. An empty dependency array is tempting because it would provide a stable reference, but it could also capture outdated values.
+###END
+
+### Q68
+LEVEL: medior
+TOPIC: Context
+TYPE: scenario
+QUESTION: An application stores both rarely changing configuration and a frequently changing counter in the same Context. What can be problematic from a performance perspective?
+CODE:
+function App() {
+  const [count, setCount] = useState(0);
+
+  const value = {
+    apiUrl: "/api",
+    count
+  };
+
+  return (
+    <AppContext.Provider value={value}>
+      <Toolbar />
+    </AppContext.Provider>
+  );
+}
+ENDCODE
+A) A Context cannot contain both strings and numbers.
+B) The Provider automatically updates consumers property by property.
+C) Every consumer necessarily has to re-render the entire application.
+D) Because `value` changes frequently, consumers that only use the rarely changing configuration may also be affected.
+ANSWER: D
+EXPLANATION: The Context value changes as a single value, so frequent updates to `count` can affect consumers that only read `apiUrl`. In larger applications, data with different update frequencies may be separated into different Contexts or handled through another state-management approach. Assuming property-level automatic updates is tempting because a consumer may only read one field, but Context is not a selector-based property-tracking system.
+###END
+
+### Q69
+LEVEL: medior
+TOPIC: Reconciliation & keys
+TYPE: output
+QUESTION: What happens in the following example when `items` becomes `["B", "C"]`?
+CODE:
+function List({ items }) {
+  return (
+    <ul>
+      {items.map((item, index) => (
+        <li key={index}>{item}</li>
+      ))}
+    </ul>
+  );
+}
+ENDCODE
+A) React always creates new `<li>` elements for both items.
+B) The `B` item takes over the identity associated with the first position, previously occupied by `A`, because the index-based key remains `0`.
+C) React automatically identifies `B` and `C` based on their values.
+D) Rendering the list throws an error because an index cannot be used as a key.
+ANSWER: B
+EXPLANATION: In the first render, `A` has `key=0` and `B` has `key=1`. After `A` is removed, `B` moves to the first position and receives `key=0`, so React can associate it with the identity previously belonging to `A`. This can be especially problematic if a list item has local state or uncontrolled DOM state. Assuming React identifies the items by their values is tempting because `B` appears to the user to be the same item, but React uses the provided keys for identity.
+###END
+
+### Q70
+LEVEL: medior
+TOPIC: Forms
+TYPE: debug
+QUESTION: Why can the following form submission handler be problematic?
+CODE:
+function Form() {
+  function handleSubmit(event) {
+    console.log("submitted");
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input name="email" />
+      <button type="submit">Send</button>
+    </form>
+  );
+}
+ENDCODE
+A) A form submit event cannot be handled in React.
+B) The input must be controlled.
+C) `event.preventDefault()` is missing, so the browser's default form submission behavior may trigger navigation or other default processing.
+D) A `button` cannot submit a form.
+ANSWER: C
+EXPLANATION: React does not automatically prevent the browser's native form submission behavior. If an SPA wants to handle submission without the browser performing its default action, the handler should call `event.preventDefault()`. Omitting it is tempting because the event reaches the React handler, but that does not disable the browser's default action.
+###END
+
+### Q71
+LEVEL: medior
+TOPIC: Performance optimization
+TYPE: scenario
+QUESTION: A `React.memo`-wrapped child still re-renders on every parent render. Which of the following props can be a direct cause?
+CODE:
+const Child = React.memo(function Child({ options }) {
+  return <div>{options.label}</div>;
+});
+
+function Parent() {
+  return <Child options={{ label: "Save" }} />;
+}
+ENDCODE
+A) `options` is a new object reference on every render, so shallow prop comparison can detect it as changed.
+B) `React.memo` only works with class components.
+C) The `label` string value causes a new render automatically on every render.
+D) `React.memo` can only prevent state changes.
+ANSWER: A
+EXPLANATION: The object literal created in JSX produces a new object reference on every parent render. `React.memo` does not perform deep equality by default, so the new reference counts as a changed prop and the child can re-render. Using `React.memo` alone does not guarantee skipped renders when the input references are unstable.
+###END
+
+### Q72
+LEVEL: medior
+TOPIC: State management
+TYPE: architecture
+QUESTION: In a larger React application, multiple distant components need to read and modify the same user-session state. What is the most important consideration when choosing a state-management approach?
+CODE:
+ENDCODE
+A) All application state must be stored in a single global object.
+B) State must always be kept in the top-level `App` component.
+C) Using a state-management library by itself guarantees a good architecture.
+D) Consider the sharing requirements, data lifecycle, update patterns, and the amount of complexity actually needed.
+ANSWER: D
+EXPLANATION: State management should be chosen based on what data needs to be shared, how often it changes, which components use it, and whether requirements such as serialization, caching, or complex update logic exist. A global store may be appropriate, but not every piece of state needs one. The idea that one library solves everything is tempting because it offers a simple decision rule, but it does not eliminate architectural trade-offs.
+###END
+
+### Q73
+LEVEL: medior
+TOPIC: Data fetching & race conditions
+TYPE: production
+QUESTION: A search field starts an API request on every keystroke. What is the most important production consideration if responses can arrive in a different order from the requests that initiated them?
+CODE:
+ENDCODE
+A) Always accept the result of whichever request responds fastest.
+B) Ignore or cancel older request results when a newer query has become the current one.
+C) Make every request synchronous.
+D) React automatically guarantees the order of requests.
+ANSWER: B
+EXPLANATION: The displayed search result should correspond to the current query, so an older response that arrives later must not blindly overwrite state. Strategies such as `AbortController`, request IDs, or other stale-result protection mechanisms can be used. Accepting the fastest response is tempting because low latency is desirable, but the fastest response is not necessarily the result for the current query.
+###END
+
+### Q74
+LEVEL: medior
+TOPIC: Concurrent features & Suspense
+TYPE: behavior
+QUESTION: What is the purpose of using `startTransition` in the following situation?
+CODE:
+function Search({ items }) {
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState("");
+
+  function handleChange(e) {
+    const value = e.target.value;
+
+    setQuery(value);
+
+    startTransition(() => {
+      setFilter(value);
+    });
+  }
+
+  return <div>{/* ... */}</div>;
+}
+ENDCODE
+A) `startTransition` guarantees that the `filter` state update runs immediately.
+B) `startTransition` completely moves the callback into the background, so the state never updates.
+C) An update marked as a transition can be treated as lower priority, allowing more urgent UI updates to take precedence.
+D) `startTransition` can only be used for network requests.
+ANSWER: C
+EXPLANATION: A transition allows certain non-urgent state updates to be treated as lower priority by React. This can allow an immediate input response to take precedence over a potentially expensive list update. `startTransition` does not automatically move the callback to a background thread and does not guarantee a specific execution time. Immediate execution is tempting because the callback itself is invoked synchronously, but the priority of the update scheduled inside it is what changes.
+###END
+
+### Q75
+LEVEL: medior
+TOPIC: Server Components & SSR
+TYPE: scenario
+QUESTION: You want to use the following code in a React Server Component. What is the problem?
+CODE:
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <button onClick={() => setCount(c => c + 1)}>
+      {count}
+    </button>
+  );
+}
+ENDCODE
+A) `useState` can only be used with CSS-in-JS in a Server Component.
+B) `onClick` is automatically converted into a server-side event handler.
+C) `useState` and the interactive `onClick` require client-side interactivity, so this component needs an appropriate Client Component boundary.
+D) All `button` elements are forbidden in Server Components.
+ANSWER: C
+EXPLANATION: State and event handlers require client-side interactivity. In a React Server Components architecture, a component like this needs to be treated as a Client Component, typically using the appropriate `"use client"` boundary in frameworks that support this model. A `button` is not forbidden in a Server Component; a static button can be rendered, but it cannot provide this client-side stateful interaction by itself.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: State & useState
+TYPE: behavior
+QUESTION: What happens in the following component when it first renders?
+CODE:
+function Counter() {
+  const [count, setCount] = React.useState(() => {
+    console.log("init");
+    return 0;
+  });
+
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+ENDCODE
+A) "init" is logged on every render
+B) "init" is logged only when the button is clicked
+C) The initializer function runs only when the state value changes
+D) The initializer function runs during the initial render to determine the initial state
+ANSWER: D
+EXPLANATION: A lazy state initializer is used to calculate the initial state, so under normal conditions it is only needed during the initial mount. In development Strict Mode, React may invoke the initializer more than once as part of its development checks. The other behavior may seem tempting because the function syntax can easily be mistaken for a callback that will be executed later.
+NOTE: The original answer was incorrect. The initializer runs during the initial render, so D is the technically correct answer.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: JSX & rendering
+TYPE: trap
+QUESTION: What is rendered by the following JSX?
+CODE:
+function App() {
+  return (
+    <>
+      {0}
+      {false}
+      {null}
+      {"Hello"}
+    </>
+  );
+}
+ENDCODE
+A) Nothing
+B) `0Hello`
+C) `falsenullHello`
+D) `Hello`
+ANSWER: B
+EXPLANATION: The number `0` and the string `"Hello"` are rendered, while `false` and `null` produce no visible output. The resulting visible text is `0Hello`. The other result may seem tempting because React treats several special values as empty render results, but numeric values such as `0` are still rendered.
+NOTE: The original answer was incorrect. `0` is rendered by React, so the visible result is `0Hello`, making B correct.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: Components & props
+TYPE: scenario
+QUESTION: A component needs to render several independent visual sections that the parent component should be able to configure separately. Which approach best fits React's composition model?
+A) Hard-code every possible UI variation inside the child component
+B) Use a single `variant` string prop to describe every possible combination
+C) Use composable `children` or targeted React node/function props
+D) Use global variables to pass the parent's configuration
+ANSWER: C
+EXPLANATION: Composition allows the parent to flexibly determine the structure rendered by the child. This often scales better than an ever-growing set of `variant` combinations. The other approach may seem simpler because it requires fewer explicit props, but it quickly leads to complex combinations.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: useEffect & lifecycle
+TYPE: debug
+QUESTION: What is the problem with the following code?
+CODE:
+function User({ userId }) {
+  const [user, setUser] = React.useState(null);
+
+  React.useEffect(() => {
+    fetch(`/api/users/${userId}`)
+      .then(response => response.json())
+      .then(setUser);
+  }, []);
+
+  return <div>{user?.name}</div>;
+}
+ENDCODE
+A) The effect does not react to changes in `userId`
+B) `fetch` cannot be used inside `useEffect`
+C) `setUser` cannot be called from a promise callback
+D) The state will always remain null
+ANSWER: A
+EXPLANATION: Because the dependency array is empty, the effect runs only on mount, so a later `userId` change will not trigger a new request. `userId` should be included in the effect's dependencies, and production code should also consider handling race conditions. The other behavior may seem tempting because the asynchronous code can make the fetch itself look suspicious.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Rules of hooks & custom hooks
+TYPE: trap
+QUESTION: Which code correctly follows the Rules of Hooks?
+CODE:
+function Component({ enabled }) {
+  if (enabled) {
+    const [value, setValue] = React.useState(0);
+  }
+
+  return <div>Content</div>;
+}
+ENDCODE
+A) Correct, because `useState` only runs when it is needed
+B) Correct, because React identifies Hooks by name
+C) Correct, as long as `enabled` does not change during the component's lifetime
+D) Incorrect, because Hooks must not be called conditionally
+ANSWER: D
+EXPLANATION: Hook call order must remain stable across renders. Conditional Hook calls would prevent React from reliably associating each Hook with the correct state. The conditional approach may seem tempting because it is natural for ordinary functions to be called only when needed.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: useRef
+TYPE: behavior
+QUESTION: Which statement correctly describes `useRef` behavior?
+A) Changing `ref.current` by itself does not trigger a re-render
+B) Changing `ref.current` always triggers a re-render
+C) `useRef` returns a new object on every render
+D) React automatically serializes the value of `useRef`
+ANSWER: A
+EXPLANATION: The ref object remains stable across renders, and changing `current` does not by itself trigger a re-render. This makes refs useful for storing DOM elements, timer IDs, or other values that do not directly drive rendering. The opposite behavior may seem tempting because changing `current` does change a value accessible to React code, but it is not state.
+NOTE: The original answer was incorrect. Updating `ref.current` does not trigger a re-render, so A is correct.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: useMemo & useCallback
+TYPE: performance
+QUESTION: When can using `useMemo` in the following code make sense?
+CODE:
+const filtered = React.useMemo(
+  () => expensiveFilter(items, query),
+  [items, query]
+);
+ENDCODE
+A) Always, because `useMemo` guarantees that the function will never run again
+B) When the calculation is actually expensive and the component frequently re-renders without changes to the dependencies
+C) Only when the `items` array is empty
+D) Only when the component is rendered on the server
+ANSWER: B
+EXPLANATION: `useMemo` is an optimization that can avoid repeating an expensive calculation when its dependencies have not changed. It does not generally guarantee that the calculation will only ever run once. The absolute guarantee may seem tempting because the name can be interpreted as a permanent cache.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: Context
+TYPE: performance
+QUESTION: A Context provider contains an object with a rarely changing configuration value and a frequently changing counter. What can be a performance problem?
+CODE:
+const value = { config, count };
+
+return (
+  <AppContext.Provider value={value}>
+    {children}
+  </AppContext.Provider>
+);
+ENDCODE
+A) Context cannot pass objects
+B) `children` will always render twice
+C) Context automatically updates only the field that changed
+D) A change to `count` causes the Context value to change, which can cause unnecessary updates for context consumers
+ANSWER: D
+EXPLANATION: Context consumers respond to changes in the provider's value; they do not automatically subscribe to individual object fields. In this situation, it may be useful to split rarely changing and frequently changing data into separate contexts or use a different state-management strategy. The field-level optimization may seem tempting because only one property of the object actually changed.
+NOTE: The original answer was incorrect. Context does not automatically update consumers at the individual field level, so D is correct.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: Reconciliation & keys
+TYPE: edgecase
+QUESTION: What typically happens to a component's state when its key changes?
+CODE:
+function App() {
+  const [version, setVersion] = React.useState(1);
+
+  return (
+    <>
+      <Form key={version} />
+      <button onClick={() => setVersion(version + 1)}>Reset</button>
+    </>
+  );
+}
+ENDCODE
+A) The `Form` always preserves the same state
+B) Only the `Form` props change
+C) The `Form` can be treated as a new instance, so its associated state is reinitialized
+D) Keys can only be used in lists, so nothing happens
+ANSWER: C
+EXPLANATION: When a component's identity changes because its key changes, React can treat it as a new component instance, so the previous instance's state is not preserved. This can be used deliberately as a reset mechanism. The assumption that keys only matter in lists may seem tempting because that is where they are most commonly encountered.
+NOTE: The original answer was incorrect. Changing the key changes the component's identity, so C is correct.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: Forms
+TYPE: behavior
+QUESTION: Why is it useful to use the current value from the event in a controlled input?
+CODE:
+function Search() {
+  const [query, setQuery] = React.useState("");
+
+  return (
+    <input
+      value={query}
+      onChange={event => setQuery(event.target.value)}
+    />
+  );
+}
+ENDCODE
+A) Because React only allows inputs to be modified this way
+B) Because it connects the input's DOM value to the React state
+C) Because `event.target.value` automatically debounces the search
+D) Because the state setter only accepts strings
+ANSWER: B
+EXPLANATION: With a controlled input, React state is the source of truth for the component's value, while `event.target.value` provides the new value entered by the user. The setter stores that value, and the next render reflects it back through the `value` prop. The other behavior may seem tempting because the DOM itself also stores the input value, but in controlled mode that value is kept in sync with React state.
+NOTE: The original answer was incorrect. `event.target.value` provides the new input value that is stored in React state, so B is correct.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: Performance optimization
+TYPE: scenario
+QUESTION: Profiling a component that renders a large list shows that thousands of DOM elements exist at once, even though the user can see only a few dozen. Which technique directly addresses this problem?
+A) Use virtualization/windowing
+B) Wrap every item in `useMemo`
+C) Generate new keys on every render
+D) Move the list state into Context
+ANSWER: A
+EXPLANATION: Virtualization renders only the items that are visible or near the viewport, significantly reducing DOM size and rendering cost. Memoization by itself does not reduce the number of DOM elements created. The `useMemo` approach may seem tempting because it is commonly associated with performance optimization, but it targets a different problem.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: State management
+TYPE: scenario
+QUESTION: A component manages several related state variables, and many different events can modify them. Which approach can make the state transitions easier to reason about?
+A) Turn every state variable into a global variable
+B) Store all state in a single string
+C) Use `useReducer` or reducer-based state management
+D) Create a separate Context Provider for every event
+ANSWER: C
+EXPLANATION: A reducer explicitly describes state transitions, making it easier to structure related state when there are many event types and transitions. This can be particularly useful when multiple pieces of state change together. Managing every piece independently may seem simpler initially, but relationships between them can become harder to follow.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: Data fetching & race conditions
+TYPE: production
+QUESTION: A search field starts a new API request for every character typed. The user types quickly, and an older request sometimes finishes after a newer one. What is an appropriate way to handle the problem?
+A) Always use the first response to arrive
+B) Automatically ignore every response
+C) Abort previous requests or invalidate results based on request identity
+D) Delay state updates using `setTimeout`
+ANSWER: C
+EXPLANATION: An older response can overwrite the result of a newer search, so stale request results should be invalidated, for example by using `AbortController` or a request ID. Debouncing can reduce the number of requests, but by itself it does not solve the race condition. Delaying state updates may seem tempting because it slows down updates, but it does not guarantee correct ordering.
+NOTE: The original answer was incorrect. The appropriate solution is to invalidate or abort stale requests, so C is correct.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: Concurrent features & Suspense
+TYPE: behavior
+QUESTION: What can `startTransition` be used for?
+CODE:
+const [query, setQuery] = React.useState("");
+
+function handleChange(event) {
+  const value = event.target.value;
+
+  React.startTransition(() => {
+    setQuery(value);
+  });
+}
+ENDCODE
+A) A state update performed inside the transition can be treated as lower-priority, non-urgent work
+B) The transition automatically converts the callback into an asynchronous JavaScript function
+C) The transition prevents all re-renders
+D) The transition automatically caches the state value
+ANSWER: A
+EXPLANATION: Updates marked as transitions can be treated by React as non-urgent work, allowing more urgent UI updates to take priority. This is not the same as a general-purpose JavaScript async mechanism. The asynchronous interpretation may seem tempting because the update may become visible later from the user's perspective.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Server Components & SSR
+TYPE: trap
+QUESTION: What is the difference between Server Components and SSR?
+A) SSR means only client-side rendering, while Server Components mean only static HTML
+B) They are exactly the same mechanism
+C) Server Components are available only in React 17
+D) SSR is a technique for rendering on the server, while Server Components determine at the component level which code can run on the server
+ANSWER: D
+EXPLANATION: SSR describes rendering React UI on the server, while Server Components are an architectural model in which certain components execute only on the server. The two concepts can be used together, but they are not synonyms. Equating them may seem tempting because both involve React code running on the server.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Error boundaries
+TYPE: production
+QUESTION: An Error Boundary catches an error during rendering and displays fallback UI. What is needed to allow the failed part to be retried after a later user action?
+A) The Error Boundary must always be restarted with a full page reload
+B) The boundary or the subtree beneath it needs a reset mechanism that recreates or resets the failed part's state
+C) Calling `console.error` automatically resets the boundary
+D) A state update inside a `catch` block resets every Error Boundary
+ANSWER: B
+EXPLANATION: To leave the fallback state and retry the failed subtree, the failed portion must be rendered again, which can be achieved through a changed key or an explicit reset mechanism. The boundary does not automatically retry indefinitely. A full page reload may seem tempting because it certainly recreates the React tree, but it is often unnecessarily disruptive in a production application.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: Testing (React Testing Library)
+TYPE: behavior
+QUESTION: A component displays a button after an API response arrives. Which React Testing Library query is most appropriate when the button is initially not in the DOM?
+A) `getByRole`
+B) `queryByRole`
+C) `findByRole`
+D) `getAllByText`
+ANSWER: C
+EXPLANATION: `findByRole` waits asynchronously for the element to appear, making it appropriate for UI that is rendered later. `getByRole` searches immediately, while `queryByRole` is more suitable for checking whether an element is present or absent without throwing when it is missing. `queryByRole` may seem tempting because it does not throw for a missing element, but it does not wait for the element to appear.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: TypeScript with React
+TYPE: scenario
+QUESTION: Which prop definition correctly ensures that a component receives either an icon or a text label, but not both?
+CODE:
+type Props =
+  | { icon: React.ReactNode; label?: never }
+  | { label: string; icon?: never };
+
+function Button(props: Props) {
+  return <button>{props.icon ?? props.label}</button>;
+}
+ENDCODE
+A) The union type prevents both props from being provided together
+B) A TypeScript union makes every prop optional
+C) `never` in this form can only be used for runtime validation
+D) The type only works if the component is written in JavaScript
+ANSWER: A
+EXPLANATION: A union using mutually exclusive props can enforce at compile time that exactly one of the alternatives is used. `never` expresses that the other prop must not be provided for that particular union member. Using two optional props may seem tempting because it is simpler, but it does not model the business rule.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: Accessibility
+TYPE: trap
+QUESTION: A clickable UI element has been implemented as follows:
+CODE:
+<div
+  role="button"
+  onClick={handleClick}
+>
+  Save
+</div>
+ENDCODE
+What is the most important issue?
+A) A `div` cannot contain text
+B) `role="button"` automatically makes the element keyboard accessible
+C) React does not allow an `onClick` handler on a `div`
+D) Native `button` semantics and keyboard behavior are generally preferable to a `div` with a manually assigned role
+ANSWER: D
+EXPLANATION: A native `button` provides appropriate semantics, focusability, and keyboard activation behavior by default. With a `div role="button"`, these behaviors would need to be implemented correctly in addition to assigning the role. Adding the role may seem sufficient because it identifies the element as a button semantically, but it does not automatically reproduce native interaction behavior.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: JSX & rendering
+TYPE: edgecase
+QUESTION: What happens in the following JSX?
+CODE:
+function App() {
+  const items = ["A", "B", "C"];
+
+  return (
+    <ul>
+      {items.map(item => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  );
+}
+ENDCODE
+A) The `key` automatically appears as a DOM attribute on each `<li>`
+B) The `key` is a special value used by React during reconciliation
+C) The `key` is necessarily included among the `li` HTML attributes
+D) The `key` becomes available as the `item` prop inside the component
+ANSWER: B
+EXPLANATION: `key` is a special prop reserved for React, which uses it during reconciliation to track element identity. It does not become a normal DOM attribute, and a child component does not automatically receive it through `props.key`. Treating it as a DOM attribute may seem tempting because it uses prop-like JSX syntax.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: State & useState
+TYPE: behavior
+QUESTION: Why can storing derived state in a separate state variable be problematic?
+CODE:
+const [firstName, setFirstName] = useState("Anna");
+const [lastName, setLastName] = useState("Nagy");
+const [fullName, setFullName] = useState("Anna Nagy");
+ENDCODE
+A) `useState` does not allow multiple state variables
+B) `fullName` would always update automatically
+C) When stored as separate state, `fullName` can easily become inconsistent with the source values
+D) React does not support string state
+ANSWER: C
+EXPLANATION: If a value can be deterministically calculated from other state, it is generally simpler to calculate it during rendering rather than duplicate it in state. When stored separately, every update path must keep the duplicated value synchronized. Separate state may seem tempting because it makes the computed result immediately available, but it introduces another source of truth.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: useEffect & lifecycle
+TYPE: production
+QUESTION: In a component, an effect registers an event listener without cleanup:
+CODE:
+React.useEffect(() => {
+  window.addEventListener("resize", handleResize);
+}, []);
+ENDCODE
+What can happen if the component is mounted and unmounted multiple times?
+A) The listener is automatically removed when the component unmounts
+B) The browser disables all subsequent resize events
+C) `handleResize` is automatically memoized
+D) The listener can remain registered and lead to unwanted callbacks or resource leaks
+ANSWER: D
+EXPLANATION: External subscriptions created by an effect should be removed during unmount, and when necessary when dependencies change, by returning a cleanup function. Without cleanup, the listener can remain active and continue performing unwanted work. Automatic cleanup may seem tempting because React removes the component from the tree, but subscriptions created through browser APIs still need to be explicitly managed.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: useRef
+TYPE: scenario
+QUESTION: Which approach can preserve a value from the previous render without causing a new render when the ref is updated?
+CODE:
+function Component({ value }) {
+  const previous = React.useRef(value);
+
+  React.useEffect(() => {
+    previous.current = value;
+  }, [value]);
+
+  return <div>Previous: {previous.current}</div>;
+}
+ENDCODE
+A) Combining `useRef` with an effect
+B) Using `useMemo` without dependencies
+C) Directly mutating state created with `useState`
+D) Using a local variable in the component body
+ANSWER: A
+EXPLANATION: The ref preserves its value across renders, while the effect updates it after the current render has completed. This makes the previous value available during the next render. A local variable may seem tempting because it is simple, but local variables inside the component function are recreated on every render.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: useMemo & useCallback
+TYPE: trap
+QUESTION: Which statement about `useCallback` is correct?
+CODE:
+const handleClick = React.useCallback(() => {
+  submit(id);
+}, [id]);
+ENDCODE
+A) The callback is guaranteed to be created only once during the entire lifetime of the application
+B) The callback reference can remain stable across renders where its dependencies have not changed
+C) The `submit` function is automatically memoized
+D) `useCallback` automatically memoizes every child component
+ANSWER: B
+EXPLANATION: `useCallback` memoizes the function reference based on the specified dependencies. This can be useful when passing a callback prop to a memoized child component. The idea that it is created only once may seem tempting because the callback reference can remain stable, but a dependency change can produce a new reference.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: Context
+TYPE: production
+QUESTION: An application uses the same Context across several independent features, but a frequently changing value causes many unrelated components to re-render. Which architectural direction may be appropriate?
+A) Add a separate `useEffect` to every Context consumer
+B) Replace every Context consumer with `useRef`
+C) Combine all state into a single global Context
+D) Split contexts by responsibility and keep frequently changing state within a narrower scope
+ANSWER: D
+EXPLANATION: Splitting Contexts according to responsibility and update frequency can reduce unnecessary context-driven updates. Frequently changing state can often be kept closer to the part of the component tree that actually consumes it. Combining everything into one Context may seem attractive because it provides simple access initially, but in a larger application it can create an overly broad update scope.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: Components & props
+TYPE: behavior
+QUESTION: What happens if a component receives an object as a prop, and the parent creates a new object with the same contents on every render?
+CODE:
+const Child = React.memo(function Child({ options }) {
+  console.log("Child render");
+  return <div>{options.theme}</div>;
+});
+
+function Parent() {
+  return <Child options={{ theme: "dark" }} />;
+}
+ENDCODE
+A) `Child` never re-renders because the object contents are identical
+B) `React.memo` automatically performs a deep comparison
+C) `Child` may re-render because a new object reference is created on every render
+D) React throws an error because of the inline object
+ANSWER: C
+EXPLANATION: `React.memo` performs a shallow comparison by default, so a new object reference is considered a different prop even if its contents are identical. The first option may seem tempting because the two objects appear to contain the same values, but they are separate objects in JavaScript.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: State & useState
+TYPE: behavior
+QUESTION: What will the value of `count` be after the first click of the button?
+CODE:
+function Counter() {
+  const [count, setCount] = React.useState(0);
+
+  function handleClick() {
+    setCount(count + 1);
+    setCount(count + 1);
+    setCount(count + 1);
+  }
+
+  return <button onClick={handleClick}>{count}</button>;
+}
+ENDCODE
+A) 3
+B) 2
+C) 1
+D) 0
+ANSWER: C
+EXPLANATION: All three setter calls use the same `count` value from the current render, so they all request the same next state value. To perform three sequential increments, a functional state updater would be needed. The value 3 may seem tempting because there are three setter calls, but they do not calculate from each other's updated result.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: useEffect & lifecycle
+TYPE: behavior
+QUESTION: When does the effect cleanup function run in the following case?
+CODE:
+React.useEffect(() => {
+  const connection = createConnection(roomId);
+  connection.connect();
+
+  return () => {
+    connection.disconnect();
+  };
+}, [roomId]);
+ENDCODE
+A) Only when the entire application is closed
+B) When the component unmounts, and before the next effect setup caused by a dependency change
+C) Before every render, regardless of the dependencies
+D) Immediately before the effect setup as part of the same render
+ANSWER: B
+EXPLANATION: The cleanup runs when the component unmounts and when React is about to run the effect again because its dependencies changed. This allows subscriptions and external resources to be properly released. The first option may seem tempting because cleanup is associated with the component lifecycle, but dependency changes can trigger cleanup before a new setup as well.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: Rules of hooks & custom hooks
+TYPE: scenario
+QUESTION: The same custom Hook is used by multiple components. Which statement about state created inside the Hook is correct?
+CODE:
+function useCounter() {
+  const [count, setCount] = React.useState(0);
+  return { count, setCount };
+}
+
+function A() {
+  const counter = useCounter();
+  return <div>{counter.count}</div>;
+}
+
+function B() {
+  const counter = useCounter();
+  return <div>{counter.count}</div>;
+}
+ENDCODE
+A) A and B share the same `count` state
+B) The state is created only once when the Hook is defined
+C) React creates a global singleton state for the custom Hook
+D) A and B receive separate state instances because the Hook's state is associated with the consuming component
+ANSWER: D
+EXPLANATION: A custom Hook does not create global state by itself; the state created by the Hooks it calls belongs to the component instance using the custom Hook. Therefore, A and B each receive an independent `count` value. Shared state may seem tempting because both components call the same Hook function, but the Hook definition itself is not a state container.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: useRef
+TYPE: scenario
+QUESTION: A component needs to preserve the ID returned by `setInterval` across renders, but changing the ID does not require a UI update. Which approach fits this requirement best?
+A) `useRef`
+B) `useMemo`
+C) `useState`
+D) A global variable
+ANSWER: A
+EXPLANATION: A ref is suitable for storing mutable values that need to persist across renders but whose changes should not trigger a re-render. An interval ID is a typical example. Using state may seem tempting because it also persists across renders, but changing it can cause unnecessary rendering.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: useMemo & useCallback
+TYPE: trap
+QUESTION: What is the key difference between `useMemo` and `useCallback`?
+A) `useMemo` can only be used with primitive values, while `useCallback` can only be used with objects
+B) `useMemo` memoizes a calculated value, while `useCallback` memoizes a function reference
+C) `useCallback` is always faster than `useMemo`
+D) There is no functional difference between the two Hooks
+ANSWER: B
+EXPLANATION: `useMemo` memoizes the result of a calculation, while `useCallback` memoizes the function reference itself based on its dependencies. They are technically related mechanisms but serve different purposes. Treating them as identical may seem tempting because both use dependency arrays for memoization.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Context
+TYPE: production
+QUESTION: A function is passed as part of a Context provider's `value`, and the provider creates a new function reference on every render. What can be the consequence?
+CODE:
+function Provider({ children }) {
+  const [user, setUser] = React.useState(null);
+
+  const value = {
+    user,
+    logout: () => setUser(null)
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+ENDCODE
+A) Context automatically ignores changes to the function reference
+B) The `logout` function cannot be called from Context
+C) The provider cannot re-render because of a state change
+D) The provider's `value` reference can change, potentially causing unnecessary updates for Context consumers
+ANSWER: D
+EXPLANATION: A new object and a new `logout` function are created on every render, so the Context `value` reference can change. This can cause consumers to re-render even when a particular consumer does not care about all of the changed data. The first option may seem tempting because the function's behavior remains the same, but React uses referential comparison.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: Reconciliation & keys
+TYPE: edgecase
+QUESTION: What happens if list items use their index as the key instead of a stable identifier, and then an item is removed from the beginning of the list?
+A) React automatically identifies the original items based on their indices
+B) Removing an item always causes the entire list to remount
+C) Item identities can shift, causing component state to become associated with the wrong item
+D) React automatically replaces the key with the object's ID
+ANSWER: C
+EXPLANATION: With index-based keys, removing or inserting an item can change the keys of subsequent items. As a result, React may associate existing component state with different list items. Using the index may seem tempting because it is simple and appears stable for static lists, but it can be problematic for dynamic lists.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: Forms
+TYPE: scenario
+QUESTION: In a large form, the component updates the entire form state on every input change, and profiling shows that this causes significant rendering overhead. Which approach may be appropriate if there is no need for every character change to immediately exist in React state?
+A) Create a separate Context Provider for every input
+B) Use uncontrolled inputs where appropriate and process their values through refs or native form data only when submitting
+C) Wrap every input in `useMemo`
+D) Send a separate API request for every character
+ANSWER: B
+EXPLANATION: If real-time React state is not required, uncontrolled inputs can reduce React rendering work, with values processed at submit time instead. This can be useful for large forms. Controlling every input may seem attractive because it provides a consistent React state model, but not every field necessarily needs that level of control.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: Performance optimization
+TYPE: performance
+QUESTION: A component performs a very expensive but purely deterministic calculation during rendering. The result changes only when certain inputs change. Which approach can reduce unnecessary recalculation?
+A) `useMemo` with appropriate dependencies
+B) `useRef` with a manual update on every render
+C) `useEffect` without a dependency array
+D) Clearing the calculation result on every render
+ANSWER: A
+EXPLANATION: `useMemo` can allow a calculation result to be reused based on the specified dependencies. This is an optimization rather than a semantic guarantee, so it should be used when the calculation cost and profiling justify it. An effect may seem tempting because it can also use dependencies, but effects are not a replacement for synchronous calculations needed during rendering.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: State management
+TYPE: scenario
+QUESTION: In an application, several distant components use the same piece of data, and those components need to react when the data changes. What is the most important consideration when deciding where to place the state?
+A) State should always be placed in the top-level component
+B) State should always be stored in Context
+C) State should generally be kept near the lowest common ancestor of the components that need it
+D) State should always be stored in a global variable
+ANSWER: C
+EXPLANATION: With state lifting, state is generally placed near the lowest common ancestor of the consumers that need it. This avoids an unnecessarily broad scope while still allowing all relevant components to access the data. Placing it at the top level may seem tempting because every child can access it, but it can create an unnecessarily broad rendering and data-flow scope.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: Data fetching & race conditions
+TYPE: production
+QUESTION: A component fetches data based on `userId`. The `userId` can change quickly while the previous request is still in progress. Which approach helps prevent an old response from overwriting a newer one?
+A) Invalidate or abort the previous request's result
+B) Reset the state to null after every render
+C) Ignore the order in which requests complete
+D) Fully remount the component after every response
+ANSWER: A
+EXPLANATION: The result of a previous request can be ignored using a request ID, abort signal, or another validity mechanism. This ensures that only the current request can update the state. Fully remounting the component may seem tempting because it creates a new component instance, but it is not a reliable solution to the ordering of network responses.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: Concurrent features & Suspense
+TYPE: behavior
+QUESTION: Which statement about the relationship between Suspense and `React.lazy` is correct?
+CODE:
+const Settings = React.lazy(() => import("./Settings"));
+
+function App() {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <Settings />
+    </React.Suspense>
+  );
+}
+ENDCODE
+A) `React.lazy` automatically creates an Error Boundary as well
+B) Suspense can only be used for server-side rendering
+C) The `fallback` appears only when a network error occurs
+D) Suspense can display its fallback UI while the lazy component is loading
+ANSWER: D
+EXPLANATION: Loading a component created with `React.lazy` can suspend rendering, allowing the surrounding Suspense boundary to display its fallback content. Suspense itself does not handle error states; a separate error-handling mechanism is needed for that. Confusing it with an Error Boundary may seem tempting because both can display alternative UI under special conditions.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: Server Components & SSR
+TYPE: edgecase
+QUESTION: Why can't a Server Component directly use browser-side `useState` state?
+A) Because Server Components cannot render JSX
+B) Because Server Component code does not run as a client-side interactive component
+C) Because `useState` is available only in TypeScript
+D) Because Server Components always generate static HTML
+ANSWER: B
+EXPLANATION: A Server Component runs in a server environment and cannot contain client-side interactivity that requires `useState` or event handlers. A Client Component boundary is required for such behavior. The static HTML explanation may seem tempting because Server Components do not manage client-side state, but the distinction is a broader architectural one.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: Error boundaries
+TYPE: trap
+QUESTION: Which error will not be caught by a traditional React Error Boundary?
+A) An error thrown while rendering a descendant component
+B) An error thrown in a lifecycle method
+C) An error thrown in an event handler
+D) An error thrown in a descendant component's constructor
+ANSWER: C
+EXPLANATION: A traditional Error Boundary can handle errors related to rendering and certain lifecycle phases, but it does not automatically catch errors thrown inside event handlers. Those need to be handled explicitly by the event-handling code. It may seem tempting to classify every descendant error as an Error Boundary concern, because Error Boundaries do cover a broad range of rendering-related failures.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: Testing (React Testing Library)
+TYPE: scenario
+QUESTION: In a test, a message appears asynchronously after a button is clicked. Which approach best fits simulating the user interaction?
+A) Directly modify the component's state
+B) Manually modify the DOM node's internal state
+C) Use `userEvent` to perform the interaction, then use an appropriate async query to verify the result
+D) Call the component's internal functions directly
+ANSWER: C
+EXPLANATION: React Testing Library encourages tests that verify user interactions and their observable results rather than the component's internal implementation. `userEvent` models realistic interactions, while an async query can wait for the resulting UI. Directly modifying state may seem tempting because it is shorter, but it bypasses the actual UI interaction.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: TypeScript with React
+TYPE: scenario
+QUESTION: A component accepts two completely different prop structures based on a `variant` prop. Which TypeScript approach makes this explicit most effectively?
+CODE:
+type Props =
+  | { variant: "link"; href: string; onClick?: never }
+  | { variant: "button"; onClick: () => void; href?: never };
+ENDCODE
+A) Use a discriminated union
+B) Set every prop to the `any` type
+C) Make every prop optional
+D) Use a single `string` prop to store all the data
+ANSWER: A
+EXPLANATION: The literal value of `variant` acts as the discriminator, allowing TypeScript to validate the props associated with each variant. This enforces the correct relationship between the props at compile time. Making the props optional may seem tempting because it requires less type code, but it provides a weaker contract.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: Accessibility
+TYPE: scenario
+QUESTION: When a modal opens, keyboard focus remains somewhere else on the page. Which approach most improves accessibility?
+A) Make the modal background darker
+B) Increase the modal text size
+C) Move focus to an appropriate element inside the modal when it opens and restore it appropriately when it closes
+D) Always add an animation to the modal
+ANSWER: C
+EXPLANATION: Proper focus management is essential for keyboard navigation. When a modal opens, focus should move to an appropriate element within the dialog, and when it closes, focus should generally be restored to the element that previously had focus. A visual solution may seem tempting because it improves the modal's appearance, but it does not address keyboard navigation.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: JSX & rendering
+TYPE: trap
+QUESTION: What is the problem with the following code?
+CODE:
+function List({ items }) {
+  return (
+    <ul>
+      {items.map(item => {
+        <li key={item.id}>{item.name}</li>;
+      })}
+    </ul>
+  );
+}
+ENDCODE
+A) The `map` callback does not return an element, so the list items are not rendered
+B) Using `key` inside `map` is forbidden
+C) `<li>` elements cannot be used in JSX
+D) The `items` array must always be stored in `useState`
+ANSWER: A
+EXPLANATION: An arrow function with a block body does not implicitly return a value, so an explicit `return` is required. The JSX is created syntactically, but it is not returned to `map`. It may seem tempting to assume the code works because the JSX itself is valid, but the callback returns `undefined`.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: Components & props
+TYPE: production
+QUESTION: A component receives too many boolean props, such as `isPrimary`, `isLarge`, `isOutlined`, and `isDisabled`, and their combinations are becoming increasingly difficult to manage. Which direction could improve the component API?
+A) Add another boolean prop for every new combination
+B) Combine all booleans into a single numeric prop
+C) Store the entire component state in global variables
+D) Design more structured variants or a composable API that explicitly models the supported combinations
+ANSWER: D
+EXPLANATION: Too many independent boolean props can easily lead to combinatorial complexity and an API that is difficult to reason about. Structured variants or composition can model supported states more clearly. Adding another boolean may seem tempting because it requires minimal initial change, but the API can become increasingly difficult to maintain over time.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: useEffect & lifecycle
+TYPE: production
+QUESTION: An effect fetches data from an external API and then updates state using `setData`. Why can it be dangerous to rely solely on effect cleanup to prevent all late promise callbacks?
+A) Because cleanup automatically starts a new request
+B) Because a promise callback does not automatically stop when effect cleanup runs; the result must be invalidated separately or the request must be aborted
+C) Because `setData` can only be used during mount
+D) Because cleanup always deletes the entire React state
+ANSWER: B
+EXPLANATION: An already-started promise does not automatically stop when the effect cleanup runs. Therefore, the validity of the async operation's result must be handled separately, for example with an abort signal or an active-request flag. It may be tempting to interpret cleanup as a complete cancellation mechanism because it marks the end of the effect's lifecycle, but it does not stop every external asynchronous operation.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: Performance optimization
+TYPE: production
+QUESTION: A `React.memo`-memoized child still re-renders frequently. Profiling shows that it receives a new object prop every time. Which approach may be appropriate?
+A) Stabilize the object's reference with appropriately used `useMemo` or redesign the data structure
+B) Move all of the child's state into Context
+C) Change the child's key on every render
+D) Remove the child entirely and manipulate the DOM manually
+ANSWER: A
+EXPLANATION: The default comparison performed by `React.memo` examines references, so a new object can be treated as a changed prop on every render. Stabilizing the reference can reduce unnecessary rendering if profiling shows that this is actually the bottleneck. Manual DOM manipulation may seem tempting because it avoids React rendering, but it introduces a substantially different and harder-to-maintain architecture.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: State management
+TYPE: scenario
+QUESTION: In an application, cached server data and local UI state are mixed together in the same global store. Why can this be problematic?
+A) React cannot manage global state
+B) Server data can never be cached
+C) Server state and client UI state can have different lifecycles, update models, and caching requirements
+D) A global store can only contain primitive values
+ANSWER: C
+EXPLANATION: Server state typically involves network caching, revalidation, loading and error states, and concurrent updates, while local UI state often follows a different lifecycle. Separating these concerns can lead to a cleaner architecture. Putting everything into one store may seem attractive because it provides a unified access model, but it can mix responsibilities that have different requirements.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: TypeScript with React
+TYPE: behavior
+QUESTION: Which type is most appropriate for a React component's `children` prop when you want to allow any valid React content?
+A) `string`
+B) `React.ReactNode`
+C) `HTMLElement`
+D) `object`
+ANSWER: B
+EXPLANATION: `React.ReactNode` represents a broad range of values that React can render, including elements, strings, numbers, arrays, and certain special values. `string` is too restrictive, while `HTMLElement` represents a DOM element object at runtime rather than general React-renderable content. `HTMLElement` may seem tempting because the browser ultimately renders DOM, but it is not the appropriate abstraction at the React props level.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Accessibility
+TYPE: production
+QUESTION: A status message appears dynamically, for example: "Saving..." followed by "Successfully saved." In addition to the visible change, screen reader users also need to be notified appropriately. Which approach can be appropriate?
+CODE:
+function Status({ message }) {
+  return <div aria-live="polite">{message}</div>;
+}
+ENDCODE
+A) Use `display: none` on the message
+B) Change the status text exclusively through CSS
+C) Remove the message from the DOM after every change
+D) Use an appropriate `aria-live` region to communicate dynamically changing status information
+ANSWER: D
+EXPLANATION: An `aria-live` region allows screen readers to detect and announce dynamically changing content appropriately. The `polite` value indicates that the announcement should not unnecessarily interrupt the user's current speech. Updating only the visual text may seem sufficient because the change is visible on screen, but that alone does not guarantee that assistive technologies will be notified.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: State & useState
+TYPE: edgecase
+QUESTION: What happens in the following code if we want to change only the `name` field through the `setUser` call?
+CODE:
+function Profile() {
+  const [user, setUser] = React.useState({
+    name: "Anna",
+    age: 30
+  });
+
+  function rename() {
+    setUser({ name: "Eva" });
+  }
+
+  return <div>{user.name} - {user.age}</div>;
+}
+ENDCODE
+A) React automatically preserves the `age` field
+B) The state is merged, resulting in `{ name: "Eva", age: 30 }`
+C) React throws an error because objects cannot be used as state
+D) The new state replaces the previous object, so the `age` field is lost
+ANSWER: D
+EXPLANATION: The `useState` setter does not perform an automatic shallow merge for objects. The new object completely replaces the previous state, so the `age` field is no longer present. Assuming automatic merging may seem tempting because the old `setState` behavior in class components worked differently in a similar situation.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: JSX & rendering
+TYPE: behavior
+QUESTION: What will be rendered by the following component?
+CODE:
+function App() {
+  const value = "";
+
+  return <div>{value || "Fallback"}</div>;
+}
+ENDCODE
+A) `Fallback`
+B) An empty `<div>`
+C) `false`
+D) React throws an error
+ANSWER: A
+EXPLANATION: An empty string is a falsy value, so JavaScript's `||` operator returns the `"Fallback"` value on the right. React then renders that value. An empty `<div>` may seem tempting because the original value is an empty string, but the JavaScript expression is evaluated before JSX rendering.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: Components & props
+TYPE: scenario
+QUESTION: A component wants to leave the rendering of another component entirely up to the parent, while also passing a specific piece of data to the rendered content. Which pattern fits this best?
+CODE:
+function DataProvider({ children }) {
+  const user = { name: "Anna" };
+
+  return children(user);
+}
+ENDCODE
+A) Store the child component as a global variable on every render
+B) Use the render prop / function-as-children pattern
+C) Always convert the `children` value to a string
+D) Pass the data only through Context
+ANSWER: B
+EXPLANATION: The function-as-children or render prop pattern allows the parent to determine the rendering structure while the component passes data to it as an argument. This is particularly useful when the data needed for rendering and the rendering structure have separate responsibilities. Context may seem tempting because it can also pass data, but this case does not require broader implicit data sharing.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: useEffect & lifecycle
+TYPE: debug
+QUESTION: What is the most important problem with the following effect?
+CODE:
+function Page({ onSave }) {
+  React.useEffect(() => {
+    window.addEventListener("beforeunload", onSave);
+
+    return () => {
+      window.removeEventListener("beforeunload", onSave);
+    };
+  }, []);
+  
+  return <div>Page</div>;
+}
+ENDCODE
+A) The `beforeunload` event cannot be used inside a React component
+B) The empty dependency array can cause the listener to keep using an outdated `onSave` callback when the prop changes
+C) The effect causes a syntax error during the first render
+D) The effect closes the browser
+ANSWER: B
+EXPLANATION: The cleanup does use the same `onSave` reference that was registered, so the cleanup itself is correct. The actual problem is the empty dependency array: if the `onSave` prop changes, the listener continues using the callback captured by the initial effect. An outdated callback may be tempting to overlook because the event listener is correctly removed during cleanup.
+NOTE: The original question was technically incorrect. The cleanup uses the same `onSave` reference, so the real issue is the stale `onSave` closure caused by the empty dependency array.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Rules of hooks & custom hooks
+TYPE: production
+QUESTION: In a custom Hook, you want to return a callback that always uses the current prop value. Which approach correctly handles the closure and dependency issue?
+CODE:
+function useLogger(value) {
+  const log = React.useCallback(() => {
+    console.log(value);
+  }, [value]);
+
+  return log;
+}
+ENDCODE
+A) Remove the dependency array
+B) Include `value` as a dependency
+C) Move the callback into a global variable
+D) Copy `value` into a `useRef` on every render and then ignore the ref
+ANSWER: B
+EXPLANATION: The callback needs access to the current `value`, so `value` must be included in its dependencies. When `value` changes, the callback is recreated with the closure from the current render. Removing the dependency may seem tempting because it would produce a more stable reference, but it can result in a stale closure.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: useRef
+TYPE: edgecase
+QUESTION: What happens if you attach a DOM ref to a component that does not forward or otherwise handle the ref correctly?
+CODE:
+function Child() {
+  return <input />;
+}
+
+function App() {
+  const inputRef = React.useRef(null);
+
+  return <Child ref={inputRef} />;
+}
+ENDCODE
+A) `ref.current` automatically points to the `<input>` DOM element
+B) React automatically finds the first DOM element inside the child
+C) The ref is automatically included in `Child`'s props
+D) The ref does not automatically reach the inner `<input>` element
+ANSWER: D
+EXPLANATION: A ref is not an ordinary prop that is automatically passed to an inner DOM element. The component must explicitly handle the ref and attach it to the intended target. The automatic forwarding assumption may seem tempting because `ref` looks similar to a prop in JSX, but it is handled through a special React mechanism.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: useMemo & useCallback
+TYPE: performance
+QUESTION: In a component, you memoize hundreds of callbacks with `useCallback`, even though none of the callbacks are passed to memoized children and creating them is inexpensive. What is the correct conclusion?
+A) Using many `useCallback` calls always makes the component faster
+B) `useCallback` automatically reduces memory usage
+C) The overhead of memoization can be greater than the work it prevents
+D) React prohibits using `useCallback` multiple times in the same component
+ANSWER: C
+EXPLANATION: Memoization itself has a cost, so not every function should be wrapped in `useCallback`. It is useful when referential stability matters or when measurable rendering work can be avoided. Memoizing every callback may seem tempting because the Hook's name suggests a direct performance benefit, but unnecessary memoization can add overhead.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: Context
+TYPE: scenario
+QUESTION: A Context value is used only by a deep subtree of the application. Where should the Provider generally be placed?
+A) Directly above `document.body`
+B) Above the smallest component subtree that actually needs the value
+C) Always in the application's root component
+D) As a separate Provider directly above every consumer
+ANSWER: B
+EXPLANATION: The scope of a Context Provider should generally match the components that actually consume the value. A narrower scope reduces the chance of unrelated parts of the application becoming coupled to the same Context state. A root-level Provider may seem tempting because it makes the value available everywhere, but it can create an unnecessarily broad scope.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: Reconciliation & keys
+TYPE: edgecase
+QUESTION: What happens in the following case when the value of `mode` changes from `edit` to `view`?
+CODE:
+function App({ mode }) {
+  return (
+    <>
+      {mode === "edit"
+        ? <Form key="edit" />
+        : <Form key="view" />}
+    </>
+  );
+}
+ENDCODE
+A) The `Form` state always remains unchanged
+B) The two `Form` instances share the same state
+C) The `key` is ignored because it can only be used in arrays
+D) Because the `key` changes, React can treat `Form` as a new component instance, so its state can be reset
+ANSWER: D
+EXPLANATION: Even though the same component type appears in the same position, changing the key changes its identity. React can therefore treat it as a new instance, so the previous state is not preserved. Preserving the state may seem tempting because the same `Form` component still appears in the JSX.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: Forms
+TYPE: production
+QUESTION: You store the state of several form fields in a single object. Which update pattern correctly preserves the other fields?
+CODE:
+const [form, setForm] = React.useState({
+  name: "",
+  email: ""
+});
+
+function updateName(name) {
+  setForm(prev => ({
+    ...prev,
+    name
+  }));
+}
+ENDCODE
+A) Omit `prev` entirely and return only `{ name }`
+B) Mutate the `form` object without using the setter
+C) Delete and recreate all fields manually on every update
+D) Spread the previous state and then overwrite the field being changed
+ANSWER: D
+EXPLANATION: The spread preserves the existing fields, while the new `name` value overwrites that specific property. A functional updater is particularly useful when the new state is based on the immediately previous state. Returning only `{ name }` may seem tempting because it is simpler, but it would discard the other fields.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: Performance optimization
+TYPE: production
+QUESTION: In an application, a single state change causes a large component tree to re-render, even though most of the tree does not depend on that state. Which approach can be an appropriate optimization?
+A) Wrap every component in `useMemo`
+B) Move the state and related UI closer together and, where appropriate, memoize the relevant boundaries
+C) Move all state into a global Context
+D) Create every component in a separate DOM tree
+ANSWER: B
+EXPLANATION: Refining where state lives is often more effective than blindly memoizing every component. If frequently changing state is kept closer to the components that actually consume it, fewer components may be affected by the update. Using `useMemo` everywhere may seem tempting because it is a recognizable optimization tool, but it does not solve an overly broad state scope.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: State management
+TYPE: algorithm
+QUESTION: A reducer needs to represent three states: `idle`, `loading`, and `success`. Which approach most effectively reduces the number of invalid state combinations?
+A) Several independent booleans such as `isLoading`, `isSuccess`, and `hasData`
+B) A single `status` field with discrete states, with transitions defined in the reducer
+C) Store all states in global variables
+D) Create a separate Context Provider for every state
+ANSWER: B
+EXPLANATION: An explicit status model defines the states as clear alternatives, reducing the chance of contradictory combinations. For example, `idle` and `loading` cannot both be valid values of the same discrete `status` field. Using multiple booleans may seem tempting because it initially appears simple, but they can easily allow invalid combinations.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: Data fetching & race conditions
+TYPE: production
+QUESTION: A search field sends API requests on every keystroke. The number of requests is too high, but stale responses also need to be handled. Which combination is most appropriate?
+A) Debounce requests to reduce their frequency, and abort or invalidate stale requests
+B) Use only `setTimeout` without invalidating requests
+C) Unconditionally apply the response from every request
+D) Completely ignore network errors
+ANSWER: A
+EXPLANATION: Debouncing reduces the frequency of requests, while aborting or checking request identity handles the race condition. These are separate concerns because debouncing alone does not guarantee that responses will arrive or be applied in the correct order. Using only debounce may seem tempting because it significantly reduces network traffic, but already-started requests can still race with one another.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Concurrent features & Suspense
+TYPE: scenario
+QUESTION: Filtering a large list while the user is typing is expensive, causing the UI input to lag. Which approach best fits the Concurrent React model?
+A) Block all UI rendering until the calculation finishes
+B) Force every state update with `flushSync`
+C) Treat the non-urgent list update as a transition while keeping the input state urgent
+D) Remount every list item with a new key
+ANSWER: C
+EXPLANATION: The urgent input state can update immediately while the expensive list update can be marked as a transition and treated as lower-priority work. This gives React more flexibility to schedule the rendering work. Updating everything at the same priority may seem simpler, but it can allow expensive work to interfere directly with user interaction.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: Server Components & SSR
+TYPE: behavior
+QUESTION: An SSR-rendered page's HTML arrives in the browser, and React then makes the page interactive on the client. What is this process called?
+A) Hydration
+B) Virtualization
+C) Reconciliation
+D) Serialization
+ANSWER: A
+EXPLANATION: During hydration, React connects the server-generated HTML with the client-side React tree and enables the required interactivity. This differs from performing a completely new client-side render. Reconciliation may seem tempting because it also deals with element identity and changes, but activating server-rendered HTML on the client is hydration.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: useEffect & lifecycle
+TYPE: production
+QUESTION: A component opens a WebSocket connection inside an effect. When `roomId` changes, a new connection should be created, but the previous connection must not remain open. Which approach is correct?
+CODE:
+React.useEffect(() => {
+  const socket = connect(roomId);
+
+  return () => {
+    socket.close();
+  };
+}, [roomId]);
+ENDCODE
+A) Store the socket in a global variable and never close it
+B) Close the connection created by the effect in the cleanup, then create a new connection when the dependency changes
+C) Create a new connection on every render with no dependency array
+D) Ignore changes to `roomId`
+ANSWER: B
+EXPLANATION: The effect setup creates the connection for the current `roomId`, while the cleanup ensures that the previous connection is closed before the next setup runs. This is a fundamental subscription-management pattern for effects. Creating a new connection on every render may seem tempting because it always uses the latest value, but it would create unnecessary connections and potentially leak resources.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: Rules of hooks & custom hooks
+TYPE: production
+QUESTION: A custom Hook encapsulates a shared business rule used by several different components. When is it appropriate to organize this logic as a custom Hook?
+A) When the logic uses state, effects, or other React Hooks and can be reused across multiple components
+B) Whenever a function is longer than five lines
+C) Only when the Hook manages global state
+D) Only when the Hook must return JSX
+ANSWER: A
+EXPLANATION: A custom Hook is a good abstraction for reusable component logic that uses React Hooks and implements the same behavior across multiple components. It does not need to return JSX and does not necessarily manage global state. Deciding based on function length may seem tempting because long functions can indicate a refactoring opportunity, but line count alone is not a good abstraction criterion.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: useMemo & useCallback
+TYPE: trap
+QUESTION: Which statement most accurately describes the role of memoization in React?
+A) Memoization guarantees that a component will never re-render
+B) Memoization always improves performance
+C) Memoization can only be used for server-side rendering
+D) Memoization is an optimization technique that can reduce calculation or rendering cost when appropriate, but it does not make all code faster by itself
+ANSWER: D
+EXPLANATION: The purpose of memoization is to reduce unnecessary work, but caching and comparison also have a cost. It should therefore be applied based on measurement and a concrete rendering problem. The claim that it is always faster may seem tempting because memoization is explicitly used as an optimization, but using it in the wrong places can add overhead.
+###END
+
+### Q144
+LEVEL: architecture
+TOPIC: Context
+TYPE: architecture
+QUESTION: In a large application, a single Context contains authentication data, rarely changing configuration, and UI state that changes every second. Why can this be an architectural problem?
+A) Context cannot store multiple types of data
+B) A Context Provider cannot contain state
+C) Data with different update frequencies and responsibilities is placed within the same update scope
+D) React allows only one Context per application
+ANSWER: C
+EXPLANATION: Putting data with different lifecycles and update frequencies into one Context can create an overly broad update scope. Separating responsibilities and keeping frequently changing state within a narrower scope can improve component rendering behavior. Using a single Context may seem attractive because it provides a simple access model, but in large systems it can unnecessarily couple many consumers.
+NOTE: The original question used `LEVEL: senior` and `TYPE: architecture`. Since `architecture` is not part of the allowed TYPE list, the English version preserves the original value exactly as requested.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: Reconciliation & keys
+TYPE: edgecase
+QUESTION: A component's state is preserved after a render when the component remains at the same position in the tree. Which factors primarily determine whether React preserves the state?
+A) Only the component's name
+B) The component's identity, which can be determined by factors including its position, component type, and key
+C) Only the DOM element's `id` attribute
+D) Only the state value used in the previous render
+ANSWER: B
+EXPLANATION: React uses component identity to determine whether an existing component instance should keep its state or whether a new instance should be created. The component type, its position in the tree, and, where applicable, its key all contribute to that identity. Relying only on the component name may seem tempting because the same component name often represents the same UI area, but identity depends on more than the name.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: Performance optimization
+TYPE: production
+QUESTION: In a production application, CPU usage increases after introducing an optimization, while rendering time barely changes. What is the best next step?
+A) Blindly add more optimizations
+B) Wrap every component in `React.memo`
+C) Move all state into Context
+D) Use profiling to determine whether the optimization actually targets the bottleneck and compare the results with the previous implementation
+ANSWER: D
+EXPLANATION: Performance optimizations should be evaluated through measurement because memoization, comparisons, and other mechanisms can themselves consume CPU. Profiling and before-and-after measurements can show whether the relevant metric actually improved. Adding more optimizations may seem tempting because high CPU usage looks like a problem, but the cause should be identified first.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: Data fetching & race conditions
+TYPE: production
+QUESTION: On a complex page, several components use the same server data, and each component fetches it independently from its own `useEffect`. What problem can this cause?
+A) React automatically combines all requests
+B) It can lead to duplicate requests, inconsistent caching, and harder-to-manage loading and error states
+C) `useEffect` cannot call APIs from multiple components
+D) The browser always blocks the second request
+ANSWER: B
+EXPLANATION: Multiple independent fetches for the same data can result in redundant network work and separate cache and lifecycle management. In such cases, a deduplicated server-state solution or shared data source may be appropriate. Assuming automatic request deduplication may seem tempting because React can optimize certain rendering work, but it does not automatically provide network caching across independent `useEffect` calls.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: Server Components & SSR
+TYPE: edgecase
+QUESTION: Why can it be problematic for a Server Component to pass a large amount of non-serializable client-side state as props to a Client Component?
+A) Server Components cannot pass props to Client Components
+B) Client Components can accept only string props
+C) Values crossing the server-client boundary must be transferable/serializable in a way supported by the framework
+D) React automatically converts every server-side object into a DOM node
+ANSWER: C
+EXPLANATION: The boundary between Server and Client Components is also a data-transfer boundary, so values passed to a Client Component must be transferable in a supported way. Arbitrary server-side runtime objects cannot be treated as though they existed in the same JavaScript environment on both sides. Assuming every object can be passed may seem tempting because JavaScript props can normally contain arbitrary values, but the server-client boundary introduces additional constraints.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Testing (React Testing Library)
+TYPE: production
+QUESTION: A test checks the exact internal state value of a component and breaks after a refactor, even though the user-visible behavior remains unchanged. What is a better testing approach?
+A) Explicitly test every detail of the internal state
+B) Call the component's private functions directly
+C) Inspect React's internal DOM properties
+D) Test user-observable behavior and accessible UI state
+ANSWER: D
+EXPLANATION: React Testing Library encourages tests that primarily verify behavior as experienced by the user rather than internal implementation details. This makes tests more resilient to internal refactoring when the externally observable behavior remains unchanged. Testing internal state may seem tempting because it is direct and precise, but it tightly couples the test to the implementation.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: TypeScript with React
+TYPE: algorithm
+QUESTION: You want a generic `Select` component where the type of the `options` items and the selected value remain automatically consistent. Which approach supports this best?
+CODE:
+type SelectProps<T> = {
+  options: T[];
+  value: T;
+  onChange: (value: T) => void;
+};
+
+function Select<T>(props: SelectProps<T>) {
+  return null;
+}
+ENDCODE
+A) Set every prop to the `any` type
+B) Always define the `value` type as `string`
+C) Use a generic type parameter shared by `options`, `value`, and `onChange`
+D) Set the `onChange` parameter type to `unknown`
+ANSWER: C
+EXPLANATION: The shared generic parameter `T` connects the types of `options`, `value`, and `onChange`, allowing TypeScript to verify at compile time that they all use the same data type. This produces a reusable and type-safe component API. Using `any` may seem tempting because it simplifies the definition, but it removes much of the type safety.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: JSX & rendering
+TYPE: edgecase
+QUESTION: What happens with the following component if the application uses server-side rendering and the `Date` value results in different times on the server and client?
+
+CODE:
+function Clock() {
+  return <div>{new Date().toLocaleTimeString()}</div>;
+}
+ENDCODE
+
+A) React automatically replaces the server value with the client's current value without any issue.
+B) React always keeps the time generated by the server, so no mismatch occurs.
+C) React reruns the entire application on the server until the two values match.
+D) A hydration mismatch can occur because the HTML generated on the server can differ from the client's first render.
+
+ANSWER: D
+EXPLANATION: With SSR, the client should produce a compatible result during its first render so it can hydrate the HTML generated on the server. Rendering the current time directly is non-deterministic and can therefore cause a mismatch. A typical solution is to use deterministic initial rendering and update the value on the client when necessary. The most tempting wrong answer is plausible because React can recover from certain hydration mismatches, but differing render output is not a safe pattern by itself.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: Components & props
+TYPE: scenario
+QUESTION: In a component library, you want to create a component whose internal structure can be composed by consumers using components. Which API design pattern fits this best?
+
+CODE:
+<Dialog>
+  <Dialog.Trigger>Open</Dialog.Trigger>
+  <Dialog.Content>
+    <Dialog.Title>Profile</Dialog.Title>
+  </Dialog.Content>
+</Dialog>
+ENDCODE
+
+A) The compound component pattern, which builds an abstraction from multiple cooperating components.
+B) All subcomponents should be stored in global variables.
+C) A single large object prop containing the entire configuration should be passed for every usage.
+D) Using React Context by itself replaces a declarative component API.
+
+ANSWER: A
+EXPLANATION: The compound component pattern allows consumers to declaratively compose the parts of a component while those parts can share state or context. This is particularly useful for complex UI elements such as dialogs, tabs, or menus. The most tempting wrong answer is plausible because Context is often part of this solution, but Context by itself does not define the component's API structure.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: State & useState
+TYPE: output
+QUESTION: What does the following component display after the first click?
+
+CODE:
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  const handleClick = () => {
+    setCount(count + 1);
+    setCount(count + 1);
+    setCount((value) => value + 1);
+  };
+
+  return (
+    <button onClick={handleClick}>
+      {count}
+    </button>
+  );
+}
+ENDCODE
+
+A) 1
+B) 2
+C) 3
+D) 4
+
+ANSWER: B
+EXPLANATION: The first two updates both use the `count` value from the same render, so both attempt to set the state to the same value. The functional update, however, is based on the result of the previous update and increments it once more. The final result is therefore 2. The most tempting wrong answer is plausible because there are three `setCount` calls, but direct value updates do not build on each other's updated state.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: useEffect & lifecycle
+TYPE: production
+QUESTION: A component needs to subscribe to an external event source, and the subscription should follow the component's lifecycle. Which approach is most appropriate?
+
+CODE:
+function Chat({ roomId }) {
+  useEffect(() => {
+    const connection = createConnection(roomId);
+    connection.connect();
+
+    return () => {
+      connection.disconnect();
+    };
+  }, [roomId]);
+
+  return <div>Chat</div>;
+}
+ENDCODE
+
+A) Remove the cleanup function from the effect because React automatically disconnects the connection.
+B) Run the effect after every render to ensure that it always stays up to date.
+C) Create the external resource inside the effect and dispose of it in the cleanup, with the relevant dependencies.
+D) The `roomId` value must always be stored in a `useRef` for the effect to work.
+
+ANSWER: C
+EXPLANATION: An effect can be responsible for synchronizing a React component with an external system. The cleanup ensures that the previous connection is disconnected when the effect reruns or the component unmounts. The `roomId` dependency causes a new connection to be created when the room changes. The most tempting wrong answer is plausible because React manages the component's rendering lifecycle, but it does not automatically dispose of external resources.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: Rules of hooks & custom hooks
+TYPE: trap
+QUESTION: Which implementation violates the Rules of Hooks?
+
+CODE:
+function useFeature(enabled) {
+  if (!enabled) {
+    return null;
+  }
+
+  const [value, setValue] = useState(0);
+
+  return { value, setValue };
+}
+ENDCODE
+
+A) Because it uses `return null`.
+B) Because a custom Hook cannot contain a `useState` call.
+C) Because a Hook name cannot start with the `use` prefix.
+D) Because `useState` is called conditionally, which can change the order in which Hooks are called.
+
+ANSWER: D
+EXPLANATION: Hooks must be called in the same order on every render and cannot be called conditionally. If `enabled` changes, `useState` is called on some renders but not others, violating the Rules of Hooks. The condition should be handled inside the Hook's logic rather than making the Hook call itself conditional. The most tempting wrong answer is plausible because the early return does change the function's execution path, but an early return by itself is not forbidden.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: useRef
+TYPE: production
+QUESTION: A component needs the current size of a DOM element, and the measurement must happen after the layout has been updated but before the browser paints the result. Which approach is most appropriate?
+
+CODE:
+function Panel() {
+  const ref = useRef(null);
+
+  useLayoutEffect(() => {
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      console.log(rect.width);
+    }
+  }, []);
+
+  return <div ref={ref}>Content</div>;
+}
+ENDCODE
+
+A) The DOM element must only be measured during render.
+B) `useLayoutEffect` is appropriate because it runs after the DOM update but before the browser paints.
+C) The `useRef` value must be converted to state, otherwise the DOM will not update.
+D) `useEffect` always guarantees that the measurement happens before paint.
+
+ANSWER: B
+EXPLANATION: `useLayoutEffect` runs after DOM mutations but before the browser paints, making it suitable for measurements that need to be available before the next visual render. `useRef` provides access to the DOM node without causing a render when the ref value changes. The most tempting wrong answer is plausible because `useEffect` also runs after a DOM update, but it does not guarantee execution before paint.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: useMemo & useCallback
+TYPE: performance
+QUESTION: Why can the following optimization be problematic?
+
+CODE:
+function SearchPage({ items, query }) {
+  const filtered = useMemo(
+    () => items.filter((item) => item.name.includes(query)),
+    [items, query]
+  );
+
+  const handleSelect = useCallback(
+    (id) => console.log(id),
+    [query]
+  );
+
+  return <SearchResults items={filtered} onSelect={handleSelect} />;
+}
+ENDCODE
+
+A) `useMemo` is always slower than `filter`.
+B) `useCallback` cannot be used for event handlers.
+C) `handleSelect` is recreated on every render because every dependency is a new object.
+D) `query` can be an unnecessary dependency if the callback does not use it, causing the callback identity to change unnecessarily.
+
+ANSWER: D
+EXPLANATION: The `handleSelect` callback does not use the `query` value, so including it as a dependency is unnecessary. As a result, every query change can create a new callback identity, which can cause unnecessary renders in a memoized child. The most tempting wrong answer is plausible because `useCallback` does not prevent a function from being recreated under every possible circumstance, but the specific issue here is the unnecessary dependency.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: Context
+TYPE: architecture
+QUESTION: In an application, a Context value changes every second because of an animation, while the same Context is consumed by hundreds of components that use mostly static configuration. Which architectural approach can most effectively reduce unnecessary updates?
+
+CODE:
+const AppContext = createContext({
+  theme: "light",
+  locale: "hu",
+  animationTime: 0
+});
+ENDCODE
+
+A) Split the Context into smaller, separate Contexts based on the different update frequencies of the data.
+B) Wrap every Context consumer in `useMemo`, regardless of whether it actually rerenders.
+C) Put all data into a single global object so that only one reference exists.
+D) Replace Context by creating separate state in every component.
+
+ANSWER: A
+EXPLANATION: Separating data with different update frequencies can narrow the set of components affected by a particular Context change. This can be especially important in large applications. The most tempting wrong answer is plausible because `useMemo` can be a useful performance optimization, but it does not by itself solve an overly broad Context scope.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Reconciliation & keys
+TYPE: edgecase
+QUESTION: What happens to the component state in the following case when `mode` switches between `edit` and `view`?
+
+CODE:
+function Screen({ mode }) {
+  return mode === "edit"
+    ? <Editor key="editor" />
+    : <Viewer key="viewer" />;
+}
+ENDCODE
+
+A) React always preserves the same state because the element is in the same position.
+B) The state is preserved because both components receive the same props.
+C) Because the two components have different keys, React treats them as different component identities, so state is not carried over.
+D) Keys only matter in lists, so they have no effect here.
+
+ANSWER: C
+EXPLANATION: A key also contributes to determining component identity. `editor` and `viewer` have different keys, so React does not treat them as the same entity, and state from one is not carried over to the other. The most tempting wrong answer is plausible because the component appears at the same JSX position, but identity is not determined by position alone.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: Forms
+TYPE: production
+QUESTION: In a React 19 application, a form triggers a server-side operation, and the UI needs to display both the result of the submission and the current pending state. Which approach best fits the modern React form Action model?
+
+CODE:
+async function saveProfile(formData) {
+  // server-side save
+}
+ENDCODE
+
+A) The form submit event must always be handled manually with `preventDefault()`, and every piece of state must be built separately.
+B) A form Action can be combined with `useActionState` and `useFormStatus` to manage the action result and pending state.
+C) Form Actions can only be used to start CSS animations.
+D) `useFormStatus` is only used for global Redux state management.
+
+ANSWER: B
+EXPLANATION: Modern React form APIs allow a form action to handle the submission flow, while `useActionState` can manage the action result and `useFormStatus` can expose the current form status, such as whether the submission is pending. The most tempting wrong answer is plausible because traditional React forms often require manual submit handling, but the modern Action model can handle much of this flow declaratively.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: Performance optimization
+TYPE: production
+QUESTION: A component is expensive to render, and the React Profiler shows that a frequently changing, large object prop is causing rerenders. What is the best first step?
+
+CODE:
+<ExpensiveChart
+  data={{ points, color: theme.color, showGrid: settings.showGrid }}
+/>
+ENDCODE
+
+A) Immediately wrap `ExpensiveChart` in `React.memo`.
+B) Move all state into global state.
+C) Manually use `forceUpdate` on every render.
+D) Investigate the prop identity and data flow, then stabilize the reference or restructure component boundaries only when justified.
+
+ANSWER: D
+EXPLANATION: To solve a performance problem, first understand what causes the render and whether the rerender is actually unnecessary. An inline-created object can have a new reference on every render, so it counts as changed even for a memoized child. The most tempting wrong answer is plausible because `React.memo` can skip renders, but if the prop is a new object every time, it will not solve this particular issue by itself.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: State management
+TYPE: scenario
+QUESTION: An application uses values from an external state store across multiple React components, and it is important that snapshots remain consistent during concurrent React rendering. Which React API is designed for this purpose?
+
+A) `useImperativeHandle`
+B) `useInsertionEffect`
+C) `useSyncExternalStore`
+D) `useId`
+
+ANSWER: C
+EXPLANATION: `useSyncExternalStore` is specifically designed to integrate external stores with React and supports consistent snapshot reads during concurrent rendering. The most tempting wrong answer is plausible because other React APIs also deal with the rendering lifecycle, but they are not general-purpose APIs for integrating external state stores.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: Data fetching & race conditions
+TYPE: production
+QUESTION: A search field starts an API request after every change. The user quickly types `react`, but an earlier `rea` request responds later than the `react` request. What is the appropriate strategy?
+
+A) Ignore the response order because the network always delivers responses in request order.
+B) Start another request after every response.
+C) Always prefer the older request because it was started first.
+D) Invalidate stale responses or abort previous requests, and only apply the result of the current query.
+
+ANSWER: D
+EXPLANATION: Network responses can arrive in a different order from when the requests were initiated, so an older response can overwrite a newer result. Using `AbortController` and/or request-ID-based invalidation can ensure that only the current query result is applied. The most tempting wrong answer is plausible because it is easy to assume that a sequence of requests preserves order, but the network does not guarantee that.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: Concurrent features & Suspense
+TYPE: behavior
+QUESTION: What is the purpose of using `startTransition` in the following code?
+
+CODE:
+const [query, setQuery] = useState("");
+const [results, setResults] = useState([]);
+
+function handleChange(event) {
+  const value = event.target.value;
+
+  setQuery(value);
+
+  startTransition(() => {
+    setResults(expensiveFilter(value));
+  });
+}
+ENDCODE
+
+A) `startTransition` prevents `expensiveFilter` from running.
+B) `startTransition` marks the update as a lower-priority transition, allowing it to be deferred in favor of more urgent updates such as typing.
+C) `startTransition` makes every state update synchronous.
+D) `startTransition` guarantees that the result is displayed immediately.
+
+ANSWER: B
+EXPLANATION: Transition updates are non-urgent, giving React more flexibility in scheduling their rendering. This can help prevent an expensive list update from blocking direct user interaction. The most tempting wrong answer is plausible because the goal of transitions is indeed to improve responsiveness, but they do not eliminate the cost of the computation.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: Server Components & SSR
+TYPE: edgecase
+QUESTION: Why can't a Server Component directly use an arbitrary browser API such as `window.localStorage`?
+
+A) Because Server Components can only be written in TypeScript.
+B) Because browser APIs are slower than server APIs.
+C) Because a Server Component runs in a server environment where browser globals are not available.
+D) Because Server Components cannot return JSX.
+
+ANSWER: C
+EXPLANATION: Server Component code runs on the server, so browser-specific global objects such as `window` and `localStorage` are not automatically available. Browser-side interaction and APIs require a Client Component. The most tempting wrong answer is plausible because Server Components do run in a different environment, but the restriction is not caused by an inability to return JSX.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: Error boundaries
+TYPE: production
+QUESTION: In an application, a widget failure must not prevent the rest of the page from working. What is the appropriate architectural solution?
+
+A) Place a separate Error Boundary around the critical widget so it can display fallback UI and, if necessary, allow that section to be reset.
+B) Ignore all errors after calling `console.error`.
+C) Put all components inside a single global try/catch block.
+D) Recreate the failing component after every render.
+
+ANSWER: A
+EXPLANATION: An Error Boundary can isolate errors occurring during rendering so that a local failure does not necessarily take down the entire UI subtree. Placing boundaries at appropriate architectural boundaries is important for fault isolation. The most tempting wrong answer is plausible because try/catch is a general JavaScript error-handling mechanism, but it does not replace React Error Boundaries for render-time errors.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: Testing (React Testing Library)
+TYPE: trap
+QUESTION: Why is directly testing a component's internal state generally considered poor testing practice when using React Testing Library?
+
+A) Because state must never change during a test.
+B) Because React Testing Library only supports snapshot tests.
+C) Because state is always inaccessible to the test.
+D) Because users interact with the observable behavior of the component, so tests coupled to implementation details can be more brittle.
+
+ANSWER: D
+EXPLANATION: React Testing Library encourages tests that verify observable behavior and accessible UI from the user's perspective. Testing internal state or implementation details can produce tests that break during refactoring even when the user-facing behavior remains unchanged. The most tempting wrong answer is plausible because state is not directly represented in the DOM, but that is not the primary reason to avoid such tests.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: TypeScript with React
+TYPE: algorithm
+QUESTION: Which type definition best ensures that the `value` and `onChange` props of a component are tied to the same type?
+
+A) `type Props = { value: unknown; onChange: (value: unknown) => void }`
+B) `type Props<T> = { value: T; onChange: (value: T) => void }`
+C) `type Props = { value: any; onChange: Function }`
+D) `type Props = { value: object; onChange: (value: object) => void }`
+
+ANSWER: B
+EXPLANATION: A generic type parameter allows the same concrete `T` to define both the `value` and the parameter type of `onChange`. For example, with `Props<string>`, both are tied to `string`. The most tempting wrong answer is plausible because `unknown` is safer than `any`, but it does not establish a specific type relationship between the two values.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: Accessibility
+TYPE: production
+QUESTION: When a modal opens, keyboard users must remain inside the modal, and after it closes, focus must return to the element that opened it. Which approach correctly describes the required behavior?
+
+A) Move focus to an arbitrary non-interactive element when the modal opens, and do not manage focus when it closes.
+B) Only an `aria-label` is required.
+C) The modal should provide appropriate dialog semantics, focus management, a focus trap when appropriate, and restore focus to the previously focused element when it closes.
+D) Keyboard navigation should be disabled so the user cannot leave the modal.
+
+ANSWER: C
+EXPLANATION: A true modal must work correctly for keyboard users as well as visually. Focus management can include moving focus into the modal, trapping focus when appropriate, and restoring focus to the previously focused element after closing. The most tempting wrong answer is plausible because an `aria-label` can improve certain accessibility information, but it does not solve focus management by itself.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: useEffect & lifecycle
+TYPE: trap
+QUESTION: Why can the following effect be problematic if the `options` object receives a new reference on every render?
+
+CODE:
+function Search({ options }) {
+  useEffect(() => {
+    fetchResults(options);
+  }, [options]);
+
+  return <Results />;
+}
+ENDCODE
+
+A) Objects cannot be used in an effect dependency array at all.
+B) React automatically compares every object deeply.
+C) Effects only respond to changes in primitive values.
+D) If the object reference is new on every render, the effect can run after every render even when the contents are identical.
+
+ANSWER: D
+EXPLANATION: Dependency comparison is not based on general deep equality; for objects, the reference matters. If the parent creates a new `options` object on every render, the effect can treat it as changed. The most tempting wrong answer is plausible because React does track dependency changes, but objects are not compared by their contents.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: Reconciliation & keys
+TYPE: scenario
+QUESTION: In a list, the order of items changes frequently. Why is it important for the `key` to be stable and tied to the underlying entity?
+
+A) Because the key only controls the speed of CSS animations.
+B) Because a stable key helps React identify which component identity corresponds to a particular item, allowing state and DOM relationships to be preserved appropriately.
+C) Because React cannot render a list at all without keys.
+D) Because the key must always be the index.
+
+ANSWER: B
+EXPLANATION: A stable, entity-based key allows React to recognize the same item after reordering and preserve its identity appropriately. Using an index as a key in a list whose order changes can lead to incorrect state and DOM associations. The most tempting wrong answer is plausible because React does warn when keys are missing, but the list can still render.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Server Components & SSR
+TYPE: production
+QUESTION: A Server Component tries to pass an arbitrary JavaScript function as a prop to a Client Component. Why is this problematic across the server/client boundary?
+
+A) Because React does not support functions in JavaScript.
+B) Because a Client Component cannot receive string props.
+C) Because data crossing the server/client boundary must be in a form supported by the framework for transport; an arbitrary server-side function is not such data.
+D) Because every Client Component can only use primitive state.
+
+ANSWER: C
+EXPLANATION: Arbitrary server-side JavaScript objects or closures cannot simply be passed across the server/client boundary. The client must receive data in a form supported by the relevant React framework and transport mechanism. The most tempting wrong answer is plausible because React does use callbacks extensively inside Client Components, but that does not mean an arbitrary server-side function can be sent to the client.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: Error boundaries
+TYPE: edgecase
+QUESTION: Which type of error cannot be handled by a traditional React Error Boundary alone as a general-purpose error-handling mechanism?
+
+A) An error thrown while rendering a descendant component.
+B) An error thrown in the lifecycle logic of a descendant component.
+C) An error thrown later from an event handler in response to a user click.
+D) An error thrown in a child component's constructor.
+
+ANSWER: C
+EXPLANATION: Error Boundaries are designed to isolate errors occurring during rendering and certain lifecycle phases, but they do not replace error handling for event handlers or arbitrary asynchronous callbacks. Event-handler errors need to be handled within the relevant event-handling flow. The most tempting wrong answer is plausible because all of these errors can originate from a child component, but an Error Boundary does not catch every JavaScript exception.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: Testing (React Testing Library)
+TYPE: production
+QUESTION: A component displays a message after an API response arrives. In a test, a `getByRole` call runs immediately after the API request starts instead of using `findByRole`. What is the problem?
+
+A) `getByRole` is always slower than `findByRole`.
+B) `getByRole` cannot be used to find buttons.
+C) `findByRole` can only be used for snapshot tests.
+D) `getByRole` is a synchronous query, so it does not wait for an asynchronous UI update; an async query such as `findByRole` may be appropriate.
+
+ANSWER: D
+EXPLANATION: `getByRole` checks the current DOM immediately and fails if the element is not present yet. For an element that appears asynchronously, `findByRole` is appropriate because it waits for the element to become available. The most tempting wrong answer is plausible because both APIs search by role, but the difference is in when and how they perform the query.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: TypeScript with React
+TYPE: edgecase
+QUESTION: Which type definition best ensures, using a discriminated union, that when `variant` is `"link"`, `href` is required, while `"button"` requires `onClick`?
+
+A) `type Props = { variant: "link" | "button"; href?: string; onClick?: () => void }`
+B) `type Props = { variant: string; [key: string]: any }`
+C) `type Props = { variant: "link" | "button"; href: string; onClick: () => void }`
+D) `type Props = | { variant: "link"; href: string; onClick?: never } | { variant: "button"; onClick: () => void; href?: never }`
+
+ANSWER: D
+EXPLANATION: A discriminated union defines a separate allowed prop combination for each variant, allowing TypeScript to enforce the relationship at compile time. Using `never` can explicitly exclude a prop from the other variant. The most tempting wrong answer is plausible because optional props create a simpler API, but they do not enforce the relationship between the variant and its required props.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: Concurrent features & Suspense
+TYPE: edgecase
+QUESTION: What happens with the following code if rendering `SlowList` suspends because of a Suspense-compatible data source?
+
+CODE:
+function App() {
+  const [query, setQuery] = useState("");
+
+  return (
+    <>
+      <input
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+      />
+
+      <Suspense fallback={<p>Loading...</p>}>
+        <SlowList query={query} />
+      </Suspense>
+    </>
+  );
+}
+ENDCODE
+
+A) The entire application always disappears and only reappears after the Suspense boundary resolves.
+B) The Suspense boundary can display the fallback UI instead of `SlowList`, while UI outside the boundary can remain usable.
+C) Suspense can only be used for loading images, not for component rendering.
+D) The `fallback` is only displayed during server-side rendering.
+
+ANSWER: B
+EXPLANATION: A Suspense boundary allows a suspended subtree to temporarily be replaced by fallback UI. Parts of the UI outside the boundary do not necessarily become unusable. The most tempting wrong answer is plausible because the fallback does replace the visible content of the suspended subtree, but it does not replace the entire application.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: useMemo & useCallback
+TYPE: trap
+QUESTION: Which statement correctly describes the role of `useMemo` in the following case?
+
+CODE:
+const visibleItems = useMemo(
+  () => items.filter((item) => item.visible),
+  [items]
+);
+ENDCODE
+
+A) `useMemo` guarantees that `filter` runs only once during the entire lifetime of the application.
+B) `useMemo` guarantees that the `visibleItems` reference will never change.
+C) `useMemo` is primarily a performance optimization that can memoize the result of a calculation based on the specified dependencies.
+D) `useMemo` prevents the `items` array from being modified.
+
+ANSWER: C
+EXPLANATION: `useMemo` allows the result of a calculation to be memoized so that the calculation can be skipped when its dependencies have not changed. It is not a semantic guarantee that the value will live forever, and it does not make the input immutable. The most tempting wrong answer is plausible because this is memoization, but React does not define the memoized value as a permanent lifetime guarantee.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: State management
+TYPE: production
+QUESTION: An application has a large, frequently changing external store. Multiple components use only specific parts of it. Which approach can help prevent every component from rerendering on every store update?
+
+A) Create a copy of the entire store inside every component.
+B) Expose the store exclusively through Context.
+C) Remount the entire application after every change.
+D) Use a subscription and selector mechanism that notifies consumers only when their relevant snapshot changes.
+
+ANSWER: D
+EXPLANATION: With large external stores, it is important for components to react only to changes in the data they actually use. Selector-based subscriptions can reduce unnecessary renders while keeping the store as a single source of truth. The most tempting wrong answer is plausible because Context can indeed be used to distribute state, but by itself it does not solve fine-grained subscription needs for a rapidly changing large store.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Data fetching & race conditions
+TYPE: scenario
+QUESTION: On a search page, the user navigates between `users` → `orders` → `users` while multiple requests are still in flight. Which caching strategy can best help previous data appear immediately while being refreshed in the background?
+
+A) A stale-while-revalidate approach, where cached data can be displayed while a fresh request revalidates it.
+B) Clear the entire cache on every navigation.
+C) Always ignore all previous requests, even when their data is still valid.
+D) Only refresh the cache when the browser is closed.
+
+ANSWER: A
+EXPLANATION: A stale-while-revalidate approach allows existing cached data to be displayed quickly while fresh data is fetched in the background. With appropriate caching and invalidation rules, this can reduce waiting and unnecessary loading states. The most tempting wrong answer is plausible because clearing the cache can indeed eliminate certain stale values, but it also removes one of the main benefits of caching.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: Server Components & SSR
+TYPE: production
+QUESTION: In an SSR application, a component generates a random ID during rendering, resulting in one ID on the server and a different ID on the client. Why is this problematic, and which React API can help generate IDs that remain consistent across SSR and hydration?
+
+A) `useRef`
+B) `useId`
+C) `useMemo`
+D) `useCallback`
+
+ANSWER: B
+EXPLANATION: Generating a random or environment-dependent ID can produce different markup on the server and client. `useId` is specifically designed to generate React-managed IDs that work correctly with SSR and hydration. The most tempting wrong answer is plausible because `useRef` can preserve a value across renders, but it is not designed for SSR-consistent ID generation.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: Forms
+TYPE: production
+QUESTION: In a React 19 form Action, the action can return an error, and the UI needs to display the action's latest result. Which approach fits this requirement best?
+
+A) Store the form action result exclusively in a DOM attribute.
+B) Write the action result to `localStorage` every time.
+C) Use `useActionState` to manage the action result and related state as React state.
+D) Use `useRef` to make the action result renderable.
+
+ANSWER: C
+EXPLANATION: `useActionState` is designed to manage the result of an Action as React state, allowing the component to rerender based on that result. This is particularly useful for displaying validation errors or the result of server-side operations. The most tempting wrong answer is plausible because `useRef` can store a value without causing a render, but that is precisely why it cannot by itself make the result appear in the UI.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Error boundaries
+TYPE: edgecase
+QUESTION: An application displays fallback UI from an Error Boundary, but after a retry you want the failed subtree to mount again from scratch. Which pattern can be used for this?
+
+A) Change the `key` of the relevant boundary or subtree during the retry.
+B) Change the `displayName` of the failing component.
+C) Call `console.error` again.
+D) Change the CSS class on the fallback element.
+
+ANSWER: A
+EXPLANATION: Changing a relevant `key` can cause React to treat the component tree as having a new identity, which can trigger a remount and reset its state. This can be used as part of a retry mechanism for an Error Boundary. The most tempting wrong answer is plausible because displaying fallback UI does change the visible DOM, but CSS or `displayName` changes do not create a new component identity.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Accessibility
+TYPE: production
+QUESTION: An application displays a message after a successful save, but a screen reader user does not need focus to move; they only need to be informed about the change. Which approach best fits this requirement?
+
+A) Reload the entire page.
+B) Use an appropriately configured live region, such as `aria-live`, to announce the change.
+C) Automatically move focus to the `body` element every time.
+D) Display the message using color alone.
+
+ANSWER: B
+EXPLANATION: A live region allows screen readers to be notified about certain dynamic content changes without unnecessarily moving focus. With appropriate ARIA configuration, the visual feedback can remain in place as well. The most tempting wrong answer is plausible because focus management is an important accessibility concern, but a simple status message does not always require moving focus.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: Testing (React Testing Library)
+TYPE: edgecase
+QUESTION: In a test, you check the result of an asynchronous UI change immediately after `userEvent.click(button)`. Why might `await` be necessary?
+
+CODE:
+const user = userEvent.setup();
+
+await user.click(screen.getByRole("button", { name: "Save" }));
+expect(await screen.findByText("Saved")).toBeInTheDocument();
+ENDCODE
+
+A) Because all `userEvent` APIs always operate exclusively synchronously.
+B) Because `await` is only required in TypeScript.
+C) Because `userEvent` interactions can involve multiple asynchronous steps, so the test needs to wait for the interaction to complete.
+D) Because `await` automatically causes the React component to rerender.
+
+ANSWER: C
+EXPLANATION: The modern `userEvent` API simulates interactions more closely to how a browser behaves, and those interactions can involve multiple steps and asynchronous operations. `await` ensures that the test continues after the interaction has completed. The most tempting wrong answer is plausible because `await` does affect timing, but it does not itself perform a React rerender.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: TypeScript with React
+TYPE: scenario
+QUESTION: A component has two mutually exclusive modes: it either behaves as a link based on `href` or as a button based on `onClick`. Which TypeScript design best enforces this contract?
+
+A) Make every prop optional and determine the active mode with runtime checks.
+B) Make both `href` and `onClick` have the `any` type.
+C) Use a discriminated union that defines separate types for link and button modes.
+D) Pass the entire configuration in a single `string` prop.
+
+ANSWER: C
+EXPLANATION: A discriminated union can enforce valid prop combinations at compile time. This reduces incorrect component usage and provides better editor support. The most tempting wrong answer is plausible because optional props look simpler, but they do not enforce mutual exclusivity between the two modes.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: JSX & rendering
+TYPE: production
+QUESTION: User-provided HTML is rendered as follows. What is the most important security concern?
+
+CODE:
+function Preview({ html }) {
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+}
+ENDCODE
+
+A) React automatically reports a TypeScript error for every HTML string.
+B) Using `dangerouslySetInnerHTML` by itself guarantees protection against XSS.
+C) The browser cannot convert an HTML string into DOM elements.
+D) Untrusted HTML can introduce an XSS vulnerability, so the input must be properly sanitized or originate from a trusted source.
+
+ANSWER: D
+EXPLANATION: `dangerouslySetInnerHTML` intentionally bypasses React's normal escaping mechanism. Directly inserting untrusted HTML can create script injection or other XSS opportunities. The most tempting wrong answer is plausible because React normally escapes text automatically, but that protection does not work the same way when using this API.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: Components & props
+TYPE: edgecase
+QUESTION: In React 19, which statement correctly describes using the `ref` prop with a function component?
+
+A) `ref` can only be used with class components.
+B) `ref` is always automatically forwarded to the deepest DOM element.
+C) `ref` can only exist when `useImperativeHandle` is used.
+D) In React 19, function components can receive the `ref` prop directly, reducing the need for the older `forwardRef` pattern.
+
+ANSWER: D
+EXPLANATION: In React 19, the `ref` prop can be accessed directly by function components, simplifying many use cases that previously required `forwardRef`. The component still needs to handle the ref appropriately and pass it to the intended element when necessary. The most tempting wrong answer is plausible because `forwardRef` was the standard approach in earlier React versions.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: useRef
+TYPE: algorithm
+QUESTION: A component needs to compare the value from the previous render with the current value, while storing the previous value should not itself trigger another render. Which approach fits this requirement?
+
+A) Store the previous value in a `useRef` and update the ref at the appropriate time.
+B) Create a new global variable on every render.
+C) The previous value must always be stored in `useState`.
+D) The previous value can only be preserved in a closure.
+
+ANSWER: A
+EXPLANATION: A ref persists across renders, and changing its value does not itself trigger another render. This makes it suitable for storing previous values or imperative data that does not belong in the rendered output. The most tempting wrong answer is plausible because state also persists across renders, but updating state triggers another render.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: useEffect & lifecycle
+TYPE: scenario
+QUESTION: An effect uses a value inside an event handler that changes frequently, but you do not want the effect to resubscribe to an external event source every time that value changes. Which modern React approach targets this problem?
+
+A) Remove every dependency from the effect.
+B) Remount the entire component whenever the value changes.
+C) Separate non-reactive event logic, for example with a `useEffectEvent`-style approach, while keeping the effect's actual external dependencies.
+D) Store the event handler in a global variable.
+
+ANSWER: C
+EXPLANATION: The Effect Events concept is intended to allow effect-related event logic to access the latest values without making every such value change restart the effect's external synchronization. This helps separate true effect dependencies from non-reactive event logic. The most tempting wrong answer is plausible because removing dependencies can prevent resubscription, but it can also introduce stale-closure problems.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: Concurrent features & Suspense
+TYPE: performance
+QUESTION: A long list is filtered based on a search term entered by the user. The search field must remain immediately responsive, but updating the list is expensive. Which API can be useful when the list should consume a deferred version of the search value?
+
+A) `useDeferredValue`
+B) `useImperativeHandle`
+C) `useId`
+D) `useInsertionEffect`
+
+ANSWER: A
+EXPLANATION: `useDeferredValue` allows a less urgent version of a value to lag behind the current value. This can be useful for expensive UI updates where the input needs to remain responsive while the list update can be deferred. The most tempting wrong answer is plausible because other Hooks are also related to React scheduling or rendering, but this API is specifically designed for deferring a value.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Performance optimization
+TYPE: production
+QUESTION: According to the React Profiler, a significant portion of a component's render time comes from rerendering a large list, while only a few items are visible at a time. Which approach is most justified?
+
+A) Always wrap every list item in `useMemo`.
+B) Apply virtualization or windowing so that only visible or otherwise necessary items are rendered.
+C) Move the entire list state into `useRef`.
+D) Completely remount the list after every interaction.
+
+ANSWER: B
+EXPLANATION: Virtualization reduces the number of elements simultaneously handled in the DOM and render tree, which can provide significant performance benefits for large lists. The most tempting wrong answer is plausible because `useMemo` can reduce certain calculations, but it does not by itself reduce the number of list items that need to be rendered.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: State & useState
+TYPE: edgecase
+QUESTION: Why can using a lazy initializer be beneficial in the following case?
+
+CODE:
+const [config, setConfig] = useState(() => loadExpensiveConfig());
+ENDCODE
+
+A) Because `loadExpensiveConfig` runs again on every state update.
+B) Because the callback automatically runs on a background thread.
+C) Because the initial state can be provided as a function, so the expensive initialization is not invoked again on every render.
+D) Because `useState` no longer allows the `config` value to be changed.
+
+ANSWER: C
+EXPLANATION: Passing a function as the initializer allows React to treat the calculation of the initial state as part of initialization rather than invoking the expensive calculation during every render. This is particularly useful for costly initial data. The most tempting wrong answer is plausible because the function does run when the state is initialized, but it does not run on every state update.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: Context
+TYPE: production
+QUESTION: In a Context Provider, you create the `value` object again on every render even though the values inside it often remain unchanged. What can be the consequence?
+
+CODE:
+function ThemeProvider({ theme, children }) {
+  const value = {
+    theme,
+    setTheme: () => {}
+  };
+
+  return (
+    <ThemeContext.Provider value={value}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+ENDCODE
+
+A) Context automatically detects that the object's contents are equal using deep equality.
+B) A Provider cannot rerender when it uses Context.
+C) The new object reference can cause Context consumers to observe a change even when the data is semantically unchanged.
+D) A Context `value` prop can only be a primitive.
+
+ANSWER: C
+EXPLANATION: The identity of the Context value matters, so an object recreated on every render can be considered a new value from a reference perspective. This can result in unnecessary consumer updates. When appropriate, the value and callback can be stabilized, but this should be based on profiling and an actual performance need. The most tempting wrong answer is plausible because the contents may indeed be identical, but React does not perform general deep-equality comparison here.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: Data fetching & race conditions
+TYPE: production
+QUESTION: In an application, multiple independent components request the same server-side data at the same time. What is one major benefit of deduplicated data fetching?
+
+A) Every component is guaranteed to receive its own separate cache.
+B) Some simultaneous operations requesting the same data can share the same in-flight result, reducing unnecessary network requests and inconsistent loading states.
+C) The server will never receive another request for the same data.
+D) Deduplication eliminates all possible race conditions.
+
+ANSWER: B
+EXPLANATION: With request deduplication, simultaneous requests for the same resource can share the same in-flight result. This can reduce network traffic and provide more consistent loading and error states. The most tempting wrong answer is plausible because deduplication does reduce duplicate requests, but it does not mean the resource will never be requested again.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: Server Components & SSR
+TYPE: edgecase
+QUESTION: In a streaming SSR application, a Suspense boundary is waiting for a slow data source. What is one major benefit of allowing the server to stream completed HTML portions?
+
+A) The client never needs to execute JavaScript.
+B) The server blocks every component so that the output is more deterministic.
+C) The complete HTML can only be sent after all data has arrived.
+D) Completed UI portions can reach the client sooner while slower subtrees are delivered later.
+
+ANSWER: D
+EXPLANATION: With streaming SSR, the server can send already completed portions without necessarily waiting for the entire page to finish rendering. Suspense boundaries allow slower portions to arrive progressively. The most tempting wrong answer is plausible because server-side rendering does send HTML to the client, but the purpose of streaming is specifically to avoid waiting for every part.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Reconciliation & keys
+TYPE: edgecase
+QUESTION: You intentionally want to reset a component's state when switching to a different entity, while keeping the same component in the JSX. Which approach best expresses this at the React identity level?
+
+CODE:
+function Profile({ userId }) {
+  return <Editor key={userId} userId={userId} />;
+}
+ENDCODE
+
+A) Use the entity ID as the `key` so that switching entities creates a new component identity.
+B) Change the component's name on every render.
+C) Reload the entire page.
+D) Manually set every state field to `null` on every render.
+
+ANSWER: A
+EXPLANATION: When the `key` changes, React can treat the element as a new component identity, so state from the previous instance is not carried over to the new instance. This can be a clean way to reset a component's state when switching entities. The most tempting wrong answer is plausible because manually clearing state can also work, but it can easily become incomplete and harder to maintain.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Forms
+TYPE: scenario
+QUESTION: In a large form, you want to display validation errors next to only the relevant fields without making the entire form perform expensive calculations on every keystroke. Which approach is most appropriate?
+
+A) Rerender the entire application on every keystroke.
+B) Always store validation results in a global variable.
+C) Structure field-level state and validation so that only the necessary fields and UI sections update.
+D) Serialize every field into a single large string and validate that.
+
+ANSWER: C
+EXPLANATION: In large forms, it is useful to structure state and validation so that frequently changing fields do not unnecessarily force expensive parts of the entire form to recalculate. Appropriate component boundaries, local state, and targeted validation can help with this. The most tempting wrong answer is plausible because centralized validation can look simpler, but it does not necessarily scale well with frequent interactions.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: Performance optimization
+TYPE: algorithm
+QUESTION: A component performs an O(n²) comparison on every render. The inputs often remain unchanged. Which strategy may be justified based on profiling?
+
+A) Always replace the O(n²) algorithm with O(1), regardless of the problem.
+B) Memoize the calculation with appropriate dependencies, or make the algorithm more efficient if profiling shows that the cost is actually significant.
+C) Move all state into `useRef`.
+D) Reload the page after every render.
+
+ANSWER: B
+EXPLANATION: For an expensive calculation, two main approaches are improving the calculation itself or avoiding unnecessary recalculations. `useMemo` with appropriate dependencies can reduce repeated work, but it is justified only when the cost is actually significant. The most tempting wrong answer is plausible because algorithmic optimization is powerful, but not every O(n²) problem can be reduced to O(1).
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: Rules of hooks & custom hooks
+TYPE: production
+QUESTION: A custom Hook is used by multiple components to share the same data-fetching logic. The Hook contains `useState`, `useEffect`, and its own cache handling. Which statement is correct?
+
+A) Using a custom Hook automatically means that all components share the same `useState` instance.
+B) A custom Hook cannot contain more than one React Hook.
+C) A custom Hook can only be used for global state management.
+D) A custom Hook can reuse Hook-based logic, but the state inside it is separate for each component by default.
+
+ANSWER: D
+EXPLANATION: A custom Hook is used to reuse Hook-based logic, not to automatically share state. When multiple components call the same custom Hook, each component receives its own Hook state instance unless the implementation explicitly uses an external store or another shared mechanism. The most tempting wrong answer is plausible because the logic is shared, but reusing logic does not imply automatically sharing state.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: Concurrent features & Suspense
+TYPE: production
+QUESTION: In a complex React application, a large navigation change updates both URL-related state and the state of a slow-rendering UI section. You want to avoid making the entire UI feel unusable during the interaction. Which architectural approach best fits React's concurrent model?
+
+A) Perform every state update with `flushSync`.
+B) Place all components under a single Suspense boundary without a fallback.
+C) Separate urgent and non-urgent updates, treat non-urgent UI updates as transitions, and use appropriately placed Suspense boundaries to isolate slow sections.
+D) Move every slow component into global state.
+
+ANSWER: C
+EXPLANATION: An important goal of React's concurrent model is to allow urgent interactions and deferrable expensive UI updates to be handled separately. Transitions allow non-urgent updates to be scheduled at lower priority, while appropriately placed Suspense boundaries can isolate slow or suspended sections. The most tempting wrong answer is plausible because `flushSync` can force an immediate synchronous update, but that works against the benefits of concurrent scheduling and is not an appropriate general performance strategy.
+###END

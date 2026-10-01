@@ -1,0 +1,2897 @@
+### Q1
+LEVEL: junior
+TOPIC: Test strategy & pyramid
+TYPE: theory
+QUESTION: Egy új webalkalmazás tesztelési stratégiáját tervezed. Melyik megközelítés illeszkedik leginkább a klasszikus tesztpiramishoz?
+A) Sok gyors unit teszt, kevesebb API/integrációs teszt és még kevesebb lassú UI end-to-end teszt
+B) Kevés unit teszt, sok UI end-to-end teszt, mert azok a valódi felhasználói működést ellenőrzik
+C) Kizárólag end-to-end teszteket írunk, hogy ne kelljen a belső implementációval foglalkozni
+D) Minden réteghez ugyanannyi tesztet írunk, hogy kiegyensúlyozott legyen a lefedettség
+ANSWER: A
+EXPLANATION: A tesztpiramis alapelve, hogy az olcsó, gyors és izolált tesztekből legyen a legtöbb, míg a drága és lassú UI end-to-end tesztekből kevesebb. Ez gyorsabb visszajelzést és általában stabilabb tesztcsomagot eredményez. A sok UI teszt azért lehet csábító, mert ezek állnak a legközelebb a valódi felhasználói folyamatokhoz, de futtatásuk jellemzően lassabb és sérülékenyebb.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: Unit testing
+TYPE: output
+QUESTION: Mit fog kiírni az alábbi JUnit teszt, ha a `Calculator.add` metódus egyszerűen összeadja a két paramétert?
+CODE:
+@Test
+void addsNumbers() {
+    Calculator calculator = new Calculator();
+
+    int result = calculator.add(2, 3);
+
+    assertEquals(5, result);
+}
+ENDCODE
+A) A teszt sikeres lesz, mert a kapott érték 5
+B) A teszt hibával leáll, mert az `assertEquals` nem használható primitív `int` értékekkel
+C) A teszt csak akkor sikeres, ha a `Calculator` Spring bean
+D) A teszt futás közben exceptiont dob, mert nincs `@BeforeEach`
+ANSWER: A
+EXPLANATION: A `Calculator` példányosítása közvetlenül megtörténik, az `add(2, 3)` eredménye 5, ezért az elvárt és tényleges érték megegyezik. JUnitben az `assertEquals` primitív egész számok összehasonlítására is használható. Azért lehet megtévesztő a Spring bean szükségessége, mert sok Java projektben a tesztek együtt használják a JUnitot és a Springet, de egy egyszerű unit teszthez erre nincs szükség.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: Mocks, stubs & fakes
+TYPE: theory
+QUESTION: Egy unit tesztben egy külső payment service hívását szeretnéd izolálni, és mindig egy előre meghatározott sikeres választ szeretnél visszakapni. Melyik megoldás illik leginkább erre?
+A) Valódi payment service meghívása minden tesztben
+B) Stub használata, amely kontrollált választ ad a tesztnek
+C) A teljes alkalmazás deployolása egy külön production környezetbe
+D) A tesztből a payment service hívásának teljes eltávolítása anélkül, hogy helyettesítenéd
+ANSWER: B
+EXPLANATION: A stub előre meghatározott válaszokat ad egy függőség helyettesítésére, így a teszt determinisztikusan tudja ellenőrizni a saját komponensét. A valódi külső szolgáltatás használata lassúvá és környezetfüggővé teheti a unit tesztet. Gyakori csapda, hogy a mock és stub fogalmát teljesen azonosnak tekintik, miközben a stub elsősorban kontrollált adatot szolgáltat.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: Selenium WebDriver
+TYPE: behavior
+QUESTION: Mi történik tipikusan az alábbi Selenium kód futtatásakor, ha az oldal betöltődött, de a `login` azonosítójú elem még nem jelent meg a DOM-ban?
+CODE:
+WebDriver driver = new ChromeDriver();
+
+driver.get("https://example.com");
+driver.findElement(By.id("login")).click();
+ENDCODE
+A) A Selenium automatikusan 30 másodpercig vár minden esetben
+B) A Selenium automatikusan újrapróbálja a kattintást, amíg az elem meg nem jelenik
+C) A `findElement` tipikusan `NoSuchElementException` hibával végződik
+D) A böngésző automatikusan újratölti az oldalt
+ANSWER: C
+EXPLANATION: Explicit vagy megfelelően konfigurált implicit wait nélkül a `findElement` nem garantálja, hogy megvárja egy később megjelenő elem létrejöttét. Ha az elem nem található a kereséskor, a Selenium `NoSuchElementException` kivételt dobhat. Az automatikus hosszú várakozás azért csábító feltételezés, mert modern UI-k esetén gyakran valóban szükség van várakozásra, de azt explicit módon kell megtervezni.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: Playwright & Cypress
+TYPE: behavior
+QUESTION: Playwrightban mit célszerű tenni, ha egy gomb megjelenése egy aszinkron API-hívástól függ?
+CODE:
+await page.goto('/dashboard');
+await page.getByRole('button', { name: 'Save' }).click();
+ENDCODE
+A) Mindig `sleep(5000)` jellegű fix várakozást kell hozzáadni
+B) A böngészőt minden teszt előtt újra kell indítani
+C) A tesztet kétszer kell egymás után lefuttatni
+D) Playwright lokátoraira és beépített auto-wait mechanizmusára lehet támaszkodni, szükség esetén célzott állapotellenőrzéssel
+ANSWER: D
+EXPLANATION: A Playwright lokátorai és actionjei számos releváns állapotot automatikusan megvárnak, például hogy az elem elérhető legyen a művelethez. Ha az üzleti feltételhez egy konkrét API-válasz vagy UI-állapot szükséges, arra célzott várakozás is használható. A fix alvás azért csábító, mert egyszerűnek tűnik, de lassú és továbbra sem garantálja a megfelelő időzítést.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Locators & selectors
+TYPE: trap
+QUESTION: Egy tesztben az alábbi CSS selector szerepel. Melyik állítás a legpontosabb?
+CODE:
+button:nth-child(3)
+ENDCODE
+A) Mindig a harmadik `button` elemet választja ki az oldalon
+B) A szülőelem harmadik gyermekét választja ki, ha az maga `button`
+C) Mindig a harmadik látható gombot választja ki
+D) Csak a harmadik olyan gombot választja ki, amelynek van `id` attribútuma
+ANSWER: B
+EXPLANATION: A `:nth-child(3)` a szülő gyermekei között a harmadik pozíciót jelenti, nem pedig a harmadik `button` elemet. Ha a harmadik gyermek nem `button`, a selector nem talál rá elemet. A harmadik gombként való értelmezés azért csábító, mert a selector neve könnyen félreérthető, de a pozíciót az összes testvérgyermek között számolja.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: Waits & flaky tests
+TYPE: debug
+QUESTION: Egy UI teszt időnként elbukik, mert a `Save` gomb csak egy API-válasz után válik kattinthatóvá. Mi a legjobb első lépés?
+A) A teljes teszt végére véletlenszerűen 10 másodperc várakozást tenni
+B) A tesztet háromszor lefuttatni, és csak a harmadik eredményt figyelembe venni
+C) Megvizsgálni az alkalmazás állapotát, és a gomb releváns állapotára várni
+D) A hibát figyelmen kívül hagyni, mert a flaky teszt normális UI teszteknél
+ANSWER: C
+EXPLANATION: A flaky teszt okát kell megszüntetni, nem pedig elrejteni. Ha a kattintás feltétele az, hogy a gomb enabled legyen, akkor erre az állapotra célszerű várni. A fix 10 másodperces sleep azért csábító, mert gyakran azonnal csökkenti a hibák számát, de feleslegesen lassít és nem oldja meg megbízhatóan a race conditiont.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Page Object Model
+TYPE: theory
+QUESTION: Mi a Page Object Model egyik fő előnye egy Selenium vagy Playwright alapú UI tesztframeworkben?
+A) A böngésző mindig gyorsabban fog futni
+B) A tesztadatokat automatikusan adatbázisba menti
+C) A unit teszteket teljesen helyettesíti
+D) A page-specifikus locatorokat és műveleteket elkülöníti a tesztek üzleti folyamatától
+ANSWER: D
+EXPLANATION: A Page Object Model célja a UI részleteinek, például locatoroknak és oldalspecifikus műveleteknek az elrejtése a tesztlogika mögött. Így egy locator változása kevesebb tesztet érint közvetlenül. Azért csábító a böngésző gyorsítását várni tőle, mert a framework strukturáltabb lesz, de a POM önmagában nem teszi gyorsabbá a böngészőt.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: API testing
+TYPE: output
+QUESTION: Mit ellenőriz az alábbi REST Assured teszt?
+CODE:
+given()
+    .when()
+    .get("/api/users/42")
+    .then()
+    .statusCode(200)
+    .body("id", equalTo(42));
+ENDCODE
+A) A válasz HTTP státuszkódja 200, és a JSON `id` mezője 42
+B) A kérés mindig POST metódussal kerül elküldésre
+C) Az API adatbázisában pontosan 42 felhasználó van
+D) A válasz body-ja kizárólag az `id` mezőt tartalmazhatja
+ANSWER: A
+EXPLANATION: A teszt GET kérést küld a `/api/users/42` végpontra, majd ellenőrzi a 200-as HTTP státuszt és azt, hogy a válasz JSON `id` mezője 42 legyen. Nem ellenőrzi, hogy más mezők ne legyenek jelen. Az adatbázisban lévő rekordok száma szintén nem következik ebből a két assertionből.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: BDD & Cucumber
+TYPE: theory
+QUESTION: Melyik szerepe van leginkább a Cucumberben a Gherkin `Given / When / Then` szerkezetnek?
+A) Java exceptionök kezelésére szolgál
+B) A tesztadatbázis automatikus létrehozását végzi
+C) Olvasható formában választja szét az előfeltételt, a műveletet és az elvárt eredményt
+D) A Selenium WebDriver konfigurációját helyettesíti
+ANSWER: C
+EXPLANATION: A `Given` jellemzően a kiindulási állapotot, a `When` a végrehajtott műveletet, a `Then` pedig az elvárt eredményt írja le. A Gherkin tehát a viselkedés olvasható leírását segíti, miközben a step definitionök kötik össze a szöveget a tényleges automatizált kóddal. Azért lehet félrevezető a WebDriverrel való összekeverés, mert Cucumbert gyakran Selenium mellett használják.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: Test data management
+TYPE: scenario
+QUESTION: Egy regisztrációs tesztnek egyedi email-címre van szüksége. Melyik megközelítés a legalkalmasabb párhuzamosan futó teszteknél?
+A) Minden teszt ugyanazt a fix `test@example.com` címet használja
+B) Minden futás egyedi, reprodukálható vagy megfelelően generált tesztadatot kap
+C) A teszt minden futás előtt véletlenszerűen töröl egy felhasználót
+D) A teszt production adatbázisból választ egy szabad email-címet
+ANSWER: B
+EXPLANATION: Párhuzamos futásnál a fix tesztadatok ütközhetnek egymással. Jobb megoldás az izolált, egyedi és lehetőleg reprodukálható tesztadat használata, például futásazonosítóval képzett email-cím. A production adatbázis használata azért különösen rossz irány, mert kiszámíthatatlan és biztonsági, illetve adatvédelmi problémákat okozhat.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: CI integration
+TYPE: scenario
+QUESTION: Egy Git repositoryhoz CI pipeline tartozik. Mi az egyik legfontosabb célja annak, hogy a tesztek minden pull request során automatikusan fussanak?
+A) A fejlesztők gépének teljesítményét növelni
+B) A production szerver logjait törölni
+C) A Git history automatikus átírását elvégezni
+D) Gyors visszajelzést adni arról, hogy a változtatás regressziót okozhat-e
+ANSWER: D
+EXPLANATION: A pull requesthez kötött automatikus tesztfuttatás gyors regressziós visszajelzést ad a változtatásról, még mielőtt az bekerülne a célágba. A CI célja nem a fejlesztői gép optimalizálása vagy a Git history módosítása. A production logok törlése teljesen független feladat.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: Parallel execution
+TYPE: behavior
+QUESTION: Mi lehet az egyik közvetlen következménye annak, ha két párhuzamos teszt ugyanazt az adatbázisrekordot módosítja?
+A) A tesztek egymástól függetlenül garantáltan ugyanazt az eredményt adják
+B) A böngésző automatikusan sorosítja az adatbázis-műveleteket
+C) Race condition és nem determinisztikus teszteredmény alakulhat ki
+D) A JUnit automatikusan visszagörget minden adatbázis-módosítást
+ANSWER: C
+EXPLANATION: Ha két teszt ugyanazon megosztott állapoton dolgozik, az egyik teszt eredménye függhet a másik futásának időzítésétől. Ez race conditiont és flaky teszteket okozhat. Az automatikus rollback csak akkor történik meg, ha azt a tesztkörnyezet és a megfelelő tranzakciós konfiguráció ténylegesen biztosítja.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: Reporting
+TYPE: theory
+QUESTION: Melyik információ különösen hasznos egy CI-ben futó sikertelen UI teszt hibakereséséhez?
+A) Csak az, hogy a teszt neve szerepel a reportban
+B) A stack trace mellett például screenshot, browser log vagy trace
+C) Kizárólag a teszt futási ideje
+D) Csak a teljes CI pipeline végső státusza
+ANSWER: B
+EXPLANATION: Egy sikertelen UI tesztnél a screenshot, trace, browser log és részletes stack trace jelentősen gyorsíthatja a hiba okának meghatározását. A puszta tesztnév vagy pipeline státusz kevés kontextust ad. Azért csábító csak a futási időt megőrizni, mert az könnyen mérhető, de önmagában nem magyarázza meg a hibát.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: Contract testing
+TYPE: theory
+QUESTION: Két microservice kommunikál egymással REST API-n keresztül. Mi a contract testing egyik fő célja?
+A) Annak ellenőrzése, hogy a fogyasztó és a szolgáltató közötti API-szerződés kompatibilis maradjon
+B) A frontend CSS pixelpontosságának ellenőrzése
+C) A production adatbázis teljesítményének mérése
+D) A unit tesztek futtatási idejének csökkentése
+ANSWER: A
+EXPLANATION: A contract testing az API-szerződés olyan részeit ellenőrzi, amelyekre a fogyasztó és szolgáltató egyaránt támaszkodik, például request/response struktúrát vagy státuszkódokat. Ez különösen microservice környezetben hasznos a kompatibilitási regressziók korai felismerésére. A CSS ellenőrzés vizuális tesztelési feladat, nem contract testing.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: Visual & accessibility testing
+TYPE: edgecase
+QUESTION: Egy accessibility teszt során egy gombot kizárólag egy színváltozással különböztetnek meg az inaktív állapottól. Miért lehet ez probléma?
+A) A böngészők nem támogatják a gombokat
+B) A HTML szabvány tiltja a gombok használatát
+C) A Selenium nem tud színt olvasni
+D) Bizonyos felhasználók számára a szín önmagában nem biztosít elegendő információt az állapot megkülönböztetésére
+ANSWER: D
+EXPLANATION: Az állapot kizárólag színnel történő jelzése accessibility problémát okozhat például színlátási eltérésekkel élő felhasználóknak. Érdemes további vizuális vagy szemantikai jelzést használni, és automatizált accessibility ellenőrzéseket is beépíteni. Azért csábító a Selenium korlátozására gondolni, mert a kérdés UI-automatizálási kontextusban jelenik meg, de itt a felhasználói hozzáférhetőség a lényeg.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: Framework design
+TYPE: theory
+QUESTION: Egy automatizált tesztframeworkben melyik megközelítés segíti leginkább a karbantarthatóságot?
+A) Minden tesztben külön példányosítani és konfigurálni minden komponenst
+B) Minden tesztben hosszú, ismétlődő locatorokat és setup kódot használni
+C) Közös konfigurációs, helper és domain-specifikus komponenseket megfelelő absztrakcióval kialakítani
+D) Minden hibát `try/catch` segítségével elnyelni, hogy a suite tovább fusson
+ANSWER: C
+EXPLANATION: Egy jól strukturált framework csökkenti a duplikációt, egységesíti a konfigurációt és elkülöníti a technikai infrastruktúrát a teszt üzleti szándékától. Az absztrakciót azonban célszerű mértékkel használni, mert a túlzott általánosítás szintén nehezen karbantarthatóvá válhat. A kivételek elnyelése különösen veszélyes, mert valódi hibákat rejthet el.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: Unit testing
+TYPE: debug
+QUESTION: Mi a probléma az alábbi JUnit teszttel, ha a `UserService` valóban egy külső adatbázisban keres felhasználót?
+CODE:
+@Test
+void shouldFindUser() {
+    UserService service = new UserService();
+    User user = service.findByEmail("alice@example.com");
+
+    assertEquals("Alice", user.getName());
+}
+ENDCODE
+A) A teszt szükségszerűen unit teszt marad, mert JUnitot használ
+B) A teszt nem lehet unit teszt, mert assertion szerepel benne
+C) A teszt csak akkor működhet, ha nincs adatbázis a projektben
+D) Ha a service valódi adatbázissal kommunikál, a teszt inkább integrációs teszt jellegű, és a unit teszthez a függőséget izolálni kellene
+ANSWER: D
+EXPLANATION: A teszt besorolását nem az dönti el, hogy JUnitot használ-e, hanem többek között az, hogy valódi külső függőségeket használ-e. Ha a `findByEmail` valódi adatbázist ér el, a teszt környezetfüggő és integrációs jellegű. Unit tesztnél a repository vagy adatbázis hozzáférését tipikusan izolálnák.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: Mocks, stubs & fakes
+TYPE: behavior
+QUESTION: Mit ellenőriz elsősorban egy mock alapú interaction verification?
+A) Hogy egy adott függőségen megtörtént-e egy elvárt hívás
+B) Hogy a production adatbázisban minden rekord helyes-e
+C) Hogy a böngészőben minden CSS szabály érvényesül-e
+D) Hogy az alkalmazás minden lehetséges bemenetre helyes eredményt ad
+ANSWER: A
+EXPLANATION: Mock segítségével nemcsak kontrollált válasz adható, hanem a teszt azt is ellenőrizheti, hogy egy függőséget milyen módon hívtak meg, például egyszer vagy meghatározott paraméterekkel. Ez interaction testing. Az összes lehetséges input helyességének ellenőrzése nem egyetlen mock verification feladata.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Selenium WebDriver
+TYPE: output
+QUESTION: Mi történik a Selenium tesztben, ha egy oldalon több elemnek is `class="submit"` attribútuma van?
+CODE:
+WebElement button = driver.findElement(By.cssSelector(".submit"));
+button.click();
+ENDCODE
+A) A Selenium automatikusan minden ilyen elemet egymás után lekattint
+B) A `findElement` az első megfelelő elemet adja vissza, ha talál ilyet
+C) A Selenium mindig hibát dob, ha több találat van
+D) A `findElement` véletlenszerűen választ egy elemet a találatok közül
+ANSWER: B
+EXPLANATION: A Selenium `findElement` egyetlen WebElementet ad vissza, és több megfelelő elem esetén az első találatot választja a DOM szerinti keresési sorrendben. Ha minden megfelelő elemet szeretnél kezelni, arra más API, például `findElements` használható. A véletlenszerű kiválasztás azért tűnhet hihetőnek, mert több elem felel meg a selector feltételének, de a Selenium keresése nem véletlenszerű.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: Playwright & Cypress
+TYPE: output
+QUESTION: Mit ellenőriz az alábbi Playwright kód?
+CODE:
+await expect(page.getByRole('heading', { name: 'Dashboard' }))
+    .toBeVisible();
+ENDCODE
+A) Azt, hogy a `/Dashboard` URL elérhető
+B) Azt, hogy a szerver HTTP 200 választ adott
+C) Azt, hogy a megfelelő nevű heading látható a felületen
+D) Azt, hogy pontosan egyetlen HTML elem létezik az oldalon
+ANSWER: C
+EXPLANATION: A locator szerepalapú keresést végez heading szerepre és `Dashboard` névre, majd az expectation azt ellenőrzi, hogy az így azonosított elem látható legyen. Ez nem HTTP státuszkód-ellenőrzés, és önmagában nem azt állítja, hogy az oldalon pontosan egy ilyen elem létezik. A URL ellenőrzéshez külön URL assertion szükséges.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: Locators & selectors
+TYPE: scenario
+QUESTION: Egy tesztben az alábbi locator található:
+CODE:
+page.locator('.btn-primary').click()
+ENDCODE
+A fejlesztő később megváltoztatja a CSS class nevét, miközben a gomb felhasználói szerepe és látható neve változatlan marad. Melyik locator lehet általában ellenállóbb az ilyen változtatással szemben?
+A) A DOM első elemét kiválasztó általános selector
+B) Egy hosszú, teljes CSS útvonal, amely minden szülőelemet tartalmaz
+C) A gomb aktuális `style` attribútumára épülő selector
+D) A gomb szemantikai szerepére és felhasználó által látható nevére épülő locator
+ANSWER: D
+EXPLANATION: A szerepalapú és felhasználóközpontú locator, például a Playwright `getByRole` megfelelő névvel, gyakran stabilabb, mert kevésbé függ a prezentációs CSS classoktól. A hosszú CSS útvonal és style alapú selector jellemzően sérülékenyebb. A DOM első elemének kiválasztása pedig könnyen rossz elemet célozhat.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: Waits & flaky tests
+TYPE: behavior
+QUESTION: Miért lehet problémás az alábbi megközelítés egy UI tesztben?
+CODE:
+Thread.sleep(5000);
+driver.findElement(By.id("result")).click();
+ENDCODE
+A) Mert a `Thread.sleep` garantálja, hogy az elem mindig eltűnik
+B) Mert mindig pontosan 5 másodpercet kell várni minden böngészőben
+C) Mert lehet, hogy az elem 500 ms után kész, de az alkalmazás akkor is további 4,5 másodpercet vár
+D) Mert a Selenium egyáltalán nem támogat várakozást Java környezetben
+ANSWER: C
+EXPLANATION: A fix sleep nem az alkalmazás tényleges állapotára vár. Ha az elem hamarabb elkészül, feleslegesen lassítja a tesztet; ha pedig 5 másodpercnél tovább tart a művelet, a teszt továbbra is elbukhat. Az állapothoz kötött explicit wait vagy a framework beépített auto-wait mechanizmusa pontosabb megoldás.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: API testing
+TYPE: debug
+QUESTION: Egy REST API `POST /users` hívása sikeres létrehozás esetén `201 Created` státuszt ad vissza. A teszt mégis hibás:
+CODE:
+given()
+    .contentType("application/json")
+    .body("{\"name\":\"Alice\"}")
+.when()
+    .post("/users")
+.then()
+    .statusCode(200);
+ENDCODE
+Mi a legvalószínűbb hiba?
+A) A teszt 200-at vár, miközben a specifikáció szerint sikeres létrehozáskor 201-et kell várnia
+B) A POST metódus nem használható JSON body-val
+C) A REST Assured csak 500-as státuszt tud ellenőrizni
+D) A `statusCode` assertion csak GET kéréseknél működik
+ANSWER: A
+EXPLANATION: A tesztben az assertion 200-as státuszt vár, miközben a megadott API-szerződés szerint a sikeres létrehozás 201-et ad. A REST Assured támogat POST kéréseket JSON body-val, és bármilyen HTTP státuszkód ellenőrizhető vele. Azért csábító a POST vagy JSON hibájára gondolni, mert a failure közvetlenül a request után jelenik meg, de az assertion várakozása tér el a szerződéstől.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: Framework design
+TYPE: scenario
+QUESTION: Egy tesztframeworkben minden egyes tesztosztály saját maga hozza létre a WebDrivert, állítja be a böngészőt, tölti be a konfigurációt és kezeli a teardown folyamatot. Mi lenne egy ésszerű első refaktorálási lépés?
+A) Minden tesztben még több WebDriver példányt létrehozni
+B) A setup és lifecycle kezelés közös, újrafelhasználható infrastruktúrába szervezése
+C) A teardown teljes eltávolítása
+D) A böngésző konfigurációjának minden tesztben véletlenszerűvé tétele
+ANSWER: B
+EXPLANATION: A közös driver lifecycle, konfiguráció és setup/teardown kezelés csökkenti a duplikációt és egységesíti a framework működését. A konkrét megvalósítás függ a használt tesztframeworktől és párhuzamosítási modelltől, de a felelősségek központosítása jó kiindulópont. A teardown eltávolítása azért csábító, mert kevesebb kódot jelent, de erőforrás-szivárgáshoz és egymást zavaró tesztekhez vezethet.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: Selenium WebDriver
+TYPE: debug
+QUESTION: Egy Selenium tesztben az elem megtalálható a DOM-ban, de a kattintás mégis `ElementClickInterceptedException` hibával bukik el. Mi a legvalószínűbb ok?
+A) A Selenium nem támogatja a kattintást Java nyelven
+B) Egy másik, például overlay vagy modal elem takarja a kattintás célpontját
+C) A locator biztosan hibás, mert az elem megtalálható
+D) A WebDriver csak input elemekre tud kattintást végrehajtani
+ANSWER: B
+EXPLANATION: Az `ElementClickInterceptedException` gyakran akkor jelentkezik, amikor a célpont fölött egy másik elem, például modal, cookie banner vagy loading overlay helyezkedik el. Ilyenkor érdemes megvárni az overlay eltűnését vagy a célpont tényleges kattintható állapotát. Azért csábító a locator hibájára gondolni, mert a teszt a click műveletnél bukik el, de a sikeres elemkeresés azt mutatja, hogy a locator önmagában működik.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: API testing
+TYPE: output
+QUESTION: Mit ellenőriz az alábbi REST Assured assertion?
+CODE:
+given()
+    .when()
+    .get("/api/users/42")
+    .then()
+    .body("active", equalTo(true));
+ENDCODE
+A) Azt, hogy az endpoint csak aktív felhasználókat ad vissza
+B) Azt, hogy az API HTTP státuszkódja biztosan 200
+C) Azt, hogy a response JSON `active` mezője `true`
+D) Azt, hogy a felhasználó adatbázisrekordja aktív
+ANSWER: C
+EXPLANATION: Az assertion közvetlenül a HTTP response body JSON `active` mezőjének értékét ellenőrzi. Önmagában nem ellenőrzi a státuszkódot, az adatbázis állapotát vagy azt, hogy más felhasználókra is ugyanilyen szabály érvényesül. Az adatbázis állapotának feltételezése azért csábító, mert az API válaszát gyakran adatbázisadatok állítják elő, de a teszt csak a response-ot ellenőrzi.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: Unit testing
+TYPE: scenario
+QUESTION: Egy unit teszt csak egyetlen üzleti szabályt akar ellenőrizni, de a teszt minden futáskor egy teljes Spring contextet indít el. Mi ennek a legfontosabb hátránya?
+A) A teszt valószínűleg lassabb és nehezebben izolált lesz a szükségesnél
+B) A teszt biztosan nem tud assertiont használni
+C) A Spring context miatt a teszt automatikusan production tesztté válik
+D) A tesztben nem lehet mockokat használni
+ANSWER: A
+EXPLANATION: Egyetlen üzleti szabály unit szintű ellenőrzéséhez általában nincs szükség a teljes Spring context inicializálására. Ez jelentős indulási költséget és több külső konfigurációt hozhat be, miközben csökken az izoláció. A Spring használata önmagában nem teszi lehetetlenné az assertionöket vagy a mockokat.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Mocks, stubs & fakes
+TYPE: output
+QUESTION: Mit eredményez az alábbi Mockito teszt, ha a `UserRepository` mock, és a `findById(1L)` hívásra a megadott `User` objektumot adja vissza?
+CODE:
+User user = new User(1L, "Alice");
+
+when(userRepository.findById(1L))
+    .thenReturn(Optional.of(user));
+
+Optional<User> result = userRepository.findById(1L);
+ENDCODE
+A) A `result` mindig `Optional.empty()` lesz, mert mock objektum nem adhat vissza valódi értéket
+B) A `result` null lesz, mert a Mockito csak metódushívást tud ellenőrizni
+C) A teszt csak akkor működik, ha valódi adatbázis is fut
+D) A `result` az `Optional` belsejében a megadott `User` objektumot tartalmazza
+ANSWER: D
+EXPLANATION: A `when(...).thenReturn(...)` konfigurálja a mock viselkedését: amikor pontosan a `findById(1L)` hívás történik, a mock `Optional.of(user)` értéket ad vissza. Nem szükséges valódi adatbázis, mert a repository izolált mock. Azért csábító az `Optional.empty()` feltételezése, mert a mockok alapértelmezett visszatérési értékei gyakran üresek vagy nullok, de itt explicit stubolás történt.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Locators & selectors
+TYPE: edgecase
+QUESTION: Egy oldalon két gombnak ugyanaz a látható szövege: `Delete`. Mi a legfontosabb probléma, ha a teszt csak a szöveg alapján próbálja kiválasztani a gombot?
+A) A szöveges locatorok soha nem használhatók gombokon
+B) A locator több elemet is találhat, ezért nem feltétlenül egyértelmű, melyik gombot kell használni
+C) A böngésző automatikusan átnevezi az egyik gombot
+D) A Selenium és a Playwright nem tudnak szöveg alapján keresni
+ANSWER: B
+EXPLANATION: Ha két azonos nevű gomb létezik, a pusztán név alapján történő kiválasztás nem feltétlenül azonosítja egyértelműen a kívánt elemet. Ilyenkor érdemes a megfelelő konténerrel, egyedi attribútummal vagy más stabil kontextussal pontosítani a locatort. Azért csábító a szöveges locator önmagában, mert emberileg jól olvasható, de az egyediség is fontos.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: Playwright & Cypress
+TYPE: behavior
+QUESTION: Miért előnyös egy Playwright locator használata az alábbi formában a közvetlen CSS selectorhoz képest?
+CODE:
+await page.getByRole('button', { name: 'Submit' }).click();
+ENDCODE
+A) A locator automatikusan módosítja az alkalmazás forráskódját
+B) A locator csak Chromiumban működik
+C) A locator a gomb szemantikai szerepét és hozzáférhető nevét használja
+D) A locator megkerüli a böngésző összes biztonsági szabályát
+ANSWER: C
+EXPLANATION: A `getByRole` a felhasználó által érzékelt szemantikai szerepre és accessible name-re épít. Ez sok esetben stabilabb és jobban tükrözi a felhasználói interakciót, mint egy prezentációs CSS class. Azért lehet csábító a CSS selector választása, mert az közvetlenül látható a fejlesztői eszközökben, de nem feltétlenül a felhasználói szemantikát fejezi ki.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: Waits & flaky tests
+TYPE: trap
+QUESTION: Miért nem jó általános megoldás a `Thread.sleep(10000)` használata minden Selenium teszt elején?
+A) Mert a Selenium tiltja a `Thread.sleep` használatát
+B) Mert a 10 másodperc túl rövid minden alkalmazáshoz
+C) Mert a teszt soha nem fog elindulni utána
+D) Mert minden tesztet szükségtelenül lassít, és nem igazodik az alkalmazás tényleges állapotához
+ANSWER: D
+EXPLANATION: A fix várakozás nem veszi figyelembe, hogy az alkalmazás mikor válik ténylegesen készen állóvá. Ha az oldal 1 másodperc alatt elkészül, 9 másodperc elvesztegetett idő keletkezik; ha 10 másodpercnél tovább tart, a teszt továbbra is hibázhat. Azért csábító, mert egyszerűnek tűnik és bizonyos flaky hibákat ideiglenesen elfedhet.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Page Object Model
+TYPE: scenario
+QUESTION: Melyik felelősség illik leginkább egy `LoginPage` Page Objectba?
+A) A teljes CI pipeline konfigurációjának kezelése
+B) A login oldal locatorainak és az oldalon végrehajtható műveleteknek a kezelése
+C) Az összes teszt eredményének adatbázisba mentése
+D) A production deployment elindítása
+ANSWER: B
+EXPLANATION: Egy `LoginPage` Page Object feladata tipikusan a login oldal UI-részleteinek és műveleteinek kapszulázása, például username, password és login gomb locatorainak kezelése. A CI és deployment felelősségek más rétegekhez tartoznak. Azért csábító túl sok felelősséget a Page Objectba tenni, mert központi helynek tűnik, de ez idővel úgynevezett God Objecthez vezethet.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: Test data management
+TYPE: edgecase
+QUESTION: Egy teszt minden futás előtt létrehoz egy `test-user` nevű felhasználót. Mi lehet a probléma, ha a teszt adatbázisban az email mező UNIQUE constraintet tartalmaz?
+A) A második futás megpróbálhat ugyanazzal az egyedi adattal rekordot létrehozni, és elbukhat
+B) A UNIQUE constraint miatt minden teszt automatikusan sikeres lesz
+C) A teszt nem tudja meghívni a backend API-t
+D) A UNIQUE constraint csak production adatbázisokban működik
+ANSWER: A
+EXPLANATION: Ha az email mező egyedi, ugyanazt az email címet ismételten létrehozni constraint violationt okozhat, ha a korábbi rekordot nem törölték vagy nem izolálták. A tesztadatoknak ezért kezelniük kell az ismételt futást és a párhuzamos végrehajtást is. Azért csábító figyelmen kívül hagyni ezt, mert egyetlen lokális futásban az első létrehozás még hibátlanul működhet.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: CI integration
+TYPE: production
+QUESTION: Egy UI teszt lokálisan Chrome-ban stabilan fut, de Linux alapú CI környezetben gyakran elbukik. Mi legyen az egyik első vizsgálati lépés?
+A) Az összes assertion eltávolítása
+B) A teszt véletlenszerű újrafuttatása addig, amíg sikeres nem lesz
+C) A lokális és CI környezet közötti különbségek, például browser version, viewport, fontok és konfiguráció vizsgálata
+D) A teljes tesztcsomag törlése és újraírása
+ANSWER: C
+EXPLANATION: A környezeti eltérések gyakori okai lehetnek a CI-specifikus hibáknak, különösen UI teszteknél. Érdemes összehasonlítani a browser verziót, viewportot, headless beállításokat, fontokat, locale-t, timezone-t és egyéb releváns konfigurációt. A véletlenszerű újrafuttatás csak elfedheti a problémát.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: Reporting
+TYPE: scenario
+QUESTION: Egy 500 tesztből álló CI suite-ból egyetlen teszt elbukik. Melyik report funkció segíti legjobban a gyors hibakeresést?
+A) Csak egy összesített "FAILED" felirat
+B) A teljes suite újrafuttatása minden alkalommal
+C) A teszt nevének elrejtése a reportból
+D) A hibás teszthez kapcsolódó részletes log, screenshot és releváns trace megőrzése
+ANSWER: D
+EXPLANATION: A részletes failure artifactok segítségével a fejlesztő vagy tesztelő a teljes suite újrafuttatása nélkül is megvizsgálhatja, mi történt. UI teszteknél különösen hasznos lehet screenshot, trace, console log és network információ. Azért csábító csak a suite státuszát megjeleníteni, mert az egyszerű, de nem ad elég diagnosztikai információt.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: API testing
+TYPE: behavior
+QUESTION: Egy REST API egy nem létező felhasználó lekérésekor `404 Not Found` státuszt ad. Melyik teszt fejezi ki legjobban az elvárt viselkedést?
+A) A `GET` kéréshez 200-as státuszt várni minden esetben
+B) A `GET` kéréshez 404-es státuszt várni, és szükség esetén ellenőrizni a hiba response struktúráját
+C) A hibás kérésre 500-as státuszt várni, mert minden hiba szerverhiba
+D) A tesztben figyelmen kívül hagyni a HTTP státuszkódot
+ANSWER: B
+EXPLANATION: Ha a specifikáció szerint a nem létező erőforrás `404 Not Found`, akkor ezt a szerződés részeként érdemes tesztelni. A hiba response body-ja szintén ellenőrizhető, ha annak struktúrája része az API contractnak. A 404 és 500 összekeverése azért gyakori, mert mindkettő hibának tűnik, de eltérő jelentésű HTTP státuszokról van szó.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: Visual & accessibility testing
+TYPE: trap
+QUESTION: Egy screenshot alapú visual regression teszt csak akkor bukik el, ha a teljes screenshot pixelről pixelre eltér. Miért lehet ez problémás?
+A) Minden pixelkülönbség mindig üzleti hibát jelent
+B) A screenshot tesztek nem használhatók webalkalmazásoknál
+C) Dinamikus tartalom, font rendering vagy környezeti különbségek hamis eltéréseket okozhatnak
+D) A screenshot tesztek automatikusan unit tesztekké alakulnak
+ANSWER: C
+EXPLANATION: Visual regression esetén nem minden pixelkülönbség jelent valódi regressziót. Dinamikus dátumok, animációk, betűrenderelés, browser verzió vagy operating system is okozhat eltérést. Emiatt érdemes stabilizálni a tesztkörnyezetet és megfelelő thresholdokat, maskingot vagy célzott összehasonlítást használni.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: Parallel execution
+TYPE: performance
+QUESTION: Egy tesztsuite 40 percig fut, és a tesztek többsége egymástól független. Mi lehet a párhuzamosítás egyik közvetlen előnye?
+A) Megfelelő izoláció mellett csökkentheti a teljes wall-clock futási időt
+B) Automatikusan megszünteti az összes flaky tesztet
+C) Garantálja, hogy minden teszt ugyanabban a sorrendben fusson
+D) Feleslegessé teszi a tesztadatok kezelését
+ANSWER: A
+EXPLANATION: Független tesztek párhuzamos futtatásával a teljes elapsed time csökkenthető, ha elegendő CPU, memória és más infrastruktúra áll rendelkezésre. A párhuzamosítás azonban nem oldja meg automatikusan a flaky teszteket, sőt megosztott állapot esetén új versenyhelyzeteket is létrehozhat. Ezért az izoláció kulcsfontosságú.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: Contract testing
+TYPE: scenario
+QUESTION: Egy frontend service azt feltételezi, hogy egy API response-ban mindig létezik a `customerId` mező stringként. Melyik contract teszt segíthet leginkább ennek a feltételnek a védelmében?
+A) Csak a frontend CSS snapshotjának ellenőrzése
+B) Csak egy end-to-end login teszt futtatása
+C) Csak annak ellenőrzése, hogy az API válasza 200-as
+D) Olyan contract ellenőrzése, amely előírja, hogy a response tartalmazzon string típusú `customerId` mezőt
+ANSWER: D
+EXPLANATION: A contractnak explicit módon ki kell fejeznie azt a struktúrát és típust, amelyre a fogyasztó támaszkodik. Így a provider oldalán egy inkompatibilis változás korán észlelhető. A 200-as státuszkód önmagában nem garantálja, hogy a szükséges mező és annak típusa megfelelő.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: BDD & Cucumber
+TYPE: scenario
+QUESTION: Egy Cucumber feature fájlban ugyanazt a hosszú UI folyamatot öt különböző scenario is leírja szinte teljesen azonos lépésekkel. Mi lehet ennek egyik problémája?
+A) A Gherkin nem támogat több scenariót egy feature-ben
+B) A Cucumber minden scenario előtt automatikusan törli a repositoryt
+C) A specifikáció redundánssá és nehezebben karbantarthatóvá válhat
+D) A `Given`, `When` és `Then` kulcsszavakat csak egyszer lehet használni
+ANSWER: C
+EXPLANATION: A jelentős lépésduplikáció növeli a karbantartási költséget, és elrejtheti, hogy a scenariók valójában miben különböznek. Érdemes a közös setupot megfelelően kezelni, miközben a feature továbbra is üzleti szempontból olvasható marad. Azért csábító mindent külön scenario-ba másolni, mert rövid távon egyszerűbbnek tűnik, hosszú távon azonban sokkal több módosítást igényel.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: Framework design
+TYPE: production
+QUESTION: Egy frameworkben ugyanaz a retry logika öt különböző tesztben, különböző formában jelenik meg. Mi lehet egy jó megoldás?
+A) Minden másolatot megtartani, hogy a tesztek teljesen függetlenek legyenek
+B) A retry viselkedést közös, jól definiált infrastruktúrába helyezni, miközben a használat szabályai egyértelműek maradnak
+C) Minden assertiont retry mögé tenni
+D) Minden tesztet háromszor lefuttatni függetlenül attól, hogy szükséges-e
+ANSWER: B
+EXPLANATION: A közös retry infrastruktúra csökkentheti a duplikációt és egységesítheti a viselkedést. Fontos azonban, hogy a retry ne maszkoljon valódi termékhibákat vagy rosszul megírt várakozásokat. Az összes assertion automatikus újrapróbálása azért veszélyes, mert a teszt látszólag stabilabb lesz, miközben a mögöttes hibát elrejtheti.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+QUESTION: Egy fejlesztő egy egyszerű validációs szabályt csak egy teljes browseres end-to-end teszttel ellenőriz. Miért lehet jobb ezt a szabályt alacsonyabb tesztszinten is lefedni?
+A) Mert az end-to-end tesztek soha nem lehetnek hasznosak
+B) Mert unit tesztben nem lehet üzleti logikát ellenőrizni
+C) Mert minden tesztet kötelező unit tesztté alakítani
+D) Mert az egyszerű szabály unit szinten gyorsabban és izoláltabban tesztelhető, miközben a magasabb szintű teszt a teljes integrációt ellenőrizheti
+ANSWER: D
+EXPLANATION: Egy izolált üzleti szabályhoz a unit teszt általában gyorsabb és pontosabb visszajelzést ad, míg egy end-to-end teszt ugyanennek a szabálynak a teljes felhasználói folyamatban való működését is ellenőrizheti. A két szint ezért eltérő célt szolgál. Azért csábító kizárólag E2E tesztet írni, mert az egyetlen tesztben látszólag mindent ellenőriz.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: Selenium WebDriver
+TYPE: output
+QUESTION: Mit eredményez a `findElements` hívás, ha egyetlen elem sem felel meg a selector feltételének?
+CODE:
+List<WebElement> elements =
+    driver.findElements(By.cssSelector(".missing"));
+
+System.out.println(elements.size());
+ENDCODE
+A) `0` értéket ír ki
+B) `1` értéket ír ki, mert a Selenium mindig létrehoz egy elemet
+C) `null` értéket ír ki
+D) `NoSuchElementException` kivételt dob
+ANSWER: A
+EXPLANATION: A `findElements` üres listát ad vissza, ha nincs találat, ezért a lista mérete `0`. Ez eltér a `findElement` viselkedésétől, amely sikertelen keresés esetén kivételt dob. Azért csábító a `NoSuchElementException` választása, mert a Selenium elemkeresésével kapcsolatosan ez egy gyakori hiba, de az adott API metódus eltérően viselkedik.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: Unit testing
+TYPE: output
+QUESTION: Mi történik az alábbi JUnit tesztben, ha a `calculateDiscount(100)` eredménye pontosan `90.0`?
+CODE:
+double actual = service.calculateDiscount(100);
+
+assertEquals(90.0, actual);
+ENDCODE
+A) A teszt biztosan hibás, mert `double` értékeket nem lehet összehasonlítani
+B) A teszt sikeres, ha a tényleges érték pontosan megfelel az elvárt értéknek
+C) A teszt csak akkor fut le, ha `BigDecimal` típust használunk
+D) Az assertion mindig 0.0 értéket vár
+ANSWER: B
+EXPLANATION: Ha a metódus ténylegesen pontosan `90.0` értéket ad vissza, az assertion ebben az esetben sikeres lehet. Lebegőpontos számításoknál azonban általános esetben érdemes toleranciát használni, mert számítási kerekítési eltérések fordulhatnak elő. Azért csábító a `double` teljes elutasítása, mert lebegőpontos összehasonlításnál valóban léteznek precizitási problémák, de ez nem jelenti azt, hogy minden ilyen assertion érvénytelen.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: API testing
+TYPE: edgecase
+QUESTION: Egy API `GET /users/1` endpointja normál esetben JSON objektumot ad vissza. Mit érdemes külön tesztelni, ha a felhasználó nem létezik?
+A) Csak azt, hogy a böngésző címsorában megjelent az endpoint
+B) Azt, hogy a szerver mindig 200-at ad, még ha nincs adat
+C) A specifikáció szerinti hibás státuszkódot és a definiált error response struktúrát
+D) Azt, hogy az API automatikusan létrehozza a hiányzó felhasználót
+ANSWER: C
+EXPLANATION: A nem létező erőforrás tipikus edge case, amelynél az API szerződése határozza meg az elvárt státuszkódot és hibaformátumot. Ezeket érdemes explicit módon tesztelni, mert az ilyen esetek könnyen eltérhetnek a sikeres válaszok struktúrájától. Az automatikus létrehozás csak akkor lenne helyes, ha ezt kifejezetten a specifikáció írná elő.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: Playwright & Cypress
+TYPE: debug
+QUESTION: Egy Playwright teszt az alábbi kóddal néha egy korábbi állapotot lát:
+CODE:
+await page.goto('/orders');
+const text = await page.locator('#status').textContent();
+console.log(text);
+ENDCODE
+A backend az oldal betöltése után módosítja a státuszt. Mi lehet a probléma?
+A) A `goto` feltétlenül megvár minden későbbi API-frissítést is
+B) A `textContent()` mindig az aktuális jövőbeli értéket adja vissza
+C) A CSS selector automatikusan cache-eli az adatbázis állapotát
+D) A teszt túl korán olvassa ki az értéket, mielőtt a releváns UI állapot létrejött volna
+ANSWER: D
+EXPLANATION: A `page.goto` nem jelenti azt, hogy minden, az oldal betöltése után indított üzleti folyamat is befejeződött. Ha a státusz később változik egy API-hívás miatt, a tesztnek a releváns állapotra kell várnia, például egy megfelelő assertion vagy célzott network/state synchronization segítségével. Azért csábító a `goto` automatikus teljes szinkronizációját feltételezni, mert a navigáció sikeresen befejeződött, de ez nem azonos minden későbbi alkalmazási folyamattal.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: Waits & flaky tests
+TYPE: scenario
+QUESTION: Egy teszt időnként azért bukik el, mert egy animáció alatt próbál rákattintani egy elemre. Mi a legjobb megközelítés?
+A) Megvizsgálni az interakcióhoz szükséges stabil állapotot, és arra várni
+B) Az animáció hosszát minden tesztben véletlenszerűen megváltoztatni
+C) A hibát retry-val teljesen elrejteni
+D) Minden teszt elején 30 másodpercet várni
+ANSWER: A
+EXPLANATION: A tesztnek azt az állapotot kell megvárnia, amelyben az interakció ténylegesen biztonságos, például amikor az elem stabil és kattintható. Az alkalmazás vagy framework képességeitől függően ez lehet beépített actionability check vagy explicit állapotellenőrzés. A hosszú fix sleep és a korlátlan retry csak elfedi a timing problémát.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: Test data management
+TYPE: production
+QUESTION: Egy tesztnek szüksége van egy 10 000 rekordos datasetre, de a teszt valójában csak három konkrét rekordot használ. Mi a célszerűbb megközelítés?
+A) Mindig a teljes 10 000 rekordot létrehozni minden teszt előtt
+B) A production adatbázist használni, hogy reális legyen az adat
+C) A teszt által ténylegesen igényelt minimális, kontrollált adatot létrehozni
+D) Véletlenszerű rekordokat kiválasztani a teljes datasetből
+ANSWER: C
+EXPLANATION: Ha a teszt csak három rekordot igényel, a minimális kontrollált dataset gyorsabb, determinisztikusabb és könnyebben karbantartható. A production adat használata biztonsági, adatvédelmi és reprodukálhatósági problémákat okozhat. A teljes dataset minden teszt előtti létrehozása felesleges költséget jelenthet.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Framework design
+TYPE: algorithm
+QUESTION: Egy tesztframeworkben ugyanaz a `login` művelet több száz tesztben szükséges. Melyik megoldás csökkenti leginkább a duplikációt úgy, hogy a tesztek továbbra is olvashatók maradjanak?
+A) Minden tesztben újra leírni a username, password és click lépéseket
+B) A login folyamatot újrafelhasználható, jól elnevezett absztrakcióba szervezni
+C) A login lépéseket véletlenszerűen elosztani a tesztkódok között
+D) A loginhoz tartozó assertionöket teljesen eltávolítani
+ANSWER: B
+EXPLANATION: Egy jól elnevezett `login()` vagy hasonló domain-specifikus absztrakció csökkenti a duplikációt, miközben a teszt üzleti szándéka olvasható marad. Az absztrakció mögött elrejthetők a locatorok és technikai részletek. Azért csábító a lépések minden tesztben való ismétlése, mert közvetlenül láthatóvá teszi a folyamatot, de nagy számú tesztnél jelentős karbantartási terhet okoz.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: Selenium WebDriver
+TYPE: behavior
+QUESTION: Mi történik az alábbi Selenium kóddal, ha a `#email` mező már létezik, de egy cookie banner eltakarja?
+CODE:
+driver.findElement(By.id("email")).sendKeys("alice@example.com");
+ENDCODE
+A) A Selenium automatikusan bezárja a cookie bannert
+B) A `sendKeys` minden esetben sikeres, mert a locator megtalálta az elemet
+C) A Selenium automatikusan újratölti az oldalt
+D) A művelet hibázhat, ha az elemhez való interakciót egy másik elem akadályozza
+ANSWER: D
+EXPLANATION: Az elem DOM-ban való megtalálása nem feltétlenül jelenti azt, hogy az interakció végrehajtható. Egy overlay vagy cookie banner megakadályozhatja a mező használatát, ezért előbb a releváns UI állapotot kell kezelni. Azért csábító azt feltételezni, hogy a sikeres locator automatikusan sikeres interakciót jelent, mert az elemkeresés és az interakció gyakran egyetlen tesztlépésnek tűnik.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: API testing
+TYPE: debug
+QUESTION: Egy REST Assured teszt JSON body-val küld POST kérést, de az API `415 Unsupported Media Type` választ ad. Mi lehet a legvalószínűbb ok?
+CODE:
+given()
+    .body("{\"name\":\"Alice\"}")
+.when()
+    .post("/users")
+.then()
+    .statusCode(201);
+ENDCODE
+A) Hiányzik a megfelelő `Content-Type`, például az `application/json`
+B) A POST metódus nem támogat JSON body-t
+C) A 415 státusz kizárólag autentikációs hibát jelent
+D) A `statusCode` assertion miatt nem lehet POST kérést küldeni
+ANSWER: A
+EXPLANATION: A `415 Unsupported Media Type` tipikusan azt jelzi, hogy a szerver nem támogatja vagy nem megfelelően kapta meg a request body média típusát. JSON küldésekor gyakran szükséges az `application/json` `Content-Type` header beállítása. Azért csábító a POST vagy az assertion hibájára gondolni, mert a hiba közvetlenül a request után jelenik meg, de a 415 a média típussal kapcsolatos.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: Unit testing
+TYPE: edgecase
+QUESTION: Egy metódus egy lista első elemét adja vissza. Melyik edge case-t érdemes külön unit tesztben lefedni?
+A) Csak azt az esetet, amikor a lista pontosan 10 elemet tartalmaz
+B) Az üres listát, ha az üzleti szabály szerint ez érvényes bemenet lehet
+C) Csak a production adatbázisban előforduló legnagyobb listát
+D) Csak egy véletlenszerűen kiválasztott listaelemet
+ANSWER: B
+EXPLANATION: Az üres lista tipikus határeset egy olyan metódusnál, amely az első elemet akarja elérni, mert például exceptionhöz vagy speciális visszatérési értékhez vezethet. A tesztnek a specifikáció szerint értelmes edge case-eket kell lefednie. A fix 10 elemű lista önmagában nem reprezentatív határeset.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: Mocks, stubs & fakes
+TYPE: theory
+QUESTION: Mi a fake egyik tipikus jellemzője egy automatizált tesztkörnyezetben?
+A) Mindig valódi production szolgáltatást hív
+B) Csak metódushívásokat tud ellenőrizni
+C) Egy működőképes, de egyszerűsített implementációt biztosít egy valódi függőség helyett
+D) Kizárólag UI tesztekben használható
+ANSWER: C
+EXPLANATION: A fake általában egy leegyszerűsített, de működő implementáció, például egy memóriában működő repository. Nem feltétlenül ugyanúgy működik, mint a valódi komponens, de lehetővé teszi az alkalmazás logikájának izolált tesztelését. Azért csábító mockként kezelni, mert mindkettő tesztkörnyezetben helyettesít egy valódi függőséget, de a fake tényleges működést is tartalmaz.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: Locators & selectors
+TYPE: scenario
+QUESTION: Egy frontend fejlesztő a CSS classokat gyakran módosítja a design változásai miatt, miközben a gombok accessible name-je stabil marad. Melyik locator stratégia lehet megfelelőbb?
+A) A gombok aktuális CSS classaira építeni
+B) A teljes DOM struktúrára épülő XPath használata
+C) A DOM első megfelelő elemét mindig kiválasztani
+D) A stabil felhasználói szerepre és accessible name-re épülő locator használata
+ANSWER: D
+EXPLANATION: Ha a CSS classok prezentációs célból gyakran változnak, egy szemantikai szerepre és accessible name-re épülő locator kevésbé függhet a vizuális implementációtól. Ez a locator stratégiát a felhasználói interakcióhoz közelebb tartja. Az aktuális classokra építés azért csábító, mert könnyen megtalálhatók a DevToolsban, de gyakori design változás mellett sérülékenyek.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: Playwright & Cypress
+TYPE: output
+QUESTION: Mit ellenőriz az alábbi Playwright assertion?
+CODE:
+await expect(page.locator('[data-testid="message"]'))
+    .toHaveText('Saved');
+ENDCODE
+A) Azt, hogy az elem pontosan egy másodpercig látható
+B) Azt, hogy az elem szöveges tartalma `Saved` lesz az assertion által elvárt állapotban
+C) Azt, hogy a backend HTTP 200 választ adott
+D) Azt, hogy az elem CSS classa `Saved`
+ANSWER: B
+EXPLANATION: A `toHaveText('Saved')` a kiválasztott elem szöveges tartalmát ellenőrzi. A Playwright assertionjei megfelelő körülmények között megvárják, hogy az elvárt állapot létrejöjjön, így nem egyszerű pillanatfelvételként kell értelmezni. Azért csábító a HTTP státuszkódra gondolni, mert a szöveg gyakran egy sikeres API-hívás eredménye, de az assertion közvetlenül a DOM állapotát ellenőrzi.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Waits & flaky tests
+TYPE: trap
+QUESTION: Egy teszt minden assertion előtt automatikusan `Thread.sleep(2000)` hívást használ. Miért rossz ez a stratégia?
+A) Mert a sleep csak Linuxon működik
+B) Mert assertion után kell használni, nem előtte
+C) Mert feleslegesen növeli a futási időt, miközben nem feltétlenül vár a szükséges állapotra
+D) Mert a tesztframeworkök nem engedik a sleep használatát
+ANSWER: C
+EXPLANATION: A fix sleep minden esetben kivárja a teljes időt, még akkor is, ha az alkalmazás hamarabb készen áll. Ugyanakkor ha az alkalmazás lassabb, a két másodperc továbbra sem garantálja a megfelelő állapotot. Azért csábító minden assertion elé sleepet tenni, mert egyszerű szabálynak tűnik, de nem az alkalmazás állapotát modellezi.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: CI integration
+TYPE: scenario
+QUESTION: Egy CI pipeline-ban a tesztek csak merge után futnak, ezért egy hibás változtatás már bekerülhet a közös branchbe. Mi lehet ennek egyik hátránya?
+A) A hibák később válnak láthatóvá, amikor a változtatás már több más módosítással együtt van jelen
+B) A tesztek automatikusan lassabbak lesznek lokálisan
+C) A Git nem tud több branch-et kezelni
+D) A CI nem tudja többé futtatni a teszteket
+ANSWER: A
+EXPLANATION: Ha a regresszió csak merge után derül ki, nehezebb lehet azonosítani, hogy melyik változtatás okozta, különösen sok párhuzamos fejlesztés esetén. A pull request előtti vagy pull requesthez kötött validáció gyorsabb visszajelzést adhat. Azért csábító csak merge után futtatni, mert így kevesebb pipeline indul, de a hibák visszacsatolása később történik.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: Reporting
+TYPE: behavior
+QUESTION: Egy teszt CI-ben elbukik, de a report csak ezt tartalmazza: `AssertionError: expected true`. Melyik fejlesztés javítaná leginkább a diagnosztikát?
+A) A report teljes eltávolítása
+B) Az assertionök eltávolítása
+C) A teszt háromszori automatikus újrafuttatása
+D) Értelmes assertion üzenetek és releváns failure artifactok, például screenshot vagy trace hozzáadása
+ANSWER: D
+EXPLANATION: A részletes assertion információ és a failure artifactok segítenek megérteni, milyen állapotban volt a rendszer a hiba pillanatában. Ez különösen fontos CI-ben, ahol a fejlesztő nem feltétlenül tudja azonnal reprodukálni a hibát. A puszta retry nem ad több információt a hiba okáról.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+QUESTION: Egy csapatnak 1000 unit tesztje, 20 API/integrációs tesztje és 2000 UI end-to-end tesztje van. A suite lassú és gyakran flaky. Mi lehet egy ésszerű stratégiai irány?
+A) Minden UI tesztet megtartani, és minden hibás tesztet retry-val kezelni
+B) Megvizsgálni, mely UI tesztek ellenőriznek alacsonyabb szinten is tesztelhető logikát, és megfelelő eseteket alacsonyabb szintre helyezni
+C) Az összes unit tesztet törölni
+D) Minden tesztet UI szintre emelni, hogy azonos környezetben fusson
+ANSWER: B
+EXPLANATION: A túlzottan UI-központú suite lassú és sérülékeny lehet. Érdemes megvizsgálni, hogy egyes üzleti szabályok vagy API viselkedések alacsonyabb, gyorsabb és stabilabb szinten is ellenőrizhetők-e, miközben a valóban end-to-end értéket adó UI tesztek megmaradnak. A retry önmagában nem oldja meg a rossz tesztstruktúrát.
+###END
+
+### Q61
+LEVEL: medior
+TOPIC: Unit testing
+TYPE: debug
+QUESTION: Az alábbi teszt időnként elbukik, mert a `Clock` valódi aktuális időt szolgáltat. Mi lenne a legjobb megoldás?
+CODE:
+@Test
+void expiresToken() {
+    TokenService service = new TokenService();
+    Token token = service.createToken();
+
+    assertTrue(service.isExpired(token));
+}
+ENDCODE
+A) A teszt elején mindig 24 órát várni
+B) A tesztet minden alkalommal kétszer futtatni
+C) Az időfüggőséget injektálhatóvá tenni, és a tesztben kontrollált időt használni
+D) A lejárati logikát eltávolítani a production kódból
+ANSWER: C
+EXPLANATION: Az aktuális idő egy külső, változó függőség a teszt szempontjából. Ha például egy injektált `Clock` vagy más time provider segítségével kontrollálható, a teszt determinisztikusan beállíthatja az időpontot és ellenőrizheti a határértékeket. A valódi idő használata azért csábító, mert egyszerű és a production működéshez hasonló, de időzítési hibákat okozhat.
+###END
+
+### Q62
+LEVEL: medior
+TOPIC: Mocks, stubs & fakes
+TYPE: trap
+QUESTION: Egy unit tesztben minden függőséget mockoltak, beleértve a saját domain objektumokat is. Mi lehet ennek egyik hátránya?
+A) A tesztek túl erősen kötődhetnek az implementáció részleteihez, és kevésbé ellenőrizhetik a valódi viselkedést
+B) A mockok miatt a teszt soha nem futhat CI-ben
+C) A mockok automatikusan valódi hálózati kapcsolatot hoznak létre
+D) A Mockito csak egyetlen mockot támogat tesztenként
+ANSWER: A
+EXPLANATION: Ha túl sok mindent mockolunk, a teszt könnyen azt ellenőrizheti, hogy a kód pontosan milyen metódushívásokat végez, nem pedig azt, hogy helyes üzleti eredményt állít elő. Ez törékeny, implementációfüggő teszteket eredményezhet. Azért csábító mindent mockolni, mert így maximális izoláció érhető el, de az izoláció túlzásba vitele csökkentheti a teszt értékét.
+###END
+
+### Q63
+LEVEL: medior
+TOPIC: Selenium WebDriver
+TYPE: debug
+QUESTION: Egy Selenium tesztben a locator helyes, az elem látható, de a click után a következő lépés néha túl korán fut le. Mi a probléma?
+A) A `click()` mindig blokkolja a böngészőt a teljes üzleti folyamat végéig
+B) A click sikeressége nem feltétlenül jelenti azt, hogy az utána induló aszinkron alkalmazási folyamat is befejeződött
+C) A Selenium a click után automatikusan bezárja az oldalt
+D) A WebDriver csak szinkron JavaScript alkalmazásokat támogat
+ANSWER: B
+EXPLANATION: A click művelet végrehajtása és az alkalmazás által indított további API-hívások vagy UI-frissítések befejezése két külön esemény. A következő lépésnek a releváns üzleti állapotra kell várnia, nem pusztán arra, hogy a click sikerült. Azért csábító a click teljes szinkronizációját feltételezni, mert maga a Selenium action blokkolhat bizonyos feltételek teljesüléséig.
+###END
+
+### Q64
+LEVEL: medior
+TOPIC: Playwright & Cypress
+TYPE: scenario
+QUESTION: Egy Playwright tesztben egy API response alapján jelenik meg egy `Success` üzenet. Melyik megközelítés lehet megfelelő, ha a tesztnek magát az API-hívást is kontrollálnia kell?
+A) Minden esetben `sleep(10000)` használata
+B) A browser teljes újraindítása az API-hívás után
+C) Az API response megfelelő Playwright route interception vagy API mocking mechanizmussal történő kontrollálása
+D) A `Success` elem locatorának törlése
+ANSWER: C
+EXPLANATION: Playwright képes hálózati kérések interceptálására és kontrollált response-ok visszaadására. Ez lehetővé teszi edge case-ek, hibás válaszok vagy determinisztikus sikeres válaszok tesztelését anélkül, hogy a valódi backend állapotától függnénk. A fix sleep csak időzítést változtat, nem kontrollálja az API-választ.
+###END
+
+### Q65
+LEVEL: medior
+TOPIC: Locators & selectors
+TYPE: algorithm
+QUESTION: Egy dinamikus listában minden sorhoz tartozik egy `Edit` gomb. A megfelelő gombot annak a sornak a `Product A` szövege alapján kell kiválasztani. Melyik stratégia a legrobosztusabb?
+A) Mindig a harmadik `Edit` gombot választani
+B) Az összes `Edit` gomb közül véletlenszerűen választani
+C) A teljes oldalon az első `Edit` gombot választani
+D) Először a `Product A`-t tartalmazó sort azonosítani, majd azon belül kiválasztani az `Edit` gombot
+ANSWER: D
+EXPLANATION: A locatornak a kívánt üzleti kontextushoz kell kötődnie: először a megfelelő sort kell megtalálni, majd azon belül a műveletet. Így a lista sorrendjének változása kevésbé befolyásolja a tesztet. A fix index azért csábító, mert rövid és könnyen megírható, de dinamikus adatoknál sérülékeny.
+###END
+
+### Q66
+LEVEL: medior
+TOPIC: Waits & flaky tests
+TYPE: performance
+QUESTION: Egy suite-ban 500 teszt van, és mindegyik minden fontos lépés előtt fix 2 másodpercet vár. Miért lehet ez jelentős teljesítményprobléma?
+A) A fix várakozások összeadódhatnak, és jelentősen növelhetik a teljes suite futási idejét
+B) A Selenium és Playwright csak 500 teszt alatt működik
+C) A fix várakozás automatikusan több CPU-magot foglal
+D) A tesztek ettől garantáltan párhuzamosan futnak
+ANSWER: A
+EXPLANATION: Ha egy tesztben több felesleges 2 másodperces várakozás van, azok összeadódnak, és 500 tesztnél komoly időveszteséget okozhatnak. Az állapot-alapú várakozás csak addig vár, amíg szükséges. A fix sleep azért csábító, mert kis egyedi költségnek tűnik, de nagy suite esetén gyorsan jelentős overheaddé válik.
+###END
+
+### Q67
+LEVEL: medior
+TOPIC: Page Object Model
+TYPE: scenario
+QUESTION: Egy nagy Page Object osztály már 1500 soros, és login, search, checkout, admin és reporting műveleteket is tartalmaz. Mi lehet egy ésszerű refaktorálási irány?
+A) Minden további funkciót ugyanabba az osztályba tenni
+B) A teszteket közvetlenül CSS selectorokra átírni
+C) A Page Objectot több, kohézió alapján szervezett komponensre vagy page/domain objectre bontani
+D) Az összes UI tesztet unit tesztté alakítani
+ANSWER: C
+EXPLANATION: Egy túl nagy Page Object több, egymástól eltérő felelősséget kezel, ezért nehezebben karbantartható. Érdemes a UI vagy domain felelősségeket kisebb, kohézív objektumokra bontani, például külön checkout vagy admin komponensekre. Azért csábító egyetlen központi Page Objectot megtartani, mert így minden locator egy helyen van, de a méret és a felelősségek összekeveredése hosszú távon problémát okoz.
+###END
+
+### Q68
+LEVEL: medior
+TOPIC: API testing
+TYPE: behavior
+QUESTION: Egy REST API `PUT /users/42` endpointja idempotensnek van definiálva. Mit jelent ez tesztelési szempontból?
+A) A második azonos PUT kérésnek mindig 500-at kell adnia
+B) Ugyanazt a PUT kérést többször elküldve az erőforrás végső állapota ismételt végrehajtás után is ugyanaz kell legyen
+C) A PUT kérés csak egyszer küldhető el
+D) A PUT minden alkalommal új erőforrást kell létrehozzon
+ANSWER: B
+EXPLANATION: Az idempotencia azt jelenti, hogy ugyanazon művelet ismételt végrehajtása ugyanazon erőforráson nem változtatja meg tovább a kívánt végső állapotot. Ez nem feltétlenül jelenti azt, hogy minden válasz byte-ra azonos vagy ugyanaz a státuszkód minden implementációban, hanem az erőforrásra gyakorolt hatás ismételt alkalmazása nem halmozódik. Azért csábító az egyszeri végrehajtásra gondolni, mert az idempotencia szó könnyen összekeverhető az egyszeri használattal.
+###END
+
+### Q69
+LEVEL: medior
+TOPIC: BDD & Cucumber
+TYPE: trap
+QUESTION: Egy csapat minden apró technikai részletet Gherkin stepként ír le, például CSS classokat, XPathokat és konkrét API endpointokat. Mi lehet ennek a fő problémája?
+A) A Gherkin nem képes stringeket kezelni
+B) A Cucumber csak backend tesztekhez használható
+C) A feature fájlok túl közel kerülnek az implementációhoz, és elveszíthetik üzleti specifikációs értéküket
+D) A `Then` kulcsszó technikai részletekre nem használható
+ANSWER: C
+EXPLANATION: A BDD feature fájlok egyik értéke, hogy a viselkedést üzleti szempontból érthetően írják le. Ha CSS classok, XPathok és konkrét endpointok kerülnek a specifikációba, a dokumentum könnyebben törik implementációs változásoknál, és kevésbé lesz üzleti nyelven olvasható. Azért csábító minden technikai részletet beleírni, mert így látszólag teljesen egyértelmű a végrehajtás, de ez összekeveri a specifikációt az implementációval.
+###END
+
+### Q70
+LEVEL: medior
+TOPIC: Test data management
+TYPE: production
+QUESTION: Párhuzamosan futó API tesztek ugyanazt a customer ID-t használják, és időnként módosítják az ügyfél állapotát. Mi lenne a legjobb irány?
+A) Minden teszt ugyanazt az ID-t használja, hogy a tesztadat egyszerű maradjon
+B) A hibákat retry-val kezelni, és az adatmegosztást változatlanul hagyni
+C) A tesztekből minden adatassertiont eltávolítani
+D) A tesztek adatizolációját megoldani, például egyedi tesztadatokkal vagy megfelelő fixture/rollback stratégiával
+ANSWER: D
+EXPLANATION: A megosztott, módosítható tesztadat párhuzamos futtatáskor race conditiont és nem determinisztikus eredményt okozhat. Az adatizoláció megvalósítható például egyedi rekordokkal, tesztenkénti namespace-szel, fixture-ökkel vagy megfelelő tranzakciós rollbackkel. A retry csak elfedi a problémát, miközben az adatverseny továbbra is fennáll.
+###END
+
+### Q71
+LEVEL: medior
+TOPIC: CI integration
+TYPE: performance
+QUESTION: Egy CI pipeline minden commitnál lefuttatja a teljes 90 perces end-to-end suite-ot. Melyik stratégia javíthatja leginkább a fejlesztői visszajelzés idejét?
+A) A teljes suite futtatását megtartani, de minden teszt előtt 5 másodpercet várni
+B) A teszteket megfelelő kategóriákra bontani, és gyors smoke/regression ellenőrzéseket korábban futtatni
+C) A tesztek minden futását manuális jóváhagyáshoz kötni
+D) A teljes suite futtatását megszüntetni, és csak lokális tesztelést engedni
+ANSWER: B
+EXPLANATION: A gyors feedback érdekében célszerű a teszteket például smoke, API, integration és hosszabb E2E kategóriákba szervezni, majd a megfelelő pipeline szakaszokban futtatni. Így a kritikus hibák gyorsabban visszajutnak a fejlesztőkhöz, miközben a teljes regresszió is megmaradhat megfelelő későbbi stage-ben. A hosszú suite teljes megszüntetése csökkentené a regressziós védelmet.
+###END
+
+### Q72
+LEVEL: medior
+TOPIC: Parallel execution
+TYPE: edgecase
+QUESTION: Egy tesztframeworkben párhuzamos worker processzek ugyanazt a statikus globális konfigurációs objektumot módosítják. Mi lehet ennek következménye?
+A) Minden worker automatikusan izolált konfigurációt kap
+B) A konfiguráció mindig a legelső teszt értékét fogja megőrizni
+C) Race condition és workerfüggő, nem determinisztikus viselkedés alakulhat ki
+D) A párhuzamos futtatás automatikusan leáll
+ANSWER: C
+EXPLANATION: Megosztott módosítható állapot esetén a worker-ek egymás működését befolyásolhatják. Ennek eredménye lehet, hogy ugyanaz a teszt más konfigurációval fut, vagy a hiba csak párhuzamos végrehajtáskor jelentkezik. Az automatikus izoláció feltételezése azért csábító, mert a framework külön workeröket használ, de a globális állapot kezelése ettől még problémás lehet.
+###END
+
+### Q73
+LEVEL: medior
+TOPIC: Visual & accessibility testing
+TYPE: scenario
+QUESTION: Egy accessibility audit során egy form inputnak nincs látható labelje, és a tesztben csak a placeholder szöveg alapján azonosítható. Miért lehet ez probléma?
+A) A placeholder minden esetben tiltott HTML elem
+B) A placeholder automatikusan ugyanazt a szerepet tölti be, mint a label
+C) A placeholder nem jelenhet meg input mezőkben
+D) A placeholder önmagában nem feltétlenül biztosít megfelelő, tartós accessible nevet az input számára
+ANSWER: D
+EXPLANATION: A placeholder hasznos kiegészítő információ lehet, de nem általános helyettesítője a megfelelő labelnek vagy más stabil accessible name forrásnak. A label javítja a felhasználói érthetőséget és a segítő technológiákkal való együttműködést. Azért csábító a placeholdert labelként kezelni, mert vizuálisan szöveget jelenít meg az inputhoz kapcsolódóan, de szemantikailag nem feltétlenül ugyanazt a szerepet tölti be.
+###END
+
+### Q74
+LEVEL: medior
+TOPIC: Framework design
+TYPE: scenario
+QUESTION: Egy automation framework több browser frameworköt támogat, és a tesztek jelentős része közvetlenül Playwright API-kat hív. A csapat most Selenium támogatást is szeretne hozzáadni. Melyik design irány csökkentheti leginkább a framework technológiai kötődését?
+A) Minden tesztben további Playwright API-kat használni
+B) Egy megfelelő absztrakciós réteget kialakítani a tesztlogika és az alacsony szintű browser API-k között
+C) Minden tesztet külön-külön lemásolni Seleniumhoz
+D) A browser frameworkök közötti különbségeket figyelmen kívül hagyni
+ANSWER: B
+EXPLANATION: Egy jól megválasztott abstraction layer elválaszthatja a tesztek üzleti szándékát a konkrét browser automation implementációtól. Fontos azonban, hogy ne próbálja minden framework összes képességét mesterségesen egyetlen primitív készletbe kényszeríteni. A teljes tesztduplikáció rövid távon egyszerű lehet, de jelentős karbantartási költséget okoz.
+###END
+
+### Q75
+LEVEL: medior
+TOPIC: API testing
+TYPE: performance
+QUESTION: Egy API teszt suite minden teszt előtt új HTTP klienskapcsolatot és új autentikációs tokent hoz létre, miközben a tesztek nagy része ugyanazt a környezetet használja. Mi lehet egy ésszerű optimalizálási irány?
+A) Megvizsgálni a connection reuse és a megfelelően kontrollált token/session újrahasználat lehetőségét, miközben a tesztek izolációja megmarad
+B) Minden teszthez három külön HTTP kapcsolatot létrehozni
+C) Minden API assertiont eltávolítani
+D) Az összes tesztet UI szintre áthelyezni
+ANSWER: A
+EXPLANATION: Az új kapcsolat és autentikáció minden teszt előtti létrehozása jelentős overheadet okozhat nagy suite esetén. Connection pooling vagy kliens-újrahasználat, illetve megfelelően kezelt tokenek csökkenthetik ezt, feltéve hogy nem sérül a tesztek izolációja és a biztonsági modell. Azért csábító minden tesztet teljesen izoláltan, minden erőforrás újralétrehozásával futtatni, mert ez egyszerű mentális modellt ad, de nem mindig szükséges technikai izolációt jelent.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+QUESTION: Egy csapat egy új üzleti funkcióhoz 15 UI tesztet és mindössze 2 unit tesztet készített. A legtöbb UI teszt ugyanazt a validációs szabályt ellenőrzi különböző bemeneti adatokkal. Mi lenne a legcélszerűbb változtatás?
+OPTIONS:
+A) A validációs szabályok jelentős részét unit szinten lefedni, és a UI teszteket a fontos integrált felhasználói folyamatokra korlátozni
+B) További UI teszteket hozzáadni, hogy minden bemenet külön böngészőben fusson
+C) A unit teszteket teljesen eltávolítani, mert a UI tesztek magasabb szintűek
+D) Minden tesztet API szintre áthelyezni, függetlenül attól, hogy van-e UI-specifikus viselkedés
+ANSWER: A
+EXPLANATION: Az egyszerű üzleti szabályok sok esetben gyorsabban és determinisztikusabban ellenőrizhetők unit szinten. A UI rétegben inkább azt érdemes validálni, hogy a komponensek és a felhasználói folyamatok megfelelően integrálódnak.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: Unit testing
+TYPE: edgecase
+QUESTION: Egy `calculateDiscount(int itemCount)` metódusnak az üzleti szabály szerint 0 darab esetén 0%, 1–9 darab esetén 5%, 10 vagy több darab esetén 10% kedvezményt kell adnia. Melyik tesztadat-készlet fedi le legjobban a releváns határértékeket?
+OPTIONS:
+A) 1, 5, 15
+B) 0, 1, 9, 10, 11
+C) 5, 10, 20
+D) 0, 5, 20
+ANSWER: B
+EXPLANATION: A határértékek környezetének tesztelése segít észrevenni az olyan hibákat, amelyek a `<`, `<=`, `>` vagy `>=` feltételek helytelen használatából erednek. A 0, 1, 9, 10 és 11 értékek a releváns tartományhatárokat és azok szomszédait fedik le.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: Mocks, stubs & fakes
+TYPE: theory
+QUESTION: Mi a legfontosabb különbség egy stub és egy mock tipikus használata között unit tesztelésben?
+OPTIONS:
+A) A stub kizárólag adatbázisokhoz használható, a mock pedig kizárólag HTTP-hez
+B) A stub mindig valódi implementáció, a mock pedig mindig hamis adatot ad vissza
+C) A stub jellemzően előre meghatározott választ biztosít, míg a mock segítségével a függőséggel való interakciók is ellenőrizhetők
+D) A mock és a stub között nincs semmilyen gyakorlati különbség
+ANSWER: C
+EXPLANATION: A stub elsődleges szerepe általában a tesztelt komponens számára szükséges válaszok vagy állapotok biztosítása. A mock ezen túlmenően az interakciók, például meghívások, argumentumok vagy hívásszámok ellenőrzésére is használható.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: Selenium WebDriver
+TYPE: behavior
+QUESTION: Egy Selenium tesztben egy elem `displayed` állapotát ellenőrzöd, de az elem ugyan létezik a DOM-ban, viszont egy másik elem teljesen eltakarja. Mit érdemes figyelembe venni?
+OPTIONS:
+A) A DOM-ban való jelenlét és a tényleges interakcióra való alkalmasság nem feltétlenül ugyanaz
+B) Ha az elem a DOM-ban van, akkor Selenium szerint mindig kattintható
+C) Az overlay kizárólag CSS-validációs probléma, ezért a WebDriver nem érzékeli
+D) A `findElement` automatikusan eltávolít minden overlayt
+ANSWER: A
+EXPLANATION: Egy elem létezése és láthatósága nem garantálja, hogy a felhasználó ténylegesen interakcióba tud lépni vele. Overlay, animáció vagy más fedőelem miatt egy látszólag jelen lévő elem kattintása sikertelen lehet.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Playwright & Cypress
+TYPE: output
+QUESTION: Mit ellenőriz az alábbi Playwright kód?
+CODE:
+```typescript
+await expect(page.getByRole('heading', { name: 'Dashboard' }))
+    .toBeVisible();
+```
+OPTIONS:
+A) Azt, hogy pontosan egy `Dashboard` nevű böngészőtab van nyitva
+B) Azt, hogy az alkalmazás szervere HTTP 200 választ adott
+C) Azt, hogy a `Dashboard` headingnek megfelelő locator eleme láthatóvá válik a megadott assertion timeouton belül
+D) Azt, hogy az oldal teljes HTML-je megegyezik egy korábbi snapshot-tal
+ANSWER: C
+EXPLANATION: A `toBeVisible()` egy web-first assertion, amely a locator által azonosított elem látható állapotát ellenőrzi. Dinamikus oldal esetén a Playwright megvárhatja, hogy az elvárt állapot bekövetkezzen a timeouton belül.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: Locators & selectors
+TYPE: trap
+QUESTION: Egy teszt jelenleg ezt a locatort használja: `div.container > div:nth-child(3) > button`. A frontend gyakran átrendezi a DOM struktúráját, miközben a gomb accessible neve stabil. Melyik változtatás csökkenti leginkább a locator törékenységét?
+OPTIONS:
+A) Még több `nth-child` szintet hozzáadni
+B) Az aktuális pixelpozíció alapján kattintani
+C) A teljes XPath útvonalat még részletesebbé tenni
+D) A gombot stabil szemantikai tulajdonság, például role és accessible name alapján azonosítani
+ANSWER: D
+EXPLANATION: A DOM-struktúrához kötött locatorok érzékenyek a layout refaktorálására. A stabil szemantikai tulajdonságok a felhasználó számára jelentést hordoznak, ezért általában tartósabb tesztcélpontot adnak.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: Waits & flaky tests
+TYPE: scenario
+QUESTION: Egy teszt egy keresés után addig szeretne továbblépni, amíg az eredménylista legalább egy elemet nem tartalmaz. Az alkalmazás válaszideje körülbelül 200 ms és 8 másodperc között változik. Melyik megközelítés illeszkedik legjobban ehhez?
+OPTIONS:
+A) Mindig pontosan 8 másodpercet várni
+B) A tesztet háromszor újrafuttatni hiba esetén
+C) Állapot-alapú várakozást használni, amely az eredménylista kívánt állapotát figyeli timeout mellett
+D) A várakozást teljesen elhagyni
+ANSWER: C
+EXPLANATION: Az alkalmazás állapotára épülő várakozás alkalmazkodik a tényleges válaszidőhöz. Gyors futásnál nem okoz felesleges késleltetést, lassabb futásnál pedig lehetőséget ad a kívánt állapot bekövetkezésére.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: Page Object Model
+TYPE: production
+QUESTION: Egy Page Object több tucat lokátort tartalmaz, és a tesztek közvetlenül ezeket a lokátorokat használják. A csapat a Page Object karbantarthatóságát szeretné javítani. Mi lenne a megfelelő irány?
+OPTIONS:
+A) A lokátorokat minden tesztben újra definiálni
+B) A tesztekben magasabb szintű Page Object műveleteket használni, és a lokátorok részleteit a Page Objectban elrejteni
+C) Minden lokátort statikus globális változóvá tenni
+D) A Page Objectot teljesen eltávolítani
+ANSWER: B
+EXPLANATION: A Page Object egyik alapvető célja, hogy a teszt ne függjön közvetlenül az oldal technikai szerkezetétől. Ha egy lokátor megváltozik, ideális esetben a változtatást a megfelelő Page Objectban kell kezelni.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: API testing
+TYPE: debug
+QUESTION: Egy REST Assured tesztben az API `Content-Type: application/json` választ ad, de a teszt a body ellenőrzésekor hibát jelez, mert az `items` mezőt listaként kezeli, miközben az API objektumot ad vissza. Mi a legjobb első lépés?
+OPTIONS:
+A) A teszt assertionjeit véletlenszerűen módosítani
+B) A response tényleges JSON struktúráját összevetni az API szerződésével, majd a helyes pathot és típust használni
+C) A `Content-Type` headert eltávolítani
+D) A teljes API response ellenőrzését kikapcsolni
+ANSWER: B
+EXPLANATION: Az assertionnek az API tényleges és szerződésben rögzített struktúrájához kell igazodnia. Először azt kell tisztázni, hogy a hiba a teszt pathjában, az elvárt típusban vagy magában az API válaszában található.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: BDD & Cucumber
+TYPE: scenario
+QUESTION: Egy csapat Gherkin scenario-kat ír, amelyek részletesen felsorolják az SQL lekérdezéseket és az adatbázistáblák nevét. A product owner számára nehezen olvashatók. Mi lenne a célszerű változtatás?
+OPTIONS:
+A) A scenario-kat üzleti viselkedésre és eredményre koncentráló nyelvre átfogalmazni, a technikai részleteket az implementációban kezelni
+B) Még több SQL részletet hozzáadni
+C) A feature fájlokat teljesen megszüntetni
+D) Minden scenario-ba legalább húsz SQL lépést beírni
+ANSWER: A
+EXPLANATION: A BDD célja, hogy az elvárt viselkedés közös nyelven legyen érthető. Az adatbázis-technikai részletek általában step definition vagy más tesztinfrastruktúra felelősségébe tartoznak.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: Test data management
+TYPE: performance
+QUESTION: Egy E2E suite minden teszt előtt 500 rekordot hoz létre UI-n keresztül, miközben a teszteknek valójában csak néhány konkrét rekordra van szükségük. Mi lehet a legnagyobb teljesítményjavulást eredményező változtatás?
+OPTIONS:
+A) A UI setup lépéseket még részletesebbé tenni
+B) Minden rekordhoz külön screenshotot készíteni
+C) A szükséges minimális adatot API-n, fixture-ön vagy közvetlen tesztadat-előkészítésen keresztül létrehozni
+D) A teszt timeoutját növelni
+ANSWER: C
+EXPLANATION: A tesztadat létrehozásának módja jelentős hatással lehet az E2E suite futási idejére. Ha az adat-előkészítés nem maga a tesztelt UI-folyamat része, általában hatékonyabb gyorsabb technikai csatornán elvégezni.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: CI integration
+TYPE: scenario
+QUESTION: Egy pipeline-ban a unit tesztek és az API tesztek egymástól függetlenül futtathatók, de jelenleg teljesen sorosan hajtódnak végre. Mi lehet az egyik legegyszerűbb optimalizáció?
+OPTIONS:
+A) A unit teszteket törölni
+B) Az API teszteket csak lokálisan futtatni
+C) A teljes pipeline-t éjszakára áthelyezni
+D) Független test stage-eket párhuzamosan futtatni, miközben a szükséges dependency-ket és erőforrásokat biztosítani kell
+ANSWER: D
+EXPLANATION: Ha két tesztcsoportnak nincs egymástól függő előfeltétele, párhuzamos futtatásukkal csökkenthető a teljes pipeline ideje. A párhuzamosítás feltétele az is, hogy az infrastruktúra és a tesztadatok megfelelően izoláltak legyenek.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: Parallel execution
+TYPE: edgecase
+QUESTION: Egy teszt suite négy workerrel stabil, de nyolc workerrel gyakrabban jelentkezik `connection pool exhausted` hiba. Mi magyarázza ezt leginkább?
+OPTIONS:
+A) A worker-ek számának növelése csökkentette a tesztek számát
+B) A párhuzamos worker-ek több egyidejű adatbázis-kapcsolatot igényelnek, és elérhetik a connection pool vagy az adatbázis kapacitásának korlátját
+C) A nyolc worker automatikusan kikapcsolja a database transactionöket
+D) A connection pool csak unit teszteknél használható
+ANSWER: B
+EXPLANATION: A párhuzamosítás növelheti az egyidejű erőforrásigényt. Ha a connection pool mérete vagy az adatbázis maximális kapcsolatainak száma korlátozott, a túl sok worker versenyhelyzetet és kapcsolat-kimerülést okozhat.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: Reporting
+TYPE: theory
+QUESTION: Miért hasznos a teszt reportban külön jelezni a teszt elsődleges hibáját és az utána bekövetkező cleanup hibákat?
+OPTIONS:
+A) Mert így megkülönböztethető, hogy mi okozta eredetileg a teszt bukását, és mi történt már a hibás állapot következményeként
+B) Mert cleanup hiba esetén mindig sikeresnek kell tekinteni a tesztet
+C) Mert a cleanup hibákat soha nem kell figyelembe venni
+D) Mert a report csak egyetlen exceptiont képes kezelni
+ANSWER: A
+EXPLANATION: Több exception esetén fontos az események sorrendjének és ok-okozati kapcsolatának megőrzése. Ez segít elkerülni, hogy egy másodlagos cleanup probléma elfedje a tényleges tesztelt viselkedés hibáját.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Contract testing
+TYPE: production
+QUESTION: Egy microservice-rendszerben egy provider API-ját több consumer használja. A provider fejlesztői szeretnének biztonságosan refaktorálni, de nincs megbízható információjuk arról, mely response mezőket használják ténylegesen a consumerek. Melyik megközelítés segíthet?
+OPTIONS:
+A) Az összes API teszt törlése
+B) Minden response mezőt automatikusan breaking change-nek tekinteni
+C) Consumer contractok kialakítása, amelyek rögzítik az egyes consumerek által ténylegesen elvárt interfészrészeket
+D) Csak manuális UI teszteket futtatni
+ANSWER: C
+EXPLANATION: A consumer contractok dokumentálhatják és automatizáltan ellenőrizhetik a ténylegesen szükséges provider-viselkedést. Ez segíthet abban, hogy a provider csapata lássa, mely változtatások veszélyeztetik a meglévő fogyasztókat.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Visual & accessibility testing
+TYPE: edgecase
+QUESTION: Egy weboldal mobil nézetében a gomb szövege látható, de a gomb fókuszba kerülésekor nincs vizuálisan észlelhető fókuszjelzés. Milyen tesztelési problémát jelezhet ez?
+OPTIONS:
+A) Kizárólag egy API teljesítményproblémát
+B) Olyan accessibility problémát, amely megnehezítheti a billentyűzetes vagy más fókuszalapú navigációt
+C) A backend adatbázisának hibáját
+D) A browser session lejáratát
+ANSWER: B
+EXPLANATION: A látható fókuszjelzés fontos a fókusz helyének követéséhez. Ha egy interaktív elem fókuszba kerülhet, de a fókusz vizuálisan nem különböztethető meg, az accessibility szempontból problémás lehet.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: Framework design
+TYPE: production
+QUESTION: Egy tesztframeworkben a Selenium, Playwright és API kliensek inicializálása közvetlenül minden tesztosztályban történik. Melyik architekturális változtatás csökkentheti a duplikációt?
+OPTIONS:
+A) Minden tesztosztályban még több inicializáló kódot használni
+B) Minden klienst globális mutable singletonná alakítani
+C) A teszteket kizárólag statikus metódusokra átírni
+D) Közös dependency lifecycle vagy fixture réteget kialakítani, amely kontrolláltan biztosítja a szükséges klienseket
+ANSWER: D
+EXPLANATION: A közös lifecycle réteg egységesítheti az erőforrások létrehozását és felszabadítását. Fontos, hogy az absztrakció megőrizze a megfelelő tesztizolációt, és ne vezessen nem kívánt globális állapothoz.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: Selenium WebDriver
+TYPE: performance
+QUESTION: Egy Selenium suite 100 tesztet futtat, és minden teszt előtt teljes browser startupot végez. A startup átlagosan 4 másodperc. Melyik tényező jelentős?
+OPTIONS:
+A) A browser indítás önmagában körülbelül 400 másodperc összesített időt jelenthet, ezért a lifecycle optimalizálása érdemi hatással lehet a suite-ra
+B) A browser startup ideje nem számít bele a teszt futási idejébe
+C) A 100 startup összesen legfeljebb 4 másodperc
+D) A browser indítás csak az első tesztnél történik meg
+ANSWER: A
+EXPLANATION: Ha minden teszt külön browser startupot végez, a 4 másodperces overhead száz alkalommal jelentkezik. A megfelelő izoláció fenntartása mellett a lifecycle optimalizálása vagy worker-szintű újrahasználata jelentősen csökkentheti ezt az overheadet.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: Playwright & Cypress
+TYPE: debug
+QUESTION: Egy Playwright teszt ezt használja:
+CODE:
+```typescript
+await page.locator('.loading').waitFor({ state: 'hidden' });
+await expect(page.getByText('Order created')).toBeVisible();
+```
+Néha a `.loading` elem egyáltalán nem jelenik meg, miközben az order létrehozása sikeresen megtörténik. Miért lehet ez problémás?
+OPTIONS:
+A) A `getByText()` nem működik dinamikus oldalon
+B) A Playwright nem támogatja a `hidden` state-et
+C) A spinner eltűnésének ellenőrzése olyan előfeltételhez kötheti a tesztet, amely nem minden érvényes UI-folyamatban létezik
+D) A locatorok csak CSS selectorokat fogadnak el
+ANSWER: C
+EXPLANATION: A várakozást lehetőleg arra az állapotra érdemes alapozni, amely ténylegesen szükséges a teszt szempontjából. Ha a spinner opcionálisan jelenik meg, akkor annak eltűnése felesleges és instabil köztes feltétellé válhat.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: API testing
+TYPE: scenario
+QUESTION: Egy API endpoint rate limitinget alkalmaz, és túl sok kérés után `429 Too Many Requests` választ ad. Melyik teszt lenne megfelelő ennek a viselkedésnek az ellenőrzésére?
+OPTIONS:
+A) A rate limitet teljesen kikapcsolni a tesztkörnyezetben
+B) Több kérés kontrollált küldése után ellenőrizni a 429 státuszt és az API által meghatározott releváns response adatokat
+C) Minden kérés után véletlenszerűen várni
+D) A 429 válaszokat mindig hibás szerverválaszként kezelni
+ANSWER: B
+EXPLANATION: A rate limiting az API szerződésének része lehet, ezért a negatív viselkedést is érdemes automatizáltan ellenőrizni. A tesztnek a dokumentált limit és response viselkedés alapján kell működnie.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: Test data management
+TYPE: scenario
+QUESTION: Egy tesztnek egy adott dátumon lejárt előfizetésű ügyfélre van szüksége. A teszt jelenleg a valós aktuális dátumra épül, ezért néhány hónap múlva más eredményt adhat. Mi a legjobb megoldás?
+OPTIONS:
+A) A tesztadatot mindig kézzel módosítani
+B) A tesztet csak az év egyetlen napján futtatni
+C) Az előfizetés lejárati dátumát véletlenszerűen generálni
+D) Determinisztikus dátumot vagy kontrollált tesztidőt használni, hogy a teszt állapota független legyen a futtatás tényleges napjától
+ANSWER: D
+EXPLANATION: Az időfüggő tesztadatok könnyen időbeli flakinesshez vezetnek. Rögzített vagy injektálható időforrással és determinisztikus fixture-rel ugyanaz az üzleti állapot reprodukálható minden futásban.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: Parallel execution
+TYPE: scenario
+QUESTION: Egy teszt suite párhuzamos futtatásakor két teszt ugyanazt az ideiglenes fájlnevet használja, ezért az egyik teszt időnként a másik fájlját olvassa. Melyik megoldás a legmegfelelőbb?
+OPTIONS:
+A) Egyedi, worker- vagy tesztazonosítót tartalmazó fájlneveket és elkülönített ideiglenes könyvtárakat használni
+B) A fájl olvasása előtt 2 másodpercet várni
+C) A párhuzamos futtatást mindig véletlenszerűen újraindítani
+D) A fájl tartalmát figyelmen kívül hagyni
+ANSWER: A
+EXPLANATION: A probléma közös, nem izolált erőforrás használatából ered. Egyedi pathokkal a tesztek nem írják felül egymás artifactjait, így a párhuzamos futtatás determinisztikusabbá válik.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: Reporting
+TYPE: performance
+QUESTION: Egy CI report alapján egy 20 perces suite-ból 14 percet egyetlen teszt tölt. A teszt több száz kisebb lépést hajt végre, de a report csak a teljes teszt időtartamát mutatja. Mi lenne a legjobb következő lépés?
+OPTIONS:
+A) A teszt teljes törlése
+B) A suite minden tesztjét újrafuttatni
+C) Step-level timing és részletes diagnosztikai adatok hozzáadása annak feltárására, mely műveletek dominálják a futási időt
+D) A report futási idejének elrejtése
+ANSWER: C
+EXPLANATION: A teljes teszt időtartama önmagában nem mutatja meg a szűk keresztmetszetet. A részletes timing lehetővé teszi, hogy az optimalizálás a valóban drága műveletekre koncentráljon.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: Contract testing
+TYPE: trap
+QUESTION: Egy provider API egy JSON mezőt `string` típusról `number` típusra változtat, miközben a mező neve és jelentése változatlan. A consumer továbbra is stringként dolgozza fel az értéket. Miért lehet ez contract szempontból breaking change?
+OPTIONS:
+A) Mert minden JSON válasz kötelezően string kell legyen
+B) Mert a mező adattípusa is része lehet a consumer által elvárt szerződésnek, így a típus megváltoztatása inkompatibilitást okozhat
+C) Mert a provider soha nem módosíthat JSON mezőket
+D) Mert contract teszt csak státuszkódokat ellenőriz
+ANSWER: B
+EXPLANATION: Egy API contract nemcsak a mezők jelenlétét, hanem azok típusát és jelentését is meghatározhatja. Ha a consumer a korábbi típust feltételezi, annak megváltoztatása kompatibilitási problémát okozhat.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: Framework design
+TYPE: algorithm
+QUESTION: Egy tesztframeworknek egységesen kell kezelnie a sikertelen UI tesztekhez tartozó screenshot, console log és trace artifactokat. Melyik tervezési megközelítés skálázhatóbb?
+OPTIONS:
+A) Minden teszt saját, eltérő artifact-kezelési logikát implementál
+B) A framework minden hibát figyelmen kívül hagy
+C) Központi failure hookot vagy lifecycle mechanizmust kialakítani, amely a teszt kontextusából automatikusan összegyűjti és elmenti a releváns artifactokat
+D) A screenshotokat csak manuálisan, lokális futtatáskor készíteni
+ANSWER: C
+EXPLANATION: A központi failure handling egységesíti a diagnosztikai artifactok gyűjtését, és csökkenti a tesztekben lévő ismétlődő infrastruktúra-kódot. A megoldásnak érdemes egyedi artifact pathokat és megfelelő lifecycle-kezelést is biztosítania párhuzamos futtatás esetén.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+QUESTION: Egy csapat azt szeretné eldönteni, hogy egy új fizetési folyamatot milyen tesztszinteken fedjen le. A fizetési számítások összetettek, míg a teljes checkout folyamat csak néhány kritikus üzleti útvonalból áll. Melyik stratégia a legcélszerűbb?
+OPTIONS:
+A) A számítási szabályokat unit szinten részletesen tesztelni, a teljes checkout folyamatból pedig néhány kritikus UI vagy E2E tesztet fenntartani
+B) Minden lehetséges kombinációt kizárólag UI tesztekkel lefedni
+C) A unit teszteket elhagyni, mert a fizetés csak integrációban értelmezhető
+D) Csak manuális tesztelést használni, mert a fizetési folyamat komplex
+ANSWER: A
+EXPLANATION: Az összetett számítási szabályok jól tesztelhetők gyors unit tesztekkel, míg a magasabb szintű teszteknek az integrációk és a kritikus üzleti folyamatok ellenőrzésére érdemes koncentrálniuk. Így a tesztcsomag kisebb és gyorsabb maradhat anélkül, hogy elveszítené a fontos rendszer-szintű védelmet.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: Unit testing
+TYPE: debug
+QUESTION: Egy JUnit teszt ugyanazt az objektumot módosítja több tesztesetben, és az eredmény attól függ, hogy melyik teszt futott korábban. Mi a legvalószínűbb probléma?
+OPTIONS:
+A) A JUnit mindig véletlenszerű sorrendben futtatja a metódusokat
+B) A tesztek megosztott vagy nem megfelelően inicializált állapotot használnak
+C) Az assertionök nem használhatók több tesztben
+D) A unit teszteknek kötelező adatbázist használniuk
+ANSWER: B
+EXPLANATION: A unit teszteknek lehetőleg egymástól függetlennek és determinisztikusnak kell lenniük. A megosztott mutable állapot miatt az egyik teszt megváltoztathatja a következő teszt kiindulási állapotát.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: Mocks, stubs & fakes
+TYPE: scenario
+QUESTION: Egy szolgáltatás egy külső időjárás-API válaszától függ. A unit tesztnek azt is ellenőriznie kell, hogyan viselkedik az alkalmazás timeout esetén. Melyik tesztdupla a legmegfelelőbb?
+OPTIONS:
+A) Valódi külső API használata véletlenszerű időjárási adatokkal
+B) Az API hívás teljes eltávolítása a tesztből
+C) Olyan tesztdupla használata, amely determinisztikusan timeout hibát szimulál
+D) A teszt futtatása csak akkor, amikor a külső API valóban lassú
+ANSWER: C
+EXPLANATION: A timeout egy nehezen reprodukálható külső körülmény lehet, ezért unit tesztben érdemes determinisztikusan szimulálni. Így a hibakezelési logika gyorsan és ismételhetően ellenőrizhető.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: Selenium WebDriver
+TYPE: scenario
+QUESTION: Egy Selenium tesztnek fájlfeltöltést kell végrehajtania egy `<input type="file">` elemen keresztül. Melyik megközelítés a legmegfelelőbb?
+OPTIONS:
+A) A fájl tartalmát billentyűzetes karakterenkénti gépeléssel bevinni
+B) A fájlt drag-and-drop animációval minden esetben szimulálni
+C) A böngészőablak pixelpozíciójára kattintani, majd a fájlkezelőben navigálni
+D) A file input elemnek közvetlenül megadni a feltöltendő fájl elérési útját, például `sendKeys` segítségével
+ANSWER: D
+EXPLANATION: Selenium esetén a file input elem közvetlenül megkaphatja a fájl elérési útját. Ez stabilabb és automatizálhatóbb, mint az operációs rendszer natív fájlválasztó ablakának pixel- vagy billentyűzetalapú vezérlése.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: Playwright & Cypress
+TYPE: behavior
+QUESTION: Egy Playwright tesztben egy új tab nyílik meg egy gombra kattintás hatására. Melyik megközelítés illeszkedik legjobban a Playwright modelljéhez?
+OPTIONS:
+A) A popup eseményt vagy contextet a művelettel összehangolva kezelni, majd az új Page objektumon folytatni a tesztet
+B) Véletlenszerűen kiválasztani az egyik nyitott tabot
+C) Mindig bezárni az eredeti oldalt
+D) Öt másodpercet várni, majd megkeresni az új tabot globális állapotból
+ANSWER: A
+EXPLANATION: A Playwright támogatja a popupok és új oldalak explicit kezelését. A létrejövő Page objektumot érdemes magával a kiváltó művelettel megfelelően szinkronizálni, így a teszt nem függ fix időzítéstől.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: Locators & selectors
+TYPE: edgecase
+QUESTION: Egy alkalmazásban két azonos nevű gomb található, de csak az egyik aktív, míg a másik egy rejtett komponensben van. A tesztnek az aktív gombbal kell interakcióba lépnie. Melyik megközelítés a legjobb?
+OPTIONS:
+A) Mindig az első egyező elemet választani
+B) Olyan locator-stratégiát használni, amely az elem egyedi kontextusát és szükséges állapotát is figyelembe veszi
+C) A gombot pixelkoordinátával megkeresni
+D) Véletlenszerűen kiválasztani az egyik egyezést
+ANSWER: B
+EXPLANATION: Az azonos nevű elemeknél fontos a megfelelő kontextus meghatározása. A locatornak lehetőleg a tesztelt elem szemantikai vagy strukturális egyediségét kell kifejeznie, nem pedig a DOM aktuális sorrendjére támaszkodnia.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Waits & flaky tests
+TYPE: production
+QUESTION: Egy CI-ben futó UI teszt 20 futásból 2 alkalommal timeouttal bukik el. A logok alapján az alkalmazás backend válaszideje néha jelentősen megnő. Mi legyen az első lépés a probléma kezelésében?
+OPTIONS:
+A) A timeout értékét korlátlanul megnövelni
+B) A tesztet automatikusan sikeresnek jelölni retry után
+C) A backend válaszidejétől függő állapotot és a teszt várakozási stratégiáját megvizsgálni, majd mérési adatok alapján javítani
+D) Az összes UI tesztet kikapcsolni CI-ben
+ANSWER: C
+EXPLANATION: A flakiness okát érdemes először azonosítani, nem pedig egyszerűen hosszabb várakozással elfedni. Ha valódi backend-latencia okozza a hibát, a teszt és az alkalmazás teljesítményét is külön kell vizsgálni.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: Page Object Model
+TYPE: theory
+QUESTION: Miért lehet problémás, ha egy Page Object minden lehetséges üzleti workflow-t egyetlen metódusba sűrít?
+OPTIONS:
+A) Mert a Page Object nem tartalmazhat metódusokat
+B) Mert a Selenium nem támogat hosszú metódusokat
+C) Mert minden workflow kötelezően külön böngészőt igényel
+D) Mert túl nagy felelősséget kaphat az osztály, és a tesztek elveszíthetik a rugalmas, újrafelhasználható komponenseket
+ANSWER: D
+EXPLANATION: A Page Objectnak a UI-val kapcsolatos viselkedést célszerű kapszuláznia, de nem kell minden teljes üzleti folyamatot egyetlen nagy metódusba zárnia. A kisebb, jól elnevezett műveletek újrafelhasználhatóbbá és karbantarthatóbbá tehetik a teszteket.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: API testing
+TYPE: output
+QUESTION: Mit ellenőriz az alábbi REST Assured kód?
+CODE:
+```java
+given()
+    .queryParam("status", "ACTIVE")
+.when()
+    .get("/users")
+.then()
+    .statusCode(200)
+    .body("findAll { it.status == 'ACTIVE' }.size()", greaterThan(0));
+```
+OPTIONS:
+A) Legalább egy ACTIVE státuszú felhasználónak szerepelnie kell a válaszban
+B) Pontosan egy ACTIVE felhasználónak kell szerepelnie
+C) A válasznak üresnek kell lennie
+D) A kérés POST műveletet hajt végre
+ANSWER: A
+EXPLANATION: A query paraméterrel a teszt az ACTIVE státuszhoz kapcsolódó lekérdezést küldi el. A body assertion azt ellenőrzi, hogy a response-ban található legalább egy ilyen státuszú elem.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: BDD & Cucumber
+TYPE: scenario
+QUESTION: Egy Cucumber feature-ben ugyanazt a login előfeltételt 12 scenario ismétli meg. A csapat szeretné csökkenteni a duplikációt, miközben megőrzi az üzleti olvashatóságot. Melyik megoldás lehet megfelelő?
+OPTIONS:
+A) Minden scenario-ba további technikai login lépéseket írni
+B) A közös előfeltételt megfelelő `Background` használatával kifejezni, ha az minden scenario-ra valóban érvényes
+C) A login lépéseket teljesen eltávolítani
+D) A teljes feature-t egyetlen scenario-vá összevonni
+ANSWER: B
+EXPLANATION: A `Background` olyan közös előfeltételek leírására használható, amelyek minden érintett scenario esetén relevánsak. Csak valóban közös és üzletileg érthető előfeltételeket érdemes így kiemelni.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: Test data management
+TYPE: production
+QUESTION: Egy tesztcsomagban ugyanazokat az előre feltöltött adatbázisrekordokat használják több száz teszthez. Egy adatmodell-változás miatt a fixture-ek egy része elavul. Melyik megközelítés segítheti leginkább a karbantarthatóságot?
+OPTIONS:
+A) Minden teszt saját, teljes adatbázismentést tároljon
+B) Az adatokat soha ne frissítsék
+C) A tesztekhez szükséges adatokat célzott, verziózott és lehetőleg minimális fixture-ekkel kezelni
+D) Minden teszt előtt az egész production adatbázist lemásolni
+ANSWER: C
+EXPLANATION: A túl nagy és központilag megosztott fixture-ek nehezen karbantarthatók és sok rejtett függőséget tartalmazhatnak. A célzott, verziózott tesztadatok jobban követhetik az alkalmazás adatmodelljének változásait.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: CI integration
+TYPE: performance
+QUESTION: Egy pipeline minden commitnál lefuttat 45 percnyi teljes regressziós UI tesztet, miközben a gyors unit és API tesztek 5 perc alatt lefutnak. Melyik CI-stratégia javíthatja a fejlesztői visszajelzési időt?
+OPTIONS:
+A) A teljes UI regressziót minden commitnál változatlanul a pipeline elejére tenni
+B) A gyorsabb teszteket korai feedbackként futtatni, a teljes regressziót pedig megfelelő későbbi stage-be helyezni
+C) A unit teszteket eltávolítani
+D) Minden tesztet csak release előtt futtatni
+ANSWER: B
+EXPLANATION: A gyors tesztek rövid idő alatt képesek alapvető hibákat jelezni. A drága regressziós suite későbbi stage-ben vagy más triggerrel is futhat, miközben a fontos védelmet továbbra is biztosítja.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: Parallel execution
+TYPE: scenario
+QUESTION: Egy tesztframework 16 workerrel futtat UI teszteket, de a browser instance-ok létrehozása miatt a gép memóriája elfogy. Mi lenne ésszerű megoldás?
+OPTIONS:
+A) További worker-ek hozzáadása
+B) A memóriahibákat figyelmen kívül hagyni
+C) A worker számát a rendelkezésre álló erőforrásokhoz igazítani, és szükség esetén a teszteket több gépen vagy jobon szétosztani
+D) Minden tesztben további browser példányokat indítani
+ANSWER: C
+EXPLANATION: A párhuzamosításnak az infrastruktúra kapacitásához kell igazodnia. Ha egyetlen gép nem képes biztonságosan ennyi browser példányt futtatni, a worker számának csökkentése vagy horizontális elosztás lehet megfelelő.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: Reporting
+TYPE: behavior
+QUESTION: Egy report több tesztnél csak annyit jelenít meg, hogy `AssertionError`, de nem mutatja az aktuális és az elvárt értéket. Miért jelent ez problémát?
+OPTIONS:
+A) A report mérete túl kicsi lesz
+B) A teszt ettől automatikusan lassabbá válik
+C) Az assertionök így nem futnak le
+D) A hiba diagnosztizálásához hiányzik a tényleges és várt állapot összehasonlítása
+ANSWER: D
+EXPLANATION: Egy hasznos reportnak meg kell mutatnia legalább a releváns elvárt és tényleges állapotot, valamint lehetőleg a futási kontextust is. Ez jelentősen csökkenti a hibakereséshez szükséges időt.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: Contract testing
+TYPE: scenario
+QUESTION: Egy frontend consumer egy API `POST /orders` endpointját használja. A provider megváltoztatja a sikeres válasz státuszkódját `201`-ről `200`-ra, miközben a response body változatlan. Miért lehet ez contract változás?
+OPTIONS:
+A) Mert a HTTP státuszkód is része lehet a consumer által elvárt API-szerződésnek
+B) Mert minden API endpointnak kizárólag 201-et szabad visszaadnia
+C) Mert POST kérés esetén nem lehet response body
+D) Mert contract tesztek csak JSON mezőket vizsgálhatnak
+ANSWER: A
+EXPLANATION: Az API contract nem kizárólag a response body szerkezetét tartalmazhatja. A státuszkódok szemantikája és a consumer által elvárt viselkedés szintén része lehet a szerződésnek.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: Visual & accessibility testing
+TYPE: scenario
+QUESTION: Egy visual regression teszt ugyanazon az oldalon fut Chrome és Firefox alatt, és eltérő font-renderelés miatt nagy számú pixelkülönbséget jelez. Mi lenne a legcélszerűbb megközelítés?
+OPTIONS:
+A) Minden pixelkülönbséget automatikusan elfogadni
+B) A vizuális baseline-okat kontrollált és megfelelően definiált renderelési környezethez kötni, és a böngészők közötti eltéréseket külön kezelni
+C) A screenshotok készítését teljesen megszüntetni
+D) A teszteket véletlenszerű böngészőkön futtatni
+ANSWER: B
+EXPLANATION: A visual regression tesztek érzékenyek a renderelési környezetre, beleértve a böngészőverziót, fontokat és platformot. Determinisztikus baseline környezet szükséges ahhoz, hogy a valódi regressziókat meg lehessen különböztetni a környezeti eltérésektől.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: Framework design
+TYPE: scenario
+QUESTION: Egy tesztframework több projekthez biztosít közös Selenium, Playwright és API utilityket. Az egyik utility módosítható globális konfigurációt tartalmaz, amelyet a tesztek futás közben átírnak. Milyen kockázatot jelent ez párhuzamos futtatásnál?
+OPTIONS:
+A) A globális mutable konfiguráció versenyhelyzetet és tesztek közötti állapotszivárgást okozhat
+B) A globális konfiguráció mindig gyorsabbá teszi a teszteket
+C) A párhuzamos futtatás automatikusan izolálja a globális objektumokat
+D) A utility osztályok nem tartalmazhatnak konfigurációt
+ANSWER: A
+EXPLANATION: A megosztott mutable állapot párhuzamos tesztek esetén különösen veszélyes. Az egyik worker módosítása hatással lehet egy másik worker által futtatott tesztre, ezért a konfigurációt lehetőleg immutable vagy megfelelően scope-olt módon célszerű kezelni.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: Selenium WebDriver
+TYPE: trap
+QUESTION: Egy Selenium tesztben implicit waitet 10 másodpercre állítottak, majd egy adott elemre 2 másodperces explicit waitet használnak. A csapat azt feltételezi, hogy a teljes várakozás minden esetben pontosan 2 másodperc lesz. Miért lehet hibás ez a feltételezés?
+OPTIONS:
+A) Az explicit wait mindig figyelmen kívül hagyja az implicit waitet
+B) Az implicit és explicit wait kombinációja kiszámíthatatlanabbá teheti a tényleges várakozási időt, és nem célszerű őket vakon kombinálni
+C) Az implicit wait csak JavaScript tesztekben működik
+D) Az explicit wait mindig 10 másodpercig vár
+ANSWER: B
+EXPLANATION: A Selenium dokumentációja szerint az implicit és explicit várakozások kombinálása nem ajánlott, mert a tényleges várakozási idő nem feltétlenül felel meg az egyszerűen összeadott vagy elvárt timeoutnak. Állapot-alapú explicit várakozásokkal általában jobban kontrollálható a tesztek szinkronizációja.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: Playwright & Cypress
+TYPE: production
+QUESTION: Egy Playwright suite minden teszt előtt teljesen új browser contextet hoz létre. A teszteknek szükségük van izolált cookie-kra és local storage-ra, de ugyanazt a browser processzt biztonságosan meg lehet osztani. Mi lehet megfelelő optimalizáció?
+OPTIONS:
+A) Minden teszt ugyanazt a contextet és ugyanazokat a cookie-kat használja
+B) A teljes browser indítását minden assertion előtt megismételni
+C) Megfelelő izoláció mellett a browser processzt újrahasználni, miközben tesztenként külön contextet tartunk fenn
+D) Az izoláció megszüntetése és az összes teszt ugyanazon az oldalon való futtatása
+ANSWER: C
+EXPLANATION: A Playwright browser contextjei könnyű izolációs egységet biztosíthatnak cookie-k és más böngészőállapot számára. Így bizonyos esetekben a drágább browser processz újrahasználható anélkül, hogy a tesztek állapota összekeveredne.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: Locators & selectors
+TYPE: algorithm
+QUESTION: Egy táblázatban egy sor egyedi `data-testid` attribútummal rendelkezik, és azon belül több gomb található. A tesztnek a soron belüli `Delete` gombot kell kiválasztania. Melyik locator-stratégia a legcélszerűbb?
+OPTIONS:
+A) Az egész oldalon az első `Delete` gomb kiválasztása
+B) A sor egyedi azonosítójával megkeresni a konténert, majd azon belül a `Delete` gombot kiválasztani
+C) A gomb aktuális pixelkoordinátáját használni
+D) A gombot a teljes DOM XPath indexével megkeresni
+ANSWER: B
+EXPLANATION: A hierarchikus locator-stratégia először stabilan azonosítja a megfelelő sort, majd azon belül keresi meg a kívánt gombot. Ez csökkenti annak kockázatát, hogy egy másik sorban található azonos nevű elemre történik interakció.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: Waits & flaky tests
+TYPE: scenario
+QUESTION: Egy UI teszt egy gomb megnyomása után azt ellenőrzi, hogy egy háttérben futó feldolgozás befejeződött. Az alkalmazás nem biztosít stabil loading indikátort, de a feldolgozás végén egy `Completed` státusz jelenik meg. Mi legyen a teszt várakozási feltétele?
+OPTIONS:
+A) Az alkalmazás tényleges végállapotára, például a `Completed` státusz megjelenésére várni timeouttal
+B) Fixen 60 másodpercet várni
+C) A böngésző újraindítására várni
+D) A tesztet retryolni addig, amíg a státusz megjelenik
+ANSWER: A
+EXPLANATION: A stabil végállapot jobb szinkronizációs pont, mint egy nem garantált köztes loading indikátor. A timeout továbbra is szükséges, hogy egy valóban elakadt feldolgozás ne blokkolja korlátlanul a tesztet.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: API testing
+TYPE: edgecase
+QUESTION: Egy API `PATCH /users/42` kérésnél opcionális mezőket fogad el. A tesztnek ellenőriznie kell, hogy egyetlen mező módosítása nem változtatja meg véletlenül a többi adatot. Melyik ellenőrzés a legfontosabb?
+OPTIONS:
+A) Csak a HTTP státuszkódot ellenőrizni
+B) Csak a response body méretét ellenőrizni
+C) A módosított mezőt és a nem módosított releváns mezőket is validálni az API szerződésének megfelelően
+D) A request body teljes eltávolítása
+ANSWER: C
+EXPLANATION: Részleges módosításnál nem elég csak azt ellenőrizni, hogy a kívánt mező megváltozott. A tesztnek azt is validálnia kell, hogy a művelet nem okozott nem kívánt változást más releváns mezőkben.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: CI integration
+TYPE: production
+QUESTION: Egy CI pipeline-ban ugyanaz a teljes E2E suite három különböző branchen párhuzamosan fut, miközben mindegyik ugyanazt a közös tesztkörnyezetet és ugyanazokat az adatokat használja. Gyakran keletkeznek egymást zavaró teszthibák. Melyik megoldás javíthatja leginkább a helyzetet?
+OPTIONS:
+A) A hibák figyelmen kívül hagyása
+B) A suite timeoutjának növelése
+C) Minden branchen ugyanazokat az adatokat még gyakrabban resetelni
+D) Branchenként vagy futásonként megfelelően izolált környezetet és tesztadatot biztosítani, illetve szükség esetén a konkurens futásokat koordinálni
+ANSWER: D
+EXPLANATION: A közös, módosítható környezet konkurens pipeline-ok között is állapotütközéseket okozhat. Az izolált környezet vagy adatállapot csökkenti az ilyen hibákat, míg a koordináció akkor lehet szükséges, ha a teljes izoláció nem megoldható.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: Parallel execution
+TYPE: performance
+QUESTION: Egy teszt suite 10 workerrel 12 perc alatt fut, de 20 workerre növelve csak 11 perc lesz az eredmény. A CPU kihasználtság közben 95% fölé emelkedik. Mit jelez ez?
+OPTIONS:
+A) A tesztek biztosan hibásan vannak megírva
+B) A CPU valószínűleg szűk keresztmetszetté vált, ezért további worker-ek már csak minimális gyorsulást adnak
+C) A parallel execution nem működik
+D) A tesztek biztosan hálózati hibák miatt lassúak
+ANSWER: B
+EXPLANATION: Ha a CPU már közel teljesen kihasznált, az extra worker-ek ugyanazért a számítási kapacitásért versenyeznek. Ilyenkor a párhuzamosítás növelése előtt érdemes a rendszer erőforrásait és a tesztek valódi szűk keresztmetszetét vizsgálni.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Framework design
+TYPE: production
+QUESTION: Egy tesztframeworkben minden teszt külön-külön kezeli a retry logikát. Egyes tesztek háromszor, mások ötször futnak újra, és a reportok sem jelzik egyértelműen, hogy melyik eredmény volt az első futás. Mi lenne a legjobb framework-szintű megoldás?
+OPTIONS:
+A) Minden tesztben tovább növelni a retry számát
+B) A retry teljes megszüntetése minden környezetben
+C) Központi, konfigurálható retry mechanizmust és olyan reportingot kialakítani, amely megőrzi az első futás és az újrafuttatások eredményeit
+D) A sikeres retry után az eredeti hibát automatikusan törölni
+ANSWER: C
+EXPLANATION: A központi retry politika egységes viselkedést és konfigurálhatóságot biztosít. A reportingnak ugyanakkor meg kell őriznie az első futás eredményét, mert a retry nem bizonyítja, hogy az eredeti flakiness vagy hiba megszűnt.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+KÉRDÉS: Egy alkalmazásban egy üzleti szabály 40 különböző kombinációt támogat. A szabály egyetlen service-ben található, és nincs szükség adatbázisra a számításához. A csapat minden kombinációhoz teljes UI tesztet szeretne írni. Mi lenne a célszerűbb megközelítés?
+A) A kombinációk nagy részét gyors unit tesztekkel fedjük le, és csak a kritikus felhasználói folyamatokat ellenőrizzük magasabb szinten.
+B) Minden kombinációhoz külön böngészősessiont indítunk.
+C) Az összes kombinációt manuálisan ellenőrizzük minden release előtt.
+D) Csak néhány véletlenszerű kombinációt tesztelünk UI szinten.
+ANSWER: A
+EXPLANATION: A determinisztikus, izolált üzleti logika gyors unit tesztekkel sokkal hatékonyabban fedhető le. A magasabb szintű teszteknek elsősorban az integrációs és end-to-end kockázatokat érdemes ellenőrizniük, nem ugyanazt a logikát újra és újra lefedniük.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: Unit testing
+TYPE: behavior
+KÉRDÉS: Mit ellenőriz az alábbi JUnit teszt?
+```java
+@Test
+void shouldRejectEmptyUsername() {
+    IllegalArgumentException exception = assertThrows(
+        IllegalArgumentException.class,
+        () -> validator.validate("")
+    );
+
+    assertEquals("Username is required", exception.getMessage());
+}
+```
+A) A validator minden bemenetnél `IllegalArgumentException` kivételt dob.
+B) Az üres username valid, ha a hibaüzenet helyes.
+C) Az üres username esetén a validator a megfelelő kivételt és annak konkrét hibaüzenetét adja.
+D) A teszt csak a hibaüzenetet ellenőrzi, a kivételtípust nem.
+ANSWER: C
+EXPLANATION: A teszt először azt ellenőrzi, hogy az üres bemenet feldolgozása során `IllegalArgumentException` keletkezik, majd a kivétel üzenetét is validálja. Így a hibás bemenet kezelésének két lényeges részét ellenőrzi.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: Mocks, stubs & fakes
+TYPE: scenario
+KÉRDÉS: Egy service unit tesztjében a repository egy `Optional.empty()` értéket ad vissza. A service ekkor `NotFoundException` kivételt kell, hogy dobjon. Miért megfelelő erre egy stub?
+A) Mert a stub kontrollált visszatérési értékkel képes előidézni a kívánt dependency-állapotot.
+B) Mert a stub automatikusan ellenőrzi a repository implementációját.
+C) Mert a stub mindig valódi adatbázishoz csatlakozik.
+D) Mert a stub kizárólag HTTP kérésekhez használható.
+ANSWER: A
+EXPLANATION: A stub segítségével előre meghatározható, hogy a dependency milyen választ adjon. Így a service izoláltan tesztelhető olyan állapotban is, amelyet valódi adatforrással nehezebb vagy költségesebb lenne reprodukálni.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: Selenium WebDriver
+TYPE: edgecase
+KÉRDÉS: Egy Selenium tesztben a következő elem egy Shadow DOM-on belül található:
+```html
+<custom-login>
+    #shadow-root
+        <input id="username">
+</custom-login>
+```
+A hagyományos `driver.findElement(By.id("username"))` nem találja az inputot. Mi ennek az oka?
+A) A Selenium nem tud input elemeket kezelni.
+B) A Shadow DOM elemei mindig iframe-ben vannak.
+C) Az input csak JavaScriptből érhető el, Seleniumból nem.
+D) A keresés alapértelmezés szerint nem lép be a Shadow DOM belső dokumentumába.
+ANSWER: D
+EXPLANATION: A Shadow DOM külön DOM-határt hoz létre. A host elemen keresztül kell elérni a megfelelő shadow rootot, majd azon belül lehet megkeresni a kívánt elemet, a használt Selenium-verzió és API lehetőségeinek megfelelően.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Playwright & Cypress
+TYPE: output
+KÉRDÉS: Mit ellenőriz az alábbi Playwright kód?
+```typescript
+await expect(page.getByRole('button', { name: 'Delete' })).toBeEnabled();
+```
+A) A gomb láthatatlan.
+B) A gomb létezik és engedélyezett állapotban van.
+C) A gomb már végrehajtotta a törlést.
+D) A gombnak pontosan egy példánya van az oldalon.
+ANSWER: B
+EXPLANATION: A `toBeEnabled()` azt ellenőrzi, hogy a locator által azonosított elem enabled állapotban van. Az assertion nem bizonyítja, hogy a gombot már megnyomták vagy hogy a művelet sikeresen befejeződött.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: Locators & selectors
+TYPE: production
+KÉRDÉS: Egy tesztben egy CSS selector az alábbi osztályokra épül:
+```text
+button.btn.btn-primary.css-1a2b3c
+```
+A `css-1a2b3c` osztály buildenként változik, miközben a gomb funkciója nem változik. Mit érdemes tenni?
+A) Az aktuális class értéket minden futás előtt automatikusan kiolvasni.
+B) A selectorban további generált classokat hozzáadni.
+C) Stabil, szándékosan tesztelhető attribútumot vagy szemantikus locatort használni.
+D) A gombot DOM-index alapján kiválasztani.
+ANSWER: C
+EXPLANATION: A generált CSS classok implementációs részletek, ezért nem jó stabil tesztelési szerződésnek. Egy stabil `data-testid`, accessible role/name vagy más tartós attribútum kevésbé érzékeny a frontend build változásaira.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: Waits & flaky tests
+TYPE: debug
+KÉRDÉS: Egy tesztben a következő várakozás szerepel:
+```java
+new WebDriverWait(driver, Duration.ofSeconds(10))
+    .until(d -> d.findElement(By.id("result")).getText().equals("Done"));
+```
+A teszt időnként `NoSuchElementException` miatt bukik még a 10 másodperces timeout előtt. Mi lehet a probléma?
+A) Az `until` csak CSS selectort támogat.
+B) A WebDriverWait mindig pontosan 10 másodperc után kezdi el keresni az elemet.
+C) A Java nem tud lambda kifejezést használni Seleniumban.
+D) A `NoSuchElementException` kezelése az alkalmazott wait konfigurációtól függ; ha a kivételt nem ignorálja a wait, a feltétel kiértékelése megszakíthatja a várakozást.
+
+ANSWER: D
+EXPLANATION: A `WebDriverWait` az `until` feltételét ismételten kiértékeli, de az alapértelmezett kivételkezelés nem feltétlenül nyel el minden, a feltétel kiértékelése során keletkező kivételt. Ha a `findElement` még nem találja az elemet, `NoSuchElementException` keletkezhet, amely megfelelő konfiguráció nélkül megszakíthatja a várakozást. Ilyenkor célszerű az exception-kezelést tudatosan konfigurálni, illetve olyan explicit wait feltételt használni, amely a kívánt állapotot közvetlenül fejezi ki.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: Page Object Model
+TYPE: scenario
+KÉRDÉS: Egy Page Object metódusa egy checkout folyamat teljes végrehajtását végzi: cím megadása, szállítás kiválasztása, fizetés, rendelés elküldése és sikeroldal ellenőrzése. Több tesztnek csak az első két műveletre van szüksége. Mi a fő probléma?
+A) A Page Object nem tartalmazhat assertiont.
+B) A Page Object túl magas szintű és túl sok különböző workflow-lépést köt össze egyetlen műveletben.
+C) A Selenium nem tud több oldalon keresztül működni.
+D) Minden tesztnek pontosan ugyanazt a checkout folyamatot kell végrehajtania.
+ANSWER: B
+EXPLANATION: Egy túl nagy workflow-metódus csökkenti az újrahasznosíthatóságot, és olyan lépéseket is kikényszeríthet, amelyek az adott teszt szempontjából irrelevánsak. Célszerűbb kisebb, jól kombinálható UI-műveleteket vagy megfelelő magasabb szintű workflow-abstrakciókat kialakítani.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: API testing
+TYPE: debug
+KÉRDÉS: Egy API teszt sikeres HTTP 200 választ kap, de a tesztelt művelet valójában nem módosította a várt resource-t. A teszt mégis sikeres. Mi hiányzik?
+A) A response body vagy az utóállapot üzleti ellenőrzése.
+B) Egy második HTTP kliens.
+C) Egy hosszabb connection timeout.
+D) Egy újabb HTTP 200 assertion.
+ANSWER: A
+EXPLANATION: A HTTP státuszkód csak a protokollszintű eredményt ellenőrzi. Ha az üzleti művelet hatása is része a szerződésnek, azt a response és szükség esetén az utóállapot ellenőrzésével is validálni kell.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: BDD & Cucumber
+TYPE: trap
+KÉRDÉS: Egy csapat minden Cucumber scenario végére egy technikai adatbázis-ellenőrzést ír, még akkor is, ha a scenario üzleti eredménye már egyértelműen ellenőrizhető a felhasználói viselkedésen keresztül. Mi lehet ennek a hátránya?
+A) A Cucumber automatikusan törli az adatbázist.
+B) A scenario-k nem használhatnak Then lépést.
+C) A feature fájlok nem képesek adatbázis-állapotot reprezentálni.
+D) A scenario szükségtelenül implementációfüggővé válhat, és elveszítheti üzleti fókuszát.
+ANSWER: D
+EXPLANATION: A BDD scenario célja elsősorban a kívánt viselkedés és üzleti eredmény kommunikálása. A közvetlen adatbázis-ellenőrzés indokolt lehet bizonyos esetekben, de nem célszerű automatikusan minden scenario részévé tenni.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: Test data management
+TYPE: performance
+KÉRDÉS: Egy API tesztcsomag minden teszt előtt több ezer rekordot töröl, majd újra létrehozza ugyanazt a kis tesztadatkészletet. A teljes futási idő jelentős részét ez a setup adja. Mi lehet a megfelelő optimalizáció?
+A) Minden teszthez még több rekordot hozunk létre.
+B) A tesztadat-kezelést a tényleges szükséglethez igazítjuk, például célzott fixture-ekkel és megfelelő reset stratégiával.
+C) A teszteket véletlenszerű sorrendben futtatjuk.
+D) A setup assertionöket eltávolítjuk.
+ANSWER: B
+EXPLANATION: A teljes adatbázis újraépítése minden tesztnél gyakran szükségtelen költség. A teszt által ténylegesen igényelt adatok célzott létrehozása vagy hatékony reset mechanizmus használata jelentősen csökkentheti a setup időt.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: CI integration
+TYPE: scenario
+KÉRDÉS: Egy pull requesthez tartozó CI pipeline-ban egy 30 perces E2E teszt fut. A fejlesztő közben új commitot pushol ugyanarra a branchre, ezért a korábbi futás eredménye már nem releváns. Milyen CI-képesség lehet hasznos?
+A) A korábbi és új futásokat mindig korlátlanul párhuzamosítani.
+B) Minden futást kétszer újraindítani.
+C) Az elavult pipeline-futásokat megszakítani, és a legfrissebb commit validációját előnyben részesíteni.
+D) Az E2E teszteket csak havonta futtatni.
+ANSWER: C
+EXPLANATION: Ha egy korábbi commit már nem a PR aktuális állapotát reprezentálja, annak hosszú tesztfutása felesleges erőforrás-felhasználást jelenthet. A concurrency- és cancellation-stratégia csökkentheti az elavult futások költségét.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: Parallel execution
+TYPE: performance
+KÉRDÉS: Egy tesztcsomag 8 workerrel 14 perc alatt fut. 16 workerre váltva 9 percre csökken, 32 workerrel viszont 8,9 perc lesz. A memóriahasználat 32 worker mellett 95%. Mi a legvalószínűbb következtetés?
+A) A 32 worker biztosan optimális.
+B) A további párhuzamosítás valószínűleg már nem hoz érdemi javulást az erőforrás-limit miatt.
+C) A teszteket csak egy workerrel szabad futtatni.
+D) A browser sessionök számának növelése mindig lineáris gyorsulást eredményez.
+ANSWER: B
+EXPLANATION: A worker szám duplázása 16-ról 32-re gyakorlatilag nem gyorsította a futást, miközben a memória közel telítődött. Ez arra utal, hogy az infrastruktúra már korlátozza a további skálázást.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Reporting
+TYPE: production
+KÉRDÉS: Egy UI teszt CI-ben elbukik, de a riportban nincs screenshot, DOM snapshot vagy trace. A hiba lokálisan nehezen reprodukálható. Melyik fejlesztés adhatja a legtöbb diagnosztikai értéket?
+A) A teszt nevét rövidebbre változtatni.
+B) A teszt timeoutját megduplázni.
+C) Minden tesztet automatikusan újrafuttatni.
+D) A failure pillanatához kapcsolódó releváns artifactok, például screenshot, trace és log automatikus gyűjtése.
+ANSWER: D
+EXPLANATION: A UI állapotát a failure pillanatában rögzítő artifactok jelentősen megkönnyítik a reprodukció nélküli hibakeresést. Különösen hasznos lehet a screenshot és a trace kombinációja a logokkal.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: Contract testing
+TYPE: edgecase
+KÉRDÉS: Egy consumer a `total` mezőt integerként kezeli. A provider dokumentáció nélkül lebegőpontos értéket kezd visszaadni, például `19.5`-öt. Miért fontos ezt contract teszttel ellenőrizni?
+A) Mert minden decimal érték HTTP hibát okoz.
+B) Mert a JSON nem támogat számokat.
+C) Mert a mező típusa és formátuma megváltozott, ami a consumer feldolgozását inkompatibilissé teheti.
+D) Mert a provider csak stringeket küldhet.
+ANSWER: C
+EXPLANATION: A contractnak a mezők típusára és formátumára vonatkozó elvárásokat is rögzítenie kellhet. Egy numerikus reprezentáció megváltozása a consumer kódjától függően parsing vagy üzleti logikai hibát okozhat.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: Visual & accessibility testing
+TYPE: scenario
+KÉRDÉS: Egy accessibility audit során kiderül, hogy egy ikonként megjelenő gombnak nincs hozzáférhető neve. A vizuális tesztek és a funkcionális kattintási tesztek sikeresek. Miért nem elegendők ezek a tesztek?
+A) Mert a vizuális tesztek kizárólag mobilon működnek.
+B) Mert a funkcionális kattintás nem bizonyítja, hogy a segítő technológiák számára az elem megfelelően azonosítható.
+C) Mert az accessibility csak backend tesztelési szempont.
+D) Mert minden accessibility hiba HTTP hibakódot eredményez.
+ANSWER: B
+EXPLANATION: Egy elem lehet vizuálisan és funkcionálisan megfelelő, miközben accessibility szempontból hiányos. Az accessible name és más szemantikai információk a képernyőolvasók és egyéb segítő technológiák számára fontosak.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: Framework design
+TYPE: architecture
+KÉRDÉS: Egy enterprise tesztframeworkben a tesztek közvetlenül environment variable-öket olvasnak, saját defaultokkal és eltérő névkonvenciókkal. CI-ben emiatt ugyanaz a konfiguráció többféleképpen értelmezhető. Mi a legjobb architekturális irány?
+A) Minden teszt saját konfigurációs logikát tartson meg.
+B) A konfigurációt minden tesztben kézzel validáljuk.
+C) A konfigurációs hozzáférést központi, típusos és validált rétegen keresztül biztosítsuk, egyértelmű precedence-szabályokkal.
+D) Minden környezethez külön tesztkódot írjunk.
+ANSWER: C
+EXPLANATION: A központi konfigurációs réteg egységesíti a nevek, defaultok, validáció és override-ok kezelését. Ez csökkenti a környezetfüggő eltéréseket, és a tesztekből eltávolítja az infrastruktúra-konfiguráció részleteit.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: Test strategy & pyramid
+TYPE: production
+KÉRDÉS: Egy csapat azt tapasztalja, hogy a teljes UI regression suite több óráig fut, miközben a hibák nagy része egyszerű üzleti szabályokhoz kapcsolódik. Az ilyen szabályokat jelenleg csak UI szinten ellenőrzik. Mi lehet a hosszú távú stratégia?
+A) A UI suite futási idejét fix sleep hívásokkal növeljük.
+B) Minden UI tesztet párhuzamosítás nélkül futtatunk.
+C) A kritikus UI flow-kat megtartjuk, de a stabil, alacsonyabb szinten tesztelhető üzleti szabályokat megfelelőbb tesztszintre helyezzük.
+D) Az összes tesztet manuális tesztelőkre bízzuk.
+ANSWER: C
+EXPLANATION: A tesztpiramist nem pusztán a tesztek száma, hanem a lefedés költsége és értéke alapján érdemes kialakítani. A gyorsabb tesztszintekre helyezett üzleti szabályok csökkenthetik az E2E suite méretét anélkül, hogy a kritikus rendszerfolyamatok ellenőrzése megszűnne.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: Unit testing
+TYPE: edgecase
+KÉRDÉS: Egy unit teszt egy random UUID generálására épít, majd az eredményt egy előre rögzített UUID-val hasonlítja össze. A teszt véletlenszerűen bukik. Mi a megfelelő megoldás?
+A) A UUID-generálást absztrakció mögé helyezzük, és a tesztben determinisztikus értéket biztosítunk.
+B) A tesztet ötször egymás után futtatjuk.
+C) A hibát figyelmen kívül hagyjuk, ha csak ritkán jelentkezik.
+D) A UUID összehasonlítását teljesen eltávolítjuk.
+ANSWER: A
+EXPLANATION: A véletlenszerűség közvetlen használata nem determinisztikus tesztet eredményez. Egy injektálható UUID-generátor vagy factory segítségével a teszt kontrollált bemenetet kaphat.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: Mocks, stubs & fakes
+TYPE: production
+KÉRDÉS: Egy payment gateway mockja mindig sikeres választ ad. Productionben azonban a gateway timeoutolhat, 429-et adhat, vagy üzleti hibát jelezhet. Hogyan érdemes a tesztelést kiegészíteni?
+A) Minden unit tesztet valódi payment gatewayre küldünk.
+B) A mockot megszüntetjük, és csak manuális teszteket használunk.
+C) Releváns hibás válaszokat és timeoutokat is modellezünk unit tesztekben, a valódi integrációt pedig külön tesztszinten ellenőrizzük.
+D) Minden gateway-hibát sikeres válaszként kezelünk.
+ANSWER: C
+EXPLANATION: A unit tesztekben kontrolláltan előidézhetők a külső dependency hibás állapotai. A valódi gateway szerződését és integrációját azonban nem helyettesíti a mock, ezért arra külön megfelelő tesztelési réteg szükséges.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: Selenium WebDriver
+TYPE: production
+KÉRDÉS: Egy Selenium Grid tesztcsomagban ugyanaz a teszt különböző browserverziókon fut. Egy adott verzióban rendszeresen eltérő eredmény születik, de a riport csak a teszt nevét tartalmazza. Melyik adat hiányzik leginkább a diagnózishoz?
+A) A fejlesztő neve.
+B) A pontos browser-, browser version-, driver-, OS- és Grid-környezet.
+C) A tesztforráskód teljes másolata minden futásból.
+D) A repository commitok teljes története.
+ANSWER: B
+EXPLANATION: Browser-specifikus hibák kivizsgálásához elengedhetetlen a futási környezet pontos ismerete. A verziók és capability-k rögzítése lehetővé teszi a probléma reprodukcióját és a környezeti eltérések összehasonlítását.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: Playwright & Cypress
+TYPE: scenario
+KÉRDÉS: Egy Playwright tesztcsomag minden teszt előtt a teljes UI login folyamatot hajtja végre. A suite futási idejének 40%-át ez teszi ki, miközben a legtöbb teszt nem magát a login funkcionalitást vizsgálja. Mi lehet a megfelelő optimalizáció?
+A) A login folyamatot minden tesztben kétszer futtatjuk.
+B) A login assertionöket eltávolítjuk.
+C) A browser timeoutját megnöveljük.
+D) Kontrollált authentication state-et állítunk elő a tesztekhez, és a login UI-t külön célzott tesztekkel fedjük le.
+ANSWER: D
+EXPLANATION: Ha a login nem része minden teszt céljának, az ismételt UI login felesleges költséget jelenthet. Az előállított authentication state gyorsíthatja a suite-ot, miközben maga a login flow továbbra is külön tesztelhető.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: Locators & selectors
+TYPE: algorithm
+KÉRDÉS: Egy terméklistában több `Add to cart` gomb található. Minden termék kártyáján egyedi `data-product-id` attribútum szerepel. Hogyan érdemes a 847-es termékhez tartozó gombot megkeresni?
+A) Az összes `Add to cart` gomb közül az elsőt választjuk.
+B) A gombok aktuális DOM-indexét használjuk.
+C) A teljes oldal abszolút XPath struktúráját rögzítjük.
+D) Azonosítjuk a `data-product-id="847"` attribútummal rendelkező termékkártyát, majd azon belül keressük az `Add to cart` gombot.
+ANSWER: D
+EXPLANATION: A termék stabil azonosítója alapján először a megfelelő konténert határozzuk meg, majd annak kontextusában választjuk ki a gombot. Ez ellenállóbb a lista sorrendjének és a környező DOM-struktúra változásainak.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Waits & flaky tests
+TYPE: performance
+KÉRDÉS: Egy tesztcsomagban minden action timeoutja 30 másodperc, mert korábban több lassú backend hívás miatt flaky tesztek jelentek meg. A suite azonban hibás teszt esetén akár több percig is vár. Mi lenne a jobb stratégia?
+A) Minden timeoutot 120 másodpercre növelünk.
+B) Kikapcsoljuk a timeoutokat.
+C) A lassú műveleteknél célzott timeoutot és megfelelő állapot-alapú várakozást használunk, miközben a normál műveletek rövidebb timeoutot kapnak.
+D) Minden tesztet automatikusan újrafuttatunk.
+ANSWER: C
+EXPLANATION: A túl magas globális timeout elfedheti a valódi problémákat és lassítja a hibajelzést. A timeoutokat a műveletek várható viselkedéséhez kell igazítani, miközben az aszinkron folyamatokat valódi állapotok alapján érdemes szinkronizálni.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Framework design
+TYPE: architecture
+KÉRDÉS: Egy több csapat által használt tesztframeworkben minden suite saját screenshot-, trace-, log- és retry-mechanizmust valósít meg. Egy új globális szabály bevezetése ezért sok különböző kódrészlet módosítását igényli. Melyik architekturális megoldás csökkenti ezt a problémát?
+A) Minden suite kapjon még több saját konfigurációt.
+B) A cross-cutting funkciókat központi szolgáltatásokba és lifecycle hookokba szervezzük, jól definiált extension pointokkal.
+C) Minden suite saját frameworköt kapjon.
+D) A screenshotokat és trace-eket mindenhol manuálisan kezeljük.
+ANSWER: B
+EXPLANATION: A retry, logging és artifact collection tipikusan cross-cutting concern, ezért célszerű központi infrastruktúrában kezelni őket. Az extension pointok lehetővé teszik a szükséges eltéréseket anélkül, hogy minden csapat külön implementációt tartana fenn.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: API testing
+TYPE: production
+KÉRDÉS: Egy nagy forgalmú API tesztcsomagban a tesztek ugyanazt a productionhöz hasonló adatállományt használják. A tesztek időnként módosítják egymás adatait, ezért a hibák nem mindig reprodukálhatók. Mi lenne a legmegfelelőbb stratégia?
+A) Minden teszt után véletlenszerű adatokat generálunk.
+B) A teszteket kizárólag véletlenszerű sorrendben futtatjuk.
+C) Izolált, egyértelműen birtokolt tesztadatokat és determinisztikus cleanup/reset stratégiát alkalmazunk.
+D) A teszteket csak egyetlen workerrel futtatjuk.
+
+ANSWER: C
+EXPLANATION: Párhuzamos vagy egymás után futó tesztek között megosztott, módosítható állapot könnyen tesztfüggőséget és nem reprodukálható hibákat okoz. Az izolált tesztadat és a determinisztikus állapotkezelés csökkenti ezt a kockázatot, miközben lehetővé teszi a párhuzamos futtatást is.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: BDD & Cucumber
+TYPE: scenario
+KÉRDÉS: Egy nagy Cucumber suite-ban több száz scenario ugyanazokat a hosszú technikai Given lépéseket ismétli. A feature fájlok egyre nehezebben olvashatók, és egy infrastruktúra-változás rengeteg step definition módosítását igényli. Mi lenne célszerű?
+A) Minden scenario-ba további technikai lépéseket írunk.
+B) A közös technikai részleteket megfelelő absztrakció mögé helyezzük, miközben a Gherkin üzleti viselkedésre fókuszál.
+C) A Given lépéseket teljesen eltávolítjuk.
+D) Minden feature-höz külön tesztframeworköt készítünk.
+
+ANSWER: B
+EXPLANATION: A BDD feature és scenario szintjén érdemes a rendszer üzleti viselkedését kommunikálni, nem az infrastruktúra minden részletét. A technikai setup megfelelő rétegbe szervezése csökkenti a duplikációt és az infrastruktúra-változások hatását.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: Test data management
+TYPE: edgecase
+KÉRDÉS: Egy teszt több ország pénznemével dolgozik, és időnként 0,01-es eltérés jelenik meg az elvárt és a számított összeg között. A teszt lebegőpontos összehasonlítást használ. Mi lehet a probléma?
+A) A pénznemek nem tesztelhetők automatizáltan.
+B) Az API-k nem képesek tört számokat kezelni.
+C) A tesztadatokat minden futás előtt véletlenszerűsíteni kell.
+D) A lebegőpontos reprezentáció kerekítési hibákat okozhat, ezért pénzügyi értékekhez megfelelő decimal/fixed-point reprezentáció és explicit kerekítési szabály szükséges.
+
+ANSWER: D
+EXPLANATION: A bináris lebegőpontos reprezentáció nem minden decimális értéket tud pontosan reprezentálni. Pénzügyi teszteknél ezért a használt adatreprezentációt és a kerekítési szabályokat explicit módon kell kezelni, nem pedig vakon pontos floating-point egyenlőséget használni.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: Contract testing
+TYPE: production
+KÉRDÉS: Egy microservice-rendszerben egy provider API-ját több tucat consumer használja. A provider csapata gyakran vezet be változtatásokat, és a teljes end-to-end suite túl lassú ahhoz, hogy minden commitnál lefusson. Mi lehet a contract testing egyik fontos előnye ebben a helyzetben?
+A) A consumer-provider szerződés kompatibilitása gyorsabban ellenőrizhető anélkül, hogy minden fogyasztói workflow-t teljes E2E környezetben kellene lefuttatni.
+B) A contract teszt minden üzleti folyamatot automatikusan lefed.
+C) A contract teszt kiváltja az összes unit tesztet.
+D) A contract teszt garantálja, hogy a provider implementációja hibamentes.
+
+ANSWER: A
+EXPLANATION: A contract testing célzottan az integrációs szerződésre koncentrál. Ez gyorsabb visszajelzést adhat arról, hogy egy provider-változás kompatibilis-e az ismert consumer elvárásokkal, miközben nem helyettesíti az egyéb tesztszinteket.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: Visual & accessibility testing
+TYPE: performance
+KÉRDÉS: Egy nagy webalkalmazás visual regression suite-ja több ezer screenshotot hasonlít össze. A tesztek jelentős része azonban olyan dinamikus területeket tartalmaz, mint időbélyegek, hirdetések és véletlenszerű ajánlások. Mi lenne a célszerű optimalizáció?
+A) Minden screenshot pixelkülönbségi küszöbét nullára állítjuk.
+B) Minden visual tesztet kikapcsolunk.
+C) A dinamikus tartalmat kontrolláljuk vagy kizárjuk a releváns vizsgálati területekből, és a stabil vizuális felületekre koncentrálunk.
+D) Minden oldalt tízszer lefuttatunk, majd átlagoljuk a screenshotokat.
+
+ANSWER: C
+EXPLANATION: A nem determinisztikus vizuális tartalom zajt okoz, és valódi regressziók helyett irreleváns különbségeket jelezhet. A dinamikus elemek kontrollálása és a vizsgálati terület tudatos meghatározása javítja a signal-to-noise arányt.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: Framework design
+TYPE: architecture
+KÉRDÉS: Egy tesztframeworkben minden teszt közvetlenül Selenium, Playwright és REST kliens API-kat hív. Egy új cross-cutting követelmény, például központi tracing bevezetésekor több száz tesztet kell módosítani. Milyen architekturális irány csökkentheti ezt a problémát?
+A) Minden tesztbe külön tracing kódot írunk.
+B) A teszteket kizárólag UI szinten futtatjuk.
+C) Minden dependencyből külön példányt hozunk létre minden assertionhöz.
+D) Stabil framework-abstrakciókat és központi adaptereket alakítunk ki a technológiai részletek és a tesztlogika elválasztására.
+
+ANSWER: D
+EXPLANATION: Ha a tesztek közvetlenül minden technológiai dependency részleteit ismerik, egy infrastruktúra-változás nagy módosítási felületet eredményez. A megfelelő absztrakciók és adapterek centralizálják az ilyen cross-cutting technikai logikát.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+KÉRDÉS: Egy rendszerben ugyanazt a validációs szabályt unit, API és UI szinten is teljes részletességgel tesztelik. A suite karbantartási költsége folyamatosan nő, miközben a validációs szabály ritkán változik. Mi lehet a jobb stratégia?
+A) Minden tesztszinten megtartjuk a teljes kombinációs lefedést.
+B) A részletes kombinációs lefedést a legmegfelelőbb, gyorsabb tesztszintre koncentráljuk, magasabb szinten pedig néhány kritikus integrációs esetet tartunk meg.
+C) A unit teszteket eltávolítjuk, mert az API tesztek magasabb szintűek.
+D) Csak manuálisan teszteljük a validációt.
+
+ANSWER: B
+EXPLANATION: Ugyanannak a determinisztikus szabálynak minden tesztszinten történő teljes újratesztelése jelentős redundanciát okozhat. A részletes lefedést célszerű ott tartani, ahol a legolcsóbban és leggyorsabban ellenőrizhető, míg magasabb szinten az integrációs kockázatokat kell hangsúlyozni.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: Unit testing
+TYPE: debug
+KÉRDÉS: Egy Java unit tesztben a következő kód szerepel:
+```java
+@Test
+void shouldCalculateDiscount() {
+    PriceCalculator calculator = new PriceCalculator();
+    assertEquals(90.0, calculator.calculate(100.0, 0.10));
+}
+```
+A teszt néha `89.999999999` jellegű érték miatt bukik. Mi lenne a megfelelő javítás?
+A) A tesztet mindig kétszer lefuttatjuk.
+B) A `PriceCalculator` eredményét stringgé alakítjuk.
+C) A floating-point értéket figyelmen kívül hagyjuk.
+D) Az üzleti szabálynak megfelelő toleranciát vagy pontos decimal/fixed-point reprezentációt használunk.
+
+ANSWER: D
+EXPLANATION: Lebegőpontos számításoknál a bináris reprezentáció miatt kis numerikus eltérések jelenhetnek meg. A tesztelési stratégia attól függ, hogy az üzleti domain megenged-e toleranciát, vagy pontos pénzügyi reprezentációra van szükség.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Mocks, stubs & fakes
+TYPE: trap
+KÉRDÉS: Egy unit tesztben egy mockolt repository minden metódushívásra automatikusan előre beállított értéket ad vissza. A teszt sikeres, de később kiderül, hogy a production kód rossz repository-metódust hív. Miért lehetett ezt nehéz észrevenni?
+A) A mock minden esetben valódi adatbázist használ.
+B) A mock automatikusan kijavítja a hibás metódushívást.
+C) A túl lazán konfigurált mock olyan viselkedést engedhet meg, amely nem tükrözi pontosan a production dependency szerződését.
+D) A repository unit tesztben nem mockolható.
+
+ANSWER: C
+EXPLANATION: A túl permisszív mock konfiguráció hamis biztonságérzetet adhat. A teszt akkor értékesebb, ha a releváns dependency-interakciókat és azok szerződését is megfelelően ellenőrzi, miközben nem kötjük feleslegesen minden belső részlethez.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: Selenium WebDriver
+TYPE: production
+KÉRDÉS: Egy Selenium Grid infrastruktúrában a tesztek futása során időnként böngészősessionök maradnak életben egy hálózati hiba után. Több száz ilyen session után elfogy a rendelkezésre álló erőforrás. Mi a legfontosabb védekezési irány?
+A) Minden teszt végén garantált lifecycle cleanupot és session-kezelést alkalmazunk, valamint infrastruktúra-szintű timeoutokat és takarítást biztosítunk.
+B) Minden tesztben végtelen timeoutot állítunk be.
+C) A hibás teszteket automatikusan sikeresnek jelöljük.
+D) A Gridet csak munkaidőben indítjuk el.
+
+ANSWER: A
+EXPLANATION: Elosztott browser infrastruktúrában a session lifecycle kezelése kritikus. A megfelelő cleanup, timeout és infrastruktúra-szintű takarítás együtt akadályozhatja meg, hogy hálózati vagy teszthibák hosszú életű erőforrásokat hagyjanak maguk után.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: Playwright & Cypress
+TYPE: output
+KÉRDÉS: Mit eredményez a következő Playwright kód?
+```typescript
+const rows = page.getByRole('row');
+await expect(rows).toHaveCount(5);
+```
+A) A `row` elemek mindegyikét láthatóvá teszi.
+B) Az ötödik sort automatikusan kijelöli.
+C) Ellenőrzi, hogy a locator által azonosított `row` elemek száma 5.
+D) Ötször újratölti az oldalt.
+
+ANSWER: C
+EXPLANATION: A `toHaveCount(5)` assertion a locator által reprezentált elemek számát ellenőrzi. Az assertionhez kapcsolódó várakozás lehetővé teszi, hogy a dinamikusan megjelenő elemek esetén a megfelelő állapot kialakulásáig várjon.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: Locators & selectors
+TYPE: algorithm
+KÉRDÉS: Egy oldalon több azonos nevű gomb található, de mindegyik egy külön dialog komponensben van. A tesztnek egy adott dialogon belül kell kiválasztania a `Save` gombot. Mi a legstabilabb megközelítés?
+A) A teljes dokumentum első `Save` gombját választjuk.
+B) A dialogot stabil locatorral azonosítjuk, majd annak kontextusán belül keressük a `Save` gombot.
+C) A gomb abszolút XPath-ját használjuk.
+D) A DOM-ban elfoglalt pozíció alapján választjuk ki.
+
+ANSWER: B
+EXPLANATION: A locator hatókörének szűkítése a megfelelő komponensre csökkenti annak kockázatát, hogy egy másik, azonos nevű elemre hivatkozzunk. A stabil komponens-azonosító és a lokális keresés általában ellenállóbb a DOM szerkezeti változásainak.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: Waits & flaky tests
+TYPE: production
+KÉRDÉS: Egy SPA-ban egy gomb kattintása után egy loading spinner eltűnik, majd egy táblázat új adatokkal jelenik meg. A teszt csak a spinner eltűnésére vár, ezért néha még a régi táblázatot ellenőrzi. Mi a megfelelő megoldás?
+A) Fix 30 másodperces sleepet helyezünk a tesztbe.
+B) A böngészőt minden assertion előtt újraindítjuk.
+C) A timeoutot korlátlanra állítjuk.
+D) A tesztet a tényleges üzleti állapotra, például az új táblázat tartalmának vagy egyértelmű állapotjelzőjének megjelenésére szinkronizáljuk.
+
+ANSWER: D
+EXPLANATION: A spinner eltűnése nem feltétlenül jelenti azt, hogy a kívánt adatok már renderelődtek. Az állapot-alapú várakozás közvetlenül arra a feltételre szinkronizál, amelyet a teszt ténylegesen ellenőrizni szeretne.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: Page Object Model
+TYPE: scenario
+KÉRDÉS: Egy nagy tesztframeworkben a Page Object osztályok több ezer sorosak, és ugyanaz az oldal több, egymástól független funkciót tartalmazó metódusokat halmozott fel. Melyik refaktorálási irány lehet megfelelő?
+A) Az összes metódust egyetlen `performEverything()` metódusba vonjuk össze.
+B) Minden teszthez külön másolatot készítünk a Page Objectből.
+C) A page-komponenseket és felelősségeket kisebb, koherens absztrakciókra bontjuk, szükség esetén komponens- vagy workflow-szintű objektumokkal.
+D) Minden locatorot közvetlenül a tesztekbe másolunk.
+
+ANSWER: C
+EXPLANATION: A túl nagy Page Object gyakran azt jelzi, hogy több különböző felelősség került egy osztályba. A kisebb, koherens komponensek és megfelelő workflow-abstrakciók javíthatják az újrahasznosíthatóságot és a karbantarthatóságot.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: API testing
+TYPE: edgecase
+KÉRDÉS: Egy REST API teszt `POST /orders` hívást küld, majd a response-ban kapott order ID alapján azonnal `GET /orders/{id}` kérést indít. A GET időnként 404-et ad, miközben a POST sikeres volt. Mi lehet a magyarázat?
+A) A POST válasz soha nem tartalmazhat ID-t.
+B) A két endpoint között nincs szükség semmilyen kapcsolatnak lennie.
+C) A GET request szintaktikailag mindig hibás.
+D) A rendszer eventual consistency miatt a létrehozás eredménye még nem látható azonnal minden olvasási útvonalon.
+
+ANSWER: D
+EXPLANATION: Elosztott rendszerekben a sikeres írás és az azonnal következő olvasás között lehet átmeneti konzisztencia-késés. A tesztnek ezt a rendszer szerződésével összhangban kell kezelnie, például megfelelő állapot-alapú retryjal vagy explicit read-after-write garanciával, ha az elvárt viselkedés ezt indokolja.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: CI integration
+TYPE: scenario
+KÉRDÉS: Egy CI pipeline több tesztstádiumból áll: unit, API, integration és E2E. A pipeline akkor is lefuttatja a drága E2E teszteket, ha a unit tesztek nagy része már korábban hibával leállt. Mi lehet a jobb pipeline-stratégia?
+A) A drága későbbi lépéseket a korábbi kötelező quality gate-ek sikeréhez kötjük, miközben a szükséges diagnosztikai artifactokat megőrizzük.
+B) Az összes tesztet mindig párhuzamosan futtatjuk.
+C) A unit teszteket eltávolítjuk.
+D) Az E2E teszteket minden commit után kétszer futtatjuk.
+
+ANSWER: A
+EXPLANATION: Ha egy korábbi kötelező tesztszint hibája miatt a build már nem tekinthető validnak, a drága későbbi tesztek automatikus futtatása erőforráspazarló lehet. A pipeline-nak azonban úgy kell kialakítania a függőségeket, hogy a hibakereséshez szükséges információk továbbra is rendelkezésre álljanak.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: Parallel execution
+TYPE: performance
+KÉRDÉS: Egy 1000 tesztes suite 10 workerrel 20 perc alatt fut. 20 workerre váltva 12 perc, 40 workerrel pedig 11,5 perc lesz a futási idő. A CI gépen a CPU 95%, az adatbázis kapcsolatpoolja pedig folyamatosan maximális kihasználtságú. Mi a legfontosabb következtetés?
+A) A worker számot korlátlanul növelni kell.
+B) A skálázást már nem csak a tesztframework, hanem az infrastruktúra szűk keresztmetszetei korlátozzák.
+C) A tesztek biztosan túl kevés assertiont tartalmaznak.
+D) A párhuzamos futtatást teljesen ki kell kapcsolni.
+
+ANSWER: B
+EXPLANATION: A 20-ról 40 workerre történő növelés csak minimális javulást eredményezett, miközben a CPU és az adatbázis erőforrásai telítettek. Ez tipikusan arra utal, hogy további worker növelés helyett az infrastruktúra bottleneckjeit kell vizsgálni.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: Reporting
+TYPE: production
+KÉRDÉS: Egy CI dashboard azt mutatja, hogy egy teszt az elmúlt 30 futásból 7 alkalommal bukott, de minden újrafuttatás után sikeres lett. A csapat ezt egyszerűen „flaky” címkével látja el. Milyen további információ lenne különösen hasznos?
+A) Csak a teszt osztályának neve.
+B) A repository teljes commit-története.
+C) A hibák típusának, környezeti korrelációinak és elsődleges futási eredményeinek trendje.
+D) A tesztfájl sorainak száma.
+
+ANSWER: C
+EXPLANATION: A flakiness önmagában kevés információt ad az okról. A hibatípusok, környezetek, browserverziók, időbeli trendek és az első futás kontra retry eredmények segíthetnek elkülöníteni például infrastruktúra-, timing- vagy valódi alkalmazáshibákat.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: Contract testing
+TYPE: trap
+KÉRDÉS: Egy consumer-driven contract teszt sikeres, mert a provider pontosan teljesíti a consumer által definiált mezőket és válaszstruktúrát. A provider csapata ebből arra következtet, hogy a provider teljes üzleti működése helyes. Miért hibás ez a következtetés?
+A) A contract tesztek kizárólag UI-környezetben futtathatók.
+B) A contract teszt csak egy meghatározott integrációs szerződést validál, nem bizonyítja a teljes provider üzleti logikájának helyességét.
+C) A provider soha nem tesztelhető consumer nélkül.
+D) A contract teszt automatikusan minden edge case-t generál.
+
+ANSWER: B
+EXPLANATION: A contract testing célja a fogyasztó és a szolgáltató közötti szerződés kompatibilitásának ellenőrzése. Ettől még lehetnek olyan üzleti szabályok, adatbázis-problémák vagy egyéb endpoint-viselkedések, amelyeket más tesztszinteken kell validálni.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: Framework design
+TYPE: production
+KÉRDÉS: Egy több repositoryból álló enterprise tesztplatformon a közös framework könyvtárat minden csapat külön verzióban használja. Egy kritikus biztonsági javítás kiadásakor több hónapig tart, mire minden suite frissül. Mi lehet a megfelelő megközelítés?
+A) Minden csapat saját frameworköt ír újra.
+B) A közös könyvtárat egyáltalán nem verziózzuk.
+C) A framework frissítését manuálisan, dokumentáció nélkül végezzük.
+D) Verziózott, kompatibilis release-stratégiát és automatizált dependency/frissítési folyamatot alakítunk ki, megfelelő migrációs szabályokkal.
+
+ANSWER: D
+EXPLANATION: A közös tesztinfrastruktúra verziózása és kontrollált frissítése szükséges ahhoz, hogy a változások követhetők és kezelhetők legyenek. Automatizált dependency-frissítési folyamat és kompatibilitási politika csökkentheti a biztonsági javítások bevezetésének késedelmét.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+KÉRDÉS: Egy kritikus pénzügyi alkalmazás release pipeline-jában minden változás teljes 6 órás E2E regression suite-ot indít. A tesztek nagy része egymástól független üzleti szabályokat ellenőriz, miközben a release sebessége üzleti problémává vált. Melyik stratégia lehet megfelelő?
+A) A teljes E2E suite futtatási idejét figyelmen kívül hagyjuk.
+B) Minden E2E tesztet manuális tesztté alakítunk.
+C) A tesztportfóliót kockázat alapján átszervezzük: gyors tesztekkel fedjük le a determinisztikus szabályokat, a kritikus end-to-end folyamatokat pedig megtartjuk.
+D) A teljes suite-ot hetente egyszer futtatjuk, és minden release teszt nélkül megy ki.
+
+ANSWER: C
+EXPLANATION: Kritikus rendszerekben a tesztelési költség és a kockázat egyensúlya különösen fontos. A részletes, gyorsabb tesztek és a célzott E2E ellenőrzések kombinációja csökkentheti a feedback időt anélkül, hogy a kritikus felhasználói folyamatokról lemondanánk.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Unit testing
+TYPE: behavior
+KÉRDÉS: Egy unit teszt egy metódus belső privát helper metódusát reflection segítségével közvetlenül hívja meg, majd annak visszatérési értékét assertionnel ellenőrzi. Mi a fő probléma ezzel?
+A) A teszt túl szorosan kapcsolódik az implementáció belső részleteihez, ezért refaktoráláskor indokolatlanul törhet.
+B) A reflection mindig lassabb, mint egy HTTP request.
+C) A privát metódusok soha nem futnak productionben.
+D) A unit tesztek nem használhatnak assertiont.
+
+ANSWER: A
+EXPLANATION: A unit teszt elsősorban a megfigyelhető viselkedést érdemes ellenőrizze, nem a belső implementáció konkrét struktúráját. Egy privát helper átnevezése, összevonása vagy eltávolítása önmagában nem kellene, hogy tesztkarbantartási feladatot okozzon, ha a publikus viselkedés változatlan marad.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: Mocks, stubs & fakes
+TYPE: scenario
+KÉRDÉS: Egy komplex unit tesztben 15 különböző mock dependency található, és a teszt beállítása hosszabb, mint maga a production metódus. A teszt minden apró implementációs változásnál elbukik. Mit jelezhet ez?
+A) A production kód biztosan hibás.
+B) A teszt túl sok implementációs részlethez kötődhet, vagy a tesztelt komponens túl sok felelősséget kezel.
+C) Több mockot kell hozzáadni.
+D) A mockok számát mindig pontosan 15-re kell növelni.
+
+ANSWER: B
+EXPLANATION: Sok mock és összetett setup gyakran arra utal, hogy a teszt túl sok együttműködést vagy implementációs részletet rögzít. Érdemes megvizsgálni a komponens felelősségeit, a dependency-k számát és azt, hogy valóban a lényeges viselkedést teszteljük-e.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: Selenium WebDriver
+TYPE: edgecase
+KÉRDÉS: Egy Selenium teszt egy többablakos alkalmazásban új browser window megnyitása után azonnal interakciót próbál végrehajtani az új oldalon. A teszt néha még a régi windowban dolgozik. Mi szükséges?
+A) A teljes böngészőt minden kattintás után újraindítani.
+B) A `Thread.sleep()` értékét végtelenre állítani.
+C) A window handle-öket explicit módon kezelni, és a megfelelő windowra váltani, miután az új handle elérhetővé vált.
+D) A window handle-eket figyelmen kívül hagyni.
+
+ANSWER: C
+EXPLANATION: Selenium több browser window vagy tab esetén window handle-ekkel azonosítja a böngészési kontextusokat. Az új ablak megjelenése után a tesztnek meg kell találnia és explicit módon aktiválnia a megfelelő handle-t, lehetőleg megfelelő wait stratégiával.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: Playwright & Cypress
+TYPE: performance
+KÉRDÉS: Egy Playwright suite minden tesztben újra letölti és előállítja ugyanazt a nagy tesztadatkészletet. A tesztek egymástól logikailag függetlenek, de az adat-előkészítés a teljes futási idő 50%-át teszi ki. Mi lehet egy megfelelő optimalizáció?
+A) Minden tesztben még nagyobb adatállományt hozunk létre.
+B) A teszteket véletlenszerű sorrendben futtatjuk.
+C) Az összes tesztet egyetlen nagy tesztté egyesítjük.
+D) Az adat-előkészítést a tesztizoláció megőrzése mellett megfelelő fixture- vagy worker-szintre emeljük, és csak a szükséges változó állapotot hozzuk létre tesztenként.
+
+ANSWER: D
+EXPLANATION: Ha a nagy adatállomány közös része biztonságosan újrahasznosítható, annak minden teszt előtti újraépítése jelentős felesleges költséget okozhat. A fixture-ek megfelelő scope-ja és a tesztspecifikus változó adatok elkülönítése csökkentheti a futási időt anélkül, hogy a tesztek egymás állapotát módosítanák.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: API testing
+TYPE: scenario
+KÉRDÉS: Egy API támogatja a `GET /users` végpont lapozását `page` és `size` paraméterekkel. A tesztek csak egy középső oldalt ellenőriznek, miközben productionben előfordult már, hogy az első és az utolsó oldal kezelése hibás volt. Melyik tesztelési stratégia lenne megfelelőbb?
+A) Csak a legnagyobb lehetséges `size` értéket használjuk.
+B) Ellenőrizzük a határhelyzeteket is, például az első oldalt, az üres utolsó oldalt és az érvénytelen lapozási paramétereket.
+C) Véletlenszerűen választunk egy oldalszámot minden futásnál.
+D) A lapozást csak UI tesztekkel ellenőrizzük.
+
+ANSWER: B
+EXPLANATION: A lapozás tipikusan határértékeknél tartalmazhat hibákat. Az első, utolsó és üres eredményű oldalak, valamint az érvénytelen paraméterek célzott tesztelése nagyobb lefedést ad, mint egyetlen köztes oldal ellenőrzése.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: Unit testing
+TYPE: behavior
+KÉRDÉS: Egy Java unit tesztben egy service metódus eredményét ellenőrzik, miközben a teszt azt is megköveteli, hogy egy belső helper pontosan háromszor legyen meghívva. A helper hívásainak száma azonban nem része a publikus szerződésnek. Mi lehet a probléma?
+A) A teszt túlságosan az implementáció belső részletéhez kötődik.
+B) A unit tesztekben tilos metódushívásokat ellenőrizni.
+C) A helpernek mindig pontosan háromszor kell lefutnia.
+D) A service tesztelhetetlen mockok nélkül.
+
+ANSWER: A
+EXPLANATION: Ha a három hívás nem része a megfigyelhető viselkedésnek vagy szerződésnek, az ilyen ellenőrzés feleslegesen köti a tesztet az implementációhoz. Egy refaktorálás, amely változatlan eredményt ad, indokolatlanul törheti a tesztet.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: Mocks, stubs & fakes
+TYPE: production
+KÉRDÉS: Egy csapat egy külső számlázási szolgáltatás teljes működését egy komplex mockkal próbálja modellezni. A mock több ezer soros, és idővel jelentősen eltér a valódi szolgáltatás viselkedésétől. Mi lehet jobb megközelítés?
+A) A mockot további több ezer sorral bővítjük.
+B) A külső szolgáltatást minden unit tesztből közvetlenül meghívjuk.
+C) Egyszerűbb unit-szintű test double-okat használunk, és a valódi szolgáltatással külön integrációs vagy contract teszteket futtatunk.
+D) A külső szolgáltatás hibáit figyelmen kívül hagyjuk.
+
+ANSWER: C
+EXPLANATION: Egy túl komplex mock könnyen saját, eltérő implementációvá válhat, amelynek karbantartása drága. A unit teszteknél célzott test double-ok, míg a valódi külső szolgáltatással külön integrációs vagy contract tesztek használata tisztább felelősségi határokat ad.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Selenium WebDriver
+TYPE: edgecase
+KÉRDÉS: Egy Selenium teszt iframe-ben található inputot próbál elérni, de a `driver.findElement(By.id("email"))` hívás `NoSuchElementException` kivételt dob. Az input valóban jelen van az iframe dokumentumában. Mi szükséges?
+A) Az iframe-et CSS-sel el kell rejteni.
+B) A böngészőt újra kell indítani.
+C) Az inputot JavaScript segítségével minden esetben meg kell keresni.
+D) Először át kell váltani a megfelelő iframe browsing contextre, majd azon belül kell megkeresni az inputot.
+
+ANSWER: D
+EXPLANATION: Az iframe saját dokumentum- és browsing contextet hoz létre. A Selenium aktuális kontextusából a benne lévő elem közvetlenül nem feltétlenül érhető el, ezért a megfelelő frame-re kell váltani, majd ott végrehajtani a keresést.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: Playwright & Cypress
+TYPE: production
+KÉRDÉS: Egy Playwright tesztben egy harmadik féltől származó analytics script rendszeresen lassítja az oldalt, és időnként külső hálózati hibát okoz. Az analytics funkcionalitása nem része az adott teszt céljának. Mi lehet megfelelő megoldás?
+A) Minden tesztnél 5 perces timeoutot állítunk be.
+B) A releváns külső kéréseket kontrolláljuk vagy mockoljuk, miközben az analytics integrációt külön célzott tesztekkel ellenőrizzük.
+C) Az analytics hibákat minden esetben figyelmen kívül hagyjuk.
+D) Az összes hálózati kérést letiltjuk.
+
+ANSWER: B
+EXPLANATION: A teszt céljához nem tartozó külső dependency-k növelhetik a futási időt és a flakiness kockázatát. A releváns hálózati viselkedés kontrollálása determinisztikusabb tesztet adhat, miközben az integrációt külön kell validálni.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: Locators & selectors
+TYPE: trap
+KÉRDÉS: Egy tesztben egy elemhez hosszú XPath tartozik, amely az aktuális DOM teljes hierarchiáját tartalmazza. A teszt gyakran törik, amikor a frontend fejlesztők átrendezik a layoutot, miközben az elem funkciója változatlan. Miért problémás ez a locator?
+A) Az XPath minden böngészőben tiltott.
+B) Az XPath csak backend tesztekben használható.
+C) A locator túl sok strukturális részletre támaszkodik, amelyek nem részei az elem funkcionális azonosításának.
+D) A hosszú XPath mindig lassabb, mint bármely más locator.
+
+ANSWER: C
+EXPLANATION: Az abszolút vagy túl strukturális XPath szorosan kapcsolódik a DOM aktuális felépítéséhez. Ha a tesztelési cél szempontjából stabil attribútum vagy szemantikus azonosító rendelkezésre áll, az általában tartósabb locator szerződést biztosít.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Waits & flaky tests
+TYPE: debug
+KÉRDÉS: Egy tesztben a következő kód szerepel:
+```java
+Thread.sleep(5000);
+driver.findElement(By.id("status")).click();
+```
+A teszt mégis időnként elbukik, mert a `status` elem 5 másodpercnél később válik kattinthatóvá. Mi a legjobb javítás?
+A) A `Thread.sleep` értékét 60 másodpercre növeljük.
+B) A sleepet egymás után többször meghívjuk.
+C) A böngészőt minden várakozás után újraindítjuk.
+D) Explicit, állapot-alapú waitet használunk, amely a kattintható állapot bekövetkezéséig vár.
+
+ANSWER: D
+EXPLANATION: A fix idejű sleep nem ismeri az alkalmazás tényleges állapotát. Ha az alkalmazás gyorsabb, feleslegesen várunk, ha lassabb, a várakozás továbbra sem elegendő. Az állapot-alapú explicit wait mindkét problémát jobban kezeli.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Page Object Model
+TYPE: scenario
+KÉRDÉS: Egy Page Object metódusa ezt a teljes folyamatot végzi: bejelentkezés, keresés, termék kosárba helyezése és checkout. Egy másik tesztnek csak a keresés és a kosárba helyezés műveletére van szüksége. Milyen kialakítás lenne célszerűbb?
+A) A teljes workflow-t minden tesztben lemásoljuk.
+B) A Page Objectet kisebb, újrahasznosítható műveletekre vagy megfelelő workflow-abstrakciókra bontjuk.
+C) Minden teszt ugyanazt a teljes workflow-t használja.
+D) A checkoutot minden esetben manuálisan végezzük.
+
+ANSWER: B
+EXPLANATION: Egy túl nagy workflow-metódus olyan műveleteket is kikényszerít, amelyek nem relevánsak minden teszt számára. Kisebb, jól kombinálható műveletekkel és szükség esetén külön workflow-abstrakciókkal rugalmasabb tesztkód alakítható ki.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: API testing
+TYPE: edgecase
+KÉRDÉS: Egy API `PATCH /users/{id}` végpontja részleges módosítást támogat. A teszt csak azt ellenőrzi, hogy a módosított mező új értéket kapott. Egy későbbi regresszió során egy másik, nem módosított mező értéke is megváltozik. Mi hiányzik a tesztből?
+A) Az API response HTTP verziójának ellenőrzése.
+B) Egy második HTTP kliens használata.
+C) A nem módosított mezők változatlanságának ellenőrzése, amikor ez a szerződés része.
+D) A request body teljes eltávolítása.
+
+ANSWER: C
+EXPLANATION: Részleges update esetén a szerződés gyakran azt is meghatározza, hogy a nem érintett mezők változatlanok maradnak. Ennek ellenőrzése olyan regressziót is képes észlelni, amelyet kizárólag a módosított mező validálása nem találna meg.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: BDD & Cucumber
+TYPE: trap
+KÉRDÉS: Egy Cucumber feature minden scenario-jában több mint húsz technikai Given lépés található, amelyek egyetlen üzleti állapot előállítását szolgálják. A feature olvasója nehezen tudja megérteni, milyen üzleti viselkedést tesztelnek. Mi lehet a probléma?
+A) A feature túl erősen technikai megvalósítási részleteket kommunikál, és elveszíti a BDD üzleti fókuszát.
+B) A Cucumber nem támogat Given lépéseket.
+C) Egy scenario legfeljebb öt Given lépést tartalmazhat.
+D) A technikai lépések minden esetben kötelezőek.
+
+ANSWER: A
+EXPLANATION: A BDD egyik célja, hogy a scenario-k érthetően kommunikálják az elvárt üzleti viselkedést. Ha a feature fájlok túl sok infrastruktúra- és implementációs részletet tartalmaznak, csökkenhet az üzleti olvashatóság és a karbantarthatóság.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: Test data management
+TYPE: production
+KÉRDÉS: Egy több workerrel futó API tesztcsomagban minden worker ugyanazzal a fix `customerId=1000` adattal dolgozik. A tesztek időnként egymás módosításait látják. Mi lenne megfelelő megoldás?
+A) Minden worker ugyanazt az ID-t használja, de véletlenszerű sorrendben futtatjuk a teszteket.
+B) A tesztek közötti sleep időt növeljük.
+C) A teszteket kizárólag egymás után futtatjuk.
+D) Worker- vagy tesztszinten izolált, egyértelműen kiosztott tesztadatokat használunk.
+
+ANSWER: D
+EXPLANATION: A megosztott, módosítható tesztadat párhuzamos futtatásnál race conditionöket és nem determinisztikus eredményeket okozhat. Az izolált adatok lehetővé teszik, hogy a worker-ek egymástól függetlenül dolgozzanak.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: CI integration
+TYPE: performance
+KÉRDÉS: Egy CI pipeline-ban ugyanaz a dependency-installáció minden jobban teljesen elölről történik. Az installáció a tesztfutás idejének jelentős részét teszi ki, és a dependency-k ritkán változnak. Mi lehet a megfelelő optimalizáció?
+A) Minden jobban kétszer telepítjük a dependency-ket.
+B) Megfelelő cache-elési stratégiát használunk a dependency-khez, verzió- vagy lockfile-változás alapján invalidálva a cache-t.
+C) A dependency-ket teljesen eltávolítjuk.
+D) A teszteket csak lokálisan futtatjuk.
+
+ANSWER: B
+EXPLANATION: A stabil dependency-k újratelepítése minden jobban jelentős időt és hálózati erőforrást fogyaszthat. Egy megfelelően kulcsolt cache gyorsíthatja a pipeline-t, miközben a dependency-változások automatikusan új cache-t eredményezhetnek.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: Parallel execution
+TYPE: scenario
+KÉRDÉS: Egy tesztcsomagban 200 teszt ugyanazt a globális admin felhasználót módosítja. Egy workerrel stabilan futnak, 10 workerrel viszont véletlenszerűen buknak. Mi az elsődleges probléma?
+A) A tesztek között megosztott mutable state miatt versenyhelyzet alakul ki.
+B) A Selenium vagy Playwright nem támogat párhuzamos futtatást.
+C) A CI mindig hibás párhuzamos futtatás esetén.
+D) Több assertionre van szükség.
+
+ANSWER: A
+EXPLANATION: A párhuzamos tesztek ugyanazt a módosítható globális állapotot használják, ezért az egyik teszt megváltoztathatja a másik által elvárt állapotot. Az izolált felhasználók vagy megfelelően szinkronizált erőforrások megszüntethetik ezt a függőséget.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: Reporting
+TYPE: production
+KÉRDÉS: Egy nagy CI környezetben naponta több ezer teszt fut, de a csapat csak pass/fail számokat lát. Egy regresszió után nehéz meghatározni, hogy melyik komponens vagy környezet érintett. Melyik reporting fejlesztés lehet a leghasznosabb?
+A) Minden teszt nevét egyetlen karakterre rövidítjük.
+B) Csak a sikeres teszteket jelenítjük meg.
+C) A teszteredményeket releváns metaadatokkal, például komponenssel, környezettel, verzióval és failure kategóriával korreláljuk.
+D) A riportot naponta egyszer töröljük.
+
+ANSWER: C
+EXPLANATION: A puszta pass/fail számok nem elegendők nagy rendszerek diagnosztikájához. A strukturált metaadatok lehetővé teszik a hibák trendjeinek és környezeti korrelációinak gyorsabb azonosítását.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: Contract testing
+TYPE: edgecase
+KÉRDÉS: Egy API contractban a provider garantálja, hogy egy opcionális `middleName` mező hiányozhat. Egy consumer azonban mindig kötelező mezőként próbálja deszerializálni. A contract teszt milyen problémát képes feltárni?
+A) A provider adatbázisának CPU-használatát.
+B) A consumer és provider eltérő optionality elvárását, amely runtime kompatibilitási hibához vezethet.
+C) A provider frontend CSS hibáit.
+D) A hálózati kábel fizikai állapotát.
+
+ANSWER: B
+EXPLANATION: Az optional és required mezők közötti eltérés közvetlen kompatibilitási probléma lehet. A contract teszt az ilyen szerződésbeli különbségeket már az integrációs környezetben képes jelezni, még mielőtt egy valós consumer futása során jelentkeznének.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Visual & accessibility testing
+TYPE: scenario
+KÉRDÉS: Egy webalkalmazás visual regression tesztjei minden viewporton tökéletesen egyeznek, de egy accessibility teszt szerint a billentyűzettel nem lehet elérni egy fontos modal dialog vezérlőit. Mit bizonyít a visual regression eredménye?
+A) Azt, hogy a modal teljes mértékben akadálymentes.
+B) Azt, hogy a billentyűzetes navigáció megfelelő.
+C) Azt, hogy a képernyőolvasók helyesen értelmezik a modalt.
+D) Elsősorban azt, hogy a vizsgált vizuális megjelenés a referenciaállapothoz képest megfelelő; az accessibility viselkedését külön kell ellenőrizni.
+
+ANSWER: D
+EXPLANATION: A vizuális egyezés nem bizonyítja a billentyűzetes navigáció, fókuszkezelés vagy szemantikai hozzáférhetőség helyességét. Ezekhez külön accessibility tesztek és adott esetben manuális ellenőrzések szükségesek.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: Framework design
+TYPE: production
+KÉRDÉS: Egy enterprise test frameworkben minden teszt közvetlenül egy globális konfigurációs singletonból olvassa az environment-, browser- és timeout-beállításokat. Egy párhuzamos futtatás során különböző tesztek eltérő konfigurációkat igényelnek. Mi lehet a megfelelő tervezési irány?
+A) A globális konfigurációt minden teszt előtt átírjuk.
+B) A konfigurációt immutable, scope-olt tesztkörnyezetként adjuk át, amely támogatja a párhuzamos futtatást és a teszt-specifikus beállításokat.
+C) Minden teszt külön environment variable fájlt hoz létre.
+D) A párhuzamos futtatást kikapcsoljuk minden suite-ban.
+
+ANSWER: B
+EXPLANATION: A megosztott mutable singleton párhuzamos futtatásnál race conditionöket és konfigurációs interferenciát okozhat. Az immutable, megfelelő scope-ban kezelt konfiguráció egyértelműbb és biztonságosabb futási kontextust biztosít.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: Test strategy & pyramid
+TYPE: production
+KÉRDÉS: Egy termékcsapat azt szeretné, hogy minden új feature-hez legalább egy E2E teszt készüljön, még akkor is, ha az adott feature üzleti logikája teljes egészében egyetlen izolált service-ben található. Melyik megközelítés illeszkedik jobban a kockázatalapú tesztstratégiához?
+A) Minden feature-höz kötelezően több E2E tesztet írunk.
+B) Az E2E teszteket teljesen megszüntetjük.
+C) A feature kockázata és architektúrája alapján választjuk meg a tesztszinteket, és ahol az üzleti logika izoláltan tesztelhető, ott részletesebb alacsonyabb szintű lefedést alkalmazunk.
+D) Csak manuális regressziót végzünk.
+
+ANSWER: C
+EXPLANATION: Nem minden feature igényel azonos tesztelési réteget. Az izolált, determinisztikus logika gyakran hatékonyabban és gyorsabban tesztelhető alacsonyabb szinten, míg E2E tesztek ott indokoltak, ahol a teljes rendszerfolyamatból származó kockázatot kell ellenőrizni.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: Unit testing
+TYPE: edgecase
+KÉRDÉS: Egy dátumkezelő unit teszt a `LocalDate.now()` közvetlen használatára épül. A teszt hónapfordulón vagy időzóna-váltás környékén időnként más eredményt ad. Mi a megfelelő megoldás?
+A) A tesztet csak délelőtt futtatjuk.
+B) A tesztben fix `Thread.sleep()` hívást használunk.
+C) A tesztet minden futás után kétszer megismételjük.
+D) Az aktuális időt absztrakció mögé helyezzük, például injektálható `Clock` használatával, és a tesztben kontrollált időpontot biztosítunk.
+
+ANSWER: D
+EXPLANATION: A rendszeróra közvetlen használata nem determinisztikus tesztelési feltételt teremt. Az idő injektálása lehetővé teszi, hogy a teszt pontosan definiált dátummal és időponttal ellenőrizze a határhelyzeteket.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: Mocks, stubs & fakes
+TYPE: scenario
+KÉRDÉS: Egy service unit tesztje azt ellenőrzi, hogy egy mockolt repository meghívása pontosan egy alkalommal történik, de nem ellenőrzi, hogy a megfelelő paraméterrel történt-e. Egy regresszió során a service rossz user ID-t ad át, miközben a teszt továbbra is sikeres. Mi hiányzik?
+A) Az interaction releváns részének, jelen esetben a hívás paramétereinek ellenőrzése.
+B) Egy valódi production adatbázis.
+C) Egy második mock ugyanahhoz a repositoryhoz.
+D) A repository unit tesztjének eltávolítása.
+
+ANSWER: A
+EXPLANATION: A hívások számának ellenőrzése önmagában nem bizonyítja, hogy a dependency-t helyes adatokkal használták. Ha a paraméter a komponens szerződésének része, annak validálása szükséges ahhoz, hogy az ilyen regressziót a teszt észlelje.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Selenium WebDriver
+TYPE: production
+KÉRDÉS: Egy Selenium tesztcsomagban a böngésző cache-e és local storage-a megmarad a tesztek között. Emiatt egy teszt csak akkor bukik, ha előtte egy másik teszt futott. Mi lenne a legfontosabb lépés?
+A) Minden tesztet véletlenszerű sorrendben futtatunk.
+B) A tesztek között növeljük a timeoutokat.
+C) A tesztek izolált browser contextet vagy sessiont, illetve szükség esetén kontrollált state cleanupot kapjanak.
+D) A hibát retryjal elfedjük.
+
+ANSWER: C
+EXPLANATION: A tesztek közötti perzisztáló browser state rejtett függőséget hozhat létre. A session vagy context izolálása, illetve a szükséges state explicit kezelése biztosítja, hogy egy korábbi teszt állapota ne befolyásolja a következőt.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Playwright & Cypress
+TYPE: debug
+KÉRDÉS: Egy Playwright tesztben a következő locator szerepel:
+```typescript
+page.locator('.item').nth(0)
+```
+A lista sorrendje azonban egy új backend optimalizáció után megváltozik, és a teszt ettől hibás terméket választ ki. Mi lenne jobb megoldás?
+A) A lista sorrendjét minden futás előtt manuálisan rögzítjük.
+B) Stabil, üzleti jelentéssel bíró locatorral azonosítjuk a kívánt elemet, például szerep, név vagy stabil attribútum alapján.
+C) Az `nth(0)` helyett `nth(1)` használunk.
+D) A backend válaszát minden tesztben véletlenszerűsítjük.
+
+ANSWER: B
+EXPLANATION: A DOM-pozícióra épülő locator nem stabil, ha a lista sorrendje változhat. A kívánt elem szemantikus vagy stabil üzleti azonosítóval történő kiválasztása ellenállóbb a rendezési és implementációs változásokkal szemben.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: Waits & flaky tests
+TYPE: production
+KÉRDÉS: Egy tesztcsomagban a flaky tesztek többsége retry után sikeres. A csapat ezért minden tesztre három automatikus retryt állított be, és a flaky failure-ek száma látszólag csökkent. Mi a fő kockázat?
+A) A retry növelheti a böngésző felbontását.
+B) A retry automatikusan determinisztikussá teszi a teszteket.
+C) A retry eltávolítja a valódi alkalmazáshibákat.
+D) A retry elfedheti a valódi stabilitási problémákat, és hamis zöld buildet eredményezhet, ha a teszt csak ismételt futtatásra sikeres.
+
+ANSWER: D
+EXPLANATION: A retry hasznos diagnosztikai vagy átmeneti infrastruktúrahibák kezelésére, de önmagában nem javítja a teszt stabilitását. Ha a rendszeresen hibázó tesztet automatikusan sikeresnek tekintjük retry után, a suite megbízhatóságával kapcsolatos problémák rejtve maradhatnak.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: Reporting
+TYPE: algorithm
+KÉRDÉS: Egy tesztframework több különböző tesztfutási formátumból generál riportot. Az egyik adapter `PASSED`, a másik `SUCCESS`, a harmadik `OK` állapotot használja ugyanarra a szemantikára. Mi lenne a jó architekturális megoldás?
+A) Minden riport külön kezeli az összes lehetséges stringet.
+B) A különböző adapterek közös, kanonikus belső eredménymodellre fordítják le a saját állapotaikat, és a reporting réteg ezt a modellt használja.
+C) Az összes adaptert egyetlen stringre kényszerítjük, dokumentáció nélkül.
+D) Az állapotokat kizárólag a frontendben normalizáljuk.
+
+ANSWER: B
+EXPLANATION: Egy közös belső eredménymodell leválasztja a reporting réteget a bemeneti formátumok és adapterek saját terminológiájáról. Ez egyszerűsíti a riportkészítést és csökkenti annak szükségességét, hogy minden fogyasztó külön kezelje ugyanazokat a szemantikai eltéréseket.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: Framework design
+TYPE: production
+KÉRDÉS: Egy enterprise test framework több száz tesztcsomagot szolgál ki. Egy új cross-cutting szabályt minden suite-ban külön implementáltak, ezért ugyanaz a viselkedés idővel eltérővé vált. Mi lenne a legfontosabb hosszú távú megoldás?
+A) Minden suite saját implementációját tovább finomítjuk.
+B) A szabályt csak a dokumentációban rögzítjük.
+C) A közös viselkedést egyetlen, verziózott framework-szintű capabilitybe szervezzük, egységes extension pointokkal és automatizált validációval.
+D) Minden suite-ot egyetlen repositoryba másolunk.
+
+ANSWER: C
+EXPLANATION: A közös cross-cutting viselkedés decentralizált implementációi könnyen driftelnek egymástól. A verziózott központi capability, az egyértelmű extension pointok és az automatizált framework-szintű validáció egységesebb működést és könnyebb karbantarthatóságot tesz lehetővé.
+###END

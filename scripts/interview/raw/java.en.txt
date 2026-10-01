@@ -1,0 +1,3684 @@
+### Q1
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: behavior
+QUESTION: What happens when we call the `makeSound()` method on the `Dog` object in the following code?
+CODE:
+class Animal {
+    void makeSound() {
+        System.out.println("animal");
+    }
+}
+
+class Dog extends Animal {
+    @Override
+    void makeSound() {
+        System.out.println("dog");
+    }
+}
+
+Animal animal = new Dog();
+animal.makeSound();
+ENDCODE
+A) `animal` is printed because the variable type is `Animal`.
+B) `dog` is printed because the actual type of the instance is `Dog`.
+C) A compilation error occurs because a `Dog` method cannot be called through an `Animal` reference.
+D) A runtime `ClassCastException` occurs.
+ANSWER: B
+EXPLANATION: Java uses dynamic dispatch for overridden instance methods. The reference is declared as `Animal`, but the actual object is a `Dog`, so `Dog.makeSound()` is invoked at runtime. The common incorrect answer is tempting because the declared reference type really is `Animal`, but it does not determine which overridden instance method implementation executes.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: Strings & immutability
+TYPE: output
+QUESTION: What will this program print?
+CODE:
+String s = "Java";
+s.concat(" 21");
+
+System.out.println(s);
+ENDCODE
+A) `Java 21`
+B) `21`
+C) `Java`
+D) A compilation error occurs.
+ANSWER: C
+EXPLANATION: `String` is immutable, so `concat()` does not modify the original `String` object. Instead, it returns a new `String`. Because the returned value is not stored anywhere, `s` remains `Java`. The common incorrect answer is tempting because methods on mutable objects often modify the object directly.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: output
+QUESTION: What happens when the following code is executed?
+CODE:
+List<String> names = new ArrayList<>();
+names.add("Anna");
+names.add("Béla");
+
+System.out.println(names.get(1));
+ENDCODE
+A) `Béla` is printed.
+B) `Anna` is printed.
+C) `null` is printed.
+D) `IndexOutOfBoundsException` occurs.
+ANSWER: A
+EXPLANATION: `List` indexing starts at 0. The first element has index 0 and the second has index 1, so `get(1)` returns `Béla`. The common incorrect answer is tempting because human numbering starts at 1, while Java collection indexing is zero-based.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: Exceptions
+TYPE: behavior
+QUESTION: What will be printed?
+CODE:
+try {
+    int result = 10 / 0;
+    System.out.println("A");
+} catch (ArithmeticException e) {
+    System.out.println("B");
+} finally {
+    System.out.println("C");
+}
+ENDCODE
+A) Only `A`
+B) Only `B`
+C) `A`, followed by `C`
+D) `B`, followed by `C`
+ANSWER: D
+EXPLANATION: Integer division by zero throws an `ArithmeticException` before `A` can be printed. The `catch` block handles the exception, so `B` is printed, and the `finally` block then executes, printing `C`. The common incorrect answer is tempting because some developers think of `finally` as something that runs only after successful execution, but it also runs during normal exception handling.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: equals & hashCode
+TYPE: trap
+QUESTION: If instances of a class should be considered unique by value when stored in a `HashSet`, which statement is correct?
+A) Only `equals()` needs to be overridden.
+B) Only `hashCode()` needs to be overridden.
+C) The `equals()` and `hashCode()` contracts must be implemented consistently.
+D) `toString()` needs to be overridden.
+ANSWER: C
+EXPLANATION: For hash-based collections, objects that are considered equal must have the same hash code. Therefore, `equals()` and `hashCode()` together form the required contract. The common incorrect answer is tempting because `equals()` directly defines value equality, but a `HashSet` also uses hash codes to efficiently locate elements.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: output
+QUESTION: What will be printed?
+CODE:
+List<Integer> numbers = List.of(1, 2, 3);
+
+int sum = 0;
+for (int n : numbers) {
+    sum += n;
+}
+
+System.out.println(sum);
+ENDCODE
+A) `6`
+B) `123`
+C) `0`
+D) A compilation error occurs.
+ANSWER: A
+EXPLANATION: The loop adds 1, 2, and 3 to `sum`, producing 6. The enhanced `for` loop provides the element values; it does not concatenate them as strings. The common incorrect answer is tempting because `Integer` objects are involved and automatic unboxing to primitive `int` happens implicitly.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: Memory model & GC
+TYPE: theory
+QUESTION: What happens to a Java object when there is no longer any strong reference to it?
+A) The JVM immediately frees its memory.
+B) It becomes unreachable from the perspective of the GC and may be reclaimed during a later garbage collection.
+C) It is automatically moved to the stack.
+D) The JVM immediately invokes its `finalize()` method.
+ANSWER: B
+EXPLANATION: When an object is no longer reachable through a chain of strong references, it becomes eligible for garbage collection. This does not mean that its memory is freed immediately. The common incorrect answer is tempting because garbage collection is often perceived as automatic and immediate memory reclamation.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: theory
+QUESTION: Which statement correctly describes the `final` keyword when used with an instance variable?
+A) The variable can only be assigned in the constructor.
+B) The variable can never be an object reference.
+C) A `final` field must be initialized to the same value in every constructor.
+D) A `final` reference cannot be reassigned to another object after initialization, but the referenced object's state may still be modified.
+ANSWER: D
+EXPLANATION: A `final` reference itself cannot be changed to point to another object after it has been initialized. However, the referenced object may still be mutable, so its internal state can be changed. The common incorrect answer is tempting because `final` is often incorrectly equated with complete object immutability.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: Streams & lambdas
+TYPE: output
+QUESTION: What will be printed?
+CODE:
+List<Integer> numbers = List.of(1, 2, 3, 4);
+
+long result = numbers.stream()
+        .filter(n -> n % 2 == 0)
+        .count();
+
+System.out.println(result);
+ENDCODE
+A) `1`
+B) `2`
+C) `4`
+D) `10`
+ANSWER: B
+EXPLANATION: `filter` allows only even numbers to continue through the stream, namely 2 and 4. Two elements remain, so `count()` returns 2. The common incorrect answer is tempting because the stream does not modify the original list, making it easy to confuse the number of processed elements with the original collection size.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: Optional
+TYPE: behavior
+QUESTION: What happens when the following code is executed?
+CODE:
+Optional<String> value = Optional.empty();
+
+System.out.println(value.orElse("default"));
+ENDCODE
+A) `null` is printed.
+B) An empty line is printed.
+C) `default` is printed.
+D) `NoSuchElementException` occurs.
+ANSWER: C
+EXPLANATION: The `Optional` is empty, so `orElse()` returns the provided fallback value. `orElse()` does not throw an exception when the Optional is empty. The common incorrect answer is tempting because `Optional.get()` does throw `NoSuchElementException` for an empty Optional, but `orElse()` serves a different purpose.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: I/O & NIO
+TYPE: behavior
+QUESTION: Which API is appropriate in a modern Java application for simply reading the entire text content of a file?
+A) `Files.readString(Path)`
+B) `System.in.readString()`
+C) `Path.readText()`
+D) `File.readString()`
+ANSWER: A
+EXPLANATION: The Java NIO `Files.readString(Path)` method provides a simple way to read the entire contents of a file as text in modern Java versions. The common incorrect answer is tempting because when working with the older `File` API, it may seem natural that the file object itself should provide a text-reading method.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: Concurrency & threads
+TYPE: trap
+QUESTION: What is the most important difference between calling `Thread.start()` and directly calling `Thread.run()`?
+A) There is no difference; both start a new thread.
+B) `run()` is always faster because there is no context switching.
+C) `start()` initiates execution on a new thread, while directly calling `run()` executes it as a normal method call on the current thread.
+D) `run()` starts a new JVM, while `start()` does not.
+ANSWER: C
+EXPLANATION: `start()` creates and starts the thread's execution on a separate thread, whereas `run()` is simply a normal method call. Therefore, directly calling `run()` does not result in concurrent execution. The common incorrect answer is tempting because the same `run()` method body executes in both cases, but the execution context is completely different.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: theory
+QUESTION: What is the primary purpose of a Java `record`?
+A) To define a class whose instances are automatically thread-safe.
+B) To create concise data models where accessors, `equals()`, `hashCode()`, and `toString()` are generated automatically for the declared components.
+C) To define a class that can have an unlimited number of subclasses.
+D) To define database entities exclusively.
+ANSWER: B
+EXPLANATION: A record is primarily intended for concise declarations of data aggregates. Based on its components, the compiler provides a constructor, component accessor methods, `equals()`, `hashCode()`, and `toString()`. The common incorrect answer is tempting because records are commonly used for immutable-style data transfer, but records do not by themselves guarantee complete immutability or thread safety of referenced mutable objects.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: JVM & class loading
+TYPE: theory
+QUESTION: What is the fundamental role of Java's class loading mechanism?
+A) Compiling Java source code into bytecode every time the application runs.
+B) Automatically performing garbage collection on Java objects.
+C) Creating the application's database connections.
+D) Loading the bytecode definitions of required classes and making them available to the JVM.
+ANSWER: D
+EXPLANATION: A class loader loads the definitions of classes required by the JVM, after which further JVM phases perform tasks such as verification, linking, and initialization. Compiling Java source code is a separate process, typically performed by `javac`. The common incorrect answer is tempting because from a developer's perspective, compilation and loading can appear to be part of the same overall Java execution process.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: Exceptions
+TYPE: debug
+QUESTION: What is the issue with the following code?
+CODE:
+try {
+    String value = null;
+    System.out.println(value.length());
+} catch (Exception e) {
+    System.out.println("error");
+}
+ENDCODE
+A) The `catch` block cannot handle `NullPointerException`.
+B) Calling `length()` on a null reference causes a `NullPointerException`, which is caught by `Exception`.
+C) The program fails to compile because `null` cannot be a `String`.
+D) The `catch` block prevents a `NullPointerException` from occurring.
+ANSWER: B
+EXPLANATION: `value` is a null reference, so calling the instance method `length()` causes a `NullPointerException`. This exception is a subclass of `Exception`, so the catch block handles it. The common incorrect answer is tempting because `NullPointerException` may seem like a special case, but as a runtime exception it is part of the `Exception` hierarchy.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: trap
+QUESTION: Which statement is true about a list created using `List.of(...)`?
+A) It is mutable, so `add()` and `remove()` can be used freely.
+B) It accepts only `String` elements.
+C) It is unmodifiable; a modifying operation such as `add()` throws `UnsupportedOperationException`.
+D) It is automatically converted into a thread-safe mutable list.
+ANSWER: C
+EXPLANATION: `List.of()` creates an unmodifiable list, so structural modification operations are not supported. For example, calling `add()` at runtime results in `UnsupportedOperationException`. The common incorrect answer is tempting because the `List` interface generally exposes modifying operations, but a particular implementation is not required to support them.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: Strings & immutability
+TYPE: output
+QUESTION: What will be printed?
+CODE:
+String a = "java";
+String b = new String("java");
+
+System.out.println(a == b);
+System.out.println(a.equals(b));
+ENDCODE
+A) `true`, followed by `true`
+B) `false`, followed by `false`
+C) `true`, followed by `false`
+D) `false`, followed by `true`
+ANSWER: D
+EXPLANATION: `==` compares reference identity, and `a` and `b` refer to different objects. `equals()` on `String` compares content, so the two values are equal. The common incorrect answer is tempting because string literals are interned, which can make `==` return `true` in some cases, but the explicit `new String(...)` creates a distinct object.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: equals & hashCode
+TYPE: output
+QUESTION: What will be printed?
+CODE:
+Set<String> set = new HashSet<>();
+
+set.add(new String("Java"));
+set.add(new String("Java"));
+
+System.out.println(set.size());
+ENDCODE
+A) `1`
+B) `2`
+C) `0`
+D) `ConcurrentModificationException`
+ANSWER: A
+EXPLANATION: `String` correctly overrides `equals()` and `hashCode()`, so the two distinct objects are considered equal by value. The `HashSet` therefore keeps only one instance of that value, resulting in a size of 1. The common incorrect answer is tempting because two separate `String` objects are physically created, but `HashSet` determines uniqueness using hashing and equality rather than reference identity.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: Streams & lambdas
+TYPE: output
+QUESTION: What will be printed?
+CODE:
+List<String> names = List.of("Anna", "Bela", "Adam");
+
+List<String> result = names.stream()
+        .filter(name -> name.startsWith("A"))
+        .map(String::toUpperCase)
+        .toList();
+
+System.out.println(result);
+ENDCODE
+A) `[Anna, Adam]`
+B) `[ANNA, ADAM]`
+C) `[BELA]`
+D) `[ANNA, BELA, ADAM]`
+ANSWER: B
+EXPLANATION: `filter` allows only elements starting with `A` to continue, so `Anna` and `Adam` remain. `map` then converts them to uppercase, producing `[ANNA, ADAM]`. The common incorrect answer is tempting because it is easy to focus only on the filtering step and overlook the subsequent stream operation.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Optional
+TYPE: trap
+QUESTION: What is the difference between `orElse()` and `orElseGet()` in this situation?
+CODE:
+String value = Optional.of("Java")
+        .orElseGet(() -> expensiveOperation());
+ENDCODE
+A) Both always execute `expensiveOperation()`.
+B) `orElseGet()` invokes the supplier's operation only if the `Optional` is empty.
+C) `orElseGet()` always returns `null`.
+D) `orElseGet()` works only with primitive values.
+ANSWER: B
+EXPLANATION: `orElseGet()` evaluates the supplier lazily, so because the Optional already contains `Java`, `expensiveOperation()` is not executed. In contrast, an argument passed to `orElse()` is evaluated before the method is invoked. The common incorrect answer is tempting because both APIs provide fallback behavior, but they differ in their evaluation strategy.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: output
+QUESTION: What will be printed?
+CODE:
+class Parent {
+    String value = "parent";
+}
+
+class Child extends Parent {
+    String value = "child";
+}
+
+Parent p = new Child();
+System.out.println(p.value);
+ENDCODE
+A) `parent`
+B) `child`
+C) `null`
+D) A compilation error occurs.
+ANSWER: A
+EXPLANATION: Fields are not polymorphic in the same way as overridden instance methods; field access is resolved based on the declared type of the reference. The declared type of `p` is `Parent`, so `Parent.value` is accessed. This differs from overridden instance methods, where dynamic dispatch uses the actual object type. The common incorrect answer is tempting because dynamic dispatch is familiar from method overriding, but it does not apply to fields in the same way.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: Memory model & GC
+TYPE: edgecase
+QUESTION: Which statement is true about the following situation?
+CODE:
+byte[] data = new byte[1024 * 1024];
+data = null;
+ENDCODE
+A) The `byte[]` object is immediately removed from the heap.
+B) The JVM is guaranteed never to free the array's memory.
+C) The array may become eligible for garbage collection if no other reachable reference points to it, but the time of garbage collection is not guaranteed.
+D) The array is automatically moved to the stack.
+ANSWER: C
+EXPLANATION: After the reference is set to null, assuming there is no other reachable reference to the array, the object becomes eligible for garbage collection. The actual time when its memory is reclaimed is determined by the GC and is not guaranteed. The common incorrect answer is tempting because assigning `null` makes the object unreachable through that reference, but that is not the same as immediate deletion.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: Concurrency & threads
+TYPE: behavior
+QUESTION: What happens if `start()` is called twice on the same `Thread` instance?
+CODE:
+Thread thread = new Thread(() -> System.out.println("running"));
+
+thread.start();
+thread.start();
+ENDCODE
+A) `run()` executes twice on the same thread.
+B) The JVM automatically creates a second thread for the same object.
+C) The second `start()` call is silently ignored.
+D) The second `start()` call throws `IllegalThreadStateException`.
+ANSWER: D
+EXPLANATION: A particular `Thread` instance can only be started once. After the thread has been started, calling `start()` again on the same instance throws `IllegalThreadStateException`. The common incorrect answer is tempting because it may seem natural that another `start()` should trigger another execution, but a new `Thread` instance is required for another thread execution.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: behavior
+QUESTION: What happens in the following Java 21 code?
+CODE:
+Object value = "Java";
+
+if (value instanceof String s) {
+    System.out.println(s.length());
+}
+ENDCODE
+A) `0` is printed.
+B) `4` is printed.
+C) A compilation error occurs because a pattern variable cannot be used with `instanceof`.
+D) `String` is printed.
+ANSWER: B
+EXPLANATION: Pattern matching for `instanceof`, finalized in Java 16, allows the type check and pattern variable declaration to be combined. Because the actual value is a `String`, `s.length()` returns 4. The common incorrect answer is tempting because older Java syntax required a separate cast after the `instanceof` check.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: Performance & profiling
+TYPE: performance
+QUESTION: A production Java application has sustained CPU utilization close to 100%, while response times have increased significantly. What would be the first professionally sound step in investigating the problem?
+A) Immediately increase the heap size.
+B) Immediately enable debug logging for every class.
+C) Immediately restart the application and consider the incident resolved.
+D) Use profiling and thread-dump tools to identify which threads and code paths are consuming CPU.
+ANSWER: D
+EXPLANATION: With high CPU utilization, the first step should be to measure and localize the problem. Thread dumps and profiling can reveal which threads are active and which code paths are consuming CPU time. Increasing the heap may be relevant for a memory or GC problem, but it does not explain high CPU usage by itself. The common incorrect answer is tempting because changing heap size is frequently considered when troubleshooting JVM performance, but doing so without diagnostic evidence is guesswork.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: behavior
+QUESTION: What happens when the following code is executed?
+CODE:
+class Counter {
+    int value;
+
+    Counter(int value) {
+        this.value = value;
+    }
+}
+
+Counter c1 = new Counter(10);
+Counter c2 = c1;
+c2.value = 20;
+
+System.out.println(c1.value);
+ENDCODE
+A) `20` is printed.
+B) `10` is printed.
+C) `null` is printed.
+D) A compilation error occurs.
+ANSWER: A
+EXPLANATION: `c2 = c1` does not copy the object; it makes the second reference point to the same object. Therefore, `c2.value = 20` modifies the state of the same object referenced by `c1`. The common incorrect answer is tempting because assignment can be interpreted as copying a value, but with object references, the reference value is copied.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: Strings & immutability
+TYPE: output
+QUESTION: What will be printed?
+CODE:
+String a = "Hello";
+String b = a.toUpperCase();
+
+System.out.println(a);
+System.out.println(b);
+ENDCODE
+A) `HELLO`, followed by `HELLO`
+B) `Hello`, followed by `HELLO`
+C) `HELLO`, followed by `Hello`
+D) `Hello`, followed by `Hello`
+ANSWER: B
+EXPLANATION: `toUpperCase()` returns a new `String` value and does not modify the original `a` object. Therefore, `a` remains `Hello`, while `b` contains `HELLO`. The common incorrect answer is tempting because the method name may suggest that it transforms the existing string in place.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: edgecase
+QUESTION: What happens when the following code is executed?
+CODE:
+List<String> values = new ArrayList<>();
+values.add("A");
+values.add(null);
+
+System.out.println(values.size());
+System.out.println(values.get(1));
+ENDCODE
+A) `2`, followed by `null` is printed.
+B) `1`, followed by `null` is printed.
+C) `NullPointerException` occurs when `add(null)` is called.
+D) `UnsupportedOperationException` occurs.
+ANSWER: A
+EXPLANATION: `ArrayList` allows `null` elements. The list therefore contains two elements, so its size is 2, and the second element is actually `null`. The common incorrect answer is tempting because some collections or application-level rules prohibit null values, but `ArrayList` itself does not.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Exceptions
+TYPE: trap
+QUESTION: Which statement about checked and unchecked exceptions is correct?
+A) Every `RuntimeException` is a checked exception.
+B) The compiler does not check checked exceptions.
+C) `RuntimeException` and its subclasses are unchecked exceptions.
+D) Checked exceptions must always be handled with a `catch` block; a `throws` declaration cannot be used.
+ANSWER: C
+EXPLANATION: `RuntimeException` and its subclasses are unchecked exceptions, so the compiler does not require them to be caught or declared. Checked exceptions, by contrast, are verified by the compiler and must be handled or declared. The common incorrect answer is tempting because `RuntimeException` is part of the `Exception` hierarchy, but that does not make it a checked exception.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: theory
+QUESTION: What is the purpose of calling `this(...)` from a constructor?
+A) It allows another constructor to be called within the same class.
+B) It calls the parent class constructor.
+C) It marks the object for garbage collection.
+D) It creates a new instance from the current object.
+ANSWER: A
+EXPLANATION: `this(...)` invokes another constructor within the same class, allowing constructor logic to be reused. The parent class constructor is invoked using `super(...)`. The common incorrect answer is tempting because both `this` and `super` can be used for constructor chaining, but they serve different purposes.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: output
+QUESTION: What will be printed?
+CODE:
+Map<String, Integer> scores = new HashMap<>();
+scores.put("Anna", 10);
+scores.put("Anna", 20);
+
+System.out.println(scores.size());
+System.out.println(scores.get("Anna"));
+ENDCODE
+A) `2`, followed by `20`
+B) `2`, followed by `10`
+C) `1`, followed by `10`
+D) `1`, followed by `20`
+ANSWER: D
+EXPLANATION: A `Map` associates at most one value with a given key. The second `put()` assigns a new value to the same key, replacing the previous value of 10. Therefore, one entry remains and its value is 20. The common incorrect answer is tempting because both `put()` calls execute successfully, but they do not create two separate entries for the same key.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: equals & hashCode
+TYPE: behavior
+QUESTION: Which statement about the contract of the `equals()` method is correct?
+A) `equals()` can return `true` only when two objects are physically the same object.
+B) `equals()` can define value equality and, when properly implemented, is reflexive, symmetric, transitive, consistent, and returns false for `null`.
+C) `equals()` must always return `true` for two objects of the same type.
+D) The result of `equals()` may change randomly between calls.
+ANSWER: B
+EXPLANATION: The `equals()` contract defines several properties, including reflexivity, symmetry, transitivity, consistency, and the requirement that a non-null object is not equal to `null`. An implementation can define value-based equality. The common incorrect answer is tempting because the default `Object.equals()` essentially uses reference identity, but subclasses can override it.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Streams & lambdas
+TYPE: behavior
+QUESTION: When is the following stream pipeline actually executed?
+CODE:
+List<String> names = List.of("Anna", "Bela", "Adam");
+
+Stream<String> stream = names.stream()
+        .filter(name -> {
+            System.out.println("checking " + name);
+            return name.startsWith("A");
+        });
+ENDCODE
+A) `filter` immediately runs for all three elements.
+B) It immediately runs only for the first element.
+C) It has not run for any element yet because there is no terminal operation.
+D) Creating the stream causes a compilation error.
+ANSWER: C
+EXPLANATION: Intermediate stream operations such as `filter` are lazy. Declaring the pipeline does not start processing the elements; a terminal operation such as `collect()`, `count()`, or `forEach()` is required. The common incorrect answer is tempting because the `filter()` method call itself happens immediately, but element processing starts only when a terminal operation triggers the pipeline.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: Optional
+TYPE: behavior
+QUESTION: What happens with the following code?
+CODE:
+Optional<String> value = Optional.ofNullable(null);
+System.out.println(value.isPresent());
+ENDCODE
+A) `true` is printed.
+B) `null` is printed.
+C) `NoSuchElementException` occurs.
+D) `false` is printed.
+ANSWER: D
+EXPLANATION: `Optional.ofNullable(null)` creates an empty `Optional`. Therefore, `isPresent()` returns `false`. The common incorrect answer is tempting because `Optional.of(null)` would indeed throw an exception, but `ofNullable()` is specifically designed to handle a null value safely.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: I/O & NIO
+TYPE: debug
+QUESTION: What is the issue with the following code if the specified file does not exist?
+CODE:
+Path path = Path.of("config.txt");
+String content = Files.readString(path);
+System.out.println(content);
+ENDCODE
+A) `Files.readString()` can throw `IOException`, so it must be handled or declared appropriately.
+B) `Path.of()` automatically creates the missing file.
+C) `Files.readString()` always returns `null` when the file is missing.
+D) The code always throws `NullPointerException`.
+ANSWER: A
+EXPLANATION: `Files.readString(Path)` can throw the checked `IOException`, including when the file does not exist. The caller must handle it or declare it in the method signature. The common incorrect answer is tempting because a missing file may seem like a situation that should simply produce a `null` result, but file I/O failures are represented by exceptions.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: Concurrency & threads
+TYPE: output
+QUESTION: What is guaranteed about the following program?
+CODE:
+Thread t = new Thread(() -> System.out.println("worker"));
+
+t.start();
+t.join();
+
+System.out.println("main");
+ENDCODE
+A) `main` is always printed before `worker`.
+B) `worker` is guaranteed to be printed before `main`.
+C) Neither string is printed because of `join()`.
+D) The program does not compile because `join()` cannot be called on a `Thread` object.
+ANSWER: B
+EXPLANATION: `join()` waits for the specified `Thread` to finish execution. Therefore, printing `main` can only happen after the `worker` thread has completed. The `worker` output is performed by that thread, so it must occur first. The common incorrect answer is tempting because the ordering of threads after `start()` is generally nondeterministic, but `join()` explicitly establishes this ordering for the continuation of the current thread.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: Memory model & GC
+TYPE: theory
+QUESTION: Which statement about Java heap and stack memory is correct?
+A) Every object exists exclusively on the stack.
+B) Local variables and objects always exist exclusively on the heap.
+C) The heap typically stores objects and arrays, while each thread has its own stack for method calls and local variables.
+D) The garbage collector manages only the contents of the stack.
+ANSWER: C
+EXPLANATION: In the Java memory model, the heap is typically used for objects and arrays, while each execution thread has its own stack containing stack frames, local variables, and method invocation information. JVM implementations can perform internal optimizations, so statements such as "every object always exists on the heap" are oversimplifications. The common incorrect answer is tempting because the heap and stack are often taught as two strictly separate physical memory areas.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: theory
+QUESTION: Which statement is true about a `sealed` class in Java?
+A) It can specify which classes or interfaces are allowed to be its direct subclasses or implementors.
+B) It cannot be instantiated at all.
+C) It automatically becomes immutable.
+D) Only records can extend it.
+ANSWER: A
+EXPLANATION: A `sealed` class or interface can explicitly restrict its direct subclasses or implementors using the `permits` declaration. This allows controlled inheritance hierarchies to be created. The common incorrect answer is tempting because sealed types do impose stricter inheritance rules, but they do not automatically make a type immutable or abstract.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: JVM & class loading
+TYPE: behavior
+QUESTION: What happens when a Java class contains a `static` initialization block?
+CODE:
+class Config {
+    static {
+        System.out.println("initialized");
+    }
+}
+
+System.out.println("before");
+new Config();
+System.out.println("after");
+ENDCODE
+A) `initialized` is never printed.
+B) `initialized` is printed before `before`.
+C) `before`, followed by `after`, is printed; the initialization block is ignored.
+D) `before`, followed by `initialized`, followed by `after` is printed.
+ANSWER: D
+EXPLANATION: The `static` initialization block runs when the `Config` class is initialized. The `before` statement executes before the first active use of the class. The `new Config()` then triggers class initialization, causing `initialized` to be printed, followed by `after`. The common incorrect answer is tempting because class loading and class initialization are separate JVM phases, and it is easy to assume that a `static` block executes merely when the class definition is loaded.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: Performance & profiling
+TYPE: performance
+QUESTION: A method performs the same expensive calculation on every loop iteration even though the result does not change during the loop. What is the most direct optimization?
+A) Create more threads for every iteration.
+B) Calculate the result once and reuse it if the result is genuinely invariant.
+C) Double the total heap size.
+D) Call `System.gc()` after every iteration.
+ANSWER: B
+EXPLANATION: If the result of a calculation is invariant throughout the loop, it should be calculated once and reused. This directly reduces unnecessary CPU work. The common incorrect answer is tempting because parallelization can be a general performance optimization technique, but eliminating redundant work is usually simpler and more effective in this situation.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: trap
+QUESTION: Which statement about abstract classes is correct?
+A) An abstract class cannot have a constructor.
+B) An abstract class can contain only abstract methods.
+C) An abstract class can contain concrete methods and a constructor, but it cannot be instantiated directly.
+D) Another class cannot inherit from an abstract class.
+ANSWER: C
+EXPLANATION: An abstract class can be used to share common state and behavior, so it can have a constructor and concrete methods. The abstract class itself cannot be instantiated directly, but concrete subclasses can be instantiated. The common incorrect answer is tempting because abstract methods are common in such classes, but an abstract class is not restricted to abstract methods.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: theory
+QUESTION: Why does Java generally not allow assigning a `List<Dog>` directly to a `List<Animal>` variable?
+A) Because generic types always contain primitives.
+B) Because it would create a type-safety problem: through a `List<Animal>` reference, we could try to add another `Animal` instance.
+C) Because `Dog` cannot be a subclass of `Animal`.
+D) Because the `List` interface does not support generic types.
+ANSWER: B
+EXPLANATION: Generic types are invariant. If `List<Dog>` could automatically be treated as `List<Animal>`, an `Animal` list reference could be used to add, for example, a `Cat`, violating the actual list's type safety. The common incorrect answer is tempting because a normal object reference can assign a `Dog` to an `Animal` reference, but parameterized collections are not covariant in the same way.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: Exceptions
+TYPE: output
+QUESTION: What will be printed?
+CODE:
+try {
+    System.out.println("try");
+    return;
+} finally {
+    System.out.println("finally");
+}
+ENDCODE
+A) `try`, followed by `finally`
+B) Only `try`
+C) Only `finally`
+D) A compilation error occurs.
+ANSWER: A
+EXPLANATION: The `finally` block executes before the `return` actually completes. Therefore, `try` is printed first, followed by `finally`. The method returns only after the `finally` block has finished executing. The common incorrect answer is tempting because `return` intuitively looks like an immediate method exit, but `finally` still runs during normal control flow.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: equals & hashCode
+TYPE: edgecase
+QUESTION: What can happen if we modify a field of an object stored in a `HashSet` when that field is used by both `equals()` and `hashCode()`?
+CODE:
+class User {
+    String id;
+
+    User(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof User other && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+}
+
+User user = new User("1");
+Set<User> users = new HashSet<>();
+users.add(user);
+
+user.id = "2";
+
+System.out.println(users.contains(user));
+ENDCODE
+A) It is always `true` because we are searching for the exact same object.
+B) It is always `false` because `HashSet` automatically removes the modified object.
+C) A compilation error occurs because an object stored in a hash-based collection cannot be modified.
+D) It can be `false` because the object's hash code has changed while the set placed it using the old hash code.
+ANSWER: D
+EXPLANATION: `HashSet` uses the object's hash code when it is inserted to determine the bucket in which it is stored. If state contributing to the hash code changes afterward, the object may logically belong to a different bucket while physically remaining in the original one. As a result, `contains()` may fail to find it. The common incorrect answer is tempting because the searched reference does point to the same object, but hash-based collections do not locate entries solely by reference identity.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: Streams & lambdas
+TYPE: output
+QUESTION: What will be printed?
+CODE:
+List<Integer> numbers = List.of(1, 2, 3);
+
+int result = numbers.stream()
+        .map(n -> n * 2)
+        .reduce(0, Integer::sum);
+
+System.out.println(result);
+ENDCODE
+A) `6`
+B) `12`
+C) `0`
+D) `3`
+ANSWER: B
+EXPLANATION: `map` transforms the values into 2, 4, and 6. `reduce(0, Integer::sum)` then adds these values together starting from 0, producing 12. The common incorrect answer is tempting because the sum of the original input list is 6, but each element is doubled before the reduction.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: Optional
+TYPE: trap
+QUESTION: What happens with the following code?
+CODE:
+Optional<String> value = Optional.empty();
+
+String result = value.get();
+
+System.out.println(result);
+ENDCODE
+A) `null` is printed.
+B) An empty string is printed.
+C) `NoSuchElementException` is thrown.
+D) `get()` automatically creates a default value.
+ANSWER: C
+EXPLANATION: The `Optional` is empty, so `get()` cannot return a value and throws `NoSuchElementException`. One purpose of `Optional` is to encourage explicit handling of missing values. The common incorrect answer is tempting because `null` is the traditional representation of a missing value in Java, but an empty `Optional` is not the same as a null return value.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: I/O & NIO
+TYPE: behavior
+QUESTION: What does `Path.resolve()` provide in the following example?
+CODE:
+Path base = Path.of("/app/config");
+Path file = base.resolve("application.properties");
+
+System.out.println(file);
+ENDCODE
+A) It creates a new physical file.
+B) It logically combines the paths and creates the corresponding child path.
+C) It reads the file contents.
+D) It guarantees that the file exists.
+ANSWER: B
+EXPLANATION: `resolve()` combines paths and returns a new `Path` representation. By itself, it does not create a file or directory, nor does it check whether the target actually exists. The common incorrect answer is tempting because the method name sounds like a file-system operation, but it only constructs the path object.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: output
+QUESTION: What will be printed in Java 17 or later?
+CODE:
+record Point(int x, int y) {}
+
+Point p1 = new Point(10, 20);
+Point p2 = new Point(10, 20);
+
+System.out.println(p1.equals(p2));
+ENDCODE
+A) `false`
+B) `true`
+C) A compilation error occurs.
+D) `NullPointerException` occurs.
+ANSWER: B
+EXPLANATION: A record automatically receives an `equals()` implementation based on its declared components. Since the component values of `p1` and `p2` are equal, `equals()` returns `true`. The common incorrect answer is tempting because the two objects are separate instances, but the record-generated `equals()` compares their component values rather than reference identity.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: JVM & class loading
+TYPE: theory
+QUESTION: Which statement correctly describes the difference between `ClassNotFoundException` and `NoClassDefFoundError`?
+A) They always occur in exactly the same situations.
+B) `ClassNotFoundException` is an `Error`, while `NoClassDefFoundError` is a checked exception.
+C) `ClassNotFoundException` typically indicates a failed explicit attempt to load a class, while `NoClassDefFoundError` can indicate that a class definition required at runtime is unavailable.
+D) `NoClassDefFoundError` can occur only during compilation.
+ANSWER: C
+EXPLANATION: `ClassNotFoundException` is a checked exception that commonly occurs during dynamic class loading, such as with `Class.forName()`, when the requested class cannot be found. `NoClassDefFoundError` is an `Error` that can occur when a class definition that was available or known at compile time is no longer available at runtime. The common incorrect answer is tempting because both involve class availability, but they represent different JVM situations.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: scenario
+QUESTION: In a JUnit test, we want to verify whether a service calls the repository's `save()` method. The repository is a Mockito mock. Which approach is appropriate?
+A) `verify(repository).save(entity);`
+B) `assertEquals(repository.save(entity), entity);`
+C) `repository.wasCalled("save");`
+D) `assertTrue(repository.save(entity));`
+ANSWER: A
+EXPLANATION: In Mockito, `verify()` is used to verify that a particular method was called on a mock. `verify(repository).save(entity)` checks that `save()` was invoked with the specified argument. The common incorrect answer is tempting because checking a method's return value can be useful in a unit test, but it does not verify that a mock was called as expected.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: behavior
+QUESTION: What happens when the following code is executed?
+CODE:
+class Parent {
+    Parent() {
+        System.out.println("parent");
+    }
+}
+
+class Child extends Parent {
+    Child() {
+        System.out.println("child");
+    }
+}
+
+new Child();
+ENDCODE
+A) Only `child` is printed.
+B) `parent`, followed by `child`, is printed.
+C) `child`, followed by `parent`, is printed.
+D) A compilation error occurs because the `Child` constructor cannot call the `Parent` constructor.
+ANSWER: B
+EXPLANATION: When a subclass object is created, the superclass constructor is invoked first. If there is no explicit `super(...)`, the no-argument superclass constructor is invoked implicitly. Therefore, `parent` is printed first, followed by `child`. The common incorrect answer is tempting because `new Child()` directly invokes the child constructor, but as part of Java constructor chaining, superclass initialization happens first.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: Strings & immutability
+TYPE: output
+QUESTION: What will be printed?
+CODE:
+String s = "Java";
+String t = s.replace("a", "o");
+
+System.out.println(s);
+System.out.println(t);
+ENDCODE
+A) `Java`, followed by `Jovo`
+B) `Jovo`, followed by `Jovo`
+C) `Jovo`, followed by `Java`
+D) `Java`, followed by `Java`
+ANSWER: A
+EXPLANATION: `replace()` does not modify the original `String` object; it returns a new string. Therefore, `s` remains `Java`, while `t` contains `Jovo`. The common incorrect answer is tempting because the method name suggests a mutating operation, while `String` is immutable.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: behavior
+QUESTION: Which statement is true about the following code?
+CODE:
+List<String> values = new ArrayList<>();
+values.add("A");
+values.add("B");
+values.remove(0);
+
+System.out.println(values.get(0));
+ENDCODE
+A) `A` is printed.
+B) `null` is printed.
+C) `B` is printed.
+D) `IndexOutOfBoundsException` occurs.
+ANSWER: C
+EXPLANATION: `remove(0)` removes the first element, which is `A`. After that, only `B` remains in the list, and it moves to index 0. The common incorrect answer is tempting because it is easy to mentally preserve the original indexes after removal, but list elements are reindexed.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: Exceptions
+TYPE: behavior
+QUESTION: What happens if a new exception is thrown from within a `catch` block?
+CODE:
+try {
+    throw new IllegalArgumentException();
+} catch (IllegalArgumentException e) {
+    throw new RuntimeException("wrapped");
+}
+ENDCODE
+A) The original exception is automatically ignored, and the program always continues.
+B) The new exception thrown from the `catch` block propagates at runtime if it is not handled appropriately.
+C) The JVM automatically creates another `catch` block.
+D) A new exception cannot be thrown from a `catch` block.
+ANSWER: B
+EXPLANATION: A `catch` block contains normal Java code, so it can throw another exception. If that new exception is not handled by an outer caller, it propagates up the call stack. The common incorrect answer is tempting because a `catch` block is often viewed as the point where exception handling ends, but it only handles the exception that reaches that block.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: equals & hashCode
+TYPE: edgecase
+QUESTION: What will be printed?
+CODE:
+String a = new String("Java");
+String b = new String("Java");
+
+System.out.println(a.equals(b));
+System.out.println(a.hashCode() == b.hashCode());
+ENDCODE
+A) `true`, followed by `true`
+B) `false`, followed by `false`
+C) `true`, followed by `false`
+D) `false`, followed by `true`
+ANSWER: A
+EXPLANATION: `String.equals()` checks content equality, so the two strings are equal. `String.hashCode()` is also based on the character content, so equal strings have the same hash code. The common incorrect answer is tempting because the two objects are separate instances, but `String` implements both `equals()` and `hashCode()` based on value.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: Memory model & GC
+TYPE: edgecase
+QUESTION: What happens in the following code?
+CODE:
+Object a = new Object();
+Object b = new Object();
+
+a = b;
+b = null;
+ENDCODE
+A) Both objects are eligible for garbage collection.
+B) The first object is definitely freed immediately, while the second is not.
+C) Neither object can be garbage collected.
+D) The first object may become eligible for garbage collection, while the second can remain reachable through another reference.
+ANSWER: D
+EXPLANATION: After `a` is assigned to the second object, there is no longer a reference to the first `Object` instance, so it may become eligible for garbage collection. Setting `b` to `null` does not make the second object unreachable because `a` still refers to it. The common incorrect answer is tempting because `b = null` may appear to remove the last reference to the second object, but `a` still points to it.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Concurrency & threads
+TYPE: behavior
+QUESTION: What is the main problem with the following code if multiple threads execute it concurrently?
+CODE:
+class Counter {
+    int count = 0;
+
+    void increment() {
+        count++;
+    }
+}
+ENDCODE
+A) `count++` is guaranteed to be atomic, so there is no problem.
+B) The code will definitely cause a deadlock.
+C) A race condition can occur because `count++` does not guarantee an atomic, thread-safe update.
+D) The JVM automatically makes every field thread-safe.
+ANSWER: C
+EXPLANATION: `count++` logically consists of a read, an increment, and a write, so concurrent execution by multiple threads can cause updates to be lost. Appropriate synchronization or another concurrency-safe counter mechanism is required. The common incorrect answer is tempting because `++` appears as a single short source-level operation, but that does not make it atomic.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: Streams & lambdas
+TYPE: output
+QUESTION: What will be printed?
+CODE:
+List<String> values = List.of("a", "bb", "ccc");
+
+long result = values.stream()
+        .map(String::length)
+        .filter(length -> length > 1)
+        .count();
+
+System.out.println(result);
+ENDCODE
+A) `2`
+B) `3`
+C) `1`
+D) `6`
+ANSWER: A
+EXPLANATION: `map` transforms the strings into their lengths, producing 1, 2, and 3. `filter` allows only lengths greater than 1 to continue, leaving two elements. The common incorrect answer is tempting because it is easy to focus only on the result of `map` or the size of the original list.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: Optional
+TYPE: behavior
+QUESTION: What will be printed?
+CODE:
+Optional<String> value = Optional.of("Java");
+
+value.map(String::length)
+        .ifPresent(System.out::println);
+ENDCODE
+A) `Java`
+B) `0`
+C) `4`
+D) `NoSuchElementException`
+ANSWER: C
+EXPLANATION: The `Optional` contains `Java`, so `map` applies `String::length`, which returns 4. The resulting `Optional<Integer>` is present, so `ifPresent` prints 4. The common incorrect answer is tempting because the original Optional contains a `String`, while `map` changes the type of the value contained by the Optional.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: I/O & NIO
+TYPE: behavior
+QUESTION: What does the following code do?
+CODE:
+Path directory = Path.of("data");
+
+Files.createDirectories(directory);
+ENDCODE
+A) It always deletes the `data` directory.
+B) It creates the specified directory and any missing parent directories.
+C) It creates the directory only if the parent directory already exists.
+D) It reads the entire contents of the directory.
+ANSWER: B
+EXPLANATION: `Files.createDirectories()` creates the specified directory and any missing parent directories as necessary. If the directory already exists, it does not fail merely because it already exists. The common incorrect answer is tempting because directory creation is often thought of as creating one specific directory, while this API handles the entire missing path.
+###END
+
+### Q61
+LEVEL: medior
+TOPIC: Collections & generics
+TYPE: trap
+QUESTION: What does the following method parameterization allow?
+CODE:
+static void printNumbers(List<? extends Number> numbers) {
+    for (Number number : numbers) {
+        System.out.println(number);
+    }
+}
+ENDCODE
+A) Only a `List<Integer>` can be passed to it.
+B) A `List<Number>` or a list whose element type is a subtype of `Number` can be passed to it.
+C) Any `List<Object>` can be passed to it.
+D) The method cannot treat the elements as `Number`.
+ANSWER: B
+EXPLANATION: `? extends Number` means that the list can contain some specific type that extends `Number`, such as `Integer`, `Double`, or `Number` itself. Its elements can safely be read as `Number`, but arbitrary `Number` values generally cannot be added to the list. The common incorrect answer is tempting because the word `extends` can easily be interpreted as allowing only one specific subtype.
+###END
+
+### Q62
+LEVEL: medior
+TOPIC: Java Core & OOP
+TYPE: behavior
+QUESTION: What happens in the following code?
+CODE:
+class Parent {
+    void process() {
+        System.out.println("parent");
+    }
+}
+
+class Child extends Parent {
+    @Override
+    void process() {
+        System.out.println("child");
+    }
+
+    void run() {
+        super.process();
+        process();
+    }
+}
+
+new Child().run();
+ENDCODE
+A) `child`, followed by `parent`, is printed.
+B) Only `parent` is printed.
+C) `parent`, followed by `child`, is printed.
+D) A compilation error occurs.
+ANSWER: C
+EXPLANATION: `super.process()` explicitly invokes the superclass implementation, so `parent` is printed first. The following `process()` call is a virtual method invocation, so based on the actual type of the current object, the `Child` implementation is selected. The common incorrect answer is tempting because both calls use the same method name, but `super` changes how the method is resolved.
+###END
+
+### Q63
+LEVEL: medior
+TOPIC: Exceptions
+TYPE: trap
+QUESTION: What happens with the following code?
+CODE:
+static void process() {
+    try {
+        throw new IllegalStateException("failure");
+    } finally {
+        System.out.println("cleanup");
+    }
+}
+ENDCODE
+A) The exception is lost because there is a `finally` block.
+B) `cleanup` is not printed because an exception occurred.
+C) `cleanup` is printed, and then the `IllegalStateException` propagates if it is not handled appropriately.
+D) The code does not compile because `finally` cannot contain a `println()` call.
+ANSWER: C
+EXPLANATION: The `finally` block executes, so `cleanup` is printed. Because `finally` does not automatically handle or swallow the exception, the `IllegalStateException` propagates if there is no outer handler. The common incorrect answer is tempting because `finally` often contains cleanup logic, but it is not itself an exception handler.
+###END
+
+### Q64
+LEVEL: medior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: A Java service's heap usage keeps increasing and GC runs more frequently, even though the amount of data actively used by the application does not justify this growth. What is a likely direction to investigate?
+A) Investigate whether long-lived references, such as static collections or caches, are unnecessarily keeping objects alive.
+B) There is definitely not enough CPU available.
+C) Every `String` object automatically causes a memory leak.
+D) Increasing the heap size alone proves that the problem has been solved.
+ANSWER: A
+EXPLANATION: With continuously growing live heap usage and increasing GC pressure, it is worth analyzing heap dumps and object retention, especially long-lived references and caches. Increasing the heap size only provides more available memory; it does not remove the underlying cause of a potential retention problem. The common incorrect answer is tempting because it appears to provide a quick symptomatic fix for memory growth, but it does not address the cause without diagnostic evidence.
+###END
+
+### Q65
+LEVEL: medior
+TOPIC: Concurrency & threads
+TYPE: scenario
+QUESTION: Two threads modify the same shared mutable object. Which approach can provide mutual exclusion for the critical section?
+A) Rename the method to `synchronized`.
+B) Protect the relevant code with an appropriate lock, such as a `synchronized` block.
+C) Call `Thread.sleep(1)` before every modification.
+D) Change the field from `static` to an instance field.
+ANSWER: B
+EXPLANATION: When used correctly, a `synchronized` block protects the critical section by allowing only one thread at a time to execute code guarded by the same monitor. `sleep()` does not provide mutual exclusion; it only changes timing. The common incorrect answer is tempting because a short delay may hide a race condition during testing, but it provides no synchronization guarantee.
+###END
+
+### Q66
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: What is the key difference between `ExecutorService.submit()` and `execute()`?
+A) `submit()` always starts a new JVM.
+B) `execute()` can only be used for CPU-bound tasks.
+C) `submit()` returns a `Future`, through which the task result or exception can be observed.
+D) There is no difference between the two methods.
+ANSWER: C
+EXPLANATION: `execute()` submits a `Runnable` for execution and does not return a `Future`. `submit()` returns a `Future`, which can be used to retrieve a result and observe exceptions associated with task execution. The common incorrect answer is tempting because both methods submit tasks through an executor, making them appear identical at first glance.
+###END
+
+### Q67
+LEVEL: medior
+TOPIC: Streams & lambdas
+TYPE: edgecase
+QUESTION: What happens if we try to perform a second terminal operation on a stream?
+CODE:
+Stream<String> stream = Stream.of("a", "b", "c");
+
+long count = stream.count();
+long countAgain = stream.count();
+ENDCODE
+A) The second `count()` returns the same result.
+B) The second `count()` throws `IllegalStateException`.
+C) The stream is automatically recreated.
+D) The second `count()` always returns `0`.
+ANSWER: B
+EXPLANATION: A stream is intended to be consumed only once. A terminal operation consumes the stream pipeline, so attempting another terminal operation on the same stream results in `IllegalStateException`. The common incorrect answer is tempting because the stream object is still referenced by the variable, but being reachable does not mean that the stream can be reused.
+###END
+
+### Q68
+LEVEL: medior
+TOPIC: Optional
+TYPE: trap
+QUESTION: Why can using `Optional` as a JPA entity field type be problematic?
+A) Because `Optional` is always non-serializable.
+B) Because `Optional` can store only primitive values.
+C) Because `Optional` does not support `null` values.
+D) Because `Optional` is primarily intended to represent return values, and using it as a persistent entity field can cause ORM mapping issues.
+ANSWER: D
+EXPLANATION: `Optional` is primarily intended to explicitly represent potentially missing return values, rather than serving as a general-purpose field or entity-state container. In JPA/Hibernate environments, using it as an entity field can create ORM mapping and persistence issues and is generally discouraged. The common incorrect answer is tempting because `Optional` is closely associated with null handling, but its purpose is specifically to avoid exposing null directly to callers.
+###END
+
+### Q69
+LEVEL: medior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: output
+QUESTION: What will be printed in Java 21?
+CODE:
+sealed interface Shape permits Circle, Rectangle {}
+
+record Circle(double radius) implements Shape {}
+record Rectangle(double width, double height) implements Shape {}
+
+Shape shape = new Circle(2);
+
+if (shape instanceof Circle c && c.radius() == 2) {
+    System.out.println("circle");
+}
+ENDCODE
+A) `rectangle`
+B) `circle`
+C) `true`
+D) A compilation error occurs.
+ANSWER: B
+EXPLANATION: The actual type of `shape` is `Circle`, so the pattern match succeeds and `c` refers to the `Circle` instance. Its `radius()` is 2, so the entire condition is true and `circle` is printed. The common incorrect answer is tempting because the reference type is `Shape`, but pattern matching checks the actual object type.
+###END
+
+### Q70
+LEVEL: medior
+TOPIC: JVM & class loading
+TYPE: behavior
+QUESTION: What happens when the initialization code for a class's `static` field throws an exception?
+CODE:
+class Config {
+    static int value = initialize();
+
+    static int initialize() {
+        throw new RuntimeException("init failed");
+    }
+}
+ENDCODE
+A) Class initialization is considered successful.
+B) The JVM always silently swallows the exception.
+C) Class initialization fails, and the operation that triggered initialization receives an exception.
+D) The `static` field automatically gets the value `0`, and initialization continues.
+ANSWER: C
+EXPLANATION: If an uncaught exception occurs during class initialization, class initialization fails. The operation that triggered initialization receives the corresponding failure, and subsequent attempts to use the class can result in initialization-related errors. The common incorrect answer is tempting because static primitive fields have default values, but those defaults do not override a failed explicit initialization.
+###END
+
+### Q71
+LEVEL: medior
+TOPIC: Performance & profiling
+TYPE: performance
+QUESTION: A Java application has high CPU utilization but low GC time. Based on thread dumps, a single thread continuously runs in the same CPU-intensive loop. What is the most appropriate next step?
+A) Take a heap dump solely to solve the CPU problem.
+B) Delete the entire database.
+C) Reduce the JVM heap size without any diagnostic measurement.
+D) Use a CPU profiler to determine which methods consume the most CPU time.
+ANSWER: D
+EXPLANATION: When GC activity is low but a thread is consuming significant CPU in a CPU-intensive loop, CPU profiling can identify the exact hotspots. The cause could be excessive iteration, an expensive algorithm, or inefficient computation. The common incorrect answer is tempting because heap dumps are useful JVM diagnostic tools, but they are not the primary tool for identifying CPU hotspots.
+###END
+
+### Q72
+LEVEL: medior
+TOPIC: Design patterns
+TYPE: scenario
+QUESTION: An application has multiple implementations of the same interface, each representing a different algorithm, and we want to choose which algorithm to execute at runtime. Which design pattern fits this situation best?
+A) Strategy
+B) Singleton
+C) Adapter
+D) Observer
+ANSWER: A
+EXPLANATION: The Strategy pattern organizes a family of algorithms into separate objects and allows them to be exchanged through a common interface. This is particularly useful when the algorithm can be selected at runtime. The common incorrect answer is tempting because Adapter also commonly involves interfaces and objects, but its primary purpose is to make incompatible interfaces work together.
+###END
+
+### Q73
+LEVEL: medior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: debug
+QUESTION: Why can the following Mockito test be incorrect or misleading?
+CODE:
+when(repository.findById(1L)).thenReturn(Optional.of(user));
+
+service.loadUser(1L);
+
+verify(repository).findById(2L);
+ENDCODE
+A) `verify()` can only be used with void methods.
+B) The stubbed call and the verified call use different arguments, so `verify` fails if the service actually uses the `1L` value.
+C) Mockito cannot verify calls involving `Optional`.
+D) `when()` and `verify()` cannot be used in the same test.
+ANSWER: B
+EXPLANATION: The test stubs the repository using the `1L` argument but verifies the call using `2L`. If the service uses the expected `1L` value, `verify(repository).findById(2L)` fails. The common incorrect answer is tempting because the stub and verification refer to the same method, but Mockito also considers the arguments.
+###END
+
+### Q74
+LEVEL: medior
+TOPIC: Production debugging
+TYPE: production
+QUESTION: In production, a REST endpoint is occasionally very slow, while its average response time remains normal. Which measurement would be particularly useful for investigating the issue?
+A) Only the application's total uptime.
+B) Only the JVM process startup time.
+C) Percentiles such as p95 and p99 latency, together with appropriate request tracing.
+D) The CPU temperature of the developer's machine.
+ANSWER: C
+EXPLANATION: Intermittent latency problems can easily be hidden by averages. p95 and p99 percentiles reveal the behavior of slower requests, while distributed tracing can identify which downstream component or code path consumes the time. The common incorrect answer is tempting because average latency is simple and easy to communicate, but it can hide rare slow requests.
+###END
+
+### Q75
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: scenario
+QUESTION: An application processing CPU-bound tasks uses an `ExecutorService`. Why can it be problematic to create an unlimited number of new threads for every incoming request?
+A) Because threads never consume memory.
+B) Because the JVM automatically serializes all threads.
+C) Because threads can only be used for I/O-bound tasks.
+D) Because too many threads introduce significant scheduling and memory overhead and can exhaust system resources.
+ANSWER: D
+EXPLANATION: An unlimited number of concurrent threads does not increase CPU-bound processing performance indefinitely. Threads require stack memory, scheduler time, and other resources, while excessive concurrency can lead to context switching, CPU thrashing, or resource exhaustion. The common incorrect answer is tempting because more threads intuitively seem to imply more parallelism, but for CPU-bound work the number of available CPU cores is an important limiting factor.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: Collections & generics
+TYPE: output
+QUESTION: What will be the output?
+CODE:
+List<Integer> numbers = new ArrayList<>(List.of(1, 2, 3));
+
+Iterator<Integer> iterator = numbers.iterator();
+while (iterator.hasNext()) {
+    if (iterator.next() == 2) {
+        iterator.remove();
+    }
+}
+
+System.out.println(numbers);
+ENDCODE
+A) `[1, 3]`
+B) `[1, 2, 3]`
+C) `ConcurrentModificationException` is thrown.
+D) `[2]`
+ANSWER: A
+EXPLANATION: The iterator first returns 1 and then 2. When the current element is 2, `iterator.remove()` legally removes it from the list. The list therefore remains `[1, 3]`. The most common wrong answer is tempting because modifying a collection during iteration often does cause a `ConcurrentModificationException`, but the iterator's own `remove()` method is specifically supported for this purpose.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: Java Core & OOP
+TYPE: trap
+QUESTION: Which statement about a Java interface is correct?
+A) An interface cannot contain any implemented methods.
+B) An interface can contain both `default` and `static` methods.
+C) An interface can always be instantiated directly.
+D) The fields of an interface are automatically instance fields.
+ANSWER: B
+EXPLANATION: Modern Java interfaces can contain both `default` and `static` methods, so they are not limited to abstract method declarations. Interface fields are implicitly `public static final`. The most common wrong answer is tempting because interfaces in Java before Java 8 were commonly understood as containing only abstract method declarations.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: Strings & immutability
+TYPE: behavior
+QUESTION: What happens in the following code?
+CODE:
+StringBuilder builder = new StringBuilder("Java");
+builder.append(" 21");
+
+System.out.println(builder);
+ENDCODE
+A) `Java` is printed.
+B) `21` is printed.
+C) `Java 21` is printed.
+D) A compilation error occurs.
+ANSWER: C
+EXPLANATION: `StringBuilder` is a mutable character sequence, so `append()` directly modifies the same object. The content of the builder therefore becomes `Java 21`. The most common wrong answer is tempting because `String` is immutable, making it easy to incorrectly assume that `StringBuilder` behaves the same way.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: equals & hashCode
+TYPE: debug
+QUESTION: What is wrong with the following `equals()` implementation?
+CODE:
+class User {
+    private final String id;
+
+    User(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return id == ((User) o).id;
+    }
+}
+ENDCODE
+A) `equals()` always returns `false`.
+B) `equals()` can only work with primitive fields.
+C) The `id` field should be `static`.
+D) `==` checks reference identity, so two separate `String` objects with the same content are not necessarily considered equal; the cast also causes additional problems.
+ANSWER: D
+EXPLANATION: For comparing `String` values, `equals()` should be used instead of `==`, because `==` checks reference identity. In addition, the implementation directly casts the argument to `User`, so it also behaves incorrectly for values such as `null` or objects of another type. The most common wrong answer is tempting because string literals may be interned, causing `==` to return `true` in some cases by coincidence.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Exceptions
+TYPE: output
+QUESTION: What will be the output?
+CODE:
+static int calculate() {
+    try {
+        return 10;
+    } finally {
+        return 20;
+    }
+}
+
+System.out.println(calculate());
+ENDCODE
+A) `10`
+B) `20`
+C) `0`
+D) A compilation error occurs.
+ANSWER: B
+EXPLANATION: The `try` block prepares to return `10`, but the `finally` block executes before the method actually returns. The `return` statement in `finally` overrides the earlier return, so the result is 20. The most common wrong answer is tempting because the `return` statement in the `try` block initially appears to be final.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: In an application, a large object is stored in a `static` field, and the associated data structure continuously grows throughout the application's lifetime. Why can this become a memory-retention problem?
+A) Objects can remain reachable for a long time through the `static` field, preventing the GC from collecting them.
+B) Every `static` field is automatically located on the stack.
+C) The GC can never inspect `static` references.
+D) A `static` field can only store primitive values.
+ANSWER: A
+EXPLANATION: A static reference typically remains reachable throughout the application's lifetime. If it contains a growing collection of objects, those objects cannot become eligible for collection even when the application no longer needs them. The most common wrong answer is tempting because the lifetime of `static` fields can easily be confused with the JVM's different memory areas and reference reachability.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: Concurrency & threads
+TYPE: edgecase
+QUESTION: What can be guaranteed for the following code?
+CODE:
+volatile boolean running = true;
+
+Thread worker = new Thread(() -> {
+    while (running) {
+    }
+});
+
+worker.start();
+running = false;
+ENDCODE
+A) Because of `volatile`, the worker thread is guaranteed to stop immediately.
+B) `volatile` guarantees that the loop executes at least once.
+C) `volatile` guarantees visibility of the change between threads, but does not guarantee an immediate scheduling response.
+D) Because of `volatile`, the JVM automatically interrupts the worker.
+ANSWER: C
+EXPLANATION: Reading and writing a `volatile` variable provides the required visibility guarantees between threads, so the worker thread is not forced to keep seeing a stale value. However, this does not mean that the thread will stop immediately or that the scheduler will react at a specific time. The most common wrong answer is tempting because visibility and actually interrupting or stopping thread execution are easy to conflate.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: What does `CountDownLatch` do in the following example?
+CODE:
+CountDownLatch latch = new CountDownLatch(2);
+
+Thread t1 = new Thread(latch::countDown);
+Thread t2 = new Thread(latch::countDown);
+
+t1.start();
+t2.start();
+
+latch.await();
+System.out.println("ready");
+ENDCODE
+A) `ready` is printed immediately, regardless of the state of the threads.
+B) `ready` is printed only after both threads have called `countDown()`.
+C) `await()` starts a new thread.
+D) `CountDownLatch` automatically becomes reusable after every `await()`.
+ANSWER: B
+EXPLANATION: The latch starts with a count of 2. The first `countDown()` reduces it to 1, and the second reduces it to 0, allowing the thread waiting in `await()` to continue. `CountDownLatch` is designed for one-time coordination and is not automatically reusable like a barrier. The most common wrong answer is tempting because the name `await()` can be interpreted as simple blocking, while in reality it waits for a specific counter condition.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: Streams & lambdas
+TYPE: output
+QUESTION: What will be the output?
+CODE:
+List<Integer> numbers = List.of(1, 2, 3, 4);
+
+int result = numbers.stream()
+        .filter(n -> n % 2 == 0)
+        .findFirst()
+        .orElse(-1);
+
+System.out.println(result);
+ENDCODE
+A) `1`
+B) `-1`
+C) `4`
+D) `2`
+ANSWER: D
+EXPLANATION: The `filter` allows only even values to proceed, and the first such value is 2. `findFirst()` therefore returns an `Optional` containing 2, so `orElse(-1)` is not used. The most common wrong answer is tempting because the fallback value in `orElse()` stands out, but it is only needed when the Optional is empty.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: Optional
+TYPE: edgecase
+QUESTION: What happens when the following code runs?
+CODE:
+Optional<String> value = Optional.of("Java");
+
+String result = value
+        .filter(s -> s.length() > 10)
+        .orElse("default");
+
+System.out.println(result);
+ENDCODE
+A) `default` is printed.
+B) `Java` is printed.
+C) `null` is printed.
+D) `NoSuchElementException` is thrown.
+ANSWER: A
+EXPLANATION: The `Optional` initially contains `Java`, but the `filter` condition is false because the string length is not greater than 10. The Optional therefore becomes empty, and `orElse("default")` supplies the fallback value. The most common wrong answer is tempting because the initial Optional is non-empty, but an intermediate `filter` operation can make it empty.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: I/O & NIO
+TYPE: scenario
+QUESTION: An application processes a large, multi-gigabyte file line by line. Why can reading the entire file with `Files.readString()` be problematic?
+A) Because `Files.readString()` can only handle binary files.
+B) Because the method automatically deletes every file.
+C) Because the entire content may be loaded into memory, causing significant heap usage and potentially an `OutOfMemoryError`.
+D) Because NIO does not support large files.
+ANSWER: C
+EXPLANATION: `Files.readString()` creates a single string containing the entire file, so very large files can require a significant amount of memory. For multi-gigabyte files, streaming or line-by-line processing is generally more appropriate, for example with `Files.lines()` or a suitable reader. The most common wrong answer is tempting because NIO provides modern and efficient APIs, but that does not make loading an entire file into memory inexpensive.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: trap
+QUESTION: Why can the following code be problematic?
+CODE:
+ExecutorService executor = Executors.newFixedThreadPool(2);
+
+Future<?> future = executor.submit(() -> {
+    try {
+        Thread.sleep(1000);
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
+});
+
+future.get();
+executor.shutdown();
+ENDCODE
+A) `Future.get()` automatically interrupts the task.
+B) `shutdown()` must be called before `Future.get()`.
+C) `submit()` cannot accept a `Runnable` task.
+D) `Future.get()` can block until the task completes, so it should not be used blindly from latency-sensitive or request threads.
+ANSWER: D
+EXPLANATION: `Future.get()` is a blocking operation: the current thread waits for the task to complete. This can be appropriate for certain coordination scenarios, but in request processing or other latency-sensitive code it can introduce unnecessary waiting and thread-pool contention. The most common wrong answer is tempting because a `Future` represents the result of an asynchronous task, but retrieving that result can itself be synchronous and blocking.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: theory
+QUESTION: Which statement correctly describes virtual threads in Java 21?
+A) Every virtual thread corresponds to a separate OS thread.
+B) Virtual threads are primarily suited to handling large numbers of frequently blocking I/O tasks, but they do not provide additional CPU capacity.
+C) Virtual threads can only be used in GUI applications.
+D) A virtual thread is always faster than a platform thread.
+ANSWER: B
+EXPLANATION: A virtual thread is a lightweight execution unit managed by the JVM and can be particularly effective for large numbers of tasks involving blocking I/O. It does not increase the number of available CPU cores, so it does not automatically improve performance for CPU-bound workloads. The most common wrong answer is tempting because very large numbers of virtual threads can be created, but that is not equivalent to increasing physical CPU capacity.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: JVM & class loading
+TYPE: behavior
+QUESTION: What happens if the same class name is loaded by two different class loaders?
+A) The JVM always considers them the same class.
+B) The second class loader automatically overwrites the definition loaded by the first.
+C) The two loaded classes can be considered different types even if their fully qualified class names are identical.
+D) The JVM always throws `ClassNotFoundException`.
+ANSWER: C
+EXPLANATION: In the JVM, class identity is determined by both the class name and the identity of the class loader that defined it. Therefore, two classes with the same fully qualified name loaded by different class loaders can be incompatible types. The most common wrong answer is tempting because in Java source code the fully qualified class name appears to be the only identifier, but JVM type identity is more nuanced.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Performance & profiling
+TYPE: debug
+QUESTION: An application's response time degrades significantly while CPU and heap usage remain normal. Thread dumps show many threads in the `BLOCKED` state. What should be investigated next?
+A) Investigate lock contention and identify which monitor or lock the threads are waiting for.
+B) Increase the heap without collecting any additional data.
+C) Disable garbage collection.
+D) Convert every thread to a virtual thread without any diagnostic investigation.
+ANSWER: A
+EXPLANATION: A large number of `BLOCKED` threads typically indicates lock contention: threads are waiting to acquire a monitor or another lock. Thread dumps and profiling can help identify the problematic lock and the thread currently holding it. The most common wrong answer is tempting because high latency can initially look like a general JVM resource problem, but with normal CPU and heap usage, lock contention is an especially important clue.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Design patterns
+TYPE: scenario
+QUESTION: An object has many optional parameters, and you want to construct it in a readable, step-by-step manner. Which pattern is the best fit?
+A) Observer
+B) Builder
+C) Proxy
+D) Chain of Responsibility
+ANSWER: B
+EXPLANATION: The Builder pattern enables complex objects to be constructed step by step in a readable way, particularly when many optional parameters exist. It is also frequently used to simplify the construction of immutable objects. The most common wrong answer is tempting because Observer and other patterns also structure object interactions, but complex object construction is not their purpose.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: scenario
+QUESTION: In a unit test, you want to isolate an external API client so that the test does not perform a real HTTP request. What is the appropriate Mockito-based approach?
+A) Instantiate the production HTTP client and call the real endpoint.
+B) Disable the test entirely.
+C) Mock the external client and stub the desired return value.
+D) Artificially increase the network connection speed.
+ANSWER: C
+EXPLANATION: In a unit test, a mock is typically used to isolate an external system, with the required behavior predefined through stubbing. This keeps the test deterministic and independent of network availability or the external service's state. The most common wrong answer is tempting because using a real HTTP client can be useful in an integration test, but that is a different level of testing.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: Production debugging
+TYPE: production
+QUESTION: In production, a service occasionally terminates with an `OutOfMemoryError`. Which diagnostic data would be particularly useful for determining which objects are retaining most of the heap?
+A) Only the application version.
+B) Only the number of HTTP status codes.
+C) Only the JVM process uptime.
+D) A heap dump captured at an appropriate time and analyzed using dominator/retention analysis.
+ANSWER: D
+EXPLANATION: A heap dump can show which objects are present in the heap and through which reference paths they remain reachable. Dominator or retention analysis can identify objects that directly or indirectly retain large amounts of memory. The most common wrong answer is tempting because application-level metrics are important, but they do not reveal the object-level composition of the heap by themselves.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: Collections & generics
+TYPE: performance
+QUESTION: An algorithm frequently checks whether an element exists in a large collection. The collection does not need to be ordered, and membership checks are frequent. Which data structure may be more appropriate than an `ArrayList` if a correct `equals()`/`hashCode()` implementation is available?
+A) `HashSet`
+B) `LinkedList`
+C) `Stack`
+D) `Vector`
+ANSWER: A
+EXPLANATION: `HashSet` is designed for hash-based membership checks and can provide average constant-time lookup with a suitable hash distribution. Searching for an element in an `ArrayList` can require linear time. The most common wrong answer is tempting because `LinkedList` is also a collection with flexible element handling, but value-based searches are also linear.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: Concurrency & threads
+TYPE: edgecase
+QUESTION: What is the problem with the following locking order?
+CODE:
+final Object lockA = new Object();
+final Object lockB = new Object();
+
+Thread t1 = new Thread(() -> {
+    synchronized (lockA) {
+        synchronized (lockB) {
+            System.out.println("t1");
+        }
+    }
+});
+
+Thread t2 = new Thread(() -> {
+    synchronized (lockB) {
+        synchronized (lockA) {
+            System.out.println("t2");
+        }
+    }
+});
+ENDCODE
+A) The code always causes a compilation error.
+B) Both threads always acquire the locks in the same order.
+C) A deadlock can occur if one thread holds `lockA` while the other holds `lockB`, with each waiting for the other lock.
+D) `synchronized` blocks automatically release each other's locks.
+ANSWER: C
+EXPLANATION: If `t1` acquires `lockA` and waits for `lockB` while `t2` acquires `lockB` and waits for `lockA`, a circular wait can occur. This is a classic deadlock scenario. A common solution is to acquire locks in a consistent order throughout the application. The most common wrong answer is tempting because each synchronized block is individually valid Java syntax, but concurrent lock ordering can create a system-level deadlock.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: What happens when the following `AtomicInteger` is used?
+CODE:
+AtomicInteger counter = new AtomicInteger(0);
+
+counter.incrementAndGet();
+counter.incrementAndGet();
+
+System.out.println(counter.get());
+ENDCODE
+A) `0`
+B) `1`
+C) `3`
+D) `2`
+ANSWER: D
+EXPLANATION: `AtomicInteger` provides atomic operations on the integer value it contains. Each `incrementAndGet()` increases the value by one, so the final value is 2. The most common wrong answer is tempting because atomic classes are often discussed primarily in terms of thread safety, while the result of the operation is still determined by the current value.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: behavior
+QUESTION: Which statement about a Java `record` component is correct?
+CODE:
+record User(String name) {}
+
+User user = new User("Anna");
+ENDCODE
+A) `user.name()` can be used to retrieve the value.
+B) `user.getName()` is required to retrieve the value.
+C) The record component always receives a mutable setter.
+D) Record components can only be accessed through reflection.
+ANSWER: A
+EXPLANATION: For each declared record component, the record provides an accessor method with the same name, so the value of the `name` component can be retrieved with `user.name()`. The traditional JavaBeans `getName()` convention is not automatically part of the record API. The most common wrong answer is tempting because `getX()` accessors are common in traditional Java DTOs.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: JVM & class loading
+TYPE: theory
+QUESTION: Which JVM component plays a key role in JIT compilation, optimizing Java bytecode execution at runtime?
+A) The garbage collector.
+B) The JIT compiler, which can compile hot code identified during execution into native machine code.
+C) The class loader, which compiles every method into native code.
+D) The Java source compiler, which recompiles every method on every invocation.
+ANSWER: B
+EXPLANATION: The Just-In-Time compiler can compile frequently executed bytecode sections into optimized native machine code at runtime. This allows the JVM to optimize based on actual execution profiles. The most common wrong answer is tempting because class loading, bytecode execution, and JIT compilation are all parts of the JVM runtime process, but they have distinct responsibilities.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: Design patterns
+TYPE: behavior
+QUESTION: When the state of an object changes, multiple other objects need to be notified automatically. Which design pattern is the best fit?
+A) Factory Method
+B) Decorator
+C) Observer
+D) Builder
+ANSWER: C
+EXPLANATION: The Observer pattern models a one-to-many notification relationship between a subject and multiple observers. When the subject's state or a relevant event changes, observers can receive notifications. The most common wrong answer is tempting because Decorator also involves multiple objects working together, but its purpose is to dynamically extend behavior rather than model a notification relationship.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: Production debugging
+TYPE: scenario
+QUESTION: In a production Java application, an endpoint occasionally throws a `NullPointerException`, but the issue cannot be reproduced locally. Which approach is most suitable for isolating the problem?
+A) Collect structured logs, request correlation IDs, relevant inputs, and stack traces, then compare the affected requests.
+B) Immediately rewrite the entire production codebase.
+C) Automatically suppress every `NullPointerException` with an empty `catch` block.
+D) Repeatedly call the endpoint at random until the issue becomes reproducible.
+ANSWER: A
+EXPLANATION: For a non-deterministic production failure, appropriate observability should be established first. A correlation ID helps trace a specific request through the system, while structured logs and stack traces allow differences in inputs and execution conditions to be compared. The most common wrong answer is tempting because reproduction seems like a simple solution, but random retries alone do not provide enough diagnostic information in a production environment.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: Java Core & OOP
+TYPE: output
+QUESTION: What will be the output?
+CODE:
+class Parent {
+    void print(Number value) {
+        System.out.println("Parent Number");
+    }
+}
+
+class Child extends Parent {
+    void print(Integer value) {
+        System.out.println("Child Integer");
+    }
+}
+
+Parent obj = new Child();
+obj.print(10);
+ENDCODE
+A) `Parent Number`
+B) `Child Integer`
+C) A compilation error occurs.
+D) Nothing is printed.
+ANSWER: A
+EXPLANATION: `print(Integer)` is an overload of `Parent.print(Number)`, not an override, because the parameter list is different. Overload resolution happens at compile time based on the declared reference type, so the `print(Number)` method declared in `Parent` is selected. The most common wrong answer is tempting because the runtime type of the object is `Child`, but dynamic dispatch selects the child implementation only for an actual override.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: Strings & immutability
+TYPE: output
+QUESTION: What will be the output?
+CODE:
+String a = new String("Java");
+String b = a.intern();
+String c = "Java";
+
+System.out.println(b == c);
+ENDCODE
+A) `false`
+B) `true`
+C) `null`
+D) A compilation error occurs.
+ANSWER: B
+EXPLANATION: `intern()` returns the canonical `"Java"` instance from the string pool. The string literal `c` refers to the same pooled instance, so the two references are identical. The most common wrong answer is tempting because `a` and `c` can indeed refer to different `String` objects, but the result of `intern()` refers to the pooled instance.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: Collections & generics
+TYPE: scenario
+QUESTION: A method needs to read `Number` values from different `List` implementations, but the method does not need to add elements to the list. Which signature is the most appropriate?
+A) `void process(List<Object> values)`
+B) `void process(List<? super Number> values)`
+C) `void process(List<? extends Number> values)`
+D) `void process(List<Number> values)`
+ANSWER: C
+EXPLANATION: `List<? extends Number>` allows arguments such as `List<Integer>`, `List<Double>`, and `List<Number>` while allowing the elements to be safely read as `Number`. This use of a wildcard corresponds to the producer side of the PECS principle. The most common wrong answer is tempting because `List<Number>` initially seems natural, but it does not accept a `List<Integer>`, for example.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: equals & hashCode
+TYPE: edgecase
+QUESTION: Which statement is true for `BigDecimal`?
+CODE:
+BigDecimal a = new BigDecimal("1.0");
+BigDecimal b = new BigDecimal("1.00");
+
+System.out.println(a.equals(b));
+System.out.println(a.compareTo(b) == 0);
+ENDCODE
+A) Both expressions are `true`.
+B) Both expressions are `false`.
+C) The first is `true`, the second is `false`.
+D) The first is `false`, the second is `true`.
+ANSWER: D
+EXPLANATION: `BigDecimal.equals()` considers both the numeric value and the scale, so `1.0` and `1.00` are not equal according to `equals()`. `compareTo()` performs a numeric comparison, so it returns zero in this case. The most common wrong answer is tempting because the two values are mathematically equal, but `BigDecimal` object equality is stricter.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: Exceptions
+TYPE: behavior
+QUESTION: What happens in the following try-with-resources code?
+CODE:
+class Resource implements AutoCloseable {
+    @Override
+    public void close() {
+        throw new RuntimeException("close");
+    }
+}
+
+try (Resource resource = new Resource()) {
+    throw new RuntimeException("body");
+}
+ENDCODE
+A) Only the `"close"` exception remains.
+B) Only the `"body"` exception remains.
+C) The two exceptions are merged into a single new exception.
+D) The `"body"` exception is the primary exception, while the `"close"` exception is attached to it as a suppressed exception.
+ANSWER: D
+EXPLANATION: With try-with-resources, the resource is closed when leaving the block. If the body has already thrown an exception and `close()` also throws, the exception from the body remains the primary exception, while the exception thrown during closing is attached as a suppressed exception. The most common wrong answer is tempting because `close()` really does throw a new exception, but Java does not simply replace the existing exception with it.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: Memory model & GC
+TYPE: theory
+QUESTION: What is the main difference between a `WeakReference` and a normal strong reference?
+A) An object referenced through a `WeakReference` can be collected by the GC under the appropriate conditions if there are no other strong references to it.
+B) A `WeakReference` always prevents garbage collection.
+C) A `WeakReference` can only hold primitive values.
+D) A `WeakReference` automatically keeps the object alive until the JVM shuts down.
+ANSWER: A
+EXPLANATION: A weak reference does not keep an object alive from the garbage collector's perspective. If there is no other strong reference to the object, it can become eligible for collection, and the weak reference may later return `null`. The most common wrong answer is tempting because `WeakReference` is itself a reference object, but its GC semantics differ from those of a strong reference.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Concurrency & threads
+TYPE: edgecase
+QUESTION: Why is a `volatile` variable not sufficient for an operation that requires an atomic increment?
+CODE:
+volatile int counter = 0;
+
+Thread t1 = new Thread(() -> counter++);
+Thread t2 = new Thread(() -> counter++);
+
+t1.start();
+t2.start();
+ENDCODE
+A) Because `volatile` can only read the value.
+B) Because `volatile` prevents communication between threads.
+C) Because `counter++` is a multi-step read-modify-write operation, and `volatile` alone does not make it atomic.
+D) Because `volatile` variables can only be of type String.
+ANSWER: C
+EXPLANATION: `volatile` provides appropriate visibility guarantees for the variable, but it does not make `counter++` atomic. The operation consists of reading, incrementing, and writing the value back, so two threads can overwrite each other's updates. The most common wrong answer is tempting because `volatile` does solve certain visibility problems, but visibility and atomicity are separate requirements.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: What happens when `take()` is called on a `BlockingQueue` while the queue is empty?
+A) `take()` returns `null`.
+B) The calling thread blocks until an element becomes available or the thread is interrupted.
+C) The JVM immediately throws `IllegalStateException`.
+D) `take()` automatically creates a new element.
+ANSWER: B
+EXPLANATION: `BlockingQueue.take()` is a blocking retrieval operation. If the queue is empty, the calling thread waits until an element becomes available or the waiting thread is interrupted. The most common wrong answer is tempting because `poll()` serves a similar purpose, but `poll()` returns `null` immediately when the queue is empty.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: Streams & lambdas
+TYPE: scenario
+QUESTION: Why can adding elements to an external mutable `ArrayList` be problematic in a parallel stream?
+CODE:
+List<Integer> result = new ArrayList<>();
+
+IntStream.range(0, 1000)
+        .parallel()
+        .forEach(result::add);
+ENDCODE
+A) Because `parallel()` automatically sorts the elements.
+B) Because `ArrayList` can only store Strings.
+C) Because `forEach` always executes sequentially.
+D) Because `ArrayList` is not thread-safe, so concurrent modifications can cause race conditions or inconsistent results.
+ANSWER: D
+EXPLANATION: With a parallel stream, multiple worker threads can invoke `result::add` concurrently. `ArrayList` does not provide the necessary thread-safety guarantees, so using external mutable state this way can lead to incorrect behavior. The stream's collector mechanism is generally a better approach, such as `collect(Collectors.toList())`. The most common wrong answer is tempting because `ArrayList` is simple and efficient for sequential use, but that does not make it safe for concurrent modification.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: Optional
+TYPE: behavior
+QUESTION: What happens in the following code?
+CODE:
+Optional<String> value = Optional.of("Java");
+
+Optional<Integer> result = value.flatMap(s -> Optional.of(s.length()));
+
+System.out.println(result.get());
+ENDCODE
+A) `Java` is printed.
+B) `Optional[4]` is printed.
+C) `4` is printed.
+D) `NoSuchElementException` is thrown.
+ANSWER: C
+EXPLANATION: `flatMap` transforms the `String` value directly into an `Optional<Integer>`, avoiding a nested `Optional<Optional<Integer>>`. The resulting Optional contains the value 4, so `get()` returns that value. The most common wrong answer is tempting because the variable itself has type `Optional<Integer>`, but `get()` returns the value contained inside it.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: output
+QUESTION: What will be the output?
+CODE:
+int day = 2;
+
+String result = switch (day) {
+    case 1 -> "Monday";
+    case 2 -> "Tuesday";
+    default -> "Other";
+};
+
+System.out.println(result);
+ENDCODE
+A) `Monday`
+B) `Tuesday`
+C) `Other`
+D) `null`
+ANSWER: B
+EXPLANATION: In the switch expression, `case 2 -> "Tuesday"` matches the value of `day`. With arrow syntax, `yield` is not needed because the expression directly provides the value. The most common wrong answer is tempting because traditional switch statements use `break` and different control-flow semantics.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: JVM & class loading
+TYPE: theory
+QUESTION: What is one important goal of the parent delegation model in Java class loading?
+A) Every class must always be loaded by the child class loader.
+B) Class loaders can never load their own classes.
+C) Supporting consistent loading of system and core classes while maintaining appropriate class loader namespace isolation.
+D) Automatically converting bytecode into JavaScript code.
+ANSWER: C
+EXPLANATION: Under the parent delegation model, a class loader typically delegates a class-loading request to its parent class loader first. This helps ensure that core platform classes cannot simply be replaced by application-level definitions and supports the management of class loader namespaces. The most common wrong answer is tempting because a child class loader can indeed load its own classes, but the delegation mechanism gives the parent an opportunity first.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: I/O & NIO
+TYPE: behavior
+QUESTION: What happens when `Files.walk()` is used as follows?
+CODE:
+try (Stream<Path> paths = Files.walk(Path.of("/tmp"))) {
+    long count = paths.count();
+    System.out.println(count);
+}
+ENDCODE
+A) The entire file system is automatically deleted.
+B) Only the direct children of `/tmp` are processed.
+C) `Files.walk()` always returns exactly one `Path` value.
+D) The stream can recursively traverse files and subdirectories under the specified directory, and the resource should be closed using try-with-resources.
+ANSWER: D
+EXPLANATION: `Files.walk()` returns a stream that can recursively traverse files and directories below the specified starting point by default. Because the stream may hold file-system resources, using it inside a try-with-resources block is recommended. The most common wrong answer is tempting because many simple file-system APIs only traverse one level, whereas `walk()` can process deeper directory structures by default.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: Performance & profiling
+TYPE: scenario
+QUESTION: A service has high CPU usage while memory usage is normal. The profiler shows that a single method consumes a significant portion of CPU time. What is the most appropriate next step?
+A) Investigate the algorithm and hot path of the affected method and determine whether the number or cost of executions can be reduced.
+B) Randomly increase the heap size.
+C) Disable the JIT compiler.
+D) Replace every collection with a `LinkedList`.
+ANSWER: A
+EXPLANATION: When profiling has identified a specific hot path, its algorithmic and execution cost should be analyzed. Possible improvements include eliminating unnecessary calculations, choosing a more appropriate data structure, or reducing the number of calls. The most common wrong answer is tempting because heap size often comes up in JVM performance discussions, but with normal memory usage it is not the direct issue here.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: Design patterns
+TYPE: scenario
+QUESTION: You want to extend the behavior of an existing object at runtime without modifying its original class. Which pattern is the best fit?
+A) Singleton
+B) Decorator
+C) Builder
+D) Factory Method
+ANSWER: B
+EXPLANATION: A Decorator wraps an existing object and provides additional behavior without modifying the original class. Multiple decorators can also be layered on top of one another, allowing behavior to be composed. The most common wrong answer is tempting because Factory Method also deals with objects, but its purpose is object creation rather than dynamically extending the behavior of existing objects.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: scenario
+QUESTION: When using Mockito, you want to verify that a method was called exactly once with a specific argument. Which approach is appropriate?
+A) `verify(service).call(any())`
+B) `verify(service, times(2)).call(42)`
+C) `verify(service, times(1)).call(42)`
+D) `verify(service, never()).call(42)`
+ANSWER: C
+EXPLANATION: `times(1)` explicitly requires exactly one invocation, while the `42` argument also verifies that the method was called with the expected parameter. Mockito's default `verify(service).call(42)` behavior also expects one invocation, but using `times(1)` explicitly communicates the test's intent. The most common wrong answer is tempting because the default `verify` behavior does indeed verify one invocation, but `times(1)` states the requirement explicitly.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: Production debugging
+TYPE: production
+QUESTION: In a production service, garbage collection time occasionally increases significantly while throughput decreases. Which investigation can provide more direct information about GC behavior?
+A) Only a list containing the names of the HTTP endpoints.
+B) Analyzing GC logs and JVM GC metrics, such as pause time, allocation rate, and heap occupancy.
+C) Analyzing the frontend CSS files.
+D) Renaming the application's package names.
+ANSWER: B
+EXPLANATION: When investigating GC problems, data such as pause time, allocation rate, heap occupancy, and GC cycles can directly help explain the behavior. This can reveal, for example, whether a high allocation rate or insufficient heap capacity is contributing to the problem. The most common wrong answer is tempting because HTTP metrics are important for understanding user impact, but they do not by themselves reveal the internal behavior of the GC.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: Collections & generics
+TYPE: behavior
+QUESTION: What will be the output?
+CODE:
+Map<String, Integer> map = new LinkedHashMap<>();
+map.put("A", 1);
+map.put("B", 2);
+map.put("A", 3);
+
+System.out.println(map);
+ENDCODE
+A) `{A=1, B=2}`
+B) `{A=3, B=2}`
+C) `{A=3}`
+D) `{B=2, A=3}`
+ANSWER: B
+EXPLANATION: In insertion-order mode, `LinkedHashMap` preserves the order in which keys were first inserted. The second `put("A", 3)` replaces the value associated with `A`, but does not create a new key or move it to the end. Therefore the result is `{A=3, B=2}`. The most common wrong answer is tempting because updating the value can easily be confused with inserting a new key, but updating an existing key does not change insertion order.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: Exceptions
+TYPE: scenario
+QUESTION: In a service layer, you want to translate a lower-level database exception into a domain-specific exception while preserving the original cause. What is the appropriate approach?
+A) Ignore the original exception.
+B) Convert every exception into an `Error`.
+C) Swallow the original exception and return `null`.
+D) Throw a domain-specific exception and preserve the original exception as its cause.
+ANSWER: D
+EXPLANATION: During exception translation, a lower-level exception can be converted into a higher-level exception that matches the domain abstraction. Preserving the original exception as the cause ensures that diagnostic information is not lost. The most common wrong answer is tempting because the service layer should indeed hide infrastructure details, but that does not mean losing the original cause.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: A heap dump contains many instances retained by a cache, and the cache continuously grows. Why can this be a memory-leak-like problem even when the GC is working correctly?
+A) Because the GC only collects primitive values.
+B) Because heap dumps always contain incorrect data.
+C) Because the objects in the cache are still reachable, so the GC correctly does not collect them even though the application no longer needs them from a business perspective.
+D) Because every cache automatically uses off-heap memory.
+ANSWER: C
+EXPLANATION: The garbage collector does not consider reachable objects to be garbage. If a cache continues to hold strong references to objects, the GC correctly keeps them alive even when the application logic no longer needs them. Therefore, an inappropriate eviction strategy or unbounded cache growth can create a memory-leak-like problem. The most common wrong answer is tempting because excessive memory usage is often attributed to the GC itself, even though the GC simply follows object reachability rules.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: Concurrency & threads
+TYPE: scenario
+QUESTION: Why can using `Thread.sleep()` inside a critical section while holding a lock be dangerous?
+CODE:
+synchronized (lock) {
+    updateState();
+    Thread.sleep(5000);
+    publishState();
+}
+ENDCODE
+A) Because `sleep()` automatically interrupts the thread.
+B) Because the thread retains the `synchronized` lock while sleeping, so other threads may wait unnecessarily for a long time.
+C) Because `sleep()` always causes a deadlock.
+D) Because `sleep()` releases all JVM locks.
+ANSWER: B
+EXPLANATION: `Thread.sleep()` suspends the thread's execution, but it does not release the monitor lock currently held by the thread. Therefore, in this example, other threads cannot acquire the `lock` object during the five-second sleep. The most common wrong answer is tempting because the thread is indeed not doing useful work while sleeping, but the monitor it acquired is still held.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: What happens if the first stage of a `CompletableFuture` pipeline throws an exception?
+CODE:
+CompletableFuture<String> future =
+        CompletableFuture.supplyAsync(() -> {
+            throw new RuntimeException("failure");
+        }).thenApply(String::toUpperCase);
+
+System.out.println(future.isCompletedExceptionally());
+ENDCODE
+A) `true`
+B) `false`
+C) `null`
+D) A compilation error occurs.
+ANSWER: A
+EXPLANATION: The stage created by `supplyAsync` completes exceptionally, so the subsequent `thenApply` transformation is not executed normally. The resulting `CompletableFuture` therefore completes exceptionally, which `isCompletedExceptionally()` reports as `true`. The most common wrong answer is tempting because `thenApply` is part of the pipeline, but it cannot complete normally when its upstream stage has failed.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: Streams & lambdas
+TYPE: scenario
+QUESTION: You want to group the elements of a `List<String>` by their length. Which stream operation is the most appropriate?
+A) `map(String::length)`
+B) `filter(String::isEmpty)`
+C) `collect(Collectors.groupingBy(String::length))`
+D) `findFirst()`
+ANSWER: C
+EXPLANATION: The `groupingBy` collector organizes elements into groups based on a key. `String::length` provides the grouping key, so all three-character strings, for example, are placed into the same group. The most common wrong answer is tempting because `map(String::length)` also produces the string lengths, but it loses the structure needed to group the original elements.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: I/O & NIO
+TYPE: edgecase
+QUESTION: What is the difference between `Path.normalize()` and checking whether a file actually exists?
+A) `normalize()` always creates the file.
+B) `normalize()` only works on Windows.
+C) `normalize()` automatically checks whether the target file exists.
+D) `normalize()` logically simplifies the path, for example by processing `.` and certain `..` elements, but by itself it does not check or modify the file system.
+ANSWER: D
+EXPLANATION: `normalize()` performs a logical path transformation, such as removing redundant `.` elements and resolving certain `..` segments. It does not access the file system, and it does not guarantee that the resulting path actually exists. The most common wrong answer is tempting because a normalized path may look like a real file path, but a `Path` object and the actual state of the file system are separate concepts.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Production debugging
+TYPE: scenario
+QUESTION: In production, an application occasionally terminates with `java.lang.OutOfMemoryError: Metaspace`. Which problem can be particularly relevant?
+A) Only too many HTTP requests are being received.
+B) Excessive or improperly released class loaders and the class metadata they retain.
+C) A single large Java `String` automatically causes every Metaspace problem.
+D) Reducing the stack size always resolves Metaspace exhaustion.
+ANSWER: B
+EXPLANATION: Metaspace is primarily associated with storing class metadata. Dynamic class loading, class loader leaks, or large numbers of generated classes can cause the amount of class metadata to grow, particularly in application-server or plugin-based environments. The most common wrong answer is tempting because every `OutOfMemoryError` can initially look like a generic heap problem, while `Metaspace` represents a different memory area and requires a different diagnostic direction.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: Collections & generics
+TYPE: behavior
+QUESTION: What will be the output?
+CODE:
+Map<String, Integer> map = new TreeMap<>();
+map.put("B", 2);
+map.put("A", 1);
+map.put("C", 3);
+
+System.out.println(map.keySet());
+ENDCODE
+A) `[A, B, C]`
+B) `[B, A, C]`
+C) `[C, B, A]`
+D) An unspecified order, similar to `HashMap`.
+ANSWER: A
+EXPLANATION: A `TreeMap` maintains its keys in their natural ordering, so String keys appear in lexicographical order. The most common wrong answer is tempting because the `Map` interface itself does not generally guarantee ordering, but `TreeMap` is specifically an ordered map implementation.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: Java Core & OOP
+TYPE: output
+QUESTION: What will be the output?
+CODE:
+interface A {
+    default void run() {
+        System.out.println("A");
+    }
+}
+
+interface B {
+    default void run() {
+        System.out.println("B");
+    }
+}
+
+class C implements A, B {
+    @Override
+    public void run() {
+        A.super.run();
+    }
+}
+
+new C().run();
+ENDCODE
+A) `B`
+B) `A`
+C) `A` and `B`
+D) A compilation error occurs.
+ANSWER: B
+EXPLANATION: If a class inherits default methods with the same signature from two interfaces, it must explicitly override the method. `C` does so and then explicitly invokes the default implementation from interface `A` using `A.super.run()`. The most common wrong answer is tempting because both interfaces provide the same method, but `C` explicitly selects one implementation.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: Strings & immutability
+TYPE: performance
+QUESTION: Why can the following code be problematic from a performance perspective with a large number of iterations?
+CODE:
+String result = "";
+
+for (int i = 0; i < 10000; i++) {
+    result += i;
+}
+ENDCODE
+A) Because String can only be used as a constant.
+B) Because `+=` always modifies the same String object.
+C) Because each `+=` can create a new String object, causing unnecessary allocations and copying.
+D) Because the JVM does not support String concatenation inside loops.
+ANSWER: C
+EXPLANATION: `String` is immutable, so concatenation can create a new String value. In large loops, this can result in significant allocation and character-copying overhead; in such cases, explicitly using `StringBuilder` may be more appropriate. The most common wrong answer is tempting because the compiler can optimize some simple concatenation cases, but that does not mean every dynamic loop is automatically optimal.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: Exceptions
+TYPE: trap
+QUESTION: Which statement about multi-catch is correct?
+CODE:
+try {
+    process();
+} catch (IOException | SQLException e) {
+    log(e);
+}
+ENDCODE
+A) The two exception types must have a common subclass.
+B) The two exceptions can be handled in a single catch branch if the types are not related through inheritance.
+C) Multi-catch can only be used with unchecked exceptions.
+D) The type of the `e` variable is always `Object`.
+ANSWER: B
+EXPLANATION: Multi-catch allows multiple independent exception types to be handled in a single catch branch. Types that have an inheritance relationship cannot be listed together in the same multi-catch because one type would already encompass the other. The most common wrong answer is tempting because the shared handling logic can make a common superclass requirement seem intuitive.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: A Java application creates many short-lived objects, while most objects become unreachable very quickly. Which JVM mechanism typically makes this allocation pattern efficient to handle?
+A) Generational garbage collection, which takes advantage of the fact that many objects are short-lived.
+B) The class loader automatically deletes every object.
+C) The stack immediately frees every heap object.
+D) `finalize()` guarantees fast reclamation for every object.
+ANSWER: A
+EXPLANATION: Generational GC benefits from the observation that many objects are short-lived. Frequent collection of the young generation can therefore handle this allocation pattern efficiently. The most common wrong answer is tempting because the relationship between the stack and heap is important in memory management, but heap object reclamation is performed by the garbage collector.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: Concurrency & threads
+TYPE: scenario
+QUESTION: Why is it important to handle `Thread.interrupt()` correctly in a worker thread performing a blocking operation?
+A) Because interrupt automatically stops every Java thread.
+B) Because interrupt deletes all objects used by the thread.
+C) Because interrupt always throws an `Error`.
+D) Because interrupt is a cooperative cancellation signal that the code must handle appropriately, for example by propagating `InterruptedException` or restoring the interrupt status.
+ANSWER: D
+EXPLANATION: Java's interrupt mechanism is cooperative: a thread does not necessarily stop automatically. Many blocking APIs signal interruption by throwing `InterruptedException`, which the code must handle appropriately. If the exception cannot be propagated, a common approach is to restore the interrupt status using `Thread.currentThread().interrupt()`. The most common wrong answer is tempting because the name "interrupt" suggests an immediate stop, but in Java it is primarily a coordination mechanism.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: What is an important property of `ConcurrentHashMap.computeIfAbsent()`?
+A) It creates a new value on every call, even if the key already exists.
+B) The mapping function is invoked only when there is no value for the given key, and the operation can be used with a map designed for concurrent access.
+C) The method can only be used in sequential programs.
+D) The method automatically removes all existing values.
+ANSWER: B
+EXPLANATION: `computeIfAbsent` computes a value when there is no existing mapping for the key. With `ConcurrentHashMap`, this operation is designed for concurrent use, making it a common choice for lazy cache-style initialization. The most common wrong answer is tempting because the mapping function appears in every invocation of the code, but it is not normally invoked when an appropriate value already exists.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: Streams & lambdas
+TYPE: edgecase
+QUESTION: What happens when the following code runs?
+CODE:
+List<String> names = List.of("Anna", "Bela", "Adam");
+
+long count = names.stream()
+        .filter(name -> {
+            System.out.println(name);
+            return name.startsWith("A");
+        })
+        .limit(2)
+        .count();
+ENDCODE
+A) All three names are printed, and the result is `2`.
+B) Only `Anna` is printed, and the result is `1`.
+C) `Anna`, `Bela`, and `Adam` are printed, and the result is `1`.
+D) `Anna`, `Bela`, and `Adam` are printed, and the result is `2`.
+ANSWER: D
+EXPLANATION: The stream pipeline is lazy, and `limit(2)` needs to find two matching elements. The `filter` examines `Anna`, then `Bela`, then `Adam`; `Anna` and `Adam` match, so two elements pass through and `count()` returns 2. The most common wrong answer is tempting because `limit(2)` can easily be interpreted as examining only the first two source elements, but here it applies to the stream after filtering.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: Optional
+TYPE: trap
+QUESTION: What is the difference between `orElse()` and `orElseGet()` in the following situation?
+CODE:
+String value = Optional.of("Java")
+        .orElse(expensiveCalculation());
+
+String value2 = Optional.of("Java")
+        .orElseGet(() -> expensiveCalculation());
+ENDCODE
+A) The argument to `orElse()` may be evaluated eagerly, while the supplier passed to `orElseGet()` is invoked only when necessary.
+B) Both always execute `expensiveCalculation()`.
+C) `orElseGet()` is always faster, even when the Optional is empty.
+D) `orElse()` cannot be used with a non-null String value.
+ANSWER: A
+EXPLANATION: The argument to `orElse()` is evaluated as a normal Java method argument before `orElse()` itself is invoked, so `expensiveCalculation()` can run even when the Optional contains a value. `orElseGet()` receives a `Supplier`, which is invoked only when the Optional is empty. The most common wrong answer is tempting because both APIs provide a fallback value, but their evaluation strategies are different.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: scenario
+QUESTION: Which benefit is directly associated with a Java record compact constructor?
+A) It allows the record to inherit from any arbitrary class.
+B) It automatically generates mutable setters.
+C) It allows validation or normalization of constructor parameters without requiring explicit assignments for every record component.
+D) It prevents `equals()` from being generated.
+ANSWER: C
+EXPLANATION: A compact constructor can be used for validation and normalization without requiring explicit field assignments for every record component. The record mechanism handles component initialization. The most common wrong answer is tempting because the record constructor is still a normal construction point, but it does not change the record's fundamental immutable data-model semantics.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: JVM & class loading
+TYPE: edgecase
+QUESTION: What happens if an exception is thrown while a class is being initialized?
+CODE:
+class Config {
+    static {
+        if (Boolean.getBoolean("fail")) {
+            throw new RuntimeException("init failed");
+        }
+    }
+}
+ENDCODE
+A) The class is always initialized normally.
+B) The JVM automatically reruns the initializer block on every access.
+C) The exception can only occur at compile time.
+D) Class initialization fails; the triggering use can result in an `ExceptionInInitializerError`, and later uses can report an initialization failure.
+ANSWER: D
+EXPLANATION: If a non-`Error` exception occurs during class initialization, the JVM can report the initialization failure to the thread that triggered initialization as an `ExceptionInInitializerError`. After a class has failed initialization, the JVM does not simply retry normal initialization on every subsequent access; later use can result in an initialization-related error, typically a `NoClassDefFoundError`. The most common wrong answer is tempting because the timing of first use and class initialization is easy to conflate.
+NOTE: The original code used `if (true)`, which makes the static initializer unable to complete normally and therefore causes a compilation error. It was changed to a runtime condition so the intended class-initialization behavior can be tested.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: I/O & NIO
+TYPE: scenario
+QUESTION: An application wants to copy the contents of a large file to another file. Why can using an appropriate NIO-based copy operation be preferable to implementing a custom byte-by-byte loop?
+A) Because NIO guarantees that the entire file content is always loaded into the heap.
+B) Because appropriate NIO APIs provide a higher-level and potentially efficient file-copy mechanism without requiring the application to implement its own byte-by-byte copying logic.
+C) Because NIO only supports text files.
+D) Because NIO automatically compresses every file.
+ANSWER: B
+EXPLANATION: NIO file APIs provide higher-level operations such as `Files.copy()`, so the application does not need to implement its own copying loop. Actual performance depends on the platform, file system, and implementation, so an absolute performance guarantee would be incorrect. The most common wrong answer is tempting because a higher-level API mainly looks like a convenience feature, but it also allows the underlying implementation to use appropriate platform-level mechanisms.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: Performance & profiling
+TYPE: trap
+QUESTION: Why can the result of a simple `System.nanoTime()`-based microbenchmark be misleading in Java?
+A) Because Java never performs runtime optimization.
+B) Because `nanoTime()` always measures in milliseconds.
+C) Because a single measurement may not account for JIT warmup, dead-code elimination, GC, and other runtime effects.
+D) Because the JVM does not support time measurement.
+ANSWER: C
+EXPLANATION: The JVM can optimize code at runtime, so the performance of early iterations can differ from performance after warmup. GC, JIT compilation, and compiler optimizations can all affect the measurement. For serious microbenchmarks, a tool such as JMH is therefore preferable. The most common wrong answer is tempting because `nanoTime()` provides high-resolution time measurement, but the measurement methodology can still be flawed.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Design patterns
+TYPE: scenario
+QUESTION: In a system, you want to perform an authorization check before allowing access to an object while keeping the actual object handling unchanged. Which pattern is the best fit?
+A) Proxy
+B) Builder
+C) Observer
+D) Strategy
+ANSWER: A
+EXPLANATION: A Proxy provides controlled access to another object, allowing concerns such as authorization checks, lazy initialization, or logging to be placed in front of the actual object. The client can work with the proxy through the same abstraction. The most common wrong answer is tempting because a Proxy can have a structure similar to a Decorator, but the primary purpose of a Proxy is controlling access.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: scenario
+QUESTION: What is the main difference between a Mockito mock and a spy?
+A) A mock can only handle primitive values.
+B) A spy always calls a remote network service.
+C) A mock and a spy are completely identical concepts.
+D) A mock primarily provides an isolated test double, while a spy can observe a real object's behavior and allows parts of that behavior to be overridden.
+ANSWER: D
+EXPLANATION: A Mockito mock is primarily a controlled test double whose behavior can be stubbed and verified. A spy typically wraps a real object, so real methods can execute while selected behavior can be overridden. The most common wrong answer is tempting because both are test doubles, but their relationship to the underlying real object is different.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: Java Core & OOP
+TYPE: edgecase
+QUESTION: Which statement about covariant return types is correct?
+CODE:
+class Parent {
+    Number create() {
+        return 1;
+    }
+}
+
+class Child extends Parent {
+    @Override
+    Integer create() {
+        return 1;
+    }
+}
+ENDCODE
+A) `Child` cannot override the method because the return type is different.
+B) The override is allowed because `Integer` is a subtype of `Number`.
+C) The override would only be allowed if both return types were primitive types.
+D) The code is only valid starting with Java 21.
+ANSWER: B
+EXPLANATION: In Java, an overriding method may have a return type that is a subtype of the overridden method's return type. This is called a covariant return type. `Integer` is a subtype of `Number`, so the method validly overrides the parent implementation. The most common wrong answer is tempting because overriding is often described as requiring the same method signature, but return types have a separate covariant rule.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: Collections & generics
+TYPE: edgecase
+QUESTION: What happens in a `HashMap` if a key's `hashCode()` value changes after the key has already been inserted?
+CODE:
+class Key {
+    int value;
+
+    Key(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public int hashCode() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Key other && value == other.value;
+    }
+}
+
+Key key = new Key(1);
+Map<Key, String> map = new HashMap<>();
+map.put(key, "value");
+
+key.value = 2;
+
+System.out.println(map.get(key));
+ENDCODE
+A) `"value"` is always printed.
+B) The map automatically moves the key to the new hash bucket.
+C) `null` may be returned because the lookup can search a different bucket based on the new hash than the bucket where the key was originally stored.
+D) `HashMap` automatically invokes the key's constructor again.
+ANSWER: C
+EXPLANATION: `HashMap` uses the key's hash to determine which bucket to search. If the hash-relevant state of the key changes after insertion, the map does not automatically move the key. A subsequent lookup can therefore search a different location based on the new hash and fail to find the originally stored entry. The most common wrong answer is tempting because the map dynamically manages its internal structure during insertion, but it does not track mutations of already-stored keys.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: Concurrency & threads
+TYPE: scenario
+QUESTION: In a high-throughput service, multiple threads increment the same shared counter. Why might `AtomicLong` be more appropriate than a `synchronized` block for a simple increment operation?
+A) Because `AtomicLong` is always lock-free and therefore always faster.
+B) Because `AtomicLong` executes every increment on a separate OS thread.
+C) Because `AtomicLong` eliminates all concurrency problems in the application.
+D) Because it provides an atomic read-modify-write operation without requiring a full monitor-based synchronization mechanism for this simple operation.
+ANSWER: D
+EXPLANATION: `AtomicLong` can provide atomic operations based on CAS, allowing a simple counter increment without using a full monitor. However, this does not mean it is always faster or that it solves every concurrency problem. The most common wrong answer is tempting because atomic classes are often described as lock-free solutions, but the actual performance and progress guarantees depend on the operation and platform.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: java.util.concurrent
+TYPE: scenario
+QUESTION: In a `CompletableFuture` pipeline, you want to execute a slow I/O operation using a dedicated executor instead of the default common pool. Which approach is appropriate?
+A) Use `supplyAsync(task, executor)`.
+B) Use `supplyAsync(task)` and replace the executor of the already-running task afterward.
+C) `CompletableFuture` does not support custom executors.
+D) A new OS thread must always be created manually.
+ANSWER: A
+EXPLANATION: The `CompletableFuture.supplyAsync()` overload allows an explicit `Executor` to be supplied. This is particularly useful for isolating I/O-bound work or controlling execution resources. The most common wrong answer is tempting because the default executor makes `CompletableFuture` convenient, but it is not the only execution model available.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: Streams & lambdas
+TYPE: performance
+QUESTION: Why can `parallelStream()` be a poor choice for processing a large data set in an I/O-bound workload?
+A) Because parallel streams only work with primitive types.
+B) Because parallel streams automatically sort the data.
+C) Because parallel streams cannot execute lambda expressions.
+D) Because the default execution model combined with blocking I/O may not fit the application's resource and concurrency model and can cause thread-pool contention.
+ANSWER: D
+EXPLANATION: The default execution model of a parallel stream is not necessarily appropriate for large amounts of blocking I/O. Blocking operations can occupy worker threads for long periods, causing contention and resource exhaustion. The most common wrong answer is tempting because parallelism intuitively sounds faster, but for I/O-bound workloads the concurrency model and execution resources are at least as important.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: A long-running Java application's heap usage keeps increasing and does not return to its previous level after GC. A heap dump shows that an application-level `Map` is retaining an increasing number of objects. What is the most likely technical explanation?
+A) The garbage collector is broken because the heap should return to zero after every GC.
+B) Strong references maintained by the application keep the objects reachable, so the GC correctly does not collect them.
+C) A stack overflow automatically causes a heap leak.
+D) The JVM keeps every `Map` object alive forever.
+ANSWER: B
+EXPLANATION: The GC does not empty the heap; it collects objects that have become unreachable. If a long-lived map keeps strong references to the objects, they remain reachable and the collector correctly does not reclaim them. The most common wrong answer is tempting because high heap usage after GC can look like faulty collector behavior, while the application's reference structure is often the actual cause.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: JVM & class loading
+TYPE: scenario
+QUESTION: In a plugin system, each plugin is loaded with a new class loader, but a global registry continues to hold references to the old class loaders. What can be the consequence?
+A) The class loader and the class metadata it loaded cannot become collectible, potentially causing Metaspace growth and eventually Metaspace exhaustion.
+B) The JVM automatically removes the references from the registry.
+C) Only heap usage can increase; Metaspace can never increase.
+D) A class loader leak can only be detected at compile time.
+ANSWER: A
+EXPLANATION: A class loader can become collectible when it is no longer appropriately reachable, allowing classes defined by it to become eligible for unloading as well. If a global registry continues to reference the loader, the loader and associated class metadata can remain alive. In a long-running plugin system, this can lead to a class loader leak and growing Metaspace usage. The most common wrong answer is tempting because the registry may look like a simple reference container, but its lifetime can determine the reachability of the entire class loader graph.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: I/O & NIO
+TYPE: scenario
+QUESTION: When processing a large file, you want to avoid loading the entire file into memory at once. Which approach best fits this requirement?
+A) Use `Files.readString(path)`.
+B) Use `Files.readAllLines(path)`.
+C) Use streaming or buffered processing that keeps only the required portions in memory.
+D) Copy the entire file contents into a `byte[]` array.
+ANSWER: C
+EXPLANATION: Streaming or buffered processing avoids keeping the entire file in memory at once. This can significantly reduce heap pressure for very large files and allows continuous processing. The most common wrong answer is tempting because `readAllLines()` is a convenient API, but loading the entire file into memory conflicts with the requirement.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Performance & profiling
+TYPE: production
+QUESTION: In a production service, the p99 latency occasionally increases significantly while average latency barely changes. Why is it important to investigate tail latency separately?
+A) Because the average is always an invalid metric.
+B) Because p99 measures only JVM startup time.
+C) Because p99 automatically reveals the specific root cause.
+D) Because rare but significant delays can be hidden by the average, while some users may experience substantial performance degradation.
+ANSWER: D
+EXPLANATION: The average compresses the distribution into a single aggregate value, so it may not reveal rare but extremely slow requests. p99 provides information about the upper tail of the latency distribution, which is particularly important in distributed systems and user-facing services. The most common wrong answer is tempting because p99 is indeed a useful diagnostic metric, but it does not identify the root cause by itself.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Production debugging
+TYPE: production
+QUESTION: In a production Java service, all worker threads in the thread pool occasionally appear to be waiting while new tasks continue to arrive, and application throughput drops to almost zero. Which diagnostic step is most appropriate?
+A) Capture thread dumps and determine whether the worker threads are waiting for locks, other threads, or blocking I/O operations.
+B) Immediately double the thread pool size without any diagnostic investigation.
+C) Completely disable garbage collection.
+D) Swallow all exceptions to ensure that the worker threads continue running.
+ANSWER: A
+EXPLANATION: When the entire worker pool is waiting, the first step should be to determine exactly which resource or event the workers are waiting for. Thread dumps can reveal stack traces, lock contention, joins, and blocking I/O calls. The most common wrong answer is tempting because a larger pool appears to offer more parallelism, but if an underlying resource or lock is blocking the workers, blindly increasing the pool size can make the problem worse.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: Concurrency & threads
+TYPE: production
+QUESTION: In a production system, you occasionally see multiple request threads remaining in the `BLOCKED` state for a long time because of a `synchronized` method. Meanwhile, the thread holding the lock is making an external HTTP call. What is the most important problem with this design?
+
+A) The thread holding the lock keeps it while blocked on I/O, so other threads cannot execute the critical section.
+B) `synchronized` automatically interrupts the HTTP call when another thread is waiting for the lock.
+C) The `BLOCKED` state can only occur because of garbage collection.
+D) The external HTTP call always runs on a separate JVM thread, so it has no effect on the lock.
+
+ANSWER: A
+EXPLANATION: If blocking external I/O occurs inside a `synchronized` block or method, the thread retains the monitor until the call returns. This can significantly increase lock contention and request latency. The most common wrong answer is tempting because blocking I/O does indeed stall the thread's execution, but it does not automatically release a `synchronized` lock.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: What is the result of the following code?
+
+CODE:
+CompletableFuture<Integer> future =
+    CompletableFuture.supplyAsync(() -> 10)
+        .thenApply(x -> x * 2)
+        .thenApply(x -> {
+            if (x == 20) {
+                throw new IllegalStateException("failed");
+            }
+            return x + 1;
+        })
+        .exceptionally(ex -> 99);
+
+System.out.println(future.join());
+ENDCODE
+
+A) 20
+B) 99
+C) `IllegalStateException`
+D) 21
+
+ANSWER: B
+EXPLANATION: The first two stages produce 20. The following `thenApply` throws an exception, causing the CompletableFuture to complete exceptionally. The `exceptionally` stage handles that failure and returns 99, so `join()` produces that value. The most common wrong answer is tempting because the callback that throws the exception does not complete normally, but `exceptionally` recovers from that failure.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: Collections & generics
+TYPE: trap
+QUESTION: Which statement correctly describes the following method?
+
+CODE:
+static <T> void copyFirst(
+        List<? extends T> source,
+        List<? super T> target) {
+
+    if (!source.isEmpty()) {
+        target.add(source.get(0));
+    }
+}
+ENDCODE
+
+A) The method only works when both lists use exactly the same generic type.
+B) An arbitrary `T` value can be safely added to the `source` list.
+C) The `source` can safely be read as `T` values, while the `target` can accept `T` values.
+D) The `target` must be exactly `List<T>`, because `add` does not compile with a wildcard.
+
+ANSWER: C
+EXPLANATION: `? extends T` acts as a producer: its elements can safely be read as `T`. `? super T` acts as a consumer: `T` values can safely be added to it. This is a classic application of the PECS principle. The most common wrong answer is tempting because wildcards can initially appear to hide the concrete type, but `super` is precisely what makes writing `T` values safe.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: In a heap dump, you see that several million domain objects are reachable from a single global `ConcurrentHashMap` instance. GC runs regularly, but the number of objects does not decrease. What best explains this behavior?
+
+A) The garbage collector can only collect objects referenced by local variables.
+B) `ConcurrentHashMap` automatically makes all objects immutable.
+C) The GC cannot collect objects while they are located on the heap.
+D) The strong references held by the map keep the objects reachable, so the GC does not consider them collectible.
+
+ANSWER: D
+EXPLANATION: A garbage collector does not collect reachable objects. If a global map holds strong references to them, the objects remain reachable regardless of whether the application logically needs them anymore. The most common wrong answer is tempting because the GC does indeed operate on heap objects, but what matters is reachability, not where the object is located.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: Streams & lambdas
+TYPE: performance
+QUESTION: You are processing tens of millions of elements with the following stream:
+
+CODE:
+long result = values.stream()
+    .filter(x -> expensiveCheck(x))
+    .mapToLong(x -> expensiveTransformation(x))
+    .sum();
+ENDCODE
+
+Profiling shows that `expensiveTransformation` performs significantly more computation than is strictly necessary for the final result. What is the most important optimization direction to investigate?
+
+A) Always replace `stream()` with `parallelStream()`.
+B) Investigate whether the processing logic can be reorganized so that unnecessary elements are eliminated as early as possible.
+C) Replace every lambda expression with an anonymous inner class.
+D) Always collect the stream into a `List` first.
+
+ANSWER: B
+EXPLANATION: With large data sets, it is especially important to ensure that expensive transformations are performed only for elements that are actually needed. Filtering and opportunities for early termination can reduce the overall computational cost. The most common wrong answer is tempting because parallel processing can improve performance for some workloads, but it does not replace eliminating unnecessary computation.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: JVM & class loading
+TYPE: scenario
+QUESTION: An application server dynamically loads and removes plugins. After running for a long time, Metaspace usage keeps increasing. The amount of heap-resident objects remains relatively stable. What is one of the most likely causes?
+
+A) The class loader instances associated with the plugins are still referenced by a global registry, so the class loaders and the classes they loaded cannot be unloaded.
+B) String objects in the heap always directly consume Metaspace memory.
+C) The garbage collector can never release a class loader.
+D) Metaspace consists exclusively of Java heap objects.
+
+ANSWER: A
+EXPLANATION: For class unloading to occur, among other conditions, the relevant class loader must become unreachable. If a global registry continues to hold a strong reference to it, the classes it loaded and their associated metadata can remain reachable. This can cause a class-loader leak and increasing Metaspace usage. The most common wrong answer is tempting because both Metaspace and the heap are JVM-managed memory areas, but they are distinct memory regions.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: Exceptions
+TYPE: production
+QUESTION: A service translates a lower-level `SQLException` into a domain-level `OrderPersistenceException`. Which approach correctly preserves the original failure?
+
+A) `throw new OrderPersistenceException();`
+B) `throw new OrderPersistenceException(sqlException.getMessage());`
+C) `throw new OrderPersistenceException("Order save failed", sqlException);`
+D) `throw new OrderPersistenceException(sqlException.toString());`
+
+ANSWER: C
+EXPLANATION: Passing the cause preserves the original exception chain, so the lower-level cause remains available for logging and troubleshooting. Passing only the message or `toString()` loses the structured exception-cause relationship. The most common wrong answer is tempting because the original error text may still be visible, but a message alone is not a substitute for the complete exception chain.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: debug
+QUESTION: Why can the following test become brittle or incorrect if the internal implementation of `service` changes while its externally observable behavior remains the same?
+
+CODE:
+@Test
+void createsOrder() {
+    service.createOrder(request);
+
+    verify(repository).findById(request.customerId());
+    verify(repository).save(any(Order.class));
+}
+ENDCODE
+
+A) Because Mockito cannot verify repository methods.
+B) Because `verify` can only be used with private methods.
+C) Because the test requires a specific internal implementation.
+D) Because the test is only correct if every repository call is mocked.
+
+ANSWER: C
+EXPLANATION: The test specifies a concrete internal interaction, such as requiring the service to call `findById`. If the externally observable behavior remains unchanged but the implementation obtains the data differently, the test can fail unnecessarily. The most common wrong answer is tempting because the repository is indeed a mocked object, but the actual problem is excessive coupling to implementation details.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Design patterns
+TYPE: scenario
+QUESTION: A system needs to perform the same operation using several different algorithms. The algorithm can change at runtime based on configuration, and the business logic should not need to know the algorithm's implementation details. Which design pattern fits this requirement best?
+
+A) Singleton
+B) Strategy
+C) Observer
+D) Adapter
+
+ANSWER: B
+EXPLANATION: The Strategy pattern encapsulates algorithms behind separate implementations, allowing the appropriate one to be selected at runtime. This reduces coupling between the business logic and the concrete algorithm implementation. The most common wrong answer is tempting because Observer also deals with dynamic behavior, but its primary purpose is propagating state changes to interested parties.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: Performance & profiling
+TYPE: production
+QUESTION: A REST API has an average response time of 80 ms and a p95 of 120 ms, but its p99 occasionally reaches 8 seconds. What conclusion is most justified?
+
+A) The API is definitely slow for every request.
+B) There is no performance problem based on the average.
+C) The application probably performs garbage collection for every request.
+D) Rare, extremely slow requests indicate a significant tail-latency problem that should be investigated separately.
+
+ANSWER: D
+EXPLANATION: A p99 value shows that roughly the slowest 1% of requests can behave very differently from the typical requests. In such a case, tracing, dependency latency, lock contention, GC, and other downstream issues should be investigated. The most common wrong answer is tempting because a low average is indeed a useful overall metric, but it can hide severe latency affecting a smaller subset of users.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: What happens when the following code runs?
+
+CODE:
+ExecutorService executor = Executors.newFixedThreadPool(2);
+
+Future<Integer> future = executor.submit(() -> {
+    Thread.sleep(1000);
+    return 42;
+});
+
+System.out.println("before");
+System.out.println(future.get());
+System.out.println("after");
+
+executor.shutdown();
+ENDCODE
+
+A) `42` is printed immediately after `before`.
+B) `future.get()` waits for the task to complete, so `42` is printed approximately one second later.
+C) `future.get()` interrupts the running task.
+D) `executor.shutdown()` immediately terminates the running task.
+
+ANSWER: B
+EXPLANATION: `submit` returns a Future representing the task's result. `get()` blocks until the result becomes available, so `42` is printed only after approximately one second of waiting. The most common wrong answer is tempting because a Future is only a handle to the task, but `get()` specifically acts as a synchronization point by waiting for its result.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: scenario
+QUESTION: A web application needs to handle tens of thousands of mostly independent requests. A significant portion of the requests spend most of their time waiting for external HTTP services while using little CPU. Which Java 21 approach best fits this workload?
+
+A) Use a single platform thread for every request.
+B) Allocate one long-lived platform thread with a large stack for every request.
+C) Use virtual threads for tasks involving blocking I/O.
+D) Limit every request to a number of threads equal to the number of CPUs.
+
+ANSWER: C
+EXPLANATION: Virtual threads are particularly well suited to workloads involving large numbers of mostly blocking I/O operations, because many concurrent tasks can be handled with substantially lower resource overhead. This does not mean they automatically make CPU-bound computations faster. The most common wrong answer is tempting because platform threads can also handle blocking I/O, but at high concurrency they can have significant resource overhead.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: Java Core & OOP
+TYPE: trap
+QUESTION: What happens in the following code?
+
+CODE:
+class Parent {
+    static void run() {
+        System.out.println("parent");
+    }
+}
+
+class Child extends Parent {
+    static void run() {
+        System.out.println("child");
+    }
+}
+
+Parent value = new Child();
+value.run();
+ENDCODE
+
+A) `parent` is printed because static methods are not selected through dynamic dispatch.
+B) `child` is printed based on the runtime type.
+C) The code does not compile because static methods cannot be inherited.
+D) The code fails with `AbstractMethodError`.
+
+ANSWER: A
+EXPLANATION: Static methods do not participate in instance-based dynamic dispatch. The method call is resolved based on the declared type, so calling through the `Parent` type binds to `Parent.run()`. The most common wrong answer is tempting because instance methods are indeed dynamically dispatched based on the runtime type.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: Memory model & GC
+TYPE: edgecase
+QUESTION: You use a `WeakHashMap` as a cache. Why is it not guaranteed that an inserted entry will remain there for a long time?
+
+A) Because `WeakHashMap` randomly removes entries after every `put`.
+B) Because it holds keys using weak-reference semantics, so if a key is no longer strongly reachable elsewhere, the entry may disappear after garbage collection.
+C) Because values are automatically set to `null` during every garbage collection.
+D) Because `WeakHashMap` cannot store String keys.
+
+ANSWER: B
+EXPLANATION: `WeakHashMap` holds keys through weak references. If a key is no longer strongly reachable from elsewhere, the garbage collector may reclaim it, and the corresponding entry can then disappear. The most common wrong answer is tempting because the map can indeed remove entries automatically, but this behavior is tied to the key becoming weakly reachable rather than happening randomly.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: Collections & generics
+TYPE: behavior
+QUESTION: What happens when the following code runs?
+
+CODE:
+List<Integer> numbers = new ArrayList<>();
+numbers.add(10);
+
+List<? extends Number> values = numbers;
+
+Number value = values.get(0);
+
+System.out.println(value);
+ENDCODE
+
+A) The program does not compile because nothing can be read from `? extends Number`.
+B) The program throws `ClassCastException` at runtime.
+C) The program prints `10` because the elements can safely be read as `Number`.
+D) The result of `values.get(0)` can only be `Object`.
+
+ANSWER: C
+EXPLANATION: The `extends` wildcard guarantees that the list contains some type that extends `Number`. Therefore, its elements can safely be read as `Number` references. The specific generic type is unknown, however, so adding an arbitrary `Number` would not be safe. The most common wrong answer is tempting because the wildcard does restrict writing, but it does not prevent safe reading.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: Streams & lambdas
+TYPE: edgecase
+QUESTION: What happens when the following code runs?
+
+CODE:
+List<String> names = List.of("Anna", "Bela", "Adam");
+
+long count = names.stream()
+    .filter(name -> name.startsWith("A"))
+    .peek(name -> System.out.println(name))
+    .count();
+
+System.out.println("count=" + count);
+ENDCODE
+
+A) Only `count=2` is printed.
+B) `Anna` and `Adam`, followed by `count=2`, are printed.
+C) `Anna`, `Bela`, `Adam`, followed by `count=3`, are printed.
+D) The stream cannot execute because of `peek`.
+
+ANSWER: B
+EXPLANATION: The `filter` allows only elements whose names start with `A` to continue, so `peek` runs only for `Anna` and `Adam`. The `count` is therefore two. The most common wrong answer is tempting because `peek` side effects can be misleading, but `Bela` has already been excluded by the preceding `filter`.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: JVM & class loading
+TYPE: scenario
+QUESTION: An application wants to load multiple plugin versions simultaneously. Two class loaders load the same fully qualified class name, but the classes come from different plugin JARs. Which statement is correct?
+
+A) The two classes are automatically the same Java type because their fully qualified names are identical.
+B) The JVM determines type identity solely from the package name.
+C) The class loader does not matter if the class bytecode is identical.
+D) The class loader participates in JVM type identity, so the two classes can be different types.
+
+ANSWER: D
+EXPLANATION: For the JVM, class identity is determined by the binary name together with the defining class loader. This allows different versions of the same class name to be loaded in isolated class-loader namespaces. The most common wrong answer is tempting because the fully qualified class name is often sufficient to identify a class in Java source code, but the JVM also distinguishes class-loader namespaces.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: Performance & profiling
+TYPE: production
+QUESTION: A Java application is running at around 95% CPU utilization. Heap occupancy is normal, GC pauses are short, and request latency is high. Which investigation can provide the most direct information about which code is consuming CPU?
+
+A) Run a CPU sampling profiler and inspect the hot methods.
+B) Double the JVM heap size.
+C) Trigger more garbage collections.
+D) Disable all logging and restart the application.
+
+ANSWER: A
+EXPLANATION: Under high CPU utilization, a CPU profiler can directly show which methods and call paths consume a significant portion of processor time. This enables targeted investigation of algorithmic or hot-path issues. The most common wrong answer is tempting because heap and GC are frequent sources of performance problems, but with normal GC metrics, CPU profiling provides more direct evidence.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: java.util.concurrent
+TYPE: scenario
+QUESTION: In a `CompletableFuture` pipeline, you want to call several independent, slow external services in parallel and then combine their results. Which approach best expresses this relationship?
+
+A) Block on the first future with `get()` and start the next operation afterward.
+B) Execute all operations inside the same synchronized block.
+C) Start the independent `CompletableFuture` operations and then use `CompletableFuture.allOf(...)` to wait for the complete set.
+D) Synchronize every future using a separate `Thread.sleep()` call.
+
+ANSWER: C
+EXPLANATION: `allOf` is designed to represent a common completion point for multiple independent futures. This allows the independent operations to execute concurrently and lets the pipeline continue once the complete set has finished. The most common wrong answer is tempting because blocking `get()` can also retrieve a result, but it serializes the waiting and can reduce concurrency.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: production
+QUESTION: An integration test uses a database, and after one test finishes, its data remains in the database. As a result, the outcome of the next test depends on execution order. What is the most important testing problem?
+
+A) JUnit does not support database tests.
+B) The tests lack proper isolation, so the state created by one test can affect another.
+C) A database is always faster than a mock, so it should be mocked.
+D) Integration tests must mock every SQL query.
+
+ANSWER: B
+EXPLANATION: A well-designed test environment should keep tests isolated so that execution order does not change their results. For database integration tests, this can be achieved through transaction rollback, isolated databases, or appropriate cleanup mechanisms. The most common wrong answer is tempting because mocks are indeed useful in unit tests, but that does not make an integration test incorrect.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: I/O & NIO
+TYPE: performance
+QUESTION: A service processes a 20 GB log file but only needs to find lines containing a specific pattern. Why can the following approach be problematic?
+
+CODE:
+String content = Files.readString(path);
+
+for (String line : content.split("\n")) {
+    if (line.contains("ERROR")) {
+        process(line);
+    }
+}
+ENDCODE
+
+A) `Files.readString` only works with binary files.
+B) `split` only works with Windows files.
+C) `contains` cannot be used on String objects.
+D) The entire file is loaded into memory, and `split` can create additional objects, so streaming-based processing can be more memory-efficient.
+
+ANSWER: D
+EXPLANATION: `readString` loads the entire file into a single String, which can require an enormous amount of memory for a 20 GB file. `split` can also create additional objects and an array. For large files, processing them line by line or through another streaming mechanism is generally more memory-efficient. The most common wrong answer is tempting because `contains` is indeed a simple operation, but the main memory cost here comes from materializing the entire input.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Memory model & GC
+TYPE: trap
+QUESTION: Which statement correctly describes the relationship between a `volatile` field and garbage collection?
+
+A) A `volatile` field guarantees that the referenced object will never be garbage collected.
+B) `volatile` automatically creates a strong reference to every object for the entire lifetime of the application.
+C) `volatile` primarily provides memory-visibility and certain ordering guarantees; by itself, it does not prevent an object from being garbage collected.
+D) The garbage collector does not read volatile fields.
+
+ANSWER: C
+EXPLANATION: `volatile` provides visibility and ordering guarantees under the Java Memory Model, but it does not make a reference live forever. If a volatile field no longer refers to an object and there are no other strong references to it, the object can eventually become eligible for garbage collection. The most common wrong answer is tempting because a volatile field provides strong visibility guarantees, but that is not the same as guaranteeing object lifetime.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: Concurrency & threads
+TYPE: deadlock
+QUESTION: Two threads attempt to acquire locks in the following order:
+
+CODE:
+synchronized (lockA) {
+    synchronized (lockB) {
+        work();
+    }
+}
+
+synchronized (lockB) {
+    synchronized (lockA) {
+        work();
+    }
+ENDCODE
+
+What problem can occur?
+
+A) A deadlock can occur if one thread holds `lockA` while waiting for `lockB`, while the other holds `lockB` while waiting for `lockA`.
+B) The JVM automatically releases one of the locks if a deadlock occurs.
+C) The two locks guarantee a race condition, but cannot cause a deadlock.
+D) `synchronized` blocks always operate in a lock-free manner.
+
+ANSWER: A
+EXPLANATION: Acquiring two different locks in inconsistent orders is a classic way to create a deadlock. One thread can hold the first lock while waiting for the second, while the other does the opposite. The most common wrong answer is tempting because the JVM can detect certain deadlocks using diagnostic tools, but it does not automatically release the locks to resolve them.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: behavior
+QUESTION: What happens when the following Java 21 code runs?
+
+CODE:
+sealed interface Result permits Success, Failure {}
+
+record Success(String value) implements Result {}
+record Failure(String reason) implements Result {}
+
+static String describe(Result result) {
+    return switch (result) {
+        case Success s -> "success: " + s.value();
+        case Failure f -> "failure: " + f.reason();
+    };
+}
+
+System.out.println(describe(new Success("OK")));
+ENDCODE
+
+A) The `switch` does not compile because sealed interfaces cannot be used with `switch`.
+B) The program prints `success: OK`.
+C) The program always selects the `Failure` branch.
+D) Pattern matching only works with classes, not records.
+
+ANSWER: B
+EXPLANATION: A sealed interface has a known and restricted set of direct implementations, allowing the compiler to verify that the `switch` is exhaustive. The pattern matching here recognizes the `Success` instance and accesses its value through the `value()` accessor. The most common wrong answer is tempting because modern `switch` pattern matching combines several newer language features, but this combination is supported in Java 21.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: Production debugging
+TYPE: scenario
+QUESTION: In a production system, a request occasionally hangs for several seconds while CPU and memory utilization remain normal. The application uses multiple thread pools and locks. Which diagnostic step can provide the most direct information about what the threads are waiting for?
+
+A) Immediately increase the JVM heap size.
+B) Immediately disable garbage collection.
+C) Capture thread dumps while the problem is occurring and inspect locks, WAITING/BLOCKED states, and stack traces.
+D) Redeploy the entire application without examining the logs.
+
+ANSWER: C
+EXPLANATION: If CPU and memory utilization are normal but requests remain stuck for a long time, a thread dump can directly show whether threads are running, waiting for locks, waiting for other threads, or blocked on I/O. Taking several dumps close together in time can be particularly useful for identifying persistent waiting states. The most common wrong answer is tempting because memory is a common source of performance problems, but with normal memory utilization, examining thread states is more targeted.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: Concurrency & threads
+TYPE: production
+QUESTION: In a production application, you want to stop a long-running worker thread using a `volatile boolean` flag. The worker is currently blocked in a `BlockingQueue.take()` call. Why is setting the flag to `false` not sufficient by itself?
+
+A) `volatile` only guarantees visibility for writes, not reads.
+B) While blocked in `BlockingQueue.take()`, the thread does not get to check the flag again.
+C) `volatile` fields cannot be used for communication between threads.
+D) `BlockingQueue.take()` automatically interrupts itself when a volatile field changes.
+
+ANSWER: B
+EXPLANATION: The `volatile` flag ensures that the worker sees the current value when it checks the flag again. However, if the thread is blocked inside `take()`, it cannot perform another check until that call returns or is interrupted. In such a case, `interrupt()` or an appropriate queue wake-up mechanism may also be required. The most common wrong answer is tempting because `volatile` is indeed suitable for visibility-based communication, but it does not interrupt arbitrary blocking operations.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: What happens when the following code runs?
+
+CODE:
+AtomicInteger counter = new AtomicInteger(0);
+
+int result = counter.updateAndGet(value -> {
+    if (value < 10) {
+        return value + 2;
+    }
+    return value;
+});
+
+System.out.println(result);
+ENDCODE
+
+A) `0`
+B) `1`
+C) `2`
+D) `10`
+
+ANSWER: C
+EXPLANATION: `updateAndGet` atomically applies the supplied function to the current value. The initial value is 0, which is less than 10, so the new value becomes 2, and that value is returned by the method. The most common wrong answer is tempting because `AtomicInteger` is often demonstrated with simple increment operations, but here the complete update function determines the new value.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: Collections & generics
+TYPE: trap
+QUESTION: What happens when the following code runs?
+
+CODE:
+Map<String, List<Integer>> map = new HashMap<>();
+
+map.computeIfAbsent("a", key -> new ArrayList<>()).add(10);
+map.computeIfAbsent("a", key -> new ArrayList<>()).add(20);
+
+System.out.println(map.get("a"));
+ENDCODE
+
+A) `[10, 20]`
+B) `[20]`
+C) `null`
+D) The second `computeIfAbsent` always creates a new list, so the contents of the map are unpredictable.
+
+ANSWER: A
+EXPLANATION: The first `computeIfAbsent` creates and stores the list associated with the `"a"` key. The second call finds an existing non-null value, so it does not create a new list and instead returns the same list. Therefore, 10 and then 20 are added to the same list. The most common wrong answer is tempting because the lambda could create a new list on every invocation, but the mapping function is only applied when the key is absent or mapped to `null`.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Streams & lambdas
+TYPE: production
+QUESTION: In a production workload using `parallelStream()`, each element requires waiting for an external REST API. Throughput is unpredictable, and other CPU-intensive tasks occasionally become slower as well. What is the most important suspicion?
+
+A) A parallel stream always processes elements in order.
+B) The stream automatically starts a new JVM for every element.
+C) REST API calls are always CPU-bound operations.
+D) Blocking I/O can occupy workers in the common ForkJoinPool for long periods, causing contention with other work.
+
+ANSWER: D
+EXPLANATION: `parallelStream()` can use the common ForkJoinPool by default. If tasks spend significant time blocked on I/O, pool workers remain occupied and have less capacity to execute other work, which can cause resource contention and unpredictable performance. The most common wrong answer is tempting because REST calls can indeed spend significant time waiting, but that waiting is precisely what makes blocking operations problematic in a limited worker pool.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: Memory model & GC
+TYPE: production
+QUESTION: In a long-running Java process, heap occupancy gradually reaches a higher baseline after every Full GC. The allocation rate does not increase significantly. Which investigation can provide the most direct evidence that an object-retention problem exists?
+
+A) Comparing heap dumps and analyzing dominator trees and retained sizes.
+B) Increasing the number of CPU cores.
+C) Doubling the thread pool size.
+D) Changing JVM startup parameters without restarting the process.
+
+ANSWER: A
+EXPLANATION: If the amount of heap that remains after Full GC keeps increasing while the allocation rate does not explain the change, it is useful to investigate which objects retain large amounts of heap. Comparing heap dumps and analyzing dominator trees can reveal retention paths such as caches, registries, or static references. The most common wrong answer is tempting because CPU and thread-pool configuration can affect performance, but they do not directly identify which objects are keeping heap memory reachable.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: JVM & class loading
+TYPE: edgecase
+QUESTION: In a Java application, a static field of one class depends on the static initialization of another class, while the second class indirectly accesses the first during initialization. Why can this be dangerous?
+
+A) The JVM automatically sets every static field to an exception instead of `null`.
+B) The JVM always enters an infinite loop in this situation.
+C) The class-initialization ordering and initialization state can lead to unexpected values being observed during initialization or to initialization-related problems.
+D) Static fields can never trigger initialization of another class.
+
+ANSWER: C
+EXPLANATION: The JVM manages class initialization and its thread-safe execution, but circular dependencies between static initializers can create complex initialization ordering. In some cases, code can observe default or not-yet-fully-initialized state from another class, or class initialization can fail because of an exception. The most common wrong answer is tempting because circular initialization can look like an infinite recursion problem, but JVM class initialization semantics are more nuanced.
+
+NOTE: The explanation was clarified to distinguish circular class initialization from guaranteed infinite recursion and to accurately describe the possibility of observing default state or encountering initialization failure.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Exceptions
+TYPE: edgecase
+QUESTION: What happens when the following code runs?
+
+CODE:
+try {
+    throw new RuntimeException("primary");
+} finally {
+    throw new IllegalStateException("cleanup");
+}
+ENDCODE
+
+A) Both exceptions are automatically combined and preserved.
+B) The `IllegalStateException` masks the original `RuntimeException`.
+C) Only the `RuntimeException` remains because `finally` cannot throw exceptions.
+D) The JVM automatically creates a `SuppressedException`.
+
+ANSWER: B
+EXPLANATION: If the `finally` block throws a new exception, that exception replaces the exception that was already in flight. The original `RuntimeException` does not automatically become a suppressed exception in this pattern. The most common wrong answer is tempting because try-with-resources does provide automatic suppressed-exception handling, but that is not a general rule for every `finally` block.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Performance & profiling
+TYPE: performance
+QUESTION: A developer calls a Java method 10,000,000 times in a simple benchmark and then calculates the average execution time using `System.nanoTime()`. Why can this be misleading?
+
+A) `nanoTime()` always has millisecond precision.
+B) Java method execution time is always constant.
+C) The JVM cannot optimize methods called from inside a loop.
+D) JIT warmup, dead-code elimination, GC, and other JVM optimizations can significantly affect the measurement.
+
+ANSWER: D
+EXPLANATION: The JVM can optimize hot code at runtime, for example by applying inlining, and it may even eliminate computations if their results have no observable effect. GC and other environmental factors can also distort the measurement. For serious benchmarking, JMH is recommended. The most common wrong answer is tempting because `nanoTime()` is indeed suitable for measuring elapsed time, but it does not by itself make the benchmark methodologically sound.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: scenario
+QUESTION: In a Mockito test, a mocked repository receives a `List` instance as an argument. The test later mutates that list during an assertion, which can make an interaction check misleading. Which approach can reduce this aliasing problem?
+
+A) Every Mockito mock must automatically be made a singleton.
+B) Capture and snapshot the argument state at the point of the interaction, for example by using an argument captor together with an appropriate copy when necessary.
+C) `verify` always creates an immutable snapshot of every argument.
+D) Mutable objects cannot be used as Mockito arguments.
+
+ANSWER: B
+EXPLANATION: With mutable arguments, it is important to distinguish the state passed during the invocation from the state of the same object after it has been mutated. An argument captor can identify the object that was passed, but if its state must be preserved independently of later mutations, a copy of the relevant state must be made before that mutation occurs. The most common wrong answer is tempting because Mockito does retain interaction information, but it does not automatically create an independent deep snapshot of every mutable argument.
+
+NOTE: The explanation was corrected to clarify that an `ArgumentCaptor` does not itself snapshot a mutable argument; an independent copy must be made at the appropriate point if the original object may later be mutated.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: Design patterns
+TYPE: scenario
+QUESTION: A system has multiple implementations of the same business operation, but the implementation must be selected based on configuration and runtime state. You want to structure the code so that adding a new implementation requires as little modification to the existing business logic as possible. Which approach fits this requirement best?
+
+A) One large `if-else` chain containing every possible implementation.
+B) A Singleton that puts all business rules into a single class.
+C) Separate implementations behind an interface and a selection mechanism that returns the appropriate implementation.
+D) Convert every implementation into static methods.
+
+ANSWER: C
+EXPLANATION: Putting implementations behind an interface and using a separate selection mechanism supports adding new behavior without continually expanding the existing business logic. This can often be implemented using a Strategy-style design together with dependency injection. The most common wrong answer is tempting because an `if-else` chain initially looks simple, but as the number of implementations grows it creates tighter coupling and becomes harder to maintain.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: I/O & NIO
+TYPE: scenario
+QUESTION: A production service processes a large number of files concurrently. File sizes vary, and the system occasionally reports `Too many open files`. CPU and heap utilization are normal. What is the most likely problem?
+
+A) Too many files are open simultaneously, and file descriptors are not being released quickly enough or correctly.
+B) The Java heap automatically converts byte arrays into file descriptors.
+C) `Path` objects by themselves always keep an operating-system file descriptor open.
+D) The garbage collector is always too slow, so every `Path` remains open permanently.
+
+ANSWER: A
+EXPLANATION: `Too many open files` typically means that the process has reached an operating-system file-descriptor limit. High concurrency, incorrect resource lifecycle management, or too many simultaneously open streams can cause this. Streams should be closed properly, typically using try-with-resources. The most common wrong answer is tempting because Java objects and OS resources can be related through their lifecycles, but a `Path` object by itself does not open a file.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: behavior
+QUESTION: What is the most important difference between a record and a traditional mutable Java bean in the following respect?
+
+CODE:
+record User(String name, int age) {}
+
+User user = new User("Anna", 30);
+ENDCODE
+
+A) A record automatically converts every field into a `static` field.
+B) A record has accessors for its components, and its component fields cannot be reassigned after construction.
+C) A record cannot contain methods.
+D) Record instances are always singletons.
+
+ANSWER: B
+EXPLANATION: Record components have corresponding accessor methods, and the fields generated for those components cannot be reassigned like fields exposed through setters on a traditional mutable bean. This does not mean that every object reachable from a record is deeply immutable. The most common wrong answer is tempting because a record is indeed a concise data model, but it is still a full Java class and can contain methods.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: Java Core & OOP
+TYPE: behavior
+QUESTION: What happens when the following code runs?
+
+CODE:
+interface A {
+    default String value() {
+        return "A";
+    }
+}
+
+interface B extends A {
+    default String value() {
+        return "B";
+    }
+}
+
+class C implements B {}
+
+System.out.println(new C().value());
+ENDCODE
+
+A) `A`
+B) `B`
+C) `null`
+D) The code does not compile because an interface cannot override another interface's default method.
+
+ANSWER: B
+EXPLANATION: Interface `B` inherits the default method from `A` but provides its own default implementation for the same method. `C` therefore inherits the more specific implementation from `B`, so the returned value is `B`. The most common wrong answer is tempting because both interfaces define a default method with the same name, but the more specific interface implementation takes precedence.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: Collections & generics
+TYPE: edgecase
+QUESTION: Why can an element from an arbitrary `List<? super Integer>` not be safely read as an `Integer`?
+
+A) Because the `super` wildcard means that the list can only contain Strings.
+B) Because `List<? super Integer>` can be a `List<Number>` or `List<Object>`, so the concrete type of a retrieved element is only safely known as `Object`.
+C) Because `Integer` is a primitive type.
+D) Because the `super` wildcard prohibits the `get` operation.
+
+ANSWER: B
+EXPLANATION: A `List<? super Integer>` can be a `List<Integer>`, `List<Number>`, or even `List<Object>`. Therefore, the compiler can safely treat a retrieved element only as `Object`. On the other hand, `Integer` values can safely be added. The most common wrong answer is tempting because `super` does impose a type relationship around `Integer`, but it does not prohibit reading from the list.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: java.util.concurrent
+TYPE: production
+QUESTION: A service's `CompletableFuture` pipeline runs across several different Executors. After an exception, error handling sometimes continues on a different thread pool than the developer expected. Which statement is important for understanding the problem?
+
+A) `CompletableFuture` guarantees that every continuation runs on the same Executor.
+B) `thenApplyAsync` and its non-async counterpart always use the same execution mechanism.
+C) Different continuation methods and the Executors they use can determine which thread or pool executes the next stage.
+D) CompletableFuture callbacks always run on the main thread.
+
+ANSWER: C
+EXPLANATION: The execution model of async and non-async `CompletableFuture` continuations can differ, and an explicit Executor can also be supplied. When designing a pipeline, it is therefore important to track exactly which Executor each stage uses, especially for blocking or CPU-intensive operations. The most common wrong answer is tempting because a simple pipeline may often remain in the same execution context, but this is not a general guarantee for every continuation.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Production debugging
+TYPE: scenario
+QUESTION: A production JVM occasionally experiences very long GC pauses. Heap size and object count alone do not explain the behavior. Which additional data can be particularly important for identifying the cause?
+
+A) Only the application version.
+B) All HTTP endpoint names.
+C) The CPU model, without any other JVM data.
+D) GC logs, allocation rate, pause durations, heap occupancy, and detailed events from individual GC cycles.
+
+ANSWER: D
+EXPLANATION: Diagnosing GC problems requires more than the current heap size. Allocation rate, GC frequency and duration, heap occupancy trends, and which GC cycles are responsible for long pauses are all important. The most common wrong answer is tempting because hardware and application version can be relevant, but neither provides enough information on its own to understand GC behavior.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: Exceptions
+TYPE: production
+QUESTION: A repository method encounters a database error and then throws a domain exception. However, the log only shows the domain exception without details of the original SQL error. What is the most important fix?
+
+A) The original exception should always be thrown instead of the domain exception.
+B) The domain exception should be created with the original exception as its cause, and the complete exception chain should be logged appropriately.
+C) All exception messages should be concatenated into a single String.
+D) Stack traces should always be removed in production.
+
+ANSWER: B
+EXPLANATION: A domain-level exception can help separate infrastructure details from the business layer, but the original cause should be preserved for troubleshooting. This keeps the complete exception chain and original stack trace available in the logs. The most common wrong answer is tempting because a domain exception provides a simpler error model, but losing the original cause makes production debugging significantly harder.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: In an application, an object stores a large cache in a `ThreadLocal`. The thread-pool threads are long-lived, while requests are short-lived. Why can this cause a memory-retention problem?
+
+A) `ThreadLocal` automatically turns every object into a global reference.
+B) The thread pool creates a new JVM after every request.
+C) The thread-local value can remain associated with the long-lived thread until it is properly removed, so large objects created per request can remain reachable for a long time.
+D) `ThreadLocal` always stores its values as weak references.
+
+ANSWER: C
+EXPLANATION: Thread-pool threads often live for the entire lifetime of the application. If a large object is stored in a thread-local during a request and is not properly removed, it can remain reachable for as long as the thread remains alive. The most common wrong answer is tempting because the internal `ThreadLocalMap` uses weak references for its keys, but that does not mean the value itself automatically becomes eligible for collection.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: Concurrency & threads
+TYPE: deadlock
+QUESTION: In a system, two locks regularly need to be acquired. Which design approach most effectively reduces the risk of deadlock?
+
+A) Define a global lock-ordering rule and always acquire the locks in the same order.
+B) Randomly change the lock acquisition order.
+C) Use `Thread.sleep()` before acquiring every lock.
+D) Add more locks to reduce contention.
+
+ANSWER: A
+EXPLANATION: Consistent lock ordering can eliminate one of the fundamental conditions for a classic cyclic deadlock. If every code path acquires the locks in the same order, the chance of two threads waiting on each other's resources is greatly reduced. The most common wrong answer is tempting because sleeping can give other threads time to run, but it does not provide correct lock coordination.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: scenario
+QUESTION: In a service, you create a separate virtual thread for every incoming request. Each request performs CPU-intensive cryptographic calculations for several seconds. Which statement is most accurate?
+
+A) A virtual thread automatically provides more CPU capacity, so the computation will always be faster.
+B) Virtual threads can only be used for database calls.
+C) Using virtual threads is prohibited for CPU-bound tasks.
+D) Virtual threads can reduce thread-management overhead, but they do not increase available CPU capacity, so CPU-bound work remains constrained by the available CPU resources.
+
+ANSWER: D
+EXPLANATION: The primary benefit of virtual threads is efficiently handling large numbers of concurrent tasks, especially blocking I/O workloads. For CPU-bound work, computational throughput remains limited by available processor time. The most common wrong answer is tempting because many more virtual threads can be created, but higher concurrency does not mean more physical CPU capacity.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Performance & profiling
+TYPE: scenario
+QUESTION: Application latency has increased after a new release. CPU usage increased only slightly, GC is normal, but a new database query causes every request to make additional downstream calls. Which method can best help investigate the end-to-end latency increase?
+
+A) Only increase the heap size.
+B) Use distributed tracing to inspect the complete request call chain and the latency of downstream spans.
+C) Restart the JVM after every request.
+D) Manually increase the frequency of garbage collection.
+
+ANSWER: B
+EXPLANATION: Distributed tracing makes the complete path of a request visible, including the duration of database and other downstream calls. This is particularly useful when overall CPU or GC activity does not explain the latency increase. The most common wrong answer is tempting because JVM memory and GC settings are common performance factors, but they do not directly expose a problematic downstream call chain.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: edgecase
+QUESTION: In a unit test, a service calls several external dependencies, and the test currently mocks every method of every dependency. The test has become very brittle because even small refactorings break many tests. What is a better strategy?
+
+A) Mock every production class.
+B) Remove the entire test so that it cannot be brittle.
+C) Focus the test on externally observable behavior and relevant collaborations, avoiding unnecessary internal interaction checks.
+D) Add at least ten `verify` calls to every mock.
+
+ANSWER: C
+EXPLANATION: A unit test is valuable when it reliably protects the intended behavior rather than every internal implementation detail. Unnecessary interaction checks can tightly couple a test to a particular implementation. The most common wrong answer is tempting because more verifications may appear to provide greater coverage, but they often only make the test more brittle.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: Java Core & OOP
+TYPE: scenario
+QUESTION: In a public Java API, you want to change the return type of an existing method to a more specific subtype while keeping the override valid. Which case is allowed?
+
+CODE:
+class Animal {}
+class Dog extends Animal {}
+
+class Parent {
+    Animal create() {
+        return new Animal();
+    }
+}
+
+class Child extends Parent {
+    // Which return type is valid here?
+}
+ENDCODE
+
+A) `Dog create()`
+B) `String create()`
+C) `Object create()`
+D) `void create()`
+
+ANSWER: A
+EXPLANATION: In Java, an overriding method may use a covariant return type that is a subtype of the original return type. Since `Dog` is a subtype of `Animal`, `Child` can legally narrow the return type. The most common wrong answer is tempting because many parts of a method signature cannot be changed when overriding, but return types support covariance.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: Production debugging
+TYPE: scenario
+QUESTION: In a production system, a request occasionally travels through several different services and eventually ends with a timeout in the final service. Local logs alone do not make it clear where the request spent its time. Which observability approach is most useful for reconstructing the complete path?
+
+A) Log only the JVM heap size.
+B) Log only exception messages.
+C) Use a single global counter for every request.
+D) Use correlation IDs or distributed tracing to connect the request's path across services.
+
+ANSWER: D
+EXPLANATION: Correlation IDs or distributed tracing allow the same request to be connected across multiple services. This makes it possible to determine which service or downstream dependency consumed most of the time and where the timeout occurred. The most common wrong answer is tempting because exception logs can contain useful error information, but they do not reconstruct the complete request path by themselves.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: Production debugging
+TYPE: production
+QUESTION: In a critical production system, you are investigating an intermittent, difficult-to-reproduce latency problem. CPU, heap, and GC metrics alone do not show an obvious issue. A single request involves multiple services, a database, and external APIs. Which approach can provide the most complete picture of the root cause?
+
+A) Only increase the JVM heap size and check the problem again.
+B) Restart only the service that appears to be the slowest.
+C) Analyze structured logs, distributed tracing, relevant JVM/thread/GC metrics, and downstream latencies together.
+D) Disable all production logging to improve performance.
+
+ANSWER: C
+EXPLANATION: For complex production latency problems, relying on a single metric is rarely sufficient. Tracing shows the request path and the time spent in each component, structured logs provide context, and JVM and thread metrics provide insight into runtime behavior. Including downstream latency helps distinguish problems within the application from the effects of external dependencies. The most common wrong answer is tempting because a single intervention may appear to offer a quick result, but without evidence it does not identify the actual root cause.
+###END

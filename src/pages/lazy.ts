@@ -25,3 +25,6 @@ function lazyPage(load: () => Promise<{ default: ComponentType }>) {
 // the article pages (and the Markdown renderer) load only when visited
 export const ArticlesPage = lazyPage(() => import('./Articles'));
 export const ArticlePage = lazyPage(() => import('./Article'));
+// the interview simulator and its question sets
+export const InterviewPage = lazyPage(() => import('./Interview'));
+export const InterviewTrackPage = lazyPage(() => import('./InterviewTrack'));

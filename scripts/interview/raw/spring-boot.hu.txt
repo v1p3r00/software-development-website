@@ -1,0 +1,3125 @@
+### Q1
+LEVEL: junior
+TOPIC: IoC & dependency injection
+TYPE: theory
+QUESTION: Mi történik egy Spring Boot alkalmazásban, ha egy `@Service` osztály konstruktorában egy másik, `@Repository` annotációval ellátott osztályt kérünk be dependencyként?
+A) A Spring automatikusan létrehozza a repository példányát, és konstruktoron keresztül beadja a service-nek
+B) A Java fordító automatikusan létrehozza a repository példányát
+C) A repository csak akkor kerül beadásra, ha a service mezőjét `@Autowired` annotációval is ellátjuk
+D) A Spring csak akkor tudja beadni, ha a repository osztályt singleton scope-pal deklaráljuk
+ANSWER: A
+EXPLANATION: A komponensszkennelés során a Spring felismeri a `@Repository` és `@Service` komponenseket, majd a service példányosításakor a konstruktor paramétere alapján feloldja a repository dependencyt. Spring Bootban a konstruktoros dependency injection az ajánlott megoldás. A mezőinjektálás hiányára építő válasz azért csábító, mert régebbi Spring-kódokban gyakran látható `@Autowired` mezőkön.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: Auto-configuration & starters
+TYPE: behavior
+QUESTION: Mi a legfontosabb szerepe a `spring-boot-starter-web` függőségnek egy Spring Boot 3 alkalmazásban?
+A) Kizárólag a beágyazott Tomcat szervert telepíti
+B) Tipikus webalkalmazáshoz szükséges, összehangolt Spring-függőségeket és kapcsolódó alapértelmezett konfigurációt biztosít
+C) Automatikusan létrehozza az összes REST controllert
+D) Lecseréli a Spring Frameworköt egy külön web frameworkre
+ANSWER: B
+EXPLANATION: A starter egy kényelmes dependency-csomag, amely tipikus webes alkalmazáshoz szükséges komponenseket húz be, például Spring MVC-t és a beágyazott webszerverhez szükséges infrastruktúrát. Az auto-configuration ezek alapján további beaneket is konfigurálhat. Az a feltételezés, hogy a starter önmagában controllereket hoz létre, azért csábító, mert a starter sok működést automatikusan bekapcsol, de az alkalmazás saját komponenseit nem generálja.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: Configuration & profiles
+TYPE: output
+QUESTION: Ha az alkalmazás `dev` profillal indul, melyik érték lesz elérhető a `server.port` konfigurációhoz?
+CODE:
+# application.yml
+server:
+  port: 8080
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+server:
+  port: 9090
+ENDCODE
+A) 8080
+B) 0
+C) 9090
+D) Az alkalmazás nem indul el, mert ugyanaz a property kétszer szerepel
+ANSWER: C
+EXPLANATION: Az első YAML dokumentum általános konfigurációt ad meg, a második pedig csak `dev` profil esetén aktiválódik. A profil-specifikus érték magasabb prioritással felülírja az általános `server.port` értéket, ezért a szerver a 9090-es porton indul. Azért csábító a 8080-at választani, mert az szerepel előbb a fájlban, de a konfigurációs prioritás fontosabb a fájlon belüli sorrendnél.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: Spring MVC & REST
+TYPE: output
+QUESTION: Milyen HTTP státuszkódot küld vissza alapértelmezés szerint az alábbi controller metódus sikeres meghívásakor?
+CODE:
+@RestController
+@RequestMapping("/users")
+class UserController {
+
+    @PostMapping
+    public User create(@RequestBody User user) {
+        return user;
+    }
+}
+ENDCODE
+A) 200 OK
+B) 201 Created
+C) 202 Accepted
+D) 204 No Content
+ANSWER: A
+EXPLANATION: A `@PostMapping` önmagában nem változtatja 201 Created státuszkódra a választ. Ha nincs külön `@ResponseStatus` vagy `ResponseEntity` használva, a sikeres metódushívás alapértelmezett sikeres válasza 200 OK. A 201 azért csábító, mert REST API-k esetén létrehozáskor szakmailag gyakran 201-et használunk, de ezt Spring MVC-ben explicit módon kell beállítani.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: Bean scopes & lifecycle
+TYPE: theory
+QUESTION: Mi igaz alapértelmezés szerint egy Spring bean scope-jára?
+A) Minden bean prototype scope-ú
+B) Minden bean request scope-ú
+C) Minden bean singleton scope-ú az adott Spring ApplicationContexten belül
+D) A scope-ot mindig kötelező explicit módon megadni
+ANSWER: C
+EXPLANATION: A Spring beanek alapértelmezett scope-ja singleton, vagyis egy adott `ApplicationContext` egyetlen beanpéldányt kezel az adott definícióhoz. Ez nem azt jelenti, hogy az egész JVM-ben feltétlenül csak egy példány létezhet. A prototype válasz azért csábító, mert az objektumorientált programozásban gyakran minden példányosítás új objektumot jelent, Springben azonban a konténer kezeli a példányok életciklusát.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Validation & error handling
+TYPE: debug
+QUESTION: Miért nem működik a Bean Validation az alábbi request DTO-n, ha a controller `@RequestBody` paraméterére nincs `@Valid`?
+CODE:
+public record CreateUserRequest(
+    @NotBlank String name,
+    @Email String email
+) {}
+
+@PostMapping("/users")
+public User create(@RequestBody CreateUserRequest request) {
+    return service.create(request);
+}
+ENDCODE
+A) A `@NotBlank` és `@Email` annotációk csak entitásokon használhatók
+B) A request body validációjához a paramétert validálásra is meg kell jelölni, például `@Valid` használatával
+C) A Spring Boot 3 már nem támogatja a Bean Validationt
+D) A validáció csak akkor működik, ha a DTO osztály `@Component` annotációt kap
+ANSWER: B
+EXPLANATION: A `@RequestBody` önmagában a request JSON-ból történő deszerializálást jelzi. A Bean Validation bekapcsolásához a paramétert például `@Valid` annotációval kell ellátni, így a Spring MVC a validációs constraint-eket is alkalmazza. Azért csábító azt gondolni, hogy az annotációk önmagukban elegendők, mert a constraint-ek deklarációja valóban a DTO-n történik, de azok alkalmazását a controller paraméterén is jelezni kell.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: Spring Data JPA
+TYPE: behavior
+QUESTION: Mit próbál megvalósítani az alábbi Spring Data JPA repository metódus?
+CODE:
+public interface UserRepository extends JpaRepository<User, Long> {
+    List<User> findByLastName(String lastName);
+}
+ENDCODE
+A) Csak akkor működik, ha SQL-lekérdezést írunk hozzá `@Query` annotációval
+B) A Spring Data JPA a metódus nevéből lekérdezést generál a `lastName` mező alapján
+C) A metódus minden felhasználót töröl, akinek egyezik a vezetékneve
+D) A metódus csak natív SQL adatbázisokkal működik
+ANSWER: B
+EXPLANATION: A Spring Data JPA támogatja a derived query metódusokat, amelyeknél a repository metódus nevéből értelmezi a lekérdezés feltételeit. A `findByLastName` ezért a `lastName` property alapján keres. Azért csábító az `@Query` használatát szükségesnek gondolni, mert összetettebb lekérdezéseknél valóban szükség lehet rá, de egyszerű esetekben a metódusnév elegendő.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Transactions
+TYPE: scenario
+QUESTION: Egy service metódus két különböző repository műveletet hajt végre. Az első sikeres, a második azonban `RuntimeException` kivétellel leáll. A metódus `@Transactional` annotációval rendelkezik. Mi történik alapértelmezés szerint?
+A) Az első módosítás véglegesítésre kerül, a második nem
+B) A teljes tranzakció automatikusan újraindul
+C) Mindkét művelet végrehajtása után kötelező manuálisan commitolni
+D) A tranzakció visszagörgethető, ezért az első módosítás is rollbackelhető
+ANSWER: D
+EXPLANATION: A Spring tranzakciókezelésben az alapértelmezett rollback-szabály szerint egy nem kezelt `RuntimeException` esetén a tranzakció rollbackelhető, így a tranzakción belüli korábbi adatbázis-módosítások sem kerülnek véglegesítésre. Azért csábító az első módosítás véglegesítését feltételezni, mert az SQL művelet technikailag már lefuthatott, de a tranzakció commitja csak a teljes tranzakció sikeres lezárásakor történik.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: IoC & dependency injection
+TYPE: trap
+QUESTION: Két bean implementálja ugyanazt az interfészt, és egy service konstruktorában csak az interfész típusa szerepel. Mi történik, ha nincs további konfiguráció?
+CODE:
+public interface PaymentService {
+    void pay();
+}
+
+@Service
+class CardPaymentService implements PaymentService {
+    public void pay() {}
+}
+
+@Service
+class PaypalPaymentService implements PaymentService {
+    public void pay() {}
+}
+
+@Service
+class CheckoutService {
+    private final PaymentService paymentService;
+
+    CheckoutService(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
+}
+ENDCODE
+A) A Spring véletlenszerűen kiválasztja az egyik implementációt
+B) A Spring automatikusan mindkét implementációt egymás után meghívja
+C) A bean létrehozása tipikusan hibával leáll, mert több megfelelő bean található
+D) A Spring mindig az elsőként betöltött implementációt választja
+ANSWER: C
+EXPLANATION: Több, azonos típusú candidate esetén a Spring nem tudja egyértelműen eldönteni, melyiket kell beadnia, ezért tipikusan `NoUniqueBeanDefinitionException` keletkezik. A helyzet megoldható például `@Qualifier` vagy megfelelő `@Primary` használatával. A véletlenszerű kiválasztás azért csábító, mert a fejlesztő könnyen feltételezheti, hogy a framework valamilyen sorrend alapján választ, de dependency injection esetén az ilyen implicit választás nem garantált.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: Auto-configuration & starters
+TYPE: behavior
+QUESTION: Mi történik általában, amikor egy Spring Boot alkalmazáshoz hozzáadjuk a `spring-boot-starter-data-jpa` startert és konfigurálunk egy DataSource-t?
+A) A Spring Boot automatikusan létrehozhat JPA/Hibernate infrastruktúrát, például `EntityManagerFactory`-hoz kapcsolódó beaneket
+B) A Spring Boot automatikusan létrehozza az összes adatbázistáblát, függetlenül a JPA konfigurációtól
+C) A starter csak JDBC drivert tartalmaz, JPA-t nem
+D) A starter automatikusan minden repository metódushoz külön SQL fájlt generál
+ANSWER: A
+EXPLANATION: A JPA starter megfelelő classpath-függőségeket biztosít, az auto-configuration pedig a rendelkezésre álló környezet és konfiguráció alapján létrehozhatja a JPA működéséhez szükséges infrastruktúrát. A sémakezelés külön kérdés, amelyet például Hibernate DDL vagy migrációs eszköz kezelhet. Azért csábító az automatikus tábla-generálást általános szabályként feltételezni, mert fejlesztői környezetben a Hibernate képes lehet sémát létrehozni, de ez külön konfiguráció és nem a starter önálló feladata.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: Configuration & profiles
+TYPE: output
+QUESTION: Melyik értéket kapja meg a `@Value` mező, ha az alkalmazás `test` profillal indul?
+CODE:
+# application.yml
+app:
+  message: default
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+app:
+  message: testing
+ENDCODE
+A) `default`
+B) `testing`
+C) `null`
+D) Az alkalmazás nem indul el, mert profil esetén az első dokumentum figyelmen kívül marad
+ANSWER: B
+EXPLANATION: A több dokumentumból álló YAML-ban a második dokumentum csak `test` profil esetén aktiválódik, és az ott szereplő `app.message` érték felülírja az általános konfigurációt. Így a `@Value("${app.message}")` a `testing` értéket kapja. Azért csábító a `default` választása, mert az első konfiguráció minden környezetre érvényesnek tűnik, de a profil-specifikus property nagyobb prioritású.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: Spring MVC & REST
+TYPE: output
+QUESTION: Mi lesz a válasz HTTP státuszkódja és törzse az alábbi endpoint sikeres meghívásakor?
+CODE:
+@GetMapping("/users/{id}")
+public ResponseEntity<User> getUser(@PathVariable Long id) {
+    return ResponseEntity.notFound().build();
+}
+ENDCODE
+A) 200 és üres JSON objektum
+B) 204 és üres body
+C) 404 és `null` JSON
+D) 404 és üres response body
+ANSWER: D
+EXPLANATION: A `ResponseEntity.notFound().build()` egy 404 Not Found státuszkódú, üres body-val rendelkező response-t hoz létre. Nem történik JSON szerializálás egy `null` értékre, mert a response body nincs beállítva. A 204 azért csábító, mert mindkettőnél nincs response body, de a 404 jelentése az, hogy a kért erőforrás nem található.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: Bean scopes & lifecycle
+TYPE: output
+QUESTION: Mit ír ki az alkalmazás az alábbi kód alapján, ha a `Counter` singleton bean?
+CODE:
+@Component
+class Counter {
+    int value = 0;
+
+    int increment() {
+        return ++value;
+    }
+}
+
+@Service
+class A {
+    private final Counter counter;
+
+    A(Counter counter) {
+        this.counter = counter;
+    }
+
+    int get() {
+        return counter.increment();
+    }
+}
+
+@Service
+class B {
+    private final Counter counter;
+
+    B(Counter counter) {
+        this.counter = counter;
+    }
+
+    int get() {
+        return counter.increment();
+    }
+}
+ENDCODE
+A) Az `A` és `B` mindig külön számlálót használ
+B) Mindkét service ugyanazt a singleton `Counter` példányt kapja
+C) A `Counter` minden metódushíváskor új példányt kap
+D) A singleton scope miatt a `Counter` nem módosíthatja a belső állapotát
+ANSWER: B
+EXPLANATION: Alapértelmezés szerint a `Counter` singleton bean, ezért ugyanazon ApplicationContexten belül ugyanazt a példányt kapja mindkét service. Emiatt az állapot megosztott. Azért csábító külön példányokra gondolni, mert az `A` és `B` külön dependency-injection műveletnek tűnik, de a Spring singleton beaneket nem példányosítja újra minden injection esetén.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: Validation & error handling
+TYPE: behavior
+QUESTION: Mi a tipikus eredménye annak, ha egy `@RestController` metódus `@Valid @RequestBody` paraméterének validációja sikertelen?
+A) A controller metódus biztosan lefut, és a hibákat a DTO kapja meg mezőként
+B) A Spring automatikusan kijavítja a hibás mezőket
+C) A request feldolgozása validációs hibával megszakad, és megfelelő exception keletkezik
+D) A HTTP válasz mindig 200 lesz, mert a validáció csak figyelmeztetés
+ANSWER: C
+EXPLANATION: A Spring MVC a request body bindingje után végrehajthatja a Bean Validationt, és sikertelen validáció esetén nem normál módon futtatja végig a controller metódust. A konkrét HTTP hibaválasz formáját a Spring Boot alapértelmezései és az alkalmazás exception handlingje határozza meg. Azért csábító a 200-as válasz, mert a validáció önmagában nem adatbázis-hiba, de a HTTP API szempontjából a hibás request feldolgozása nem tekinthető sikeres műveletnek.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: Spring Data JPA
+TYPE: theory
+QUESTION: Melyik állítás írja le helyesen a `JpaRepository<User, Long>` használatát?
+A) A repository csak SELECT műveleteket tud
+B) A repository használatához minden CRUD művelethez saját SQL-t kell írni
+C) A repository kizárólag natív SQL-t támogat
+D) A repository örökölt metódusokon keresztül tipikus CRUD és JPA-specifikus műveleteket is biztosít
+ANSWER: D
+EXPLANATION: A `JpaRepository` több Spring Data interfészből örökölve tipikus CRUD műveleteket és JPA-specifikus funkcionalitást biztosít, így például `save`, `findById`, `findAll` és `deleteById` használható saját SQL nélkül. Azért csábító saját SQL írását szükségesnek gondolni, mert összetett vagy speciális lekérdezéseknél valóban lehet szükség `@Query`-re, de az alap CRUD-hoz nem.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: Transactions
+TYPE: trap
+QUESTION: Miért lehet problémás az alábbi kód, ha azt várjuk, hogy a `@Transactional` biztosan létrehozza a tranzakciót?
+CODE:
+@Service
+class OrderService {
+
+    public void placeOrder() {
+        saveOrder();
+    }
+
+    @Transactional
+    public void saveOrder() {
+        // adatbázis-módosítás
+    }
+}
+ENDCODE
+A) A `@Transactional` csak repository osztályokon használható
+B) A Spring tranzakciókezelése proxy alapú, ezért a saját osztályon belüli közvetlen metódushívás megkerülheti a tranzakciós proxyt
+C) A tranzakció csak `private` metódusokon működik
+D) A tranzakcióhoz kötelező JDBC `Connection` objektumot átadni
+ANSWER: B
+EXPLANATION: A Spring deklaratív tranzakciókezelése tipikusan proxyn keresztül működik. Ha egy bean egy másik metódusát saját magán belül közvetlenül hívja meg, a hívás nem megy át a proxy tranzakciós interceptionjén, ezért a `@Transactional` nem feltétlenül érvényesül úgy, ahogy kívánjuk. Azért csábító azt gondolni, hogy az annotáció minden metódushívást automatikusan tranzakcióssá tesz, mert az annotáció deklaratívan nagyon egyszerűnek tűnik.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: Spring Security
+TYPE: scenario
+QUESTION: Egy Spring Boot 3 alkalmazásban hozzáadod a Spring Security dependencyt, de nem írsz saját security konfigurációt. Mi várható egy tipikus webalkalmazásnál?
+A) Minden endpoint automatikusan publikus lesz
+B) A Spring Security kikapcsolja a HTTP szervert
+C) A Spring Boot alapértelmezett security konfigurációt aktiválhat, amely védi a webes végpontokat
+D) A Spring Security csak akkor működik, ha minden controlleren `@Secured` szerepel
+ANSWER: C
+EXPLANATION: A Spring Boot megfelelő security dependency jelenlétében auto-configurationt alkalmaz, amely alapértelmezett webes biztonsági beállításokat is adhat. Egy ilyen alkalmazásnál tipikusan hitelesítésre van szükség a védett endpointok eléréséhez. Azért csábító azt feltételezni, hogy security annotációk nélkül minden endpoint nyitott, mert a metódusszintű authorization valóban külön konfigurációs kérdés lehet.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: behavior
+QUESTION: Mire használható elsősorban a `MockMvc` egy Spring Boot tesztben?
+A) Valódi böngészőt indít és azon keresztül teszteli az oldalt
+B) Közvetlenül egy production adatbázishoz csatlakozik
+C) Csak repository metódusokat tesztel
+D) Spring MVC endpointokat lehet vele HTTP-szerű módon, servlet konténer indítása nélkül tesztelni
+ANSWER: D
+EXPLANATION: A `MockMvc` lehetővé teszi Spring MVC requestek szimulálását, így controllerek, request mappingek, státuszkódok és response-ok tesztelhetők teljes értékű külső HTTP szerver indítása nélkül. Nem egy valódi böngésző. Azért csábító böngészős tesztelőeszköznek tekinteni, mert HTTP request/response szinten hasonló felületet ad, de a működése a Spring MVC tesztkörnyezetére épül.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: Actuator & observability
+TYPE: theory
+QUESTION: Mire szolgál elsősorban a Spring Boot Actuator?
+A) Az alkalmazás működésének monitorozására és diagnosztikai/management endpointok biztosítására
+B) Az alkalmazás Java bytecode-jának automatikus optimalizálására
+C) Az adatbázis-sémák migrációjára
+D) A REST endpointok automatikus dokumentálására
+ANSWER: A
+EXPLANATION: Az Actuator production környezetben hasznos management és observability funkciókat biztosít, például health, metrics és más management endpointokat. Ezek segítségével az alkalmazás állapota és működése monitorozható. Azért csábító az OpenAPI dokumentációval összekeverni, mert mindkettő endpointokkal kapcsolatos fejlesztői eszköz, de eltérő célt szolgálnak.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Caching
+TYPE: behavior
+QUESTION: Mit kell általában megtenni ahhoz, hogy egy Spring Boot alkalmazásban a `@Cacheable` annotáció ténylegesen cache-elési mechanizmust aktiváljon?
+A) Minden metódust `static`-ká kell tenni
+B) Engedélyezni kell a caching támogatást, például `@EnableCaching` használatával, és megfelelő CacheManagernek is rendelkezésre kell állnia
+C) A cache csak akkor működik, ha minden metódus `private`
+D) A `@Cacheable` önmagában minden esetben Redis cache-t hoz létre
+ANSWER: B
+EXPLANATION: A `@Cacheable` deklarálja, hogy az adott metódus eredménye cache-elhető, de az alkalmazásban a caching infrastruktúrának is konfigurálva kell lennie. Az `@EnableCaching` engedélyezi a Spring cache interceptiont, a konkrét CacheManager pedig meghatározza a cache mögötti implementációt. Azért csábító azt hinni, hogy automatikusan Redis indul, mert production környezetben gyakori a Redis használata, de ez nem a `@Cacheable` alapértelmezett jelentése.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: Async & scheduling
+TYPE: scenario
+QUESTION: Mit célszerű használni, ha egy Spring Boot alkalmazásban egy metódust minden nap éjfél körül automatikusan szeretnénk futtatni?
+A) `@Repository`
+B) `@Autowired`
+C) `@Scheduled`
+D) `@Transactional`
+ANSWER: C
+EXPLANATION: A Spring scheduling támogatása a `@Scheduled` annotációval képes időzített metódusok futtatására, például cron expression alapján. A scheduling engedélyezéséhez az alkalmazásban megfelelően be kell kapcsolni a scheduling támogatást. Azért csábító a `@Async` használata, mert az is háttérben futó munkákkal kapcsolatos, de az aszinkron végrehajtás és az időzítés két külön probléma.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: Messaging (Kafka, RabbitMQ)
+TYPE: theory
+QUESTION: Mi a fő különbség egy tipikus REST API hívás és egy üzenetközvetítőn keresztüli kommunikáció között?
+A) REST esetén soha nincs HTTP
+B) Üzenetközvetítőnél a producer és consumer kommunikációja tipikusan lazábban csatolt és aszinkron feldolgozást is lehetővé tehet
+C) Kafka és RabbitMQ kizárólag adatbázisok tárolására használható
+D) REST mindig aszinkron, a messaging pedig mindig szinkron
+ANSWER: B
+EXPLANATION: Messaging rendszerekben a producer üzenetet küldhet egy brokernek, amelyet a consumer később dolgoz fel, így a komponensek időben és működésben lazábban kapcsolódhatnak. A pontos delivery, ordering és retry szemantika a választott technológiától és konfigurációtól függ. Azért csábító a messaginget automatikusan aszinkronnak tekinteni minden szempontból, mert gyakran erre használják, de a kliensoldali API és a feldolgozás konkrét működése ennél árnyaltabb.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: Microservices & Spring Cloud
+TYPE: scenario
+QUESTION: Egy microservice-architektúrában több service-nek kell központi konfigurációból betöltenie környezetspecifikus beállításokat. Melyik probléma megoldására használható a Spring Cloud Config?
+A) A service-ek közötti HTTP forgalom titkosítására
+B) A Java garbage collector konfigurálására
+C) Központi konfiguráció kezelésére és service-ek számára történő biztosítására
+D) A microservice-ek adatbázisainak automatikus összevonására
+ANSWER: C
+EXPLANATION: A Spring Cloud Config központi konfigurációkezelési mintát biztosít, amelyben a konfiguráció elkülöníthető a service-ek deployolt artifactjaitól és környezetenként kezelhető. Ez különösen több service és több deployment environment esetén lehet hasznos. Azért csábító a titkosítást választani, mert konfigurációk gyakran tartalmaznak érzékeny adatokat, de a Config elsődleges szerepe a konfiguráció központosítása, nem önmagában a hálózati titkosítás.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: Production issues & performance
+TYPE: performance
+QUESTION: Egy Spring Boot REST API productionben időnként nagyon lassúvá válik, miközben a CPU-használat alacsony. Az endpoint adatbázis-lekérdezéseket is végez. Melyik vizsgálat lenne ésszerű első lépés?
+A) Azonnal növelni a JVM heap méretét
+B) Azonnal több CPU-t rendelni a konténerhez
+C) Minden Spring bean scope-ját prototype-ra állítani
+D) Megvizsgálni a request latencyt, adatbázis-lekérdezések idejét, connection poolt és az alkalmazás releváns metrikáit
+ANSWER: D
+EXPLANATION: Alacsony CPU mellett jelentős latencyt okozhat például lassú adatbázis, connection pool kimerülése, hálózati várakozás vagy külső dependency. A helyes production-debugging első lépése a mérés és a szűk keresztmetszet azonosítása, nem egy véletlenszerű erőforrás-növelés. Azért csábító a heap növelése, mert a JVM memória gyakori production probléma, de alacsony CPU és adatbázis-hozzáférés mellett ebből önmagában semmi nem következik.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: Hibernate & N+1
+TYPE: trap
+QUESTION: Egy `Order` entitásnak `List<OrderItem>` kapcsolata van, és egy lekérdezés 100 ordert tölt be. A kódban minden orderhez meghívjuk az itemek getterét, és azt tapasztaljuk, hogy rengeteg SQL query fut le. Mi lehet ennek tipikus oka?
+A) A Spring Data JPA minden `get` metódust automatikusan INSERT-té alakít
+B) A Hibernate mindig pontosan egy SQL queryt futtat minden entityre
+C) N+1 lekérdezési probléma alakulhat ki, amikor a kezdeti lekérdezés után az egyes orderökhöz külön lekérdezések töltik be a kapcsolódó elemeket
+D) A `List` használata önmagában kikapcsolja a Hibernate cache-t
+ANSWER: C
+EXPLANATION: Az N+1 probléma tipikus esete, amikor az első query betölti a 100 ordert, majd a kapcsolódó `OrderItem` adatok elérése további lekérdezéseket indít, akár orderenként egyet. A megoldás a konkrét use case-től függhet, például megfelelő fetch join, entity graph vagy batch fetching alkalmazható. Azért csábító a Hibernate cache-re fogni, mert az is befolyásolhatja az adatbázis-lekérdezések számát, de az N+1 alapvetően a fetch stratégiából és az adatok hozzáférésének mintájából ered.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: IoC & dependency injection
+TYPE: behavior
+QUESTION: Mi történik az alábbi kóddal Spring Bootban, ha a `ReportService` bean létrehozásakor a `Clock` típusból pontosan egy Spring bean található?
+CODE:
+@Configuration
+class AppConfig {
+
+    @Bean
+    Clock clock() {
+        return Clock.systemUTC();
+    }
+}
+
+@Service
+class ReportService {
+    private final Clock clock;
+
+    ReportService(Clock clock) {
+        this.clock = clock;
+    }
+}
+ENDCODE
+A) A Spring nem tudja beadni a `Clock` objektumot, mert csak `@Component` osztályokat lehet injektálni
+B) A Spring a `@Bean` metódus által létrehozott objektumot dependencyként beadja a `ReportService` konstruktorába
+C) A konstruktoros injection csak saját készítésű osztályokra működik, JDK osztályokra nem
+D) A `Clock` objektumot a Spring csak akkor tudja beadni, ha a `ReportService` mezőjén `@Autowired` szerepel
+ANSWER: B
+EXPLANATION: A `@Bean` metódus által regisztrált objektum ugyanúgy Spring bean, mint egy `@Component` által felismert komponens. A dependency injection típusalapon fel tudja oldani a `Clock` példányt, majd beadja a konstruktorba. Azért csábító a `@Component` hiányára hivatkozni, mert sok Spring bean annotált osztályból származik, de a `@Bean` explicit bean-regisztrációra szolgál.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: IoC & dependency injection
+TYPE: trap
+QUESTION: Melyik állítás igaz az alábbi két annotáció használatára?
+CODE:
+@Service
+class UserService {
+    // ...
+}
+
+@Component
+class AuditService {
+    // ...
+}
+ENDCODE
+A) A `@Service` mindig singleton, míg a `@Component` mindig prototype
+B) A `@Component` csak konfigurációs osztályokon használható
+C) Mindkettő komponensként regisztrálható a Spring ApplicationContextben, a `@Service` pedig szemantikailag service-réteget jelöl
+D) A `@Service` csak Spring MVC alkalmazásokban működik
+ANSWER: C
+EXPLANATION: A `@Service` a `@Component` specializált sztereotípia annotációja, ezért mindkettő component scanning segítségével Spring bean regisztrációhoz vezethet. A `@Service` elsősorban a kód szerepét teszi egyértelműbbé. Azért csábító külön életciklushoz kötni őket, mert különböző annotációneveket használunk, de alapértelmezett scope-juk ugyanúgy singleton.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: Configuration & profiles
+TYPE: output
+QUESTION: Mi lesz az `app.name` értéke, ha a `prod` profil aktív?
+CODE:
+# application.yml
+app:
+  name: base
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+app:
+  name: production
+ENDCODE
+A) `production`
+B) `base`
+C) `null`
+D) A property értéke nem lehet több YAML dokumentumban
+ANSWER: A
+EXPLANATION: Az első dokumentum általános konfigurációt ad, a második pedig `prod` profil esetén aktiválódik. Az aktív profilhoz tartozó konfiguráció felülírja az általános `app.name` értéket, ezért az eredmény `production`. Azért csábító az általános értéket választani, mert az első dokumentum mindig betöltődik, de a későbbi profil-specifikus konfiguráció nagyobb prioritást kaphat.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Configuration & profiles
+TYPE: debug
+QUESTION: Miért nem működik megfelelően az alábbi konfiguráció, ha azt várjuk, hogy a `dev` profil csak az adatbázis URL-jét írja felül?
+CODE:
+# application.yml
+spring:
+  datasource:
+    url: jdbc:h2:mem:default
+    username: sa
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:dev
+ENDCODE
+A) A `dev` profilban kötelező minden datasource property-t újra megadni
+B) A YAML nem támogat profilokat
+C) A `spring.config.activate.on-profile` csak Java konfigurációban használható
+D) A konfiguráció érvényes; a profil aktiválásakor az URL felülírható, miközben az általános username továbbra is öröklődik
+ANSWER: D
+EXPLANATION: A profil-specifikus konfiguráció nem teljes konfigurációs blokkcsere, hanem property-k szintjén is felülírhatja az általános értékeket. Így `dev` esetén az URL `jdbc:h2:mem:dev`, míg a `username` továbbra is `sa` marad. Azért csábító azt hinni, hogy az egész `datasource` blokkot újra kell definiálni, mert a YAML struktúrája hierarchikusnak látszik, de a Spring property resolution ennél finomabban működik.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Spring MVC & REST
+TYPE: behavior
+QUESTION: Mit köt be a Spring MVC az alábbi endpoint meghívásakor `/users/42?active=true` URL esetén?
+CODE:
+@GetMapping("/users/{id}")
+public User getUser(
+        @PathVariable Long id,
+        @RequestParam boolean active) {
+    return service.find(id, active);
+}
+ENDCODE
+A) `id = 42`, `active = true`
+B) `id = null`, `active = true`
+C) `id = 42`, `active = false`
+D) A request hibával leáll, mert a path variable és request parameter nem használható együtt
+ANSWER: A
+EXPLANATION: A `{id}` értéket a pathból a `@PathVariable` kapja meg, így `id` értéke 42. A query stringben szereplő `active=true` értéket a `@RequestParam` köti a boolean paraméterhez. Azért csábító csak a path paraméterre koncentrálni, mert az endpoint URL-jének útvonala látványosabb, de a query paraméterek külön binding mechanizmust használnak.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: Spring MVC & REST
+TYPE: debug
+QUESTION: Miért kaphatunk hibát az alábbi endpoint meghívásakor `/users/42` URL-lel?
+CODE:
+@GetMapping("/users/{id}")
+public User getUser(@PathVariable String userId) {
+    return service.find(userId);
+}
+ENDCODE
+A) A `@PathVariable` mindig csak `Long` típust támogat
+B) A Spring MVC nem támogat path variable bindingot REST controllerekben
+C) A paraméter neve `userId`, miközben a path változó neve `id`, és nincs explicit név megadva
+D) A `@PathVariable` csak POST requesteknél használható
+ANSWER: C
+EXPLANATION: A mappingben `{id}` szerepel, míg a Java paraméter `userId` nevű. Explicit név nélkül a Springnek a path variable nevével kell egyezést találnia, ezért ez a kód nem feltétlenül tudja feloldani az értéket. Biztosan működne például `@PathVariable("id") String userId` formában. Azért csábító a típust okolni, mert a path variable gyakran numerikus azonosító, de a `String` teljesen érvényes típus.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: Validation & error handling
+TYPE: scenario
+QUESTION: Egy `@RestControllerAdvice` osztályban `@ExceptionHandler(MethodArgumentNotValidException.class)` metódust definiálsz. Mire használható elsősorban?
+A) Adatbázis-tranzakciók rollbackelésére
+B) A request validáció során keletkező hibák központi kezelésére
+C) A Spring Security hitelesítési tokenek generálására
+D) Az összes Java `NullPointerException` automatikus kijavítására
+ANSWER: B
+EXPLANATION: A `MethodArgumentNotValidException` tipikusan request body validációs problémák esetén keletkezhet, és `@RestControllerAdvice` segítségével egységes HTTP error response alakítható ki belőle. Az exception handler nem javítja ki a hibás adatot, hanem annak kezelését centralizálja. Azért csábító a tranzakciókezeléshez kötni, mert az exception handling és rollback gyakran ugyanabban a service folyamatban jelenik meg, de külön mechanizmusokról van szó.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Validation & error handling
+TYPE: edgecase
+QUESTION: Mi történik az alábbi DTO esetén, ha a kliens a `name` mezőt teljesen kihagyja a JSON-ból?
+CODE:
+public record CreateUserRequest(
+    @NotBlank String name
+) {}
+ENDCODE
+A) A `@NotBlank` constraint a hiányzó értéket érvényesnek tekinti
+B) A Spring automatikusan `"unknown"` értéket ad a mezőnek
+C) A JSON parser mindig 400-at ad még a Bean Validation előtt
+D) A mező tipikusan `null` lesz, majd `@NotBlank` miatt a validáció sikertelen lehet
+ANSWER: D
+EXPLANATION: Ha a JSON-ban nincs `name`, a deszerializálás során a record komponens értéke tipikusan `null` lesz. A `@NotBlank` nem engedi meg a `null`, üres vagy csak whitespace karakterekből álló stringet, ezért validációs hiba keletkezhet. Azért csábító azt gondolni, hogy a JSON parser önmagában hibázik, mert a mező hiányzik, de egy ilyen DTO esetén a hiányzó property önmagában nem feltétlenül deszerializációs hiba.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: Spring Data JPA
+TYPE: output
+QUESTION: Mit eredményez a következő repository metódus neve?
+CODE:
+interface UserRepository extends JpaRepository<User, Long> {
+    List<User> findByAgeGreaterThanEqualOrderByLastNameAsc(int age);
+}
+ENDCODE
+A) Az adott kor alatti felhasználókat keresi vezetéknév szerint csökkenő sorrendben
+B) Minden felhasználót visszaad, majd Java oldalon rendez
+C) Legalább a megadott életkorral rendelkező felhasználókat keresi vezetéknév szerint növekvő sorrendben
+D) Csak pontosan a megadott életkorú felhasználókat keresi
+ANSWER: C
+EXPLANATION: A `GreaterThanEqual` legalább akkora értéket jelent, tehát `age >= megadott érték` feltételt eredményez. Az `OrderByLastNameAsc` a `lastName` szerinti növekvő sorrendet jelzi. Azért csábító a pontos egyezést választani, mert a `findByAge` valóban equality feltételt jelentene, de itt a `GreaterThanEqual` módosítja a feltételt.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: Spring Data JPA
+TYPE: debug
+QUESTION: Mi a legvalószínűbb oka annak, hogy az alábbi repository metódus nem fordul vagy nem működik a várt módon?
+CODE:
+interface UserRepository extends JpaRepository<User, Long> {
+    List<User> findByUsernameAndEmailAddress(String username, String email);
+}
+ENDCODE
+A) A Spring Data JPA nem támogat két feltételt ugyanabban a derived queryben
+B) A `username` vagy `emailAddress` property-nek megfelelő entitásmezőknek létezniük kell, különben a query derivation hibát okozhat
+C) A `List` visszatérési típus tiltott repository metódusoknál
+D) Minden derived queryhez kötelező `@Transactional`
+ANSWER: B
+EXPLANATION: A Spring Data JPA a metódus nevéből property-ket próbál feloldani. Ha például az entityben nincs `emailAddress` nevű property, a query derivation már a repository inicializálásakor hibát okozhat. Azért csábító a tranzakciót okolni, mert repository műveletek gyakran tranzakció részei, de a probléma itt a property név feloldása.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: Transactions
+TYPE: theory
+QUESTION: Mi a tranzakciós határ szempontjából fontos különbség az alábbi két megoldás között?
+CODE:
+@Service
+class OrderService {
+
+    @Transactional
+    public void createOrder() {
+        // database operations
+    }
+
+    public void validateOrder() {
+        // validation
+    }
+}
+ENDCODE
+A) A `@Transactional` kizárólag az egész osztályra vonatkozik
+B) A `validateOrder` is automatikusan tranzakciós lesz, mert ugyanabban az osztályban van
+C) A `createOrder` tranzakciós lehet, míg a `validateOrder` önmagában nem válik tranzakcióssá
+D) A tranzakciós annotáció csak repository metódusokon működik
+ANSWER: C
+EXPLANATION: A metódusszintű `@Transactional` az annotált metódus tranzakciós viselkedését deklarálja, nem pedig automatikusan az osztály minden metódusát. Így a `createOrder` tranzakciós proxy interceptionen keresztül hívva tranzakcióban futhat, míg a `validateOrder` nem lesz ettől automatikusan tranzakciós. Azért csábító az egész osztályra kiterjeszteni a hatást, mert a `@Transactional` annotáció osztályszinten is használható, de itt csak metódusszinten szerepel.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: Transactions
+TYPE: trap
+QUESTION: Melyik állítás igaz az alábbi metódusra?
+CODE:
+@Transactional(readOnly = true)
+public User findUser(Long id) {
+    return repository.findById(id).orElseThrow();
+}
+ENDCODE
+A) A `readOnly = true` kötelezően megakadályoz minden adatbázis-módosítást
+B) A `readOnly = true` azt jelenti, hogy a metódus nem használhat repositoryt
+C) A `readOnly = true` kikapcsolja a tranzakciót
+D) A `readOnly = true` read-only szándékot jelez a tranzakciókezelés számára, és bizonyos persistence optimalizációkat is lehetővé tehet, de nem univerzális írásvédelmi garancia
+ANSWER: D
+EXPLANATION: A `readOnly` attribútum azt jelzi a tranzakciós infrastruktúrának és bizonyos persistence technológiáknak, hogy a tranzakció olvasási célú. Hibernate esetén ez bizonyos dirty checking optimalizációkat is lehetővé tehet, de nem általános adatbázis-szintű írásvédelmi mechanizmus. Azért csábító abszolút írásvédelmi szabályként értelmezni, mert a neve egyértelműen read-onlynak hangzik.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: Spring Security
+TYPE: scenario
+QUESTION: Egy Spring Security konfigurációban az alábbi szabályokat állítjuk be. Melyik requesthez szükséges hitelesítés?
+CODE:
+@Bean
+SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/public/**").permitAll()
+            .anyRequest().authenticated()
+        );
+    return http.build();
+}
+ENDCODE
+A) Csak a `/public/**` alatt lévő endpointokhoz
+B) Minden endpoint nyilvánosan elérhető
+C) A `/public/**` kivételével minden endpoint eléréséhez
+D) Csak a POST requestekhez
+ANSWER: C
+EXPLANATION: A `/public/**` mintára illeszkedő requestek explicit módon engedélyezettek. Az `anyRequest().authenticated()` minden más requestre hitelesítést ír elő. Azért csábító minden endpointot nyilvánosnak tekinteni, mert a `permitAll` könnyen félreérthető, de az csak a megadott matcherre vonatkozik.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: Spring Security
+TYPE: debug
+QUESTION: Mi a lényegi különbség a `permitAll()` és az `authenticated()` között az alábbi konfigurációban?
+CODE:
+.authorizeHttpRequests(auth -> auth
+    .requestMatchers("/health").permitAll()
+    .requestMatchers("/api/**").authenticated()
+)
+ENDCODE
+A) A `permitAll()` azt jelenti, hogy csak adminok férhetnek hozzá
+B) A `permitAll()` nem igényel hitelesített felhasználót, míg az `authenticated()` igen
+C) Az `authenticated()` kikapcsolja a Spring Securityt
+D) A két szabály teljesen azonos
+ANSWER: B
+EXPLANATION: A `permitAll()` lehetővé teszi a hozzáférést hitelesítés nélkül is, míg az `authenticated()` csak hitelesített principal számára enged hozzáférést. Ez nem azonos azzal, hogy minden hitelesített felhasználónak minden további jogosultsága megvan. Azért csábító összekeverni őket, mert mindkettő authorization konfiguráció része, de eltérő hozzáférési feltételt határoznak meg.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: scenario
+QUESTION: Mikor érdemes inkább `@WebMvcTest` használni a `@SpringBootTest` helyett?
+A) Amikor csak a teljes production rendszert akarjuk elindítani
+B) Amikor valódi Kafka clustert akarunk tesztelni
+C) Amikor kizárólag adatbázis-migrációkat akarunk futtatni
+D) Amikor a web layer, például egy controller működését szeretnénk célzottan tesztelni a teljes alkalmazási context betöltése nélkül
+ANSWER: D
+EXPLANATION: A `@WebMvcTest` egy slice test, amely elsősorban a Spring MVC réteget tölti be, így gyorsabb és célzottabb controller teszteket tesz lehetővé. A service dependencyket jellemzően mockolni kell. Azért csábító mindig `@SpringBootTest`-et használni, mert az közelebb áll a teljes alkalmazáshoz, de egy controller teszthez gyakran feleslegesen nagy contextet indít.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: behavior
+QUESTION: Mire szolgál egy Testcontainers konténer egy Spring Boot integrációs tesztben?
+A) Valós, izoláltan futó külső szolgáltatás, például adatbázis indítására a tesztek számára
+B) A Java unit tesztek fordításának gyorsítására
+C) A Spring beanek automatikus mockolására
+D) A production Kubernetes cluster helyettesítésére minden körülmények között
+ANSWER: A
+EXPLANATION: A Testcontainers Docker konténerekben képes valódi infrastruktúrát, például PostgreSQL-t, MySQL-t vagy más támogatott szolgáltatást futtatni tesztelés céljából. Így az alkalmazás valódi adatbázis-technológiával integrációsan tesztelhető. Azért csábító mockként tekinteni rá, mert a tesztkörnyezetet izolálja, de a konténerben tényleges szolgáltatás fut.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: Actuator & observability
+TYPE: output
+QUESTION: Melyik endpoint szolgál tipikusan az alkalmazás egészségi állapotának ellenőrzésére, ha az Actuator megfelelően konfigurált?
+A) `/actuator/health`
+B) `/actuator/sql`
+C) `/actuator/controller`
+D) `/actuator/status-code`
+ANSWER: A
+EXPLANATION: A Spring Boot Actuator health endpointja az alkalmazás és bizonyos dependencyk egészségi állapotáról ad információt. A konkrét részletek és a látható információk konfigurációtól függhetnek. Azért csábító a `/actuator/status-code` választása, mert a HTTP státuszkódok valóban fontosak az observabilityben, de ez nem standard Actuator endpoint.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: Caching
+TYPE: debug
+QUESTION: Mi történik az első és a második hívás során, ha a `getUser` metódus megfelelő cache-konfiguráció mellett `@Cacheable("users")` annotációt kap?
+CODE:
+@Cacheable("users")
+public User getUser(Long id) {
+    return repository.findById(id).orElseThrow();
+}
+ENDCODE
+A) Mindkét hívás mindig végrehajtja a repository lekérdezést
+B) Az első hívás eredménye cache-be kerülhet, a későbbi azonos cache key-vel történő hívás pedig a cache-ből szolgálható ki
+C) Csak az első hívás eredménye lesz `null`
+D) A repository automatikusan törli a cache-t minden hívás után
+ANSWER: B
+EXPLANATION: Az első hívásnál a cache még nem tartalmazza a megfelelő kulcsot, ezért a metódus lefuthat, majd az eredmény cache-elhető. Egy későbbi, azonos cache key-t eredményező hívásnál a Spring az eredményt a cache-ből adhatja vissza a metódus futtatása nélkül. Azért csábító azt gondolni, hogy minden hívásnál lefut a repository, mert a metódus törzse továbbra is ezt tartalmazza, de a cache interception megakadályozhatja a tényleges végrehajtást.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: Async & scheduling
+TYPE: scenario
+QUESTION: Mi a fő célja a `@Async` annotációnak egy Spring bean metódusán?
+A) A metódus automatikus időzítése minden órára
+B) A metódus tranzakciós határának meghatározása
+C) A metódus végrehajtásának aszinkron executoron történő elindítása megfelelő konfiguráció esetén
+D) A metódus adatbázis-lekérdezéseinek cache-elése
+ANSWER: C
+EXPLANATION: A `@Async` azt jelzi, hogy a metódus meghívása megfelelő Spring async konfiguráció mellett egy task executor segítségével aszinkron módon történhet. A hívó szál így nem feltétlenül várja meg a metódus teljes végrehajtását. Azért csábító a `@Scheduled`-del összekeverni, mert mindkettő háttérben futó munkát eredményezhet, de az `@Async` nem időzítést, hanem aszinkron végrehajtást kezel.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: Messaging (Kafka, RabbitMQ)
+TYPE: behavior
+QUESTION: Egy Kafka consumer feldolgoz egy üzenetet, majd a feldolgozás közben exception keletkezik. Miért fontos ilyenkor az acknowledgment és a consumer error handling konfigurációja?
+A) Mert ezek határozhatják meg, hogy a sikertelen üzenet feldolgozása után mikor és hogyan történik újrafeldolgozás vagy offset kezelés
+B) Mert Kafka esetén minden exception automatikusan törli az üzenetet
+C) Mert az acknowledgment kizárólag a producer oldalon létezik
+D) Mert a consumer exception mindig leállítja az egész Kafka clustert
+ANSWER: A
+EXPLANATION: Kafka esetén az offsetek kezelése és a listener container error handlingje fontos szerepet játszik abban, hogy egy sikertelen feldolgozás után történik-e retry, recovery vagy más hibakezelés. A pontos viselkedés a Spring Kafka és a consumer konfigurációjától függ. Azért csábító az automatikus törlést feltételezni, mert egyes messaging rendszereknél a sikeres acknowledgment hatással van az üzenet eltűnésére, Kafka esetén azonban az offset-alapú modell a lényeges.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: Microservices & Spring Cloud
+TYPE: scenario
+QUESTION: Egy service-nek egy másik service HTTP endpointját kell meghívnia. Melyik szempont különösen fontos production környezetben?
+A) A hívó service-ben mindig le kell tiltani minden timeoutot
+B) A hálózati hívás mindig sikeres, ha a cél service fut
+C) A service-ek között nem lehet HTTP-t használni microservice architektúrában
+D) Timeout, retry és megfelelő hibakezelés szükséges lehet, mert a hálózati függőség részlegesen vagy időszakosan meghibásodhat
+ANSWER: D
+EXPLANATION: A hálózati kommunikáció új hibaforrásokat vezet be, például timeoutot, connection errort, átmeneti elérhetetlenséget vagy túlterhelést. Emiatt a kliens oldali timeout és a megfelelően korlátozott retry stratégia fontos production szempont. Azért csábító a timeoutok kikapcsolása, mert így a lassú szolgáltatásra tovább várhatunk, de ezzel könnyen erőforrás-kimerülést és cascading failure-t okozhatunk.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: Production issues & performance
+TYPE: debug
+QUESTION: Egy Spring Boot alkalmazásban az alábbi konfiguráció szerepel. A production forgalom alatt gyakran `connection pool exhausted` jellegű hibák jelennek meg. Mi lehet az egyik első vizsgálandó terület?
+CODE:
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 10
+      connection-timeout: 2000
+ENDCODE
+A) Az összes controller `final` kulcsszót kapjon
+B) A datasource connection pool használata, a connectionök életciklusa és a lassú/le nem zárt adatbázis-műveletek
+C) A JSON property nevek átnevezése
+D) A Spring MVC controller mappingek sorrendje
+ANSWER: B
+EXPLANATION: A pool exhaustion azt jelenti, hogy a requestek nem jutnak időben szabad adatbázis-kapcsolathoz. Vizsgálni kell többek között a pool méretét, a query-k futási idejét, a tranzakciók hosszát és azt, hogy megfelelően visszakerülnek-e a connectionök a poolba. Azért csábító egyszerűen megnövelni a pool méretét, mert ez rövid távon enyhítheti a tünetet, de túl nagy pool az adatbázist is túlterhelheti.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: Bean scopes & lifecycle
+TYPE: scenario
+QUESTION: Egy singleton Spring bean egy requestenként változó felhasználói adatot közvetlenül egy példánymezőben tárol. Miért veszélyes ez?
+A) Mert singleton beanben tilos bármilyen mezőt használni
+B) Mert a Spring automatikusan törli a mezőket minden request végén
+C) Mert több request ugyanazt a bean példányt használhatja, ezért a request-specifikus mutable state megosztottá és szálbiztonsági problémák forrásává válhat
+D) Mert singleton beanekben csak primitive típusok tárolhatók
+ANSWER: C
+EXPLANATION: Egy singleton bean ugyanazt a példányt szolgálhatja ki több request számára, akár párhuzamosan is. Ha request-specifikus adatot mutable példánymezőben tárolunk, az egyik request adata összekeveredhet egy másik requestével, illetve race condition alakulhat ki. Azért csábító a mező használata, mert a service kódja így egyszerűbbnek tűnik, de singleton komponenseknél a mutable shared state különösen veszélyes.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: Spring Security
+TYPE: trap
+QUESTION: Melyik állítás igaz a CSRF védelemről egy tipikus Spring Security webalkalmazásban?
+A) A CSRF kizárólag SQL injection elleni védelem
+B) A CSRF minden API-nál automatikusan kikapcsolható következmények nélkül
+C) A CSRF és a CORS pontosan ugyanazt a támadást kezeli
+D) A CSRF olyan támadás ellen véd, amelyben egy támadó a felhasználó nevében jogosult browser sessionnel nem kívánt állapotmódosító kérést próbál végrehajtatni
+ANSWER: D
+EXPLANATION: A Cross-Site Request Forgery lényege, hogy a böngésző egy másik oldalról olyan requestet küldhet, amelyhez a felhasználó hitelesítési kontextusa automatikusan társulhat. A CSRF védelem tokenekkel és megfelelő request-kezeléssel akadályozhatja ezt. Azért csábító SQL injectionnel vagy CORS-szal azonosítani, mert mindegyik webbiztonsági fogalom, de teljesen eltérő támadási modelleket kezelnek.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Production issues & performance
+TYPE: performance
+QUESTION: Egy Spring Boot alkalmazás memóriahasználata hosszú futás után folyamatosan növekszik, majd időnként hosszú GC pause-ok jelennek meg. Mi lenne szakmailag megfelelő első lépés?
+A) Azonnal letiltani a garbage collectort
+B) Azonnal megduplázni a heap méretét bizonyíték nélkül
+C) Minden singleton beant prototype scope-ra állítani
+D) Heap usage, GC metrikák és heap dump/profiling segítségével megvizsgálni, hogy valódi memory leak vagy normális heap növekedés történik-e
+ANSWER: D
+EXPLANATION: A folyamatosan növekvő memóriahasználat önmagában nem bizonyít memory leaket, mert a JVM a rendelkezésre álló heapet normál működés közben is kihasználhatja. A GC pause-ok és a heap állapotának mérésével, szükség esetén heap dump elemzésével lehet azonosítani a problémás objektumokat vagy retention pathokat. Azért csábító azonnal heapet növelni, mert ezzel átmenetileg ritkíthatók a GC-k, de az ok feltárása nélkül a probléma csak későbbre tolódhat.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: IoC & dependency injection
+TYPE: behavior
+QUESTION: Mi történik, ha egy Spring bean konstruktorában egy interfészt `List<NotificationSender>` típusként kérünk be, és két különböző `NotificationSender` bean van regisztrálva?
+CODE:
+public interface NotificationSender {
+    void send(String message);
+}
+
+@Component
+class EmailSender implements NotificationSender {
+    public void send(String message) {}
+}
+
+@Component
+class SmsSender implements NotificationSender {
+    public void send(String message) {}
+}
+
+@Service
+class NotificationService {
+    private final List<NotificationSender> senders;
+
+    NotificationService(List<NotificationSender> senders) {
+        this.senders = senders;
+    }
+}
+ENDCODE
+A) A Spring hibát dob, mert egy interfészhez csak egy bean tartozhat
+B) A lista üres lesz, mert interfészt nem lehet injektálni
+C) A Spring a két megfelelő beant egy listába injektálhatja
+D) A Spring véletlenszerűen kiválaszt egyetlen implementációt
+ANSWER: C
+EXPLANATION: Ha egy collection típusú dependencyt kérünk be, a Spring össze tudja gyűjteni az adott típushoz tartozó beaneket, így mindkét `NotificationSender` bekerülhet a listába. A sorrend külön kérdés, amelyet például `@Order` vagy más konfiguráció befolyásolhat. Azért csábító egyetlen beant várni, mert egyszerű típusinjektálásnál több candidate valóban ambiguus lehet, collection injection esetén azonban ez kifejezetten támogatott minta.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: Bean scopes & lifecycle
+TYPE: edgecase
+QUESTION: Mi történik egy `@Scope("prototype")` bean esetén, amikor ugyanazt a beant kétszer kérjük le közvetlenül az `ApplicationContext`ből?
+CODE:
+@Component
+@Scope("prototype")
+class RequestData {
+}
+ENDCODE
+A) Mindkét lekérés ugyanazt a példányt adja vissza
+B) A két lekérés tipikusan két külön példányt eredményez
+C) A prototype bean csak webalkalmazásban használható
+D) A Spring nem tud prototype beant létrehozni `@Component` használatával
+ANSWER: B
+EXPLANATION: A prototype scope azt jelenti, hogy a Spring minden bean lekéréskor új példányt hozhat létre. Ez eltér a singleton scope-tól, ahol ugyanazon ApplicationContexten belül egy kezelt példányt használ a konténer. Azért csábító ugyanazt a példányt várni, mert mindkét objektum ugyanahhoz a bean definícióhoz tartozik, de a scope határozza meg a példányosítási viselkedést.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: Auto-configuration & starters
+TYPE: debug
+QUESTION: Egy Spring Boot alkalmazásban eltávolítod az embedded web serverhez szükséges webes startert, miközben továbbra is vannak `@RestController` osztályok. Miért nem jelenti a controller megléte önmagában azt, hogy az alkalmazás HTTP szerverként is működni fog?
+A) A controller csak adatbázis-kapcsolat mellett működhet
+B) A `@RestController` automatikusan elindít egy külön JVM-et
+C) A Spring MVC minden esetben külső webszervert igényel
+D) A controller csak webes infrastruktúrával együtt képes HTTP requesteket kiszolgálni; a controller annotáció önmagában nem biztosít beágyazott szervert
+ANSWER: D
+EXPLANATION: A `@RestController` egy Spring MVC komponens, de HTTP requestek kiszolgálásához megfelelő web stack és webszerver-infrastruktúra is szükséges. A starter gyakran ezeket a függőségeket együtt biztosítja. Azért csábító azt gondolni, hogy a controller önmagában szervert indít, mert az annotáció közvetlenül webes működéshez kapcsolódik, de a teljes runtime infrastruktúrát nem ez az egy annotáció biztosítja.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: Configuration & profiles
+TYPE: scenario
+QUESTION: Melyik konfigurációs megoldás a legcélszerűbb, ha egy `@ConfigurationProperties` osztályban szeretnéd típusbiztosan kezelni az `app.storage.bucket` és `app.storage.region` property-ket?
+A) Minden property-t külön `@Value` mezőként kell deklarálni
+B) Az egész YAML fájlt Java stringként kell beégetni
+C) Egy `@ConfigurationProperties(prefix = "app.storage")` osztályt érdemes használni
+D) A property-ket csak environment variable-ként lehet kezelni
+ANSWER: C
+EXPLANATION: A `@ConfigurationProperties` típusbiztos és strukturált konfigurációkezelést tesz lehetővé, különösen akkor, ha több összetartozó property-t kell kezelni. Az `app.storage` prefix alatt például a `bucket` és `region` mezők természetesen leképezhetők. Azért csábító sok külön `@Value` használata, mert egyszerű propertyknél kényelmes, de nagyobb konfigurációs objektumoknál kevésbé strukturált megoldás.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: Spring MVC & REST
+TYPE: output
+QUESTION: Mi történik, ha az alábbi endpointot `/users/42` URL-lel hívjuk meg, és a `User` objektumot Jackson sikeresen szerializálja?
+CODE:
+@GetMapping("/users/{id}")
+@ResponseStatus(HttpStatus.NO_CONTENT)
+public User getUser(@PathVariable Long id) {
+    return service.find(id);
+}
+ENDCODE
+A) 200 OK és a User JSON reprezentációja
+B) 204 No Content, és a response body nem kerül normál JSON bodyként elküldésre
+C) 404 Not Found, mert a 204 nem használható GET esetén
+D) 201 Created és a User JSON reprezentációja
+ANSWER: B
+EXPLANATION: A `@ResponseStatus(HttpStatus.NO_CONTENT)` explicit módon 204-es státuszt állít be. A 204 válasz szemantikája szerint nincs response content, ezért a visszaadott objektumot nem normál JSON response bodyként kell kezelni. Azért csábító a 200-at választani, mert a metódus ténylegesen visszaad egy `User` objektumot, de az explicit response status meghatározza a HTTP választ.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: Validation & error handling
+TYPE: trap
+QUESTION: Mi a különbség a `@NotNull` és a `@NotBlank` között egy `String` mező esetén?
+A) A `@NotNull` tiltja az üres stringet is, a `@NotBlank` pedig csak a nullt
+B) Mindkettő pontosan ugyanazt ellenőrzi
+C) A `@NotNull` csak számokra használható
+D) A `@NotNull` csak azt tiltja, hogy az érték `null` legyen, míg a `@NotBlank` a nullt, az üres és a csak whitespace karakterekből álló stringet is tiltja
+ANSWER: D
+EXPLANATION: `@NotNull` esetén kizárólag a null érték tiltott. `@NotBlank` stringeknél azt is megköveteli, hogy az érték ne legyen üres vagy csak whitespace karakterekből álló. Azért csábító ugyanazt a constraintet feltételezni, mert mindkettőt gyakran kötelező mezők validálására használják, de eltérő feltételeket ellenőriznek.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Spring Data JPA
+TYPE: behavior
+QUESTION: Mit jelent az alábbi repository metódus visszatérési típusa?
+CODE:
+Optional<User> findByEmail(String email);
+ENDCODE
+A) A repository mindig pontosan egy User objektumot ad vissza, különben compile error történik
+B) Ha nincs találat, `null` helyett `Optional.empty()` adható vissza
+C) Az `Optional` automatikusan létrehoz egy új User entitást, ha nincs találat
+D) Az `Optional` miatt a query nem fut le adatbázisban
+ANSWER: B
+EXPLANATION: Az `Optional<User>` lehetővé teszi a találat hiányának explicit kezelését `Optional.empty()` formájában, így nem kell közvetlenül `null` értékre támaszkodni. Találat esetén az `Optional` tartalmazhatja az entityt. Azért csábító automatikus objektumlétrehozást feltételezni, mert az `Optional` egy wrapper, de nem végez ilyen domainműveletet.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: Transactions
+TYPE: scenario
+QUESTION: Egy `@Transactional` metódus sikeresen lefut, és nem dob kivételt. Mikor történik meg tipikusan az adatbázis-tranzakció commitja?
+A) Minden egyes SQL statement után
+B) A service metódus első sorának végrehajtásakor
+C) A tranzakciós proxy a metódus sikeres befejezésekor commitálhatja a tranzakciót
+D) Csak az alkalmazás teljes leállásakor
+ANSWER: C
+EXPLANATION: A deklaratív Spring tranzakció tipikusan a tranzakciós proxy határán indul, és a metódus sikeres visszatérésekor a transaction interceptor commitálhatja a tranzakciót. A commit nem minden egyes SQL statement után történik. Azért csábító ezt feltételezni, mert az SQL statementek egymás után ténylegesen végrehajtódhatnak, de azok a tranzakció részeként kezelhetők.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: output
+QUESTION: Mit ellenőriz az alábbi `MockMvc` teszt?
+CODE:
+mockMvc.perform(get("/users/42"))
+    .andExpect(status().isOk())
+    .andExpect(jsonPath("$.id").value(42));
+ENDCODE
+A) A `/users/42` endpoint 200 OK választ ad, és a JSON response `id` mezője 42
+B) Az adatbázisban biztosan létrejön egy 42-es azonosítójú User
+C) A controller minden endpointja 200 OK választ ad
+D) A teszt csak azt ellenőrzi, hogy a Java metódus nem dobott exceptiont
+ANSWER: A
+EXPLANATION: A teszt egy GET requestet szimulál a `/users/42` endpoint felé, majd ellenőrzi a HTTP 200 státuszt és a JSON body `id` propertyjét. Nem következik belőle automatikusan, hogy valódi adatbázis-művelet történt. Azért csábító adatbázis-tesztnek tekinteni, mert egy valós API requestet modellez, de a MockMvc önmagában nem garantál valódi persistence réteget.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: Production issues & performance
+TYPE: scenario
+QUESTION: Egy Spring Boot alkalmazás productionben egyre több `OutOfMemoryError` hibát produkál. Melyik megközelítés a leginkább megfelelő?
+A) Azonnal növelni a logolás mennyiségét minden osztályban
+B) Minden exceptiont elnyomni
+C) Megvizsgálni a heap használatot, GC metrikákat és szükség esetén heap dumpot készíteni a memóriaretenció okának feltárásához
+D) Minden bean scope-ját prototype-ra állítani
+ANSWER: C
+EXPLANATION: Az `OutOfMemoryError` okának megértéséhez először meg kell különböztetni a túl kicsi heapet, a túlzott memóriaigényt és a valódi memory leak vagy object retention problémát. Heap metrikák és heap dump segítségével megkereshetők a memóriát hosszú ideig megtartó objektumok. Azért csábító egyszerűen növelni a heapet, mert ez átmenetileg késleltetheti a hibát, de az okot nem feltétlenül oldja meg.
+###END
+
+### Q61
+LEVEL: medior
+TOPIC: IoC & dependency injection
+TYPE: debug
+QUESTION: Miért lehet problémás az alábbi konstruktoros dependency injection, ha a két implementáció közül egyik sincs `@Primary` vagy `@Qualifier` segítségével kiválasztva?
+CODE:
+public interface PaymentGateway {
+    void charge();
+}
+
+@Component
+class StripeGateway implements PaymentGateway {
+    public void charge() {}
+}
+
+@Component
+class AdyenGateway implements PaymentGateway {
+    public void charge() {}
+}
+
+@Service
+class PaymentService {
+    private final PaymentGateway gateway;
+
+    PaymentService(PaymentGateway gateway) {
+        this.gateway = gateway;
+    }
+}
+ENDCODE
+A) A Spring mindig az utolsóként definiált beant választja
+B) A Spring mindkét gatewayt automatikusan egy proxy mögé helyezi
+C) A Spring automatikusan kombinálja a két implementációt
+D) A dependency feloldása ambiguus lehet, ezért a bean létrehozása `NoUniqueBeanDefinitionException` hibával meghiúsulhat
+ANSWER: D
+EXPLANATION: A konstruktor egyetlen `PaymentGateway` dependencyt kér, miközben két megfelelő bean található. Ha nincs további jelzés, például `@Qualifier` vagy megfelelő `@Primary`, a Spring nem tudja egyértelműen kiválasztani a dependencyt. Azért csábító az utolsó vagy első bean választását feltételezni, mert a beaneknek lehet regisztrációs sorrendjük, de ez nem jelent ilyen automatikus kiválasztási szabályt.
+###END
+
+### Q62
+LEVEL: medior
+TOPIC: Bean scopes & lifecycle
+TYPE: edgecase
+QUESTION: Mi történik, ha egy singleton bean konstruktorában közvetlenül egy prototype scope-ú beant injektálunk?
+CODE:
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+class JobContext {
+}
+
+@Service
+class JobService {
+    private final JobContext context;
+
+    JobService(JobContext context) {
+        this.context = context;
+    }
+}
+ENDCODE
+A) A `JobContext` minden `JobService` metódushíváskor új példány lesz
+B) A `JobService` példányosításakor létrejöhet egy `JobContext` példány, amelyet a singleton service ezután ugyanazon referenciaként használ
+C) A Spring nem engedélyezi prototype bean injektálását singletonba
+D) A `JobService` automatikusan prototype scope-úvá válik
+ANSWER: B
+EXPLANATION: Közvetlen dependency injection esetén a prototype példányt a singleton létrehozásakor oldja fel a Spring, így a singleton ugyanazt a referenciát tarthatja meg később is. Ha minden használatkor új prototype példányra van szükség, például `ObjectProvider` vagy más lookup mechanizmus használható. Azért csábító az új példányonkénti működés feltételezése, mert a dependency deklarációja prototype scope-ú, de az injection pillanata is számít.
+###END
+
+### Q63
+LEVEL: medior
+TOPIC: Auto-configuration & starters
+TYPE: behavior
+QUESTION: Mi történik, ha egy saját `DataSource` beant definiálsz egy Spring Boot alkalmazásban, miközben a DataSource auto-configuration egyébként is alkalmazható lenne?
+A) A Spring minden esetben két DataSource beant hoz létre
+B) A saját bean automatikusan törlődik
+C) A saját `DataSource` bean jelenléte miatt a feltételes auto-configuration tipikusan nem hozza létre ugyanazt az alapértelmezett DataSource-t
+D) A DataSource auto-configuration mindig felülírja a saját beant
+ANSWER: C
+EXPLANATION: A Spring Boot auto-configuration nagy része feltételekhez kötött, például ahhoz, hogy egy adott bean még ne legyen definiálva. Ha a megfelelő saját `DataSource` bean rendelkezésre áll, az auto-configuration tipikusan nem készít még egy alapértelmezett példányt. Azért csábító két DataSource-ra számítani, mert az auto-configuration és a saját konfiguráció egyszerre van jelen, de a conditional mechanizmus éppen az ilyen ütközések elkerülését szolgálja.
+###END
+
+### Q64
+LEVEL: medior
+TOPIC: Configuration & profiles
+TYPE: scenario
+QUESTION: Egy alkalmazásban a `SPRING_PROFILES_ACTIVE=prod` environment variable van beállítva. Mi a legfontosabb következménye?
+A) A `prod` Spring profile aktívvá válik, így az ahhoz kötött konfigurációk betölthetők
+B) Csak a `production.yml` nevű fájl tölthető be
+C) Az összes másik property automatikusan törlődik
+D) A Spring Security automatikusan production módba kapcsol
+ANSWER: A
+EXPLANATION: A `SPRING_PROFILES_ACTIVE` a Spring által támogatott konfigurációs property, amely az aktív profilokat határozza meg. Az aktív `prod` profilhoz kötött konfigurációk így bekerülhetnek az Environmentbe. Azért csábító a fájlnévre szűkíteni a jelentését, mert gyakori az `application-prod.yml` használata, de a profile aktiválása nem kizárólag egy konkrét fájl betöltését jelenti.
+###END
+
+### Q65
+LEVEL: medior
+TOPIC: Spring MVC & REST
+TYPE: debug
+QUESTION: Az alábbi controllerben miért lehet hibás a `@RequestBody` és a `@RequestParam` használatával kapcsolatos feltételezés?
+CODE:
+@PostMapping("/orders")
+public Order create(
+        @RequestBody CreateOrderRequest request,
+        @RequestParam String source) {
+    return service.create(request, source);
+}
+ENDCODE
+A) A `@RequestBody` és `@RequestParam` soha nem használható ugyanabban a metódusban
+B) A request body és a query parameter két külön inputforrás, ezért a requestnek például `/orders?source=web` URL-lel kell tartalmaznia a query paramétert is
+C) A `source` paramétert kötelező a JSON bodyba tenni
+D) A `@RequestBody` csak GET requesteken használható
+ANSWER: B
+EXPLANATION: A `@RequestBody` a HTTP bodyból, míg a `@RequestParam` alapértelmezés szerint a query parameterből bindol. Ezért egy megfelelő request tartalmazhat JSON bodyt és például `?source=web` query paramétert egyszerre. Azért csábító a `source`-ot a JSON-ba tenni, mert az összes üzleti adatot egy objektumban kényelmesebb elképzelni, de a két annotáció eltérő inputforrást jelöl.
+###END
+
+### Q66
+LEVEL: medior
+TOPIC: Validation & error handling
+TYPE: scenario
+QUESTION: Egy API egységes JSON formátumban szeretné visszaadni a hibákat minden controllerből. Melyik Spring megoldás illeszkedik leginkább ehhez a célhoz?
+A) Minden controllerben külön `try-catch` blokk minden lehetséges exceptionre
+B) Minden exceptiont `System.out.println` segítségével logolni
+C) Egy `@RestControllerAdvice` osztályban központi exception handlereket definiálni
+D) Minden DTO-ra `@ExceptionHandler` annotációt tenni
+ANSWER: C
+EXPLANATION: A `@RestControllerAdvice` centralizált exception handlinget tesz lehetővé több controller számára, így egységes hibastruktúra alakítható ki. A konkrét exception típusokra külön `@ExceptionHandler` metódusok készíthetők. Azért csábító minden controllerben `try-catch` blokkokat írni, mert az közvetlenül láthatóvá teszi a hibakezelést, de jelentős duplikációhoz vezet.
+###END
+
+### Q67
+LEVEL: medior
+TOPIC: Spring Data JPA
+TYPE: performance
+QUESTION: Egy repository metódus csak a `User` entityk `id` és `email` adataira kíváncsi egy nagy táblából. Mi lehet teljesítmény szempontból kedvezőbb a teljes entity betöltésénél?
+A) Minden esetben `findAll()` használata
+B) Egy megfelelő projection használata, amely csak a szükséges mezőket kéri le
+C) Minden entityt `EAGER` fetch-csel betölteni
+D) A teljes táblát Java oldalon szűrni
+ANSWER: B
+EXPLANATION: Ha az üzleti logika valóban csak néhány mezőt igényel, egy interface-based vagy DTO projection csökkentheti a lekért adatok mennyiségét és az entity materializáció overheadjét. Ez különösen nagy result seteknél lehet hasznos. Azért csábító minden esetben entityt betölteni, mert a JPA elsősorban entity-alapú modellre épül, de nem minden read use case igényel teljes entityt.
+###END
+
+### Q68
+LEVEL: medior
+TOPIC: Hibernate & N+1
+TYPE: debug
+QUESTION: Egy `Order` entityhez `Customer` tartozik, és egy lista lekérdezése után minden orderhez hozzáférsz a customer nevéhez. A logokban az alap query mellett sok további SELECT jelenik meg. Melyik megoldás lehet megfelelő az N+1 probléma csökkentésére egy adott read use case-ben?
+A) A megfelelő associationre irányuló `JOIN FETCH` lekérdezés használata
+B) Minden associationt automatikusan `EAGER`-re állítani
+C) Minden SELECT előtt új Hibernate Sessiont létrehozni
+D) A `Customer` entitást minden requestben törölni
+ANSWER: A
+EXPLANATION: Egy megfelelő JPQL `JOIN FETCH` segítségével a szükséges kapcsolódó adatokat ugyanazon lekérdezésben lehet betölteni, így csökkenthető az N+1 queryk száma. Az `EAGER` globális használata nem általános megoldás, és újabb teljesítményproblémákat okozhat. Azért csábító minden associationt `EAGER`-re állítani, mert így az adott lazy loading probléma megszűnhet, de a felesleges adatok betöltését és más queryk viselkedését is ronthatja.
+###END
+
+### Q69
+LEVEL: medior
+TOPIC: Transactions
+TYPE: edgecase
+QUESTION: Mi történik tipikusan, ha egy `@Transactional` metóduson belül egy `REQUIRES_NEW` propagációjú másik tranzakciós metódust hívunk?
+A) A külső tranzakció folytatódik, és nincs új tranzakció
+B) A teljes alkalmazás tranzakciós állapota törlődik
+C) A belső tranzakció mindig ugyanazt a JDBC connectiont használja
+D) A külső tranzakció tipikusan felfüggesztésre kerül, és egy új tranzakció indul a belső művelethez
+ANSWER: D
+EXPLANATION: `REQUIRES_NEW` esetén a Spring tipikusan felfüggeszti a meglévő tranzakciót, majd új tranzakciót indít a belső művelet számára. A belső tranzakció külön commitolható vagy rollbackelhető a külső tranzakciótól függetlenül, bár a pontos resource-kezelés környezetfüggő. Azért csábító ugyanazt a tranzakciót feltételezni, mert a hívás ugyanazon service folyamat része, de a propagation szabály éppen a tranzakciós határ elválasztását írja elő.
+###END
+
+### Q70
+LEVEL: medior
+TOPIC: Spring Security
+TYPE: behavior
+QUESTION: Mit ellenőriz elsősorban az alábbi konfiguráció?
+CODE:
+.authorizeHttpRequests(auth -> auth
+    .requestMatchers("/admin/**").hasRole("ADMIN")
+    .anyRequest().authenticated()
+)
+ENDCODE
+A) Minden felhasználónak ADMIN szerepet ad
+B) Az `/admin/**` útvonalhoz ADMIN szerep szükséges, a többi requesthez pedig legalább hitelesítés
+C) Csak anonim felhasználók érhetik el az admin endpointokat
+D) Az összes endpoint automatikusan publikus
+ANSWER: B
+EXPLANATION: A `hasRole("ADMIN")` olyan authorization szabályt állít fel, amelyhez a megfelelő szerepkör szükséges. Az `/admin/**` alól kivételt nem képező requestekre az `authenticated()` szabály vonatkozik. Azért csábító azt gondolni, hogy a `hasRole` maga létrehozza vagy kiosztja a szerepet, de ez csak hozzáférési feltételt ellenőriz.
+###END
+
+### Q71
+LEVEL: medior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: scenario
+QUESTION: Miért lehet hasznos a Testcontainers PostgreSQL-lel egy repository integrációs tesztben a H2 használata helyett?
+A) Mert a Testcontainers nem használ valódi adatbázist
+B) Mert a PostgreSQL konténerben futó valódi adatbázis jobban reprodukálhatja a production adatbázis viselkedését
+C) Mert H2 mellett semmilyen SQL lekérdezés nem fut
+D) Mert a Testcontainers automatikusan kijavítja a JPA mapping hibákat
+ANSWER: B
+EXPLANATION: Ha productionben PostgreSQL fut, egy PostgreSQL Testcontainer lehetővé teszi, hogy az integrációs tesztek ugyanazzal vagy nagyon hasonló adatbázis-motorral fussanak. Ez csökkentheti az eltérő SQL-dialektusokból és adatbázis-specifikus viselkedésből eredő meglepetéseket. Azért csábító a H2-t elegendőnek tekinteni, mert gyors és egyszerű tesztadatbázis, de nem feltétlenül reprodukálja pontosan a production adatbázist.
+###END
+
+### Q72
+LEVEL: medior
+TOPIC: Actuator & observability
+TYPE: scenario
+QUESTION: Egy Kubernetesben futó Spring Boot alkalmazásnál azt szeretnéd, hogy a platform külön tudja választani azt az állapotot, amikor az alkalmazás még nem áll készen forgalmat fogadni attól, amikor már súlyosan hibás. Melyik Actuator megoldás illeszkedik ehhez?
+A) A readiness és liveness health groupok használata
+B) A `/actuator/info` endpoint átnevezése
+C) A `server.port` értékének requestenkénti módosítása
+D) A Spring beanek prototype scope-ra állítása
+ANSWER: A
+EXPLANATION: A readiness és liveness állapotok különböző üzemeltetési kérdéseket fejeznek ki: a readiness azt jelzi, hogy az instance fogadhat-e forgalmat, míg a liveness azt, hogy az alkalmazás életben van-e és újraindítás szükséges lehet-e. Ez Kubernetes környezetben különösen fontos. Azért csábító egy általános health endpointot használni, mert az egyszerűnek tűnik, de a két állapot eltérő operációs döntést jelent.
+###END
+
+### Q73
+LEVEL: medior
+TOPIC: Caching
+TYPE: edgecase
+QUESTION: Miért lehet problémás az alábbi cache használata, ha egy `User` objektum email címe később megváltozik?
+CODE:
+@Cacheable("usersByEmail")
+public User findByEmail(String email) {
+    return repository.findByEmail(email).orElseThrow();
+}
+ENDCODE
+A) A `@Cacheable` mindig megakadályozza az adatbázis frissítését
+B) Az email soha nem használható cache keyként
+C) A korábban cache-elt eredmény elavulhat, ezért az update műveletnek megfelelő cache eviction vagy frissítés is szükséges lehet
+D) A cache automatikusan felismeri minden adatbázis-módosítást
+ANSWER: C
+EXPLANATION: A cache nem feltétlenül tud arról, hogy az adatbázisban megváltozott az adott user. Ha az emailhez kötött bejegyzés bent marad a cache-ben, az alkalmazás egy ideig stale adatot adhat vissza. Azért csábító az automatikus szinkronizációt feltételezni, mert a cache ugyanahhoz az alkalmazáshoz tartozik, de a Spring cache abstraction önmagában nem figyeli az adatbázis minden változását.
+###END
+
+### Q74
+LEVEL: medior
+TOPIC: Async & scheduling
+TYPE: performance
+QUESTION: Egy `@Async` metódus nagyon sok rövid taskot kap, és productionben egyre hosszabb várakozási idők jelennek meg. Mi lehet a probléma?
+A) Az `@Async` automatikusan korlátlan számú threadet hoz létre
+B) Az async executor kapacitása és queue-ja korlátozott lehet, ezért a taskok felhalmozódhatnak
+C) Az `@Async` minden taskot szinkronná alakít
+D) Az async taskok soha nem használnak thread poolt
+ANSWER: B
+EXPLANATION: Az aszinkron feldolgozás tipikusan executoron keresztül történik, amelynek thread poolja és queue-ja korlátozott kapacitású lehet. Túlterhelés esetén a taskok várakozhatnak, elutasíthatók vagy más rejection policy léphet életbe a konfigurációtól függően. Azért csábító korlátlan threadekre gondolni, mert az `@Async` eltávolítja a munkát a hívó szálról, de ez nem jelent végtelen erőforrást.
+###END
+
+### Q75
+LEVEL: medior
+TOPIC: Messaging (Kafka, RabbitMQ)
+TYPE: scenario
+QUESTION: Egy Kafka consumer egy üzenet feldolgozását követően sikeresen commitolja az offsetet, de közvetlenül ezután az alkalmazás összeomlik. Mi a lényeges következmény?
+A) Az üzenet garantáltan még egyszer feldolgozásra kerül
+B) Az összes korábbi Kafka üzenet újra feldolgozásra kerül
+C) Az offset commit miatt az adott üzenet újraindulás után tipikusan nem kerül újra feldolgozásra
+D) Kafka minden consumerhez új topicot hoz létre
+ANSWER: C
+EXPLANATION: Ha az offset már sikeresen commitálódott, a consumer újrainduláskor jellemzően a következő feldolgozandó offsettől folytatja, így az adott üzenetet nem dolgozza fel újra. Ez az at-most-once/at-least-once jellegű viselkedés és az offset-kezelés miatt fontos production szempont. Azért csábító az újrafeldolgozást várni, mert az alkalmazás közvetlenül az üzenet után összeomlott, de a sikeres offset commit már tartós fogyasztási állapotot jelent.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: IoC & dependency injection
+TYPE: behavior
+QUESTION: Mi történik az alábbi konfigurációban, ha a `PaymentService` konstruktorában `PaymentGateway` dependencyt kérünk be?
+CODE:
+@Configuration
+class PaymentConfig {
+
+    @Bean
+    PaymentGateway paymentGateway() {
+        return new StripeGateway();
+    }
+}
+
+@Service
+class PaymentService {
+    private final PaymentGateway gateway;
+
+    PaymentService(PaymentGateway gateway) {
+        this.gateway = gateway;
+    }
+}
+ENDCODE
+A) A `PaymentGateway` nem lehet dependency, mert interfész
+B) A Spring a `@Bean` metódus eredményét nem regisztrálja az ApplicationContextben
+C) A Spring a `paymentGateway()` által létrehozott objektumot bean-ként regisztrálja és beadja a konstruktorba
+D) A `PaymentService` csak akkor jön létre, ha a gateway osztályon is `@Component` van
+ANSWER: C
+EXPLANATION: A `@Bean` metódus eredménye Spring bean-ként kerül regisztrálásra, és a dependency injection során típusalapon feloldható `PaymentGateway` dependencyként. Nem szükséges, hogy az implementáció külön `@Component` legyen. Azért csábító a `@Component` hiányát problémának tekinteni, mert ez a leggyakoribb bean-regisztrációs forma, de a `@Bean` explicit alternatívát biztosít.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: IoC & dependency injection
+TYPE: trap
+QUESTION: Mi történik, ha egy bean konstruktorában `Optional<PaymentGateway>` dependencyt kérünk be, és nincs egyetlen `PaymentGateway` bean sem?
+CODE:
+@Service
+class PaymentService {
+    private final Optional<PaymentGateway> gateway;
+
+    PaymentService(Optional<PaymentGateway> gateway) {
+        this.gateway = gateway;
+    }
+}
+ENDCODE
+A) A bean létrehozása kötelezően `NoSuchBeanDefinitionException` hibával leáll
+B) A dependency `Optional.empty()` lehet
+C) A Spring automatikusan létrehoz egy `PaymentGateway` implementációt
+D) A konstruktor nem hívódik meg
+ANSWER: B
+EXPLANATION: Az `Optional` dependency injection használatával a hiányzó bean kezelhető, és a Spring `Optional.empty()` értéket adhat. Ez akkor hasznos, ha egy dependency opcionális. Azért csábító kivételt várni, mert egy normál kötelező dependency hiánya valóban bean creation hibát okozhat.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: Bean scopes & lifecycle
+TYPE: output
+QUESTION: Milyen értéket írhat ki a program, ha a `Counter` singleton bean, és az `ApplicationContext` ugyanaz?
+CODE:
+@Component
+class Counter {
+    private int value;
+
+    int increment() {
+        return ++value;
+    }
+}
+
+@Component
+class FirstService {
+    private final Counter counter;
+
+    FirstService(Counter counter) {
+        this.counter = counter;
+    }
+
+    int next() {
+        return counter.increment();
+    }
+}
+
+@Component
+class SecondService {
+    private final Counter counter;
+
+    SecondService(Counter counter) {
+        this.counter = counter;
+    }
+
+    int next() {
+        return counter.increment();
+    }
+}
+ENDCODE
+A) Ha előbb a `FirstService`, majd a `SecondService` `next()` metódusát hívjuk, az eredmény 1 és 2 lehet
+B) Az eredmény mindig 1 és 1
+C) Az eredmény mindig 0 és 0
+D) A két service nem kaphatja meg ugyanazt a `Counter` példányt
+ANSWER: A
+EXPLANATION: A `Counter` alapértelmezés szerint singleton, ezért mindkét service ugyanazt a példányt használja. Az első `increment()` 1-et ad, a következő pedig ugyanazon állapot miatt 2-t. Azért csábító az 1 és 1, mert két külön service metódushívásáról van szó, de a dependency maga közös singleton példány.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: Bean scopes & lifecycle
+TYPE: edgecase
+QUESTION: Mi igaz egy prototype scope-ú Spring bean lifecycle-jára?
+A) A Spring minden egyes prototype példány teljes lifecycle-jét az alkalmazás leállásáig automatikusan kezeli
+B) A prototype bean mindig HTTP requestenként jön létre
+C) A prototype bean mindig egyetlen példányban létezik
+D) A Spring létrehozza és konfigurálja a prototype példányt, de a teljes destruction lifecycle kezelését nem végzi el ugyanúgy, mint singletonoknál
+ANSWER: D
+EXPLANATION: Prototype bean esetén a Spring létrehozza, dependencykkel ellátja és inicializálja a példányt, de a prototype példányok destruction callbackjeinek teljes körű automatikus kezelését nem biztosítja ugyanúgy, mint singletonoknál. A HTTP request scope külön scope, nem a prototype jelentése. Azért csábító azt hinni, hogy a Spring mindent automatikusan kezel, mert singletonoknál a teljes lifecycle erősen konténervezérelt.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Auto-configuration & starters
+TYPE: debug
+QUESTION: Egy Spring Boot alkalmazásban nem jelenik meg a várt auto-configured bean. Melyik vizsgálat lehet különösen hasznos annak megértéséhez, hogy miért nem aktiválódott az auto-configuration?
+A) Az összes controller átnevezése
+B) A Spring Boot condition evaluation report vagy megfelelő debug logging vizsgálata
+C) A Java package-ek alfabetikus sorrendbe rendezése
+D) A JVM heap azonnali megduplázása
+ANSWER: B
+EXPLANATION: A Spring Boot condition evaluation report megmutathatja, hogy egy auto-configuration milyen feltételek miatt aktiválódott vagy maradt ki. Ez különösen hasznos `@ConditionalOnClass`, `@ConditionalOnMissingBean` és hasonló feltételek esetén. Azért csábító találomra beaneket vagy JVM-erőforrásokat módosítani, mert az auto-configuration hibája elsőre nehezen látható, de a condition report közvetlenül a döntési okokat mutatja.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: Configuration & profiles
+TYPE: scenario
+QUESTION: Egy production secretet szeretnél Kubernetesben kezelni. Melyik megközelítés illeszkedik jobban a konfigurációs elválasztáshoz?
+A) A secretet közvetlenül a Git repositoryban lévő `application-prod.yml` fájlba commitolni
+B) A secretet Java source code-ban konstansként tárolni
+C) A secretet környezeti változón vagy megfelelő secret/config mechanizmuson keresztül biztosítani, és az alkalmazás konfigurációjából feloldani
+D) A secretet minden requestben query parameterként elküldeni
+ANSWER: C
+EXPLANATION: Production secretet célszerű a deployment/configuration infrastruktúrában kezelni, például Kubernetes Secret vagy megfelelő secret management rendszer segítségével, majd az alkalmazás számára konfigurációs propertyként elérhetővé tenni. Ez csökkenti annak kockázatát, hogy a credential forráskódba vagy Git historyba kerüljön. Azért csábító a YAML fájlba írni, mert technikailag egyszerű propertyként kezelni, de a repositoryban tárolt secret komoly biztonsági kockázat.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: Spring MVC & REST
+TYPE: output
+QUESTION: Mi történik az alábbi controllerrel, ha a kliens `Content-Type: application/json` headerrel küld JSON bodyt?
+CODE:
+@PostMapping("/users")
+public User create(@RequestBody CreateUserRequest request) {
+    return service.create(request);
+}
+ENDCODE
+A) A Spring MVC megfelelő `HttpMessageConverter` segítségével JSON-ból objektummá deszerializálhatja a request bodyt
+B) A Spring csak XML-ből tudja létrehozni a DTO-t
+C) A `@RequestBody` csak query paramétereket olvas
+D) A request body automatikusan adatbázis-entitássá válik
+ANSWER: A
+EXPLANATION: A `@RequestBody` azt jelzi, hogy a request body tartalmát egy megfelelő message converterrel a metódus paraméterévé kell deszerializálni. Spring Bootban JSON esetén tipikusan Jackson végzi ezt a feladatot. Azért csábító az XML-re vagy query parameterre gondolni, mert Spring MVC többféle inputforrást kezel, de a `@RequestBody` konkrétan a HTTP bodyhoz kapcsolódik.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: Spring MVC & REST
+TYPE: trap
+QUESTION: Mi a fő különbség a `@Controller` és a `@RestController` között?
+A) A `@Controller` nem lehet Spring bean
+B) A `@RestController` csak GET endpointokat támogat
+C) A `@Controller` csak adatbázis-műveletekre használható
+D) A `@RestController` lényegében `@Controller` és `@ResponseBody` kombinációja, ezért a metódusok visszatérési értékei tipikusan response bodyként kerülnek kezelésre
+ANSWER: D
+EXPLANATION: A `@RestController` a `@Controller` és `@ResponseBody` szemantikáját kombinálja, ezért REST API-k esetén kényelmes. A `@Controller` önmagában gyakran view renderinghez használható, bár egyes metódusokra `@ResponseBody` külön is tehető. Azért csábító azt hinni, hogy teljesen külön komponensek, mert eltérő annotációkat látunk, de a `@RestController` egy specializált controller-sztereotípia.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: Validation & error handling
+TYPE: edgecase
+QUESTION: Egy endpoint `@Valid @RequestBody` paramétert használ, és a DTO egyik mezőjén `@Size(min = 3, max = 10)` szerepel. Mi történik, ha a kliens `null` értéket küld erre a mezőre?
+A) A `@Size` önmagában szükségszerűen validációs hibát eredményez
+B) A `@Size` önmagában általában nem tekinti hibának a `null` értéket; null tiltásához külön constraint, például `@NotNull`, szükséges
+C) A `@Size` automatikusan üres stringgé alakítja a nullt
+D) A request biztosan JSON parse hibával áll le
+ANSWER: B
+EXPLANATION: A Bean Validation `@Size` constraintje általában `null` értéket validnak tekint, és a nullability ellenőrzését külön constraintre bízza. Ha a mező kötelező, például `@NotNull` és `@Size` kombinálható. Azért csábító azt gondolni, hogy a minimum méret a nullt is tiltja, mert egy nullnak nincs hossza, de a constraint szemantikája szándékosan külön kezeli a null értéket.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: Spring Data JPA
+TYPE: behavior
+QUESTION: Mi történik egy JPA persistence contextben, ha egy már managed `User` entitás mezőjét módosítod egy tranzakción belül, majd nem hívsz explicit `save()`-et?
+CODE:
+@Transactional
+public void renameUser(Long id) {
+    User user = entityManager.find(User.class, id);
+    user.setName("New Name");
+}
+ENDCODE
+A) A módosítás csak akkor kerülhet adatbázisba, ha mindenáron `save()`-et is hívunk
+B) A JPA az entitást automatikusan törli
+C) A dirty checking miatt a módosítás a flush során SQL UPDATE-té válhat
+D) A managed entity módosítása mindig csak memóriában marad
+ANSWER: C
+EXPLANATION: A `find()` által visszaadott entity a persistence contextben managed állapotban van. Hibernate dirty checking során észlelheti, hogy a state megváltozott, és flushkor megfelelő UPDATE statementet generálhat, ezért ilyen esetben nem feltétlenül szükséges explicit `save()`. Azért csábító a `save()` szükségességét feltételezni, mert Spring Data repository használatakor gyakran látjuk, de a JPA managed entityk életciklusa ettől eltérően működik.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: Hibernate & N+1
+TYPE: performance
+QUESTION: Egy endpoint 500 `Order` entityt tölt be, és minden orderhez egy lazy `Customer` kapcsolatot is használ. A latency jelentősen megnő. Melyik megközelítés lehet célszerű a konkrét read use case optimalizálására?
+A) Minden kapcsolatot globálisan `EAGER`-re állítani
+B) Minden request után új JVM-et indítani
+C) A Hibernate teljes kikapcsolása
+D) A szükséges adatokat célzottan lekérni, például projectionnel vagy megfelelő fetch plan/fetch join használatával
+ANSWER: D
+EXPLANATION: A teljes entity graph automatikus eager betöltése helyett célszerű az adott use case-hez szükséges adatokat célzottan lekérni. Projection vagy megfelelő fetch join csökkentheti a queryk számát és a feleslegesen betöltött adatot. Azért csábító globálisan `EAGER`-re állítani a kapcsolatokat, mert az megszüntethet bizonyos lazy loading problémákat, de más lekérdezéseket jelentősen drágábbá tehet.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: Transactions
+TYPE: debug
+QUESTION: Egy `@Transactional` metódusban checked exception keletkezik, amelyet nem kap el az alkalmazás. Mi igaz az alapértelmezett Spring rollback viselkedésre?
+A) Minden checked exception automatikusan rollbacket okoz
+B) A checked exception alapértelmezés szerint nem feltétlenül okoz rollbacket
+C) Checked exception esetén az alkalmazás mindig új tranzakciót indít
+D) Checked exception automatikusan commitálja a tranzakciót
+ANSWER: B
+EXPLANATION: A Spring alapértelmezett rollback szabálya jellemzően a `RuntimeException` és `Error` típusokra vonatkozik, míg checked exception esetén önmagában nem következik automatikusan rollback. Ha szükséges, a rollback szabály például `rollbackFor` segítségével explicit megadható. Azért csábító minden exceptionre rollbacket várni, mert adatbázis-művelet közben bármilyen exception hibának tűnik, de a Spring különbséget tesz a kivételtípusok között.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: Spring Security
+TYPE: scenario
+QUESTION: Egy JWT-alapú REST API-nál melyik állítás írja le helyesen a tipikus stateless authentication modellt?
+A) A szerver minden requesthez kötelezően HTTP sessionben tárolja a teljes authentication állapotot
+B) A JWT-t csak az adatbázisban lehet tárolni
+C) A kliens minden requestben hitelesítési információt küldhet, például Bearer tokent, így a szervernek nem feltétlenül kell szerveroldali sessiont fenntartania
+D) JWT használata automatikusan titkosítja a teljes HTTP kapcsolatot
+ANSWER: C
+EXPLANATION: Stateless JWT-alapú API-knál a kliens tipikusan `Authorization: Bearer ...` headerben küld tokent, amelyből a szerver fel tudja építeni a security contextet. Ez nem jelenti azt, hogy a JWT szükségszerűen titkosított: a JWS token payloadja például alá van írva, de nem feltétlenül titkos. Azért csábító a JWT-t HTTP-titkosításnak tekinteni, mert a token biztonsági célra szolgál, de a hálózati titkosítást TLS biztosítja.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: debug
+QUESTION: Miért lehet lassú egy nagy tesztcsomag, ha minden egyes tesztosztály `@SpringBootTest` segítségével teljes application contextet tölt be?
+A) Mert a `@SpringBootTest` letiltja a JVM JIT fordítót
+B) Mert minden teszt automatikusan production adatbázist használ
+C) Mert a Spring context betöltése és inicializálása jelentős költség lehet, különösen sok bean és infrastruktúra esetén
+D) Mert a `@SpringBootTest` csak egyetlen tesztet enged futtatni
+ANSWER: C
+EXPLANATION: A teljes Spring context létrehozása és inicializálása több időt és erőforrást igényelhet, különösen nagy alkalmazásoknál. A teszt context caching ezt részben mérsékelheti, de sok különböző konfigurációjú context továbbra is költséges lehet. Azért csábító a JIT-re vagy production adatbázisra gondolni, mert ezek is okozhatnak tesztlassulást, de a teljes context inicializáció önmagában is jelentős tényező.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Actuator & observability
+TYPE: performance
+QUESTION: Egy production alkalmazásnál szeretnéd monitorozni a HTTP request latency percentiliseit. Melyik megközelítés illeszkedik leginkább az observability céljához?
+A) Minden requesthez manuálisan `System.out.println` hívást hozzáadni
+B) Metrics alapú instrumentation használata, például Micrometer segítségével, és megfelelő backendbe exportálni
+C) A response bodyba beleírni a request teljes futási idejét minden endpointnál
+D) Minden requesthez új logfájlt létrehozni
+ANSWER: B
+EXPLANATION: A Spring Boot observability stackje Micrometeren keresztül metrics instrumentationt és különböző monitoring backendekhez történő exportot támogat. A latency percentilisek így aggregált, productionben is használható metrikaként elemezhetők. Azért csábító minden requestet logolni, mert abból is számolható latency, de nagy forgalomnál ez zajos és költséges lehet, miközben a metrics rendszer erre célzottabb.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Caching
+TYPE: debug
+QUESTION: Miért nem feltétlenül működik úgy a `@Cacheable`, ahogy várjuk, ha egy bean saját magán belül közvetlenül hívja meg az annotált metódusát?
+CODE:
+@Service
+class ProductService {
+
+    public Product getProduct(Long id) {
+        return loadProduct(id);
+    }
+
+    @Cacheable("products")
+    public Product loadProduct(Long id) {
+        return repository.findById(id).orElseThrow();
+    }
+}
+ENDCODE
+A) A cache csak repositorykon használható
+B) A saját objektumon belüli közvetlen hívás megkerülheti a Spring cache proxyját, ezért a cache interception nem feltétlenül fut le
+C) A `@Cacheable` csak private metódusokon működik
+D) A cache automatikusan letiltódik minden GET requestnél
+ANSWER: B
+EXPLANATION: A Spring cache abstraction tipikusan proxy/interception mechanizmuson keresztül működik. Ha ugyanazon bean belül közvetlenül hívunk egy metódust, a hívás megkerülheti a proxyt, ezért a `@Cacheable` interception nem feltétlenül történik meg. Azért csábító azt gondolni, hogy az annotáció minden Java metódushívást elfog, mert deklaratív módon van megadva, de a proxy határa fontos.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: Async & scheduling
+TYPE: edgecase
+QUESTION: Mi történik tipikusan, ha egy `@Async` metódus `void` visszatérési típusú és kivétel keletkezik benne?
+A) A kivétel mindig ugyanazon a stacken jut vissza a hívóhoz
+B) A kivétel automatikusan rollbackeli az összes tranzakciót az alkalmazásban
+C) A kivétel minden esetben leállítja az alkalmazást
+D) A kivétel nem ugyanúgy adódik vissza a hívóhoz, ezért megfelelő async exception handling szükséges lehet
+ANSWER: D
+EXPLANATION: Az aszinkron metódus másik végrehajtási szálon fut, ezért egy `void` visszatérési típusú `@Async` metódus kivételét a hívó nem kapja meg ugyanúgy, mint egy szinkron hívásnál. Az alkalmazás megfelelő `AsyncUncaughtExceptionHandler` konfigurációval kezelheti az ilyen hibákat. Azért csábító a normál exception propagation feltételezése, mert a metódust ugyanúgy Java kódból hívjuk, de a tényleges végrehajtás másik szálon történik.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: Messaging (Kafka, RabbitMQ)
+TYPE: behavior
+QUESTION: Miért fontos Kafka esetén a consumer group használata?
+A) Mert ugyanazon group consumerjei között a topic partíciói megoszthatók, így a feldolgozás skálázható
+B) Mert egy consumer group minden esetben pontosan egy Kafka brokert használ
+C) Mert a group automatikusan adatbázis-tranzakcióvá alakítja az üzenetfeldolgozást
+D) Mert a consumer group megszünteti a partíciók szükségességét
+ANSWER: A
+EXPLANATION: Egy consumer groupon belül a topic partícióit a csoport consumerjei között lehet felosztani, így több consumerrel párhuzamosan lehet feldolgozni az adatot. Egy adott partícióhoz egy groupon belül egy consumer tartozhat egy adott időpontban. Azért csábító a brokerhez kötni a group fogalmát, mert a Kafka cluster és a consumer group együtt jelenik meg az architektúrában, de a group elsősorban a fogyasztási és offset-kezelési modellt határozza meg.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: Microservices & Spring Cloud
+TYPE: scenario
+QUESTION: Miért lehet hasznos egy circuit breaker egy microservice HTTP hívásnál?
+A) Mert automatikusan kijavítja a hibás adatbázisrekordokat
+B) Mert minden hálózati hibát véglegesen megszüntet
+C) Mert tartósan hibás vagy túlterhelt downstream service esetén korlátozhatja a további hívásokat, csökkentve a cascading failure kockázatát
+D) Mert garantálja, hogy minden request sikeres lesz
+ANSWER: C
+EXPLANATION: Circuit breaker segítségével a rendszer egy hibás vagy elérhetetlen downstream dependency felé egy idő után nem próbálkozik minden requesttel, hanem open állapotban gyorsan hibát adhat, majd később kontrolláltan tesztelheti a helyreállást. Ez segíthet megakadályozni a cascading failure-t. Azért csábító garantált sikerességet várni tőle, mert a circuit breaker a hibák kezelésére szolgál, de valójában nem javítja meg a downstream szolgáltatást.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: Production issues & performance
+TYPE: production
+QUESTION: Egy Spring Boot API response latencyje hirtelen megnőtt egy új release után. CPU és memória normális, de egy downstream HTTP service válaszideje jelentősen nőtt. Mi lehet a legvalószínűbb következő vizsgálati irány?
+A) A Java osztálynevek átnevezése
+B) A downstream dependency timeoutjainak, latencyjének, retryinak és connection pooljának vizsgálata
+C) Minden Spring bean singletonról prototype-ra váltása
+D) Az összes REST endpoint POST-ra cserélése
+ANSWER: B
+EXPLANATION: Ha az alkalmazás saját erőforrásai normálisak, miközben egy downstream dependency lassult, akkor annak latencyje közvetlenül növelheti az API response time-ját. Meg kell vizsgálni a timeoutokat, retrykat, connection poolokat és az esetleges cascading terhelést. Azért csábító az alkalmazás belső beanjeit módosítani, mert a release után jelent meg a probléma, de a mért downstream latency erős nyom a hálózati dependency irányába.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: Spring Data JPA
+TYPE: scenario
+QUESTION: Egy repository metódus több százezer rekordot próbál egyszerre `List<Entity>` formában visszaadni. Melyik megközelítés lehet megfelelőbb?
+A) Minden esetben növelni a JVM heapet
+B) Minden rekordot egyetlen óriási tranzakcióban módosítani
+C) A teljes result setet mindig JSON-ként visszaadni
+D) Lapozás, streaming vagy batch feldolgozás használata a konkrét use case szerint
+ANSWER: D
+EXPLANATION: Több százezer entity egyszerre történő materializálása nagy memória- és persistence-context terhelést okozhat. Pagination, megfelelő streaming vagy batch processing segítségével kontrollálhatóbbá tehető az adatmennyiség feldolgozása. Azért csábító a heap növelése, mert az több objektum tárolását teszi lehetővé, de az alkalmazás és az adatbázis terhelése ettől még problémás maradhat.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: Transactions
+TYPE: scenario
+QUESTION: Egy `@Transactional` service metódusban egy külső REST API hívást is végrehajtasz, amely 10 másodpercig tart. Miért lehet ez productionben problémás?
+A) A hosszú tranzakció feleslegesen tarthat adatbázis-erőforrásokat, például connectiont vagy lockokat, miközben a külső szolgáltatásra vár
+B) A Spring automatikusan kikapcsolja a tranzakciót HTTP hívás előtt
+C) A REST API hívás automatikusan ugyanazon adatbázis connectiont használja
+D) A tranzakció mindig rollbackel minden HTTP timeout nélkül is
+ANSWER: A
+EXPLANATION: Ha a tranzakció már megnyílt, miközben a service hosszú külső hálózati műveletre vár, az adatbázis connection és esetleg lockok hosszabb ideig foglalva maradhatnak. Ez connection pool exhaustionhöz és konkurencia-problémákhoz vezethet. Azért csábító a tranzakciót csak az adatbázis statementekhez kötni, mert a HTTP hívás nem adatbázis-művelet, de ugyanabban a tranzakciós metódusban a tranzakció fennmaradhat.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: Spring Security
+TYPE: behavior
+QUESTION: Mit jelent a `SecurityContext` szerepe egy tipikus Spring Security request feldolgozás során?
+A) Kizárólag az adatbázis connectionöket tárolja
+B) A HTTP response JSON struktúráját tárolja
+C) A security feldolgozás során az aktuális authenticated principalhez és kapcsolódó authentication információhoz biztosíthat hozzáférést
+D) Automatikusan létrehozza a felhasználó JWT tokenjét minden request végén
+ANSWER: C
+EXPLANATION: A `SecurityContext` a security állapotot, például az aktuális `Authentication` objektumot hordozhatja, amelyből a principal és authority információk elérhetők. Ez a request security feldolgozásának fontos része. Azért csábító JWT-tárolóként értelmezni, mert JWT-alapú authentication esetén is részt vesz az authentication eredményének kezelésében, de a `SecurityContext` nem azonos magával a JWT-vel.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: Hibernate & N+1
+TYPE: edgecase
+QUESTION: Miért nem jó általános megoldás az összes JPA kapcsolatot `FetchType.EAGER` értékre állítani az N+1 problémák elkerülésére?
+A) Mert az `EAGER` minden esetben compile hibát okoz
+B) Mert az `EAGER` csak primitive típusokra használható
+C) Mert az `EAGER` automatikusan letiltja a tranzakciókat
+D) Mert olyan adatokat is betölthet, amelyekre nincs szükség, és összetett entity graphoknál nagyobb query- és memória-terhelést okozhat
+ANSWER: D
+EXPLANATION: Az eager fetching egy adott lazy loading problémát elkerülhet, de cserébe minden releváns entity betöltésekor automatikusan több kapcsolódó adatot is szükségessé tehet. Nagy entity graph esetén ez jelentős memória- és query-terhelést eredményezhet. Azért csábító univerzális megoldásként használni, mert megszünteti a lazy proxyk későbbi betöltését, de a fetch stratégia mindig a konkrét use case-hez igazítandó.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: Production issues & performance
+TYPE: performance
+QUESTION: Egy Spring Boot alkalmazásban az adatbázis queryk többsége gyors, de néhány endpoint nagy mennyiségű adatot szerializál JSON-ná, és emiatt magas latencyt mutat. Melyik vizsgálat a leginkább célzott?
+A) A response payload méretének, serialization idejének és a szükségtelenül visszaadott adatoknak a vizsgálata
+B) A JVM összes threadjének leállítása
+C) Az összes repository metódus `nativeQuery`-re állítása
+D) Minden bean prototype scope-ra állítása
+ANSWER: A
+EXPLANATION: Ha az adatbázis queryk gyorsak, de a nagy response-ok lassúak, érdemes a payload méretét, JSON serialization idejét és az API által visszaadott adatok szükségességét vizsgálni. Pagination, célzott DTO-k vagy kisebb response-ok csökkenthetik a serialization és hálózati költséget. Azért csábító továbbra is az adatbázist hibáztatni, mert az endpoint adatot kér le, de a mért query latency alapján a serialization lehet a tényleges bottleneck.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: IoC & dependency injection
+TYPE: edgecase
+QUESTION: Mi történik, ha egy Spring bean konstruktorában két különböző interfészre ugyanazt az implementációt lehetne beadni, de az egyik dependencyhez nincs egyértelmű bean?
+CODE:
+@Configuration
+class PaymentConfig {
+
+    @Bean
+    PaymentGateway stripeGateway() {
+        return new StripeGateway();
+    }
+}
+
+@Service
+class PaymentService {
+    private final PaymentGateway gateway;
+
+    PaymentService(PaymentGateway gateway) {
+        this.gateway = gateway;
+    }
+}
+ENDCODE
+A) A Spring automatikusan létrehoz egy második implementációt
+B) A Spring a bean nevét mindig a konstruktor paraméterével egyezteti
+C) A Spring csak akkor tudja beadni a dependencyt, ha az implementáció `@Service`
+D) Ha pontosan egy megfelelő `PaymentGateway` bean van, a dependency típusalapon feloldható, függetlenül attól, hogy az implementáció `@Bean` vagy stereotype annotációval lett regisztrálva
+ANSWER: D
+EXPLANATION: A dependency injection alapértelmezésben típusalapon működik, ezért egyetlen megfelelő `PaymentGateway` bean esetén a Spring be tudja adni azt. A bean létrehozásának módja lehet `@Bean` vagy például `@Component`, `@Service` és hasonló stereotype. Azért csábító az annotáció típusához kötni a működést, mert a stereotype annotációk gyakoriak, de a konténer számára a regisztrált bean típusa a lényeg.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: Bean scopes & lifecycle
+TYPE: behavior
+QUESTION: Mikor fut le egy singleton Spring bean `@PostConstruct` metódusa?
+A) Minden HTTP request előtt
+B) A bean inicializálásakor, a dependency injection és a szükséges inicializáció után
+C) Minden alkalommal, amikor a bean egyik metódusát meghívják
+D) Csak az alkalmazás leállításakor
+ANSWER: B
+EXPLANATION: A `@PostConstruct` metódus az adott bean inicializálásának részeként fut le, miután a szükséges dependencyk be lettek állítva. Singleton esetén ez jellemzően a bean létrehozásakor történik. Azért csábító requestenkénti futást feltételezni, mert webalkalmazásban a beaneket requestek használják, de a singleton lifecycle nem request-alapú.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: Auto-configuration & starters
+TYPE: scenario
+QUESTION: Egy Spring Boot alkalmazásban hozzáadod a `spring-boot-starter-data-jpa` dependencyt, de nincs konfigurált adatbázis és nincs embedded database a classpathon. Mi lehet az egyik tipikus következmény induláskor?
+A) A JPA automatikusan kikapcsol minden repositoryt
+B) A Spring automatikusan létrehoz egy production adatbázist
+C) Az alkalmazás induláskor DataSource konfigurációs hibával leállhat
+D) A JPA mindig kizárólag memóriában fut adatbázis nélkül
+ANSWER: C
+EXPLANATION: A JPA starter önmagában nem biztosít tetszőleges adatbázis-kapcsolatot. Ha nincs megfelelő DataSource konfiguráció és nincs használható embedded database, az alkalmazás indulásakor a DataSource/JPA auto-configuration hibát okozhat. Azért csábító azt hinni, hogy a starter mindent automatikusan létrehoz, mert sok infrastruktúrát valóban automatikusan konfigurál, de az adatbázis elérhetőségét nem tudja kitalálni.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: Configuration & profiles
+TYPE: output
+QUESTION: Mi lesz a `server.port` értéke, ha az aktív profil `prod`, és a konfigurációk az alábbiak?
+CODE:
+# application.yml
+server:
+  port: 8080
+
+# application-prod.yml
+server:
+  port: 9090
+ENDCODE
+A) 8080
+B) 9090
+C) Mindkettő egyszerre aktív, ezért az alkalmazás véletlenszerű portot választ
+D) Az alkalmazás nem indul el
+ANSWER: B
+EXPLANATION: Az aktív `prod` profilhoz tartozó konfiguráció felülírja az alapkonfiguráció ugyanazon propertyjét, ezért a `server.port` értéke 9090 lesz. A Spring Boot a konfigurációs forrásokat prioritás és profil alapján egyesíti. Azért csábító az alapértéket választani, mert az `application.yml` mindig betöltődik, de a profil-specifikus érték felülírhatja.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: Spring MVC & REST
+TYPE: behavior
+QUESTION: Mit tesz lehetővé a `@RequestParam(required = false)` használata egy controller metódusban?
+A) A query paraméter hiányozhat anélkül, hogy emiatt kötelező binding hiba keletkezne
+B) A query paraméter automatikusan path paraméterré válik
+C) A request body kötelezővé válik
+D) A paraméter értékét mindig `null` helyettesíti akkor is, ha elküldték
+ANSWER: A
+EXPLANATION: A `required = false` azt jelzi, hogy a query parameter opcionális, ezért hiánya önmagában nem okoz kötelező parameter binding hibát. A paraméter típusa és deklarációja alapján a hiányzó érték például `null` lehet. Azért csábító path parameterként értelmezni, mert mindkettő URL-ben szereplő adatot kezel, de eltérő binding mechanizmusról van szó.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: Validation & error handling
+TYPE: scenario
+QUESTION: Egy REST API egységes JSON hibaválaszokat szeretne adni minden controllerből érkező validációs hibára. Melyik megközelítés illeszkedik ehhez legjobban?
+A) Minden controllerben külön try-catch blokkot írni minden validációhoz
+B) Minden DTO-ban manuálisan JSON stringet létrehozni
+C) A validációt teljesen kikapcsolni
+D) Központi exception handlinget használni, például `@RestControllerAdvice` segítségével
+ANSWER: D
+EXPLANATION: A `@RestControllerAdvice` központilag kezelheti a controller rétegből származó kivételeket, és egységes hibaválaszt építhet fel. Ez csökkenti a duplikációt és egységes API-szerződést tesz lehetővé. Azért csábító minden controllerben külön kezelni a hibákat, mert lokálisan egyszerűnek tűnik, de nagyobb alkalmazásban gyorsan ismétlődő kódhoz vezet.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Spring Data JPA
+TYPE: behavior
+QUESTION: Mit jelent egy Spring Data JPA repository metódus esetén a `Page<User>` visszatérési típus használata?
+A) A repository mindig az összes rekordot betölti, majd Java oldalon levágja a többit
+B) A repository csak egyetlen rekordot adhat vissza
+C) A repository lapozott eredményt adhat vissza, amelyhez paging metadata is társulhat
+D) A `Page` kizárólag native SQL lekérdezésekkel használható
+ANSWER: C
+EXPLANATION: A `Page<T>` lapozott eredmény reprezentációja, amely a tartalmazott elemek mellett paging információkat is biztosíthat, például az összes elemek számát és az oldalak számát. A Spring Data JPA ezt adatbázisoldali paginationnel tudja támogatni. Azért csábító az összes rekord betöltését feltételezni, mert a Java oldalon is `Page` objektumot kapunk, de a pagination célja éppen a teljes result set materializálásának elkerülése.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: Hibernate & N+1
+TYPE: debug
+QUESTION: Egy `Order` lekérdezés után minden orderhez külön SQL query fut a hozzá tartozó `Customer` betöltésére. Melyik jelenségre utal ez leginkább?
+A) Dirty checking
+B) N+1 query problémára
+C) Optimistic lockingra
+D) Database migration hibára
+ANSWER: B
+EXPLANATION: Ha egy kezdeti query után minden egyes elemhez további query fut egy kapcsolódó entity betöltésére, az tipikus N+1 minta. Nagy adatmennyiségnél ez jelentősen növelheti a latencyt és az adatbázis terhelését. Azért csábító dirty checkingre gondolni, mert az is Hibernate által kezelt automatikus mechanizmus, de az nem extra selectek sorozatát jelenti.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: Transactions
+TYPE: edgecase
+QUESTION: Mit jelent a `Propagation.REQUIRED` egy Spring tranzakciónál?
+A) Ha van aktív tranzakció, azt használja; ha nincs, új tranzakciót indít
+B) Mindig új tranzakciót indít és felfüggeszti a régit
+C) Soha nem használ tranzakciót
+D) Csak read-only tranzakciókat engedélyez
+ANSWER: A
+EXPLANATION: A `REQUIRED` az alapértelmezett tranzakciós propagation stratégia: meglévő tranzakció esetén csatlakozik hozzá, tranzakció hiányában pedig újat indít. Ez lehetővé teszi, hogy a service rétegek tipikusan ugyanazon tranzakciós határon belül dolgozzanak. Azért csábító a mindig új tranzakciót választani, mert az explicit izolációt sugall, de ezt a `REQUIRES_NEW` biztosítja.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: Spring Security
+TYPE: scenario
+QUESTION: Egy endpointet csak authenticated felhasználóknak szeretnél elérhetővé tenni, de szerepkörtől függetlenül. Melyik szabály felel meg ennek?
+A) `denyAll()`
+B) `hasRole("USER")`
+C) `permitAll()`
+D) `authenticated()`
+ANSWER: D
+EXPLANATION: Az `authenticated()` azt jelenti, hogy a requesthez hitelesített felhasználó szükséges, de önmagában nem követel meg konkrét authorityt vagy role-t. A `hasRole` már szerepkör alapú korlátozást jelent. Azért csábító a `hasRole("USER")` használata, mert sok alkalmazásban szerepkörökkel védik az endpointokat, de itt a követelmény csak a hitelesítés.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: scenario
+QUESTION: Mikor lehet előnyös egy `@WebMvcTest` használata egy teljes `@SpringBootTest` helyett?
+A) Ha valódi Kafka clustert akarsz elindítani
+B) Ha csak a web réteg viselkedését szeretnéd tesztelni kisebb és fókuszáltabb application contexttel
+C) Ha production adatbázist szeretnél használni
+D) Ha az összes Spring bean teljes lifecycle-ját akarod integrációsan tesztelni
+ANSWER: B
+EXPLANATION: A `@WebMvcTest` a Spring MVC rétegre fókuszál, ezért controller teszteknél kisebb és gyorsabban induló contextet biztosíthat. A teljes `@SpringBootTest` ezzel szemben az alkalmazás szélesebb infrastruktúráját töltheti be. Azért csábító a teljes contextet választani minden teszthez, mert az közelebb áll az alkalmazás teljes futási környezetéhez, de a web réteghez ez gyakran felesleges.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: Actuator & observability
+TYPE: production
+QUESTION: Egy production Spring Boot alkalmazásnál az Actuator endpointokat szeretnéd úgy elérhetővé tenni, hogy ne legyen minden endpoint nyilvánosan hozzáférhető. Mi a megfelelő megközelítés?
+A) Minden Actuator endpointot automatikusan publikussá tenni
+B) Az Actuatort teljesen eltávolítani
+C) A szükséges endpointokat célzottan kitenni, és megfelelő security/network hozzáférési szabályokkal védeni
+D) Az endpointokat query parameterrel védeni
+ANSWER: C
+EXPLANATION: Productionben célszerű csak a szükséges Actuator endpointokat exponálni, és azokat megfelelő authentication, authorization, hálózati policy vagy management port konfiguráció segítségével védeni. A cél az observability biztosítása anélkül, hogy érzékeny management információk nyilvánosan elérhetők legyenek. Azért csábító mindent publikálni, mert fejlesztés közben kényelmes, de productionben a management endpointok hozzáférését kontrollálni kell.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: Caching
+TYPE: scenario
+QUESTION: Egy `@Cacheable` metódus eredménye időnként elavult adatot ad vissza. Melyik megoldás lehet megfelelő, ha az adat változásakor a cache entryt is érvényteleníteni szeretnéd?
+A) `@CacheEvict` vagy megfelelő cache invalidation stratégia használata
+B) Minden request előtt az egész JVM újraindítása
+C) A repository törlése
+D) A cache annotationök eltávolítása minden más metódusról
+ANSWER: A
+EXPLANATION: Ha egy adat módosul, a hozzá tartozó cache entry explicit invalidálható például `@CacheEvict` használatával, vagy alkalmazható más megfelelő eviction/invalidation stratégia. Így csökkenthető annak esélye, hogy a read path régi adatot szolgáljon ki. Azért csábító a teljes cache újraépítését választani, mert az biztosan eltünteti a régi értékeket, de szükségtelenül nagy művelet lehet.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: Async & scheduling
+TYPE: performance
+QUESTION: Egy `@Async` feladatokkal terhelt alkalmazásban az async executor queue-ja folyamatosan nő. Mit jelezhet ez leginkább?
+A) A JVM biztosan memory leaket tartalmaz
+B) A feladatok feldolgozási sebessége tartósan kisebb lehet, mint a beérkező feladatok sebessége
+C) A Spring automatikusan kikapcsolta az async végrehajtást
+D) A queue növekedése mindig CPU cache hibát jelent
+ANSWER: B
+EXPLANATION: Ha a producer gyorsabban küldi a feladatokat, mint ahogy az executor képes feldolgozni őket, a queue növekedni kezdhet. Ez executor saturationhoz, magas latencyhez és végül elutasított taskokhoz vagy memória-problémákhoz is vezethet a konfigurációtól függően. Azért csábító közvetlenül memory leakre gondolni, mert a queue memóriát használ, de a növekedés önmagában throughput mismatchre is utalhat.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: Messaging (Kafka, RabbitMQ)
+TYPE: scenario
+QUESTION: Egy Kafka consumer feldolgoz egy üzenetet, de az offset commit előtt összeomlik. Mi történhet egy tipikus at-least-once feldolgozási modellben?
+A) Az üzenet garantáltan elveszik
+B) A Kafka automatikusan törli a topicból
+C) Az üzenet újra feldolgozható lehet, mert a commit nem történt meg
+D) A consumer automatikusan pontosan egyszeri feldolgozást garantál
+ANSWER: C
+EXPLANATION: At-least-once modellben az üzenet feldolgozása és az offset commit két külön lépés lehet. Ha a consumer a commit előtt leáll, a következő consumer ugyanazt az offsetet folytathatja, ezért az üzenet újra feldolgozható. Azért csábító elvesztett üzenetet feltételezni, mert a feldolgozás már elkezdődött, de a committed offset határozza meg, honnan folytatódik a fogyasztás.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: Microservices & Spring Cloud
+TYPE: scenario
+QUESTION: Egy microservice több downstream service-t hív szinkron HTTP-n keresztül egyetlen request kiszolgálásakor. Miért lehet veszélyes, ha minden downstream hívásnak hosszú timeoutja van?
+A) Mert a hosszú timeout mindig javítja a rendszer throughputját
+B) Mert a Spring letiltja az összes HTTP klienst
+C) Mert a JVM nem tud több mint egy HTTP requestet kezelni
+D) Mert a lassú dependencyk hosszú ideig foglalhatják a request erőforrásait, és egymásra torlódva cascading latencyt okozhatnak
+ANSWER: D
+EXPLANATION: Hosszú timeout esetén a requestek sokáig várakozhatnak downstream dependencykre, miközben threadek, connectionök vagy más erőforrások foglalva maradhatnak. Több ilyen dependency egymás után vagy párhuzamosan tovább növelheti a teljes latencyt és a terhelést. Azért csábító hosszú timeoutot választani, mert az csökkenti a korai timeout hibákat, de túl hosszú érték esetén a rendszer lassan és nehezen tud visszaterhelődni.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: Production issues & performance
+TYPE: debug
+QUESTION: Egy Spring Boot alkalmazásban időszakosan `HikariPool-1 - Connection is not available, request timed out` jellegű hibák jelennek meg. Mi lehet az egyik első vizsgálandó terület?
+A) A connection pool mérete, a connectionök használati ideje és az esetleges hosszú vagy beragadt adatbázis-műveletek
+B) A REST endpointok HTTP metódusainak átnevezése
+C) A Java package-ek sorrendje
+D) Az összes bean prototype scope-ra állítása
+ANSWER: A
+EXPLANATION: A hiba azt jelezheti, hogy a poolból nem érhető el szabad connection a kérés kiszolgálásakor. Vizsgálni kell többek között a pool méretét, a connectionök tartási idejét, a lassú queryket és az esetleges connection leaket. Azért csábító egyszerűen növelni a pool méretét, mert az több connectiont biztosíthat, de a kiváltó ok megszüntetése nélkül ez csak elfedheti vagy továbbterhelheti a problémát.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: Spring Data JPA
+TYPE: performance
+QUESTION: Miért lehet problémás, ha egy REST endpoint közvetlenül nagy JPA entity graphot szerializál JSON-ná?
+A) Mert a JPA entityk soha nem szerializálhatók JSON-ná
+B) Mert minden entity automatikusan immutable lesz
+C) Mert lazy kapcsolatok további queryket indíthatnak, illetve túl sok adat kerülhet a response-ba
+D) Mert a JSON csak primitive Java típusokat támogat
+ANSWER: C
+EXPLANATION: Egy nagy entity graph szerializálása során lazy kapcsolatok elérése további SQL queryket indíthat, és a response a szükségesnél jóval több adatot is tartalmazhat. DTO-k vagy célzott projectionök segítségével jobban kontrollálható a response shape. Azért csábító azt gondolni, hogy a probléma csak JSON-szinten jelentkezik, mert a hívó HTTP response-t lát, de a serialization közben adatbázis-műveletek is történhetnek.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: Transactions
+TYPE: behavior
+QUESTION: Mi a `readOnly = true` egyik fontos gyakorlati jelentése Spring tranzakció esetén?
+A) Garantálja, hogy semmilyen adatbázis-írás technikailag nem történhet
+B) Minden SQL statement automatikusan SELECT lesz
+C) Automatikusan megszünteti az adatbázis lockokat
+D) A tranzakció olvasási szándékát jelzi, és egyes persistence/database implementációk optimalizálhatják ennek megfelelően a működést, de nem univerzális write-blocking mechanizmus
+ANSWER: D
+EXPLANATION: A `readOnly = true` deklaráció olvasási szándékot jelez, amelyet a Spring és az underlying persistence/database réteg bizonyos módokon felhasználhat optimalizálásra. Nem tekinthető univerzális biztonsági mechanizmusnak, amely minden adatbázis-írást fizikailag megakadályoz. Azért csábító valódi write protectionként értelmezni, mert a property neve ezt sugallja, de a tényleges viselkedés az alkalmazott stacktől is függ.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: Spring Security
+TYPE: trap
+QUESTION: Miért nem célszerű kizárólag frontend oldali route guardra hagyatkozni egy admin endpoint védelmében?
+A) Mert a frontend soha nem tud route-ot kezelni
+B) Mert a kliensoldali kódot a felhasználó megkerülheti, ezért a tényleges authorizationt a backendnek is ellenőriznie kell
+C) Mert a frontend route guard mindig letiltja a HTTP requesteket
+D) Mert a backend nem képes roleokat kezelni
+ANSWER: B
+EXPLANATION: A frontend route guard javíthatja a felhasználói élményt, de nem tekinthető biztonsági határnak, mert a kliens által futtatott kód módosítható vagy megkerülhető. Az admin jogosultságot a backendnek minden védett műveletnél ellenőriznie kell. Azért csábító a frontend guardot elegendőnek tekinteni, mert a UI-ban elrejtheti az admin funkciókat, de ez nem akadályozza meg a közvetlen HTTP hívásokat.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: behavior
+QUESTION: Mit ellenőriz elsősorban a `MockMvc` segítségével végzett controller teszt?
+A) A teljes production Kubernetes cluster működését
+B) A valódi böngésző JavaScript motorját
+C) A Spring MVC request/response feldolgozását a web rétegen
+D) A production adatbázis fizikai teljesítményét
+ANSWER: C
+EXPLANATION: A `MockMvc` lehetővé teszi HTTP-szerű requestek végrehajtását a Spring MVC stacken keresztül anélkül, hogy feltétlenül valódi hálózati szervert kellene indítani. Controller endpointok státuszkódja, response bodyja, headerjei és bindingja így célzottan tesztelhető. Azért csábító valódi böngészőtesztként értelmezni, mert HTTP requesteket szimulál, de nem böngésző JavaScript környezetét futtatja.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: Caching
+TYPE: scenario
+QUESTION: Egy cache-ben tárolt adat több alkalmazáspéldány között közös kell legyen, és az alkalmazásokat horizontálisan skálázod. Miért lehet problémás egy kizárólag lokális in-memory cache használata?
+A) Mert a lokális cache soha nem tud adatot tárolni
+B) Mert minden cache automatikusan adatbázist használ
+C) Mert a JVM nem támogatja a cache-elést
+D) Mert az egyes példányok saját, egymástól eltérő cache állapotot tarthatnak fenn
+ANSWER: D
+EXPLANATION: Lokális in-memory cache esetén minden application instance saját memóriával és saját cache állapottal rendelkezik. Emiatt az egyik példány által frissített vagy invalidált adat nem feltétlenül jelenik meg azonnal a többiben. Azért csábító lokális cache-t választani, mert egyszerű és gyors, de több példánynál a cache konzisztenciáját külön kezelni kell.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: Messaging (Kafka, RabbitMQ)
+TYPE: scenario
+QUESTION: Egy Kafka topicnak három partíciója van, és egy consumer groupban öt consumer fut. Mi igaz általánosan?
+A) Legfeljebb három consumer tud aktívan partíciót feldolgozni ebben a groupban egy adott pillanatban, a többi consumernek nem jut saját partíció
+B) Mind az öt consumer mindig ugyanazt a három partíciót dolgozza fel párhuzamosan
+C) A Kafka automatikusan öt partícióra bővíti a topicot
+D) A consumer group miatt a topicból minden üzenet ötször lesz feldolgozva
+ANSWER: A
+EXPLANATION: Egy consumer groupon belül egy partíció egy adott pillanatban legfeljebb egy consumerhez rendelhető, ezért három partíció mellett legfeljebb három consumer tud aktívan partíciót feldolgozni. A többi consumer idle lehet, amíg új partíció vagy rebalance miatt más elosztás nem történik. Azért csábító minden consumer egyidejű aktív működését feltételezni, mert több consumer több feldolgozási kapacitást sugall, de a párhuzamosság felső korlátját a partíciók száma adja.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: Microservices & Spring Cloud
+TYPE: production
+QUESTION: Egy microservice dependencyje időnként 503-at ad vissza. Miért lehet veszélyes vakon azonnal újrapróbálni minden hibás requestet?
+A) Mert a retry mindig lassabb, mint egy új JVM indítása
+B) Mert a retry minden esetben adatvesztést okoz
+C) Mert a hibás vagy túlterhelt downstream service-t további requestekkel még jobban megterhelheti, és retry stormot okozhat
+D) Mert HTTP-n soha nem szabad második requestet küldeni
+ANSWER: C
+EXPLANATION: A retry átmeneti hibák esetén hasznos lehet, de ha a downstream service már túlterhelt, a kontrollálatlan újrapróbálkozások tovább növelhetik a terhelést. Backoff, jitter, megfelelő retry limit és circuit breaker segíthet a retry storm elkerülésében. Azért csábító minden 503-at azonnal újrapróbálni, mert a hiba átmenetinek tűnhet, de a downstream állapotától függően ez ronthat a helyzeten.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Production issues & performance
+TYPE: production
+QUESTION: Egy Spring Boot alkalmazásnál a garbage collection gyakran aktiválódik, miközben az application heap használata folyamatosan magas. Melyik vizsgálat adhat érdemi információt?
+A) Heap dump és memory profiling segítségével megvizsgálni, mely objektumtípusok tartanak jelentős memóriát
+B) Minden controller HTTP metódusát GET-re változtatni
+C) Az összes Spring bean nevét átírni
+D) Az adatbázis indexek automatikus törlése
+ANSWER: A
+EXPLANATION: Magas heap használat és gyakori GC esetén érdemes megvizsgálni az objektumok eloszlását és retentionjét heap dump vagy memory profiling segítségével. Ez segíthet megkülönböztetni a normális nagy memóriaigényt, a túlzott allocationt és az esetleges memory leaket. Azért csábító egyszerűen több heapet adni a JVM-nek, mert az átmenetileg csökkentheti a GC nyomását, de nem deríti fel a memóriahasználat okát.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: IoC & dependency injection
+TYPE: scenario
+QUESTION: Egy alkalmazásban ugyanabból az interfészből több implementáció van, és az egyiknek mindig ezt kell használnia a service-nek. Melyik megoldás fejezi ki legjobban ezt a dependency injection konfigurációban?
+CODE:
+@Service
+class OrderService {
+
+    private final PaymentGateway gateway;
+
+    OrderService(PaymentGateway gateway) {
+        this.gateway = gateway;
+    }
+}
+ENDCODE
+A) Az összes implementációt eltávolítani
+B) A dependency típust `Object`-re változtatni
+C) A kívánt implementációt `@Primary` annotációval megjelölni, ha az legyen az alapértelmezett jelölt
+D) A Spring contextből manuálisan lekérni az összes bean-t minden hívásnál
+ANSWER: C
+EXPLANATION: Több azonos típusú bean esetén a `@Primary` megjelölheti azt az implementációt, amelyet a Spring alapértelmezett jelöltként válasszon az egyértelműséghez. Specifikusabb esetekben `@Qualifier` is használható. Azért csábító az összes bean manuális lekérése, mert így explicit módon kiválasztható egy implementáció, de ez feleslegesen összeköti a service-t a Spring konténerrel.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: Bean scopes & lifecycle
+TYPE: behavior
+QUESTION: Mi történik, ha egy request scope-ú bean egy singleton bean dependencyje?
+A) A singleton minden requestben automatikusan új példányt kap konstruktorhívással
+B) A Spring megfelelő scope proxyval vagy más scope-aware mechanizmussal képes a request scope-ú dependency használatát a singletonból kezelni
+C) Ez minden esetben compile-time hiba
+D) A request scope automatikusan singletonná válik
+ANSWER: B
+EXPLANATION: Egy hosszabb életű singleton közvetlenül nem tarthat ugyanúgy egy request scope-ú objektumpéldányt, ezért Spring scope proxy vagy hasonló mechanizmus segítségével a megfelelő aktuális request-scoped példányhoz tudja irányítani a hozzáférést. Azért csábító azt gondolni, hogy konstruktorinjection esetén mindig ugyanaz a példány marad, mert singleton dependencyknél ez valóban így működik, de különböző scope-ok esetén a scope kezelését is figyelembe kell venni.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: Auto-configuration & starters
+TYPE: edgecase
+QUESTION: Mi történhet, ha egy Spring Boot alkalmazásban definiálsz egy saját `DataSource` bean-t, miközben a `DataSourceAutoConfiguration` is elérhető?
+A) A Spring mindig létrehoz egy második DataSource-t is
+B) Az alkalmazás minden esetben leáll
+C) A saját bean automatikusan törlődik
+D) Az auto-configuration feltételei alapján a saját `DataSource` miatt a default DataSource auto-configuration egy része kihagyható
+ANSWER: D
+EXPLANATION: A Spring Boot auto-configuration feltételes, ezért például egy meglévő `DataSource` bean jelenléte miatt bizonyos default konfigurációk nem aktiválódnak. Ez lehetővé teszi, hogy az alkalmazás saját konfigurációval felülírja a Boot által biztosított alapértelmezett infrastruktúrát. Azért csábító a második DataSource létrejöttét várni, mert az auto-configuration külön infrastruktúrát konfigurálhat, de a conditional feltételek ezt megakadályozhatják.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: Configuration & profiles
+TYPE: scenario
+QUESTION: Egy alkalmazás külön konfigurációt használ `dev`, `test` és `prod` környezetekhez. Miért előnyös a profile-specifikus konfiguráció használata?
+A) Mert lehetővé teszi a környezetfüggő beállítások elkülönítését anélkül, hogy a Java kódot környezetenként módosítani kellene
+B) Mert minden property automatikusan titkosítva lesz
+C) Mert a Spring Boot csak egyetlen YAML fájlt tud kezelni
+D) Mert a profilok automatikusan létrehozzák a külön adatbázisokat
+ANSWER: A
+EXPLANATION: A profilok segítségével például eltérő adatbázis URL-ek, portok vagy feature-beállítások kezelhetők ugyanazon alkalmazáskód mellett. Így a környezet-specifikus konfiguráció elkülöníthető a programlogikától. Azért csábító automatikus secret titkosítást feltételezni, mert a profilok gyakran production konfigurációval együtt jelennek meg, de önmagukban nem titkosítják a propertyket.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Spring MVC & REST
+TYPE: debug
+QUESTION: Egy `@GetMapping("/users/{id}")` endpointban a metódus paramétere `@PathVariable Long userId`, és a request `/users/42`. Miért kaphat a controller binding hibát?
+A) A GET request nem tartalmazhat path paramétert
+B) A `Long` nem használható `@PathVariable` típusként
+C) A `@PathVariable` alapértelmezett névfeloldása nem feltétlenül egyezik a `id` és `userId` nevekkel
+D) A Spring MVC csak query paramétereket támogat GET esetén
+ANSWER: C
+EXPLANATION: A template változó neve `id`, míg a Java paraméter neve `userId`, ezért név szerinti feloldás esetén eltérés lehet. A probléma egyértelművé tehető például `@PathVariable("id") Long userId` használatával. Azért csábító a GET metódust hibáztatni, mert a request URL-ben történik a binding, de a GET önmagában teljesen alkalmas path variable használatára.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: Validation & error handling
+TYPE: scenario
+QUESTION: Egy API azt szeretné biztosítani, hogy egy `email` mező egyszerre legyen jelen és érvényes email formátumú. Melyik megközelítés megfelelő?
+A) Csak `@Email` használata
+B) Csak `@NotNull` használata
+C) Csak `@Size` használata
+D) `@NotBlank` és `@Email` kombinációjának használata
+ANSWER: D
+EXPLANATION: Az `@NotBlank` biztosítja, hogy a string ne legyen null, üres vagy csak whitespace, míg az `@Email` a formátumot ellenőrzi. A kettő együtt fejezi ki jól azt a követelményt, hogy a mező kötelező és email formátumú legyen. Azért csábító csak `@Email`-t használni, mert az email formátumát ellenőrzi, de önmagában nem fejezi ki megfelelően a kötelező mező követelményét.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: Spring Data JPA
+TYPE: performance
+QUESTION: Egy repository lekérdezésből csak egy `User` néhány mezőjére van szükséged, nem az egész entityre. Mi lehet célszerű megoldás?
+A) Minden esetben az összes entityt betölteni, majd Java oldalon eldobni a mezők többségét
+B) Projection vagy célzott DTO lekérdezés használata
+C) Az összes entityt `EAGER` módon betölteni
+D) Az adatbázis teljes tábláját memóriába másolni
+ANSWER: B
+EXPLANATION: Projection vagy célzott DTO query segítségével csak a szükséges adatokat kérheted le, ami csökkentheti a DB-ből átvitt és Java oldalon materializált adatmennyiséget. Ez különösen nagy result seteknél lehet jelentős optimalizáció. Azért csábító az egész entity betöltése, mert a repository használata így egyszerűbbnek tűnik, de felesleges adatot és objektumot is kezel.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: Hibernate & N+1
+TYPE: scenario
+QUESTION: Egy listázó endpointnak az order adatok mellett minden orderhez a customer nevét is vissza kell adnia. Melyik megközelítés csökkentheti célzottan az N+1 kockázatát?
+A) A kapcsolat globális `EAGER`-re állítása
+B) Minden customerhez külön repository hívást indítani Java ciklusban
+C) Célzott fetch join vagy projection használata a szükséges adatok lekérésére
+D) Az összes JPA kapcsolat törlése
+ANSWER: C
+EXPLANATION: Ha a use case pontosan meghatározza a szükséges order és customer adatokat, egy megfelelő fetch join vagy projection egyetlen célzott lekérdezéssel is képes lehet ezeket lekérni. Ez kontrolláltabb, mint a teljes entity graph globális eager betöltése. Azért csábító az `EAGER` választása, mert az csökkentheti a lazy loadingból eredő queryket, de más use case-ekben fölösleges adatbetöltést okozhat.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: Transactions
+TYPE: trap
+QUESTION: Egy `@Transactional` metódus meghív egy másik, ugyanazon osztályban található `@Transactional` metódust. Miért nem feltétlenül érvényesül a belső metódus saját tranzakciós konfigurációja?
+CODE:
+@Service
+class OrderService {
+
+    public void process() {
+        saveOrder();
+    }
+
+    @Transactional
+    public void saveOrder() {
+        // database operation
+    }
+}
+ENDCODE
+A) Mert a Spring minden `@Transactional` annotációt figyelmen kívül hagy
+B) Mert az adatbázis nem támogatja a nested Java metódusokat
+C) Mert csak private metódusokra érvényes a tranzakció
+D) Mert a közvetlen self-invocation megkerülheti a Spring tranzakciós proxyt
+ANSWER: D
+EXPLANATION: A Spring deklaratív tranzakciókezelése tipikusan proxy interceptionen keresztül működik. Ha ugyanazon objektumon belül közvetlenül hívjuk meg a metódust, a hívás megkerülheti a proxyt, ezért a belső metódus tranzakciós beállítása nem feltétlenül lép életbe külön. Azért csábító az annotáció megléte alapján automatikus tranzakciót feltételezni, mert deklaratív konfigurációról van szó, de a proxyhatár döntő.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: Spring Security
+TYPE: edgecase
+QUESTION: Mit jelent egy Spring Security szabályban a `hasAuthority("invoice:read")` használata?
+A) A requesthez tartozó authenticated usernek rendelkeznie kell az adott authorityvel
+B) Bármely anonymous user hozzáférhet
+C) A usernek kizárólag `ROLE_USER` role-ra van szüksége
+D) A szabály csak a JWT lejárati idejét ellenőrzi
+ANSWER: A
+EXPLANATION: A `hasAuthority` egy konkrét authority meglétét követeli meg az aktuális authenticationben. Ez finomabb permission-szintű authorizationt is lehetővé tehet, például `invoice:read` és `invoice:write` elkülönítésével. Azért csábító role-ként értelmezni, mert a role is authorityként jelenhet meg a Spring Security modelljében, de itt kifejezetten az adott authority string megléte a feltétel.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: scenario
+QUESTION: Miért lehet hasznos Testcontainers használata egy Spring Data JPA integrációs tesztben?
+A) Mert minden tesztet JavaScriptre fordít
+B) Mert a teszt egy valódi adatbázis-technológiát futtató izolált konténerhez kapcsolódhat, így a productionhöz közelebb álló DB viselkedés tesztelhető
+C) Mert automatikusan megszünteti az összes adatbázis lockot
+D) Mert a JPA helyett mindig H2-t használ
+ANSWER: B
+EXPLANATION: A Testcontainers segítségével például PostgreSQL vagy MariaDB konténer indítható a tesztekhez, így a tesztelés a tényleges adatbázis-motorhoz közelebb álló környezetben történhet. Ez csökkentheti az eltéréseket az egyszerűbb in-memory adatbázisokhoz képest. Azért csábító H2-re gondolni, mert az is gyakori tesztadatbázis, de a Testcontainers éppen lehetővé teszi más adatbázisok konténeres használatát.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: Actuator & observability
+TYPE: behavior
+QUESTION: Mi a különbség a liveness és readiness health check tipikus célja között Kubernetes környezetben?
+A) A liveness azt jelzi, hogy az alkalmazás készen áll-e forgalmat fogadni, a readiness pedig azt, hogy a JVM fut-e
+B) Mindkettő kizárólag az adatbázis kapcsolatát ellenőrzi
+C) A liveness azt vizsgálja, hogy az alkalmazás életképes-e, míg a readiness azt, hogy képes-e forgalmat fogadni
+D) A readiness mindig újraindítja a podot hiba esetén
+ANSWER: C
+EXPLANATION: A liveness azt segíti eldönteni, hogy az alkalmazás életképes-e, és egy tartósan hibás állapot esetén szükség lehet az újraindításra. A readiness azt jelzi, hogy az instance kész-e forgalmat fogadni, ezért egy nem kész példány kivehető a forgalomból anélkül, hogy feltétlenül újra kellene indítani. Azért csábító a két checket azonosnak tekinteni, mert mindkettő health állapotot jelez, de eltérő operációs céljuk van.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: Caching
+TYPE: edgecase
+QUESTION: Mi lehet az egyik kockázata annak, ha egy cache-ben hosszú TTL-lel tárolsz olyan adatot, amelyet gyakran módosítanak?
+A) Az adatbázis automatikusan törlődik
+B) A JVM nem tud többé garbage collectiont futtatni
+C) A cache automatikusan tranzakciós lockká válik
+D) A cache sokáig elavult értéket szolgáltathat ki
+ANSWER: D
+EXPLANATION: Hosszú TTL esetén egy módosított adat régi értéke hosszabb ideig maradhat a cache-ben, ha nincs megfelelő invalidation stratégia. Ez különösen problémás lehet olyan adatoknál, ahol a frissesség fontos. Azért csábító hosszú TTL-t választani, mert az csökkenti a cache miss-ek számát, de ezzel együtt növeli a stale data időablakát.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Async & scheduling
+TYPE: scenario
+QUESTION: Egy `@Scheduled(fixedRate = 1000)` feladat végrehajtása néha 5 másodpercig tart. Miért kell erre különösen figyelni productionben?
+A) Mert a scheduler működése és az esetleges párhuzamosság az executor konfigurációjától függ, ezért a hosszú futás torlódást vagy átfedést okozhat
+B) Mert a `fixedRate` automatikusan minden futást letilt
+C) Mert a Spring minden scheduled taskot adatbázis-tranzakcióban futtat
+D) Mert a `fixedRate` mindig pontosan egy másodperces execution time-ot garantál
+ANSWER: A
+EXPLANATION: A `fixedRate` az indítások ütemezésére vonatkozik, nem arra, hogy a feladat garantáltan egy másodperc alatt befejeződik. Hosszú futás esetén a tényleges viselkedést a scheduler és az executor konfigurációja is befolyásolja, és több task torlódhat vagy megfelelő konfiguráció mellett párhuzamosan futhat. Azért csábító az egy másodperces periódust futási időkorlátnak tekinteni, mert a paraméter értéke időtartamot jelent, de nem execution timeout.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: Messaging (Kafka, RabbitMQ)
+TYPE: performance
+QUESTION: Egy Kafka consumer feldolgozása lassabb, mint ahogy az üzenetek érkeznek, ezért a consumer lag folyamatosan növekszik. Mit jelent ez?
+A) A Kafka automatikusan elveszíti az üzeneteket
+B) A consumer által feldolgozott pozíció egyre jobban lemarad a producerek által létrehozott adatok mögött
+C) A topic partíciói automatikusan törlődnek
+D) A producer automatikusan leáll
+ANSWER: B
+EXPLANATION: A consumer lag azt fejezi ki, hogy a consumer által követett vagy commitált pozíció mennyire van lemaradva a topic aktuális termelői pozíciójához képest. Folyamatosan növekvő lag arra utal, hogy a fogyasztási kapacitás nem tart lépést a beérkező terheléssel. Azért csábító elveszett üzenetekre gondolni, mert a consumer nem éri utol a termelőt, de a lag önmagában nem jelent adatvesztést.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: Microservices & Spring Cloud
+TYPE: scenario
+QUESTION: Egy microservice több downstream service-t hív, és az egyik lassulása az egész request láncot lelassítja. Melyik architekturális megközelítés segíthet a hiba terjedésének korlátozásában?
+A) Minden downstream hívás timeoutjának korlátlan növelése
+B) Minden request új threadben történő indítása kontroll nélkül
+C) Timeoutok, circuit breaker, bulkhead és megfelelő fallback stratégia kombinációja
+D) Az összes downstream service egyetlen JVM-be összevonása
+ANSWER: C
+EXPLANATION: A timeoutok határt szabnak a várakozásnak, a circuit breaker korlátozhatja a tartósan hibás dependency felé irányuló hívásokat, a bulkhead elkülönítheti az erőforrásokat, a fallback pedig kontrollált alternatív viselkedést biztosíthat. Ezek együtt csökkenthetik a cascading failure kockázatát. Azért csábító minden requestet új threadben futtatni, mert több párhuzamosságot ígér, de kontroll nélkül ez tovább súlyosbíthatja az erőforrás-kimerülést.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: Transactions
+TYPE: edgecase
+QUESTION: Egy tranzakción belül egy külső payment service sikeresen terhelte a kártyát, majd az adatbázisban rollback történik. Miért nem oldja meg ezt önmagában a Spring `@Transactional`?
+A) Mert az adatbázis-tranzakció és a külső HTTP szolgáltatás művelete nem ugyanabban a lokális tranzakcióban vesz részt
+B) Mert a Spring nem tud rollbacket végrehajtani adatbázison
+C) Mert a payment service mindig ugyanazt az adatbázist használja
+D) Mert HTTP hívás esetén nincs tranzakciós határ
+ANSWER: A
+EXPLANATION: A lokális Spring tranzakció az alkalmazás által kezelt erőforrásokra, tipikusan az adatbázisra vonatkozik, és önmagában nem tudja visszagörgetni egy külső payment provider már végrehajtott műveletét. Ilyen distributed consistency problémákra például idempotency, kompenzáló művelet vagy megfelelő saga jellegű megoldás használható. Azért csábító a teljes rollbacket feltételezni, mert a HTTP hívás ugyanazon service metóduson belül történt, de ez nem teszi automatikusan közös tranzakcióvá.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: Hibernate & N+1
+TYPE: performance
+QUESTION: Egy összetett riport endpoint több különböző kapcsolaton keresztül nagy mennyiségű adatot tölt be, és egyetlen óriási `JOIN FETCH` query után duplikált root entityk és nagyon nagy result set jelenik meg. Mi lehet megfelelőbb stratégia?
+A) Minden kapcsolatot globálisan `EAGER`-re állítani
+B) A teljes adatbázist Java collectionökbe betölteni
+C) Az összes lazy loadingot globálisan kikapcsolni
+D) A riporthoz célzott projectionöket vagy több, jól megválasztott lekérdezést használni az adatvolumen kontrollálására
+ANSWER: D
+EXPLANATION: Több collection fetch joinja cartesian-szerű result set növekedést és root entity duplikációt okozhat, ezért egyetlen óriási query nem mindig optimális. Célzott projectionök, külön lekérdezések vagy más read-model megközelítés kontrollálhatja az adatvolument. Azért csábító mindent egyetlen `JOIN FETCH` querybe tenni, mert az látszólag megszünteti az N+1 problémát, de a query mérete és eredményhalmaza új teljesítményproblémát okozhat.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: Spring Security
+TYPE: production
+QUESTION: Egy JWT-alapú API-nál a hozzáférési tokenek rövid élettartamúak, és refresh token mechanizmust használsz. Miért fontos a refresh token megfelelő védelme?
+A) Mert a refresh token csak UI állapotot tárol
+B) Mert a refresh token megszerzése lehetővé teheti új access tokenek kiadását, ezért kompromittálódása hosszabb ideig fennálló hozzáférési kockázatot jelenthet
+C) Mert a refresh token automatikusan titkosítja az adatbázist
+D) Mert refresh token nélkül a HTTPS nem működik
+ANSWER: B
+EXPLANATION: A refresh token jellemzően új access token megszerzésére használható, ezért annak kompromittálódása jelentős biztonsági kockázat. Emiatt a tokenek tárolását, rotációját, visszavonását és lejáratát megfelelően kell megtervezni. Azért csábító csak az access tokent védeni, mert az kerül gyakran minden API requestbe, de a refresh token hosszabb életű jogosultságot biztosíthat.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: scenario
+QUESTION: Egy kritikus JPA lekérdezést PostgreSQL production környezetben használsz, és H2-vel futó tesztek nem mutatják ki a problémát. Miért lehet indokolt PostgreSQL-alapú Testcontainers tesztet használni?
+A) Mert a Testcontainers automatikusan production adatokat tölt be
+B) Mert a PostgreSQL minden esetben gyorsabb H2-nél
+C) Mert a teszt ugyanazt a PostgreSQL adatbázis-motort használhatja izolált környezetben, így SQL, típus- és constraint-viselkedés szempontjából közelebb kerülhetsz a productionhöz
+D) Mert a Testcontainers kikapcsolja a JPA persistence contextet
+ANSWER: C
+EXPLANATION: H2 és PostgreSQL SQL-dialektusa, adattípusai, constraintjei és egyes query-viselkedése eltérhet. PostgreSQL Testcontainers használatával az integrációs teszt tényleges PostgreSQL engine-en futhat izoláltan. Azért csábító a H2 megtartása, mert gyors és egyszerű, de bizonyos production-specifikus adatbázis-viselkedést nem feltétlenül reprodukál.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: Actuator & observability
+TYPE: production
+QUESTION: Egy production rendszerben a request latency hirtelen megugrik, de a CPU és memória metrikák normálisak. Melyik observability megközelítés segíthet leginkább az ok lokalizálásában?
+A) Distributed tracing használata a downstream service-ek és a request spanok követésére
+B) Minden request body manuális logolása
+C) Az összes Actuator endpoint kikapcsolása
+D) A JVM heap méretének véletlenszerű növelése
+ANSWER: A
+EXPLANATION: Distributed tracing segítségével egy request útja több service-en keresztül követhető, és láthatóvá válhat, hogy melyik span vagy downstream dependency okozza a latency növekedését. Ez különösen hasznos microservice architektúrában. Azért csábító minden request bodyt logolni, mert sok információt tartalmazhat, de az adatvédelmi, költség- és zajproblémák mellett nem mutatja jól a teljes distributed call chain-t.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: Caching
+TYPE: architecture
+QUESTION: Egy több példányos Spring Boot rendszerben Redis-alapú distributed cache-t használsz. Miért kell a cache invalidation stratégiát az adatbázis tranzakcióival együtt megtervezni?
+A) Mert a Redis automatikusan ugyanabban a JDBC tranzakcióban fut
+B) Mert a cache minden esetben lassabb az adatbázisnál
+C) Mert egy adatbázis commit és a cache frissítése/invalidation külön művelet lehet, ezért átmeneti inkonzisztencia alakulhat ki
+D) Mert distributed cache esetén nincs szükség TTL-re
+ANSWER: C
+EXPLANATION: A database commit és a distributed cache módosítása nem feltétlenül ugyanazon atomi tranzakció része. Ha például az egyik sikerül, a másik pedig nem, a cache átmenetileg stale adatot szolgáltathat. Azért csábító automatikus tranzakciós egységet feltételezni, mert az alkalmazás ugyanabban a service metódusban kezeli mindkét műveletet, de a két infrastruktúra külön erőforrás.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: Async & scheduling
+TYPE: performance
+QUESTION: Egy nagy forgalmú Spring Boot alkalmazásban több különböző `@Async` workload ugyanazt a thread poolt használja. Az egyik lassú workload időnként blokkolja a másik típusú feladatok feldolgozását. Melyik architekturális megoldás lehet indokolt?
+A) Minden async task prioritását véletlenszerűen változtatni
+B) Külön executorokat vagy megfelelően elkülönített erőforrás-poolokat használni a különböző workloadokhoz
+C) Minden taskot szinkronná alakítani
+D) A közös queue méretét korlátlanra állítani
+ANSWER: B
+EXPLANATION: Külön executorokkal a különböző workloadok erőforrásai elkülöníthetők, így egy lassú vagy túlterhelt tasktípus kevésbé akadályozza a többit. A poolok méretét, queue-it és rejection policyját a workloadhoz kell igazítani. Azért csábító korlátlan queue-t használni, mert csökkenti a közvetlen rejectionöket, de végül kontrollálatlan memória- és latencyproblémához vezethet.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Messaging (Kafka, RabbitMQ)
+TYPE: scenario
+QUESTION: Egy Kafka consumer egy adatbázis-módosítást hajt végre, majd sikeresen commitálja az offsetet. Később kiderül, hogy az adatbázis-művelet üzletileg hibás volt. Miért nem elég az offset commit egyszerűen visszaállítani?
+A) Mert a Kafka offset mindig immutable
+B) Mert a database változás és az offset commit külön rendszerekben történik, ezért a korábbi side effect már megtörténhetett
+C) Mert a consumer group nem használ offseteket
+D) Mert az offset commit mindig törli az adatbázis rekordját
+ANSWER: B
+EXPLANATION: Az adatbázis-művelet és a Kafka offset commit két külön side effect lehet. Ha az adatbázis-változás már committed, az offset visszaállítása nem undoolja automatikusan azt. Ilyen helyzetekre idempotens feldolgozás, transactional outbox/inbox vagy más konzisztenciaminta alkalmazható. Azért csábító az offset visszaállítását teljes rollbackként értelmezni, mert a consumer pozícióját valóban vissza lehet mozgatni, de ez nem vonja vissza a külső side effectet.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Production issues & performance
+TYPE: production
+QUESTION: Egy Spring Boot alkalmazásban a request latency csak nagy terhelés alatt romlik drasztikusan. CPU 70% körül van, de a thread pool és a connection pool gyakran telített. Melyik megközelítés lehet a leginkább célzott?
+A) Csak a CPU-limit növelése
+B) Az összes query cache-elése függetlenül a use case-től
+C) A terhelési profil, thread dumpok, pool metrikák és downstream várakozási idők együttes vizsgálata
+D) Minden Spring bean singletonról prototype-ra váltása
+ANSWER: C
+EXPLANATION: A magas latency és telített thread- vagy connection pool arra utalhat, hogy a rendszer valamilyen erőforrás-korlát vagy várakozási lánc miatt nem tud tovább skálázódni. Thread dumpokkal, pool metrikákkal és downstream latencykkel azonosítható, hogy hol alakul ki a torlódás. Azért csábító csak a CPU-t növelni, mert nagy terhelésnél a CPU az elsőként vizsgált metrika, de 70%-os CPU mellett a valódi bottleneck lehet egy telített pool vagy lassú dependency.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: Transactions
+TYPE: scenario
+QUESTION: Egy szolgáltatás egyetlen metóduson belül módosít egy adatbázis-entitást, majd egy külső payment API-t hív. A payment hívás sikeres, de az adatbázis-tranzakció később rollbackel. Mi történik a payment API-val?
+A) A Spring automatikusan visszahívja a payment API-t
+B) A payment API hívása is rollbackelődik, mert a metódus tranzakcionális
+C) A payment API hívása nem rollbackelődik, ezért kompenzáló mechanizmusra lehet szükség
+D) A payment API csak akkor fut le, ha a DB tranzakció már commitolt
+ANSWER: C
+EXPLANATION: A Spring tranzakció csak a saját tranzakciós erőforrásaira, például az adatbázisra terjed ki. Egy külső HTTP/API hívás sikerét a későbbi DB rollback nem tudja visszacsinálni. Ilyen esetben kompenzáló művelet, outbox vagy más elosztott tranzakciós minta lehet szükséges. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a tranzakció hatókörét könnyű tévesen minden, a metóduson belül végzett műveletre kiterjeszteni.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: Hibernate & N+1
+TYPE: performance
+QUESTION: Egy `Order` entitásnak lazy módon betöltött `items` kollekciója van. Egy endpoint 500 rendelést tölt be, majd egy ciklusban minden rendelés `getItems()` metódusát meghívja. A logban több száz SELECT jelenik meg. Melyik megoldás a legcélzottabb, ha az endpointnak ténylegesen szüksége van az itemekre?
+A) Az `items` kollekciót globálisan EAGER-re állítani
+B) Minden entitáshoz külön `EntityManager` példányt létrehozni
+C) A Hibernate second-level cache-t minden esetben bekapcsolni
+D) Célzott fetch join/projection használata az adott lekérdezésben
+ANSWER: D
+EXPLANATION: Ha az adott use case-nek szüksége van a kapcsolódó adatokra, célzott fetch join vagy megfelelő projection segítségével egy kontrollált lekérdezéssel lehet betölteni őket. A globális EAGER stratégia más use case-ekben fölösleges adatbetöltést és további teljesítményproblémákat okozhat. A legcsábítóbb téves válasz azért tűnhet egyszerű megoldásnak, mert az EAGER valóban megszüntethet bizonyos lazy betöltéseket, de nem jó általános N+1-stratégia.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: Spring Security
+TYPE: scenario
+QUESTION: Egy REST API JWT-alapú hitelesítést használ. A backend több példányban fut Kubernetesben, és egyik példány sem tárol session állapotot. Mi teszi lehetővé, hogy egy kérés bármelyik példányon hitelesíthető legyen?
+A) A JWT-ben lévő, ellenőrizhető hitelesítési információ és a közös token-validációs konfiguráció
+B) Az, hogy minden pod ugyanazt a HTTP sessiont használja
+C) Az, hogy a Kubernetes automatikusan megosztja a Spring SecurityContextet
+D) Az, hogy minden pod külön másolatot készít minden felhasználó sessionjéről
+ANSWER: A
+EXPLANATION: Stateles JWT-alapú autentikációnál a kéréshez tartozó token hordozza a szükséges hitelesítési információt, amelyet minden példány ugyanazon megbízható kulcs vagy issuer alapján validálhat. Nincs szükség megosztott HTTP sessionre. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert session-alapú autentikációnál valóban szükség lehet megosztott vagy sticky session mechanizmusra.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: Microservices & Spring Cloud
+TYPE: production
+QUESTION: Egy service egy downstream service-t hív. A downstream időnként 10 másodpercig nem válaszol, miközben a hívó service thread poolja fokozatosan megtelik. Melyik változtatás kezeli közvetlenül a problémát?
+A) A HTTP timeout teljes eltávolítása
+B) Ésszerű, korlátozott timeout beállítása és megfelelő bulkhead/circuit breaker stratégia alkalmazása
+C) A retry-k számának korlátlan növelése
+D) A downstream hívások tranzakcióba helyezése
+ANSWER: B
+EXPLANATION: A korlátozott timeout megakadályozza, hogy a hívó erőforrásai hosszú ideig blokkolódjanak, a bulkhead pedig korlátozhatja, hogy egy problémás downstream mennyi erőforrást foglaljon el. Circuit breakerrel a tartósan hibás downstream hívások gyorsan elutasíthatók. A legcsábítóbb téves válasz azért tűnhet hasznosnak, mert a retry valóban kezelhet átmeneti hibákat, de korlátlanul alkalmazva tovább növeli a terhelést.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: Messaging (Kafka, RabbitMQ)
+TYPE: scenario
+QUESTION: Egy Kafka consumer feldolgoz egy üzenetet, amely alapján pénzügyi rekordot ír az adatbázisba. A folyamat az adatbázis commitja után, de az offset commitja előtt összeomlik. Mi történhet újraindítás után?
+A) Az üzenet garantáltan elveszik
+B) A Kafka automatikusan visszavonja az adatbázis commitját
+C) Az üzenet csak akkor dolgozható fel újra, ha manuálisan visszaállítják a teljes topicot
+D) Az üzenet újra kézbesíthető, ezért az adatbázis-oldali feldolgozásnak idempotensnek kell lennie
+ANSWER: D
+EXPLANATION: Ha az adatbázis-művelet már commitolt, de a Kafka offset még nincs commitolva, a consumer újra megkaphatja ugyanazt az üzenetet. Ezért az adatbázis-műveletet idempotenssé kell tenni, vagy megfelelő deduplikációs/inbox mechanizmust kell alkalmazni. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert sikeres adatbázis-commit után könnyű feltételezni, hogy az üzenet feldolgozása is véglegesen rögzített.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: production
+QUESTION: Egy integrációs teszt Spring Boot alkalmazásban PostgreSQL-specifikus SQL viselkedést is ellenőriz. Miért lehet problémás kizárólag H2-t használni tesztadatbázisként?
+A) H2 soha nem támogat tranzakciókat
+B) A Spring Boot nem tud H2-vel repositorykat tesztelni
+C) H2 és PostgreSQL között lehetnek SQL-, típus-, constraint- és viselkedésbeli eltérések
+D) H2 kizárólag production környezetben használható
+ANSWER: C
+EXPLANATION: H2 hasznos lehet gyors tesztekhez, de nem garantálja a PostgreSQL-lel azonos SQL- és adatbázis-viselkedést. PostgreSQL-specifikus viselkedéshez a valódi adatbázismotorral futtatott Testcontainers teszt megbízhatóbb. A legcsábítóbb téves válasz azért tűnhet igaznak, mert H2 valóban jól integrálható Spring Boottal, de az integrálhatóság nem jelenti a teljes kompatibilitást.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: Actuator & observability
+TYPE: scenario
+QUESTION: Egy production Spring Boot alkalmazásban az átlagos HTTP latency normálisnak látszik, de a felhasználók időnként több másodperces válaszidőt tapasztalnak. Melyik metrika segíthet jobban az ilyen ritka lassú kérések felismerésében?
+A) Csak az összes HTTP-kérés száma
+B) A latency percentilisei, például a p95 vagy p99
+C) Csak a JVM heap maximális mérete
+D) Csak a CPU átlagos kihasználtsága
+ANSWER: B
+EXPLANATION: Az átlag elrejtheti a ritka, de jelentős latency-spike-okat. A p95 vagy p99 megmutatja, hogy a kérések felső részében milyen válaszidők jelentkeznek, ezért alkalmasabb lehet tail latency vizsgálatára. A legcsábítóbb téves válasz azért tűnhet elegendőnek, mert a CPU és heap valóban fontos production metrika, de önmagukban nem írják le a request latency eloszlását.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: Caching
+TYPE: edgecase
+QUESTION: Egy több példányban futó Spring Boot alkalmazás lokális memóriacache-t használ. Az egyik példány frissíti egy termék árát az adatbázisban, de egy másik példány továbbra is a régi árat adja vissza. Mi a probléma legközvetlenebb oka?
+A) A lokális cache-ek példányonként külön állapotot tartanak
+B) A Spring Data JPA nem támogat ármezőket
+C) A JVM nem tud egyszerre több cache-be írni
+D) A HTTP protokoll nem támogat cache invalidációt
+ANSWER: A
+EXPLANATION: Az egyes JVM-ekben lévő lokális cache-ek egymástól függetlenek, ezért az egyik példány invalidációja nem feltétlenül frissíti a többi példány cache-ét. Ilyenkor megosztott cache vagy megfelelő cache-invalidation eseménymechanizmus használható. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert az adatbázis közös, de a lokális memóriában tárolt cache-állapot nem közös.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Async & scheduling
+TYPE: performance
+QUESTION: Egy alkalmazásban három különböző `@Async` metódus használja ugyanazt az executor poolt. Az egyik workload hirtelen több ezer lassú feladatot generál, és emiatt a többi async művelet is késik. Mi a legcélszerűbb megoldás?
+A) Minden `@Async` metódust szinkronná tenni
+B) A queue méretét korlátlanra növelni
+C) Minden feladatnál új Thread példányt létrehozni
+D) Az eltérő workloadokhoz külön, megfelelően méretezett executorokat használni
+ANSWER: D
+EXPLANATION: Külön executorokkal az egyik workload nem tudja teljesen elfogyasztani a másik workload számára szükséges erőforrásokat. A poolokat a feladat jellegéhez, párhuzamosságához és terheléséhez kell méretezni, megfelelő queue- és rejection-stratégiával. A legcsábítóbb téves válasz azért tűnhet gyors megoldásnak, mert a nagyobb queue átmenetileg több feladatot képes fogadni, de a feldolgozási kapacitást nem növeli.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: Production issues & performance
+TYPE: production
+QUESTION: Egy Spring Boot production alkalmazásban hirtelen megnőtt a request latency. A CPU csak 30%, a heap pedig normális, de a HikariCP connection poolban a várakozó kapcsolatkérések száma magas. Mi a legvalószínűbb vizsgálati irány?
+A) Csak a frontend CSS-t kell optimalizálni
+B) A JVM garbage collectort kell azonnal lecserélni
+C) Az adatbázis-kapcsolatok használatát, hosszú tranzakciókat és lassú SQL-lekérdezéseket kell vizsgálni
+D) Az összes Spring bean scope-ját prototype-ra kell állítani
+ANSWER: C
+EXPLANATION: Ha a threadek adatbázis-kapcsolatra várnak, miközben a CPU és heap nem telített, a connection pool lehet a szűk keresztmetszet. Érdemes megvizsgálni a connection leak lehetőségét, a hosszú tranzakciókat, a lassú SQL-t és a pool konfigurációját. A legcsábítóbb téves válasz azért tűnhet logikusnak, mert a magas latency gyakran JVM-problémára utalhat, de a rendelkezésre álló metrikák itt más irányt jeleznek.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: Transactions
+TYPE: edgecase
+QUESTION: Egy `@Transactional` metóduson belül egy `REQUIRES_NEW` propagációjú metódust hívnak meg. A belső tranzakció commitol, majd a külső tranzakció később rollbackel. Mi történik a belső tranzakció adataival?
+A) A belső commit is automatikusan rollbackelődik
+B) A belső tranzakció külön tranzakcióként commitolhat, és a külső rollback nem vonja vissza
+C) Mindkét tranzakció mindig ugyanazt a commitot használja
+D) A `REQUIRES_NEW` kizárólag read-only tranzakciót hozhat létre
+ANSWER: B
+EXPLANATION: A `REQUIRES_NEW` felfüggeszti a meglévő tranzakciót, és külön tranzakciót indít. Ha ez a belső tranzakció sikeresen commitol, annak eredménye a külső tranzakció későbbi rollbackje után is megmaradhat. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a hívási lánc egy metóduson belül történik, de a tranzakciós határok ettől még különválhatnak.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: Spring Data JPA
+TYPE: performance
+QUESTION: Egy `User` táblából csak `id`, `email` és `status` mezőkre van szükség egy listázó endpointban, de a repository teljes entitásokat tölt be több tucat további mezővel és kapcsolattal. Mi a célzott optimalizáció?
+A) Minden mezőt EAGER-re állítani
+B) Minden entityhez külön SQL queryt futtatni
+C) A teljes entity helyett projectiont vagy DTO-alapú lekérdezést használni
+D) Az összes repository metódust `findAll()`-ra cserélni
+ANSWER: C
+EXPLANATION: Ha csak néhány mező szükséges, projection vagy DTO query segítségével kevesebb adatot lehet lekérni és materializálni. Ez csökkentheti az adatbázis- és memóriaoldali költséget, különösen nagy eredményhalmaznál. A legcsábítóbb téves válasz azért tűnhet megfelelőnek, mert az EAGER kapcsolatokkal egyszerűbbnek látszik az adat elérése, de az valójában növelheti a betöltött adatok mennyiségét.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: Spring Security
+TYPE: trap
+QUESTION: Egy endpoint konfigurációja a következő:
+CODE:
+http.authorizeHttpRequests(auth -> auth
+    .requestMatchers("/admin/**").hasRole("ADMIN")
+    .anyRequest().authenticated()
+);
+ENDCODE
+Egy hitelesített felhasználó rendelkezik a `ROLE_ADMIN` authorityvel. Melyik állítás helyes?
+A) A felhasználó hozzáférhet az `/admin/**` endpointokhoz
+B) A `hasRole("ADMIN")` mindig a pontosan `ADMIN` authorityt keresi
+C) A `ROLE_ADMIN` authority csak `hasAuthority("ADMIN")` esetén használható
+D) A `authenticated()` automatikusan minden role-t figyelmen kívül hagy
+ANSWER: A
+EXPLANATION: A `hasRole("ADMIN")` alapértelmezés szerint a role prefix szabály alapján a `ROLE_ADMIN` authorityt ellenőrzi. Ezért az ilyen authorityvel rendelkező hitelesített felhasználó megfelel az admin szabálynak. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a `hasRole` paramétere valóban csak az `ADMIN` szöveg, miközben a framework a megfelelő prefixet kezeli.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: Messaging (Kafka, RabbitMQ)
+TYPE: performance
+QUESTION: Egy Kafka consumer groupban a lag folyamatosan növekszik, miközben minden consumer példány CPU-ja alacsony. A feldolgozás külső HTTP szolgáltatást is hív, amely gyakran lassú. Mi lehet az egyik fő ok?
+A) A Kafka topicok nem tartalmazhatnak lassú consumer folyamatokat
+B) A producer nem tud több üzenetet küldeni, ha a consumer CPU-ja alacsony
+C) A Kafka automatikusan megszünteti a partíciókat
+D) A consumer throughputját a downstream HTTP hívások latencyje korlátozza
+ANSWER: D
+EXPLANATION: A consumer lehet CPU szempontból alulterhelt, miközben a feldolgozás jelentős időt tölt blokkoló downstream hívásokkal. Ha az üzenetek beérkezési sebessége meghaladja a feldolgozási sebességet, a lag növekedni fog. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert alacsony CPU-kihasználtság mellett könnyű arra következtetni, hogy nincs throughput-probléma, pedig az I/O-várakozás is limitáló tényező.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: scenario
+QUESTION: Egy `@SpringBootTest` teszt egy külső payment service-t is meghívna, de a teszt célja csak az alkalmazás és az adatbázis integrációjának ellenőrzése. Mi a megfelelő megközelítés?
+A) Production payment endpointot használni a tesztben
+B) A payment integrációt tesztduplával/mockkal leválasztani, és az adatbázist valódi Testcontainers példánnyal tesztelni
+C) A payment service hívását minden tesztben 60 másodpercig váratni
+D) A production API kulcsot a tesztforráskódba tenni
+ANSWER: B
+EXPLANATION: Az integrációs tesztnek kontrollált és determinisztikus környezetben kell ellenőriznie a saját komponenseit. A külső payment szolgáltatás helyettesíthető mockkal vagy stubbal, miközben az adatbázis valódi technológiával futtatható Testcontainersben. A legcsábítóbb téves válasz azért tűnhet valósághűnek, mert production környezethez hasonló tesztet ígér, de külső szolgáltatás bevonása instabil és nem determinisztikus teszteket eredményezhet.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: Auto-configuration & starters
+TYPE: debug
+QUESTION: Egy Spring Boot alkalmazásban egy automatikus konfiguráció várhatóan létrehozna egy bean-t, de az alkalmazásban ugyanahhoz a típushoz saját `@Bean` definíció található. A saját bean miatt az auto-configuration nem hozza létre a default bean-t. Mi a legfontosabb mechanizmus ennek hátterében?
+A) A `@Bean` metódusok mindig letiltják az összes auto-configurationt
+B) A Spring Boot soha nem konfigurál felhasználó által definiált beaneket
+C) A conditional auto-configuration csak akkor alkalmazható, ha a feltételei teljesülnek, például ha egy bean még hiányzik
+D) A Spring Boot minden beanből automatikusan kettőt hoz létre
+ANSWER: C
+EXPLANATION: A Spring Boot auto-configuration nagy része conditional feltételekkel működik. Tipikusan csak akkor hoz létre infrastruktúrát, ha a szükséges osztályok és egyéb feltételek jelen vannak, és például nincs már megfelelő felhasználói bean. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a saját konfiguráció valóban megakadályozhat egy adott auto-configured beant, de nem tiltja le az összes auto-configurationt.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: Configuration & profiles
+TYPE: production
+QUESTION: Egy production Spring Boot alkalmazás adatbázis-jelszava jelenleg `application-prod.yml` fájlban, Git repositoryban található. Mi a megfelelő production megközelítés?
+A) A jelszót kódolt Base64 formában ugyanott hagyni
+B) A jelszót Java source code-ba áthelyezni
+C) A jelszót kommentként dokumentálni egy másik konfigurációs fájlban
+D) Külső secret managementet vagy környezeti/orkesztrációs secret mechanizmust használni
+ANSWER: D
+EXPLANATION: A production credentialeket nem célszerű forráskódban vagy Gitben tárolni. Kubernetes Secret, secret manager vagy megfelelő környezeti konfiguráció használható, lehetőleg hozzáférés-szabályozással és rotációval. A legcsábítóbb téves válasz azért tűnhet biztonságosabbnak, mert a Base64 kódolt érték nem olvasható azonnal, de a Base64 nem titkosítás.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: Actuator & observability
+TYPE: production
+QUESTION: Egy Kubernetesben futó Spring Boot alkalmazás indulása után azonnal fogadni kezdi a forgalmat, miközben az adatbázis-kapcsolatok még nem állnak készen. Melyik mechanizmus segíthet abban, hogy a pod csak akkor kapjon forgalmat, amikor ténylegesen kész?
+A) Csak a JVM heap méretének növelése
+B) Readiness health check megfelelő konfigurációja
+C) A logolás teljes kikapcsolása
+D) A CPU limit eltávolítása
+ANSWER: B
+EXPLANATION: A readiness állapot azt jelzi, hogy az alkalmazás készen áll-e forgalom fogadására. Kubernetes környezetben a readiness probe segítségével a forgalom addig visszatartható, amíg az alkalmazás szükséges függőségei és komponensei készen nem állnak. A legcsábítóbb téves válasz azért tűnhet relevánsnak, mert a heap és CPU hatással lehet az indulásra, de nem fejezi ki közvetlenül a forgalom fogadására való készséget.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: Hibernate & N+1
+TYPE: edgecase
+QUESTION: Egy JPQL lekérdezés két különböző `@OneToMany` kollekciót próbál egyszerre `JOIN FETCH`-el betölteni egy nagy eredményhalmazhoz. Mi lehet ennek egyik komoly következménye?
+A) A Java compiler nem engedi lefordítani a repositoryt
+B) A Spring Security automatikusan blokkolja a lekérdezést
+C) A result set sorainak száma jelentősen megnőhet a kollekciók kombinációja miatt
+D) A Hibernate minden esetben automatikusan cache-eli az összes sort
+ANSWER: C
+EXPLANATION: Több kollekció együttes fetch joinja nagy kombinatorikus eredményhalmazt eredményezhet, különösen több elemű kapcsolatok esetén. Ez jelentős adatbázis-, memória- és Hibernate-feldolgozási költséget okozhat. Gyakran célzottabb projection, több külön lekérdezés vagy más betöltési stratégia szükséges. A legcsábítóbb téves válasz azért tűnhet hihetőnek, mert a fetch join valóban csökkentheti az N+1 lekérdezéseket, de több kollekció esetén új teljesítményproblémát okozhat.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: Microservices & Spring Cloud
+TYPE: scenario
+QUESTION: Egy service több downstream szolgáltatást hív párhuzamosan. Az egyik downstream lassulása miatt az összes request thread fokozatosan elfogy. Melyik architekturális minta segíthet legközvetlenebbül abban, hogy az egyik downstream ne tudja teljesen elvenni az erőforrásokat a többiektől?
+A) Bulkhead
+B) Globális cache törlés
+C) Database eager loading
+D) CSRF protection
+ANSWER: A
+EXPLANATION: A bulkhead minta külön erőforrás- vagy concurrency-korlátokat alkalmazhat az egyes downstream függőségekre, így egy problémás szolgáltatás nem tudja teljesen kimeríteni a hívó service erőforrásait. Ez kombinálható timeouttal és circuit breakerrel. A legcsábítóbb téves válasz azért tűnhet hasznosnak, mert a cache valóban csökkentheti a downstream hívásokat, de nem biztosít erőforrás-izolációt.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: Spring Data JPA
+TYPE: algorithm
+QUESTION: Egy endpoint 100 000 rekordot jelenít meg egy UI-ban. A repository jelenleg `findAll()` segítségével tölti be az összes entitást memóriába. Melyik megközelítés illeszkedik legjobban egy hagyományos paginált listázáshoz?
+A) Minden requestben az összes rekord betöltése, majd Java oldali szűrése
+B) `Pageable` használata és az adatbázisban végzett lapozás
+C) Minden rekordhoz külön repository hívás
+D) Minden rekordot egyetlen óriási JSON válaszban elküldeni
+ANSWER: B
+EXPLANATION: A `Pageable` segítségével az adatbázis oldalon korlátozható a lekért rekordok száma, és a `Page` további lapozási információkat is biztosíthat. Nagy adathalmaznál ez jelentősen csökkentheti a memória- és hálózati terhelést. A legcsábítóbb téves válasz azért tűnhet egyszerűnek, mert a Java oldali szűrés könnyen megvalósítható, de feleslegesen az alkalmazásba tölti az adatokat.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Spring Security
+TYPE: security
+QUESTION: Egy SPA frontend JWT access tokent használ, és a fejlesztők csak frontend route guarddal védik az admin oldalt. A backend endpoint azonban közvetlenül is meghívható HTTP klienssel. Miért nem elegendő a frontend route guard?
+A) Mert a route guard csak a backend adatbázisát védi
+B) Mert a route guard automatikusan kikapcsolja a JWT-t
+C) Mert a route guard kizárólag Java kódot tud futtatni
+D) Mert a kliensoldali ellenőrzés megkerülhető, ezért a backendnek is enforce-olnia kell az authorization szabályokat
+ANSWER: D
+EXPLANATION: A frontend route guard elsősorban UX- és navigációs kontroll, nem megbízható biztonsági határ. A backend endpointot közvetlen HTTP klienssel is el lehet érni, ezért ott kell ellenőrizni az autentikációt és az authorizationt. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a felhasználói felületen valóban elrejthető egy admin oldal, de ez nem védi magát az API-t.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: Production issues & performance
+TYPE: production
+QUESTION: Egy Java/Spring Boot alkalmazásban a heap használata óráról órára növekszik, és az egyre gyakoribb Full GC-k után sem tér vissza a korábbi szintre. A CPU-használat is folyamatosan nő. Mi a legcélszerűbb első mélyebb vizsgálat?
+A) Heap dump és memory profiling segítségével megkeresni a tartósan elérhető objektumokat
+B) Az összes HTTP státuszkódot 200-ra állítani
+C) Az adatbázis connection pool méretét azonnal nullára állítani
+D) Minden Spring bean scope-ját prototype-ra cserélni
+ANSWER: A
+EXPLANATION: A folyamatos heap-növekedés, amely Full GC után sem csökken vissza, memory leakre vagy a vártnál hosszabb objektumélettartamra utalhat. Heap dump és memory profiler segítségével megvizsgálható, mely objektumok maradnak elérhetők, és mi tartja őket életben. A legcsábítóbb téves válasz azért tűnhet relevánsnak, mert a magas CPU-használat más teljesítményproblémákból is eredhet, de a GC utáni heap-növekedés itt erős memóriaoldali jel.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: Caching
+TYPE: scenario
+QUESTION: Egy `@Cacheable` metódus egy termék aktuális árát cache-eli. Az admin módosítja az árat az adatbázisban, de az API még hosszú ideig a régi értéket adja vissza. Melyik megoldás biztosítja legközvetlenebbül, hogy módosítás után a régi cache-bejegyzés ne maradjon érvényes?
+A) Az adatbázis connection pool növelése
+B) Az `@Cacheable` metódus paramétereinek megváltoztatása
+C) A megfelelő cache entry invalidálása, például `@CacheEvict` használatával a módosításhoz kapcsolódóan
+D) A controller `@RestController` annotációjának lecserélése
+ANSWER: C
+EXPLANATION: Ha egy cache-elt adat forrásértéke megváltozik, az érintett cache-bejegyzést invalidálni kell, vagy más konzisztens cache-frissítési stratégiát kell alkalmazni. Az `@CacheEvict` megfelelő helyen történő használata erre alkalmas lehet. A legcsábítóbb téves válasz azért tűnhet megoldásnak, mert a cache működését valóban befolyásolhatja a kulcsképzés, de egy már elavult értéket önmagában nem tesz érvénytelenné.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: Production issues & performance
+TYPE: scenario
+QUESTION: Egy nagy forgalmú Spring Boot alkalmazásban a CPU 25%, a DB connection pool 40%-ban kihasznált, mégis magas a request latency. A thread dump alapján sok request thread ugyanarra a külső HTTP szolgáltatásra vár. Melyik következtetés a leginkább közvetlenül alátámasztott?
+A) A JVM biztosan memory leaket tartalmaz
+B) A request latency egyik fő komponense valószínűleg a downstream HTTP várakozás
+C) A Hibernate biztosan N+1 problémát okoz
+D) A Spring Security biztosan túl sok CPU-t használ
+ANSWER: B
+EXPLANATION: A thread dump közvetlenül azt mutatja, hogy sok request thread külső HTTP műveletre vár, ezért a downstream latency valószínűleg jelentős része a teljes request latencynek. További vizsgálatként timeoutok, connection poolok, downstream metrikák és tracing használható. A legcsábítóbb téves válasz azért tűnhet valószínűnek, mert az N+1 gyakori teljesítményprobléma, de a rendelkezésre álló bizonyíték itt közvetlenül a külső HTTP várakozásra mutat.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: IoC & dependency injection
+TYPE: edgecase
+QUESTION: Egy Spring Boot alkalmazásban két különböző bean ugyanazt az interfészt implementálja, és egyik sem `@Primary`. A service konstruktorában az interfész típusa szerepel egyetlen paraméterként. Mi történik az application context indulásakor?
+A) A Spring automatikusan véletlenszerűen kiválaszt egy implementációt
+B) A Spring mindkét implementációt ugyanabba a mezőbe injektálja
+C) A Spring `NoUniqueBeanDefinitionException` hibát jelez, mert nem egyértelmű, melyik bean kerüljön injektálásra
+D) A Spring automatikusan prototype scope-ra vált
+ANSWER: C
+EXPLANATION: Ha egyetlen interfészhez több matching bean tartozik, és nincs további feloldási szabály, például `@Primary` vagy `@Qualifier`, a konstruktoros dependency injection nem tud egyértelmű jelöltet választani. Az application context inicializálása ezért hibával leállhat. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a Spring sok esetben automatikusan feloldja a dependencyket, de több azonos típusú bean esetén explicit döntési szabály szükséges.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: Bean scopes & lifecycle
+TYPE: behavior
+QUESTION: Egy singleton bean egy request-scoped beanre támaszkodik. Mi szükséges ahhoz, hogy minden HTTP kérésnél a megfelelő request-scoped példány legyen elérhető a singleton számára?
+A) A request-scoped beant singletonná kell alakítani
+B) Scope-aware proxy vagy megfelelő `ObjectProvider`/lookup mechanizmus használata
+C) A request-scoped beant `static` mezőben kell tárolni
+D) A singleton beanhez minden kérésnél új Spring ApplicationContextet kell létrehozni
+ANSWER: B
+EXPLANATION: A singleton élettartama hosszabb, mint egy request-scoped beané, ezért közvetlen példányhivatkozás helyett scope-aware proxy vagy dinamikus lookup szükséges. Így a tényleges requesthez tartozó példány használható minden kérés során. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a singleton és request scope közötti élettartamkülönbség valóban problémát okoz, de a singletonná alakítás elveszítené a requestenkénti izolációt.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: Auto-configuration & starters
+TYPE: debug
+QUESTION: Egy Spring Boot alkalmazásban egy starter eltávolítása után egy korábban automatikusan létrehozott bean eltűnik. Mi magyarázza ezt legjobban?
+A) A starter csak dokumentációt tartalmazott, ezért nincs hatása a beanekre
+B) A starter törlése automatikusan törölte a `@Configuration` osztályokat a source code-ból
+C) A Spring csak XML konfigurációból tud auto-configurationt betölteni
+D) A starter által biztosított classpath-függőségek hiánya miatt az adott auto-configuration conditional feltételei már nem teljesülnek
+ANSWER: D
+EXPLANATION: A Spring Boot auto-configuration jelentős része classpath- és egyéb conditional feltételekhez kötött. Egy starter eltávolításával az általa biztosított libraryk és classok is eltűnhetnek, ezért egy auto-configuration már nem lesz aktiválható. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a starter neve alapján könnyű pusztán konfigurációs csomagnak tekinteni, miközben dependencyket is biztosít.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Configuration & profiles
+TYPE: edgecase
+QUESTION: Egy Spring Boot alkalmazásban az `application.yml` és az `application-prod.yml` is definiálja ugyanazt a propertyt. A `prod` profil aktív. Melyik érték lesz érvényes, ha nincs további, magasabb prioritású property source?
+A) Mindig az `application.yml` értéke
+B) Az `application-prod.yml` értéke
+C) A két érték stringként összefűződik
+D) A Spring véletlenszerűen választ
+ANSWER: B
+EXPLANATION: Az aktív profilhoz tartozó konfiguráció felülírhatja az alapkonfiguráció ugyanazon propertyjét. Ez lehetővé teszi a környezet-specifikus beállítások elkülönítését. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert az alap `application.yml` minden környezetben betöltődik, de az aktív profilhoz tartozó konfiguráció megfelelő property esetén magasabb prioritást élvez.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: Spring MVC & REST
+TYPE: trap
+QUESTION: Egy controller metódusa `ResponseEntity<User>` típust ad vissza, és sikeres esetben `ResponseEntity.ok(user)` értéket ad. A kliens milyen HTTP státuszkódot kap sikeres végrehajtáskor?
+A) 201 Created
+B) 204 No Content
+C) 200 OK
+D) 302 Found
+ANSWER: C
+EXPLANATION: A `ResponseEntity.ok(...)` explicit módon 200 OK státuszt állít be, és a `User` objektum kerülhet a response body-ba. A 201 általában új erőforrás létrehozásához, a 204 pedig body nélküli sikeres válaszhoz használható. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert REST API-kban a sikeres létrehozás gyakran 201-et használ, de itt nincs ilyen státuszkód megadva.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: Validation & error handling
+TYPE: scenario
+QUESTION: Egy REST endpoint `@Valid @RequestBody CreateUserRequest` paramétert használ. A DTO-n `@NotBlank` és `@Email` validációk vannak. Hibás request esetén a fejlesztők egységes JSON error response-t szeretnének minden controllerben. Hol érdemes ezt központilag megvalósítani?
+A) Minden controllerben külön try-catch blokkal
+B) Egy globális `@RestControllerAdvice` és megfelelő exception handler segítségével
+C) A repository rétegben
+D) A DTO konstruktorában
+ANSWER: B
+EXPLANATION: A `@RestControllerAdvice` központilag kezelheti a controller rétegben keletkező validációs kivételeket, és egységes JSON struktúrát adhat vissza. Így nem kell ugyanazt a hibakezelési logikát minden controllerben megismételni. A legcsábítóbb téves válasz azért tűnhet egyszerűnek, mert a try-catch közvetlenül kezelheti a kivételt, de nagyobb alkalmazásban jelentős duplikációhoz vezet.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Spring Data JPA
+TYPE: performance
+QUESTION: Egy repository metódus `Page<Order>` eredményt ad vissza `Pageable` paraméterrel. A lekérdezés nagyon összetett `JOIN`-okat tartalmaz, és a count query különösen lassú. Melyik optimalizáció lehet célzott megoldás?
+A) A teljes adatbázis indexelésének eltávolítása
+B) Minden esetben `findAll()` használata
+C) A count query megfelelő optimalizálása vagy szükség esetén explicit count query megadása
+D) A `Pageable` teljes eltávolítása
+ANSWER: C
+EXPLANATION: A `Page` használata általában külön count lekérdezést is igényel az oldalszámítási metaadatokhoz. Összetett queryknél ez a count rész lehet a szűk keresztmetszet, ezért célzott count query vagy egyszerűsített számítás alkalmazható, ha az üzleti igény megengedi. A legcsábítóbb téves válasz azért tűnhet gyors megoldásnak, mert a pagination megszüntetésével eltűnhet a count query, de ezzel a nagy eredményhalmaz kezelésének problémája is visszatér.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Hibernate & N+1
+TYPE: production
+QUESTION: Egy endpoint JSON-ba szerializál egy JPA entitást. A response generálása közben váratlanul több SELECT jelenik meg, mert lazy kapcsolatok is elérődnek. Mi a legjobb általános megközelítés?
+A) Minden kapcsolatot globálisan EAGER-re állítani
+B) A JPA entitásokat közvetlenül és korlátozás nélkül API response-ként használni
+C) Minden requesthez új adatbázist létrehozni
+D) Célzott DTO/projection használata az API response-hoz szükséges adatok lekérésére
+ANSWER: D
+EXPLANATION: A JPA entitás közvetlen JSON-szerializációja lazy kapcsolatok elérését és nem kívánt adatbázis-lekérdezéseket okozhat. DTO vagy projection segítségével explicit módon meghatározható, milyen adatok szükségesek az API response-hoz. A legcsábítóbb téves válasz azért tűnhet egyszerű megoldásnak, mert az EAGER betöltés megszüntethet bizonyos lazy queryket, de globálisan jelentős overfetchinget okozhat.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: Transactions
+TYPE: edgecase
+QUESTION: Egy `@Transactional` metódusban egy `RuntimeException` keletkezik, de a metódus egy `try-catch` blokkban elkapja, naplózza, majd normálisan visszatér. Mi történik alapértelmezés szerint a tranzakcióval?
+A) A Spring minden esetben rollbackel, mert eredetileg RuntimeException keletkezett
+B) A tranzakció automatikusan commitol, függetlenül minden további művelettől
+C) A tranzakció biztosan új tranzakcióra vált
+D) A kivétel külsőleg nem hagyja el a tranzakciós metódust, ezért alapértelmezés szerint nem történik rollback pusztán azért, mert a kivételt belül elkapta
+ANSWER: D
+EXPLANATION: A Spring alapértelmezett rollback szabálya tipikusan a tranzakciós metódusból kifelé propagáló `RuntimeException` és `Error` esetén aktiválódik. Ha a kivételt a metóduson belül elkapják, és normálisan visszatér, a proxy nem látja a kivételt, ezért önmagában a belső kivétel nem vált ki automatikus rollbacket. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a fejlesztő látja, hogy RuntimeException történt, de a rollback szabály a tranzakciós határon átlépő kivétel viselkedéséhez kötődik.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: Spring Security
+TYPE: scenario
+QUESTION: Egy REST API stateless JWT authenticationt használ. A konfigurációban a session policy `STATELESS`. Egy fejlesztő mégis arra számít, hogy a backend HTTP sessionben fogja tárolni a felhasználó autentikációját két request között. Miért hibás ez a feltételezés?
+A) Mert stateless módban a requestekhez nem használható `SecurityContext`
+B) Mert stateless módban minden requestnek saját hitelesítési információt kell biztosítania, session alapú tárolás nélkül
+C) Mert JWT esetén a backend nem végezhet authorizationt
+D) Mert a JWT kizárólag websocket kapcsolatokhoz használható
+ANSWER: B
+EXPLANATION: Stateless security esetén a szerver nem támaszkodik HTTP sessionben tárolt autentikációs állapotra. A requesthez tartozó JWT-t minden alkalommal megfelelően validálni kell, és abból felépíthető a request SecurityContextje. A legcsábítóbb téves válasz azért tűnhet igaznak, mert a stateless működés valóban csökkenti a session-alapú állapotot, de ettől a SecurityContext requestenként továbbra is használható.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: Testing (SpringBootTest, MockMvc, Testcontainers)
+TYPE: debug
+QUESTION: Egy `@SpringBootTest` teszt lassú, mert minden tesztosztály újra és újra teljes Spring contextet indít. Melyik mechanizmus segíthet a context újrahasznosításában?
+A) A Spring TestContext framework context cache-e, ha a tesztek konfigurációja kompatibilis
+B) Minden teszt előtt az összes bean kézi törlése
+C) A `@SpringBootTest` helyett minden esetben production adatbázis használata
+D) A tesztmetódusok `static`-ká alakítása
+ANSWER: A
+EXPLANATION: A Spring TestContext framework képes a kompatibilis tesztkontextusokat cache-elni és újrahasznosítani, így nem szükséges minden tesztosztálynál teljesen új contextet indítani. A különböző konfigurációk vagy állapotmódosító tesztannotációk csökkenthetik az újrahasznosítás lehetőségét. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a tesztek izolációja fontos, de a context kézi törlése éppen növelné az indítási költséget.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: Actuator & observability
+TYPE: production
+QUESTION: Egy microservice rendszerben egy request több service-en halad keresztül. Az egyik API request időnként 4 másodpercig tart, de önmagában az alkalmazás lokális metrikái nem mutatják egyértelműen a problémát. Melyik observability mechanizmus segíthet leginkább a request útjának lokalizálásában?
+A) Csak a JVM heap aktuális mérete
+B) Distributed tracing trace/span adatokkal
+C) Csak az összes HTTP response számláló
+D) Csak a CPU átlagos kihasználtsága
+ANSWER: B
+EXPLANATION: A distributed tracing egy requestet több service-en át követhető trace-re és részletes spanokra bont, így megmutathatja, mely downstream hívás vagy komponens tölti az idő nagy részét. Ez különösen hasznos elosztott rendszerekben. A legcsábítóbb téves válasz azért tűnhet elegendőnek, mert a heap és CPU fontos metrikák, de nem mutatják meg közvetlenül egy konkrét request teljes elosztott útját.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: Caching
+TYPE: scenario
+QUESTION: Egy alkalmazás Redis-alapú distributed cache-t használ több Spring Boot példány között. Egy adatbázis-módosítás után a cache-ben lévő értékek egy része továbbra is régi. Melyik probléma állhat a háttérben?
+A) A Redis kizárólag lokális JVM memóriát használ
+B) A Spring Boot nem tud distributed cache-t használni
+C) A cache invalidáció és az adatbázis-módosítás nem feltétlenül ugyanabban az atomi műveletben történik
+D) A JPA automatikusan törli a Redis kulcsokat minden commit után
+ANSWER: C
+EXPLANATION: A DB-módosítás és a distributed cache invalidáció két külön erőforrást érinthet, ezért megfelelő koordináció nélkül átmenetileg inkonzisztens állapot alakulhat ki. A cache-frissítési stratégia, tranzakció utáni események, TTL és megfelelő invalidációs mechanizmus együtt kezelheti ezt. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a Redis valóban közös cache lehet több példány számára, de ettől még nem válik automatikusan tranzakcionálisan konzisztenssé az adatbázissal.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: Async & scheduling
+TYPE: edgecase
+QUESTION: Egy `@Async` metódus `void` visszatérési típusú, és futás közben kivételt dob. A hívó metódus nem kapja vissza a kivételt. Hol érdemes az ilyen kivételek kezelését konfigurálni?
+A) Kizárólag a controller `@ExceptionHandler` metódusában
+B) A JPA `EntityManager` konfigurációjában
+C) Az `@Async` executor pool queue-jában
+D) Megfelelő `AsyncUncaughtExceptionHandler` segítségével
+ANSWER: D
+EXPLANATION: `void` visszatérési típusú async metódusnál a kivétel nem adható vissza a hívónak egy `Future` vagy `CompletableFuture` eredményén keresztül. Az ilyen kivételek kezelésére Springben `AsyncUncaughtExceptionHandler` konfigurálható. A legcsábítóbb téves válasz azért tűnhet logikusnak, mert a controller exception handlingje más request-szintű kivételeket kezelhet, de az async feladat már külön végrehajtási szálon fut.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: Messaging (Kafka, RabbitMQ)
+TYPE: scenario
+QUESTION: Egy Kafka consumer egy üzenet feldolgozása során adatbázisba ír, majd sikeresen commitolja a Kafka offsetet. Később egy másik folyamat törli az adatbázisrekordot, és az eredeti Kafka üzenet nem kerül újra feldolgozásra. Melyik állítás írja le helyesen ezt a helyzetet?
+A) Az offset commitot nem rollbackeli automatikusan az adatbázis későbbi módosítása
+B) A Kafka automatikusan újraküldi az összes korábban commitolt üzenetet
+C) Az adatbázisrekord törlése automatikusan visszaállítja a consumer offsetet
+D) A Kafka minden adatbázis-műveletet egyetlen tranzakcióban kezel
+ANSWER: A
+EXPLANATION: A Kafka offset commitja és egy későbbi adatbázis-módosítás nem alkot automatikusan közös, visszagörgethető tranzakciót. Ha az offset már commitolva lett, a consumer normál működés mellett nem dolgozza fel újra az üzenetet csak azért, mert az adatbázisban később megváltozott vagy törlődött az adat. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a Kafka-feldolgozás és az adatbázis-művelet ugyanahhoz az üzleti folyamathoz tartozik, de ettől technikailag még nem válnak egyetlen tranzakcióvá.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Microservices & Spring Cloud
+TYPE: production
+QUESTION: Egy service egy downstream API-ra retry mechanizmust használ. A downstream 503 hibákat ad vissza, miközben a hívó forgalma magas. A retry-k miatt a downstream terhelése tovább nő. Melyik stratégia segíthet a retry storm mérséklésében?
+A) Végtelen számú azonnali retry
+B) Retry teljes eltávolítása minden hibatípusnál
+C) Exponential backoff, korlátozott retry szám és megfelelő circuit breaker használata
+D) Minden retry után új adatbázis létrehozása
+ANSWER: C
+EXPLANATION: A korlátozott számú retry exponential backoff mellett csökkenti annak esélyét, hogy a hibás downstreamot azonnali újrapróbálkozásokkal tovább terheljük. Circuit breakerrel tartós hiba esetén gyorsan megakadályozható a további hívások nagy része. A legcsábítóbb téves válasz azért tűnhet megfelelőnek, mert a retry átmeneti hibáknál hasznos, de korlátlan és azonnali retry könnyen retry stormhoz vezet.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: Production issues & performance
+TYPE: scenario
+QUESTION: Egy production alkalmazásban a request thread pool és az adatbázis connection pool is közel maximális kihasználtságon van. A downstream HTTP hívások latencyje szintén megemelkedett. Melyik vizsgálati stratégia a legcélszerűbb?
+A) Csak a CPU növelése
+B) A teljes rendszer terhelési láncának vizsgálata thread dumpokkal, pool metrikákkal és downstream latency adatokkal
+C) Minden timeout eltávolítása
+D) Minden adatbázis-index törlése
+ANSWER: B
+EXPLANATION: Több erőforrás egyidejű telítődése esetén fontos meghatározni, hol kezdődik a szűk keresztmetszet, és hogyan terjed tovább a várakozás a rendszeren. Thread dumpok, connection/thread pool metrikák és downstream latencyk együtt segíthetnek az ok-okozati lánc feltárásában. A legcsábítóbb téves válasz azért tűnhet logikusnak, mert a CPU növelése javíthat bizonyos CPU-bound problémákon, de itt több, egymással összefüggő erőforrás telítettsége látható.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: IoC & dependency injection
+TYPE: scenario
+QUESTION: Egy alkalmazásban egy interfészhez három implementáció tartozik. Az egyik üzleti komponensnek mindig ugyanazt az alapértelmezett implementációt kell kapnia, míg egy másik komponensnek explicit módon a harmadik implementációra van szüksége. Melyik megoldás fejezi ki legjobban ezt a szándékot?
+A) Az alapértelmezett implementáció `@Primary` annotációval, a speciális eset pedig `@Qualifier` segítségével
+B) Mindhárom bean `@Primary` annotációval
+C) Az összes implementáció singleton scope-jának megszüntetése
+D) Az egyik implementáció törlése
+ANSWER: A
+EXPLANATION: A `@Primary` megadhat egy alapértelmezett jelöltet, míg `@Qualifier` segítségével egy adott dependency injection ponton explicit kiválasztható a szükséges bean. Ez jól kezeli azt az esetet, amikor van általános default és speciális választás is. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert több implementáció mindegyike valóban lehet technikailag használható, de egyszerre több `@Primary` nem oldja fel az ambiguityt.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: Bean scopes & lifecycle
+TYPE: edgecase
+QUESTION: Egy singleton bean egy `@Prototype` beanre közvetlenül konstruktorparaméterként hivatkozik. Később a fejlesztő azt várja, hogy minden metódushíváskor új prototype példányt kapjon. Miért nem ez történik?
+A) A prototype scope teljesen figyelmen kívül marad
+B) A singleton minden metódushíváskor új ApplicationContextet indít
+C) A prototype bean automatikusan singletonná változik minden esetben
+D) A singleton létrehozásakor kap egy prototype példányt, és a közvetlen referencia később ugyanarra a példányra mutat
+ANSWER: D
+EXPLANATION: A prototype scope azt jelenti, hogy a Spring új példányt biztosít minden bean lookup alkalmával. Ha a prototype beant közvetlenül egy singleton konstruktorába injektáljuk, a lookup a singleton létrehozásakor történik meg, ezért a singleton ugyanazt a példányt tartja meg. Minden alkalommal új példányhoz például `ObjectProvider` vagy más lookup mechanizmus használható. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a bean deklarált scope-ja valóban prototype, de az injection pont időzítése is meghatározza, mikor történik új példány létrehozása.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: Validation & error handling
+TYPE: edgecase
+QUESTION: Egy DTO mezőjén csak `@Size(min = 1)` szerepel. A kliens a mezőt teljesen kihagyja a JSON requestből. Mi történik a validáció során?
+A) A `@Size` automatikusan `@NotNull`-ként is működik
+B) A hiányzó mező mindig 400-as hibát eredményez
+C) A mező null lehet, és a `@Size` önmagában nem feltétlenül tiltja meg a null értéket
+D) A Spring automatikusan üres stringgé alakítja a hiányzó mezőt
+ANSWER: C
+EXPLANATION: A Bean Validation `@Size` alapvetően a méretet ellenőrzi, és a null értéket önmagában általában nem tekinti hibának. Ha a mező kötelező, külön `@NotNull`, string esetén szükség szerint `@NotBlank` használata indokolt. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert a mező minimális mérete meg van adva, de a null és az üres érték validációs szempontból külön eset.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Spring MVC & REST
+TYPE: production
+QUESTION: Egy REST endpoint nagy, több tíz megabájtos JSON payloadot generál egyetlen response-ban. A memóriahasználat és a válaszidő magas. Melyik megközelítés csökkentheti közvetlenül a response méretét és feldolgozási költségét?
+A) A teljes entity graph EAGER betöltése
+B) Pagination, célzott DTO/projection és szükség esetén streaming használata
+C) Minden adatot duplikálni a JSON-ban
+D) Az összes controller metódust `synchronized`-dá tenni
+ANSWER: B
+EXPLANATION: Paginationnel kisebb eredményhalmazokat lehet visszaadni, DTO/projection segítségével pedig csak a szükséges adatokat lehet előállítani. Nagy response-oknál streaming is csökkentheti annak szükségességét, hogy a teljes payload egyszerre legyen memóriában. A legcsábítóbb téves válasz azért tűnhet hasznosnak, mert az EAGER betöltés egyszerűbb adatelérést ígér, de növeli a betöltött adatok mennyiségét.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Messaging (Kafka, RabbitMQ)
+TYPE: scenario
+QUESTION: Egy Kafka topicnak 3 partitionje van, és egy consumer groupban 5 consumer példány fut. Melyik állítás helyes?
+A) Mind az 5 consumer mindig aktívan ugyanazt a 3 partitiont dolgozza fel
+B) A Kafka minden consumernek automatikusan saját új partitiont hoz létre
+C) Maximum 3 consumer lehet egyidejűleg aktívan hozzárendelve partitionhöz ebben a groupban
+D) A consumer group mérete nem függ a partitionök számától
+ANSWER: C
+EXPLANATION: Egy consumer groupon belül egy partitiont egy adott pillanatban egy consumer dolgoz fel. Három partition esetén ezért legfeljebb három consumer lehet aktívan hozzárendelve, míg a további consumer példányok tétlenek maradhatnak. A legcsábítóbb téves válasz azért tűnhet helyesnek, mert öt consumer valóban elindítható, de a párhuzamos feldolgozás felső korlátját a partitionök száma adja.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: Transactions
+TYPE: scenario
+QUESTION: Egy service egyetlen lokális DB tranzakcióban több táblát módosít, és a metódus végén minden módosítás sikeresen commitol. Később egy másik service-nek is konzisztensen reagálnia kell erre az üzleti eseményre. Melyik minta segíthet úgy publikálni az eseményt, hogy a DB commit és az esemény megbízható rögzítése összehangolható legyen?
+A) Véletlenszerű HTTP retry
+B) Outbox pattern
+C) Globális `synchronized` metódus
+D) Minden service közös lokális változója
+ANSWER: B
+EXPLANATION: Az outbox pattern az üzleti változással együtt ugyanabban a lokális DB tranzakcióban rögzíti a publikálandó eseményt egy outbox táblába. Egy külön publisher később megbízhatóan továbbíthatja az eseményt a messaging rendszer felé. A legcsábítóbb téves válasz azért tűnhet elegendőnek, mert a retry valóban kezelhet átmeneti hálózati hibákat, de önmagában nem oldja meg a DB commit és az eseményküldés közötti konzisztencia problémáját.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: Production issues & performance
+TYPE: production
+QUESTION: Egy production Spring Boot alkalmazásban a request latency csak terhelés alatt kezd jelentősen növekedni. Thread dumpok alapján sok thread `WAITING` vagy `TIMED_WAITING` állapotban van, miközben a CPU-kihasználtság jóval 100% alatt marad. Mi legyen az egyik fontos következő vizsgálati irány?
+A) Csak a CPU órajelének növelése
+B) A threadek számának korlátlan növelése
+C) A várakozás okának azonosítása, például connection poolok, lockok, downstream I/O vagy queue contention vizsgálatával
+D) A garbage collection teljes kikapcsolása
+ANSWER: C
+EXPLANATION: Az alacsony CPU-kihasználtság mellett jelentkező magas latency gyakran arra utal, hogy a threadek valamilyen erőforrásra vagy külső műveletre várnak. Thread dumpok, pool metrikák, lock contention és downstream latency adatok segítségével azonosítható a tényleges szűk keresztmetszet. A legcsábítóbb téves válasz azért tűnhet logikusnak, mert nagyobb terhelés mellett valóban nőhet a szükséges threadek száma, de további threadek hozzáadása egy erőforrásra váró rendszerben akár tovább ronthatja a helyzetet.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: Microservices & Spring Cloud
+TYPE: scenario
+QUESTION: Egy kritikus Spring Boot microservice több downstream szolgáltatástól függ. Egyetlen downstream átmeneti hibája jelenleg az összes bejövő requestet hosszú időre blokkolhatja. Melyik kombináció segíthet a hiba izolálásában és a rendszer degradációjában?
+A) Timeout, circuit breaker és bulkhead megfelelő fallback vagy részleges funkcionalitással
+B) Végtelen retry timeout nélkül
+C) Egyetlen globális adatbázis-connection használata minden downstreamhoz
+D) Az összes downstream hívás egyetlen hosszú tranzakcióba helyezése
+ANSWER: A
+EXPLANATION: A timeout korlátozza a várakozási időt, a circuit breaker megakadályozhatja a tartósan hibás downstream további terhelését, a bulkhead pedig izolálhatja az erőforrásokat. Fallbackkel vagy részleges funkcionalitással a szolgáltatás bizonyos esetekben degradált módban is működhet. A legcsábítóbb téves válasz azért tűnhet megbízhatónak, mert a retry átmeneti hibáknál hasznos, de timeout és korlát nélkül továbbterhelheti a rendszert.
+###END

@@ -1,0 +1,3825 @@
+### Q1
+LEVEL: junior
+TOPIC: Hoisting
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+console.log(a);
+var a = 10;
+ENDCODE
+A) `undefined`
+B) `10`
+C) `ReferenceError`
+D) `null`
+ANSWER: A
+EXPLANATION: A `var` deklarációja hoistolódik a függvény- vagy globális scope tetejére, de az értékadás nem. A kód futása ezért úgy viselkedik, mintha `var a;` megelőzné a `console.log` hívást. Az érték ekkor még `undefined`.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: let és const
+TYPE: output
+QUESTION: Mi történik a kód futtatásakor?
+CODE:
+console.log(x);
+let x = 5;
+ENDCODE
+A) `undefined` jelenik meg
+B) `5` jelenik meg
+C) `ReferenceError` keletkezik
+D) `null` jelenik meg
+ANSWER: C
+EXPLANATION: A `let` deklarációja is hoistolódik, de az inicializációig a Temporal Dead Zone-ban (TDZ) van. Emiatt a deklaráció előtti hozzáférés `ReferenceError` hibát okoz. Ez különbözik a `var` viselkedésétől.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: Primitive és reference types
+TYPE: output
+QUESTION: Mi lesz a konzol kimenete?
+CODE:
+const a = { value: 10 };
+const b = a;
+
+b.value = 20;
+
+console.log(a.value);
+ENDCODE
+A) `10`
+B) `20`
+C) `undefined`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: Az objektum változója nem magát az objektumot, hanem egy referenciát tárol. Az `a` és `b` ugyanarra az objektumra hivatkozik. A `b.value = 20` ezért az `a` által elérhető objektumot is módosítja.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: Type coercion
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+console.log("5" + 2);
+console.log("5" - 2);
+ENDCODE
+A) `7` és `3`
+B) `"52"` és `3`
+C) `"52"` és `"3"`
+D) `7` és `"3"`
+ANSWER: B
+EXPLANATION: A `+` operátor stringgel találkozva stringkonkatenációt végez, ezért az első eredmény `"52"`. A `-` operátor nem támogat stringkonkatenációt, ezért a `"5"` számértékké konvertálódik, és `5 - 2` eredménye `3`.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: == és ===
+TYPE: trap
+QUESTION: Melyik állítás igaz a következő kifejezésre?
+CODE:
+console.log(0 == false);
+console.log(0 === false);
+ENDCODE
+A) Mindkettő `true`
+B) Mindkettő `false`
+C) Az első `true`, a második `false`
+D) Az első `false`, a második `true`
+ANSWER: C
+EXPLANATION: A `==` típuskonverziót is végezhet, ezért `0 == false` igaz. A `===` nem végez ilyen implicit típuskonverziót; a bal oldal `number`, a jobb oldal `boolean`, ezért az eredmény `false`. Modern JavaScriptben általában a `===` használata az egyértelműbb választás.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Scope
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+let x = "global";
+
+function test() {
+  let x = "local";
+  console.log(x);
+}
+
+test();
+ENDCODE
+A) `"global"`
+B) `"local"`
+C) `undefined`
+D) `ReferenceError`
+ANSWER: B
+EXPLANATION: A JavaScript lexical scope-ot használ. A `test` függvény saját scope-jában van egy `x` változó, ezért a névfeloldás először ezt találja meg. A globális `x` ebben a helyzetben nem kerül felhasználásra.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: Functions
+TYPE: behavior
+QUESTION: Mi igaz az alábbi kódra?
+CODE:
+const result = greet();
+
+function greet() {
+  return "Hello";
+}
+
+console.log(result);
+ENDCODE
+A) `ReferenceError` keletkezik
+B) `undefined` jelenik meg
+C) `"Hello"` jelenik meg
+D) `TypeError` keletkezik
+ANSWER: C
+EXPLANATION: A function declaration teljes egészében hoistolódik, ezért a függvény már a deklaráció szövegbeli helye előtt meghívható. A `greet()` visszaadja a `"Hello"` stringet.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Arrow functions
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const add = (a, b) => a + b;
+
+console.log(add(2, 3));
+ENDCODE
+A) `5`
+B) `23`
+C) `undefined`
+D) `NaN`
+ANSWER: A
+EXPLANATION: Az arrow function implicit returnt használ, mert nincs kapcsos zárójelből álló function body. A `2 + 3` eredménye `5`, ezt adja vissza a függvény.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: Destructuring
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+const user = {
+  name: "Anna",
+  age: 30
+};
+
+const { name, age } = user;
+
+console.log(name, age);
+ENDCODE
+A) `undefined undefined`
+B) `"Anna" 30`
+C) `{ name: "Anna" } { age: 30 }`
+D) `ReferenceError`
+ANSWER: B
+EXPLANATION: Az object destructuring a property-k neve alapján értékeket rendel lokális változókhoz. A `name` változó `"Anna"`, az `age` pedig `30` értéket kap.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: Spread és rest
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const numbers = [1, 2, 3];
+const copy = [...numbers];
+
+copy.push(4);
+
+console.log(numbers.length, copy.length);
+ENDCODE
+A) `4 4`
+B) `3 3`
+C) `3 4`
+D) `4 3`
+ANSWER: C
+EXPLANATION: Az array spread létrehoz egy új tömböt, amelybe az eredeti elemei kerülnek. A `copy` ezért külön tömb. A `push(4)` csak a `copy` hosszát növeli, így az eredeti tömb hossza `3`, a másolaté `4`.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: Array methods
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+const numbers = [1, 2, 3, 4];
+
+const result = numbers
+  .filter(n => n % 2 === 0)
+  .map(n => n * 10);
+
+console.log(result);
+ENDCODE
+A) `[10, 20, 30, 40]`
+B) `[2, 4]`
+C) `[20, 40]`
+D) `[1, 3]`
+ANSWER: C
+EXPLANATION: A `filter` először csak a páros számokat hagyja meg, így `[2, 4]` keletkezik. Erre fut rá a `map`, amely minden elemet megszoroz tízzel. Az eredmény `[20, 40]`.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: reduce
+TYPE: algorithm
+QUESTION: Melyik megoldás adja vissza helyesen a tömb elemeinek összegét?
+CODE:
+const numbers = [2, 4, 6];
+
+const result = numbers.reduce((sum, n) => {
+  return sum + n;
+}, 0);
+
+console.log(result);
+ENDCODE
+A) `6`
+B) `12`
+C) `24`
+D) `undefined`
+ANSWER: B
+EXPLANATION: A `reduce` kezdőértéke `0`. Az akkumulátor lépésenként `0 + 2`, majd `2 + 4`, végül `6 + 6` értéket vesz fel. Az eredmény ezért `12`.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: Objects
+TYPE: behavior
+QUESTION: Mi történik az alábbi kóddal?
+CODE:
+const user = {
+  name: "Peter"
+};
+
+user.age = 25;
+
+console.log(user);
+ENDCODE
+A) `TypeError` keletkezik, mert a `const` objektum nem módosítható
+B) Az objektum változatlan marad
+C) Az objektum megkapja az `age` propertyt
+D) `ReferenceError` keletkezik
+ANSWER: C
+EXPLANATION: A `const` az objektumra mutató referencia újrahozzárendelését tiltja, nem az objektum property-jeinek módosítását. Ezért az `user.age = 25` érvényes művelet.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: const
+TYPE: trap
+QUESTION: Melyik művelet okoz hibát?
+CODE:
+const user = { name: "Anna" };
+
+user.name = "Eva";
+user.age = 30;
+user = { name: "Peter" };
+ENDCODE
+A) Csak az első sor
+B) Csak a második sor
+C) Csak a harmadik sor
+D) Mindhárom sor
+ANSWER: C
+EXPLANATION: A `const` referencia nem rendelhető új objektumhoz. Az első két művelet azonban az eredeti objektum property-jeit módosítja, ami megengedett. A harmadik sor `TypeError` hibát okoz.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: Array methods
+TYPE: behavior
+QUESTION: Mi igaz a `map()` metódusra?
+A) Az eredeti tömböt mindig módosítja
+B) Egy új tömböt hoz létre a callback visszatérési értékeiből
+C) Mindig csak boolean értékeket képes visszaadni
+D) Az első megfelelő elemenél leáll
+ANSWER: B
+EXPLANATION: A `map()` minden feldolgozott elemhez egy új eredményelemet készít a callback visszatérési értékéből. Önmagában nem módosítja az eredeti tömb struktúráját. A C válasz inkább a `some()` vagy `every()` jellegű műveletekre utal, a D pedig például a `find()` működésére.
+###END
+
+### Q16
+LEVEL: medior
+TOPIC: Closures
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function createCounter() {
+  let count = 0;
+
+  return function () {
+    count++;
+    return count;
+  };
+}
+
+const counter = createCounter();
+
+console.log(counter());
+console.log(counter());
+ENDCODE
+A) `0` majd `0`
+B) `1` majd `1`
+C) `1` majd `2`
+D) `2` majd `2`
+ANSWER: C
+EXPLANATION: A visszaadott függvény closure-t alkot a `createCounter` lokális scope-jával. Emiatt a `count` változó életben marad a `createCounter` befejezése után is. Az első hívás `1`-re növeli, a második pedig `2`-re.
+###END
+
+### Q17
+LEVEL: medior
+TOPIC: Closures
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function createFunctions() {
+  const result = [];
+
+  for (var i = 0; i < 3; i++) {
+    result.push(() => i);
+  }
+
+  return result;
+}
+
+const functions = createFunctions();
+
+console.log(functions[0](), functions[1](), functions[2]());
+ENDCODE
+A) `0 1 2`
+B) `1 2 3`
+C) `3 3 3`
+D) `undefined undefined undefined`
+ANSWER: C
+EXPLANATION: A `var` nem hoz létre iterációnként külön block scope-ot. A három closure ugyanazt az `i` változót használja. A ciklus végére `i` értéke `3`, ezért mindhárom függvény `3`-at ad vissza. `let` használatával iterációnként külön binding jönne létre.
+###END
+
+### Q18
+LEVEL: medior
+TOPIC: this
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const user = {
+  name: "Anna",
+  greet() {
+    console.log(this.name);
+  }
+};
+
+user.greet();
+ENDCODE
+A) `"Anna"`
+B) `undefined`
+C) `null`
+D) `ReferenceError`
+ANSWER: A
+EXPLANATION: A metódust `user.greet()` formában hívjuk meg, ezért a metódushívás objektuma lesz a `this` értéke. Így `this` a `user` objektumra mutat, és `this.name` értéke `"Anna"`.
+###END
+
+### Q19
+LEVEL: medior
+TOPIC: call/apply/bind
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const user = {
+  name: "Anna"
+};
+
+function greet() {
+  return this.name;
+}
+
+const boundGreet = greet.bind(user);
+
+console.log(boundGreet());
+ENDCODE
+A) `undefined`
+B) `"Anna"`
+C) `user`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: A `bind()` egy új függvényt hoz létre, amelynek a `this` értéke a megadott objektumhoz van kötve. Ezért a `boundGreet()` meghívásakor `this` a `user` objektum, így az eredmény `"Anna"`.
+###END
+
+### Q20
+LEVEL: medior
+TOPIC: Prototypes
+TYPE: behavior
+QUESTION: Ha egy objektumon nincs megtalálható egy property, hogyan keresi tovább a JavaScript annak értékét?
+A) Automatikusan a globális változók között keres
+B) A property nevét fájlban keresi meg
+C) Az objektum prototype láncán halad tovább
+D) Új propertyt hoz létre alapértelmezett értékkel
+ANSWER: C
+EXPLANATION: Property lookup során a JavaScript először magán az objektumon keres. Ha ott nem találja, a prototype-ra lép, majd annak prototype-jára, és így tovább a prototype chain végéig. Ha sehol nincs ilyen property, az eredmény általában `undefined`.
+###END
+
+### Q21
+LEVEL: medior
+TOPIC: Prototypes
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const parent = {
+  greet() {
+    return "hello";
+  }
+};
+
+const child = Object.create(parent);
+
+console.log(child.greet());
+ENDCODE
+A) `undefined`
+B) `"hello"`
+C) `TypeError`
+D) `"child"`
+ANSWER: B
+EXPLANATION: Az `Object.create(parent)` olyan objektumot hoz létre, amelynek a prototype-ja `parent`. A `child` objektumon nincs saját `greet` property, ezért a JavaScript a prototype láncon keresve megtalálja a `parent.greet` függvényt.
+###END
+
+### Q22
+LEVEL: medior
+TOPIC: Type coercion
+TYPE: edgecase
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+console.log([] == false);
+console.log([] === false);
+ENDCODE
+A) `true` és `true`
+B) `false` és `false`
+C) `true` és `false`
+D) `false` és `true`
+ANSWER: C
+EXPLANATION: A `===` különböző típusok esetén nem végez implicit konverziót, ezért `[] === false` hamis. A `==` viszont coerciont végez. Az üres tömb primitív értékké alakítása során üres string, majd számkonverzió során `0` keletkezik, így az összehasonlítás `0 == false`, ami igaz.
+###END
+
+### Q23
+LEVEL: medior
+TOPIC: Error handling
+TYPE: behavior
+QUESTION: Mi lesz a `result` értéke?
+CODE:
+function test() {
+  try {
+    throw new Error("Something went wrong");
+  } catch (error) {
+    return "caught";
+  } finally {
+    console.log("finally");
+  }
+}
+
+const result = test();
+console.log(result);
+ENDCODE
+A) A `finally` nem fut le, mert volt exception
+B) `"finally"` majd `"caught"` jelenik meg
+C) Csak `"caught"` jelenik meg
+D) A függvény exceptionnel tér vissza
+ANSWER: B
+EXPLANATION: A `catch` kezeli a kivételt és `return "caught"` értéket készít elő. A `finally` blokk azonban a `return` előtt lefut, ezért először `"finally"` kerül a konzolra, majd a függvény tényleges visszatérési értéke `"caught"` lesz.
+###END
+
+### Q24
+LEVEL: medior
+TOPIC: Modules
+TYPE: theory
+QUESTION: Melyik állítás igaz az ES module-ok alapértelmezett működésére?
+A) Minden module változó automatikusan globális scope-ba kerül
+B) A module-ok strict mode-ban futnak
+C) Az `import` csak runtime stringből működhet
+D) Egy module-ban nem lehet több named export
+ANSWER: B
+EXPLANATION: Az ES module-ok implicit strict mode-ban futnak. A module scope elkülönül a globális scope-tól. Több named export is lehetséges, és az `import` statikus formája lehetővé teszi a module dependency-k elemzését a betöltés előtt.
+###END
+
+### Q25
+LEVEL: medior
+TOPIC: Promises
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+console.log("A");
+
+Promise.resolve().then(() => {
+  console.log("B");
+});
+
+console.log("C");
+ENDCODE
+A) `A B C`
+B) `B A C`
+C) `A C B`
+D) `C A B`
+ANSWER: C
+EXPLANATION: A szinkron kód először lefut, ezért `"A"`, majd a Promise callbackje microtaskként bekerül a microtask queue-ba. Ezután a szinkron `console.log("C")` lefut. Amikor a call stack kiürül, a runtime feldolgozza a microtask queue-t, ezért végül `"B"` jelenik meg. A sorrend tehát `A`, `C`, `B`.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: Scope
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+let x = 1;
+
+{
+  let x = 2;
+  {
+    let x = 3;
+    console.log(x);
+  }
+}
+ENDCODE
+A) `3`
+B) `2`
+C) `1`
+D) `ReferenceError`
+ANSWER: A
+EXPLANATION: A legbelső blokk saját `x` változót deklarál, ezért a névfeloldás ezt találja meg először. A `console.log` tehát `3`-at ír ki. A `2` és `1` ugyan léteznek külső scope-okban, de az árnyékolás miatt itt nem ezeket használja a JavaScript. A leggyakoribb rossz válasz a `2`, mert könnyű figyelmen kívül hagyni, hogy a belső blokk újabb lexical scope-ot hoz létre.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: var/let/const
+TYPE: output
+QUESTION: Mi történik a ciklus végrehajtásakor?
+CODE:
+for (let i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 0);
+}
+ENDCODE
+A) `3 3 3`
+B) `0 1 2`
+C) `undefined undefined undefined`
+D) A ciklus egyszer sem fut le
+ANSWER: B
+EXPLANATION: A `let` ciklusváltozója iterációnként külön bindingot biztosít a callbackek számára. A három timer callback ezért rendre az `0`, `1` és `2` értékhez tartozó bindingot látja. A `setTimeout` callbackjei csak később futnak le, de addigra mindegyik saját `i` értéket őriz. A leggyakoribb rossz válasz a `3 3 3`, ami a `var`-os klasszikus closure-problémából származik.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: Array methods
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const numbers = [1, 2, 3];
+
+const result = numbers.map(n => {
+  n * 2;
+});
+
+console.log(result);
+ENDCODE
+A) `[2, 4, 6]`
+B) `[1, 2, 3]`
+C) `[]`
+D) `[undefined, undefined, undefined]`
+ANSWER: D
+EXPLANATION: A callback kapcsos zárójelet használ, ezért nincs implicit return. Az `n * 2` kifejezés kiszámolódik, de az eredménye nincs visszaadva. A `map` minden elemhez `undefined` eredményt kap, így `[undefined, undefined, undefined]` keletkezik. A leggyakoribb rossz válasz az `[2, 4, 6]`, mert az olvasó könnyen implicit returnként értelmezi a kódot.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Destructuring
+TYPE: edgecase
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const user = {
+  name: "Anna"
+};
+
+const { name, age = 25 } = user;
+
+console.log(name, age);
+ENDCODE
+A) `"Anna" undefined`
+B) `"Anna" 25`
+C) `undefined 25`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: A `name` property létezik, ezért értéke `"Anna"`. Az `age` property hiányzik, ezért a destructuring során megadott default érték, `25`, kerül a változóba. A default csak `undefined` esetén aktiválódik, nem általánosan minden falsy értéknél. A leggyakoribb rossz válasz az `undefined` az `age` számára, mert a hiányzó property alapértelmezett értékét könnyű figyelmen kívül hagyni.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Spread és rest
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function sum(first, ...rest) {
+  return rest.reduce((total, n) => total + n, first);
+}
+
+console.log(sum(1, 2, 3, 4));
+ENDCODE
+A) `10`
+B) `9`
+C) `6`
+D) `1`
+ANSWER: A
+EXPLANATION: A `first` paraméter értéke `1`, a rest parameter `rest` pedig `[2, 3, 4]`. A `reduce` kezdőértéke `first`, vagyis `1`, ehhez adódik sorban `2`, `3` és `4`, így az eredmény `1 + 2 + 3 + 4 = 10`. A `9` akkor jönne ki, ha a kezdőérték kimaradna és csak a rest elemeit adnánk össze; a `6` pedig egy gyakori fejszámolási csapda.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: Primitive types
+TYPE: edgecase
+QUESTION: Melyik állítás igaz az alábbi értékre?
+CODE:
+const value = NaN;
+
+console.log(value === value);
+ENDCODE
+A) `true`
+B) `false`
+C) `undefined`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: A JavaScript speciális szabálya szerint a `NaN` nem egyenlő önmagával sem, ezért `NaN === NaN` eredménye `false`. Ha azt szeretnénk ellenőrizni, hogy egy érték ténylegesen `NaN`, használható például a `Number.isNaN(value)`. A leggyakoribb rossz válasz a `true`, mert normál primitíveknél az önmagukkal való strict equality valóban igaz.
+###END
+
+### Q32
+LEVEL: medior
+TOPIC: this
+TYPE: trap
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const user = {
+  name: "Anna",
+  greet: () => {
+    console.log(this.name);
+  }
+};
+
+user.greet();
+ENDCODE
+A) `"Anna"`
+B) `undefined`
+C) `user`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: Az arrow function nem rendelkezik saját dinamikus `this`-szel. A `this` értékét a létrehozás környezetéből lexikálisan örökli, ezért a `user.greet()` hívási formája nem állítja `this`-t a `user` objektumra. Böngészőben és module-környezettől függően a konkrét külső `this` eltérhet, de tipikus ES module környezetben `this` `undefined`, így `this.name` is `undefined`. A leggyakoribb rossz válasz az `"Anna"`, mert az objektum metódusaként való meghívás megtévesztően hasonlít a normál metódushoz.
+###END
+
+### Q33
+LEVEL: medior
+TOPIC: call/apply/bind
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+function multiply(a, b) {
+  return this.factor * a * b;
+}
+
+const obj = { factor: 2 };
+
+const fn = multiply.bind(obj, 3);
+
+console.log(fn(4));
+ENDCODE
+A) `6`
+B) `8`
+C) `12`
+D) `24`
+ANSWER: D
+EXPLANATION: A `bind(obj, 3)` egyszerre rögzíti a `this` értékét és az első argumentumot. Így a későbbi `fn(4)` hívás lényegében `multiply.call(obj, 3, 4)` jellegű meghívásnak felel meg. A számítás `2 * 3 * 4`, tehát `24`. A leggyakoribb rossz válasz a `12`, mert könnyű elfelejteni, hogy a `3` már bindolva bekerült argumentumként.
+###END
+
+### Q34
+LEVEL: medior
+TOPIC: Objects
+TYPE: edgecase
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const obj = {
+  a: 1,
+  b: 2
+};
+
+Object.freeze(obj);
+
+obj.a = 10;
+obj.c = 3;
+
+console.log(obj.a, obj.c);
+ENDCODE
+A) `10 3`
+B) `1 3`
+C) `10 undefined`
+D) `1 undefined`
+ANSWER: D
+EXPLANATION: A `Object.freeze()` megakadályozza az objektum meglévő property-jeinek módosítását, illetve új property-k hozzáadását és meglévők törlését. A kód nem strict mode-ban futó környezetet feltételez, ezért a tiltott módosítások csendben figyelmen kívül maradnak. Így `a` marad `1`, `c` pedig nem jön létre. A leggyakoribb rossz válasz az `10 3`, mert az objektum módosíthatóságát sokan összekeverik a `const` referencia védelmével.
+###END
+
+### Q35
+LEVEL: medior
+TOPIC: Prototype chain
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const parent = {
+  value: 10
+};
+
+const child = Object.create(parent);
+child.value = 20;
+
+delete child.value;
+
+console.log(child.value);
+ENDCODE
+A) `undefined`
+B) `10`
+C) `20`
+D) `ReferenceError`
+ANSWER: B
+EXPLANATION: A `child.value = 20` saját property-t hoz létre a `child` objektumon. A `delete child.value` ezt a saját property-t törli. Ezután a property lookup továbbmegy a prototype láncon, ahol a `parent.value` megtalálható, ezért az eredmény `10`. A leggyakoribb rossz válasz a `20`, mert könnyű a korábbi értéket figyelembe venni a `delete` után is.
+###END
+
+### Q36
+LEVEL: medior
+TOPIC: Classes
+TYPE: behavior
+QUESTION: Melyik állítás igaz a JavaScript class konstrukciókra?
+A) A class deklarációk teljes egészében használhatók a deklaráció előtt
+B) A class csak adatokat tartalmazhat, metódusokat nem
+C) A class példányai automatikusan mélymásolatok
+D) A class szintaktikai absztrakció a prototype-alapú mechanizmusok fölött
+ANSWER: D
+EXPLANATION: A `class` modern szintaxist biztosít a JavaScript prototype-alapú öröklődésének kezelésére. A metódusok jellemzően a prototype-ra kerülnek, nem minden példány saját példányfüggvényeként jönnek létre. A class deklarációk viszont TDZ-szerű módon viselkednek, ezért nem tekinthetők egyszerűen teljesen hoistoltnak. A leggyakoribb rossz válasz az A, mert a `function` declaration hoistingje miatt könnyű ugyanazt feltételezni a classokra.
+###END
+
+### Q37
+LEVEL: medior
+TOPIC: Getters/setters
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const user = {
+  firstName: "Anna",
+  lastName: "Kovacs",
+
+  get fullName() {
+    return `${this.firstName} ${this.lastName}`;
+  }
+};
+
+console.log(user.fullName);
+ENDCODE
+A) `"Anna Kovacs"`
+B) `undefined`
+C) `function fullName()`
+D) `TypeError`
+ANSWER: A
+EXPLANATION: A `get fullName()` getterként definiálja a property-t, ezért azt nem függvényként kell meghívni. A `user.fullName` hozzáférés automatikusan végrehajtja a gettert, amely az aktuális `firstName` és `lastName` alapján létrehozza a stringet. A leggyakoribb rossz válasz a `function fullName()`, mert a szintaxis alapján sokan hagyományos metódusra gondolnak.
+###END
+
+### Q38
+LEVEL: medior
+TOPIC: Map és Set
+TYPE: edgecase
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const set = new Set([1, 1, 2, 2, 3]);
+
+console.log(set.size);
+ENDCODE
+A) `5`
+B) `3`
+C) `2`
+D) `1`
+ANSWER: B
+EXPLANATION: A `Set` minden értéket legfeljebb egyszer tárol. A konstruktorba átadott iterable `[1, 1, 2, 2, 3]`, de a duplikált értékek eltűnnek, így a halmaz elemei `1`, `2` és `3`. Ezért a `size` értéke `3`. A leggyakoribb rossz válasz az `5`, mert a Set létrehozásakor a bemeneti tömb hosszát könnyű összekeverni a halmaz méretével.
+###END
+
+### Q39
+LEVEL: medior
+TOPIC: WeakMap
+TYPE: theory
+QUESTION: Miért használható a `WeakMap` bizonyos objektumhoz kötött metaadatok tárolására memóriahasználat szempontjából?
+A) Mert minden kulcsot automatikusan stringgé alakít
+B) Mert kulcsai csak primitívek lehetnek
+C) Mert objektumkulcsai nem akadályozzák meg önmagukban az objektum garbage collectionjét
+D) Mert automatikusan törli az összes értéket minden event loop körben
+ANSWER: C
+EXPLANATION: A `WeakMap` kulcsai objektumok lehetnek, és a gyenge referencia jelleg miatt a map önmagában nem tartja életben a kulcsobjektumot. Ha az objektum más módon már nem elérhető, garbage collectionre kerülhet, és a hozzá kapcsolódó WeakMap-bejegyzés is eltűnhet. A leggyakoribb rossz válasz a D, mert a "weak" elnevezést sokan automatikus időzített törlésként értelmezik.
+###END
+
+### Q40
+LEVEL: medior
+TOPIC: Iterators
+TYPE: behavior
+QUESTION: Mit kell egy szabványos JavaScript iterator `next()` metódusának visszaadnia?
+A) Mindig csak az aktuális értéket
+B) Egy `{ value, done }` alakú objektumot
+C) Mindig egy Promise-t
+D) Egy tömböt az összes hátralévő értékkel
+ANSWER: B
+EXPLANATION: Az iterator protocol szerint a `next()` hívás egy objektumot ad vissza, amelynek tipikusan `value` és `done` property-je van. A `done: true` jelzi, hogy az iteráció befejeződött. A `for...of` erre a protocolra épít. A leggyakoribb rossz válasz az A, mert az iterator felhasználói oldalról valóban úgy tűnhet, mintha csak értékeket szolgáltatna.
+###END
+
+### Q41
+LEVEL: medior
+TOPIC: Generators
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function* numbers() {
+  yield 1;
+  yield 2;
+  return 3;
+}
+
+const iterator = numbers();
+
+console.log(iterator.next().value);
+console.log(iterator.next().value);
+console.log(iterator.next().value);
+ENDCODE
+A) `1`, `2`, `3`
+B) `1`, `2`, `undefined`
+C) `0`, `1`, `2`
+D) `undefined`, `1`, `2`
+ANSWER: A
+EXPLANATION: Az első `next()` a `yield 1`-ig fut, így `value` értéke `1`; a második a `yield 2`-ig, így `2`. A harmadik hívás eléri a `return 3`-at: az iterator result ekkor `{ value: 3, done: true }`, tehát a kiírt érték `3`. A `return` értéke csak a `for...of` és a spread számára „láthatatlan”, mert azok `done: true` esetén eldobják a `value`-t – ezért csábító az `undefined`.
+###END
+
+### Q42
+LEVEL: medior
+TOPIC: Symbols
+TYPE: edgecase
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const id = Symbol("id");
+
+const user = {
+  name: "Anna",
+  [id]: 123
+};
+
+console.log(Object.keys(user));
+ENDCODE
+A) `["name", "id"]`
+B) `["id"]`
+C) `["name"]`
+D) `[]`
+ANSWER: C
+EXPLANATION: Az `Object.keys()` csak az enumerable string kulcsokat adja vissza. A Symbol kulcsú property nem jelenik meg ebben a listában. A Symbol property ugyanakkor létezik az objektumon, és például `Object.getOwnPropertySymbols(user)` segítségével lekérdezhető. A leggyakoribb rossz válasz az A, mert a Symbol leírása `"id"`, de ez nem jelenti azt, hogy string kulccsá válik.
+###END
+
+### Q43
+LEVEL: medior
+TOPIC: Error handling
+TYPE: debug
+QUESTION: Mi a probléma az alábbi kóddal, ha a programozó azt szeretné, hogy a hibát kezelje, majd a program folytatódjon?
+CODE:
+try {
+  JSON.parse("{ invalid json }");
+} catch (error) {
+  console.log("Parsing failed");
+  throw error;
+}
+
+console.log("Application continues");
+ENDCODE
+A) A `JSON.parse` soha nem dob hibát
+B) A `catch` után automatikusan folytatódik a program
+C) A `throw error` miatt a kivétel továbbterjed, ezért a következő `console.log` normál esetben nem fut le
+D) A `catch` blokk nem férhet hozzá az `error` változóhoz
+ANSWER: C
+EXPLANATION: A `JSON.parse` hibás JSON esetén exceptiont dob. A `catch` valóban elkapja és kiírja a hibakezelési üzenetet, de a `throw error` azonnal továbbdobja a kivételt. Emiatt a függvényhívási lánc magasabb szintjén kell újabb hibakezelésnek lennie, különben a `"Application continues"` nem kerül végrehajtásra. A leggyakoribb rossz válasz a B, mert sokan úgy gondolják, hogy a `catch` automatikusan "elfogyasztja" a hibát.
+###END
+
+### Q44
+LEVEL: medior
+TOPIC: Promises
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+Promise.resolve(10)
+  .then(value => value * 2)
+  .then(value => {
+    console.log(value);
+  });
+ENDCODE
+A) `10`
+B) `12`
+C) `undefined`
+D) `20`
+ANSWER: D
+EXPLANATION: Az első `then` callbackje megkapja a `10` értéket, és `20`-at ad vissza. Ez a visszatérési érték kerül a következő Promise láncszem fulfillment értékébe. A második `then` ezért `20`-at kap, és ezt írja ki. A leggyakoribb rossz válasz a `10`, mert könnyű csak az eredeti Promise értékére figyelni, és figyelmen kívül hagyni a láncolt transzformációt.
+###END
+
+### Q45
+LEVEL: medior
+TOPIC: Promise error handling
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+Promise.reject("error")
+  .catch(() => "recovered")
+  .then(value => console.log(value));
+ENDCODE
+A) `error`
+B) `recovered`
+C) `undefined`
+D) Unhandled promise rejection
+ANSWER: B
+EXPLANATION: A rejected Promise-t a `catch` kezeli. A callback `"recovered"` stringet ad vissza, amelyből a lánc következő Promise-ja fulfilled állapotú lesz ezzel az értékkel. A következő `then` ezért `"recovered"` értéket kap. A leggyakoribb rossz válasz az A, mert a kezdeti rejection értékét könnyű összekeverni a `catch` által továbbadott értékkel.
+###END
+
+### Q46
+LEVEL: senior
+TOPIC: Event loop
+TYPE: async
+QUESTION: Mi a pontos kimeneti sorrend?
+CODE:
+console.log("A");
+
+setTimeout(() => console.log("B"), 0);
+
+Promise.resolve().then(() => {
+  console.log("C");
+  queueMicrotask(() => console.log("D"));
+});
+
+console.log("E");
+ENDCODE
+A) `A E C D B`
+B) `A C D E B`
+C) `A E B C D`
+D) `A E C B D`
+ANSWER: A
+EXPLANATION: Először a szinkron kód fut: `A`, majd a timer regisztrálódik, aztán a Promise callback microtaskként bekerül a queue-ba, végül `E` szinkron módon kiíródik. A call stack kiürülése után a microtask queue feldolgozása kezdődik, ezért `C` fut. A `C` callback közben `D` újabb microtaskként bekerül, amelyet a runtime a timer előtt feldolgoz, így `D` következik. Csak ezután kerül sor a macrotaskként kezelt `setTimeout` callbackre, ezért végül `B` jelenik meg. A leggyakoribb rossz válasz az `A E C B D`, mert sokan úgy kezelik a `queueMicrotask` hívást, mintha a timerrel azonos prioritású lenne.
+###END
+
+### Q47
+LEVEL: senior
+TOPIC: Async/Await
+TYPE: output
+QUESTION: Mi lesz a kimeneti sorrend?
+CODE:
+async function test() {
+  console.log("1");
+  await Promise.resolve();
+  console.log("2");
+}
+
+console.log("3");
+test();
+console.log("4");
+ENDCODE
+A) `1 2 3 4`
+B) `3 1 4 2`
+C) `3 1 2 4`
+D) `1 3 4 2`
+ANSWER: D
+EXPLANATION: A `console.log("3")` először szinkron módon lefut. Ezután a `test()` meghívódik, és az async function az `await`-ig szinkron módon végrehajtja a `console.log("1")` sort. Az `await` után következő rész azonban microtaskként folytatódik. A `test()` hívása után ezért a külső `console.log("4")` fut le, majd az await folytatása kiírja a `2`-t. A leggyakoribb rossz válasz az `3 1 2 4`, mert az `await`-ot sokan teljesen szinkron blokkolásként képzelik el.
+###END
+
+### Q48
+LEVEL: senior
+TOPIC: Race conditions
+TYPE: production
+QUESTION: Egy keresőmező minden billentyűleütés után HTTP kérést indít. A felhasználó gyorsan beírja: `cat`, majd `cats`. A `cats` kérés gyorsabban elkészül, de később a `cat` kérés válasza is megérkezik, és felülírja az eredményt. Mi a legközvetlenebb módja annak, hogy a korábbi kérés eredménye ne írja felül az újabbat?
+A) Minden response-ot mindig azonnal renderelni
+B) A requestek eredményét véletlenszerű késleltetéssel feldolgozni
+C) Csak a leghosszabb ideig futó request eredményét elfogadni
+D) Requestenként azonosítót vagy sequence numbert használni, és csak a legfrissebb request eredményét alkalmazni
+ANSWER: D
+EXPLANATION: A probléma klasszikus race condition: a request indítási sorrendje nem garantálja a response-ok érkezési sorrendjét. Egy monoton növekvő request ID segítségével a kliens ellenőrizheti, hogy a response még mindig az aktuális kereséshez tartozik-e. Alternatív megoldás lehet az előző request `AbortController` segítségével történő megszakítása, de az ID-alapú védelem akkor is hasznos, ha a korábbi request már nem szakítható meg. A leggyakoribb rossz válasz az A, mert normál esetben valóban minden sikeres response renderelhető lenne, de itt éppen ez okozza a versenyhelyzetet.
+###END
+
+### Q49
+LEVEL: senior
+TOPIC: Debouncing
+TYPE: performance
+QUESTION: Egy autocomplete mezőben a felhasználó minden billentyűleütésre API-kérést indít. A cél az, hogy csak akkor induljon kérés, ha a felhasználó legalább 300 ms-ig nem gépel tovább. Melyik megoldás felel meg ennek?
+A) Minden input eseménynél azonnal requestet indítani
+B) Minden input eseménynél törölni az előző timert, majd új 300 ms-os timert indítani
+C) `requestAnimationFrame` segítségével minden billentyűleütést azonnal elküldeni
+D) A requestet kizárólag a `blur` eseményben indítani
+ANSWER: B
+EXPLANATION: A debounce lényege, hogy az egymáshoz közeli eseményeket egyetlen későbbi végrehajtásba tömöríti. Minden új input esemény törli az előző `setTimeout` időzítőjét, majd új 300 ms-os timer indul. Így csak akkor történik API-hívás, amikor legalább 300 ms eltelt újabb input nélkül. A leggyakoribb rossz válasz az A, mert az technikailag működik, de éppen azt a felesleges request-mennyiséget okozza, amit a debounce célja megszüntetni.
+###END
+
+### Q50
+LEVEL: senior
+TOPIC: Memory management
+TYPE: production
+QUESTION: Egy SPA-ban egy komponens minden mountoláskor hozzáad egy `window` eseményfigyelőt. Unmountkor nem távolítja el. A komponens később többször újramountolódik. Mi a legvalószínűbb probléma hosszabb futás után?
+A) A JavaScript automatikusan minden korábbi listenert megszüntet
+B) A komponens mindig pontosan egyszer fog reagálni az eseményre
+C) Több listener maradhat aktív, ami memóriahasználatot és többszörös callback-végrehajtást okozhat
+D) A `window` objektum minden event után garbage collected lesz
+ANSWER: C
+EXPLANATION: A globális objektumra, például `window`-ra regisztrált event listener életben tarthat olyan callbackeket és closure-öket, amelyekre már nincs szüksége az alkalmazásnak. Ha minden mount új listenert ad hozzá, de nincs megfelelő cleanup, idővel több példány reagálhat ugyanarra az eseményre. Ez nemcsak memóriahasználati problémát, hanem duplikált üzleti logikát és teljesítményromlást is okozhat. A leggyakoribb rossz válasz a B, mert egyetlen komponenspéldány viselkedéséből könnyű figyelmen kívül hagyni a korábbi mountok által hátrahagyott listenereket.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: Type coercion
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+console.log(true + true);
+console.log(true + false);
+ENDCODE
+A) `2` és `1`
+B) `true` és `false`
+C) `1` és `0`
+D) `NaN` és `NaN`
+ANSWER: A
+EXPLANATION: A numerikus műveletben a boolean értékek számmá konvertálódnak: `true` értéke `1`, `false` értéke `0`. Ezért az első kifejezés `1 + 1`, vagyis `2`, a második pedig `1 + 0`, vagyis `1`. A `true` és `false` csak akkor maradna boolean, ha maga a művelet boolean eredményt állítana elő. A leggyakoribb tévedés, hogy a boolean értékeket szöveges vagy logikai operációként kezeljük a `+` miatt.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: Equality
+TYPE: edgecase
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+console.log(null == undefined);
+console.log(null === undefined);
+ENDCODE
+A) `true` és `true`
+B) `false` és `false`
+C) `true` és `false`
+D) `false` és `true`
+ANSWER: C
+EXPLANATION: A loose equality speciális szabálya szerint `null` és `undefined` egymással egyenlőnek számítanak. Strict equality esetén viszont különböző típusokról van szó, ezért az összehasonlítás hamis. A leggyakoribb tévedés az, hogy a `==` és `===` közötti különbséget csak általános szám-string konverzióként kezeljük, miközben a `null` és `undefined` között külön szabály is létezik.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: Functions
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function greet(name = "Guest") {
+  return `Hello ${name}`;
+}
+
+console.log(greet());
+console.log(greet(undefined));
+console.log(greet(null));
+ENDCODE
+A) `Hello Guest`, `Hello Guest`, `Hello null`
+B) `Hello undefined`, `Hello undefined`, `Hello null`
+C) `Hello Guest`, `Hello undefined`, `Hello Guest`
+D) `Hello Guest`, `Hello Guest`, `Hello null`
+ANSWER: D
+EXPLANATION: A default paraméter akkor lép működésbe, amikor az argumentum értéke `undefined`. Ezért a paraméter nélküli hívás és az explicit `undefined` is `"Guest"` értéket használ. A `null` viszont ténylegesen átadott érték, ezért nem aktiválja a default paramétert, így `"Hello null"` lesz az eredmény. A leggyakoribb tévedés, hogy minden falsy értéket úgy kezelünk, mintha hiányzó argumentum lenne.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: Optional chaining
+TYPE: behavior
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const user = {
+  profile: null
+};
+
+console.log(user.profile?.address?.city);
+ENDCODE
+A) `null`
+B) `undefined`
+C) `TypeError`
+D) `false`
+ANSWER: B
+EXPLANATION: Az optional chaining megszakítja a property-hozzáférési láncot, amikor az aktuális érték `null` vagy `undefined`. A `user.profile` értéke `null`, ezért az `address` lekérése már nem történik meg, és a teljes optional chaining kifejezés eredménye `undefined`. A leggyakoribb tévedés a `TypeError`, mert normál `user.profile.address` esetén valóban hibát kapnánk.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: Nullish coalescing
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+console.log(0 ?? 10);
+console.log(null ?? 10);
+console.log(undefined ?? 10);
+ENDCODE
+A) `10`, `10`, `10`
+B) `0`, `10`, `10`
+C) `0`, `null`, `undefined`
+D) `10`, `null`, `undefined`
+ANSWER: B
+EXPLANATION: A `??` csak `null` vagy `undefined` esetén használja a jobb oldali értéket. A `0` ezért érvényes érték marad, míg `null` és `undefined` esetén `10` lesz az eredmény. Ez fontos különbség az `||` operátorhoz képest, amely a falsy értékeket, például a `0`-t is lecseréli. A leggyakoribb tévedés az, hogy a `??` ugyanúgy viselkedik, mint az `||`.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: Array methods
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const numbers = [1, 2, 3, 4];
+
+console.log(numbers.find(n => n > 2));
+console.log(numbers.filter(n => n > 2));
+ENDCODE
+A) `3` és `[3, 4]`
+B) `[3, 4]` és `3`
+C) `4` és `[4]`
+D) `true` és `true`
+ANSWER: A
+EXPLANATION: A `find()` az első olyan elemet adja vissza, amely megfelel a feltételnek, ezért `3` lesz az eredmény. A `filter()` ezzel szemben az összes megfelelő elemből új tömböt készít, így `[3, 4]` keletkezik. A leggyakoribb tévedés, hogy a két metódus hasonló callbackje miatt ugyanazt az eredményt várjuk tőlük.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Array methods
+TYPE: edgecase
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const numbers = [1, 2, 3];
+
+const result = numbers.some(n => n > 5);
+
+console.log(result);
+ENDCODE
+A) `undefined`
+B) `[]`
+C) `false`
+D) `TypeError`
+ANSWER: C
+EXPLANATION: A `some()` azt vizsgálja, hogy legalább egy elem megfelel-e a feltételnek. Az `[1, 2, 3]` tömbben nincs 5-nél nagyobb érték, ezért az eredmény `false`. A metódus boolean értéket ad vissza, nem a megfelelő elemeket. A leggyakoribb tévedés az üres tömbre vonatkozó eredmény várása, mert a `filter()` működésével könnyű összekeverni.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: Array methods
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const numbers = [1, 2, 3];
+
+const result = numbers.forEach(n => n * 2);
+
+console.log(result);
+ENDCODE
+A) `[2, 4, 6]`
+B) `6`
+C) `true`
+D) `undefined`
+ANSWER: D
+EXPLANATION: A `forEach()` végrehajtja a callbacket minden elemen, de nem készít és nem ad vissza új tömböt. A callbackben kiszámolódik az `n * 2`, de ezt az értéket a `forEach()` nem gyűjti össze. Maga a `forEach()` visszatérési értéke `undefined`. A leggyakoribb tévedés a `[2, 4, 6]`, mert a `map()`-hez hasonlóan itt is minden elemre lefut egy callback.
+###END
+
+### Q59
+LEVEL: medior
+TOPIC: Closure
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function createCounter() {
+  let count = 0;
+
+  return {
+    increment() {
+      count++;
+    },
+    getCount() {
+      return count;
+    }
+  };
+}
+
+const counter = createCounter();
+
+counter.increment();
+counter.increment();
+
+console.log(counter.getCount());
+ENDCODE
+A) `0`
+B) `1`
+C) `2`
+D) `undefined`
+ANSWER: C
+EXPLANATION: A két metódus ugyanahhoz a closure-ben tárolt `count` változóhoz fér hozzá. Az első `increment()` `0`-ról `1`-re növeli, a második pedig `2`-re. A `getCount()` ezután ugyanebből a closure-ből olvassa ki az értéket. A leggyakoribb tévedés az `1`, amikor valaki különálló állapotot feltételez a két metódus mögött.
+###END
+
+### Q60
+LEVEL: medior
+TOPIC: this
+TYPE: trap
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const user = {
+  name: "Anna",
+  getName() {
+    return this.name;
+  }
+};
+
+const getName = user.getName;
+
+console.log(getName());
+ENDCODE
+A) `"Anna"`
+B) `undefined`
+C) `"user"`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: A `getName` függvényt először kinyerjük az objektumból, majd önálló függvényként hívjuk meg. A hívási hely már nem `user.getName()`, ezért a metódushívásból származó `this` kapcsolat elveszik. Modern strict/module környezetben az önálló hívás `this` értéke `undefined`, ezért a függvény nem tudja a `user.name` property-t elérni. A leggyakoribb tévedés az `"Anna"`, mert a függvény eredetileg a `user` objektum metódusa volt.
+###END
+
+### Q61
+LEVEL: medior
+TOPIC: call/apply
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function sum(a, b, c) {
+  return this.base + a + b + c;
+}
+
+const context = { base: 10 };
+
+console.log(sum.call(context, 1, 2, 3));
+console.log(sum.apply(context, [1, 2, 3]));
+ENDCODE
+A) `16` és `16`
+B) `10` és `6`
+C) `16` és `10`
+D) `6` és `16`
+ANSWER: A
+EXPLANATION: A `call()` és az `apply()` is explicit módon beállítja a `this` értékét. A különbség itt csak az argumentumok átadásának módja: `call()` külön argumentumokat, `apply()` pedig tömbszerű argumentumlistát kap. Mindkét esetben `10 + 1 + 2 + 3`, vagyis `16` az eredmény. A leggyakoribb tévedés az eltérő eredmény várása, mert a két API argumentumátadási szintaxisa valóban különbözik.
+###END
+
+### Q62
+LEVEL: medior
+TOPIC: Object references
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const original = {
+  nested: {
+    value: 1
+  }
+};
+
+const copy = { ...original };
+
+copy.nested.value = 99;
+
+console.log(original.nested.value);
+ENDCODE
+A) `1`
+B) `99`
+C) `undefined`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: Az object spread csak sekély másolatot készít. A legfelső szintű objektum új, de a `nested` property értéke továbbra is ugyanarra a belső objektumra mutat. Ezért a `copy.nested.value` módosítása az `original.nested.value` értékét is megváltoztatja. A leggyakoribb tévedés az `1`, mert a spread szintaxisa könnyen mélymásolatnak tűnhet.
+###END
+
+### Q63
+LEVEL: medior
+TOPIC: Classes
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+class Counter {
+  constructor() {
+    this.value = 0;
+  }
+
+  increment() {
+    this.value++;
+  }
+}
+
+const a = new Counter();
+const b = new Counter();
+
+a.increment();
+
+console.log(a.value, b.value);
+ENDCODE
+A) `1 1`
+B) `0 1`
+C) `1 0`
+D) `0 0`
+ANSWER: C
+EXPLANATION: A `new Counter()` minden alkalommal új példányt hoz létre, ezért `a` és `b` külön `value` property-vel rendelkezik. Az `increment()` csak az `a` példány saját állapotát módosítja. A `increment` metódus ugyan közösen a prototype-on található, de a `this` mindig az aktuális példányra mutat. A leggyakoribb tévedés az `1 1`, amikor a prototype-on lévő metódust összekeverjük a példányon tárolt állapottal.
+###END
+
+### Q64
+LEVEL: medior
+TOPIC: Prototype inheritance
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+class Animal {
+  speak() {
+    return "animal";
+  }
+}
+
+class Dog extends Animal {
+  speak() {
+    return "dog";
+  }
+}
+
+const dog = new Dog();
+
+console.log(dog.speak());
+console.log(super.speak);
+ENDCODE
+A) `"dog"` majd `undefined`
+B) `"animal"` majd `undefined`
+C) `"dog"` majd `TypeError`
+D) A kód szintaktikailag hibás
+ANSWER: D
+EXPLANATION: A `super` használata csak megfelelő class method body-ban értelmezett, itt viszont a top-level kódban szerepel. Emiatt a teljes program parse/syntax hibába ütközik, tehát egyik `console.log` sem hajtódik végre. A leggyakoribb tévedés az, hogy a `super`-t egyszerűen egy globális hivatkozásként kezeljük, holott speciális class-környezethez kötött nyelvi konstrukció.
+###END
+
+### Q65
+LEVEL: medior
+TOPIC: Map
+TYPE: edgecase
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const map = new Map();
+
+const a = {};
+const b = {};
+
+map.set(a, "first");
+map.set(b, "second");
+
+console.log(map.size);
+ENDCODE
+A) `1`
+B) `2`
+C) `0`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: Az objektumok referenciák alapján különböznek egymástól. Bár `a` és `b` szerkezete azonos, két külön létrehozott objektumról van szó, ezért külön Map-kulcsok. A Map így két bejegyzést tartalmaz. A leggyakoribb tévedés az `1`, mert az objektumok strukturális azonosságát összekeverjük a referenciaazonossággal.
+###END
+
+### Q66
+LEVEL: medior
+TOPIC: Iterators and generators
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function* numbers() {
+  yield 1;
+  yield 2;
+}
+
+const iterator = numbers();
+
+console.log(iterator.next());
+console.log(iterator.next());
+console.log(iterator.next());
+ENDCODE
+A) `{ value: 1, done: false }`, `{ value: 2, done: false }`, `{ value: undefined, done: true }`
+B) `{ value: 1, done: true }`, `{ value: 2, done: true }`, `{ value: undefined, done: true }`
+C) `1`, `2`, `undefined`
+D) `{ value: 0, done: false }`, `{ value: 1, done: false }`, `{ value: 2, done: true }`
+ANSWER: A
+EXPLANATION: Az első `next()` az első `yield` után áll meg, ezért `value` értéke `1`, `done` pedig `false`. A második ugyanígy `2`-t ad vissza és még nincs vége az iterációnak. A harmadik hívás már a generator végére ér, ezért `done: true` és `value: undefined` lesz az eredmény. A leggyakoribb tévedés az, hogy a `yield` értéke önmagában kerül visszaadásra, miközben az iterator protocol egy result objektumot használ.
+###END
+
+### Q67
+LEVEL: medior
+TOPIC: Error handling
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function test() {
+  try {
+    return "try";
+  } finally {
+    return "finally";
+  }
+}
+
+console.log(test());
+ENDCODE
+A) `"try"`
+B) `"finally"`
+C) `undefined`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: A `try` blokkból származó `return` előkészíti a visszatérést, de a `finally` blokk még lefut. Ha a `finally` maga is `return`-t hajt végre, az felülírja a korábban előkészített visszatérési értéket. Ezért a függvény tényleges eredménye `"finally"`. A leggyakoribb tévedés az `"try"`, mert a korábbi `return` jelenléte megtévesztően véglegesnek tűnik.
+###END
+
+### Q68
+LEVEL: medior
+TOPIC: Modules
+TYPE: theory
+QUESTION: Mi a lényegi különbség a named export és a default export között?
+A) Named exportból module-onként csak egy lehet
+B) Default exportból korlátlan számú lehet ugyanabban a module-ban
+C) A named exportot csak CommonJS tudja importálni
+D) Egy module-nak legfeljebb egy default exportja lehet, míg több named exportja is lehet
+ANSWER: D
+EXPLANATION: Egy ES module legfeljebb egy default exportot tartalmazhat, miközben tetszőleges számú named exportot definiálhat. Named export esetén az exportált névhez kötötten importálunk, default exportnál az importáló szabadon választhat lokális nevet. A leggyakoribb tévedés az exportok darabszámának összekeverése, különösen nagyobb module-oknál, ahol több különböző API-t exportálnak.
+###END
+
+### Q69
+LEVEL: medior
+TOPIC: Promise chaining
+TYPE: async
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+Promise.resolve(1)
+  .then(value => {
+    throw new Error("failed");
+  })
+  .then(() => console.log("success"))
+  .catch(error => console.log(error.message));
+ENDCODE
+A) `success`
+B) `undefined`
+C) `failed`
+D) `Error`
+ANSWER: C
+EXPLANATION: Az első `then` callbackje exceptiont dob, ezért az általa visszaadott Promise rejected állapotú lesz. A következő `then` emiatt kimarad, mert az csak fulfilled eredménynél futna. A lánc ezután eléri a `catch` blokkot, amely megkapja a hibát, és annak `message` property-jét, vagyis `"failed"` értéket írja ki. A leggyakoribb tévedés a `success`, mert a láncolt `then`-ek egymás utáni futását sokan automatikusnak tekintik.
+###END
+
+### Q70
+LEVEL: senior
+TOPIC: Event loop
+TYPE: async
+QUESTION: Mi a kimeneti sorrend?
+CODE:
+console.log("A");
+
+setTimeout(() => console.log("B"), 0);
+
+queueMicrotask(() => {
+  console.log("C");
+
+  Promise.resolve().then(() => {
+    console.log("D");
+  });
+});
+
+queueMicrotask(() => console.log("E"));
+
+console.log("F");
+ENDCODE
+A) `A F C E D B`
+B) `A C D E F B`
+C) `A F B C E D`
+D) `A F C D E B`
+ANSWER: A
+EXPLANATION: A szinkron kód először `A` és `F` értékeket írja ki. Ezután a microtask queue-ban két feladat van: az első `C`-t írja ki, majd közben hozzáad egy új Promise microtaskot `D`-vel. A már meglévő második microtask, amely `E`-t írja ki, előbb kerül feldolgozásra, majd az újonnan hozzáadott `D` következik. A timer csak a microtask queue kiürítése után fut, ezért `B` az utolsó. A leggyakoribb tévedés az `A F C D E B`, mert az új microtask hozzáadását könnyű úgy elképzelni, mintha azonnal megelőzné a már queue-ban lévő feladatokat.
+###END
+
+### Q71
+LEVEL: senior
+TOPIC: Async/Await
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+async function test() {
+  try {
+    await Promise.reject(new Error("boom"));
+    console.log("success");
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+test();
+console.log("after");
+ENDCODE
+A) `boom` majd `after`
+B) `after` majd `boom`
+C) `success` majd `after`
+D) `after` majd `success`
+ANSWER: B
+EXPLANATION: A `test()` meghívása elindítja az async functiont, amely az `await`-ig szinkron módon fut. A rejected Promise miatt az `await` utáni folytatás a `catch` ágba kerül, de ez a folytatás microtaskként történik. Közben a külső szinkron kód kiírja az `"after"` értéket. Ezután fut le az async folytatás, és a `catch` kiírja a `"boom"` üzenetet. A leggyakoribb tévedés a `boom` elsőként való várása, mert az exception logikailag közvetlenül az `await` után keletkezik, miközben az async folytatás ütemezett.
+###END
+
+### Q72
+LEVEL: senior
+TOPIC: Race conditions
+TYPE: production
+QUESTION: Egy alkalmazásban két párhuzamos async művelet ugyanazt az objektumot módosítja:
+CODE:
+let state = { count: 0 };
+
+async function update() {
+  const current = state.count;
+  await Promise.resolve();
+  state.count = current + 1;
+}
+
+await Promise.all([update(), update()]);
+
+console.log(state.count);
+ENDCODE
+Mi lesz a kimenet, és miért?
+A) `2`, mert a két függvény mindig egymás után fut
+B) `0`, mert az `await` minden módosítást megszakít
+C) `1`, mert mindkét hívás ugyanazt a kezdeti értéket olvassa, majd ugyanarra az értékre ír
+D) `undefined`, mert a `Promise.all` nem támogat közös state-et
+ANSWER: C
+EXPLANATION: Mindkét `update()` meghívás először elolvassa a `state.count` értékét, amely ekkor `0`, és ezt saját `current` változójába menti. Ezután mindkettő eljut az `await`-hez. A folytatások később lefutnak, de mindkettő `current + 1`, vagyis `1` értéket ír vissza. A második írás így nem a már megnövelt értéket növeli tovább, hanem felülírja azt ugyanazzal az értékkel. A leggyakoribb tévedés a `2`, mert intuitív módon két increment műveletet látunk, de az olvasás és írás nem atomi művelet.
+###END
+
+### Q73
+LEVEL: senior
+TOPIC: Event handling
+TYPE: behavior
+QUESTION: Egy DOM elemre click eseményt regisztrálunk `capture: true` beállítással, egy belső elemre pedig normál bubbling listener kerül. A belső elemre kattintanak. Melyik sorrend helyes?
+A) Először a belső elem bubbling listenerje, majd a külső capture listener
+B) Először a külső capture listener, majd a belső elem bubbling listener
+C) Csak a külső capture listener fut le
+D) Csak a belső bubbling listener fut le
+ANSWER: B
+EXPLANATION: A DOM események útja először a capture fázison halad a cél felé. Emiatt a külső elem capture listenerje előbb fut le, mint a célhoz tartozó listener. Ezután következik a target/bubbling szakasz, ahol a belső elem normál listenerje végrehajtódik. A leggyakoribb tévedés az, hogy a bubbling miatt minden listener a célponttól kifelé indul, miközben a capture fázis éppen ennek az ellenkező irányú szakasza.
+###END
+
+### Q74
+LEVEL: senior
+TOPIC: Fetch API
+TYPE: trap
+QUESTION: Mi igaz erre a kódra?
+CODE:
+fetch("/api/data")
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.log("failed"));
+ENDCODE
+A) A `catch` automatikusan lefut minden HTTP 4xx és 5xx válaszra
+B) A `fetch()` csak HTTP 200 esetén teljesít
+C) A `response.json()` soha nem okozhat rejectet
+D) A `fetch()` általában nem rejectel pusztán egy HTTP 404 vagy 500 státusz miatt; a `response.ok` ellenőrzése külön szükséges
+ANSWER: D
+EXPLANATION: A `fetch()` Promise-a hálózati hibák esetén rejectel, de egy HTTP szintű hibás státusz, például `404` vagy `500`, önmagában nem számít fetch szintű hibának. Ilyenkor a Promise általában fulfilled `Response` objektummal teljesül, amelynek `ok` property-je `false`. Production kódban ezért gyakori minta a `if (!response.ok) throw new Error(...)` ellenőrzés a JSON feldolgozása előtt. A leggyakoribb tévedés az automatikus `catch`-re hagyatkozás, mert más HTTP klienseknél valóban megszokott lehet a hibás státuszok exceptionként kezelése.
+###END
+
+### Q75
+LEVEL: senior
+TOPIC: Immutability és performance
+TYPE: production
+QUESTION: Egy nagy objektumot tartalmazó state frissítésekor csak egyetlen nested property változik. Melyik megközelítés biztosítja a módosítandó útvonal mentén az immutabilitást anélkül, hogy az egész objektumot manuálisan újra felépítenénk property-ről property-re?
+CODE:
+const state = {
+  user: {
+    profile: {
+      name: "Anna",
+      age: 30
+    },
+    settings: {
+      theme: "dark"
+    }
+  }
+};
+ENDCODE
+A) `state.user.profile.age = 31`
+B) `Object.freeze(state)` után közvetlenül módosítani az `age` értéket
+C) Az érintett objektumszintek shallow copy-jának elkészítése spreaddel, majd az új `age` érték beállítása
+D) `JSON.stringify(state)` meghívása módosítás nélkül
+ANSWER: C
+EXPLANATION: Immutábilis frissítésnél nem módosítjuk közvetlenül az eredeti objektumot. Ehelyett létrehozzuk az új state-et, valamint új példányt készítünk az érintett `user` és `profile` szinteken, miközben a nem érintett ágak, például `settings`, újrahasznosíthatók. Egy tipikus megoldás például `const next = { ...state, user: { ...state.user, profile: { ...state.user.profile, age: 31 } } }`. Ez sekély másolást használ minden szükséges szinten, nem pedig teljes mélymásolatot. A leggyakoribb tévedés a közvetlen property-módosítás, mert az rövidebb és működőképesnek látszik, de megsérti az immutábilis state-frissítés feltételét.
+###END
+
+### Q76
+LEVEL: junior
+TOPIC: Scope
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const x = 10;
+
+function test() {
+  console.log(x);
+  const x = 20;
+}
+
+test();
+ENDCODE
+A) `20`
+B) `10`
+C) `undefined`
+D) `ReferenceError`
+ANSWER: D
+EXPLANATION: A `test` függvényen belüli `const x` deklaráció miatt az egész függvényen belül ez az `x` az érvényes binding. A deklaráció előtti időszakban azonban a változó a Temporal Dead Zone-ban van. Emiatt a `console.log(x)` nem a külső `x`-et használja, hanem `ReferenceError` hibát okoz. A leggyakoribb tévedés a `10`, mert a külső változó láthatónak tűnik, de a belső deklaráció árnyékolja azt.
+###END
+
+### Q77
+LEVEL: junior
+TOPIC: Primitive values
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+let a = 10;
+let b = a;
+
+b = 20;
+
+console.log(a, b);
+ENDCODE
+A) `10 20`
+B) `20 20`
+C) `10 10`
+D) `undefined 20`
+ANSWER: A
+EXPLANATION: A szám primitív érték, ezért `b = a` során az érték kerül átadásra, nem egy megosztott referencia. A `b = 20` csak a `b` változó értékét módosítja, az `a` továbbra is `10`. A leggyakoribb tévedés a `20 20`, ami objektumoknál hasonló szituációban előfordulhat referencia-megosztás miatt.
+###END
+
+### Q78
+LEVEL: junior
+TOPIC: Functions
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function outer() {
+  return inner();
+
+  function inner() {
+    return 42;
+  }
+}
+
+console.log(outer());
+ENDCODE
+A) `undefined`
+B) `42`
+C) `ReferenceError`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: Az `inner` function declaration teljes egészében hoistolódik az `outer` függvény scope-ján belül. Emiatt az `inner()` meghívható a deklaráció szövegbeli helye előtt is. Az `inner` `42`-t ad vissza, ezt pedig az `outer` továbbadja. A leggyakoribb tévedés az, hogy a `return` miatt a későbbi deklaráció nem lehetne elérhető, pedig a function declaration hoistingja ezt lehetővé teszi.
+###END
+
+### Q79
+LEVEL: junior
+TOPIC: Spread és rest
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function collect(first, ...rest) {
+  console.log(first);
+  console.log(rest);
+}
+
+collect("a", "b", "c");
+ENDCODE
+A) `["a"]` majd `["b", "c"]`
+B) `"a"` majd `"b", "c"`
+C) `"a"` majd `["b", "c"]`
+D) `undefined` majd `["a", "b", "c"]`
+ANSWER: C
+EXPLANATION: A `first` az első argumentumot kapja, vagyis `"a"` értéket. A rest parameter az összes további argumentumot egy új tömbben gyűjti össze, ezért `rest` értéke `["b", "c"]`. A leggyakoribb tévedés az, hogy a rest paraméter stringként kapja meg a maradék argumentumokat, miközben a rest mindig tömböt készít.
+###END
+
+### Q80
+LEVEL: junior
+TOPIC: Array methods
+TYPE: behavior
+QUESTION: Melyik állítás írja le helyesen az `every()` működését?
+A) Akkor ad `true` értéket, ha legalább egy elem megfelel a feltételnek
+B) Az első megfelelő elemet adja vissza
+C) Az összes megfelelő elemből új tömböt készít
+D) Akkor ad `true` értéket, ha minden elem megfelel a feltételnek
+ANSWER: D
+EXPLANATION: Az `every()` boolean értéket ad vissza, és csak akkor `true`, ha minden elemre igaz a callbackben megadott feltétel. Ha akár egyetlen elem is hamis eredményt ad, a metódus `false`-t eredményez és rövidre zárhat. A legalább egy megfelelő elem keresésére a `some()` használható. A leggyakoribb tévedés a `some()` működésének rávetítése az `every()` metódusra.
+###END
+
+### Q81
+LEVEL: junior
+TOPIC: Array methods
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const numbers = [1, 2, 3, 4];
+
+const result = numbers.reduce((acc, value) => {
+  if (value % 2 === 0) {
+    acc.push(value * 10);
+  }
+  return acc;
+}, []);
+
+console.log(result);
+ENDCODE
+A) `[10, 20, 30, 40]`
+B) `[20, 40]`
+C) `[2, 4]`
+D) `[]`
+ANSWER: B
+EXPLANATION: A `reduce()` itt egy üres tömbbel indul akkumulátorként. Az `1` és `3` páratlan, ezért ezeknél nem történik `push`. A `2` bekerül `20` értékként, a `4` pedig `40` értékként. Így a végeredmény `[20, 40]`. A leggyakoribb tévedés az összes elem transzformálása, mert könnyű figyelmen kívül hagyni a feltételes `push`-t.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: Equality
+TYPE: trap
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+console.log("0" == false);
+console.log("0" === false);
+ENDCODE
+A) `true` és `false`
+B) `false` és `false`
+C) `true` és `true`
+D) `false` és `true`
+ANSWER: A
+EXPLANATION: Loose equality esetén a `"0"` string és a `false` boolean olyan coercionon megy keresztül, amely végül numerikus összehasonlításhoz vezet: `"0"` számmá alakítva `0`, a `false` pedig szintén `0`. Ezért az első eredmény `true`. Strict equality esetén a különböző típusok miatt az eredmény `false`. A leggyakoribb tévedés az, hogy a string `"0"` önmagában truthy, ezért az összehasonlítást is truthiness alapján próbáljuk megítélni.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: Closures
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function createMultiplier(multiplier) {
+  return function (value) {
+    return value * multiplier;
+  };
+}
+
+const double = createMultiplier(2);
+const triple = createMultiplier(3);
+
+console.log(double(5), triple(5));
+ENDCODE
+A) `10 10`
+B) `15 15`
+C) `10 15`
+D) `5 5`
+ANSWER: C
+EXPLANATION: A `createMultiplier()` minden meghívásakor létrejön egy új closure, amely megőrzi az adott `multiplier` értéket. A `double` closure-je `2`-t, a `triple` closure-je `3`-at tárol. Ezért `double(5)` eredménye `10`, míg `triple(5)` eredménye `15`. A leggyakoribb tévedés az azonos eredmény várása, mert a két visszaadott függvény ugyanabból a factoryból származik.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: this
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const user = {
+  name: "Anna",
+  greet() {
+    const inner = function () {
+      return this.name;
+    };
+
+    return inner();
+  }
+};
+
+console.log(user.greet());
+ENDCODE
+A) `"Anna"`
+B) `undefined`
+C) `null`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: A `greet()` normál metódushívásként fut, ezért annak `this` értéke a `user`. Azonban az `inner()` önálló függvényhívás, nem `this.inner()` jellegű metódushívás. Strict/module környezetben ezért az `inner` belsejében `this` `undefined`, így az eredmény `undefined`. A leggyakoribb tévedés az `"Anna"`, mert a külső metódus `this` értékét könnyű automatikusan továbbörökítettnek feltételezni.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: Arrow functions és this
+TYPE: debug
+QUESTION: Miért nem működik az alábbi kód a várt módon, ha a cél az, hogy a `setTimeout` callbackben is a `user` legyen a `this`?
+CODE:
+const user = {
+  name: "Anna",
+
+  greet() {
+    setTimeout(function () {
+      console.log(this.name);
+    }, 0);
+  }
+};
+
+user.greet();
+ENDCODE
+A) A `setTimeout` mindig törli a `this` értékét
+B) A normál függvény saját `this`-t kap, ezért nem örökli automatikusan a `greet()` `this` értékét
+C) A `user` objektum nem tartalmazhat callbacket
+D) A `setTimeout` csak arrow functiont fogad el
+ANSWER: B
+EXPLANATION: A `greet()` belsejében lévő callback normál function, ezért saját `this`-szel rendelkezik. Nem örökli lexikálisan a külső metódus `this` értékét. Arrow functionnel, például `setTimeout(() => console.log(this.name), 0)`, a callback lexikálisan örökölné a `greet()` `this` értékét. A leggyakoribb tévedés az, hogy a `setTimeout` mechanizmusát hibáztatjuk, miközben a lényeg a callback függvénytípusa.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: Prototype chain
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const parent = {
+  value: 1
+};
+
+const child = Object.create(parent);
+
+console.log(child.hasOwnProperty("value"));
+console.log("value" in child);
+ENDCODE
+A) `true` és `true`
+B) `false` és `false`
+C) `true` és `false`
+D) `false` és `true`
+ANSWER: D
+EXPLANATION: A `child` saját property-jei között nincs `value`, ezért a `hasOwnProperty("value")` eredménye `false`. Az `in` operátor viszont a prototype láncot is vizsgálja, így megtalálja a `parent` objektumban lévő `value` property-t. Ezért a második eredmény `true`. A leggyakoribb tévedés az, hogy minden property-ellenőrzés csak a saját property-ket vizsgálja.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: Classes és inheritance
+TYPE: behavior
+QUESTION: Egy `Child` class `extends Parent` kapcsolatban van. Melyik állítás igaz az alábbi szerkezetre?
+CODE:
+class Parent {
+  constructor() {
+    this.type = "parent";
+  }
+}
+
+class Child extends Parent {
+  constructor() {
+    super();
+    this.type = "child";
+  }
+}
+ENDCODE
+A) A `super()` a parent constructorát hívja meg
+B) A `super()` csak statikus metódusokat ér el
+C) A `super()` után nem módosítható a példány
+D) Az `extends` miatt a `Child` nem örökölheti a parent prototype metódusait
+ANSWER: A
+EXPLANATION: Derived class constructorban a `super()` meghívja a parent constructorát, és inicializálja az öröklött példányt. Ezután a `Child` saját konstruktorában módosítható a példány állapota, ezért a `type` végül `"child"` lesz. A `Child` a parent prototype láncából is örökölhet metódusokat. A leggyakoribb tévedés az, hogy a `super()` pusztán egy parent metódusra mutató referencia, miközben constructorban ténylegesen a parent inicializálását végzi.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: Set
+TYPE: edgecase
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+const set = new Set();
+
+set.add(NaN);
+set.add(NaN);
+
+console.log(set.size);
+ENDCODE
+A) `1`
+B) `2`
+C) `0`
+D) `TypeError`
+ANSWER: A
+EXPLANATION: A `Set` az értékek azonosságának meghatározására olyan szemantikát használ, amelyben a `NaN` önmagával azonosnak számít. Emiatt a második `set.add(NaN)` nem hoz létre új elemet. A halmaz mérete így `1`. A leggyakoribb tévedés a `2`, mert a `NaN === NaN` eredménye valóban `false`, de a `Set` belső egyenlőségszabálya nem egyszerűen a `===` alkalmazása.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: Symbols
+TYPE: behavior
+QUESTION: Melyik állítás igaz a Symbol értékekről?
+A) Minden `Symbol("x")` ugyanazt a Symbolt adja vissza
+B) A Symbol mindig stringgé alakul property-ként használva
+C) A Symbol csak array indexként használható
+D) Két külön `Symbol("x")` létrehozása különböző Symbol értékeket eredményez
+ANSWER: D
+EXPLANATION: A `Symbol()` minden meghívása egyedi Symbol értéket hoz létre, még akkor is, ha ugyanazt a leírást adjuk meg. Így `Symbol("x") === Symbol("x")` hamis. A leírás csak debugging célokat segítő metadata, nem az azonosság alapja. A leggyakoribb tévedés az, hogy a `"x"` leírás miatt a két Symbolt azonos kulcsként kezeljük.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Generators
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+function* values() {
+  yield 1;
+  yield 2;
+}
+
+const result = [...values()];
+
+console.log(result);
+ENDCODE
+A) `[undefined, undefined]`
+B) `[1, 2]`
+C) `1, 2`
+D) `[]`
+ANSWER: B
+EXPLANATION: A generator function meghívása egy iterable/iterator objektumot ad. A spread operátor végigiterál rajta, és összegyűjti a `yield` által szolgáltatott értékeket egy új tömbbe. Ezért a végeredmény `[1, 2]`. A leggyakoribb tévedés az `[]`, mert a generator meghívása önmagában nem futtatja végig a függvény törzsét, de a spread már ténylegesen iterál rajta.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Promise.finally
+TYPE: async
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+Promise.resolve("data")
+  .finally(() => {
+    console.log("cleanup");
+  })
+  .then(value => console.log(value));
+ENDCODE
+A) Csak `cleanup`
+B) Csak `data`
+C) `cleanup`, majd `data`
+D) `data`, majd `cleanup`
+ANSWER: C
+EXPLANATION: A `finally()` callbackje lefut a Promise állapotától függetlenül, és itt először `"cleanup"` kerül a konzolra. Mivel a `finally()` callbackje nem dob hibát és nem ad vissza új rejectiont, az eredeti fulfilled érték továbbhalad a láncban. A következő `then` ezért `"data"` értéket kap. A leggyakoribb tévedés a `cleanup` önálló eredményként való kezelése, miközben a `finally()` alapértelmezés szerint nem változtatja meg az előző Promise értékét.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: Promise.all
+TYPE: async
+QUESTION: Mi történik az alábbi kóddal?
+CODE:
+const p1 = Promise.resolve("A");
+const p2 = Promise.reject(new Error("B"));
+const p3 = new Promise(resolve => {
+  setTimeout(() => resolve("C"), 100);
+});
+
+Promise.all([p1, p2, p3])
+  .then(values => console.log(values))
+  .catch(error => console.log(error.message));
+ENDCODE
+A) `["A", "B", "C"]` jelenik meg
+B) `C` jelenik meg 100 ms után
+C) `undefined` jelenik meg
+D) `B` jelenik meg, és a `Promise.all` rejected lesz
+ANSWER: D
+EXPLANATION: A `Promise.all()` akkor fulfilled, ha minden input Promise fulfilled. Itt `p2` azonnal rejected, ezért a `Promise.all()` eredménye rejected lesz, és a `catch` kiírja a hiba `message` értékét, vagyis `"B"`. A többi Promise futását a `Promise.all` mechanikusan nem feltétlenül állítja le, de a kombinált eredmény már rejection. A leggyakoribb tévedés az összes érték összegyűjtése, mert a `Promise.all` neve alapján könnyű csak a sikeres esetet elképzelni.
+###END
+
+### Q93
+LEVEL: senior
+TOPIC: Event loop és Promise.all
+TYPE: output
+QUESTION: Mi a kimeneti sorrend?
+CODE:
+async function run() {
+  console.log("A");
+
+  const result = await Promise.all([
+    Promise.resolve("B"),
+    Promise.resolve("C")
+  ]);
+
+  console.log(result.join(""));
+}
+
+run();
+
+console.log("D");
+ENDCODE
+A) `A`, majd `D`, majd `BC`
+B) `A`, majd `BC`, majd `D`
+C) `D`, majd `A`, majd `BC`
+D) `A`, majd `D`, majd `CB`
+ANSWER: A
+EXPLANATION: A `run()` az `await`-ig szinkron módon fut, ezért először `A` jelenik meg. Az `await` miatt a folytatás későbbre, microtaskként kerül, ezért a külső szinkron `console.log("D")` még előtte lefut. A `Promise.all` megőrzi az input Promise-ok sorrendjét, így az eredmény `["B", "C"]`, amelyből `"BC"` készül. A leggyakoribb tévedés a `BC` első helyre tétele, mert a Promise-ok már resolved állapotban vannak, de az `await` utáni folytatás akkor is aszinkron módon történik.
+###END
+
+### Q94
+LEVEL: senior
+TOPIC: Async error handling
+TYPE: debug
+QUESTION: Mi a probléma az alábbi hibakezeléssel?
+CODE:
+async function loadUser() {
+  try {
+    const response = await fetch("/api/user");
+    return response.json();
+  } catch (error) {
+    console.log("Request failed");
+  }
+}
+
+loadUser();
+ENDCODE
+A) Az `await` nem használható `try` blokkon belül
+B) A `fetch()` mindig automatikusan kezeli a JSON hibákat
+C) A `response.json()` Promise-a nem kerül awaitelésre, de az outer async function ettől még visszaadja a Promise-t, így a JSON parse rejectionje nem feltétlenül kerül a helyi `catch`-be
+D) Az async function nem térhet vissza Promise-szal
+ANSWER: C
+EXPLANATION: A `return response.json()` egy Promise-t ad vissza az async functionből, de maga a JSON parsing Promise nem kerül `await`-re a `try` blokkon belül. Emiatt annak későbbi rejectionje nem ugyanúgy fut át ezen a helyi `catch`-en, mint egy `await response.json()` esetén. Robusztusabb megoldás a `const data = await response.json(); return data;`, így a parsing hibája is ugyanebbe a `try/catch` szerkezetbe kerül. Emellett HTTP státuszkódot is érdemes külön ellenőrizni. A leggyakoribb tévedés az, hogy a `return` automatikusan azt jelenti, hogy a Promise teljesítése során keletkező minden hiba még a `try` blokkban kezelődik.
+###END
+
+### Q95
+LEVEL: senior
+TOPIC: Debouncing és closures
+TYPE: debug
+QUESTION: Az alábbi debounce implementáció első ránézésre működőképesnek tűnik. Mi a legfontosabb probléma vele?
+CODE:
+function debounce(fn, delay) {
+  let timer;
+
+  return function (...args) {
+    setTimeout(() => {
+      clearTimeout(timer);
+      fn(...args);
+    }, delay);
+  };
+}
+ENDCODE
+A) A `fn` nem hívható meg closure-ből
+B) A timer változónak minden hívásnál új értéket kell kapnia, ezért a korábbi timeoutot nem lehet megfelelően törölni
+C) A `delay` nem lehet szám
+D) A rest parameter nem használható visszaadott függvényben
+ANSWER: B
+EXPLANATION: A valódi debounce esetén az új hívásnak törölnie kell az előző, még várakozó timeoutot. Itt viszont a `setTimeout()` visszatérési értéke soha nincs a `timer` változóba mentve. Ráadásul a `clearTimeout(timer)` csak a timeout callback lefutásakor történik, amikor már túl késő a korábbi hívás eldobásához. A helyes alapminta `timer = setTimeout(...)`, és a következő hívás elején `clearTimeout(timer)`. A leggyakoribb tévedés az, hogy a `clearTimeout` puszta jelenléte miatt kész debounce implementációnak tekintjük a kódot.
+###END
+
+### Q96
+LEVEL: senior
+TOPIC: Throttling
+TYPE: performance
+QUESTION: Egy scroll handler nagyon drága számításokat végez. A cél az, hogy a handler legfeljebb meghatározott időközönként fusson, akkor is, ha a scroll események nagyon gyakran érkeznek. Melyik technika illik leginkább ehhez a célhoz?
+A) Throttling
+B) Debouncing
+C) Memoization
+D) Currying
+ANSWER: A
+EXPLANATION: A throttling időablakot szab arra, hogy egy adott időszakban legfeljebb milyen gyakran fusson a művelet. Ez különösen alkalmas nagy frekvenciájú események, például `scroll`, `mousemove` vagy resize kezelésére. A debounce ezzel szemben jellemzően a sorozat végét várja meg, és akkor futtatja a callbacket, amikor egy ideje nem érkezett új esemény. A leggyakoribb tévedés a debounce választása, mert mindkét technika az események számának csökkentésére használható, de eltérő időzítési szemantikájuk van.
+###END
+
+### Q97
+LEVEL: senior
+TOPIC: Garbage collection
+TYPE: production
+QUESTION: Melyik helyzet okozhat tipikusan olyan memóriamegtartást, amelyet egy JavaScript garbage collector nem tud megszüntetni?
+A) Egy lokális változó értéke egy függvény visszatérése után már nem elérhető
+B) Egy objektumhoz már semmilyen elérhető referencia nem vezet
+C) Egy objektumot továbbra is elér egy aktív globális referencia vagy élő closure
+D) Egy primitív szám változó scope-ja véget ér
+ANSWER: C
+EXPLANATION: A garbage collector olyan objektumokat tud felszabadítani, amelyek már nem érhetők el az alkalmazás által. Ha például egy globális változó vagy egy még aktív closure továbbra is hivatkozik egy nagy objektumra, az objektum elérhető marad, ezért a collector nem tekintheti garbage-nek. Ez okozhat hosszú életű alkalmazásokban memóriamegtartást. A leggyakoribb tévedés az, hogy minden már régen létrehozott objektum automatikusan felszabadul, függetlenül attól, hogy létezik-e még elérhető referencia.
+###END
+
+### Q98
+LEVEL: senior
+TOPIC: Performance
+TYPE: performance
+QUESTION: Egy függvény ugyanazt a drága, determinisztikus számítást végzi el több alkalommal ugyanazzal a bemenettel. Melyik technika lehet közvetlenül alkalmas a számítások ismételt elvégzésének elkerülésére?
+A) Event delegation
+B) Memoization
+C) Event bubbling
+D) Destructuring
+ANSWER: B
+EXPLANATION: A memoization a függvény korábbi bemenetéhez tartozó eredményt cache-ben tárolhatja, majd azonos bemenet esetén újraszámolás helyett visszaadhatja a korábbi eredményt. Ez főleg tiszta, determinisztikus függvényeknél biztonságos és jól alkalmazható. A cache méretét és invalidációját production környezetben külön meg kell tervezni. A leggyakoribb tévedés az event delegation, mert az is performance-optimalizálási technika lehet, de nem a számítási eredmények újrahasznosítására szolgál.
+###END
+
+### Q99
+LEVEL: senior
+TOPIC: Functional programming
+TYPE: behavior
+QUESTION: Melyik megoldás őrzi meg legjobban az immutábilis, tiszta transzformáció jellegét?
+CODE:
+const users = [
+  { name: "Anna", active: true },
+  { name: "Peter", active: false }
+];
+ENDCODE
+A) `users.filter(user => user.active).map(user => user.name)`
+B) `users.forEach(user => { if (!user.active) users.splice(users.indexOf(user), 1); })`
+C) `users.sort((a, b) => Number(a.active) - Number(b.active))`
+D) `users.pop()`
+ANSWER: A
+EXPLANATION: A `filter()` és `map()` együtt új tömböt állít elő, miközben a bemeneti tömb szerkezetét nem módosítja. A többi megoldás közvetlenül módosítja a tömb állapotát: a `splice`, a `sort` és a `pop` mind mutáló műveletek. A tiszta funkcionális megközelítés előnye, hogy az adatfolyam könnyebben tesztelhető és kiszámíthatóbb. A leggyakoribb tévedés a `sort()`, mert új tömböt ad vissza, miközben maga az eredeti tömb is módosul.
+###END
+
+### Q100
+LEVEL: senior
+TOPIC: Event delegation és DOM
+TYPE: production
+QUESTION: Egy táblázatban több ezer dinamikusan létrehozott sorhoz ugyanazt a click műveletet kell hozzárendelni. Melyik megoldás csökkenti leginkább a listener-ek számát, miközben a később létrehozott sorokat is kezeli?
+A) Minden sorhoz külön `click` listenert kell regisztrálni
+B) Minden új sorhoz két listenert kell regisztrálni a biztonság kedvéért
+C) A click eseményt le kell tiltani, és pollinggal kell figyelni a változásokat
+D) A közös szülőelemre kell egyetlen click listenert tenni, majd az esemény célpontja alapján kezelni a megfelelő sort
+ANSWER: D
+EXPLANATION: Az event delegation kihasználja, hogy a click esemény bubbling során a szülőelemhez is eljut. Így egyetlen listener kezelheti a sok gyermekelemet, és az újonnan létrehozott sorokhoz sem kell külön listener-regisztráció. A handlerben például `event.target.closest(...)` segítségével azonosítható a releváns sor vagy gomb. Nagy elemszámnál ez jelentősen csökkentheti a listener-ek és a hozzájuk kapcsolódó memóriaigény számát. A leggyakoribb tévedés az, hogy minden dinamikus elemhez új listener szükséges, pedig éppen az eseménydelegálás egyik fő előnye a dinamikusan változó DOM kezelése.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: Event loop
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+console.log("start");
+
+setTimeout(() => console.log("timeout"), 0);
+
+Promise.resolve()
+  .then(() => console.log("promise-1"))
+  .then(() => console.log("promise-2"));
+
+queueMicrotask(() => console.log("microtask"));
+
+console.log("end");
+ENDCODE
+A) `start end promise-1 microtask promise-2 timeout`
+B) `start promise-1 promise-2 microtask end timeout`
+C) `start end timeout promise-1 promise-2 microtask`
+D) `start end promise-1 promise-2 microtask timeout`
+ANSWER: A
+EXPLANATION: A szinkron kód miatt először `start`, majd `end` jelenik meg. Ezután a microtask queue első eleme a Promise első callbackje, ezért `promise-1` fut le, és közben újabb Promise microtaskot tesz a queue végére. A már korábban beütemezett `microtask` ezután fut, majd a `promise-2` következik. Csak a microtask queue teljes kiürítése után kerül sor a `setTimeout` callbackjére. A leggyakoribb tévedés az, hogy a Promise teljes lánca egyetlen queue-elemként kezelődik, pedig minden további `then` új microtaskot hoz létre.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: Async/Await
+TYPE: async
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+async function getValue() {
+  return 42;
+}
+
+console.log(getValue());
+ENDCODE
+A) `42`
+B) `Promise { 42 }`
+C) `undefined`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: Egy `async` függvény mindig Promise-t ad vissza, még akkor is, ha a függvény törzsében egyszerű primitív értéket adunk vissza. A `42` a Promise fulfillment értéke lesz. A konkrét konzolmegjelenítés runtime-onként eltérhet, de szemantikailag egy fulfilled Promise-ról van szó. A leggyakoribb tévedés a `42`, mert az `async` függvény belső `return` értéke könnyen összekeverhető a függvény tényleges visszatérési értékével.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: Promise concurrency
+TYPE: async
+QUESTION: Egy dashboard három egymástól független API-erőforrást tölt be, és csak akkor akarjuk kirenderelni az összesített nézetet, ha mindhárom sikeresen betöltődött. Melyik megoldás illik leginkább ehhez?
+A) `Promise.all()`
+B) `Promise.race()`
+C) `Promise.any()`
+D) `Promise.resolve()`
+ANSWER: A
+EXPLANATION: A `Promise.all()` akkor teljesül, ha minden átadott Promise teljesül, és az eredményeket az input sorrendjében adja vissza. Ha bármelyik Promise rejected lesz, a kombinált Promise is rejected lesz. Ez pontosan megfelel annak az esetnek, amikor az összes erőforrás szükséges a teljes dashboardhoz. A `Promise.race()` csak az elsőként lezáruló Promise eredményét figyeli, ezért más célra való.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: Promise.race
+TYPE: behavior
+QUESTION: Egy API-kéréshez 2 másodperces timeoutot szeretnél megvalósítani. Melyik állítás igaz a `Promise.race()` használatára?
+CODE:
+const request = fetch("/api/data");
+
+const timeout = new Promise((_, reject) => {
+  setTimeout(() => reject(new Error("Timeout")), 2000);
+});
+
+Promise.race([request, timeout]);
+ENDCODE
+A) A timeout automatikusan megszakítja a hálózati kérést
+B) A `fetch()` csak 2 másodpercig futhat
+C) A `Promise.race()` csak azt határozza meg, melyik Promise eredménye lesz a kombinált eredmény; a veszteső Promise futását önmagában nem állítja le
+D) A `Promise.race()` minden Promise-t automatikusan abortál
+ANSWER: C
+EXPLANATION: A `Promise.race()` a kombinált Promise állapotát rendezi az elsőként lezáruló input alapján, de nem rendelkezik általános cancellation mechanizmussal. Ha a timeout Promise nyer, a `fetch` ettől még tovább futhat a háttérben. Valódi hálózati megszakításhoz például `AbortController` használható. A leggyakoribb tévedés az automatikus megszakítás feltételezése, mert a timeout üzleti szempontból valóban lezártnak tekinti a műveletet, technikailag azonban a request még futhat.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: AbortController
+TYPE: production
+QUESTION: Egy autocomplete komponens minden új keresésnél meg akarja szakítani az előző HTTP-kérést. Melyik megoldás a legmegfelelőbb?
+A) `Promise.all()` használata
+B) Az előző `AbortController` `abort()` metódusának meghívása, majd új controller létrehozása
+C) `clearTimeout()` meghívása a `fetch()` Promise-ára
+D) A korábbi Promise értékének `null`-ra állítása
+ANSWER: B
+EXPLANATION: A Fetch API támogatja az `AbortSignal` használatát. Az aktuális controller signalját át lehet adni a `fetch` hívásnak, majd egy új keresés indulásakor az előző controller `abort()` metódusával megszakítható a kérés. Ez nemcsak a race condition kezelésében segíthet, hanem felesleges hálózati és feldolgozási munkát is csökkenthet. A leggyakoribb tévedés a `clearTimeout()`, mert az valóban megszakíthat timer callbacket, de nincs hatással egy már elindított `fetch` kérésre.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: Race conditions
+TYPE: production
+QUESTION: Egy alkalmazásban két egymást követő keresés indul:
+CODE:
+let latestRequest = 0;
+
+async function search(query) {
+  const requestId = ++latestRequest;
+  const result = await fetch(`/api/search?q=${query}`).then(r => r.json());
+
+  if (requestId !== latestRequest) {
+    return;
+  }
+
+  render(result);
+}
+ENDCODE
+Miért hasznos a `requestId` ellenőrzése?
+A) Megakadályozza, hogy a fetch HTTP hibát dobjon
+B) Automatikusan cache-eli az API választ
+C) Garantálja, hogy a requestek ugyanabban a sorrendben fejeződjenek be
+D) Megakadályozza, hogy egy régebbi, később befejeződő request felülírja az újabb eredményt
+ANSWER: D
+EXPLANATION: A requestek befejezési sorrendje eltérhet az indítási sorrendtől. Minden kérés kap egy monoton növekvő azonosítót, és csak az a response kerül renderelésre, amelynek azonosítója még megegyezik az aktuális `latestRequest` értékkel. A korábbi response ettől még megérkezhet, de figyelmen kívül marad. A leggyakoribb tévedés az, hogy az ID-számozás sorrendbe kényszeríti a hálózati requesteket, pedig csak az eredmények alkalmazását védi.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Memory leaks
+TYPE: production
+QUESTION: Mi okozhat memóriaszivárgást az alábbi mintában egy hosszú életű SPA-ban?
+CODE:
+const cache = [];
+
+function process(data) {
+  cache.push({
+    data,
+    timestamp: Date.now()
+  });
+}
+ENDCODE
+A) A `Date.now()` minden hívásnál új memória-szegmenst hagy maga után
+B) A `cache` tömb nem lehet globális változó
+C) A tömb folyamatosan megtartja a korábban hozzáadott objektumokat, így korlátlanul növekedhet
+D) A JavaScript minden tömböt automatikusan weak reference-ként kezel
+ANSWER: C
+EXPLANATION: A `cache` elérhető marad a globális scope-ból, ezért a benne lévő objektumok továbbra is reachable objektumok. A garbage collector ezeket nem szabadíthatja fel, amíg a cache hivatkozik rájuk. Ha a cache korlátlanul növekszik, a memóriahasználat folyamatosan emelkedhet. A leggyakoribb tévedés az automatikus garbage collectionre hagyatkozás, pedig a collector nem törölhet olyan objektumot, amelyet az alkalmazás még elér.
+###END
+
+### Q108
+LEVEL: senior
+TOPIC: Memory leaks
+TYPE: production
+QUESTION: Egy komponens minden mountkor létrehoz egy closure-t, amely egy nagy objektumra hivatkozik, majd egy globális event listenerhez regisztrálja. Unmountkor nincs cleanup. Miért maradhat életben a nagy objektum?
+A) A closure automatikusan deep copy-t készít minden változóról
+B) A listener callbackje elérhető marad a globális `window` objektumon keresztül, és a closure-en át a nagy objektum is reachable maradhat
+C) A garbage collector csak Promise-okat képes felszabadítani
+D) A closure miatt az objektum mindig stacken marad
+ANSWER: B
+EXPLANATION: A closure nem másolja le automatikusan az összes környezeti objektumot, hanem hivatkozást tarthat azokra az értékekre, amelyeket a callback használ. Ha a callbacket a `window` listenerként továbbra is tárolja, a callback elérhető marad. Ezen keresztül a closure és az általa elért objektumok is reachable-ek lehetnek. A listener eltávolítása ezért fontos lifecycle cleanup. A leggyakoribb tévedés az, hogy a komponens unmountolása önmagában megszünteti minden hozzá kapcsolódó globális referencia életét.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: Performance
+TYPE: performance
+QUESTION: Egy `render()` függvényben minden meghíváskor ezt látod:
+CODE:
+function render(users) {
+  const activeUsers = users
+    .filter(user => user.active)
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  return activeUsers;
+}
+ENDCODE
+A lista több tízezer elemet tartalmaz, és ugyanazzal az inputtal sokszor újrahívják a függvényt. Mi lehet az egyik legkézenfekvőbb optimalizáció?
+A) A `filter()` teljes eltávolítása
+B) Minden user objektumot JSON stringgé alakítani
+C) Minden alkalommal mélymásolatot készíteni
+D) Az eredmény memoizálása vagy megfelelő cache-elése, ha az input ténylegesen nem változott
+ANSWER: D
+EXPLANATION: A `filter()` és a `sort()` minden meghíváskor újra feldolgozza az adatokat, ezért változatlan input mellett ugyanaz a drága munka ismétlődik. Ha a függvény feltételei teljesülnek, memoizációval a korábbi eredmény újrahasznosítható. A cache invalidációját azonban helyesen kell kezelni, különösen mutálható inputok esetén. A leggyakoribb tévedés az, hogy a deep copy javítja a teljesítményt, miközben éppen további munkát és memóriahasználatot okozna.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: Performance
+TYPE: performance
+QUESTION: Miért lehet problémás az alábbi kód nagy tömb esetén?
+CODE:
+const numbers = Array.from({ length: 100000 }, (_, i) => i);
+
+const result = numbers
+  .map(n => n * 2)
+  .filter(n => n % 3 === 0)
+  .map(n => n + 1);
+ENDCODE
+A) A `map()` nem használható egymás után
+B) Minden `map()` és `filter()` köztes tömböt hoz létre, ezért több teljes iteráció és allokáció történik
+C) A `filter()` mindig végtelen ciklust okoz
+D) A callbackek miatt a JavaScript automatikusan szinkronból aszinkronná válik
+ANSWER: B
+EXPLANATION: A lánc minden lépése végigiterál az aktuális tömbön, és `map()` vagy `filter()` esetén új tömböt hoz létre. Nagy adatmennyiségnél ez extra CPU-munkát és memóriaterhelést jelenthet. Bizonyos esetekben egyetlen `for` ciklussal vagy egyéb fusion jellegű megoldással csökkenthető a köztes allokációk száma, de a mérés fontos. A leggyakoribb tévedés az, hogy a deklaratív lánc automatikusan optimális, miközben a kényelmes API-használatnak lehet futási költsége.
+###END
+
+### Q111
+LEVEL: senior
+TOPIC: Performance
+TYPE: production
+QUESTION: Egy weboldalon egy nagy listát renderelő JavaScript kód scroll közben folyamatosan DOM-módosításokat végez. A felhasználói élmény akadozik. Melyik stratégia csökkentheti leginkább a felesleges renderelést?
+A) Minden scroll eseményre több külön DOM-módosítást végezni
+B) A teljes oldal DOM-ját minden scrollnál újraépíteni
+C) A frissítéseket `requestAnimationFrame` köré szervezni, és szükség esetén virtualizálni a listát
+D) A scroll eseményeket végtelen loopban pollinggal helyettesíteni
+ANSWER: C
+EXPLANATION: A `requestAnimationFrame` a böngésző renderelési ciklusához igazítja a vizuális frissítéseket, így csökkenthető a túl gyakori DOM-módosítás. Nagy listák esetén a virtualizáció további jelentős javulást hozhat azzal, hogy csak a látható elemeket rendereli. A pontos megoldást profiling alapján érdemes kiválasztani. A leggyakoribb tévedés az események számának puszta növelése, miközben a cél éppen a renderelési munka csökkentése és ütemezése.
+###END
+
+### Q112
+LEVEL: senior
+TOPIC: XSS
+TYPE: security
+QUESTION: Egy alkalmazás felhasználói inputot jelenít meg. Melyik művelet jelent közvetlen XSS-kockázatot, ha az input nem megbízható?
+CODE:
+const userInput = '<img src=x onerror="alert(1)">';
+
+element.innerHTML = userInput;
+ENDCODE
+A) A nem megbízható HTML közvetlen beillesztése `innerHTML` segítségével
+B) A string `length` property-jének lekérése
+C) A string `toLowerCase()` használata
+D) A string tömbbé alakítása `Array.from()` segítségével
+ANSWER: A
+EXPLANATION: Az `innerHTML` a stringet HTML-ként értelmezi, ezért a támadó által kontrollált markup aktív tartalmat is tartalmazhat. A példában az eseménykezelő attribútum XSS-vektorként használható. Ha csak szöveget kell megjeleníteni, a `textContent` megfelelőbb választás, komplex HTML esetén pedig megbízható sanitization szükséges. A leggyakoribb tévedés az, hogy minden user input önmagában veszélyes, miközben a konkrét veszélyt az input HTML-ként való feldolgozása teremti meg.
+###END
+
+### Q113
+LEVEL: senior
+TOPIC: CORS
+TYPE: security
+QUESTION: Egy frontend a `https://app.example.com` domainről `fetch()` segítségével API-t hív a `https://api.example.com` címre. A böngésző CORS hibát jelez, miközben a szerver HTTP szinten helyesen működik. Mi a lényeg?
+A) A JavaScript mindig blokkolja a subdomain-ek közötti kéréseket
+B) A CORS csak POST kérésekre vonatkozik
+C) A CORS egy szerveroldali böngészőbiztonsági policy, amelynél a response megfelelő `Access-Control-Allow-Origin` és szükség esetén egyéb CORS headerekkel engedélyezhető
+D) A CORS hibát mindig a DNS okozza
+ANSWER: C
+EXPLANATION: A két origin eltér, mert az origin a scheme, host és port kombinációja alapján számít. A böngésző cross-origin request esetén a szerver által adott CORS response headerek alapján dönti el, hogy a frontend JavaScript hozzáférhet-e a válaszhoz. Bizonyos kérésekhez preflight `OPTIONS` kérés is szükséges. A leggyakoribb tévedés az, hogy a CORS egyszerűen hálózati vagy DNS-probléma, miközben a kérés akár el is juthat a szerverhez, csak a böngésző nem engedi a response programozott felhasználását.
+###END
+
+### Q114
+LEVEL: senior
+TOPIC: Web Storage
+TYPE: security
+QUESTION: Egy frontend JWT access tokent tárol `localStorage`-ban. Melyik kockázat különösen releváns?
+A) A `localStorage` automatikusan titkosítja a tokent
+B) Egy XSS sérülékenység esetén a futó JavaScript hozzáférhet a tokenhez
+C) A token HTTP request nélkül soha nem használható
+D) A `localStorage` csak szerveroldali JavaScriptből érhető el
+ANSWER: B
+EXPLANATION: A `localStorage` tartalma az adott origin JavaScript kódja számára hozzáférhető. Ha egy támadó XSS-en keresztül saját JavaScriptet tud futtatni az oldalon, elolvashatja a token értékét is. HttpOnly cookie esetén a kliensoldali JavaScript nem tudja közvetlenül kiolvasni a cookie-t, bár annak használata más CSRF- és session-biztonsági szempontokat vet fel. A leggyakoribb tévedés az, hogy a browser storage önmagában biztonságos tároló, pedig nem jelent titkos vagy XSS-től védett vaultot.
+###END
+
+### Q115
+LEVEL: senior
+TOPIC: Cookies
+TYPE: security
+QUESTION: Egy session cookie esetén melyik beállítás akadályozza meg, hogy normál frontend JavaScript közvetlenül kiolvassa a cookie értékét?
+A) `HttpOnly`
+B) `SameSite=None`
+C) `Path=/`
+D) `Max-Age=3600`
+ANSWER: A
+EXPLANATION: Az `HttpOnly` attribútum azt jelzi a böngészőnek, hogy a cookie ne legyen elérhető a kliensoldali `document.cookie` API-n keresztül. A cookie ettől még HTTP requestekben továbbítható a megfelelő feltételek mellett. A `SameSite` elsősorban cross-site requestek küldésének szabályozásában fontos. A leggyakoribb tévedés a `SameSite`, mert az is fontos session security attribútum, de nem a JavaScript hozzáférését tiltja.
+###END
+
+### Q116
+LEVEL: senior
+TOPIC: Design patterns
+TYPE: theory
+QUESTION: Egy alkalmazásban egy objektum állapotváltozásáról több, egymástól független komponensnek kell értesülnie anélkül, hogy a módosító objektum közvetlenül ismerné őket. Melyik minta illik leginkább ehhez?
+A) Factory
+B) Adapter
+C) Observer / Pub-Sub jellegű megoldás
+D) Singleton
+ANSWER: C
+EXPLANATION: Az Observer vagy Pub-Sub jellegű megoldásban a publisher eseményt vagy állapotváltozást közöl, a subscriberok pedig feliratkoznak az őket érdeklő változásokra. Így a publisher kevésbé függ a konkrét fogyasztóktól. Fontos production szempont a subscriptionök megfelelő leiratkozása, különösen hosszú életű alkalmazásokban, mert ezek listener-leakhez vezethetnek. A leggyakoribb tévedés a Singleton, mert az is központi hozzáférési pontként jelenhet meg, de nem ez oldja meg önmagában az eseményértesítési problémát.
+###END
+
+### Q117
+LEVEL: senior
+TOPIC: Design patterns
+TYPE: theory
+QUESTION: Egy kódbázisban különböző konstruktorparaméterek alapján többféle objektumot kell létrehozni, miközben a hívó kódnak nem kell ismernie a konkrét példányosítás részleteit. Melyik minta illik erre?
+A) Factory
+B) Observer
+C) Decorator
+D) Iterator
+ANSWER: A
+EXPLANATION: A Factory a példányosítási logikát egy külön helyre szervezi, így a kliens a létrehozási folyamat részletei nélkül kérhet egy megfelelő objektumot. Ez különösen hasznos, ha több konkrét implementáció közül kell választani. A Factory nem feltétlenül jelent class-t vagy bonyolult frameworköt; lehet egyszerű függvény is. A leggyakoribb tévedés a Decorator, mert az is objektumok felépítésével kapcsolatosnak tűnhet, de annak célja meglévő viselkedés dinamikus kiegészítése.
+###END
+
+### Q118
+LEVEL: senior
+TOPIC: TypeScript-közeli JavaScript
+TYPE: trap
+QUESTION: Mi történik runtime szinten az alábbi kóddal?
+CODE:
+function greet(user) {
+  return user.name;
+}
+
+greet({ name: "Anna" });
+ENDCODE
+A) A JavaScript runtime automatikusan ellenőrzi, hogy `user` megfelel-e egy TypeScript interface-nek
+B) A JavaScript csak akkor fut le, ha a `user` explicit class példánya
+C) A runtime nem végez TypeScript interface-alapú type checket; a property hozzáférés a tényleges runtime objektum alapján történik
+D) A JavaScript minden objektumot automatikusan TypeScript interface-é alakít
+ANSWER: C
+EXPLANATION: A TypeScript típusinformációi alapvetően compile-time ellenőrzésre szolgálnak, és az interface-ek runtime-ban nem léteznek úgy, mint JavaScript objektumok. A JavaScript futáskor egyszerűen megpróbálja kiolvasni a `user.name` property-t a kapott értékből. Ha a property hiányzik, `undefined` lehet az eredmény, ha maga a `user` `null` vagy `undefined`, akkor viszont runtime hiba keletkezhet. A leggyakoribb tévedés az automatikus runtime type checking feltételezése, mert a TypeScript fejlesztés közben erős típusbiztonságot ad, de ez nem jelenti azt, hogy a típusinformációk változatlanul bekerülnek a JavaScript runtime-ba.
+###END
+
+### Q119
+LEVEL: senior
+TOPIC: TypeScript-közeli JavaScript
+TYPE: behavior
+QUESTION: Egy TypeScript `readonly` property-t JavaScriptre fordított kódban használunk. Mit jelent ez elsősorban?
+A) A JavaScript runtime garantáltan blokkol minden módosítást
+B) A `readonly` alapvetően statikus TypeScript ellenőrzés; önmagában nem jelent runtime immutability garanciát
+C) A property automatikusan `Object.freeze()`-szé válik
+D) A property csak szerveroldalon módosítható
+ANSWER: B
+EXPLANATION: A TypeScript `readonly` a fordító számára jelzi, hogy a property-t az adott típuson belül ne lehessen módosítani. Ez compile-time szabály, és nem egyenlő azzal, hogy a JavaScript runtime objektuma immutable lesz. Ha runtime szintű védelem szükséges, külön mechanizmus, például `Object.freeze()` vagy megfelelő immutable adatstruktúra alkalmazható. A leggyakoribb tévedés az `Object.freeze()` automatikus alkalmazásának feltételezése, pedig a TypeScript típusinformációi általában eltűnnek a runtime JavaScriptből.
+###END
+
+### Q120
+LEVEL: senior
+TOPIC: Debugging
+TYPE: production
+QUESTION: Egy production frontendben ritkán jelentkező `Cannot read properties of undefined` hiba jelenik meg. Mi lenne a legjobb első lépés a hiba reprodukálása és diagnosztizálása előtt?
+A) Véletlenszerűen `try/catch` blokkokkal körbevenni az egész alkalmazást
+B) Az összes `undefined` értéket automatikusan üres objektumra cserélni
+C) Azonnal újraírni az érintett komponenst
+D) A stack trace, request/context adatok és reprodukálható input alapján meghatározni, pontosan melyik property-hozzáférésnél és milyen állapotban történt a hiba
+ANSWER: D
+EXPLANATION: Production hibánál először a tényleges hibahelyzetet kell rekonstruálni. A stack trace megmutathatja a hibás hozzáférés helyét, a releváns request vagy state adatok pedig segíthetnek meghatározni, milyen bemenet vagy versenyhelyzet vezetett oda. A vakon hozzáadott `try/catch` vagy default értékek elrejthetik a hibát anélkül, hogy az ok megszűnne. A leggyakoribb tévedés az azonnali kódátírás, mert a tünet javítása a kiváltó ok ismerete nélkül újabb hibákat teremthet.
+###END
+
+### Q121
+LEVEL: senior
+TOPIC: Debugging
+TYPE: production
+QUESTION: Egy API-hívás sikeresen visszatér HTTP 200 státusszal, mégis a frontend hibát jelez a feldolgozás során. Az alábbi response érkezik:
+CODE:
+{
+  "user": {
+    "id": 42,
+    "name": "Anna"
+  }
+}
+ENDCODE
+A frontend viszont ezt használja:
+CODE:
+const data = await response.json();
+console.log(data.user.profile.name);
+ENDCODE
+Mi a legpontosabb diagnózis?
+A) A HTTP 200 biztosan azt jelenti, hogy a frontend által várt adatstruktúra helyes
+B) A JSON mindig automatikusan létrehozza a hiányzó `profile` objektumot
+C) A response sikeres lehet HTTP szinten, miközben a frontend által elvárt nested property hiányzik, ezért a hozzáférés runtime hibát okozhat
+D) A `response.json()` minden hiányzó property-t `null` értékre cserél
+ANSWER: C
+EXPLANATION: A HTTP státuszkód és az alkalmazási adatstruktúra két külön szint. A response tartalmaz `user` objektumot, de abban nincs `profile`, ezért a `data.user.profile.name` hozzáférésnél `profile` értéke `undefined`, és annak `name` property-jének elérése hibát okozhat. A production megoldás része lehet a response schema validálása, explicit runtime guard vagy megfelelő API contract. A leggyakoribb tévedés az, hogy a 200-as státuszt teljes adatvalidációként kezeljük.
+###END
+
+### Q122
+LEVEL: senior
+TOPIC: Security
+TYPE: security
+QUESTION: Miért veszélyes egy ilyen kód?
+CODE:
+const redirect = new URLSearchParams(location.search).get("redirect");
+
+window.location.href = redirect;
+ENDCODE
+A) Mert a `URLSearchParams` mindig XSS-t okoz
+B) Mert a felhasználó által kontrollált URL alapján a böngésző potenciálisan nem megbízható célra navigálhat
+C) Mert a `window.location.href` csak HTTPS URL-t fogad el
+D) Mert query paraméterekből soha nem lehet URL-t létrehozni
+ANSWER: B
+EXPLANATION: A query parameter támadó által kontrollálható lehet, ezért közvetlenül navigációs célként használva open redirect jellegű biztonsági problémát okozhat. Például egy támadó létrehozhat olyan linket, amely a legitim domainről egy külső oldalra irányítja az áldozatot. A megoldás általában allowlistelt célok használata vagy csak saját originre korlátozott relatív útvonalak elfogadása. A leggyakoribb tévedés az, hogy a probléma kizárólag XSS lehet, miközben itt elsősorban nem megbízható redirect célról van szó.
+###END
+
+### Q123
+LEVEL: senior
+TOPIC: Security
+TYPE: edgecase
+QUESTION: Melyik megközelítés a legbiztonságosabb, ha egy felhasználó által megadott stringet HTML-ként kell megjeleníteni?
+A) Közvetlenül `innerHTML`-be helyezni
+B) Base64-re kódolni, majd `innerHTML`-be helyezni
+C) `eval()` segítségével feldolgozni
+D) Megbízható HTML sanitizert használni, és csak a szükséges HTML elemeket/attribútumokat engedélyezni
+ANSWER: D
+EXPLANATION: Ha valóban HTML-t kell elfogadni, a puszta escape-elés vagy tetszőleges stringkonverzió nem feltétlenül megfelelő. Megbízható sanitization során meghatározható, hogy milyen tagek és attribútumok engedélyezettek, és a veszélyes konstrukciók eltávolíthatók. Ha egyáltalán nincs szükség HTML-re, a `textContent` használata egyszerűbb és biztonságosabb. A leggyakoribb tévedés a Base64 használata, mert az átalakítja az adatot, de önmagában nem teszi biztonságossá annak HTML-ként történő feldolgozását.
+###END
+
+### Q124
+LEVEL: senior
+TOPIC: Design patterns
+TYPE: algorithm
+QUESTION: Egy alkalmazásban ugyanazt az alapértelmezett objektumot szeretnéd létrehozni sok helyen, de bizonyos lépések opcionálisak és különböző kombinációkban kapcsolhatók hozzá. Melyik megközelítés illik leginkább ehhez a problémához?
+A) Builder jellegű API, amely lépésenként konfigurálható objektumot épít
+B) Véletlenszerű globális változók használata
+C) Minden konfigurációhoz külön, teljesen más nevű constructor létrehozása
+D) Minden esetben mélymásolat készítése az alapobjektumról
+ANSWER: A
+EXPLANATION: A Builder minta akkor hasznos, amikor egy objektum létrehozása sok opcionális vagy kombinálható beállítást tartalmaz. A lépésenkénti API olvashatóbbá teheti a konfigurációt, és elválaszthatja az objektum felépítését annak végső reprezentációjától. JavaScriptben ez gyakran egyszerű fluent API-val vagy factory-builder kombinációval valósul meg. A leggyakoribb tévedés a sok külön constructor használata, mert az rövid távon működhet, de a kombinációk számának növekedésével nehezen karbantarthatóvá válik.
+###END
+
+### Q125
+LEVEL: senior
+TOPIC: Testing
+TYPE: production
+QUESTION: Egy függvény HTTP-kérést indít, majd az eredmény alapján módosítja az alkalmazás állapotát. Unit tesztben szeretnéd determinisztikusan ellenőrizni a hibás hálózati válasz kezelését. Melyik megközelítés a legjobb?
+A) Mindig valódi production API-t hívni a unit tesztből
+B) Véletlenszerű hálózati hibára várni
+C) A hálózati réteget kontrollált mockkal vagy test double-lel helyettesíteni, és explicit rejection/response eseteket tesztelni
+D) A hibás ágakat kihagyni, mert hálózati hibát nem lehet reprodukálni
+ANSWER: C
+EXPLANATION: A unit teszt célja a vizsgált logika izolált, determinisztikus ellenőrzése. A hálózati réteg mockolásával explicit módon előállítható például timeout, rejected Promise, 500-as response vagy hibás payload. Így a teszt nem függ valódi hálózati állapottól és külső szolgáltatásoktól. Integration vagy end-to-end tesztekben természetesen valódi HTTP-réteg is vizsgálható. A leggyakoribb tévedés a valódi API használata, mert az elsőre életszerűbbnek tűnik, de unit tesztként instabil és lassú függőséget eredményez.
+###END
+
+### Q126
+LEVEL: senior
+TOPIC: ES Modules
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon, ha az alábbi két module ugyanahhoz a module graphhoz tartozik?
+CODE:
+let count = 0;
+
+export function increment() {
+  count++;
+}
+
+export { count };
+ENDCODE
+Tegyük fel, hogy egy másik module ezt használja:
+CODE:
+import { count, increment } from "./counter.js";
+
+console.log(count);
+increment();
+console.log(count);
+ENDCODE
+A) `0`, majd `0`
+B) `0`, majd `1`
+C) `1`, majd `1`
+D) `undefined`, majd `1`
+ANSWER: B
+EXPLANATION: Az ES module named exportjai live bindingként működnek. Az importáló module nem egy egyszeri másolatot kap a `count` aktuális értékéről, hanem az exportált bindinghoz kapcsolódik. Kezdetben `count` értéke `0`, az `increment()` pedig ugyanazt a bindingot `1`-re módosítja, ezért a második kiírás `1`. A leggyakoribb tévedés a `0`, mert az importált primitív értékeket sokan úgy képzelik el, mintha egyszerű értékmásolatok lennének.
+###END
+
+### Q127
+LEVEL: senior
+TOPIC: ES Modules
+TYPE: behavior
+QUESTION: Mi történik, ha ugyanazt az ES module-t több helyről importáljuk ugyanazon module graphban?
+A) Minden `import` új példányt hoz létre a module-ból
+B) Minden import külön global scope-ot kap, de a state közös
+C) A module tipikusan egyszer kerül kiértékelésre, és az importálók ugyanazt a module instance-ot használják
+D) Az importált module minden használatkor újra lefut
+ANSWER: C
+EXPLANATION: Az ES module rendszer a module specifier alapján kezeli a module graphot, és ugyanazon module-t tipikusan egyszer értékeli ki egy adott graphban. Az exportált state ezért megosztható az importálók között. Ez különösen fontos singleton-szerű module state esetén. A leggyakoribb tévedés az új példány feltételezése, mert az `import` szintaktikailag hasonlíthat egy factory meghívásához, de nem az.
+###END
+
+### Q128
+LEVEL: senior
+TOPIC: Structured cloning
+TYPE: behavior
+QUESTION: Mi igaz az alábbi kódra?
+CODE:
+const original = {
+  name: "Anna",
+  nested: {
+    age: 30
+  }
+};
+
+const copy = structuredClone(original);
+
+copy.nested.age = 40;
+
+console.log(original.nested.age);
+ENDCODE
+A) `40`
+B) `30`
+C) `undefined`
+D) `TypeError`
+ANSWER: B
+EXPLANATION: A `structuredClone()` mélyen klónozza a támogatott adatstruktúrákat, ezért a `nested` objektum sem ugyanaz a referencia lesz. A `copy.nested.age = 40` módosítás nem érinti az eredeti `nested` objektumot, így az eredeti érték `30` marad. Ez lényegesen különbözik az object spread sekély másolásától. A leggyakoribb tévedés a `40`, mert a spreadből ismert referencia-megosztás itt már nem áll fenn.
+###END
+
+### Q129
+LEVEL: senior
+TOPIC: Structured cloning
+TYPE: edgecase
+QUESTION: Mi történik az alábbi kóddal?
+CODE:
+const obj = {
+  fn: () => 42
+};
+
+structuredClone(obj);
+ENDCODE
+A) A függvény automatikusan stringgé alakul
+B) A függvény változatlanul bekerül a klónba
+C) `null` kerül a `fn` helyére
+D) `DataCloneError` keletkezik
+ANSWER: D
+EXPLANATION: A structured clone algoritmus nem támogatja a JavaScript function objektumok klónozását. Emiatt az objektum klónozása `DataCloneError` kivétellel meghiúsul. A `structuredClone()` tehát nem általános "bármilyen JavaScript értéket másoló" mechanizmus. A leggyakoribb tévedés a változatlan function-referencia feltételezése, mert másolási műveleteknél megszokott lehet a referencia továbbadása.
+###END
+
+### Q130
+LEVEL: senior
+TOPIC: Prototype pollution
+TYPE: security
+QUESTION: Miért lehet veszélyes egy ilyen általános objektummerge implementáció?
+CODE:
+function merge(target, source) {
+  for (const key in source) {
+    target[key] = source[key];
+  }
+}
+
+merge({}, JSON.parse('{"__proto__":{"isAdmin":true}}'));
+ENDCODE
+A) Mert a JSON parser nem tud objektumot létrehozni
+B) Mert a `for...in` csak tömbökön működik
+C) Mert speciális property-k, például `__proto__`, nem megfelelő kezelése prototype pollutionhöz vezethet
+D) Mert a `target` mindig immutable
+ANSWER: C
+EXPLANATION: A `__proto__` speciális viselkedése miatt a naiv property-hozzárendelés nem mindig csak egy ártalmatlan saját property létrehozását jelenti. Nem megbízható inputtal végzett általános merge műveletek prototype pollutionhöz vezethetnek, amely más objektumok viselkedését is befolyásolhatja. Védekezésként explicit kulcsallowlist, veszélyes kulcsok tiltása, biztonságos merge implementáció és megfelelő adatmodell használható. A leggyakoribb tévedés az, hogy JSON-ból érkező adat automatikusan biztonságos, miközben a veszélyes hatás a későbbi JavaScript property-művelet során jelentkezhet.
+###END
+
+### Q131
+LEVEL: senior
+TOPIC: Prototype pollution
+TYPE: production
+QUESTION: Egy deep-merge utility felhasználói JSON-t is feldolgoz. Melyik megközelítés csökkenti leginkább a prototype pollution kockázatát?
+A) Minden inputot `eval()` segítségével feldolgozni
+B) Tetszőleges property-neveket feltétel nélkül rekurzívan másolni
+C) Csak string értékeket engedélyezni, de minden property-nevet elfogadni
+D) A veszélyes kulcsokat, például `__proto__`, `constructor` és `prototype` megfelelően tiltani vagy biztonságos, auditált merge könyvtárat használni
+ANSWER: D
+EXPLANATION: Prototype pollution ellen fontos, hogy az input kulcsai ne vezethessenek a prototype lánc módosításához. A `__proto__`, `constructor` és `prototype` különösen érzékeny kulcsok, ezért az általános rekurzív másolás veszélyes lehet. Production rendszerben célszerű jól karbantartott, biztonsági szempontból auditált megoldást használni, és szükség esetén allowlistet alkalmazni. A leggyakoribb tévedés az értékek típusának korlátozása, miközben maga a támadási felület a property-k nevéhez kötődik.
+###END
+
+### Q132
+LEVEL: senior
+TOPIC: Regular expressions
+TYPE: performance
+QUESTION: Miért lehet veszélyes productionben egy rosszul megválasztott, erősen backtrackingelő reguláris kifejezés felhasználói inputon?
+A) Mert a regex mindig hálózati kérést indít
+B) Mert bizonyos minták extrém mennyiségű CPU-időt használhatnak adversarial inputon, ami ReDoS-hoz vezethet
+C) Mert a regex automatikusan XSS-t hajt végre
+D) Mert minden regex több szálon fut
+ANSWER: B
+EXPLANATION: Bizonyos backtracking-alapú regex motoroknál a minta szerkezete és egy speciálisan kialakított input exponenciálisan vagy nagyon gyorsan növekvő feldolgozási időt eredményezhet. Ha ez szerveroldalon vagy érzékeny UI-szálon történik, az erőforrás-kimerülést okozhat. Ezt Regular Expression Denial of Service, azaz ReDoS problémának nevezik. A leggyakoribb tévedés az XSS-szel való összekeverés, mert mindkettő biztonsági probléma lehet, de teljesen eltérő támadási mechanizmusról van szó.
+###END
+
+### Q133
+LEVEL: senior
+TOPIC: Event loop
+TYPE: output
+QUESTION: Mi jelenik meg a konzolon?
+CODE:
+setTimeout(() => console.log("timer"), 0);
+
+Promise.resolve().then(() => {
+  console.log("p1");
+  setTimeout(() => console.log("timer-2"), 0);
+});
+
+queueMicrotask(() => {
+  console.log("m1");
+});
+
+console.log("sync");
+ENDCODE
+A) `sync p1 m1 timer timer-2`
+B) `sync timer p1 m1 timer-2`
+C) `sync p1 timer m1 timer-2`
+D) `p1 m1 sync timer timer-2`
+ANSWER: A
+EXPLANATION: A szinkron `console.log` miatt először `sync` jelenik meg. Ezután a microtask queue feldolgozása következik: először a Promise callbackje fut, ezért `p1`, majd a korábban queue-ba tett `m1` következik. A Promise callback közben létrehozott `timer-2` csak későbbi task lehet, ezért az első `setTimeout` után fut le. A leggyakoribb tévedés az, hogy a `timer-2` közvetlenül a Promise callback után fut, miközben új macrotaskként még meg kell várnia a microtask queue feldolgozásának végét.
+###END
+
+### Q134
+LEVEL: senior
+TOPIC: Async generators
+TYPE: async
+QUESTION: Mit csinál az alábbi kód?
+CODE:
+async function* stream() {
+  yield Promise.resolve(1);
+  yield Promise.resolve(2);
+}
+
+async function run() {
+  for await (const value of stream()) {
+    console.log(value);
+  }
+}
+
+run();
+ENDCODE
+A) A `for await...of` nem használható async generatorrel
+B) `Promise` objektumok jelennek meg a konzolon
+C) `1`, majd `2` jelenik meg
+D) A generator csak az első értéket szolgáltatja
+ANSWER: C
+EXPLANATION: Az async generator async iterable-t szolgáltat. A `for await...of` az iteráció során megvárja az értékekhez kapcsolódó Promise-okat, ezért a ciklus body már a feloldott `1` és `2` értékeket kapja. Ez hasznos például paginált API-k, streaming jellegű feldolgozás vagy aszinkron adatforrások esetén. A leggyakoribb tévedés a Promise objektumok kiírása, mert az inputként ténylegesen Promise-ok szerepelnek, de a `for await` feloldja őket.
+###END
+
+### Q135
+LEVEL: senior
+TOPIC: Async iterators
+TYPE: production
+QUESTION: Egy paginált API eredményeit szeretnéd úgy feldolgozni, hogy ne töltsd be egyszerre az összes oldalt memóriába. Melyik megközelítés illik leginkább ehhez?
+A) Az összes oldalt előre `Promise.all()`-lal lekérni
+B) Egy async generatort használni, amely oldalanként lekér, majd `yield`-eli az elemeket
+C) Minden oldalt globális tömbben tárolni
+D) Az összes adatot először JSON stringgé alakítani
+ANSWER: B
+EXPLANATION: Az async generator lehetővé teszi, hogy az adatok fokozatosan érkezzenek és kerüljenek feldolgozásra. A fogyasztó `for await...of` segítségével kérheti a következő adatot, miközben nem szükséges az összes oldal eredményét egyszerre memóriában tartani. Ez backpressure-szerű feldolgozási modellt is támogathat. A leggyakoribb tévedés a `Promise.all()` használata, mert az párhuzamosan gyors lehet, de éppen egyszerre tartja a kombinált eredményeket és nem feltétlenül alkalmas nagy adathalmaz streaming jellegű feldolgozására.
+###END
+
+### Q136
+LEVEL: senior
+TOPIC: Race conditions
+TYPE: async
+QUESTION: Egy autocomplete rendszerben a request ID mellett azt is szeretnéd elérni, hogy a régi hálózati kérések ténylegesen megszakadjanak. Melyik kombináció a legrobosztusabb?
+A) `AbortController` az előző request megszakítására és request ID a későn érkező eredmények védelmére
+B) Csak `setTimeout()`
+C) Csak `Promise.resolve()`
+D) A response-ok véletlenszerű sorrendbe rendezése
+ANSWER: A
+EXPLANATION: Az `AbortController` csökkentheti a felesleges hálózati és feldolgozási munkát azzal, hogy a korábbi fetchet megszakítja. A request ID ettől függetlenül védelmet ad arra az esetre, ha egy response már úton van, vagy egy cancellation nem minden szinten érvényesül úgy, ahogy szeretnénk. A két mechanizmus tehát külön problémát kezel, és együtt robusztusabb megoldást adhat. A leggyakoribb tévedés az egyetlen technikától várt teljes garancia, miközben a cancellation és a stale-result protection külön concern.
+###END
+
+### Q137
+LEVEL: senior
+TOPIC: Race conditions
+TYPE: production
+QUESTION: Egy alkalmazásban a felhasználó gyorsan egymás után módosít egy beállítást. Minden módosítás külön POST requestet indít. Miért lehet veszélyes egyszerűen minden response után frissíteni a lokális state-et?
+A) Mert a POST requestek soha nem lehetnek párhuzamosak
+B) Mert a böngésző minden response-ot automatikusan cache-el
+C) Mert a legkésőbb érkező response nem feltétlenül a legfrissebb felhasználói művelet eredménye
+D) Mert a POST mindig HTTP 404-et ad
+ANSWER: C
+EXPLANATION: A requestek befejezési sorrendje nem garantáltan egyezik a felhasználói műveletek sorrendjével. Egy régebbi request lassabban érkezhet vissza, és ha annak response-a feltétel nélkül felülírja a state-et, a UI visszakerülhet egy korábbi állapotba. Megoldás lehet sequence number, optimistic concurrency, request cancellation vagy szerveroldali verziózás az alkalmazás igényeitől függően. A leggyakoribb tévedés az, hogy az utolsó response automatikusan a legfrissebb művelethez tartozik, pedig a hálózat ezt nem garantálja.
+###END
+
+### Q138
+LEVEL: senior
+TOPIC: Performance és browser rendering
+TYPE: performance
+QUESTION: Miért lehet lassú az alábbi minta nagy DOM-listánál?
+CODE:
+for (const element of elements) {
+  element.style.width = element.offsetWidth + 10 + "px";
+}
+ENDCODE
+A) Mert az `offsetWidth` mindig hálózati kérést indít
+B) Mert a `style.width` olvasási művelet
+C) Mert a JavaScript nem módosíthat DOM-ot ciklusban
+D) Mert a layoutot kiváltó mérés és a DOM-stílus módosítása ismételten forced layoutot okozhat
+ANSWER: D
+EXPLANATION: Az olyan layout információk lekérése, mint az `offsetWidth`, bizonyos helyzetekben arra kényszerítheti a böngészőt, hogy a korábbi DOM/stílusváltozásokat kiszámolja. Ha ezt közvetlenül DOM-módosításokkal váltogatjuk sokszor, layout thrashing alakulhat ki. Gyakori optimalizáció a mérések csoportosítása, majd a módosítások külön kezelése. A leggyakoribb tévedés a hálózati overhead feltételezése, miközben a probléma a browser rendering pipeline-jában keletkezik.
+###END
+
+### Q139
+LEVEL: senior
+TOPIC: Performance
+TYPE: behavior
+QUESTION: Miért lehet hasznos a `passive: true` opció egy gyakori touch vagy wheel event listenernél?
+CODE:
+window.addEventListener("wheel", handleScroll, { passive: true });
+ENDCODE
+A) A callback automatikusan worker threadben fut
+B) A böngésző tudhatja, hogy a listener nem fogja meghívni a `preventDefault()`-ot, ezért bizonyos scroll-optimalizációkat végezhet
+C) A callback automatikusan throttle-olva lesz
+D) A listener több eseményt kap, mint normál esetben
+ANSWER: B
+EXPLANATION: A passive listener szerződés szerint nem fog `preventDefault()`-ot használni az esemény alapértelmezett viselkedésének megakadályozására. Ez fontos lehet olyan nagy frekvenciájú eseményeknél, mint a `wheel` és touch események, mert a böngésző bizonyos esetekben nem kell, hogy a JavaScript callback döntésére várjon a scrollozással kapcsolatban. A passive opció önmagában nem throttling. A leggyakoribb tévedés az automatikus throttle feltételezése, pedig a két technika teljesen különböző problémát kezel.
+###END
+
+### Q140
+LEVEL: senior
+TOPIC: Web Workers
+TYPE: performance
+QUESTION: Egy frontendben egy CPU-intenzív, több száz milliszekundumos számítás blokkolja a UI threadet. Melyik megoldás lehet megfelelő?
+A) A számítást Web Workerbe áthelyezni
+B) A számítást `setTimeout(..., 0)` callbackbe tenni, és attól várni, hogy a CPU-terhelés eltűnik
+C) A számítás eredményét többször újraszámolni
+D) A DOM méretét növelni
+ANSWER: A
+EXPLANATION: A Web Worker külön execution contextben futtat JavaScriptet, így egy CPU-intenzív számítás nem ugyanazon a main threaden fut, amely a UI eseményeit és renderelését kezeli. A worker és a fő thread között message passing történik, és az adatátadásnak is lehet költsége. A `setTimeout(..., 0)` csak későbbre ütemezi ugyanazon threaden a munkát, ezért a számítás CPU-költsége nem tűnik el. A leggyakoribb tévedés a timer használata, mert az valóban javíthatja az ütemezést, de nem teszi párhuzamossá a CPU-intenzív munkát.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: Web Workers
+TYPE: edgecase
+QUESTION: Miért lehet fontos a transferable object használata nagy bináris adatok workerbe küldésekor?
+A) Mert a worker csak stringeket tud fogadni
+B) Mert a transferable objektumok mindig JSON-ként kerülnek átadásra
+C) Mert bizonyos objektumok tulajdonjoga átadható másolás helyett, így csökkenthető a nagy adatok másolási költsége
+D) Mert a transferable objektumok megakadályozzák a garbage collectiont
+ANSWER: C
+EXPLANATION: Bizonyos objektumok, például `ArrayBuffer`, transferable-ként átadhatók a workernek. Ilyenkor a runtime a tulajdonjogot átadhatja a másik execution contextnek ahelyett, hogy az adatot teljes egészében strukturálisan lemásolná. A küldő oldalon az átadott buffer tipikusan detached állapotba kerül. Ez nagy bináris adatoknál jelentős teljesítményelőny lehet. A leggyakoribb tévedés az, hogy a worker mindig automatikusan másolás nélkül dolgozik, pedig alapértelmezésben a structured clone mechanizmus lehet érvényes.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: Storage
+TYPE: behavior
+QUESTION: Két külön böngészőfül ugyanazon originen belül ugyanazt a `localStorage`-t használja. Mi történhet, ha az egyik fülben módosítod az értéket?
+A) A másik fül semmilyen körülmények között nem érzékeli a változást
+B) A másik fülben `storage` esemény érkezhet a megfelelő feltételek mellett
+C) A másik fül automatikusan újratöltődik
+D) A böngésző minden másik fület bezár
+ANSWER: B
+EXPLANATION: A `storage` esemény segítségével egy másik dokumentum ugyanazon originen belül értesülhet a `localStorage` változásáról. Fontos részlet, hogy a változást kezdeményező dokumentumban maga a `storage` esemény nem ugyanúgy kerül kézbesítésre, mint a többi dokumentumban. Ez egyszerű cross-tab state synchronization mechanizmus lehet, bár komplexebb alkalmazásoknál a `BroadcastChannel` vagy más megoldás is megfelelő lehet. A leggyakoribb tévedés az automatikus oldalfrissítés feltételezése.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: BroadcastChannel
+TYPE: production
+QUESTION: Egy webalkalmazás több tabja között szeretnél egy egyszerű, valós idejű üzenetcsatornát létrehozni ugyanazon origin alatt. Melyik Browser API illik közvetlenül erre?
+A) `BroadcastChannel`
+B) `URLSearchParams`
+C) `IntersectionObserver`
+D) `MutationObserver`
+ANSWER: A
+EXPLANATION: A `BroadcastChannel` arra szolgál, hogy ugyanazon originhez tartozó külön browsing context-ek, például tabok vagy window-k között üzeneteket küldjünk. A csatorna példányai ugyanazon névvel kommunikálhatnak egymással. A `MutationObserver` DOM-változásokat figyel, az `IntersectionObserver` láthatósági metrikákat, az `URLSearchParams` pedig URL query paraméterek kezelésére való. A leggyakoribb tévedés a `MutationObserver`, mert annak neve alapján általános "változásfigyelőnek" tűnhet.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: TypeScript runtime validation
+TYPE: production
+QUESTION: Egy TypeScript frontend ezt a típust használja:
+CODE:
+type User = {
+  id: number;
+  name: string;
+};
+ENDCODE
+Egy API azonban runtime-ban ezt küldi:
+CODE:
+{
+  "id": "42",
+  "name": "Anna"
+}
+ENDCODE
+Mi igaz?
+A) A TypeScript automatikusan stringből számmá konvertálja az `id` értéket
+B) A JSON parser a TypeScript type alapján validálja az adatot
+C) A `User` típus runtime-ban automatikusan ellenőrzi a response-ot
+D) A TypeScript típus önmagában nem validálja a runtime JSON-t; explicit runtime schema validation szükséges, ha ezt garantálni akarjuk
+ANSWER: D
+EXPLANATION: A TypeScript type annotation és type alias alapvetően compile-time információ. A `JSON.parse()` vagy `fetch().json()` runtime-ban nem ismeri a TypeScript `User` típust, ezért az API által küldött `"42"` string nem alakul automatikusan számmá. Ha runtime contractot is ellenőrizni kell, schema validation vagy explicit runtime guard használható. A leggyakoribb tévedés a TypeScript compile-time biztonságának runtime validációként való értelmezése.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: TypeScript narrowing
+TYPE: behavior
+QUESTION: Miért hasznos egy JavaScriptben is értelmezhető type guard jellegű ellenőrzés?
+CODE:
+function print(value) {
+  if (typeof value === "string") {
+    console.log(value.toUpperCase());
+  } else {
+    console.log(value.toFixed(2));
+  }
+}
+ENDCODE
+A) Mert a `typeof` automatikusan átalakítja az értéket stringgé
+B) Mert az ellenőrzés runtime-ban meghatározza az érték tényleges típusát, és TypeScriptben ebből a vezérlési ágban narrowing is következhet
+C) Mert minden objectből primitívet készít
+D) Mert csak compile-time fut le, ezért nincs runtime hatása
+ANSWER: B
+EXPLANATION: A `typeof value === "string"` valódi JavaScript runtime ellenőrzés. Ha TypeScriptben a `value` union type, a fordító ezt az ellenőrzést felhasználhatja annak leszűkítésére, hogy az adott ágban stringgel dolgozunk. A másik ágban az ellenkező típusok maradnak. Ez jó példa arra, amikor a runtime ellenőrzés és a statikus type narrowing együtt működik. A leggyakoribb tévedés az, hogy a TypeScript narrowing kizárólag compile-time "varázslat", miközben a narrowing alapját egy valódi runtime feltétel adja.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: TypeScript és JavaScript classes
+TYPE: trap
+QUESTION: Mi történik runtime-ban egy TypeScript `private` property esetén, ha az hagyományos TypeScript `private` módosítót használ?
+CODE:
+class User {
+  private name = "Anna";
+}
+ENDCODE
+A) A property teljesen eltűnik runtime-ban
+B) A property automatikusan `WeakMap`-ba kerül
+C) A hagyományos TypeScript `private` elsősorban compile-time hozzáférési szabály; önmagában nem ugyanaz, mint a JavaScript `#private` field
+D) A property automatikusan `Object.freeze()` védelmet kap
+ANSWER: C
+EXPLANATION: A TypeScript hagyományos `private` módosítója a fordító számára hozzáférési korlátozás. A generált JavaScriptben a property tipikusan normál JavaScript property maradhat, így runtime-ban nincs automatikus `#`-field jellegű privátság. A natív JavaScript `#name` valódi private fieldként más runtime szemantikát biztosít. A leggyakoribb tévedés az, hogy a TypeScript `private` automatikusan ugyanazt a runtime izolációt adja, mint a JavaScript private field.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: Error handling
+TYPE: edgecase
+QUESTION: Mi történik az alábbi Promise-lánccal?
+CODE:
+Promise.resolve()
+  .then(() => {
+    throw new Error("first");
+  })
+  .catch(() => {
+    throw new Error("second");
+  })
+  .catch(error => {
+    console.log(error.message);
+  });
+ENDCODE
+A) `first`
+B) `second`
+C) Semmi, mert a második `throw` megszakítja a Promise láncot
+D) `undefined`
+ANSWER: B
+EXPLANATION: Az első `then` exceptiont dob, ezért a lánc rejected állapotba kerül. Az első `catch` ezt kezeli, de maga is exceptiont dob, ezért az eredmény újra rejected lesz, immár `"second"` hibával. A következő `catch` ezt a második hibát kapja meg, és annak message értékét írja ki. A leggyakoribb tévedés az első hiba megtartása, pedig a `catch` által dobott új exception lecseréli a lánc aktuális rejection okát.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: Event listeners
+TYPE: production
+QUESTION: Miért hasznos az `AbortSignal` event listenerhez való használata?
+CODE:
+const controller = new AbortController();
+
+window.addEventListener("resize", handleResize, {
+  signal: controller.signal
+});
+
+controller.abort();
+ENDCODE
+A) Az `abort()` minden böngészőben bezárja a teljes oldalt
+B) Az `abort()` új resize eventet generál
+C) Az event listener automatikusan eltávolítható az `AbortController` signaljának abortálásával
+D) Az `AbortController` csak fetchhez használható
+ANSWER: C
+EXPLANATION: Modern browser API-kban az `AbortSignal` nemcsak `fetch` cancellationre használható. Event listenerhez kapcsolva a signal abortálásakor a böngésző automatikusan eltávolítja az adott listener regisztrációját. Ez különösen hasznos lifecycle-alapú cleanupnál, mert több kapcsolódó művelet kezelését is egy controllerhez lehet kötni. A leggyakoribb tévedés az, hogy az `AbortController` kizárólag HTTP cancellation API, pedig általánosabb cancellation mechanizmust is támogat.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Security és DOM
+TYPE: security
+QUESTION: Egy alkalmazás egy felhasználó által megadott URL-t tesz egy link `href` attribútumába. Miért lehet veszélyes az URL ellenőrzés nélküli elfogadása?
+CODE:
+const url = getUserInput();
+link.href = url;
+ENDCODE
+A) Mert a `href` kizárólag relatív URL-t támogat
+B) Mert a böngésző minden URL-t automatikusan blokkol
+C) Mert az URL property mindig `null` lesz
+D) Mert veszélyes scheme-ek, például `javascript:`, bizonyos környezetekben aktív viselkedést tehetnek lehetővé
+ANSWER: D
+EXPLANATION: A felhasználói URL nem feltétlenül csak `https://` vagy relatív útvonal lehet. Ha az alkalmazás nem korlátozza az engedélyezett scheme-eket és célokat, veszélyes URL-sémák is bekerülhetnek olyan DOM kontextusba, ahol azok biztonsági problémát okozhatnak. Gyakori védekezés az engedélyezett scheme-ek explicit allowlistje, például `https:` és szükség szerint `http:`. A leggyakoribb tévedés az, hogy a DOM property-be írás önmagában minden URL-t biztonságossá tesz.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Architecture és production debugging
+TYPE: production
+QUESTION: Egy frontend alkalmazásban ugyanazt az API-hívást több külön komponens is egyszerre elindítja, és emiatt a backend feleslegesen kap sok azonos requestet. A cél az, hogy ugyanazon kulcs alapján egyidejűleg csak egy hálózati request fusson, és a többi fogyasztó ugyanannak az eredménynek a Promise-át kapja. Melyik minta illik leginkább ehhez?
+A) In-flight request deduplication, ahol a folyamatban lévő Promise-okat kulcs alapján cache-eled
+B) Minden request véletlenszerű késleltetése
+C) Minden response JSON stringgé alakítása
+D) A requestek teljes kikapcsolása
+ANSWER: A
+EXPLANATION: In-flight deduplication esetén egy Map például az API-kérés logikai kulcsához rendeli a már folyamatban lévő Promise-t. Ha ugyanarra a kulcsra újabb komponens kér adatot, nem indít új requestet, hanem ugyanazt a Promise-t kapja meg. A Promise lezárásakor a bejegyzést megfelelően törölni kell, hogy későbbi friss request indulhasson. Ez egyszerre csökkentheti a hálózati terhelést és az egymással versengő azonos requestekből fakadó state-problémákat. A leggyakoribb tévedés a sima response cache, mert az csak már befejezett kéréseket kezel, miközben itt kifejezetten a párhuzamos, még folyamatban lévő requestek összevonása a cél.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: Object.is
+TYPE: edgecase
+QUESTION: Mi lesz a kimenet, és miért tér el az `Object.is()` eredménye a `===` eredményétől?
+CODE:
+console.log(Object.is(NaN, NaN));
+console.log(NaN === NaN);
+console.log(Object.is(-0, 0));
+console.log(-0 === 0);
+ENDCODE
+A) `true`, `false`, `false`, `true`
+B) `false`, `false`, `true`, `true`
+C) `true`, `true`, `false`, `false`
+D) `false`, `true`, `true`, `false`
+ANSWER: A
+EXPLANATION: Az `Object.is()` a `NaN` értékeket azonosnak tekinti, ezért az első eredmény `true`. A `===` szerint `NaN` nem egyenlő önmagával. Ezzel szemben `Object.is(-0, 0)` `false`, míg a `===` nem különbözteti meg a két nullát. A gyakori tévedés azért csábító, mert a `===` és az `Object.is()` a legtöbb hétköznapi értéknél ugyanúgy viselkedik.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: Property descriptors
+TYPE: behavior
+QUESTION: Mi történik az alábbi kód futtatásakor?
+CODE:
+"use strict";
+
+const user = {};
+
+Object.defineProperty(user, "id", {
+  value: 42,
+  writable: false,
+  configurable: false,
+  enumerable: true
+});
+
+user.id = 99;
+console.log(user.id);
+ENDCODE
+A) `99` jelenik meg
+B) `42` jelenik meg
+C) A hozzárendelés csendben figyelmen kívül marad, majd `42` jelenik meg
+D) `TypeError` keletkezik
+ANSWER: D
+EXPLANATION: Strict mode-ban egy nem írható property értékének módosítása `TypeError` hibát okoz. A `writable: false` megakadályozza az érték módosítását, a `configurable: false` pedig azt is megakadályozza, hogy a descriptor később átállítható legyen. A gyakori tévedés azért csábító, mert strict mode nélkül a sikertelen hozzárendelés tipikusan csendben figyelmen kívül marad.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: Proxy
+TYPE: output
+QUESTION: Mit ír ki a kód? A `Proxy` getterében miért fontos a `receiver` továbbadása?
+CODE:
+const base = {
+  value: 10,
+  get doubled() {
+    return this.value * 2;
+  }
+};
+
+const proxy = new Proxy(base, {
+  get(target, property, receiver) {
+    console.log("get:", property);
+    return Reflect.get(target, property, receiver);
+  }
+});
+
+console.log(proxy.doubled);
+ENDCODE
+A) Csak `20`
+B) `get: doubled`, majd `20`
+C) `get: value`, majd `20`
+D) `get: doubled`, `get: value`, majd `20`
+ANSWER: D
+EXPLANATION: A `proxy.doubled` elérése aktiválja a `get` trapet, ezért először `get: doubled` jelenik meg. A trap a `Reflect.get(target, property, receiver)` hívással a gettert úgy futtatja, hogy annak `this` értéke a `receiver`, vagyis maga a proxy. Így a getterben lévő `this.value` újra a proxyn keresztül fut, és kiírja a `get: value` sort, végül `20`. Ha a `receiver` nem kerülne továbbadásra (`target[property]`), a getter `this` értéke az eredeti objektum lenne, és a `value` elérése már nem futna át a trapen.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: Proxy invariants
+TYPE: behavior
+QUESTION: Mi történik az alábbi kóddal?
+CODE:
+"use strict";
+
+const target = {};
+Object.defineProperty(target, "id", {
+  value: 42,
+  writable: false,
+  configurable: false
+});
+
+const proxy = new Proxy(target, {
+  get() {
+    return 99;
+  }
+});
+
+console.log(proxy.id);
+ENDCODE
+A) `99`
+B) `42`
+C) `undefined`
+D) `TypeError`
+ANSWER: D
+EXPLANATION: A Proxy nem sértheti meg a target bizonyos, nem konfigurálható property-jeire vonatkozó invariánsokat. Ha a targeten egy property nem konfigurálható és nem írható data property, a proxy nem adhat vissza attól eltérő értéket. A gyakori tévedés azért csábító, mert általában a `get` trap valóban felül tudja írni a property-hozzáférés eredményét.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: Symbol.toPrimitive
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+const price = {
+  value: 10,
+  [Symbol.toPrimitive](hint) {
+    if (hint === "number") return this.value;
+    if (hint === "string") return `$${this.value}`;
+    return this.value;
+  }
+};
+
+console.log(+price);
+console.log(`${price}`);
+console.log(price + 5);
+ENDCODE
+A) `10`, `$10`, `15`
+B) `$10`, `$10`, `15`
+C) `10`, `10`, `$105`
+D) `NaN`, `$10`, `15`
+ANSWER: A
+EXPLANATION: A unary `+` number hintet használ, ezért `10` lesz az eredmény. Template literal esetén string hintet kap, ezért `$10` jelenik meg. A `+` operátor objektumnál default hintet használ, amely itt `10`-et ad vissza, így `10 + 5` lesz `15`. A gyakori tévedés azért csábító, mert a `+` operátort könnyű automatikusan string-konverzióként értelmezni.
+###END
+
+### Q156
+LEVEL: medior
+TOPIC: Property enumeration order
+TYPE: output
+QUESTION: Milyen sorrendben jelennek meg a kulcsok?
+CODE:
+const obj = {
+  b: "b",
+  10: "ten",
+  2: "two",
+  1: "one",
+  a: "a"
+};
+
+console.log(Object.keys(obj));
+ENDCODE
+A) `["b", "10", "2", "1", "a"]`
+B) `["1", "2", "10", "b", "a"]`
+C) `["1", "2", "10", "a", "b"]`
+D) `["10", "2", "1", "b", "a"]`
+ANSWER: B
+EXPLANATION: Az integer index jellegű kulcsok numerikus sorrendben jelennek meg először: `1`, `2`, `10`. A többi string kulcs a létrehozási sorrendben következik: `b`, majd `a`. A gyakori tévedés azért csábító, mert az objektumot sokan egyszerűen insertion-order mapként kezelik minden kulcstípusra.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: WeakRef / FinalizationRegistry
+TYPE: production
+QUESTION: Melyik állítás helyes egy cache rendszer `WeakRef` és `FinalizationRegistry` használatáról?
+A) A `FinalizationRegistry` callback garantáltan lefut, amikor az objektum már nem érhető el
+B) A `WeakRef.deref()` mindig ugyanazt az objektumot adja vissza az alkalmazás teljes élettartama alatt
+C) A garbage collection időzítése nem determinisztikus, ezért ezekre nem szabad üzleti logikát vagy garantált cleanupot építeni
+D) A `WeakRef` megakadályozza az objektum garbage collectionjét
+ANSWER: C
+EXPLANATION: A `WeakRef` és a `FinalizationRegistry` GC-hoz kötött mechanizmusok, amelyeknél az időzítés nem determinisztikus. Használhatók optimalizációs vagy cache-jellegű esetekben, de nem alkalmasak garantált erőforrás-felszabadításra. A gyakori tévedés azért csábító, mert a `FinalizationRegistry` neve alapján könnyű determinisztikus destructor-szerű mechanizmusként gondolni rá.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: MutationObserver
+TYPE: behavior
+QUESTION: Mit ír ki a kód egy böngészőben?
+CODE:
+const target = document.createElement("div");
+
+const observer = new MutationObserver(() => {
+  console.log("observer");
+});
+
+observer.observe(target, { childList: true });
+
+target.append("A");
+console.log("sync");
+ENDCODE
+A) `observer`, majd `sync`
+B) `sync`, majd `observer`
+C) csak `sync`
+D) csak `observer`
+ANSWER: B
+EXPLANATION: A DOM módosítása szinkron történik, de a `MutationObserver` callbackje nem azonnal fut le. A callback a jelenlegi JavaScript stack után, microtask checkpoint környékén kerül feldolgozásra, ezért a szinkron `console.log` előbb jelenik meg. A gyakori tévedés azért csábító, mert maga a DOM-módosítás azonnali, ezért sokan a callbacket is azonnali eseménykezelésnek gondolják.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: IntersectionObserver
+TYPE: production
+QUESTION: Egy végtelen görgetésű feedben szeretnéd betölteni a következő oldalt, amikor a sentinel elem közel kerül a viewporthoz. Miért megfelelő az `IntersectionObserver` használata?
+A) Mert teljesen megszünteti a hálózati kérések szükségességét
+B) Mert minden scroll eseményt szinkron módon kezel
+C) Mert csak CSS-sel működik, JavaScript nélkül
+D) Mert a böngésző optimalizált módon jelzi az intersection változásokat anélkül, hogy folyamatos scroll számításokat kellene végezni
+ANSWER: D
+EXPLANATION: Az `IntersectionObserver` kifejezetten arra szolgál, hogy a böngésző jelezze, amikor egy elem láthatósága vagy metszése megváltozik. Ez általában jobb architektúra, mint minden `scroll` eseménynél kézzel viewport-geometriát számolni. A gyakori tévedés azért csábító, mert a scroll esemény valóban használható erre, csak gyakran felesleges számításokat és teljesítményproblémákat okoz.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: postMessage security
+TYPE: production
+QUESTION: Egy iframe-ből érkező `postMessage` adatot csak egy megbízható partnernek szeretnél elfogadni. Mi a megfelelő ellenőrzés?
+A) Csak azt ellenőrzöd, hogy az üzenet objektum-e
+B) `event.origin` értékét ellenőrzöd egy előre meghatározott allowlist alapján
+C) Az üzenetben érkező `event.origin` mezőt ellenőrzöd
+D) Minden üzenetet elfogadsz, ha HTTPS kapcsolaton érkezik
+ANSWER: B
+EXPLANATION: A `message` esemény `event.origin` mezője jelzi a küldő originjét, ezért ezt kell ellenőrizni a várt origin ellen. Az üzenet payloadja önmagában nem bizonyítja a küldő identitását. A gyakori tévedés azért csábító, mert az adat szerkezetének ellenőrzése fontos, de az nem helyettesíti a forrás originjének validálását.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: CORS credentials
+TYPE: trap
+QUESTION: Egy frontend cross-origin `fetch` kérést küld cookie-kkal. A szerver `Access-Control-Allow-Origin: *` és `Access-Control-Allow-Credentials: true` fejléceket ad vissza. Mi a probléma?
+A) A böngésző blokkolhatja a választ, mert credentialed CORS esetén a wildcard origin nem használható
+B) A cookie automatikusan törlődik
+C) A kérés mindig 500-as HTTP státuszt kap
+D) A CORS csak GET kérésekre vonatkozik
+ANSWER: A
+EXPLANATION: Credentialed CORS esetén a szervernek konkrét origin értéket kell visszaadnia, nem `*` wildcardot. Emellett a kliens oldalon is megfelelő credentials beállítás szükséges, például `credentials: "include"`. A gyakori tévedés azért csábító, mert a CORS fejlécek hibája nem feltétlenül jelent HTTP szerverhibát; a böngésző biztonsági szabálya blokkolhatja a frontend hozzáférését.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: SameSite cookies / CSRF
+TYPE: production
+QUESTION: Egy autentikációs cookie `SameSite=Lax` beállítással rendelkezik. Melyik állítás írja le helyesen a szerepét?
+A) Teljesen megszünteti az összes CSRF kockázatot
+B) Automatikusan titkosítja a cookie tartalmát
+C) Korlátozza a cookie cross-site küldését, de nem helyettesít minden CSRF-védelmi stratégiát
+D) Megakadályozza, hogy JavaScript hozzáférjen a cookie-hoz
+ANSWER: C
+EXPLANATION: A `SameSite` szabályozza, hogy a böngésző milyen cross-site kontextusokban küldje a cookie-t. A `Lax` csökkenti bizonyos CSRF támadások lehetőségét, de nem univerzális biztonsági garancia. A gyakori tévedés azért csábító, mert a `SameSite` valóban fontos CSRF-mitigáció, de nem azonos egy általános CSRF-tokenes védelemmel.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: Content Security Policy
+TYPE: production
+QUESTION: Egy alkalmazásban inline script-eket szeretnél engedélyezni anélkül, hogy globálisan `unsafe-inline` CSP szabályt adnál. Melyik megoldás alkalmas erre?
+A) Minden inline script végére `eval()` hívást teszel
+B) A script tartalmát localStorage-ban tárolod
+C) A `script-src` alatt egy megfelelő nonce-ot használsz, amelyet a szerver generál és a script taghez is hozzáadsz
+D) `Access-Control-Allow-Origin: *` fejlécet állítasz be
+ANSWER: C
+EXPLANATION: A CSP nonce lehetővé teszi, hogy csak a szerver által engedélyezett inline script fusson. A nonce-nak megfelelően véletlenszerűnek és kérésenként kiszámíthatatlannak kell lennie. A gyakori tévedés azért csábító, mert az `unsafe-inline` valóban engedélyezi az inline scriptet, de ezzel jelentősen gyengíti a CSP egyik fontos védelmi célját.
+###END
+
+### Q164
+LEVEL: medior
+TOPIC: Cryptographic randomness
+TYPE: security
+QUESTION: Egy frontend alkalmazásban egy felhasználó számára nehezen kitalálható, rövid azonosítót kell generálni biztonsági szempontból is. Melyik megoldás megfelelőbb?
+A) `Math.random().toString(36)`
+B) `Date.now().toString(36)`
+C) `crypto.randomUUID()` vagy megfelelő Web Crypto alapú véletlenszerűség
+D) `Math.sin(Date.now())`
+ANSWER: C
+EXPLANATION: A Web Crypto API kriptográfiailag erősebb véletlenszerűséget biztosít, míg a `Math.random()` nem biztonsági célokra készült. Biztonsági tokenekhez, session azonosítókhoz vagy előre nem jelezhető értékekhez megfelelő kriptográfiai primitívet kell használni. A gyakori tévedés azért csábító, mert `Math.random()` gyakorlatban véletlenszerűnek tűnik, de kiszámíthatósági garanciái nem megfelelőek biztonsági célokra.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: Service Worker caching
+TYPE: production
+QUESTION: Egy PWA új verzióját deployolod, de néhány felhasználó továbbra is a régi JavaScript bundle-t kapja. Mi lehet ennek tipikus oka?
+A) A Service Worker cache-ben továbbra is a régi asset található
+B) A JavaScript mindig örökre cache-elődik
+C) A browser nem tud JavaScript fájlokat cache-elni
+D) A Service Worker csak képeket képes cache-elni
+ANSWER: A
+EXPLANATION: A Service Worker saját cache-stratégiát alkalmazhat, ezért egy hibás vagy túl agresszív cache-elési stratégia régi bundle-t szolgáltathat ki. Hash-elt assetnevek és megfelelő cache invalidáció gyakori megoldás. A gyakori tévedés azért csábító, mert a browser HTTP cache és a Service Worker Cache API két külön réteg, és könnyű őket egyetlen cache-ként kezelni.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: Fetch streaming
+TYPE: behavior
+QUESTION: Egy nagy HTTP választ streamelve szeretnél feldolgozni, hogy ne kelljen az egész body-t egyszerre memóriába tölteni. Melyik API illeszkedik ehhez?
+A) `response.text()` minden esetben
+B) `response.json()` minden esetben
+C) `JSON.stringify(response)`
+D) `response.body` mint `ReadableStream`
+ANSWER: D
+EXPLANATION: A Fetch Response `body` property-je `ReadableStream`, amelyből chunkonként lehet adatot olvasni és feldolgozni. Ez lehetővé teszi a streaming feldolgozást nagy payloadoknál. A gyakori tévedés azért csábító, mert a `json()` és `text()` kényelmes API-k, de ezek tipikusan a teljes body feldolgozását igénylik.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: Concurrency limiting
+TYPE: algorithm
+QUESTION: Egy API legfeljebb 3 párhuzamos kérést engedélyez. Van egy `tasks` tömböd, amely Promise-t visszaadó függvényeket tartalmaz. Melyik stratégia valósít meg valódi concurrency limitet?
+A) `await Promise.all(tasks.map(task => task()))`
+B) Minden task előtt `setTimeout(task, 0)` hívása
+C) Három worker futtatása, amelyek mindig a következő még nem feldolgozott taskot veszik ki a queue-ból
+D) A Promise-ok eredményeinek utólagos batch-elése
+ANSWER: C
+EXPLANATION: A concurrency limitet a ténylegesen futó taskok számának korlátozásával kell megvalósítani. Három worker elegendő ahhoz, hogy egyszerre legfeljebb három async művelet fusson, miközben a befejezett worker új feladatot vehet fel. A gyakori tévedés azért csábító, mert a `Promise.all()` jól kezeli az eredmények összegyűjtését, de önmagában nem korlátozza az elindított műveletek számát.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: Strategy pattern
+TYPE: production
+QUESTION: Egy webshopban több szállítási díjszámítási algoritmus létezik: standard, express és international. A futásidőben kiválasztott algoritmust szeretnéd könnyen cserélhetővé tenni. Melyik megközelítés illeszkedik legjobban a Strategy patternhez?
+A) Egyetlen 500 soros `if/else` blokk
+B) Külön, azonos szerződésű stratégiafüggvények vagy objektumok, amelyek közül a kliens futásidőben választ
+C) Az összes stratégia eredményének előzetes kiszámítása
+D) Globális változó használata az aktuális szállítási mód tárolására
+ANSWER: B
+EXPLANATION: A Strategy pattern lényege, hogy egy változó algoritmuscsoportot különválasztunk, és futásidőben cserélhetővé tesszük. JavaScriptben ez gyakran egyszerű függvényekkel vagy közös interfészt követő objektumokkal valósítható meg. A gyakori tévedés azért csábító, mert egy `if/else` blokk működőképes lehet, de az algoritmusok számának növekedésével egyre nehezebben tesztelhető és bővíthető.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: Retry / exponential backoff
+TYPE: production
+QUESTION: Egy átmenetileg túlterhelt API-t retry mechanizmussal kezelsz. Miért célszerű exponential backoffot és jittert használni?
+A) Mert garantálja, hogy a szerver mindig sikeres választ ad
+B) Mert minden retry azonnal egymás után fut
+C) Mert csökkenti annak esélyét, hogy sok kliens egyszerre ugyanabban az időpontban terhelje újra a szolgáltatást
+D) Mert a HTTP státuszkódokat automatikusan 200-ra alakítja
+ANSWER: C
+EXPLANATION: Az exponential backoff növeli a retry-k közötti várakozást, a jitter pedig szétteríti azok időzítését. Ez különösen fontos, amikor sok kliens ugyanarra az átmeneti hibára reagál, mert elkerülhető a thundering herd jelenség. A gyakori tévedés azért csábító, mert a retry-t sokan egyszerűen ugyanazon kérés többszöri azonnali megismétléseként képzelik el.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: Idempotency
+TYPE: production
+QUESTION: Egy fizetési endpoint hálózati hiba miatt nem ad választ, ezért a kliens újraküldi ugyanazt a kérést. Hogyan csökkenthető annak veszélye, hogy a fizetés kétszer történjen meg?
+A) Az endpoint legyen idempotens, például kliens által küldött idempotency key alapján
+B) A kliens minden retry előtt változtassa meg az összeget
+C) A szerver mindig utasítsa el a második HTTP kérést
+D) A kliens csak POST helyett GET-et használjon
+ANSWER: A
+EXPLANATION: Egy egyedi idempotency key segítségével a szerver felismerheti, hogy ugyanazt a műveletet próbálják újra végrehajtani, és visszaadhatja az előző eredményt ahelyett, hogy új tranzakciót indítana. Ez különösen fontos hálózati timeoutoknál, amikor a kliens nem tudja, hogy a szerver már végrehajtotta-e a műveletet. A gyakori tévedés azért csábító, mert a retry problémája kliensoldalinak tűnik, miközben az idempotencia szerveroldali állapotkezelést is igényel.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: Top-level await
+TYPE: behavior
+QUESTION: Egy ES module-ban top-level `await` található. Mi történik a modult importáló másik module evaluation folyamatával?
+A) A modul azonnal teljesen kiértékelődik, a `await` figyelmen kívül marad
+B) A top-level `await` mindig blokkolja az egész böngésző UI threadet
+C) A modul Promise-ként exportálja automatikusan az összes változóját
+D) Az importáló module evaluationje megvárhatja a függőség async inicializációját
+ANSWER: D
+EXPLANATION: Top-level `await` esetén az adott module evaluationje aszinkronná válhat, és a tőle függő module-ok kiértékelése megvárhatja a függőség befejezését. Ez hasznos lehet async konfiguráció vagy inicializáció esetén, de dependency graph szinten késleltetést okozhat. A gyakori tévedés azért csábító, mert a `await` kulcsszót sokan kizárólag async függvényekhez társítják.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Dynamic import
+TYPE: performance
+QUESTION: Mi a fő előnye a `import("./feature.js")` használatának egy ritkán használt funkció esetén?
+A) A modul mindig szinkron módon töltődik be
+B) A modul betöltése futásidőben, szükség esetén történhet, ami code splittinget és lazy loadingot tesz lehetővé
+C) A modul kódja automatikusan bekerül a HTML-be
+D) A modul többé nem cache-elhető
+ANSWER: B
+EXPLANATION: A dynamic import Promise-t ad vissza, és lehetővé teszi, hogy egy modul csak akkor töltődjön be, amikor ténylegesen szükség van rá. Bundlerek ezt gyakran külön chunkok kialakítására használják. A gyakori tévedés azért csábító, mert a statikus `import` és a dynamic `import()` hasonló szintaxist használ, miközben eltérő betöltési modellt biztosít.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: TypeScript runtime boundary
+TYPE: edgecase
+QUESTION: Mi történik runtime szinten egy TypeScript `satisfies` használatával, ha a kód JavaScriptre fordul?
+CODE:
+const config = {
+  retries: 3,
+  timeout: 5000
+} satisfies {
+  retries: number;
+  timeout: number;
+};
+ENDCODE
+A) A `satisfies` runtime validációt hajt végre
+B) A `satisfies` HTTP kérést küld a típus ellenőrzéséhez
+C) A `satisfies` compile-time ellenőrzés, runtime-ban nincs ilyen validációs hatása
+D) A `satisfies` automatikusan `Object.freeze()`-zeli az objektumot
+ANSWER: C
+EXPLANATION: A `satisfies` TypeScript konstrukció, amely fordításkor ellenőrzi, hogy az expression megfelel-e a megadott típusnak, miközben megőrzi az expression saját típusinformációit. Runtime JavaScriptben maga a típusinformáció nem marad meg. A gyakori tévedés azért csábító, mert a szintaxis erősen validációs mechanizmusnak tűnik, valójában azonban nem helyettesít runtime schema validációt.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: Async testing / fake timers
+TYPE: debugging
+QUESTION: Egy tesztben fake timereket használsz, és az alábbi kód miatt a timer előreléptetése után még nem látod az async eredményt. Miért?
+CODE:
+setTimeout(() => {
+  Promise.resolve().then(() => {
+    console.log("microtask");
+  });
+}, 1000);
+
+console.log("before");
+ENDCODE
+A) A Promise callback mindig a következő másodpercben fut
+B) A `setTimeout` nem futtatható fake timerrel
+C) A microtaskok nem kapcsolódnak a timerhez
+D) A timer callback lefutása után a Promise microtask queue-t is megfelelően le kell kezelni a teszt frameworktől függő API-val
+ANSWER: D
+EXPLANATION: A timer callback és az általa létrehozott Promise microtask két külön ütemezési mechanizmus. Egy tesztben attól, hogy az órát 1000 ms-sel előreléptetted, még szükség lehet a pending microtaskok kiürítésére is. A gyakori tévedés azért csábító, mert a kód szemantikailag egyetlen async műveletnek látszik, valójában timer és microtask kombinációja.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: Middleware composition
+TYPE: algorithm
+QUESTION: Egy Express-szerű middleware láncot szeretnél megvalósítani, ahol minden middleware megkapja a `next()` függvényt, és a következő middleware futtatásával folytatódik a lánc. Melyik megközelítés a legfontosabb az alapvető működéshez?
+A) Minden middleware-t egyszerre kell meghívni `Promise.all()` segítségével
+B) A middleware-eket globális változókban kell tárolni
+C) A middleware-ek eredményét csak a lánc végén lehet meghívni
+D) Egy indexelt dispatch függvénynek kell a következő middleware-re lépnie, és kezelnie kell az async `next()` hívásokat is
+ANSWER: D
+EXPLANATION: A middleware composition lényege egy dispatch mechanizmus, amely az aktuális index alapján meghívja a következő middleware-t, és a `next()` segítségével továbblép. Async middleware-eknél a Promise-kezelés és a hibák továbbítása különösen fontos, mert könnyen létrejöhet többszörös `next()` hívás vagy elnyelt exception. A gyakori tévedés azért csábító, mert a middleware-ek első látásra egyszerűen egymás után meghívható függvényeknek tűnnek, de a vezérlés átadásának pontos kezelése a lényeg.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: Event loop / microtask starvation
+TYPE: output
+QUESTION: Mi történik a böngészőben az alábbi kóddal?
+CODE:
+let count = 0;
+
+function loop() {
+  count++;
+  if (count < 100000) {
+    queueMicrotask(loop);
+  }
+}
+
+queueMicrotask(loop);
+
+setTimeout(() => {
+  console.log("timer", count);
+}, 0);
+
+console.log("sync");
+ENDCODE
+A) `sync`, majd `timer 100000`
+B) `timer 0`, majd `sync`
+C) `sync`, majd a timer azonnal lefut, végül `100000`
+D) A timer csak akkor futhat, ha a microtask queue teljesen kiürült, ezért `sync`, majd `timer 100000`
+ANSWER: D
+EXPLANATION: A szinkron kód először lefut, majd a microtask queue feldolgozása következik. A timer egy későbbi task, ezért a böngésző nem kezdi el azt a microtaskok feldolgozása közben. Nagy vagy végtelen microtask-lánc ezért képes blokkolni a timer-eket és a renderelést is. A gyakori tévedés azért csábító, mert a `setTimeout(..., 0)` úgy tűnik, mintha azonnal végrehajtható lenne, de a `0` nem jelent prioritást.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: Async iterators
+TYPE: behavior
+QUESTION: Egy `for await...of` ciklusban fogyasztott async iterable esetén melyik mechanizmus teszi lehetővé, hogy a fogyasztó megszakításakor az iterable erőforrásokat takarítson?
+A) Az iterable `return()` metódusának kezelése
+B) A `finally` kulcsszó automatikusan bezár minden Promise-t
+C) A `await` automatikusan abortálja a hálózati kérést
+D) A `for await...of` minden esetben megszakítja a generátort `throw()` segítségével
+ANSWER: A
+EXPLANATION: Async iterátoroknál a fogyasztó korai kilépésekor az iterator `return()` metódusa használható a cleanup elvégzésére. Async generator esetén ez különösen hasznos socketek, stream-ek vagy más erőforrások lezárására. A gyakori tévedés azért csábító, mert az `await` valóban aszinkron vezérlést kezel, de önmagában nem jelent általános cancellation mechanizmust.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: Promise combinators
+TYPE: edgecase
+QUESTION: Mi lesz az eredmény?
+CODE:
+const result = await Promise.allSettled([
+  Promise.resolve("A"),
+  Promise.reject(new Error("B")),
+  Promise.resolve("C")
+]);
+
+console.log(result.map(x => x.status));
+ENDCODE
+A) `["fulfilled", "rejected", "fulfilled"]`
+B) `["fulfilled", "fulfilled", "fulfilled"]`
+C) A teljes Promise azonnal rejectálódik
+D) `["rejected"]`
+ANSWER: A
+EXPLANATION: A `Promise.allSettled()` nem áll meg az első rejectnél, hanem minden input Promise állapotát megvárja, és az eredményeket sorrendben adja vissza. A második elem ezért `rejected`, miközben a harmadik továbbra is feldolgozódik. A gyakori tévedés azért csábító, mert a `Promise.all()` valóban rejectál az első elutasított Promise miatt.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Cancellation architecture
+TYPE: production
+QUESTION: Egy keresőmező minden változásnál API-kérést indít. Az előző kérés még fut, amikor a felhasználó új karaktert ír be. Mi a legrobosztusabb megoldás, ha nem akarod, hogy a régi kérés eredménye felülírja az újat?
+A) Minden kérést `Promise.all()` segítségével futtatni
+B) Az előző request `AbortController`-ét abortálni, és az eredményt csak az aktuális requesthez kötve alkalmazni
+C) A régi Promise-t `null` értékre állítani
+D) A response megérkezése után mindig 100 ms-et várni
+ANSWER: B
+EXPLANATION: Az abortálás csökkenti a felesleges hálózati és feldolgozási munkát, de önmagában nem minden race conditiont old meg. Érdemes az aktuális requesthez controllert vagy request ID-t kötni, és csak az aktuális eredményt commitolni. A gyakori tévedés azért csábító, mert az abortálás nagyon hasznos, de a már befejeződött vagy nem abortálható aszinkron munka eredménye még okozhat stale state frissítést.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: Async state race
+TYPE: debugging
+QUESTION: Egy autocomplete komponens néha régi találatokat jelenít meg az újabb keresés helyett. Mi a valódi probléma az alábbi architektúrában?
+CODE:
+async function search(query) {
+  const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+  const data = await response.json();
+  state.results = data;
+}
+
+search("jav");
+search("javascript");
+ENDCODE
+A) A `fetch()` mindig FIFO sorrendben adja vissza a válaszokat
+B) A két request szinkron módon fut
+C) A második hívás automatikusan megszakítja az elsőt
+D) A második request gyorsabban befejeződhet, így az első későbbi válasza felülírhatja az újabb eredményt
+ANSWER: D
+EXPLANATION: A requestek indítási sorrendje nem garantálja a befejezési sorrendet. Ha a `"javascript"` kérés előbb fejeződik be, majd a `"jav"` válasza később érkezik, a régi eredmény felülírhatja az újabbat. A gyakori tévedés azért csábító, mert a Promise-ok és `fetch()` hívások sorrendje determinisztikusnak tűnhet, miközben a hálózati latency nem az.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: Memory retention / closures
+TYPE: production
+QUESTION: Egy SPA-ban route-váltás után egy komponens már nem látható, mégis nagy mennyiségű memóriát tart meg. Melyik helyzet okozhat ilyen problémát?
+A) Egy globális event listener closure-ben továbbra is hivatkozik a komponensre és annak nagy objektumaira
+B) A `const` használata
+C) Egy egyszer lefutó lokális függvény
+D) Egy primitív string lokális változó
+ANSWER: A
+EXPLANATION: Ha egy globális vagy hosszú életű objektum egy closure-en keresztül eléri a komponens objektumait, a garbage collector számára azok továbbra is elérhetők lehetnek. SPA-kban ezért fontos a listener-ek, subscriptionök, timer-ek és egyéb hosszú életű referenciák cleanupja. A gyakori tévedés azért csábító, mert a komponens DOM-ból való eltávolítását sokan automatikusan az objektumok garbage collectionjével azonosítják.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Memory / cache architecture
+TYPE: production
+QUESTION: Egy alkalmazásban egy `Map` cache-ben DOM node-okhoz kapcsolódó adatokat tárolsz. A node-ok eltávolítása után a memória folyamatosan nő. Melyik változtatás lehet indokolt, ha a cache-nek nem kell életben tartania a key objektumokat?
+A) `Map` helyett `WeakMap` használata, amennyiben a kulcsok objektumok és az adatok lifecycle-ja ezt megengedi
+B) Minden key-t stringgé alakítani
+C) Minden objektumot `Object.freeze()`-olni
+D) A Map méretét minden request előtt megduplázni
+ANSWER: A
+EXPLANATION: A `WeakMap` nem akadályozza meg a kulcsként használt objektum garbage collectionjét, ha máshonnan már nem érhető el. Ez alkalmas lehet objektumokhoz kötött metadata cache-elésére. A gyakori tévedés azért csábító, mert a `Map` és `WeakMap` API-ja hasonló, de lifecycle és garbage-collection szempontból lényeges különbség van közöttük.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Browser rendering / event loop
+TYPE: behavior
+QUESTION: Egy hosszú JavaScript ciklusban több DOM módosítást hajtasz végre. Miért nem feltétlenül jelennek meg a felhasználónak a köztes állapotok az egyes módosítások után?
+A) Mert a DOM nem módosítható JavaScriptből
+B) Mert a browser renderelése csak Promise után történik
+C) Mert a JavaScript task hosszú ideig foglalhatja a main threadet, és a böngésző nem tud közben renderelni
+D) Mert minden DOM módosítás automatikusan Web Workerben fut
+ANSWER: C
+EXPLANATION: A main threaden futó hosszú JavaScript task blokkolhatja a renderinget. A DOM objektummodellje ettől még módosulhat, de a felhasználó nem feltétlenül látja az intermediate state-eket, amíg a böngésző nem kap lehetőséget renderelni. A gyakori tévedés azért csábító, mert a DOM módosítása azonnal megtörténik, ezért könnyű összekeverni a DOM állapotát a képernyőn látható állapottal.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: Security / postMessage
+TYPE: trap
+QUESTION: Egy ablak `postMessage` üzenetet kap. Miért veszélyes az alábbi ellenőrzés?
+CODE:
+window.addEventListener("message", event => {
+  if (event.data.type === "login") {
+    processLogin(event.data);
+  }
+});
+ENDCODE
+A) Mert a `message` event mindig csak azonos originről érkezik
+B) Mert a payload típusának ellenőrzése nem bizonyítja, hogy megbízható originből érkezett az üzenet
+C) Mert a `postMessage` csak stringet tud küldeni
+D) Mert a browser automatikusan törli a message eventet
+ANSWER: B
+EXPLANATION: A `postMessage` kifejezetten cross-origin kommunikációra is használható, ezért a payload szerkezete önmagában nem jelent bizalmi határt. Érdemes ellenőrizni az `event.origin` értékét és szükség esetén a `event.source`-ot is, majd validálni a payloadot. A gyakori tévedés azért csábító, mert a saját alkalmazás által definiált `type` mező kontrolláltnak tűnik, de azt egy támadó is létrehozhatja.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: Security / prototype pollution
+TYPE: production
+QUESTION: Egy konfigurációs objektumot felhasználói JSON-ból merge-ölsz egy célobjektumba. Melyik védekezés a legfontosabb a prototype pollution kockázat csökkentésére?
+A) Csak `JSON.stringify()` használata
+B) Minden property-t `Object.freeze()`-olni a merge előtt
+C) A veszélyes kulcsok (`__proto__`, `constructor`, `prototype`) és a merge mechanizmus szigorú validálása, illetve biztonságos merge stratégia használata
+D) A JSON-t `eval()` segítségével feldolgozni
+ANSWER: C
+EXPLANATION: Prototype pollution esetén támadó által kontrollált kulcsokkal a prototype chain módosítására lehet törekedni, különösen hibás deep merge implementációknál. A bemenet validálása és megbízható merge könyvtár vagy jól megtervezett saját algoritmus használata fontos. A gyakori tévedés azért csábító, mert a JSON önmagában adatnak tűnik, de a feldolgozás módja dönti el, hogy a speciális property-nevek milyen hatással lehetnek.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: XSS / DOM sinks
+TYPE: security
+QUESTION: Egy backendből érkező, nem teljesen megbízható szöveget szeretnél megjeleníteni egy DOM elemben. Melyik megoldás a biztonságosabb, ha nincs szükség HTML formázásra?
+A) `element.innerHTML = value`
+B) `element.outerHTML = value`
+C) `document.write(value)`
+D) `element.textContent = value`
+ANSWER: D
+EXPLANATION: A `textContent` szövegként kezeli az adatot, így nem értelmezi HTML-ként. Az `innerHTML`, `outerHTML` és `document.write` HTML parseren keresztül értelmezhetik a bemenetet, ezért nem megbízható tartalom esetén XSS kockázatot jelenthetnek. A gyakori tévedés azért csábító, mert az `innerHTML` kényelmes és gyors módja HTML létrehozásának, de éppen ez teszi veszélyessé nem megbízható inputnál.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: Secure URL handling
+TYPE: production
+QUESTION: Egy felhasználói inputból linket generálsz. Miért problémás egyszerűen ezt használni?
+CODE:
+link.href = userInput;
+ENDCODE
+A) Mert a `href` property nem módosítható JavaScriptből
+B) Mert a browser mindig HTTP URL-re alakít minden inputot
+C) Mert a felhasználó például veszélyes URL scheme-et adhat meg, ezért a protokollt/origint és az elvárt célformátumot validálni kell
+D) Mert a `href` kizárólag abszolút URL-t fogad el
+ANSWER: C
+EXPLANATION: A browser többféle URL scheme-et kezel, nem csak `https:`-t. Ha az alkalmazás üzletileg csak HTTPS linkeket vár, akkor explicit validáció szükséges, például `new URL()` segítségével és engedélyezett protocol allowlist alapján. A gyakori tévedés azért csábító, mert az URL string formailag valid lehet, miközben biztonsági szempontból nem elfogadható.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: Architecture / stale-while-revalidate
+TYPE: production
+QUESTION: Egy frontend cache-ben azt szeretnéd, hogy a felhasználó azonnal kapjon egy korábbi értéket, miközben a háttérben friss adat érkezik. Melyik architektúra illik ehhez?
+A) Stale-while-revalidate: cache-hit esetén azonnal visszaadod a régi adatot, majd háttérben újratöltöd és frissíted a cache-t
+B) Minden requestet kétszer szinkron módon futtatsz
+C) Minden cache-hit után törlöd a cache-t
+D) Csak a leglassabb response-t használod
+ANSWER: A
+EXPLANATION: A stale-while-revalidate modell a gyors felhasználói élményt és a háttérben történő frissítést kombinálja. Fontos, hogy a cache freshness, invalidáció és párhuzamos refresh kezelése is definiált legyen. A gyakori tévedés azért csábító, mert a cache frissítése és a response kiszolgálása egyetlen műveletnek tűnhet, miközben a két lifecycle szétválasztható.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: Request deduplication
+TYPE: architecture
+QUESTION: Egy SPA-ban ugyanazt a resource-t egyszerre tíz komponens kéri. Hogyan csökkenthető tíz azonos hálózati kérés egyetlen in-flight requestre?
+A) Minden komponenst letiltasz 5 másodpercre
+B) Az aktuális Promise-t resource key alapján egy Map-ben tárolod, és ugyanarra a key-re a meglévő Promise-t adod vissza
+C) Minden kérést `setTimeout()` mögé teszel
+D) A response után indítasz még egy kérést ellenőrzésként
+ANSWER: B
+EXPLANATION: Az in-flight deduplication lényege, hogy nem csak a kész cache értékét, hanem a folyamatban lévő Promise-t is cache-eled. Így ugyanarra a resource key-re minden fogyasztó ugyanazt a Promise-t várhatja. A gyakori tévedés azért csábító, mert a hagyományos cache elsősorban kész eredményeket tárol, itt azonban a párhuzamos állapotot is kezelni kell.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: AbortSignal composition
+TYPE: async
+QUESTION: Egy requestet két külön feltételnek is meg kell tudnia szakítani: a felhasználó Cancel gombja és egy globális timeout. Melyik architektúra a legjobb?
+A) Két külön `try/catch` blokkban indítod ugyanazt a requestet
+B) A requestet kétszer indítod el, majd az egyik eredményt figyelmen kívül hagyod
+C) A két cancellation feltételt egy közös cancellation signal mögé komponálod, és azt adod át a requestnek
+D) Csak a timeoutot használod, mert a manuális megszakítás nem kezelhető
+ANSWER: C
+EXPLANATION: A cancellation concern-t érdemes egyetlen signalon keresztül továbbadni az alacsonyabb szintű API-knak. Modern környezetekben erre használható például `AbortSignal.any()` vagy egy saját controller-alapú composition. Így a request implementációjának nem kell ismernie az összes magasabb szintű megszakítási okot. A gyakori tévedés azért csábító, mert több cancellation feltételt könnyű több boolean flaggel kezelni, de ez gyorsan versenyhelyzetekhez vezethet.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: IndexedDB transactions
+TYPE: production
+QUESTION: Egy kliensoldali offline alkalmazás IndexedDB-ben több rekordot módosít, amelyeknek konzisztensen együtt kell változniuk. Miért célszerű ugyanabba a transactionbe tenni őket?
+A) Mert a transaction garantálhatja, hogy a műveletek atomikusan kerüljenek végrehajtásra a transaction szabályai szerint
+B) Mert így az IndexedDB automatikusan HTTP kérést küld
+C) Mert a transaction minden hibát elrejt
+D) Mert transaction nélkül az IndexedDB nem tud stringet tárolni
+ANSWER: A
+EXPLANATION: Az IndexedDB transactionjei lehetővé teszik, hogy összetartozó adatbázis-módosításokat egy konzisztens egységként kezelj. Hiba esetén a transaction rollbackelhető a megfelelő műveleti modell szerint. A gyakori tévedés azért csábító, mert a Promise-ok egymás utáni használata hasonló sorrendet ad, de az alkalmazási Promise-sorrend önmagában nem jelent adatbázis-tranzakciós atomicitást.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: Web Workers / structured clone
+TYPE: performance
+QUESTION: Egy 200 MB-os `ArrayBuffer` adatot szeretnél Web Workerbe küldeni. Miért lehet előnyös transferable objectként átadni?
+A) Mert így az adat automatikusan JSON-ná alakul
+B) Mert a worker mindig ugyanazt a memóriacímet használja
+C) Mert a buffer transfer esetén a tulajdonjog átadható jelentős strukturális másolás nélkül
+D) Mert a transfer után mindkét oldal korlátozás nélkül használhatja ugyanazt a buffert
+ANSWER: C
+EXPLANATION: Transferable objektumok, például `ArrayBuffer`, esetén a tulajdonjog átadható a workernek, így nagy adatoknál elkerülhető a teljes másolás költsége. A küldő oldalon az átadott buffer többé nem használható ugyanúgy, mert az ownership átkerült. A gyakori tévedés azért csábító, mert a worker kommunikációja kívülről másolásnak tűnik, de transfer esetén eltérő memória-kezelési mechanizmus működik.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: Architecture / bounded concurrency
+TYPE: algorithm
+QUESTION: Egy feldolgozó rendszer 10000 fájlt kap, de egyszerre legfeljebb 5 fájl feldolgozása engedélyezett. Miért jobb egy bounded worker pool, mint 10000 Promise azonnali elindítása?
+A) Mert a Promise-ok nem tudnak fájlokat feldolgozni
+B) Mert kontrollálja a memória-, CPU- és külső szolgáltatás-terhelést, miközben fenntartja a párhuzamosságot
+C) Mert a worker pool mindig gyorsabb minden környezetben
+D) Mert a Promise concurrency automatikusan korlátlan
+ANSWER: B
+EXPLANATION: A bounded worker pool egyszerre csak meghatározott számú feladatot futtat, így szabályozza a backpressure-t és a resource consumptiont. A cél nem feltétlenül a maximális párhuzamosság, hanem a rendszer stabil throughputja. A gyakori tévedés azért csábító, mert sok Promise egyidejű elindítása rövid feladatoknál gyorsnak tűnhet, nagy mennyiségnél azonban erőforrás-kimerüléshez vezethet.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: Production debugging / error propagation
+TYPE: debugging
+QUESTION: Egy async request handler hibát dob, de a production logban nincs stack trace. Melyik architekturális hiba lehet ennek tipikus oka?
+A) A Promise-ok mindig elnyelik a hibákat
+B) A `throw` csak szinkron függvényben működik
+C) A böngésző minden exceptiont automatikusan töröl
+D) Az async Promise rejection nincs megfelelően awaitelve vagy centrally handled, ezért a hiba nem jut el a megfigyelési/error boundary réteghez
+ANSWER: D
+EXPLANATION: Async kódban a `throw` gyakran rejected Promise-t eredményez. Ha a hívó nem `await`-eli vagy nem kezeli a Promise-t, a hiba elkerülheti a várt error boundaryt és logging réteget. A gyakori tévedés azért csábító, mert szinkron függvényeknél a `try/catch` intuitívabban működik, async kódban viszont a Promise-lánc részeinek is megfelelően kell kapcsolódniuk.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: Event listener lifecycle
+TYPE: production
+QUESTION: Egy komponens minden mount során hozzáad egy event listenert, de unmountkor nem távolítja el. Mi a legvalószínűbb következmény hosszú életű SPA-ban?
+A) A listener-ek száma és az általuk tartott closure-ök növekedhetnek, ami duplikált reakciókhoz és memory leakhez vezethet
+B) A browser automatikusan törli az összes listener-t route-váltáskor
+C) A listener minden render után önmagát törli
+D) A probléma csak Node.js környezetben létezik
+ANSWER: A
+EXPLANATION: A DOM node életciklusának megszűnése és a listener cleanupja nem mindig ugyanazt jelenti, különösen globális targetek, például `window` vagy `document` esetén. Ismételt mountoknál ugyanaz a callback többször regisztrálódhat, és closure-ökön keresztül további objektumokat tarthat életben. A gyakori tévedés azért csábító, mert egy komponens eltűnése vizuálisan azt sugallja, hogy minden hozzá kapcsolódó JavaScript erőforrás is megszűnt.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Security / CSRF vs CORS
+TYPE: trap
+QUESTION: Egy fejlesztő azt mondja: „A CORS megakadályozza a CSRF-et, mert a másik origin nem férhet hozzá a response-hoz.” Miért hibás ez az érvelés?
+A) Mert a CORS csak Web Workerben létezik
+B) Mert CSRF esetén a támadó bizonyos állapotváltoztató requesteket response-olvasás nélkül is kiválthat, ezért a CORS nem általános CSRF-védelem
+C) Mert CORS kizárólag WebSocketekre vonatkozik
+D) Mert a CSRF kizárólag SQL injection formájában létezik
+ANSWER: B
+EXPLANATION: A CORS elsősorban azt szabályozza, hogy egy origin JavaScriptje milyen cross-origin response-okhoz férhet hozzá. Egy CSRF támadásnál viszont bizonyos esetekben már maga az állapotváltoztató request létrehozása is problémát jelenthet. Ezért a CSRF-védelemhez megfelelő cookie-beállítás, token vagy más szerveroldali stratégia szükséges. A gyakori tévedés azért csábító, mert a CORS és CSRF egyaránt cross-origin biztonsági témának tűnik.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Module architecture / circular dependencies
+TYPE: architecture
+QUESTION: Egy nagy ES module rendszerben A importálja B-t, B pedig közvetlenül vagy közvetve A-t. Miért lehet ez production hibák forrása?
+A) Az ES module-ok soha nem engednek circular dependencyt
+B) A körkörös import automatikusan duplikálja az összes modult
+C) A module graph kiértékelési sorrendje és a live bindingok miatt egy export használata az inicializáció megfelelő pontja előtt problémát okozhat
+D) A circular dependency minden esetben végtelen loopot eredményez
+ANSWER: C
+EXPLANATION: Az ES module rendszer támogatja a ciklikus dependency graphokat, de az inicializáció sorrendje és a live bindingok miatt egy még nem inicializált binding használata problémát okozhat. Ez gyakran refaktorálási vagy architekturális szag, különösen nagy alkalmazásokban. A gyakori tévedés azért csábító, mert a körkörös importot könnyű egyszerű végtelen ciklusként elképzelni, miközben a valódi probléma a module evaluation és initialization.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: Performance / memoization
+TYPE: production
+QUESTION: Egy drága számítás eredményét memoizálod egy `Map` segítségével. A függvény paramétere minden rendernél új objektum:
+CODE:
+const cache = new Map();
+
+function expensive(options) {
+  if (cache.has(options)) {
+    return cache.get(options);
+  }
+
+  const result = calculate(options);
+  cache.set(options, result);
+  return result;
+}
+
+expensive({ page: 1, sort: "name" });
+expensive({ page: 1, sort: "name" });
+ENDCODE
+Miért nem működik a memoizáció a várt módon?
+A) Mert a Map nem tud objektumokat kulcsként használni
+B) Mert a `calculate()` mindig azonos értéket ad vissza
+C) Mert a `Map` minden objektumot automatikusan stringgé alakít
+D) Mert a két objektumliterál külön referencia, ezért két külön Map key
+ANSWER: D
+EXPLANATION: A `Map` objektumkulcsokat referenciaazonosság alapján kezel. A két külön objektumliterál tartalmilag azonos, de külön objektum, ezért külön key-nek számítanak. Stabil referencia vagy megfelelően kialakított strukturális cache key szükséges. A gyakori tévedés azért csábító, mert az objektumok tartalma azonos, de JavaScriptben a referenciaazonosság és a strukturális egyenlőség két külön fogalom.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: Architecture / resilience
+TYPE: production
+QUESTION: Egy frontend alkalmazás három egymástól független API-tól kap adatot. Az egyik szolgáltatás időnként 10 másodpercig nem válaszol. A teljes oldal betöltését mégsem szeretnéd emiatt blokkolni. Melyik architekturális megközelítés a legalkalmasabb?
+A) Minden API-t egyetlen Promise.all-ba kényszeríteni, és csak akkor renderelni, ha mind sikeres
+B) Minden API-t eltávolítani
+C) Az API-kat izolált async boundary-kban kezelni, timeouttal, részleges fallbackkel és szükség esetén retry/circuit-breaker jellegű stratégiával
+D) A lassú API-t végtelen ideig újrapróbálni
+ANSWER: C
+EXPLANATION: Független downstream szolgáltatásoknál célszerű a hibákat izolálni, hogy egyetlen lassú vagy hibás dependency ne blokkolja az egész UI-t. Timeout, részleges renderelés, fallback és kontrollált retry megfelelő resilience minták lehetnek. A gyakori tévedés azért csábító, mert a `Promise.all()` egyszerű és konzisztens, de egyetlen reject miatt az összes eredmény kezelését egyetlen hibafüggő láncba köti.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: Production debugging / async architecture
+TYPE: debugging
+QUESTION: Egy production rendszerben ritkán előfordul, hogy egy felhasználó régi adatot lát, miközben a backendben már az új érték szerepel. A frontend több párhuzamos requestet, cache-t és optimistic update-et használ. Melyik megközelítés adja a legjobb kiindulópontot a probléma feltárásához?
+A) Véletlenszerűen kikapcsolni a cache-t productionben
+B) Csak a backend logjait vizsgálni
+C) Az összes async kódot szinkronná alakítani
+D) Request ID-k, cache key-ek, verziók/timestamp-ek és state transitionök strukturált naplózásával rekonstruálni a teljes adatfolyamot, majd azonosítani a stale write vagy out-of-order response pontját
+ANSWER: D
+EXPLANATION: Az ilyen hibák tipikusan több réteg együttműködéséből származnak: request race, stale cache, optimistic state vagy későn érkező response is okozhatja őket. Strukturált correlation/request ID, state transition és cache metadata nélkül nehéz megállapítani, melyik művelet írta felül az aktuális állapotot. A gyakori tévedés azért csábító, mert egyetlen hibás requestet keresünk, miközben production race condition esetén az események időbeli sorrendjének rekonstruálása a kulcs.
+###END

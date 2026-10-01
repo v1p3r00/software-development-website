@@ -6,7 +6,7 @@ import { projects } from '../data/projects';
 import { site } from '../data/site';
 import { cx } from './ui';
 import { usePageTransition } from '../lib/pageTransition';
-import { ArticlesPage } from '../pages/lazy';
+import { ArticlesPage, InterviewPage } from '../pages/lazy';
 
 interface Command {
   id: string;
@@ -50,6 +50,16 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
         run: () => {
           setOpen(false);
           void go(lp('/articles/'), 'slide', { prepare: ArticlesPage.preload });
+        },
+      },
+      {
+        id: 'interview',
+        group: t.palette.navigate,
+        label: t.palette.goInterview,
+        hint: '07',
+        run: () => {
+          setOpen(false);
+          void go(lp('/interview/'), 'slide', { prepare: InterviewPage.preload });
         },
       },
     ];

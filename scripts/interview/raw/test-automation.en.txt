@@ -1,0 +1,2896 @@
+### Q1
+LEVEL: junior
+TOPIC: Test strategy & pyramid
+TYPE: theory
+QUESTION: You are designing a testing strategy for a new web application. Which approach best aligns with the classic test pyramid?
+A) Many fast unit tests, fewer API/integration tests, and even fewer slow UI end-to-end tests
+B) Few unit tests and many UI end-to-end tests because they validate real user behavior
+C) Only end-to-end tests, so there is no need to deal with internal implementation details
+D) The same number of tests at every layer to ensure balanced coverage
+ANSWER: A
+EXPLANATION: The test pyramid principle is to have the largest number of cheap, fast, and isolated tests, with fewer expensive and slow UI end-to-end tests. This provides faster feedback and generally results in a more stable test suite. Having many UI tests can be tempting because they are closest to real user workflows, but they are typically slower and more fragile.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: Unit testing
+TYPE: output
+QUESTION: What will the following JUnit test do if the `Calculator.add` method simply adds the two parameters?
+CODE:
+@Test
+void addsNumbers() {
+    Calculator calculator = new Calculator();
+
+    int result = calculator.add(2, 3);
+
+    assertEquals(5, result);
+}
+ENDCODE
+A) The test passes because the result is 5
+B) The test fails because `assertEquals` cannot be used with primitive `int` values
+C) The test only passes if `Calculator` is a Spring bean
+D) The test throws an exception at runtime because there is no `@BeforeEach`
+ANSWER: A
+EXPLANATION: The `Calculator` is instantiated directly, `add(2, 3)` returns 5, and therefore the expected and actual values match. JUnit's `assertEquals` can also be used to compare primitive integers. The need for a Spring bean can be tempting to assume because many Java projects use JUnit together with Spring, but a simple unit test does not require Spring.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: Mocks, stubs & fakes
+TYPE: theory
+QUESTION: In a unit test, you want to isolate a call to an external payment service and always return a predefined successful response. Which approach is the best fit?
+A) Call the real payment service in every test
+B) Use a stub that returns a controlled response to the test
+C) Deploy the entire application to a separate production environment
+D) Remove the payment service call from the test without replacing it with anything
+ANSWER: B
+EXPLANATION: A stub provides predefined responses to replace a dependency, allowing the test to behave deterministically while focusing on the component under test. Using a real external service can make a unit test slow and environment-dependent. It can be tempting to treat mocks and stubs as exactly the same concept, although a stub primarily provides controlled data or behavior to the test.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: Selenium WebDriver
+TYPE: behavior
+QUESTION: What typically happens when the following Selenium code runs if the page has loaded but the element with the `login` ID has not yet appeared in the DOM?
+CODE:
+WebDriver driver = new ChromeDriver();
+
+driver.get("https://example.com");
+driver.findElement(By.id("login")).click();
+ENDCODE
+A) Selenium automatically waits 30 seconds in every case
+B) Selenium automatically retries the click until the element appears
+C) `findElement` typically fails with a `NoSuchElementException`
+D) The browser automatically reloads the page
+ANSWER: C
+EXPLANATION: Without an explicit or appropriately configured implicit wait, `findElement` does not guarantee that it will wait for an element that appears later. If the element cannot be found when the lookup occurs, Selenium throws a `NoSuchElementException`. The assumption of an automatic long wait is tempting because modern UIs often do require waiting, but the waiting behavior must be configured or explicitly implemented.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: Playwright & Cypress
+TYPE: behavior
+QUESTION: In Playwright, what is the appropriate approach if the appearance of a button depends on an asynchronous API call?
+CODE:
+await page.goto('/dashboard');
+await page.getByRole('button', { name: 'Save' }).click();
+ENDCODE
+A) Always add a fixed wait such as `sleep(5000)`
+B) Restart the browser before every test
+C) Run the test twice in succession
+D) Rely on Playwright's locators and built-in auto-waiting, using targeted state checks when necessary
+ANSWER: D
+EXPLANATION: Playwright locators and actions automatically wait for many relevant conditions, such as an element becoming actionable. If the business condition requires waiting for a specific API response or UI state, a targeted wait can also be used. A fixed sleep is tempting because it seems simple, but it is slow and still does not guarantee the correct timing.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Locators & selectors
+TYPE: trap
+QUESTION: Which statement most accurately describes the following CSS selector?
+CODE:
+button:nth-child(3)
+ENDCODE
+A) It always selects the third `button` element on the page
+B) It selects the third child of the parent if that child itself is a `button`
+C) It always selects the third visible button
+D) It selects only the third button that has an `id` attribute
+ANSWER: B
+EXPLANATION: `:nth-child(3)` refers to the third position among the children of the parent, not the third `button` element. If the third child is not a `button`, the selector matches nothing. Interpreting it as the third button is tempting because the selector name can be misleading, but the position is counted among all sibling children.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: Waits & flaky tests
+TYPE: debug
+QUESTION: A UI test intermittently fails because the `Save` button becomes clickable only after an API response. What is the best first step?
+A) Randomly add a 10-second wait to the end of the test
+B) Run the test three times and only consider the third result
+C) Investigate the application state and wait for the relevant button state
+D) Ignore the failure because flaky tests are normal for UI tests
+ANSWER: C
+EXPLANATION: The goal should be to eliminate the cause of the flaky test rather than hide it. If the click requires the button to be enabled, the test should wait for that state. A fixed 10-second sleep is tempting because it may immediately reduce some failures, but it unnecessarily slows the test and does not reliably solve the race condition.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Page Object Model
+TYPE: theory
+QUESTION: What is one of the main benefits of the Page Object Model in a Selenium- or Playwright-based UI test framework?
+A) It always makes the browser run faster
+B) It automatically stores test data in a database
+C) It completely replaces unit tests
+D) It separates page-specific locators and actions from the business flow of the tests
+ANSWER: D
+EXPLANATION: The Page Object Model aims to hide UI details such as locators and page-specific actions behind an abstraction used by the tests. This means a locator change can affect fewer tests directly. It can be tempting to expect it to speed up the browser because the framework becomes more structured, but POM itself does not make the browser faster.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: API testing
+TYPE: output
+QUESTION: What does the following REST Assured test verify?
+CODE:
+given()
+    .when()
+    .get("/api/users/42")
+    .then()
+    .statusCode(200)
+    .body("id", equalTo(42));
+ENDCODE
+A) The HTTP response status is 200 and the JSON `id` field is 42
+B) The request is always sent using the POST method
+C) There are exactly 42 users in the API database
+D) The response body may contain only the `id` field
+ANSWER: A
+EXPLANATION: The test sends a GET request to `/api/users/42`, then verifies the 200 HTTP status and that the `id` field in the JSON response is 42. It does not verify that no other fields are present. The number of records in the database also cannot be inferred from these two assertions.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: BDD & Cucumber
+TYPE: theory
+QUESTION: What is the primary role of the Gherkin `Given / When / Then` structure in Cucumber?
+A) It is used to handle Java exceptions
+B) It automatically creates the test database
+C) It describes the precondition, action, and expected result in a readable form
+D) It replaces Selenium WebDriver configuration
+ANSWER: C
+EXPLANATION: `Given` typically describes the initial state, `When` the action being performed, and `Then` the expected result. Gherkin therefore helps express behavior in a readable form, while step definitions connect that text to the actual automation code. Confusing it with WebDriver configuration is tempting because Cucumber is frequently used together with Selenium.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: Test data management
+TYPE: scenario
+QUESTION: A registration test requires a unique email address. Which approach is most appropriate when tests run in parallel?
+A) Use the same fixed `test@example.com` address in every test
+B) Give each run unique, reproducible or appropriately generated test data
+C) Randomly delete a user before every test run
+D) Select an available email address from the production database
+ANSWER: B
+EXPLANATION: Fixed test data can conflict when tests run in parallel. A better approach is to use isolated, unique, and preferably reproducible test data, for example an email address generated using a run identifier. Using a production database is especially problematic because it is unpredictable and can introduce security and data privacy issues.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: CI integration
+TYPE: scenario
+QUESTION: A Git repository has a CI pipeline. What is one of the most important goals of automatically running tests for every pull request?
+A) Increase the performance of developers' machines
+B) Delete production server logs
+C) Automatically rewrite Git history
+D) Provide fast feedback on whether the change may have introduced a regression
+ANSWER: D
+EXPLANATION: Automatically running tests for a pull request provides fast regression feedback before the change is merged into the target branch. CI is not intended to optimize the developer's machine or modify Git history. Deleting production logs is unrelated to the purpose of the test pipeline.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: Parallel execution
+TYPE: behavior
+QUESTION: What can directly happen if two parallel tests modify the same database record?
+A) The tests are guaranteed to produce the same result independently
+B) The browser automatically serializes the database operations
+C) A race condition and nondeterministic test result can occur
+D) JUnit automatically rolls back every database modification
+ANSWER: C
+EXPLANATION: If two tests operate on the same shared state, the result of one test can depend on the timing of the other test. This can cause race conditions and flaky tests. An automatic rollback occurs only if the test environment and appropriate transactional configuration actually provide it.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: Reporting
+TYPE: theory
+QUESTION: Which information is particularly useful for debugging a failed UI test running in CI?
+A) Only the test name appearing in the report
+B) A stack trace along with artifacts such as a screenshot, browser log, or trace
+C) Only the test execution time
+D) Only the final status of the entire CI pipeline
+ANSWER: B
+EXPLANATION: For a failed UI test, a screenshot, trace, browser log, and detailed stack trace can significantly speed up identifying the root cause. A test name or pipeline status alone provides little context. It can be tempting to retain only execution time because it is easy to measure, but it does not explain the failure.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: Contract testing
+TYPE: theory
+QUESTION: Two microservices communicate with each other through a REST API. What is one of the main goals of contract testing?
+A) Verify that the API contract between the consumer and provider remains compatible
+B) Verify pixel-perfect frontend CSS rendering
+C) Measure production database performance
+D) Reduce the execution time of unit tests
+ANSWER: A
+EXPLANATION: Contract testing verifies the parts of an API contract that the consumer and provider rely on, such as request/response structure or status codes. This is particularly useful in microservice environments for detecting compatibility regressions early. CSS validation is a visual testing concern, not contract testing.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: Visual & accessibility testing
+TYPE: edgecase
+QUESTION: During an accessibility test, a button's active and inactive states are distinguished solely by a color change. Why can this be a problem?
+A) Browsers do not support buttons
+B) The HTML standard prohibits the use of buttons
+C) Selenium cannot read colors
+D) For some users, color alone may not provide enough information to distinguish the state
+ANSWER: D
+EXPLANATION: Communicating state through color alone can create an accessibility problem, for example for users with color vision differences. Additional visual or semantic indicators should be considered, along with automated accessibility checks. It is tempting to think of this as a Selenium limitation because the question is in a UI automation context, but the underlying issue is user accessibility.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: Framework design
+TYPE: theory
+QUESTION: Which approach best supports maintainability in an automated test framework?
+A) Instantiate and configure every component separately in every test
+B) Use long, repetitive locators and setup code in every test
+C) Organize shared configuration, helper, and domain-specific components using appropriate abstractions
+D) Catch every error with `try/catch` so the suite can continue running
+ANSWER: C
+EXPLANATION: A well-structured framework reduces duplication, standardizes configuration, and separates technical infrastructure from the business intent of the tests. Abstraction should still be used carefully because excessive generalization can also make a framework difficult to maintain. Swallowing exceptions is particularly dangerous because it can hide real failures.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: Unit testing
+TYPE: debug
+QUESTION: What is the problem with the following JUnit test if `UserService` actually looks up the user in an external database?
+CODE:
+@Test
+void shouldFindUser() {
+    UserService service = new UserService();
+    User user = service.findByEmail("alice@example.com");
+
+    assertEquals("Alice", user.getName());
+}
+ENDCODE
+A) The test necessarily remains a unit test because it uses JUnit
+B) The test cannot be a unit test because it contains an assertion
+C) The test can work only if the project has no database
+D) If the service communicates with a real database, the test is more like an integration test, and the dependency should be isolated for a unit test
+ANSWER: D
+EXPLANATION: The classification of a test is not determined by whether it uses JUnit, but by factors such as whether it interacts with real external dependencies. If `findByEmail` accesses a real database, the test is environment-dependent and has integration-test characteristics. In a unit test, the repository or database access would typically be isolated.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: Mocks, stubs & fakes
+TYPE: behavior
+QUESTION: What does mock-based interaction verification primarily check?
+A) Whether an expected call was made to a particular dependency
+B) Whether every record in the production database is correct
+C) Whether every CSS rule is applied correctly in the browser
+D) Whether the application returns the correct result for every possible input
+ANSWER: A
+EXPLANATION: A mock can be used not only to provide controlled responses, but also to verify how a dependency was called, for example whether it was called once or with specific parameters. This is interaction testing. Checking correctness for every possible input is not the purpose of a single mock verification.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Selenium WebDriver
+TYPE: output
+QUESTION: What happens in the Selenium test if multiple elements on a page have `class="submit"`?
+CODE:
+WebElement button = driver.findElement(By.cssSelector(".submit"));
+button.click();
+ENDCODE
+A) Selenium automatically clicks every matching element one after another
+B) `findElement` returns the first matching element if one is found
+C) Selenium always throws an error if there are multiple matches
+D) `findElement` randomly selects one of the matching elements
+ANSWER: B
+EXPLANATION: Selenium's `findElement` returns a single WebElement, and when multiple elements match, it returns the first match according to the DOM search order. If you want to handle all matching elements, another API such as `findElements` can be used. Random selection may seem plausible because multiple elements match the selector, but Selenium does not choose randomly.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: Playwright & Cypress
+TYPE: output
+QUESTION: What does the following Playwright code verify?
+CODE:
+await expect(page.getByRole('heading', { name: 'Dashboard' }))
+    .toBeVisible();
+ENDCODE
+A) That the `/Dashboard` URL is reachable
+B) That the server returned HTTP 200
+C) That the correctly named heading is visible in the UI
+D) That exactly one HTML element exists on the page
+ANSWER: C
+EXPLANATION: The locator searches for an element with the heading role and the accessible name `Dashboard`, and the expectation verifies that the matched element is visible. This is not an HTTP status check, and it does not by itself assert that exactly one such element exists on the page. A separate URL assertion would be required to verify the URL.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: Locators & selectors
+TYPE: scenario
+QUESTION: A test contains the following locator:
+CODE:
+page.locator('.btn-primary').click()
+ENDCODE
+A developer later changes the CSS class name while the button's user-facing role and accessible name remain unchanged. Which locator is generally more resilient to this kind of change?
+A) A generic selector that selects the first element in the DOM
+B) A long, full CSS path that includes every parent element
+C) A selector based on the button's current `style` attribute
+D) A locator based on the button's semantic role and user-facing name
+ANSWER: D
+EXPLANATION: A role-based and user-centered locator, such as Playwright's `getByRole` with the appropriate accessible name, is often more stable because it depends less on presentation-oriented CSS classes. Long CSS paths and style-based selectors are generally more fragile. Selecting the first DOM element can easily target the wrong element.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: Waits & flaky tests
+TYPE: behavior
+QUESTION: Why can the following approach be problematic in a UI test?
+CODE:
+Thread.sleep(5000);
+driver.findElement(By.id("result")).click();
+ENDCODE
+A) Because `Thread.sleep` guarantees that the element will always disappear
+B) Because exactly 5 seconds must be waited in every browser
+C) Because the element may be ready after 500 ms, but the application will still wait another 4.5 seconds
+D) Because Selenium does not support waiting in a Java environment
+ANSWER: C
+EXPLANATION: A fixed sleep does not wait for the actual application state. If the element becomes ready sooner, the test is unnecessarily slowed down; if it takes longer than 5 seconds, the test can still fail. An explicit wait tied to the relevant state, or the framework's built-in auto-waiting, is more precise.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: API testing
+TYPE: debug
+QUESTION: A REST API `POST /users` request returns `201 Created` when creation succeeds. The test still fails:
+CODE:
+given()
+    .contentType("application/json")
+    .body("{\"name\":\"Alice\"}")
+.when()
+    .post("/users")
+.then()
+    .statusCode(200);
+ENDCODE
+What is the most likely problem?
+A) The test expects 200, while according to the specification it should expect 201 for successful creation
+B) The POST method cannot be used with a JSON body
+C) REST Assured can only verify a 500 status
+D) The `statusCode` assertion works only with GET requests
+ANSWER: A
+EXPLANATION: The test asserts that the status should be 200, while the stated API contract specifies 201 for successful resource creation. REST Assured supports POST requests with JSON bodies, and any HTTP status code can be asserted. It can be tempting to suspect a problem with POST or JSON because the failure occurs directly after the request, but the assertion does not match the API contract.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: Framework design
+TYPE: scenario
+QUESTION: In a test framework, every test class creates its own WebDriver, configures the browser, loads configuration, and handles teardown. What would be a reasonable first refactoring step?
+A) Create even more WebDriver instances in every test
+B) Move setup and lifecycle management into shared, reusable infrastructure
+C) Remove teardown completely
+D) Make browser configuration random in every test
+ANSWER: B
+EXPLANATION: Shared driver lifecycle, configuration, and setup/teardown handling reduce duplication and standardize framework behavior. The exact implementation depends on the test framework and parallel execution model, but centralizing these responsibilities is a sensible starting point. Removing teardown may seem attractive because it means less code, but it can lead to resource leaks and tests interfering with one another.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: Selenium WebDriver
+TYPE: debug
+QUESTION: In a Selenium test, the element is present in the DOM, but the click still fails with an `ElementClickInterceptedException`. What is the most likely cause?
+A) Selenium does not support clicking in Java
+B) Another element, such as an overlay or modal, is covering the click target
+C) The locator must be incorrect because the element was found
+D) WebDriver can only click input elements
+ANSWER: B
+EXPLANATION: `ElementClickInterceptedException` often occurs when another element, such as a modal, cookie banner, or loading overlay, is positioned over the target. In this case, the test should wait for the overlay to disappear or for the target to become actually clickable. Suspecting a bad locator is tempting because the failure occurs during the click, but successful element lookup shows that the locator itself works.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: API testing
+TYPE: output
+QUESTION: What does the following REST Assured assertion verify?
+CODE:
+given()
+    .when()
+    .get("/api/users/42")
+    .then()
+    .body("active", equalTo(true));
+ENDCODE
+A) That the endpoint returns only active users
+B) That the API HTTP status code is definitely 200
+C) That the response JSON `active` field is `true`
+D) That the user's database record is active
+ANSWER: C
+EXPLANATION: The assertion directly checks the value of the `active` field in the HTTP response body JSON. By itself, it does not verify the status code, the database state, or whether the same rule applies to other users. Assuming the database state is being verified is tempting because API responses are often generated from database data, but the test only checks the response.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: Unit testing
+TYPE: scenario
+QUESTION: A unit test wants to verify only a single business rule, but it starts the entire Spring context on every run. What is the most important drawback?
+A) The test will likely be slower and less isolated than necessary
+B) The test definitely cannot use assertions
+C) Starting the Spring context automatically makes the test a production test
+D) The test cannot use mocks
+ANSWER: A
+EXPLANATION: Verifying a single business rule at unit-test level usually does not require initializing the entire Spring context. Doing so introduces significant startup overhead and additional external configuration while reducing isolation. Using Spring does not by itself prevent assertions or mocks from being used.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Mocks, stubs & fakes
+TYPE: output
+QUESTION: What does the following Mockito test produce if `UserRepository` is a mock and the call to `findById(1L)` returns the specified `User` object?
+CODE:
+User user = new User(1L, "Alice");
+
+when(userRepository.findById(1L))
+    .thenReturn(Optional.of(user));
+
+Optional<User> result = userRepository.findById(1L);
+ENDCODE
+A) `result` is always `Optional.empty()` because a mock cannot return real values
+B) `result` is null because Mockito can only verify method calls
+C) The test works only if a real database is running
+D) `result` contains the specified `User` object inside the `Optional`
+ANSWER: D
+EXPLANATION: `when(...).thenReturn(...)` configures the mock's behavior: when exactly `findById(1L)` is called, the mock returns `Optional.of(user)`. No real database is required because the repository is isolated as a mock. Assuming `Optional.empty()` is tempting because mock objects often return empty or null-like defaults, but explicit stubbing has been configured here.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Locators & selectors
+TYPE: edgecase
+QUESTION: A page contains two buttons with the same visible text: `Delete`. What is the main problem if the test tries to select a button based only on its text?
+A) Text-based locators can never be used with buttons
+B) The locator may match multiple elements, so it may not uniquely identify which button should be used
+C) The browser automatically renames one of the buttons
+D) Selenium and Playwright cannot search by text
+ANSWER: B
+EXPLANATION: If two buttons have the same accessible name, selecting only by that name may not uniquely identify the intended element. The locator should be refined using the appropriate container, a unique attribute, or another stable piece of context. A text-based locator can be tempting because it is easy for humans to read, but uniqueness is also important.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: Playwright & Cypress
+TYPE: behavior
+QUESTION: Why can using a Playwright locator in the following form be advantageous compared with a direct CSS selector?
+CODE:
+await page.getByRole('button', { name: 'Submit' }).click();
+ENDCODE
+A) The locator automatically modifies the application's source code
+B) The locator works only in Chromium
+C) The locator uses the button's semantic role and accessible name
+D) The locator bypasses all browser security rules
+ANSWER: C
+EXPLANATION: `getByRole` is based on semantic information perceived by the user, such as the element's role and accessible name. This can often be more stable and better aligned with user interaction than a presentation-oriented CSS class. Choosing a CSS selector can be tempting because it is directly visible in developer tools, but it does not necessarily express the user-facing semantics.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: Waits & flaky tests
+TYPE: trap
+QUESTION: Why is using `Thread.sleep(10000)` at the beginning of every Selenium test generally not a good solution?
+A) Selenium prohibits the use of `Thread.sleep`
+B) Ten seconds is too short for every application
+C) The test will never start afterward
+D) It unnecessarily slows every test and does not adapt to the application's actual state
+ANSWER: D
+EXPLANATION: A fixed wait does not account for when the application actually becomes ready. If the page is ready after one second, nine seconds are wasted; if it takes longer than ten seconds, the test can still fail. It is tempting because it is simple and can temporarily hide certain flaky failures.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Page Object Model
+TYPE: scenario
+QUESTION: Which responsibility best belongs in a `LoginPage` Page Object?
+A) Managing the configuration of the entire CI pipeline
+B) Managing the locators and actions available on the login page
+C) Storing all test results in a database
+D) Starting the production deployment
+ANSWER: B
+EXPLANATION: A `LoginPage` Page Object typically encapsulates the UI details and actions of the login page, such as username, password, and login button locators. CI and deployment responsibilities belong to other layers. It can be tempting to put too many responsibilities into a Page Object because it appears to be a central place, but this can eventually lead to a so-called God Object.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: Test data management
+TYPE: edgecase
+QUESTION: A test creates a user named `test-user` before every run. What can happen if the email field in the test database has a UNIQUE constraint?
+A) The second run may try to create the same unique data again and fail
+B) The UNIQUE constraint makes every test pass automatically
+C) The test can no longer call the backend API
+D) A UNIQUE constraint works only in production databases
+ANSWER: A
+EXPLANATION: If the email field is unique, attempting to create the same email address again can cause a constraint violation if the previous record was not deleted or isolated. Test data therefore needs to account for repeated runs and parallel execution. It can be tempting to overlook this because the first local run may work without any issue.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: CI integration
+TYPE: production
+QUESTION: A UI test runs reliably in Chrome locally but frequently fails in a Linux-based CI environment. What should be one of the first things to investigate?
+A) Remove all assertions
+B) Randomly rerun the test until it passes
+C) Investigate differences between the local and CI environments, such as browser version, viewport, fonts, and configuration
+D) Delete and rewrite the entire test suite
+ANSWER: C
+EXPLANATION: Environment differences are a common cause of CI-specific failures, especially for UI tests. Browser version, viewport, headless settings, fonts, locale, timezone, and other relevant configuration should be compared. Random reruns can only hide the underlying problem.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: Reporting
+TYPE: scenario
+QUESTION: One test fails in a CI suite containing 500 tests. Which reporting feature helps most with fast debugging?
+A) Only an aggregated "FAILED" label
+B) Rerunning the entire suite every time
+C) Hiding the test name from the report
+D) Preserving detailed logs, screenshots, and relevant traces associated with the failed test
+ANSWER: D
+EXPLANATION: Detailed failure artifacts allow a developer or tester to investigate what happened without rerunning the entire suite. For UI tests, screenshots, traces, console logs, and network information can be particularly useful. It can be tempting to show only the suite status because it is simple, but it provides insufficient diagnostic information.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: API testing
+TYPE: behavior
+QUESTION: A REST API returns `404 Not Found` when a non-existent user is requested. Which test best expresses the expected behavior?
+A) Expect a 200 status for every GET request
+B) Expect a 404 status for the GET request and, if appropriate, verify the error response structure
+C) Expect a 500 status for the invalid request because every error is a server error
+D) Ignore the HTTP status code in the test
+ANSWER: B
+EXPLANATION: If the specification defines `404 Not Found` for a non-existent resource, that behavior should be tested as part of the API contract. The error response body can also be verified if its structure is part of the API contract. Confusing 404 with 500 is common because both represent errors, but they have different HTTP semantics.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: Visual & accessibility testing
+TYPE: trap
+QUESTION: A screenshot-based visual regression test fails whenever the entire screenshot differs pixel-for-pixel. Why can this be problematic?
+A) Every pixel difference always represents a business defect
+B) Screenshot tests cannot be used with web applications
+C) Dynamic content, font rendering, or environment differences can cause false differences
+D) Screenshot tests automatically become unit tests
+ANSWER: C
+EXPLANATION: Not every pixel difference in visual regression represents a real regression. Dynamic dates, animations, font rendering, browser versions, or operating systems can cause differences. The test environment should therefore be stabilized, and appropriate thresholds, masking, or targeted comparisons can be used.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: Parallel execution
+TYPE: performance
+QUESTION: A test suite takes 40 minutes to run, and most tests are independent of each other. What is one direct benefit of parallelization?
+A) With appropriate isolation, it can reduce the total wall-clock execution time
+B) It automatically eliminates all flaky tests
+C) It guarantees that all tests run in the same order
+D) It makes test data management unnecessary
+ANSWER: A
+EXPLANATION: Running independent tests in parallel can reduce total elapsed time when sufficient CPU, memory, and other infrastructure are available. However, parallelization does not automatically solve flaky tests and can introduce new race conditions when shared state is involved. Proper isolation is therefore essential.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: Contract testing
+TYPE: scenario
+QUESTION: A frontend service assumes that an API response always contains a `customerId` field of type string. Which contract test would best protect this assumption?
+A) Checking only the frontend CSS snapshot
+B) Running only an end-to-end login test
+C) Checking only that the API returns HTTP 200
+D) A contract check that requires the response to contain a string-typed `customerId` field
+ANSWER: D
+EXPLANATION: The contract should explicitly express the structure and type that the consumer relies on. This allows an incompatible provider-side change to be detected early. An HTTP 200 status alone does not guarantee that the required field exists or has the correct type.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: BDD & Cucumber
+TYPE: scenario
+QUESTION: A Cucumber feature file describes the same long UI flow in five different scenarios, with nearly identical steps. What is one potential problem with this?
+A) Gherkin does not support multiple scenarios in a feature
+B) Cucumber automatically deletes the repository before every scenario
+C) The specification can become redundant and harder to maintain
+D) The `Given`, `When`, and `Then` keywords can only be used once
+ANSWER: C
+EXPLANATION: Significant duplication of steps increases maintenance cost and can obscure how the scenarios actually differ. Common setup should be handled appropriately while keeping the feature readable from a business perspective. Copying everything into separate scenarios can be tempting because it is simpler in the short term, but it requires many more changes in the long term.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: Framework design
+TYPE: production
+QUESTION: In a framework, the same retry logic appears in five different tests, each in a slightly different form. What could be a good solution?
+A) Keep every copy so the tests remain completely independent
+B) Move the retry behavior into shared, well-defined infrastructure while keeping its usage rules explicit
+C) Put every assertion behind a retry
+D) Run every test three times regardless of whether it is necessary
+ANSWER: B
+EXPLANATION: Shared retry infrastructure can reduce duplication and standardize behavior. However, retries must not mask real product defects or poorly designed waits. Automatically retrying every assertion is dangerous because it can make tests appear more stable while hiding the underlying problem.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+QUESTION: A developer verifies a simple validation rule only through a full browser-based end-to-end test. Why might it be better to cover the rule at a lower test level as well?
+A) Because end-to-end tests can never be useful
+B) Because business logic cannot be tested in unit tests
+C) Because every test must be converted into a unit test
+D) Because the simple rule can be tested faster and more independently at unit level, while the higher-level test can verify the complete integration
+ANSWER: D
+EXPLANATION: An isolated business rule generally receives faster and more precise feedback from a unit test, while an end-to-end test can verify that the same rule works as part of the complete user flow. The two levels therefore serve different purposes. It can be tempting to rely exclusively on an E2E test because it appears to verify everything in a single test.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: Selenium WebDriver
+TYPE: output
+QUESTION: What does `findElements` return if no elements match the selector?
+CODE:
+List<WebElement> elements =
+    driver.findElements(By.cssSelector(".missing"));
+
+System.out.println(elements.size());
+ENDCODE
+A) It prints `0`
+B) It prints `1` because Selenium always creates an element
+C) It prints `null`
+D) It throws a `NoSuchElementException`
+ANSWER: A
+EXPLANATION: `findElements` returns an empty list when there are no matches, so the list size is `0`. This differs from `findElement`, which throws an exception when the lookup fails. Choosing `NoSuchElementException` can be tempting because it is a common Selenium error related to element lookup, but the two methods have different behavior.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: Unit testing
+TYPE: output
+QUESTION: What happens in the following JUnit test if `calculateDiscount(100)` returns exactly `90.0`?
+CODE:
+double actual = service.calculateDiscount(100);
+
+assertEquals(90.0, actual);
+ENDCODE
+A) The test necessarily fails because `double` values cannot be compared
+B) The test passes if the actual value exactly matches the expected value
+C) The test only runs if `BigDecimal` is used
+D) The assertion always expects a value of 0.0
+ANSWER: B
+EXPLANATION: If the method actually returns exactly `90.0`, the assertion can pass in this case. However, for floating-point calculations in general, a tolerance should often be used because rounding and representation differences can occur. Completely rejecting `double` comparisons can be tempting because floating-point precision issues are real, but that does not mean every such assertion is invalid.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: API testing
+TYPE: edgecase
+QUESTION: An API endpoint `GET /users/1` normally returns a JSON object. What should be tested separately when the user does not exist?
+A) Only that the endpoint appears in the browser address bar
+B) That the server always returns 200 even when no data exists
+C) The error status code defined by the specification and the defined error response structure
+D) That the API automatically creates the missing user
+ANSWER: C
+EXPLANATION: A non-existent resource is a typical edge case where the API contract defines the expected status code and error format. These should be tested explicitly because such cases can easily differ from successful response structures. Automatically creating the user would only be correct if the specification explicitly required that behavior.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: Playwright & Cypress
+TYPE: debug
+QUESTION: A Playwright test sometimes reads a previous state using the following code:
+CODE:
+await page.goto('/orders');
+const text = await page.locator('#status').textContent();
+console.log(text);
+ENDCODE
+The backend updates the status after the page has loaded. What could be the problem?
+A) `goto` necessarily waits for all subsequent API updates as well
+B) `textContent()` always returns the future value that will eventually appear
+C) The CSS selector automatically caches the database state
+D) The test reads the value too early, before the relevant UI state has been established
+ANSWER: D
+EXPLANATION: `page.goto` does not mean that every business process started after page load has also completed. If the status changes later because of an API call, the test needs to wait for the relevant state, for example through an appropriate assertion or targeted network/state synchronization. It can be tempting to assume that `goto` provides complete application synchronization because navigation has finished successfully, but that is not equivalent to every subsequent application process being complete.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: Waits & flaky tests
+TYPE: scenario
+QUESTION: A test occasionally fails because it tries to click an element while an animation is still running. What is the best approach?
+A) Identify the stable state required for the interaction and wait for that state
+B) Randomly change the animation duration in every test
+C) Completely hide the failure with retries
+D) Wait 30 seconds at the beginning of every test
+ANSWER: A
+EXPLANATION: The test should wait for the state in which the interaction is actually safe, such as when the element is stable and clickable. Depending on the application and framework capabilities, this may be handled by built-in actionability checks or an explicit state assertion. Long fixed sleeps and unlimited retries only hide the timing problem.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: Test data management
+TYPE: production
+QUESTION: A test needs access to a dataset containing 10,000 records, but it actually uses only three specific records. What is the more appropriate approach?
+A) Always create all 10,000 records before every test
+B) Use the production database to make the data realistic
+C) Create the minimum controlled dataset actually required by the test
+D) Select random records from the full dataset
+ANSWER: C
+EXPLANATION: If the test needs only three records, a minimal controlled dataset is faster, more deterministic, and easier to maintain. Using production data can create security, privacy, and reproducibility problems. Creating the entire dataset before every test can also introduce unnecessary overhead.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Framework design
+TYPE: algorithm
+QUESTION: In a test framework, the same `login` operation is required by hundreds of tests. Which approach reduces duplication most effectively while keeping the tests readable?
+A) Rewrite the username, password, and click steps in every test
+B) Encapsulate the login flow in a reusable, well-named abstraction
+C) Randomly distribute the login steps across the test code
+D) Remove all assertions related to login
+ANSWER: B
+EXPLANATION: A well-named `login()` or similar domain-specific abstraction reduces duplication while keeping the business intent of the test readable. The abstraction can hide locators and technical details behind a simple interface. Repeating the steps in every test can be tempting because the entire flow is visible directly, but it creates a significant maintenance burden when many tests depend on it.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: Selenium WebDriver
+TYPE: behavior
+QUESTION: What happens with the following Selenium code if the `#email` field already exists but is covered by a cookie banner?
+CODE:
+driver.findElement(By.id("email")).sendKeys("alice@example.com");
+ENDCODE
+A) Selenium automatically closes the cookie banner
+B) `sendKeys` is always successful because the locator found the element
+C) Selenium automatically reloads the page
+D) The operation can fail if another element prevents interaction with the target
+ANSWER: D
+EXPLANATION: Finding an element in the DOM does not necessarily mean that interaction with it is possible. An overlay or cookie banner can prevent the field from being used, so the relevant UI state needs to be handled first. It is tempting to assume that a successful locator automatically means a successful interaction because element lookup and interaction often appear as a single test step.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: API testing
+TYPE: debug
+QUESTION: A REST Assured test sends a POST request with a JSON body, but the API returns `415 Unsupported Media Type`. What is the most likely cause?
+CODE:
+given()
+    .body("{\"name\":\"Alice\"}")
+.when()
+    .post("/users")
+.then()
+    .statusCode(201);
+ENDCODE
+A) The appropriate `Content-Type`, such as `application/json`, is missing
+B) The POST method does not support JSON request bodies
+C) A 415 status code indicates only an authentication error
+D) The `statusCode` assertion prevents POST requests from being sent
+ANSWER: A
+EXPLANATION: A `415 Unsupported Media Type` response typically indicates that the server does not support or did not correctly receive the media type of the request body. When sending JSON, the `Content-Type` header often needs to be set to `application/json`. It is tempting to suspect the POST method or the assertion because the error appears immediately after the request, but 415 is specifically related to the media type.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: Unit testing
+TYPE: edgecase
+QUESTION: A method returns the first element of a list. Which edge case should be covered in a separate unit test?
+A) Only the case where the list contains exactly 10 elements
+B) An empty list, if it is a valid input according to the business rules
+C) Only the largest list that occurs in the production database
+D) Only a randomly selected list element
+ANSWER: B
+EXPLANATION: An empty list is a typical boundary case for a method that accesses the first element because it can lead to an exception or a special return value. The test should cover edge cases that are meaningful according to the specification. A list containing exactly 10 elements is not inherently a representative boundary case.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: Mocks, stubs & fakes
+TYPE: theory
+QUESTION: What is a typical characteristic of a fake in an automated test environment?
+A) It always calls a real production service
+B) It can only verify method calls
+C) It provides a working but simplified implementation instead of a real dependency
+D) It can only be used in UI tests
+ANSWER: C
+EXPLANATION: A fake is generally a simplified but functional implementation, such as an in-memory repository. It does not necessarily behave exactly like the real component, but it allows application logic to be tested in isolation. It can be tempting to treat a fake as a mock because both replace a real dependency in a test environment, but a fake contains actual working behavior.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: Locators & selectors
+TYPE: scenario
+QUESTION: A frontend developer frequently changes CSS classes due to design changes, while the accessible names of the buttons remain stable. Which locator strategy may be more appropriate?
+A) Base the locator on the buttons' current CSS classes
+B) Use an XPath based on the complete DOM structure
+C) Always select the first matching element in the DOM
+D) Use a locator based on the stable user-facing role and accessible name
+ANSWER: D
+EXPLANATION: If CSS classes frequently change for presentation purposes, a locator based on semantic role and accessible name can be less dependent on the visual implementation. This keeps the locator strategy closer to actual user interaction. Using the current classes is tempting because they are easy to find in DevTools, but they are fragile when the design changes frequently.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: Playwright & Cypress
+TYPE: output
+QUESTION: What does the following Playwright assertion verify?
+CODE:
+await expect(page.locator('[data-testid="message"]'))
+    .toHaveText('Saved');
+ENDCODE
+A) That the element is visible for exactly one second
+B) That the element's text content is `Saved` when the expected state is reached
+C) That the backend returned HTTP 200
+D) That the element's CSS class is `Saved`
+ANSWER: B
+EXPLANATION: `toHaveText('Saved')` checks the selected element's text content. Playwright assertions appropriately wait for the expected state to be reached, so this should not be interpreted as merely taking an instantaneous snapshot. It is tempting to associate the assertion with an HTTP status because the text may be the result of a successful API call, but the assertion directly checks the DOM state.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Waits & flaky tests
+TYPE: trap
+QUESTION: A test automatically calls `Thread.sleep(2000)` before every assertion. Why is this a poor strategy?
+A) Because sleep works only on Linux
+B) Because it should be used after assertions, not before them
+C) Because it unnecessarily increases execution time without necessarily waiting for the required state
+D) Because test frameworks do not allow the use of sleep
+ANSWER: C
+EXPLANATION: A fixed sleep always waits for the full duration, even if the application becomes ready sooner. At the same time, if the application is slower, two seconds still does not guarantee that the required state has been reached. It is tempting to put a sleep before every assertion because it seems like a simple rule, but it does not model the application's actual state.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: CI integration
+TYPE: scenario
+QUESTION: In a CI pipeline, tests run only after a merge, so a faulty change can already enter the shared branch. What is one potential drawback?
+A) Failures become visible later, when the change may already be combined with other changes
+B) Tests automatically become slower when run locally
+C) Git can no longer handle multiple branches
+D) CI can no longer run the tests
+ANSWER: A
+EXPLANATION: If a regression is discovered only after merging, it can be harder to identify which change caused it, especially when multiple changes are developed in parallel. Validation tied to pull requests can provide faster feedback. Running tests only after merging can be tempting because it starts fewer pipelines, but feedback about failures arrives later.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: Reporting
+TYPE: behavior
+QUESTION: A test fails in CI, but the report contains only this: `AssertionError: expected true`. Which improvement would most improve diagnostics?
+A) Remove the report completely
+B) Remove the assertions
+C) Automatically rerun the test three times
+D) Add meaningful assertion messages and relevant failure artifacts such as a screenshot or trace
+ANSWER: D
+EXPLANATION: Detailed assertion information and failure artifacts help determine what state the system was in when the failure occurred. This is particularly important in CI, where the developer may not be able to reproduce the failure immediately. A retry alone does not provide additional information about the root cause.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+QUESTION: A team has 1,000 unit tests, 20 API/integration tests, and 2,000 UI end-to-end tests. The suite is slow and frequently flaky. What could be a reasonable strategic direction?
+A) Keep all UI tests and handle every failure with retries
+B) Identify which UI tests cover logic that can also be tested at a lower level, and move appropriate coverage to lower levels
+C) Delete all unit tests
+D) Move every test to the UI level so they all run in the same environment
+ANSWER: B
+EXPLANATION: A suite that is overly focused on UI tests can be slow and fragile. It is worth examining whether some business rules or API behaviors can be verified at a lower, faster, and more stable level, while retaining UI tests that provide genuine end-to-end value. Retries alone do not solve an inappropriate test structure.
+###END
+
+### Q61
+LEVEL: medior
+TOPIC: Unit testing
+TYPE: debug
+QUESTION: The following test intermittently fails because `Clock` provides the actual current time. What would be the best solution?
+CODE:
+@Test
+void expiresToken() {
+    TokenService service = new TokenService();
+    Token token = service.createToken();
+
+    assertTrue(service.isExpired(token));
+}
+ENDCODE
+A) Always wait 24 hours at the beginning of the test
+B) Run the test twice every time
+C) Make the time dependency injectable and use controlled time in the test
+D) Remove the expiration logic from the production code
+ANSWER: C
+EXPLANATION: The current time is an external, changing dependency from the test's perspective. If it can be controlled through an injected `Clock` or another time provider, the test can deterministically set the time and verify boundary conditions. Using real time is tempting because it is simple and resembles production behavior, but it can introduce timing-related failures.
+###END
+
+### Q62
+LEVEL: medior
+TOPIC: Mocks, stubs & fakes
+TYPE: trap
+QUESTION: In a unit test, every dependency has been mocked, including the domain objects owned by the application itself. What is one potential drawback?
+A) The tests can become too tightly coupled to implementation details and may verify less of the actual behavior
+B) Because of mocks, the test can never run in CI
+C) Mocks automatically establish real network connections
+D) Mockito supports only one mock per test
+ANSWER: A
+EXPLANATION: When too many components are mocked, a test can end up verifying exactly which method calls the implementation makes rather than whether it produces the correct business result. This can lead to fragile tests that are tightly coupled to implementation details. Mocking everything is tempting because it provides maximum isolation, but excessive isolation can reduce the value of the test.
+###END
+
+### Q63
+LEVEL: medior
+TOPIC: Selenium WebDriver
+TYPE: debug
+QUESTION: In a Selenium test, the locator is correct and the element is visible, but after the click, the next step sometimes runs too early. What is the problem?
+A) `click()` always blocks the browser until the entire business process has completed
+B) A successful click does not necessarily mean that the asynchronous application process triggered afterward has also completed
+C) Selenium automatically closes the page after a click
+D) WebDriver supports only synchronous JavaScript applications
+ANSWER: B
+EXPLANATION: Executing a click and completing subsequent API calls or UI updates triggered by the application are two separate events. The next step should wait for the relevant business state, not merely for the click to succeed. It is tempting to assume that the click provides complete synchronization because the Selenium action itself may block until certain conditions are met.
+###END
+
+### Q64
+LEVEL: medior
+TOPIC: Playwright & Cypress
+TYPE: scenario
+QUESTION: In a Playwright test, a `Success` message appears based on an API response. Which approach may be appropriate if the test also needs to control the API call itself?
+A) Always use `sleep(10000)`
+B) Fully restart the browser after the API call
+C) Control the API response using an appropriate Playwright route interception or API mocking mechanism
+D) Remove the locator for the `Success` element
+ANSWER: C
+EXPLANATION: Playwright can intercept network requests and return controlled responses. This makes it possible to test edge cases, error responses, or deterministic successful responses without depending on the actual backend state. A fixed sleep only changes timing; it does not control the API response.
+###END
+
+### Q65
+LEVEL: medior
+TOPIC: Locators & selectors
+TYPE: algorithm
+QUESTION: A dynamic list contains an `Edit` button in every row. The correct button must be selected based on the `Product A` text in that row. Which strategy is the most robust?
+A) Always select the third `Edit` button
+B) Randomly select one of the `Edit` buttons
+C) Select the first `Edit` button on the entire page
+D) First identify the row containing `Product A`, then select the `Edit` button within that row
+ANSWER: D
+EXPLANATION: The locator should be tied to the desired business context: first find the correct row, then find the action within that row. This makes the test less sensitive to changes in list ordering. A fixed index is tempting because it is short and easy to write, but it is fragile when the data is dynamic.
+###END
+
+### Q66
+LEVEL: medior
+TOPIC: Waits & flaky tests
+TYPE: performance
+QUESTION: A suite contains 500 tests, and every test performs a fixed 2-second wait before every important step. Why can this become a significant performance problem?
+A) Fixed waits can accumulate and significantly increase the total suite execution time
+B) Selenium and Playwright only work with fewer than 500 tests
+C) Fixed waits automatically consume multiple CPU cores
+D) The tests are guaranteed to run in parallel because of the waits
+ANSWER: A
+EXPLANATION: If a test contains several unnecessary 2-second waits, they accumulate and can create substantial time loss across 500 tests. State-based waiting waits only as long as necessary. A fixed sleep is tempting because its individual cost appears small, but across a large suite it can quickly become significant overhead.
+###END
+
+### Q67
+LEVEL: medior
+TOPIC: Page Object Model
+TYPE: scenario
+QUESTION: A large Page Object class has grown to 1,500 lines and contains login, search, checkout, admin, and reporting operations. What would be a reasonable refactoring direction?
+A) Add all future functionality to the same class
+B) Rewrite the tests to use CSS selectors directly
+C) Split the Page Object into multiple components or page/domain objects organized around cohesive responsibilities
+D) Convert all UI tests into unit tests
+ANSWER: C
+EXPLANATION: An oversized Page Object handles multiple unrelated responsibilities and therefore becomes harder to maintain. The UI or domain responsibilities can be split into smaller, cohesive objects, such as separate checkout or admin components. Keeping a single central Page Object is tempting because all locators are in one place, but its size and mixed responsibilities eventually become problematic.
+###END
+
+### Q68
+LEVEL: medior
+TOPIC: API testing
+TYPE: behavior
+QUESTION: A REST API `PUT /users/42` endpoint is defined as idempotent. What does this mean from a testing perspective?
+A) The second identical PUT request must always return 500
+B) Sending the same PUT request multiple times should leave the resource in the same final state as after applying it once
+C) A PUT request can be sent only once
+D) PUT must create a new resource every time
+ANSWER: B
+EXPLANATION: Idempotency means that repeating the same operation on the same resource does not further change the intended final state. It does not necessarily mean that every response must be byte-for-byte identical or that every implementation must return the same status code for every repetition; the key property is that repeated application does not accumulate additional effects on the resource. It is tempting to interpret idempotency as meaning "can only be used once," but that is the opposite of its intended meaning.
+###END
+
+### Q69
+LEVEL: medior
+TOPIC: BDD & Cucumber
+TYPE: trap
+QUESTION: A team describes every small technical detail as a Gherkin step, including CSS classes, XPath expressions, and specific API endpoints. What is the main problem with this?
+A) Gherkin cannot handle strings
+B) Cucumber can be used only for backend tests
+C) The feature files become too closely coupled to the implementation and can lose their value as business-level specifications
+D) The `Then` keyword cannot be used for technical details
+ANSWER: C
+EXPLANATION: One value of BDD feature files is that they describe behavior in language that is understandable from a business perspective. If CSS classes, XPath expressions, and specific endpoints are included in the specification, the document becomes more fragile when the implementation changes and less readable as a business specification. Including every technical detail is tempting because it appears to make execution completely explicit, but it mixes specification with implementation.
+###END
+
+### Q70
+LEVEL: medior
+TOPIC: Test data management
+TYPE: production
+QUESTION: Parallel API tests use the same customer ID and sometimes modify the customer's state. What would be the best direction?
+A) Use the same ID in every test to keep test data simple
+B) Handle failures with retries while leaving the shared data unchanged
+C) Remove all data assertions from the tests
+D) Introduce test data isolation, for example through unique test data or an appropriate fixture/rollback strategy
+ANSWER: D
+EXPLANATION: Shared mutable test data can cause race conditions and nondeterministic results during parallel execution. Data isolation can be achieved through unique records, per-test namespaces, fixtures, or appropriate transactional rollback. Retries only hide the problem while the underlying data race remains.
+###END
+
+### Q71
+LEVEL: medior
+TOPIC: CI integration
+TYPE: performance
+QUESTION: A CI pipeline runs the entire 90-minute end-to-end suite on every commit. Which strategy could improve developer feedback time the most?
+A) Keep the full suite but add a 5-second wait before every test
+B) Split the tests into appropriate categories and run fast smoke/regression checks earlier
+C) Require manual approval before every test run
+D) Stop running the full suite and allow only local testing
+ANSWER: B
+EXPLANATION: For fast feedback, tests can be organized into categories such as smoke, API, integration, and longer E2E tests, then executed at appropriate pipeline stages. This allows critical failures to reach developers sooner while preserving full regression coverage in a later stage. Completely removing the full suite would reduce regression protection.
+###END
+
+### Q72
+LEVEL: medior
+TOPIC: Parallel execution
+TYPE: edgecase
+QUESTION: In a test framework, parallel worker processes modify the same static global configuration object. What can happen as a result?
+A) Every worker automatically receives an isolated configuration
+B) The configuration always retains the value from the first test
+C) A race condition and worker-dependent, nondeterministic behavior can occur
+D) Parallel execution automatically stops
+ANSWER: C
+EXPLANATION: Shared mutable state can cause workers to interfere with one another. As a result, the same test may run with different configuration depending on timing, or the failure may occur only during parallel execution. It is tempting to assume automatic isolation because the framework uses separate workers, but global mutable state can still create problems.
+###END
+
+### Q73
+LEVEL: medior
+TOPIC: Visual & accessibility testing
+TYPE: scenario
+QUESTION: During an accessibility audit, a form input has no visible label and can be identified in the test only by its placeholder text. Why can this be a problem?
+A) A placeholder is always a prohibited HTML element
+B) A placeholder automatically serves the same role as a label
+C) A placeholder cannot appear in input fields
+D) A placeholder alone does not necessarily provide an appropriate, persistent accessible name for the input
+ANSWER: D
+EXPLANATION: A placeholder can provide useful supplementary information, but it is not a general replacement for a proper label or another stable source of an accessible name. A label improves usability and interaction with assistive technologies. It is tempting to treat a placeholder as a label because it visually displays text associated with the input, but semantically it does not necessarily serve the same role.
+###END
+
+### Q74
+LEVEL: medior
+TOPIC: Framework design
+TYPE: scenario
+QUESTION: An automation framework supports multiple browser frameworks, and a significant portion of the tests directly calls Playwright APIs. The team now wants to add Selenium support. Which design direction could reduce technology coupling the most?
+A) Use even more Playwright APIs in every test
+B) Introduce an appropriate abstraction layer between test logic and low-level browser APIs
+C) Duplicate every test separately for Selenium
+D) Ignore the differences between the browser frameworks
+ANSWER: B
+EXPLANATION: A well-designed abstraction layer can separate the business intent of the tests from the specific browser automation implementation. However, it is important not to force every framework capability artificially into one set of primitives. Fully duplicating the tests may be simple in the short term, but it creates significant maintenance cost.
+###END
+
+### Q75
+LEVEL: medior
+TOPIC: API testing
+TYPE: performance
+QUESTION: An API test suite creates a new HTTP client connection and a new authentication token before every test, even though most tests use the same environment. What could be a reasonable optimization?
+A) Investigate connection reuse and appropriately controlled token/session reuse while preserving test isolation
+B) Create three separate HTTP connections for every test
+C) Remove all API assertions
+D) Move all tests to the UI level
+ANSWER: A
+EXPLANATION: Creating a new connection and performing authentication before every test can introduce significant overhead in a large suite. Connection pooling or client reuse, along with appropriately managed tokens, can reduce this overhead as long as test isolation and the security model are preserved. It can be tempting to create every resource from scratch for every test because this provides a simple mental model of isolation, but it does not always provide necessary technical isolation.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+QUESTION: A team created 15 UI tests and only 2 unit tests for a new business feature. Most of the UI tests verify the same validation rule with different input data. What would be the most appropriate change?
+OPTIONS:
+A) Cover a significant part of the validation rules at unit level, and limit the UI tests to important integrated user flows
+B) Add more UI tests so that every input runs in a separate browser
+C) Remove the unit tests completely because UI tests are at a higher level
+D) Move all tests to the API level regardless of whether there is UI-specific behavior
+ANSWER: A
+EXPLANATION: Simple business rules can often be verified faster and more deterministically at unit level. At the UI layer, it is more appropriate to validate that components and user flows are integrated correctly.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: Unit testing
+TYPE: edgecase
+QUESTION: A `calculateDiscount(int itemCount)` method must return 0% for 0 items, 5% for 1–9 items, and 10% for 10 or more items according to the business rule. Which test data set covers the relevant boundary values best?
+OPTIONS:
+A) 1, 5, 15
+B) 0, 1, 9, 10, 11
+C) 5, 10, 20
+D) 0, 5, 20
+ANSWER: B
+EXPLANATION: Testing around boundary values helps detect bugs caused by incorrect use of `<`, `<=`, `>` or `>=` conditions. The values 0, 1, 9, 10, and 11 cover the relevant range boundaries and their neighbors.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: Mocks, stubs & fakes
+TYPE: theory
+QUESTION: What is the most important difference between a stub and a mock in their typical use in unit testing?
+OPTIONS:
+A) A stub can only be used for databases, while a mock can only be used for HTTP
+B) A stub is always a real implementation, while a mock always returns fake data
+C) A stub typically provides a predefined response, while a mock can also be used to verify interactions with the dependency
+D) There is no practical difference between a mock and a stub
+ANSWER: C
+EXPLANATION: The primary role of a stub is generally to provide the responses or states required by the component under test. A mock can additionally be used to verify interactions, such as calls, arguments, or invocation counts.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: Selenium WebDriver
+TYPE: behavior
+QUESTION: A Selenium test checks the `displayed` state of an element. The element exists in the DOM, but another element covers it completely. What should you keep in mind?
+A) Being present in the DOM and being ready for real interaction are not necessarily the same thing
+B) If the element is in the DOM, Selenium always considers it clickable
+C) An overlay is purely a CSS validation issue, so WebDriver cannot notice it
+D) `findElement` automatically removes every overlay
+ANSWER: A
+EXPLANATION: An element existing, or even being visible, does not guarantee that a user can actually interact with it. Because of an overlay, an animation or another covering element, clicking an element that seems to be there can fail (for example with `ElementClickInterceptedException`), so wait for the element to be clickable and for overlays to disappear.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Playwright & Cypress
+TYPE: output
+QUESTION: What does the following Playwright code verify?
+CODE:
+```typescript
+await expect(page.getByRole('heading', { name: 'Dashboard' }))
+    .toBeVisible();
+```
+OPTIONS:
+A) That exactly one browser tab named `Dashboard` is open
+B) That the application server returned an HTTP 200 response
+C) That the element matching the `Dashboard` heading locator becomes visible within the configured assertion timeout
+D) That the entire HTML of the page matches a previous snapshot
+ANSWER: C
+EXPLANATION: `toBeVisible()` is a web-first assertion that verifies the visible state of the element identified by the locator. On a dynamic page, Playwright can wait for the expected state to occur within the configured timeout.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: Locators & selectors
+TYPE: trap
+QUESTION: A test currently uses this locator: `div.container > div:nth-child(3) > button`. The frontend frequently changes the DOM structure, while the button's accessible name remains stable. Which change would reduce the locator's brittleness the most?
+OPTIONS:
+A) Add more `nth-child` levels
+B) Click based on the current pixel position
+C) Make the full XPath path even more detailed
+D) Identify the button using stable semantic properties, such as its role and accessible name
+ANSWER: D
+EXPLANATION: Locators tied to DOM structure are sensitive to layout refactoring. Stable semantic properties carry meaning for users, so they generally provide more durable test targets.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: Waits & flaky tests
+TYPE: scenario
+QUESTION: A test needs to continue after a search once the result list contains at least one item. The application's response time varies from approximately 200 ms to 8 seconds. Which approach fits this requirement best?
+OPTIONS:
+A) Always wait exactly 8 seconds
+B) Rerun the test three times if it fails
+C) Use state-based waiting that observes the desired state of the result list with a timeout
+D) Remove the wait completely
+ANSWER: C
+EXPLANATION: Waiting based on application state adapts to the actual response time. It avoids unnecessary delays when the application is fast while still allowing enough time for the desired state to occur when the application is slower.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: Page Object Model
+TYPE: production
+QUESTION: A Page Object contains dozens of locators, and the tests use these locators directly. The team wants to improve the maintainability of the Page Object. What would be the appropriate approach?
+OPTIONS:
+A) Redefine the locators in every test
+B) Use higher-level Page Object operations in the tests and hide the locator details inside the Page Object
+C) Make every locator a static global variable
+D) Remove the Page Object completely
+ANSWER: B
+EXPLANATION: One of the fundamental purposes of the Page Object is to prevent tests from depending directly on the technical structure of the page. Ideally, when a locator changes, the change should be handled in the appropriate Page Object.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: API testing
+TYPE: debug
+QUESTION: A REST Assured test receives an API response with `Content-Type: application/json`, but the body assertion fails because the test treats the `items` field as a list while the API returns an object. What is the best first step?
+OPTIONS:
+A) Randomly modify the test assertions
+B) Compare the actual JSON response structure with the API contract, then use the correct path and type
+C) Remove the `Content-Type` header
+D) Disable all API response validation
+ANSWER: B
+EXPLANATION: The assertion must match the actual and contractually defined API structure. First determine whether the problem is in the test path, the expected type, or the API response itself.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: BDD & Cucumber
+TYPE: scenario
+QUESTION: A team writes Gherkin scenarios that describe SQL queries and database table names in detail. The product owner finds them difficult to read. What would be the appropriate change?
+OPTIONS:
+A) Rewrite the scenarios using language focused on business behavior and outcomes, while handling technical details in the implementation
+B) Add even more SQL details
+C) Remove the feature files completely
+D) Add at least twenty SQL steps to every scenario
+ANSWER: A
+EXPLANATION: The goal of BDD is to make expected behavior understandable in a shared language. Database-specific technical details generally belong in step definitions or other test infrastructure.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: Test data management
+TYPE: performance
+QUESTION: An E2E suite creates 500 records through the UI before every test, while the tests actually need only a few specific records. Which change could provide the greatest performance improvement?
+OPTIONS:
+A) Make the UI setup steps even more detailed
+B) Take a separate screenshot for every record
+C) Create only the required minimum data through an API, fixture, or dedicated test-data setup
+D) Increase the test timeout
+ANSWER: C
+EXPLANATION: The way test data is created can have a significant impact on E2E suite execution time. If data preparation is not itself part of the UI flow being tested, it is generally more efficient to perform it through a faster technical channel.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: CI integration
+TYPE: scenario
+QUESTION: In a pipeline, unit tests and API tests can run independently, but they currently execute completely sequentially. What could be one of the simplest optimizations?
+OPTIONS:
+A) Delete the unit tests
+B) Run the API tests only locally
+C) Move the entire pipeline to run overnight
+D) Run independent test stages in parallel while providing the required dependencies and resources
+ANSWER: D
+EXPLANATION: If two test groups have no dependent prerequisites, running them in parallel can reduce the total pipeline duration. Successful parallelization also requires appropriately isolated infrastructure and test data.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: Parallel execution
+TYPE: edgecase
+QUESTION: A test suite is stable with four workers, but with eight workers it more frequently encounters `connection pool exhausted` errors. What most likely explains this?
+OPTIONS:
+A) Increasing the number of workers reduced the number of tests
+B) The parallel workers require more simultaneous database connections and may reach the connection pool or database capacity limit
+C) Eight workers automatically disable database transactions
+D) A connection pool can only be used by unit tests
+ANSWER: B
+EXPLANATION: Increasing parallelism can increase the number of concurrent resource requirements. If the connection pool size or the database's maximum connection count is limited, too many workers can cause contention and connection exhaustion.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: Reporting
+TYPE: theory
+QUESTION: Why is it useful to distinguish the primary test failure from subsequent cleanup failures in a test report?
+OPTIONS:
+A) Because it distinguishes what originally caused the test to fail from what happened as a consequence of the failed state
+B) Because a cleanup failure should always make the test pass
+C) Because cleanup failures should never be considered
+D) Because a report can handle only one exception
+ANSWER: A
+EXPLANATION: When multiple exceptions occur, preserving their order and causal relationship is important. This helps prevent a secondary cleanup problem from obscuring the actual failure in the behavior being tested.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Contract testing
+TYPE: production
+QUESTION: In a microservice system, multiple consumers use the same provider API. The provider developers want to refactor safely, but they do not have reliable information about which response fields the consumers actually use. Which approach can help?
+OPTIONS:
+A) Delete all API tests
+B) Treat every response field change as a breaking change
+C) Establish consumer contracts that capture the interface portions actually expected by each consumer
+D) Run only manual UI tests
+ANSWER: C
+EXPLANATION: Consumer contracts can document and automatically verify the provider behavior that consumers actually require. This can help the provider team understand which changes could affect existing consumers.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Visual & accessibility testing
+TYPE: edgecase
+QUESTION: In the mobile view of a website, a button's text is visible, but when the button receives focus, there is no visually perceivable focus indicator. What testing problem could this indicate?
+OPTIONS:
+A) Only an API performance problem
+B) An accessibility problem that can make keyboard-based or other focus-based navigation difficult
+C) A backend database error
+D) An expired browser session
+ANSWER: B
+EXPLANATION: A visible focus indicator is important for tracking the current focus location. If an interactive element can receive focus but the focus cannot be visually distinguished, this can be an accessibility issue.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: Framework design
+TYPE: production
+QUESTION: In a test framework, Selenium, Playwright, and API clients are initialized directly in every test class. Which architectural change could reduce duplication?
+OPTIONS:
+A) Add even more initialization code to every test class
+B) Turn all clients into global mutable singletons
+C) Rewrite the tests to use only static methods
+D) Create a shared dependency lifecycle or fixture layer that provides the required clients in a controlled manner
+ANSWER: D
+EXPLANATION: A shared lifecycle layer can standardize resource creation and cleanup. The abstraction must preserve proper test isolation and avoid introducing unwanted global state.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: Selenium WebDriver
+TYPE: performance
+QUESTION: A Selenium suite runs 100 tests, and each test performs a full browser startup. Startup takes an average of 4 seconds. Which statement is significant?
+OPTIONS:
+A) Browser startup alone can represent approximately 400 seconds of cumulative time, so optimizing the lifecycle can have a meaningful impact on the suite
+B) Browser startup time does not count toward test execution time
+C) 100 startups take at most 4 seconds in total
+D) Browser startup happens only for the first test
+ANSWER: A
+EXPLANATION: If every test performs a separate browser startup, the 4-second overhead occurs one hundred times. With proper isolation, optimizing the lifecycle or reusing browsers at the worker level can significantly reduce this overhead.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: Playwright & Cypress
+TYPE: debug
+QUESTION: A Playwright test uses:
+CODE:
+```typescript
+await page.locator('.loading').waitFor({ state: 'hidden' });
+await expect(page.getByText('Order created')).toBeVisible();
+```
+Sometimes the `.loading` element never appears, while the order is successfully created. Why can this be a problem?
+OPTIONS:
+A) `getByText()` does not work on dynamic pages
+B) Playwright does not support the `hidden` state
+C) Waiting for the spinner to disappear can make the test depend on a prerequisite that does not exist in every valid UI flow
+D) Locators only accept CSS selectors
+ANSWER: C
+EXPLANATION: It is preferable to base the wait on the state that is actually required by the test. If the spinner appears only optionally, waiting for it to disappear can become an unnecessary and unstable intermediate condition.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: API testing
+TYPE: scenario
+QUESTION: An API endpoint applies rate limiting and returns `429 Too Many Requests` after too many requests. Which test would be appropriate for verifying this behavior?
+OPTIONS:
+A) Disable rate limiting completely in the test environment
+B) Send multiple requests in a controlled manner, then verify the 429 status and the relevant response data defined by the API
+C) Wait for a random amount of time after every request
+D) Always treat 429 responses as incorrect server responses
+ANSWER: B
+EXPLANATION: Rate limiting can be part of the API contract, so its negative behavior should also be verified through automation. The test should be based on the documented limit and response behavior.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: Test data management
+TYPE: scenario
+QUESTION: A test requires a customer with an expired subscription on a specific date. The test currently relies on the real current date, so it may produce different results several months later. What is the best solution?
+OPTIONS:
+A) Manually modify the test data every time
+B) Run the test only on one specific day of the year
+C) Generate the subscription expiration date randomly
+D) Use a deterministic date or controlled test clock so that the test state is independent of the actual day on which it runs
+ANSWER: D
+EXPLANATION: Time-dependent test data can easily lead to temporal flakiness. With a fixed or injectable time source and deterministic fixtures, the same business state can be reproduced on every run.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: Parallel execution
+TYPE: scenario
+QUESTION: When a test suite runs in parallel, two tests use the same temporary file name, so one test occasionally reads the other test's file. What is the most appropriate solution?
+OPTIONS:
+A) Use unique file names containing a worker or test identifier and separate temporary directories
+B) Wait 2 seconds before reading the file
+C) Randomly restart the parallel execution
+D) Ignore the contents of the file
+ANSWER: A
+EXPLANATION: The problem is caused by using a shared, non-isolated resource. Unique paths prevent tests from overwriting each other's artifacts and make parallel execution more deterministic.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: Reporting
+TYPE: performance
+QUESTION: A CI report shows that a 20-minute suite spends 14 minutes on a single test. The test performs hundreds of small steps, but the report shows only the total test duration. What would be the best next step?
+OPTIONS:
+A) Delete the test completely
+B) Rerun every test in the suite
+C) Add step-level timing and detailed diagnostic data to identify which operations dominate the execution time
+D) Hide the test execution time from the report
+ANSWER: C
+EXPLANATION: The total test duration alone does not reveal the bottleneck. Detailed timing makes it possible to focus optimization efforts on the operations that are actually expensive.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: Contract testing
+TYPE: trap
+QUESTION: A provider API changes a JSON field from `string` to `number`, while the field name and meaning remain unchanged. The consumer still processes the value as a string. Why can this be a breaking change from a contract perspective?
+OPTIONS:
+A) Because every JSON response must necessarily contain only strings
+B) Because the field's data type can be part of the contract expected by the consumer, so changing the type can cause incompatibility
+C) Because a provider must never modify JSON fields
+D) Because contract tests only verify status codes
+ANSWER: B
+EXPLANATION: An API contract can define not only the presence of fields but also their types and semantics. If the consumer relies on the previous type, changing it can cause a compatibility problem.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: Framework design
+TYPE: algorithm
+QUESTION: A test framework needs to handle screenshot, console log, and trace artifacts consistently for failed UI tests. Which design approach is more scalable?
+OPTIONS:
+A) Each test implements its own, different artifact-handling logic
+B) The framework ignores all failures
+C) Create a centralized failure hook or lifecycle mechanism that automatically collects and stores relevant artifacts from the test context
+D) Take screenshots only manually during local execution
+ANSWER: C
+EXPLANATION: Centralized failure handling standardizes diagnostic artifact collection and reduces repetitive infrastructure code in the tests. The solution should also provide unique artifact paths and appropriate lifecycle management for parallel execution.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+QUESTION: A team needs to decide which test levels should cover a new payment flow. The payment calculations are complex, while the complete checkout flow consists of only a few critical business paths. Which strategy is the most appropriate?
+OPTIONS:
+A) Test the calculation rules in detail at unit level and keep a few critical UI or E2E tests for the complete checkout flow
+B) Cover every possible combination exclusively with UI tests
+C) Skip unit tests because payment functionality can only be understood at the integration level
+D) Use only manual testing because the payment flow is complex
+ANSWER: A
+EXPLANATION: Complex calculation rules are well suited to fast unit tests, while higher-level tests should focus on integrations and critical business flows. This keeps the test suite smaller and faster without losing important system-level coverage.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: Unit testing
+TYPE: debug
+QUESTION: A JUnit test modifies the same object across multiple test cases, and the result depends on which test ran previously. What is the most likely problem?
+OPTIONS:
+A) JUnit always runs methods in random order
+B) The tests are using shared or improperly initialized state
+C) Assertions cannot be used in multiple tests
+D) Unit tests are required to use a database
+ANSWER: B
+EXPLANATION: Unit tests should ideally be independent and deterministic. Shared mutable state can cause one test to change the starting state of another test.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: Mocks, stubs & fakes
+TYPE: scenario
+QUESTION: A service depends on an external weather API. The unit test also needs to verify how the application behaves when the API times out. Which test double is most appropriate?
+OPTIONS:
+A) Use the real external API with random weather data
+B) Remove the API call from the test completely
+C) Use a test double that deterministically simulates a timeout failure
+D) Run the test only when the external API happens to be slow
+ANSWER: C
+EXPLANATION: A timeout can be a difficult external condition to reproduce reliably, so it is useful to simulate it deterministically in a unit test. This allows the error-handling logic to be verified quickly and repeatably.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: Selenium WebDriver
+TYPE: scenario
+QUESTION: A Selenium test needs to upload a file through an `<input type="file">` element. Which approach is the most appropriate?
+OPTIONS:
+A) Enter the file contents character by character using the keyboard
+B) Simulate a drag-and-drop animation in every case
+C) Click based on the browser window's pixel coordinates and navigate through the file picker
+D) Directly provide the path of the file to the file input element, for example using `sendKeys`
+ANSWER: D
+EXPLANATION: With Selenium, a file input element can be given the path to the file directly. This is more stable and automatable than controlling the operating system's native file picker using pixels or keyboard input.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: Playwright & Cypress
+TYPE: behavior
+QUESTION: In a Playwright test, a new tab opens as a result of clicking a button. Which approach best fits the Playwright model?
+OPTIONS:
+A) Handle the popup event or context in coordination with the action, then continue the test using the new Page object
+B) Randomly select one of the open tabs
+C) Always close the original page
+D) Wait five seconds and then find the new tab from global state
+ANSWER: A
+EXPLANATION: Playwright provides explicit support for handling popups and new pages. The resulting Page object should be synchronized appropriately with the action that triggers it, so the test does not depend on fixed timing.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: Locators & selectors
+TYPE: edgecase
+QUESTION: An application contains two buttons with the same name, but only one is active while the other is inside a hidden component. The test needs to interact with the active button. Which approach is best?
+OPTIONS:
+A) Always select the first matching element
+B) Use a locator strategy that considers both the element's unique context and the required state
+C) Locate the button using pixel coordinates
+D) Randomly select one of the matches
+ANSWER: B
+EXPLANATION: When elements have the same name, it is important to establish the correct context. The locator should express the semantic or structural uniqueness of the target element rather than relying on its current position in the DOM.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Waits & flaky tests
+TYPE: production
+QUESTION: A UI test running in CI fails with a timeout 2 out of 20 runs. Logs indicate that the application's backend response time sometimes increases significantly. What should be the first step in addressing the problem?
+OPTIONS:
+A) Increase the timeout indefinitely
+B) Automatically mark the test as successful after a retry
+C) Investigate the state that depends on backend response time and the test's waiting strategy, then improve it based on measured data
+D) Disable all UI tests in CI
+ANSWER: C
+EXPLANATION: The first step should be to identify the cause of the flakiness rather than simply hiding it with a longer wait. If real backend latency is causing the failure, both the test and the application's performance should be investigated separately.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: Page Object Model
+TYPE: theory
+QUESTION: Why can it be problematic if a Page Object puts every possible business workflow into a single method?
+OPTIONS:
+A) Because a Page Object cannot contain methods
+B) Because Selenium does not support long methods
+C) Because every workflow necessarily requires a separate browser
+D) Because the class can take on too much responsibility, and the tests can lose flexible, reusable components
+ANSWER: D
+EXPLANATION: A Page Object should encapsulate UI-related behavior, but it does not need to wrap every complete business process into one large method. Smaller, well-named operations can make tests more reusable and maintainable.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: API testing
+TYPE: output
+QUESTION: What does the following REST Assured code verify?
+CODE:
+```java
+given()
+    .queryParam("status", "ACTIVE")
+.when()
+    .get("/users")
+.then()
+    .statusCode(200)
+    .body("findAll { it.status == 'ACTIVE' }.size()", greaterThan(0));
+```
+OPTIONS:
+A) At least one user with ACTIVE status must be present in the response
+B) Exactly one ACTIVE user must be present
+C) The response must be empty
+D) The request performs a POST operation
+ANSWER: A
+EXPLANATION: The query parameter causes the test to request users associated with the ACTIVE status. The body assertion verifies that the response contains at least one element with that status.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: BDD & Cucumber
+TYPE: scenario
+QUESTION: A Cucumber feature repeats the same login prerequisite in 12 scenarios. The team wants to reduce duplication while preserving business readability. Which solution may be appropriate?
+OPTIONS:
+A) Add more technical login steps to every scenario
+B) Express the common prerequisite using an appropriate `Background` if it is genuinely applicable to every scenario
+C) Remove the login steps completely
+D) Merge the entire feature into a single scenario
+ANSWER: B
+EXPLANATION: `Background` can be used to describe common prerequisites that are relevant to every affected scenario. Only prerequisites that are genuinely shared and understandable from a business perspective should be extracted this way.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: Test data management
+TYPE: production
+QUESTION: A test suite uses the same preloaded database records for hundreds of tests. A data model change makes some of the fixtures outdated. Which approach can improve maintainability the most?
+OPTIONS:
+A) Store a complete database backup for every test
+B) Never update the data
+C) Manage the data required by tests using targeted, versioned, and preferably minimal fixtures
+D) Copy the entire production database before every test
+ANSWER: C
+EXPLANATION: Large, centrally shared fixtures are difficult to maintain and can contain many hidden dependencies. Targeted, versioned test data can track changes in the application's data model more effectively.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: CI integration
+TYPE: performance
+QUESTION: A pipeline runs 45 minutes of full regression UI tests on every commit, while the fast unit and API tests complete in 5 minutes. Which CI strategy can improve developer feedback time?
+OPTIONS:
+A) Keep the full UI regression at the beginning of the pipeline on every commit
+B) Run the faster tests as early feedback and move the full regression to an appropriate later stage
+C) Remove the unit tests
+D) Run all tests only before release
+ANSWER: B
+EXPLANATION: Fast tests can identify basic problems in a short amount of time. The expensive regression suite can run in a later stage or through another trigger while still providing important protection.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: Parallel execution
+TYPE: scenario
+QUESTION: A test framework runs UI tests with 16 workers, but the machine runs out of memory because of the browser instances. What would be a reasonable solution?
+OPTIONS:
+A) Add more workers
+B) Ignore the memory errors
+C) Adjust the worker count to the available resources and, if necessary, distribute the tests across multiple machines or jobs
+D) Start additional browser instances in every test
+ANSWER: C
+EXPLANATION: Parallelism needs to be matched to infrastructure capacity. If a single machine cannot safely run that many browser instances, reducing the worker count or distributing the workload horizontally may be appropriate.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: Reporting
+TYPE: behavior
+QUESTION: A report displays only `AssertionError` for several tests but does not show the actual and expected values. Why is this a problem?
+OPTIONS:
+A) The report will become too small
+B) The test will automatically become slower
+C) The assertions will not execute
+D) The information needed to compare the actual and expected states is missing for diagnosing the failure
+ANSWER: D
+EXPLANATION: A useful report should show at least the relevant expected and actual states, and preferably the execution context as well. This can significantly reduce the time required for debugging.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: Contract testing
+TYPE: scenario
+QUESTION: A frontend consumer uses an API's `POST /orders` endpoint. The provider changes the successful response status code from `201` to `200` while leaving the response body unchanged. Why can this be a contract change?
+OPTIONS:
+A) Because the HTTP status code can also be part of the API contract expected by the consumer
+B) Because every API endpoint must return only 201
+C) Because a POST request cannot have a response body
+D) Because contract tests can only verify JSON fields
+ANSWER: A
+EXPLANATION: An API contract does not necessarily contain only the response body structure. The semantics of status codes and the behavior expected by the consumer can also be part of the contract.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: Visual & accessibility testing
+TYPE: scenario
+QUESTION: A visual regression test runs on the same page in Chrome and Firefox and reports a large number of pixel differences due to different font rendering. What would be the most appropriate approach?
+OPTIONS:
+A) Automatically accept every pixel difference
+B) Tie visual baselines to a controlled and appropriately defined rendering environment, and handle cross-browser differences separately
+C) Remove screenshot testing completely
+D) Run the tests on random browsers
+ANSWER: B
+EXPLANATION: Visual regression tests are sensitive to the rendering environment, including browser version, fonts, and platform. A deterministic baseline environment is needed to distinguish real regressions from environmental differences.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: Framework design
+TYPE: scenario
+QUESTION: A test framework provides shared Selenium, Playwright, and API utilities for multiple projects. One utility contains mutable global configuration that tests modify during execution. What risk does this create during parallel execution?
+OPTIONS:
+A) The shared mutable configuration can cause race conditions and state leakage between tests
+B) Global configuration always makes tests faster
+C) Parallel execution automatically isolates global objects
+D) Utility classes cannot contain configuration
+ANSWER: A
+EXPLANATION: Shared mutable state is particularly dangerous in parallel test execution. A modification made by one worker can affect a test running in another worker, so configuration should preferably be immutable or appropriately scoped.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: Selenium WebDriver
+TYPE: trap
+QUESTION: A Selenium test sets the implicit wait to 10 seconds and then uses a 2-second explicit wait for a particular element. The team assumes that the total wait will always be exactly 2 seconds. Why can this assumption be incorrect?
+OPTIONS:
+A) The explicit wait always ignores the implicit wait
+B) Combining implicit and explicit waits can make the actual waiting behavior less predictable, and they should not be blindly combined
+C) Implicit waits only work in JavaScript tests
+D) The explicit wait always waits for 10 seconds
+ANSWER: B
+EXPLANATION: Selenium documentation advises against combining implicit and explicit waits because the actual waiting behavior may not match a simple expected timeout calculation. State-based explicit waits generally provide better control over test synchronization.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: Playwright & Cypress
+TYPE: production
+QUESTION: A Playwright suite creates a completely new browser context before every test. The tests need isolated cookies and local storage, but the same browser process can be safely shared. What could be an appropriate optimization?
+OPTIONS:
+A) Have every test use the same context and the same cookies
+B) Repeat the entire browser startup before every assertion
+C) Reuse the browser process while keeping a separate context per test to preserve the required isolation
+D) Remove isolation and run all tests on the same page
+ANSWER: C
+EXPLANATION: Playwright browser contexts can provide lightweight isolation for cookies and other browser state. In some cases, this allows the more expensive browser process to be reused without mixing test state.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: Locators & selectors
+TYPE: algorithm
+QUESTION: A table row has a unique `data-testid` attribute and contains several buttons. The test needs to select the `Delete` button within that row. Which locator strategy is the most appropriate?
+OPTIONS:
+A) Select the first `Delete` button on the entire page
+B) Locate the container using the row's unique identifier, then select the `Delete` button within it
+C) Use the button's current pixel coordinates
+D) Locate the button using its full DOM XPath index
+ANSWER: B
+EXPLANATION: A hierarchical locator strategy first identifies the correct row using a stable identifier and then searches for the desired button within that context. This reduces the risk of interacting with an identically named element in another row.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: Waits & flaky tests
+TYPE: scenario
+QUESTION: After clicking a button, a UI test needs to verify that a background process has completed. The application does not provide a stable loading indicator, but a `Completed` status appears when processing finishes. What should the test wait for?
+OPTIONS:
+A) Wait with a timeout for the actual final state of the application, such as the `Completed` status appearing
+B) Always wait exactly 60 seconds
+C) Wait for the browser to restart
+D) Keep retrying the test until the status appears
+ANSWER: A
+EXPLANATION: A stable final state is a better synchronization point than an intermediate loading indicator that is not guaranteed to exist. A timeout is still necessary so that a genuinely stuck process does not block the test indefinitely.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: API testing
+TYPE: edgecase
+QUESTION: An API accepts optional fields in a `PATCH /users/42` request. The test needs to verify that modifying a single field does not accidentally change the other data. Which validation is most important?
+OPTIONS:
+A) Check only the HTTP status code
+B) Check only the response body size
+C) Validate both the modified field and the relevant fields that should remain unchanged according to the API contract
+D) Remove the request body completely
+ANSWER: C
+EXPLANATION: For a partial update, it is not enough to verify only that the desired field changed. The test should also verify that the operation did not cause unintended changes to other relevant fields.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: CI integration
+TYPE: production
+QUESTION: In a CI pipeline, the same full E2E suite runs concurrently on three different branches, while all runs use the same shared test environment and the same data. Tests frequently interfere with one another. Which solution can improve the situation the most?
+OPTIONS:
+A) Ignore the failures
+B) Increase the suite timeout
+C) Reset the same data even more frequently on every branch
+D) Provide appropriately isolated environments and test data per branch or run, and coordinate concurrent executions when necessary
+ANSWER: D
+EXPLANATION: A shared, mutable environment can cause state conflicts between concurrent pipelines. Isolated environments or data states reduce these failures, while coordination may be necessary when full isolation is not possible.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: Parallel execution
+TYPE: performance
+QUESTION: A test suite runs in 12 minutes with 10 workers, but increasing the number to 20 workers reduces the time to only 11 minutes. CPU utilization is above 95% during the run. What does this indicate?
+OPTIONS:
+A) The tests are definitely written incorrectly
+B) The CPU has likely become a bottleneck, so additional workers provide only minimal speedup
+C) Parallel execution is not working
+D) The tests are definitely slow because of network failures
+ANSWER: B
+EXPLANATION: When the CPU is already nearly fully utilized, additional workers compete for the same computational capacity. In this situation, it is worth investigating system resources and the actual bottleneck before increasing parallelism further.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Framework design
+TYPE: production
+QUESTION: In a test framework, every test handles retry logic independently. Some tests retry three times, others five times, and the reports do not clearly indicate which result came from the initial run. What would be the best framework-level solution?
+OPTIONS:
+A) Increase the retry count further in every test
+B) Disable retries completely in every environment
+C) Implement a centralized, configurable retry mechanism and reporting that preserves the results of both the initial run and subsequent retries
+D) Automatically delete the original failure after a retry succeeds
+ANSWER: C
+EXPLANATION: A centralized retry policy provides consistent behavior and configurability. However, reporting should preserve the initial run result because a successful retry does not prove that the original flakiness or failure has been resolved.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+QUESTION: In an application, a business rule supports 40 different combinations. The rule is contained in a single service and does not require a database for its calculation. The team wants to create a full UI test for every combination. What would be the more appropriate approach?
+A) Cover most of the combinations with fast unit tests, and validate only the critical user flows at a higher level.
+B) Start a separate browser session for every combination.
+C) Manually verify all combinations before every release.
+D) Test only a few random combinations at the UI level.
+ANSWER: A
+EXPLANATION: Deterministic, isolated business logic can be covered much more efficiently with fast unit tests. Higher-level tests should primarily validate integration and end-to-end risks rather than repeatedly covering the same logic.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: Unit testing
+TYPE: behavior
+QUESTION: What does the following JUnit test verify?
+```java
+@Test
+void shouldRejectEmptyUsername() {
+    IllegalArgumentException exception = assertThrows(
+        IllegalArgumentException.class,
+        () -> validator.validate("")
+    );
+
+    assertEquals("Username is required", exception.getMessage());
+}
+```
+A) The validator throws `IllegalArgumentException` for every input.
+B) An empty username is valid as long as the error message is correct.
+C) For an empty username, the validator produces the expected exception and its specific error message.
+D) The test checks only the error message, not the exception type.
+ANSWER: C
+EXPLANATION: The test first verifies that processing the empty input produces an `IllegalArgumentException`, and then validates the exception message as well. This checks two important aspects of handling invalid input.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: Mocks, stubs & fakes
+TYPE: scenario
+QUESTION: In a service unit test, the repository returns `Optional.empty()`. The service is expected to throw `NotFoundException`. Why is a stub appropriate here?
+A) Because a stub can provide a controlled return value to reproduce the required dependency state.
+B) Because a stub automatically verifies the repository implementation.
+C) Because a stub always connects to a real database.
+D) Because a stub can only be used for HTTP requests.
+ANSWER: A
+EXPLANATION: A stub allows the dependency's response to be predefined. This lets the service be tested in isolation under a state that would otherwise be harder or more expensive to reproduce with a real data source.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: Selenium WebDriver
+TYPE: edgecase
+QUESTION: In a Selenium test, the following element is located inside a Shadow DOM:
+```html
+<custom-login>
+    #shadow-root
+        <input id="username">
+</custom-login>
+```
+A regular `driver.findElement(By.id("username"))` cannot find the input. Why?
+A) Selenium cannot handle input elements.
+B) Shadow DOM elements are always inside an iframe.
+C) The input can only be accessed from JavaScript, not Selenium.
+D) By default, the search does not cross into the Shadow DOM's internal document.
+ANSWER: D
+EXPLANATION: Shadow DOM creates a separate DOM boundary. The appropriate shadow root must be accessed through the host element, after which the desired element can be located inside it, using the APIs supported by the Selenium version in use.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Playwright & Cypress
+TYPE: output
+QUESTION: What does the following Playwright code verify?
+```typescript id="4ilaof"
+await expect(page.getByRole('button', { name: 'Delete' })).toBeEnabled();
+```
+A) The button is invisible.
+B) The button exists and is enabled.
+C) The button has already performed the deletion.
+D) There is exactly one instance of the button on the page.
+ANSWER: B
+EXPLANATION: `toBeEnabled()` verifies that the element identified by the locator is in an enabled state. The assertion does not prove that the button has already been clicked or that the operation completed successfully.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: Locators & selectors
+TYPE: production
+QUESTION: A test uses the following CSS selector:
+```text
+button.btn.btn-primary.css-1a2b3c
+```
+The `css-1a2b3c` class changes between builds while the button's functionality remains unchanged. What should be done?
+A) Automatically read the current class value before every run.
+B) Add more generated classes to the selector.
+C) Use a stable, intentionally testable attribute or semantic locator.
+D) Select the button based on its DOM index.
+ANSWER: C
+EXPLANATION: Generated CSS classes are implementation details and therefore are not a good stable test contract. A stable `data-testid`, accessible role/name, or another durable attribute is less sensitive to frontend build changes.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: Waits & flaky tests
+TYPE: debug
+QUESTION: A test contains the following wait:
+```java
+new WebDriverWait(driver, Duration.ofSeconds(10))
+    .until(d -> d.findElement(By.id("result")).getText().equals("Done"));
+```
+The test sometimes fails with `NoSuchElementException` before the 10-second timeout expires. What could be the problem?
+A) `until` supports only CSS selectors.
+B) WebDriverWait always waits exactly 10 seconds before starting to search.
+C) Java does not support lambda expressions in Selenium.
+D) The handling of `NoSuchElementException` during condition evaluation must be appropriate for the wait configuration being used.
+ANSWER: D
+EXPLANATION: During the wait, the element may initially be absent from the DOM. Selenium's explicit wait normally ignores `NoSuchElementException` by default, but this behavior can be changed through configuration, so the wait's exception-handling configuration must be checked when such an exception terminates the wait unexpectedly.
+NOTE: The original wording was technically ambiguous because Selenium's `WebDriverWait` ignores `NoSuchElementException` by default; the explanation was clarified to reflect that behavior.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: Page Object Model
+TYPE: scenario
+QUESTION: A Page Object method performs an entire checkout flow: entering the address, selecting shipping, making a payment, submitting the order, and verifying the success page. Several tests need only the first two operations. What is the main problem?
+A) A Page Object cannot contain assertions.
+B) The Page Object is too high-level and couples too many separate workflow steps into a single operation.
+C) Selenium cannot work across multiple pages.
+D) Every test must execute exactly the same checkout flow.
+ANSWER: B
+EXPLANATION: An overly large workflow method reduces reusability and may force steps that are irrelevant to a particular test. It is generally better to provide smaller, composable UI operations or appropriate higher-level workflow abstractions.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: API testing
+TYPE: debug
+QUESTION: An API test receives a successful HTTP 200 response, but the operation being tested did not actually modify the expected resource. The test still passes. What is missing?
+A) Validation of the response body or the resulting business state.
+B) A second HTTP client.
+C) A longer connection timeout.
+D) Another HTTP 200 assertion.
+ANSWER: A
+EXPLANATION: An HTTP status code validates only the protocol-level result. If the effect of the business operation is also part of the contract, it should be validated through the response and, where necessary, the resulting state.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: BDD & Cucumber
+TYPE: trap
+QUESTION: A team adds a technical database check to the end of every Cucumber scenario, even when the business outcome of the scenario can already be clearly verified through user behavior. What is a potential drawback?
+A) Cucumber automatically deletes the database.
+B) Scenarios cannot use Then steps.
+C) Feature files cannot represent database state.
+D) The scenario can become unnecessarily implementation-dependent and lose its business focus.
+ANSWER: D
+EXPLANATION: The primary purpose of a BDD scenario is to communicate the desired behavior and business outcome. Direct database verification can be justified in some cases, but it should not automatically become part of every scenario.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: Test data management
+TYPE: performance
+QUESTION: An API test suite deletes thousands of records before every test and then recreates the same small test dataset. A significant portion of the total runtime is spent on this setup. What could be an appropriate optimization?
+A) Create even more records for every test.
+B) Align test data management with actual requirements, for example through targeted fixtures and an appropriate reset strategy.
+C) Run the tests in a random order.
+D) Remove setup assertions.
+ANSWER: B
+EXPLANATION: Rebuilding the entire database for every test is often an unnecessary cost. Creating only the data actually required by the test or using an efficient reset mechanism can significantly reduce setup time.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: CI integration
+TYPE: scenario
+QUESTION: A pull request has a 30-minute E2E test running. The developer pushes a new commit to the same branch while the previous run is still executing, so the previous result is no longer relevant. What CI capability could be useful?
+A) Always run the previous and new executions in parallel without limits.
+B) Restart every run twice.
+C) Cancel obsolete pipeline runs and prioritize validation of the latest commit.
+D) Run E2E tests only once a month.
+ANSWER: C
+EXPLANATION: If an earlier commit no longer represents the current state of the pull request, its long-running test execution may consume resources unnecessarily. A concurrency and cancellation strategy can reduce the cost of obsolete runs.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: Parallel execution
+TYPE: performance
+QUESTION: A test suite runs in 14 minutes with 8 workers. Increasing to 16 workers reduces the runtime to 9 minutes, while 32 workers results in 8.9 minutes. Memory usage reaches 95% with 32 workers. What is the most likely conclusion?
+A) 32 workers are definitely optimal.
+B) Further parallelization is unlikely to provide meaningful improvement because of the resource limit.
+C) The tests should only be run with one worker.
+D) Increasing the number of browser sessions always results in linear speedup.
+ANSWER: B
+EXPLANATION: Doubling the worker count from 16 to 32 produced virtually no additional speedup while memory usage approached saturation. This indicates that infrastructure resources are already limiting further scaling.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Reporting
+TYPE: production
+QUESTION: A UI test fails in CI, but the report contains no screenshot, DOM snapshot, or trace. The failure is difficult to reproduce locally. Which improvement could provide the most diagnostic value?
+A) Shorten the test name.
+B) Double the test timeout.
+C) Automatically rerun every test.
+D) Automatically collect relevant artifacts, such as screenshots, traces, and logs, at the time of failure.
+ANSWER: D
+EXPLANATION: Artifacts that capture the UI state at the moment of failure can make debugging much easier without requiring reproduction. A screenshot combined with a trace and logs can be especially useful.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: Contract testing
+TYPE: edgecase
+QUESTION: A consumer treats the `total` field as an integer. In a new version, the provider starts returning a floating-point value such as `19.5` without documentation. Why is this important to verify with contract testing?
+A) Because every decimal value causes an HTTP error.
+B) Because JSON does not support numbers.
+C) Because the field's type and representation have changed, which can make the consumer incompatible.
+D) Because providers can only return strings.
+ANSWER: C
+EXPLANATION: A contract may define expectations about field types and representations. A change in numeric representation can cause parsing or business-logic errors depending on how the consumer processes the value.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: Visual & accessibility testing
+TYPE: scenario
+QUESTION: During an accessibility audit, it is discovered that an icon-only button has no accessible name. Visual and functional click tests both pass. Why are those tests insufficient?
+A) Because visual tests work only on mobile devices.
+B) Because a functional click does not prove that the element can be properly identified by assistive technologies.
+C) Because accessibility is only a backend testing concern.
+D) Because every accessibility issue results in an HTTP error code.
+ANSWER: B
+EXPLANATION: An element can be visually and functionally correct while still being inaccessible. Accessible names and other semantic information are important for screen readers and other assistive technologies.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: Framework design
+TYPE: architecture
+QUESTION: In an enterprise test framework, tests read environment variables directly, use their own defaults, and follow different naming conventions. As a result, the same configuration can be interpreted differently in CI. What is the best architectural direction?
+A) Keep the configuration logic specific to each test.
+B) Manually validate the configuration in every test.
+C) Provide configuration access through a centralized, typed, and validated layer with clear precedence rules.
+D) Write separate test code for every environment.
+ANSWER: C
+EXPLANATION: A centralized configuration layer standardizes the handling of names, defaults, validation, and overrides. This reduces environment-specific inconsistencies and removes infrastructure configuration details from the tests.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: Test strategy & pyramid
+TYPE: production
+QUESTION: A team finds that its full UI regression suite takes several hours to run, while many failures are related to simple business rules. Those rules are currently verified only at the UI level. What could be a long-term strategy?
+A) Increase the UI suite runtime with fixed sleep calls.
+B) Run all UI tests without parallelization.
+C) Keep the critical UI flows, but move stable business rules that can be tested at lower levels to more appropriate test levels.
+D) Hand all testing over to manual testers.
+ANSWER: C
+EXPLANATION: A test pyramid should be designed based not only on the number of tests, but also on the cost and value of the coverage. Moving business rules to faster test levels can reduce the size of the E2E suite without eliminating coverage of critical system flows.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: Unit testing
+TYPE: edgecase
+QUESTION: A unit test relies on random UUID generation and then compares the result with a hard-coded UUID. The test fails intermittently. What is the appropriate solution?
+A) Put UUID generation behind an abstraction and provide a deterministic value in the test.
+B) Run the test five times in a row.
+C) Ignore the failure if it occurs only occasionally.
+D) Remove the UUID comparison entirely.
+ANSWER: A
+EXPLANATION: Direct use of randomness makes the test non-deterministic. An injectable UUID generator or factory allows the test to use a controlled value.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: Mocks, stubs & fakes
+TYPE: production
+QUESTION: A payment gateway mock always returns a successful response. In production, however, the gateway can time out, return 429, or report a business error. How should testing be extended?
+A) Send every unit test to the real payment gateway.
+B) Remove the mock and use only manual testing.
+C) Model relevant error responses and timeouts in unit tests, and validate the real integration at an appropriate separate test level.
+D) Treat every gateway error as a successful response.
+ANSWER: C
+EXPLANATION: Unit tests can deliberately reproduce failures of external dependencies in a controlled way. However, a mock does not replace verification of the real gateway's contract and integration, so that requires an appropriate additional testing layer.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: Selenium WebDriver
+TYPE: production
+QUESTION: In a Selenium Grid test suite, the same test runs against different browser versions. A particular version consistently produces different results, but the report contains only the test name. Which information is most important to add for diagnosis?
+A) The developer's name.
+B) The exact browser, browser version, driver, OS, and Grid environment.
+C) A complete copy of the test source code from every run.
+D) The entire history of repository commits.
+ANSWER: B
+EXPLANATION: Exact execution-environment information is essential when investigating browser-specific failures. Recording versions and capabilities makes it possible to reproduce the problem and compare environmental differences.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: Playwright & Cypress
+TYPE: scenario
+QUESTION: A Playwright test suite performs the full UI login flow before every test. This accounts for 40% of the suite's runtime, while most tests do not actually test the login functionality. What could be an appropriate optimization?
+A) Run the login flow twice in every test.
+B) Remove the login assertions.
+C) Increase the browser timeout.
+D) Prepare a controlled authentication state for the tests and cover the login UI with separate targeted tests.
+ANSWER: D
+EXPLANATION: If login is not part of every test's purpose, repeatedly performing the UI login adds unnecessary cost. A prepared authentication state can speed up the suite while the login flow itself remains covered by dedicated tests.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: Locators & selectors
+TYPE: algorithm
+QUESTION: A product list contains multiple `Add to cart` buttons. Each product card has a unique `data-product-id` attribute. How should the button for product 847 be located?
+A) Select the first `Add to cart` button.
+B) Use the current DOM index of the buttons.
+C) Hard-code the full absolute XPath structure of the page.
+D) Identify the product card with `data-product-id="847"`, then find the `Add to cart` button within that card.
+ANSWER: D
+EXPLANATION: The stable product identifier is used to locate the correct container first, and the button is then located within that context. This is more resilient to changes in list order and surrounding DOM structure.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Waits & flaky tests
+TYPE: performance
+QUESTION: In a test suite, every action has a 30-second timeout because slow backend calls previously caused flaky tests. However, a failing test can now wait for several minutes. What would be a better strategy?
+A) Increase all timeouts to 120 seconds.
+B) Disable timeouts.
+C) Use targeted timeouts and appropriate state-based waits for slow operations, while giving normal operations shorter timeouts.
+D) Automatically rerun every test.
+ANSWER: C
+EXPLANATION: An excessively high global timeout can hide real problems and delay failure reporting. Timeouts should match the expected behavior of each operation, while asynchronous processes should be synchronized based on actual application states.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Framework design
+TYPE: architecture
+QUESTION: In a test framework used by multiple teams, every suite implements its own screenshot, trace, logging, and retry mechanisms. Introducing a new global rule therefore requires changes in many different code locations. Which architectural solution best reduces this problem?
+A) Give every suite even more configuration of its own.
+B) Organize cross-cutting functionality into centralized services and lifecycle hooks with well-defined extension points.
+C) Give every suite its own framework.
+D) Handle screenshots and traces manually everywhere.
+ANSWER: B
+EXPLANATION: Retry, logging, and artifact collection are typical cross-cutting concerns, so they should be handled by shared infrastructure. Extension points allow necessary variations without requiring every team to maintain a separate implementation.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: API testing
+TYPE: production
+QUESTION: In a high-volume API test suite, the tests use the same production-like dataset. The tests sometimes modify each other's data, so failures are not always reproducible. What would be the most appropriate strategy?
+A) Generate random data after every test.
+B) Run the tests exclusively in random order.
+C) Use isolated, clearly owned test data and a deterministic cleanup/reset strategy.
+D) Run the tests with only a single worker.
+
+ANSWER: C
+EXPLANATION: Shared, mutable state between tests can easily cause test dependencies and non-reproducible failures, whether the tests run in parallel or sequentially. Isolated test data and deterministic state management reduce this risk while still allowing parallel execution.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: BDD & Cucumber
+TYPE: scenario
+QUESTION: In a large Cucumber suite, hundreds of scenarios repeat the same long technical Given steps. The feature files are becoming increasingly difficult to read, and an infrastructure change requires modifications to many step definitions. What would be a sensible approach?
+A) Add more technical steps to every scenario.
+B) Move common technical details behind appropriate abstractions while keeping Gherkin focused on business behavior.
+C) Remove the Given steps completely.
+D) Create a separate test framework for every feature.
+
+ANSWER: B
+EXPLANATION: At the BDD feature and scenario level, it is preferable to communicate the business behavior of the system rather than every infrastructure detail. Moving technical setup into the appropriate layer reduces duplication and limits the impact of infrastructure changes.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: Test data management
+TYPE: edgecase
+QUESTION: A test works with currencies from multiple countries, and an occasional 0.01 difference appears between the expected and calculated amounts. The test uses floating-point comparison. What could be the problem?
+A) Currencies cannot be tested automatically.
+B) APIs cannot handle fractional numbers.
+C) Test data must be randomized before every run.
+D) Floating-point representation can introduce rounding errors, so financial values require an appropriate decimal/fixed-point representation and explicit rounding rules.
+
+ANSWER: D
+EXPLANATION: Binary floating-point representation cannot represent every decimal value exactly. For financial tests, the numeric representation and rounding rules should therefore be handled explicitly rather than relying blindly on exact floating-point equality.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: Contract testing
+TYPE: production
+QUESTION: In a microservice system, a provider API is used by dozens of consumers. The provider team frequently introduces changes, and the full end-to-end suite is too slow to run on every commit. What is an important advantage of contract testing in this situation?
+A) Consumer-provider contract compatibility can be verified more quickly without having to run every consumer workflow in a full E2E environment.
+B) A contract test automatically covers every business process.
+C) A contract test replaces all unit tests.
+D) A contract test guarantees that the provider implementation is defect-free.
+
+ANSWER: A
+EXPLANATION: Contract testing focuses specifically on the integration contract. This can provide fast feedback on whether a provider change remains compatible with known consumer expectations, while not replacing other levels of testing.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: Visual & accessibility testing
+TYPE: performance
+QUESTION: A large web application's visual regression suite compares several thousand screenshots. However, many of them contain dynamic areas such as timestamps, advertisements, and randomized recommendations. What would be an appropriate optimization?
+A) Set the pixel-difference threshold of every screenshot to zero.
+B) Disable all visual tests.
+C) Control or exclude dynamic content from the relevant validation areas and focus on stable visual regions.
+D) Run every page ten times and average the screenshots.
+
+ANSWER: C
+EXPLANATION: Non-deterministic visual content creates noise and can report irrelevant differences instead of real regressions. Controlling dynamic elements and deliberately defining the areas to validate improves the signal-to-noise ratio.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: Framework design
+TYPE: architecture
+QUESTION: In a test framework, every test directly calls Selenium, Playwright, and REST client APIs. When a new cross-cutting requirement, such as centralized tracing, is introduced, hundreds of tests need to be modified. What architectural approach could reduce this problem?
+A) Add separate tracing code to every test.
+B) Run the tests exclusively at the UI level.
+C) Create a separate instance of every dependency for each assertion.
+D) Establish stable framework abstractions and centralized adapters that separate technology-specific details from test logic.
+
+ANSWER: D
+EXPLANATION: When tests directly depend on the details of every technology dependency, infrastructure changes create a large modification surface. Appropriate abstractions and adapters centralize this kind of cross-cutting technical logic.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+QUESTION: In a system, the same validation rule is tested in full detail at the unit, API, and UI levels. Maintenance costs continue to increase, while the validation rule rarely changes. What could be a better strategy?
+A) Keep full combinatorial coverage at every test level.
+B) Concentrate detailed combinatorial coverage at the most appropriate, faster test level, while keeping a few critical integration cases at higher levels.
+C) Remove the unit tests because API tests are at a higher level.
+D) Test the validation only manually.
+
+ANSWER: B
+EXPLANATION: Fully retesting the same deterministic rule at every test level can create significant redundancy. Detailed coverage should generally be placed where it can be verified most cheaply and quickly, while higher levels should emphasize integration risks.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: Unit testing
+TYPE: debug
+QUESTION: The following code appears in a Java unit test:
+```java
+@Test
+void shouldCalculateDiscount() {
+    PriceCalculator calculator = new PriceCalculator();
+    assertEquals(90.0, calculator.calculate(100.0, 0.10));
+}
+```
+The test sometimes fails because of a value such as `89.999999999`. What would be the appropriate fix?
+A) Always run the test twice.
+B) Convert the result of `PriceCalculator` to a string.
+C) Ignore the floating-point value.
+D) Use a business-appropriate tolerance or an exact decimal/fixed-point representation.
+
+ANSWER: D
+EXPLANATION: Floating-point calculations can produce small numerical differences because of binary representation. The testing strategy depends on whether the business domain permits a tolerance or requires an exact financial representation.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Mocks, stubs & fakes
+TYPE: trap
+QUESTION: In a unit test, a mocked repository returns a predefined value for every method call. The test passes, but it is later discovered that the production code calls the wrong repository method. Why might this have been difficult to detect?
+A) The mock always uses a real database.
+B) The mock automatically corrects the incorrect method call.
+C) An overly permissive mock can allow behavior that does not accurately reflect the production dependency's contract.
+D) A repository cannot be mocked in a unit test.
+
+ANSWER: C
+EXPLANATION: An overly permissive mock can create a false sense of confidence. A test is more valuable when it appropriately verifies relevant dependency interactions and their contract without unnecessarily coupling the test to every implementation detail.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: Selenium WebDriver
+TYPE: production
+QUESTION: In a Selenium Grid infrastructure, browser sessions occasionally remain alive after a network failure. After several hundred such sessions, the available resources are exhausted. What is the most important defensive approach?
+A) Guarantee lifecycle cleanup and session management at the end of every test, and provide infrastructure-level timeouts and cleanup.
+B) Set infinite timeouts in every test.
+C) Automatically mark failed tests as successful.
+D) Start the Grid only during working hours.
+
+ANSWER: A
+EXPLANATION: Session lifecycle management is critical in distributed browser infrastructure. Appropriate cleanup, timeouts, and infrastructure-level cleanup mechanisms can prevent network or test failures from leaving long-lived resources behind.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: Playwright & Cypress
+TYPE: output
+QUESTION: What does the following Playwright code do?
+```typescript
+const rows = page.getByRole('row');
+await expect(rows).toHaveCount(5);
+```
+A) Makes all `row` elements visible.
+B) Automatically selects the fifth row.
+C) Verifies that the number of `row` elements matched by the locator is 5.
+D) Reloads the page five times.
+
+ANSWER: C
+EXPLANATION: The `toHaveCount(5)` assertion verifies the number of elements represented by the locator. The assertion's built-in waiting behavior allows it to wait for the expected state when elements appear dynamically.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: Locators & selectors
+TYPE: algorithm
+QUESTION: A page contains multiple buttons with the same name, but each button is inside a separate dialog component. The test needs to select the `Save` button within a specific dialog. What is the most robust approach?
+A) Select the first `Save` button in the entire document.
+B) Identify the dialog with a stable locator and then find the `Save` button within its context.
+C) Use the button's absolute XPath.
+D) Select the button based on its position in the DOM.
+
+ANSWER: B
+EXPLANATION: Narrowing the locator scope to the correct component reduces the risk of selecting another element with the same name. A stable component identifier combined with a scoped search is generally more resilient to DOM structure changes.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: Waits & flaky tests
+TYPE: production
+QUESTION: In an SPA, clicking a button causes a loading spinner to disappear, after which a table is populated with new data. The test waits only for the spinner to disappear, so it sometimes verifies the old table contents. What is the appropriate solution?
+A) Add a fixed 30-second sleep to the test.
+B) Restart the browser before every assertion.
+C) Set the timeout to unlimited.
+D) Synchronize the test with the actual business state, such as the appearance of the new table contents or an unambiguous state indicator.
+
+ANSWER: D
+EXPLANATION: The disappearance of the spinner does not necessarily mean that the desired data has already been rendered. State-based waiting synchronizes directly with the condition that the test actually intends to verify.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: Page Object Model
+TYPE: scenario
+QUESTION: In a large test framework, Page Object classes contain thousands of lines, and the same page has accumulated methods for several independent functional areas. What refactoring approach could be appropriate?
+A) Combine all methods into a single `performEverything()` method.
+B) Create a separate copy of the Page Object for every test.
+C) Split page components and responsibilities into smaller, cohesive abstractions, using component- or workflow-level objects where appropriate.
+D) Copy every locator directly into the tests.
+
+ANSWER: C
+EXPLANATION: An oversized Page Object often indicates that multiple responsibilities have been placed in one class. Smaller, cohesive components and appropriate workflow abstractions can improve reusability and maintainability.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: API testing
+TYPE: edgecase
+QUESTION: A REST API test sends a `POST /orders` request and then immediately sends a `GET /orders/{id}` request using the order ID returned in the response. The GET occasionally returns 404 even though the POST succeeded. What could explain this?
+A) A POST response can never contain an ID.
+B) There does not need to be any relationship between the two endpoints.
+C) The GET request is always syntactically invalid.
+D) The system may use eventual consistency, so the newly created resource may not yet be visible through every read path.
+
+ANSWER: D
+EXPLANATION: In distributed systems, there can be a temporary consistency delay between a successful write and a subsequent read. The test should handle this according to the system's contract, for example with appropriate state-based retrying or an explicit read-after-write guarantee if the expected behavior requires it.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: CI integration
+TYPE: scenario
+QUESTION: A CI pipeline consists of multiple test stages: unit, API, integration, and E2E. The pipeline still runs the expensive E2E tests even when a large portion of the unit tests have already failed. What could be a better pipeline strategy?
+A) Make expensive later stages dependent on the success of earlier mandatory quality gates, while preserving the necessary diagnostic artifacts.
+B) Always run all tests in parallel.
+C) Remove the unit tests.
+D) Run the E2E tests twice after every commit.
+
+ANSWER: A
+EXPLANATION: If a failure in an earlier mandatory test level already means that the build cannot be considered valid, automatically running expensive later tests can waste resources. However, the pipeline should still preserve the information needed for diagnosis.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: Parallel execution
+TYPE: performance
+QUESTION: A 1,000-test suite takes 20 minutes with 10 workers. With 20 workers it takes 12 minutes, and with 40 workers it takes 11.5 minutes. On the CI machine, CPU utilization is 95%, and the database connection pool is continuously at maximum utilization. What is the most important conclusion?
+A) The number of workers should be increased without limit.
+B) Scaling is now constrained not only by the test framework but also by infrastructure bottlenecks.
+C) The tests definitely contain too few assertions.
+D) Parallel execution should be disabled completely.
+
+ANSWER: B
+EXPLANATION: Increasing the number of workers from 20 to 40 produced only a minimal improvement while CPU and database resources were saturated. This typically indicates that infrastructure bottlenecks should be investigated instead of simply increasing the worker count further.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: Reporting
+TYPE: production
+QUESTION: A CI dashboard shows that a test has failed 7 times out of the last 30 runs, but it passes after every retry. The team simply labels it as "flaky". What additional information would be particularly useful?
+A) Only the name of the test class.
+B) The complete commit history of the repository.
+C) Trends in failure types, environmental correlations, and the results of the initial test runs.
+D) The number of lines in the test file.
+
+ANSWER: C
+EXPLANATION: Flakiness alone provides little information about the underlying cause. Failure types, environments, browser versions, temporal trends, and initial-run versus retry results can help distinguish infrastructure, timing, and genuine application failures.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: Contract testing
+TYPE: trap
+QUESTION: A consumer-driven contract test passes because the provider exactly satisfies the fields and response structure defined by the consumer. The provider team concludes from this that the provider's overall business behavior is correct. Why is this conclusion incorrect?
+A) Contract tests can only run in a UI environment.
+B) A contract test validates a specific integration contract; it does not prove that the provider's overall business logic is correct.
+C) A provider can never be tested without a consumer.
+D) A contract test automatically generates every edge case.
+
+ANSWER: B
+EXPLANATION: The purpose of contract testing is to verify compatibility between the consumer and provider contract. There can still be business rules, database problems, or other endpoint behaviors that need to be validated at other test levels.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: Framework design
+TYPE: production
+QUESTION: On an enterprise test platform consisting of multiple repositories, each team uses a different version of the shared framework library. When a critical security fix is released, it takes several months for every suite to upgrade. What could be an appropriate approach?
+A) Have every team rewrite its own framework.
+B) Do not version the shared library at all.
+C) Perform framework upgrades manually without documentation.
+D) Establish a versioned, compatible release strategy and an automated dependency/update process with appropriate migration rules.
+
+ANSWER: D
+EXPLANATION: Versioning and controlled upgrades of shared test infrastructure are necessary to make changes traceable and manageable. An automated dependency update process and a compatibility policy can reduce delays in adopting security fixes.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: Test strategy & pyramid
+TYPE: scenario
+QUESTION: In the release pipeline of a critical financial application, every change triggers a full six-hour E2E regression suite. Most tests verify independent business rules, while release speed has become a business problem. Which strategy could be appropriate?
+A) Ignore the execution time of the full E2E suite.
+B) Convert all E2E tests into manual tests.
+C) Restructure the test portfolio based on risk: cover deterministic rules with fast tests and retain the critical end-to-end flows.
+D) Run the full suite once a week and release every build without testing.
+
+ANSWER: C
+EXPLANATION: In critical systems, balancing testing cost and risk is particularly important. A combination of detailed, faster tests and targeted E2E checks can reduce feedback time without giving up verification of critical user flows.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Unit testing
+TYPE: behavior
+QUESTION: A unit test directly invokes a private helper method of a class using reflection and verifies its return value with an assertion. What is the main problem with this approach?
+A) The test is too tightly coupled to implementation details, so it can break unnecessarily during refactoring.
+B) Reflection is always slower than an HTTP request.
+C) Private methods never execute in production.
+D) Unit tests cannot use assertions.
+
+ANSWER: A
+EXPLANATION: A unit test should primarily verify observable behavior rather than the specific internal structure of the implementation. Renaming, merging, or removing a private helper should not by itself require test maintenance if the public behavior remains unchanged.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: Mocks, stubs & fakes
+TYPE: scenario
+QUESTION: A complex unit test contains 15 different mock dependencies, and setting up the test takes longer than the production method itself. The test breaks whenever there is a small implementation change. What could this indicate?
+A) The production code is definitely incorrect.
+B) The test may be coupled to too many implementation details, or the component under test may have too many responsibilities.
+C) More mocks should be added.
+D) The number of mocks should always be increased to exactly 15.
+
+ANSWER: B
+EXPLANATION: A large number of mocks and complex setup often indicate that the test captures too many interactions or implementation details. It is worth examining the component's responsibilities, the number of dependencies, and whether the test is actually verifying the essential behavior.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: Selenium WebDriver
+TYPE: edgecase
+QUESTION: A Selenium test opens a new browser window in a multi-window application and immediately attempts to interact with the new page. The test sometimes continues working in the old window. What is required?
+A) Restart the entire browser after every click.
+B) Set the `Thread.sleep()` duration to infinity.
+C) Explicitly handle window handles and switch to the correct window after the new handle becomes available.
+D) Ignore window handles.
+
+ANSWER: C
+EXPLANATION: Selenium identifies browser contexts such as windows and tabs using window handles. After the new window appears, the test must locate and explicitly activate the appropriate handle, preferably using a suitable wait strategy.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: Playwright & Cypress
+TYPE: performance
+QUESTION: A Playwright suite downloads and prepares the same large test dataset again for every test. The tests are logically independent, but data preparation accounts for 50% of the total execution time. What could be an appropriate optimization?
+A) Create an even larger dataset in every test.
+B) Run the tests in random order.
+C) Combine all tests into a single large test.
+D) Move data preparation to an appropriate fixture or worker scope while preserving test isolation, and create only the variable state required by each test.
+
+ANSWER: D
+EXPLANATION: If the shared portion of the large dataset can be safely reused, rebuilding it before every test creates significant unnecessary cost. Appropriate fixture scoping and separating test-specific mutable data can reduce execution time without allowing tests to modify each other's state.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: API testing
+TYPE: scenario
+QUESTION: An API supports pagination for the `GET /users` endpoint using `page` and `size` parameters. The tests only verify a middle page, while production has previously exposed issues with handling the first and last pages. Which testing strategy would be more appropriate?
+A) Use only the largest possible `size` value.
+B) Test boundary conditions as well, such as the first page, an empty last page, and invalid pagination parameters.
+C) Choose a random page number for every run.
+D) Test pagination only with UI tests.
+
+ANSWER: B
+EXPLANATION: Pagination often contains defects at boundary conditions. Targeted testing of the first page, last or empty-result pages, and invalid parameters provides better coverage than verifying a single middle page.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: Unit testing
+TYPE: behavior
+QUESTION: A Java unit test verifies the result of a service method while also requiring an internal helper to be called exactly three times. However, the number of helper invocations is not part of the public contract. What could be the problem?
+A) The test is too tightly coupled to an internal implementation detail.
+B) Method invocations must never be verified in unit tests.
+C) The helper must always execute exactly three times.
+D) The service cannot be tested without mocks.
+
+ANSWER: A
+EXPLANATION: If three invocations are not part of the observable behavior or contract, such a verification unnecessarily couples the test to the implementation. A refactoring that preserves the result could then break the test for no meaningful reason.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: Mocks, stubs & fakes
+TYPE: production
+QUESTION: A team is trying to model the complete behavior of an external billing service with a complex mock. The mock is thousands of lines long and has gradually diverged significantly from the real service's behavior. What could be a better approach?
+A) Extend the mock by several thousand more lines.
+B) Call the external service directly from every unit test.
+C) Use simpler unit-level test doubles and run separate integration or contract tests against the real service.
+D) Ignore failures from the external service.
+
+ANSWER: C
+EXPLANATION: An overly complex mock can easily become a separate implementation with behavior that diverges from the real service and becomes expensive to maintain. Targeted test doubles at the unit level, combined with separate integration or contract tests against the real external service, provide clearer responsibility boundaries.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Selenium WebDriver
+TYPE: edgecase
+QUESTION: A Selenium test tries to access an input inside an iframe, but `driver.findElement(By.id("email"))` throws `NoSuchElementException`. The input is definitely present in the iframe's document. What is required?
+A) The iframe must be hidden with CSS.
+B) The browser must be restarted.
+C) The input must always be located using JavaScript.
+D) The test must first switch to the appropriate iframe browsing context and then locate the input within it.
+
+ANSWER: D
+EXPLANATION: An iframe creates its own document and browsing context. The element inside it may not be directly accessible from Selenium's current context, so the test must switch to the appropriate frame and perform the lookup there.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: Playwright & Cypress
+TYPE: production
+QUESTION: In a Playwright test, a third-party analytics script regularly slows down the page and occasionally causes an external network failure. The analytics functionality is not part of the goal of the test. What could be an appropriate solution?
+A) Set a five-minute timeout for every test.
+B) Control or mock the relevant external requests while verifying the analytics integration separately with targeted tests.
+C) Always ignore analytics failures.
+D) Block all network requests.
+
+ANSWER: B
+EXPLANATION: External dependencies that are outside the scope of a test can increase execution time and the risk of flakiness. Controlling the relevant network behavior can make the test more deterministic, while the integration itself should be validated separately.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: Locators & selectors
+TYPE: trap
+QUESTION: A test uses a long XPath for an element that contains the entire current DOM hierarchy. The test frequently breaks when frontend developers rearrange the layout, even though the element's functionality remains unchanged. Why is this locator problematic?
+A) XPath is prohibited in every browser.
+B) XPath can only be used in backend tests.
+C) The locator relies on too many structural details that are not part of the element's functional identity.
+D) A long XPath is always slower than any other locator.
+
+ANSWER: C
+EXPLANATION: An absolute or overly structural XPath is tightly coupled to the current DOM structure. If a stable attribute or semantic identifier is available for the testing purpose, it generally provides a more durable locator contract.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Waits & flaky tests
+TYPE: debug
+QUESTION: The following code appears in a test:
+```java
+Thread.sleep(5000);
+driver.findElement(By.id("status")).click();
+```
+The test still occasionally fails because the `status` element becomes clickable only after five seconds. What is the best fix?
+A) Increase the `Thread.sleep` duration to 60 seconds.
+B) Call the sleep repeatedly.
+C) Restart the browser after every wait.
+D) Use an explicit, state-based wait that waits until the element becomes clickable.
+
+ANSWER: D
+EXPLANATION: A fixed-duration sleep does not know the application's actual state. If the application is faster, the test waits unnecessarily; if it is slower, the wait may still be insufficient. A state-based explicit wait handles both problems more effectively.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Page Object Model
+TYPE: scenario
+QUESTION: A Page Object method performs this entire workflow: login, search, add a product to the cart, and checkout. Another test needs only the search and add-to-cart operations. What design would be more appropriate?
+A) Duplicate the entire workflow in every test.
+B) Split the Page Object into smaller reusable operations or appropriate workflow abstractions.
+C) Make every test use the entire workflow.
+D) Perform checkout manually in every case.
+
+ANSWER: B
+EXPLANATION: An oversized workflow method forces operations that are not relevant to every test. Smaller, composable operations and, where appropriate, separate workflow abstractions make the test code more flexible.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: API testing
+TYPE: edgecase
+QUESTION: An API supports partial updates through a `PATCH /users/{id}` endpoint. The test only verifies that the modified field receives its new value. A later regression causes an unrelated, unmodified field to change as well. What is missing from the test?
+A) Verification of the HTTP version in the API response.
+B) Using a second HTTP client.
+C) Verification that unmodified fields remain unchanged when this is part of the contract.
+D) Removing the request body completely.
+
+ANSWER: C
+EXPLANATION: For a partial update, the contract often specifies that unaffected fields remain unchanged. Verifying this can detect regressions that would not be caught by validating only the field that was explicitly modified.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: BDD & Cucumber
+TYPE: trap
+QUESTION: Every scenario in a Cucumber feature contains more than twenty technical Given steps that exist solely to establish a single business state. The reader of the feature has difficulty understanding which business behavior is being tested. What could be the problem?
+A) The feature communicates too many technical implementation details and loses its BDD business focus.
+B) Cucumber does not support Given steps.
+C) A scenario may contain at most five Given steps.
+D) Technical steps are always mandatory.
+
+ANSWER: A
+EXPLANATION: One goal of BDD is for scenarios to communicate the expected business behavior clearly. When feature files contain too many infrastructure and implementation details, business readability and maintainability can suffer.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: Test data management
+TYPE: production
+QUESTION: In an API test suite running with multiple workers, every worker uses the same fixed `customerId=1000` test data. The tests occasionally observe each other's modifications. What would be an appropriate solution?
+A) Have every worker use the same ID but run the tests in random order.
+B) Increase the sleep time between tests.
+C) Run the tests exclusively sequentially.
+D) Use isolated, explicitly allocated test data at the worker or test level.
+
+ANSWER: D
+EXPLANATION: Shared mutable test data can cause race conditions and non-deterministic results during parallel execution. Isolated data allows workers to operate independently.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: CI integration
+TYPE: performance
+QUESTION: In a CI pipeline, the same dependency installation is performed from scratch in every job. Installation accounts for a significant portion of the test execution time, and the dependencies rarely change. What could be an appropriate optimization?
+A) Install the dependencies twice in every job.
+B) Use an appropriate dependency cache strategy, invalidating the cache based on version or lockfile changes.
+C) Remove the dependencies completely.
+D) Run the tests only locally.
+
+ANSWER: B
+EXPLANATION: Reinstalling stable dependencies in every job can consume significant time and network resources. A properly keyed cache can speed up the pipeline while automatically producing a new cache when dependencies change.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: Parallel execution
+TYPE: scenario
+QUESTION: In a test suite, 200 tests modify the same global admin user. They run reliably with one worker but fail randomly with 10 workers. What is the primary problem?
+A) The tests have a race condition because they share mutable state.
+B) Selenium or Playwright does not support parallel execution.
+C) CI always fails when tests run in parallel.
+D) More assertions are required.
+
+ANSWER: A
+EXPLANATION: The parallel tests use the same mutable global state, so one test can change the state expected by another. Isolated users or properly synchronized resources can eliminate this dependency.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: Reporting
+TYPE: production
+QUESTION: In a large CI environment, thousands of tests run every day, but the team sees only pass/fail counts. After a regression, it is difficult to determine which component or environment is affected. Which reporting improvement could be most useful?
+A) Shorten every test name to a single character.
+B) Display only successful tests.
+C) Correlate test results with relevant metadata such as component, environment, version, and failure category.
+D) Delete the report once a day.
+
+ANSWER: C
+EXPLANATION: Simple pass/fail counts are not sufficient for diagnosing large systems. Structured metadata makes it possible to identify failure trends and environmental correlations more quickly.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: Contract testing
+TYPE: edgecase
+QUESTION: In an API contract, the provider guarantees that an optional `middleName` field may be absent. However, a consumer always attempts to deserialize it as a required field. What problem can contract testing reveal?
+A) The CPU utilization of the provider's database.
+B) A mismatch in optionality expectations between the consumer and provider that could lead to a runtime compatibility failure.
+C) CSS defects in the provider's frontend.
+D) The physical condition of the network cable.
+
+ANSWER: B
+EXPLANATION: A mismatch between optional and required fields can be a direct compatibility problem. Contract testing can detect such differences in the integration contract before they surface during execution of a real consumer.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Visual & accessibility testing
+TYPE: scenario
+QUESTION: A web application's visual regression tests match perfectly across all viewports, but an accessibility test shows that important controls in a modal dialog cannot be reached using the keyboard. What does the visual regression result prove?
+A) That the modal is fully accessible.
+B) That keyboard navigation is correct.
+C) That screen readers interpret the modal correctly.
+D) Primarily that the visual appearance under test matches the reference state; accessibility behavior must be verified separately.
+
+ANSWER: D
+EXPLANATION: Visual equivalence does not prove correct keyboard navigation, focus management, or semantic accessibility. These require separate accessibility tests and, where appropriate, manual verification.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: Framework design
+TYPE: production
+QUESTION: In an enterprise test framework, every test reads environment, browser, and timeout settings directly from a global configuration singleton. During parallel execution, different tests require different configurations. What would be an appropriate design direction?
+A) Modify the global configuration before every test.
+B) Pass configuration as an immutable, scoped test context that supports parallel execution and test-specific settings.
+C) Have every test create its own environment variable file.
+D) Disable parallel execution in every suite.
+
+ANSWER: B
+EXPLANATION: A shared mutable singleton can cause race conditions and configuration interference during parallel execution. Immutable configuration managed within the appropriate scope provides a clearer and safer execution context.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: Test strategy & pyramid
+TYPE: production
+QUESTION: A product team wants every new feature to have at least one E2E test, even when the feature's business logic is entirely contained in a single isolated service. Which approach better aligns with a risk-based testing strategy?
+A) Require multiple E2E tests for every feature.
+B) Eliminate E2E tests completely.
+C) Choose test levels based on the feature's risk and architecture, using more detailed lower-level coverage where the business logic can be tested in isolation.
+D) Perform only manual regression testing.
+
+ANSWER: C
+EXPLANATION: Not every feature requires the same testing layers. Isolated, deterministic logic can often be tested more efficiently and quickly at a lower level, while E2E tests are appropriate where risk arises from the behavior of the complete system flow.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: Unit testing
+TYPE: edgecase
+QUESTION: A date-handling unit test directly uses `LocalDate.now()`. Around month boundaries or timezone transitions, the test occasionally produces a different result. What is the appropriate solution?
+A) Run the test only in the morning.
+B) Use a fixed `Thread.sleep()` call in the test.
+C) Run the test twice after every execution.
+D) Put the current time behind an abstraction, such as an injectable `Clock`, and provide a controlled point in time in the test.
+
+ANSWER: D
+EXPLANATION: Direct use of the system clock creates a non-deterministic testing condition. Injecting the clock allows the test to verify boundary conditions using an explicitly defined date and time.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: Mocks, stubs & fakes
+TYPE: scenario
+QUESTION: A service unit test verifies that a mocked repository is called exactly once, but it does not verify that it was called with the correct parameter. During a regression, the service passes the wrong user ID while the test still passes. What is missing?
+A) Verification of the relevant part of the interaction, in this case the call parameters.
+B) A real production database.
+C) A second mock of the same repository.
+D) Removing the repository unit test.
+
+ANSWER: A
+EXPLANATION: Verifying only the number of calls does not prove that the dependency was used with the correct data. If the parameter is part of the component's contract, it must be validated to detect this kind of regression.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Selenium WebDriver
+TYPE: production
+QUESTION: In a Selenium test suite, the browser cache and local storage persist between tests. As a result, a test fails only when another test ran before it. What would be the most important step?
+A) Run all tests in random order.
+B) Increase the timeouts between tests.
+C) Give tests isolated browser sessions and, where necessary, perform controlled state cleanup.
+D) Hide the failure with retries.
+
+ANSWER: C
+EXPLANATION: Persistent browser state between tests can create hidden dependencies. Isolating sessions and explicitly managing the required state ensures that the state left by one test does not affect the next one.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Playwright & Cypress
+TYPE: debug
+QUESTION: The following locator appears in a Playwright test:
+```typescript id="hl6if8"
+page.locator('.item').nth(0)
+```
+However, the list order changes after a new backend optimization, causing the test to select the wrong product. What would be a better solution?
+A) Manually fix the list order before every run.
+B) Identify the desired element using a stable, business-meaningful locator, such as a role, name, or stable attribute.
+C) Replace `nth(0)` with `nth(1)`.
+D) Randomize the backend response in every test.
+
+ANSWER: B
+EXPLANATION: A locator based on DOM position is not stable when the order of the list can change. Selecting the desired element using a semantic or stable business identifier is more resilient to sorting and implementation changes.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: Waits & flaky tests
+TYPE: production
+QUESTION: In a test suite, most flaky tests pass after a retry. The team therefore configured three automatic retries for every test, and the apparent number of flaky failures decreased. What is the main risk?
+A) Retries can increase the browser resolution.
+B) Retries automatically make tests deterministic.
+C) Retries remove real application defects.
+D) Retries can hide real stability problems and produce a falsely green build when a test passes only after being rerun.
+
+ANSWER: D
+EXPLANATION: Retries can be useful for diagnosing or handling transient infrastructure failures, but they do not make an unstable test reliable by themselves. If a test that regularly fails is automatically considered successful after a retry, problems with suite reliability can remain hidden.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: Reporting
+TYPE: algorithm
+QUESTION: A test framework generates reports from several different test execution formats. One adapter uses `PASSED`, another uses `SUCCESS`, and a third uses `OK` for the same semantic state. What would be a good architectural solution?
+A) Each report handles every possible string separately.
+B) The different adapters translate their states into a common canonical internal result model, and the reporting layer uses that model.
+C) Force all adapters to use a single string without documentation.
+D) Normalize the states exclusively in the frontend.
+
+ANSWER: B
+EXPLANATION: A common internal result model decouples the reporting layer from the terminology used by individual input formats and adapters. This simplifies report generation and avoids requiring every consumer to handle the same semantic differences separately.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: Framework design
+TYPE: production
+QUESTION: An enterprise test framework serves hundreds of test suites. A new cross-cutting rule was implemented separately in every suite, so the same behavior has gradually diverged between suites. What would be the most important long-term solution?
+A) Continue refining each suite's own implementation.
+B) Document the rule only.
+C) Organize the shared behavior into a single versioned framework-level capability with consistent extension points and automated validation.
+D) Copy every suite into a single repository.
+
+ANSWER: C
+EXPLANATION: Decentralized implementations of shared cross-cutting behavior can easily drift apart. A versioned central capability, clearly defined extension points, and automated framework-level validation enable more consistent behavior and easier maintenance.
+###END

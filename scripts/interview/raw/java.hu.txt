@@ -1,0 +1,3691 @@
+### Q1
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: behavior
+QUESTION: Mi történik az alábbi kódban, amikor a `Dog` objektumon meghívjuk a `makeSound()` metódust?
+CODE:
+class Animal {
+    void makeSound() {
+        System.out.println("animal");
+    }
+}
+
+class Dog extends Animal {
+    @Override
+    void makeSound() {
+        System.out.println("dog");
+    }
+}
+
+Animal animal = new Dog();
+animal.makeSound();
+ENDCODE
+A) Az `animal` szöveg jelenik meg, mert a változó típusa `Animal`.
+B) A `dog` szöveg jelenik meg, mert a példány tényleges típusa `Dog`.
+C) Fordítási hiba történik, mert egy `Animal` referenciából nem hívható a `Dog` metódusa.
+D) Futásidejű `ClassCastException` történik.
+ANSWER: B
+EXPLANATION: A metódusok felülírása esetén Java dinamikus kötést használ. A referencia deklarált típusa `Animal`, de az objektum tényleges típusa `Dog`, ezért futáskor a `Dog.makeSound()` kerül meghívásra. A gyakori téves válasz azért csábító, mert a referencia deklarált típusa valóban `Animal`, de ez nem határozza meg az override-olt példánymetódus futásidejű implementációját.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: Strings & immutability
+TYPE: output
+QUESTION: Mi lesz a program kimenete?
+CODE:
+String s = "Java";
+s.concat(" 21");
+
+System.out.println(s);
+ENDCODE
+A) `Java 21`
+B) `21`
+C) `Java`
+D) Fordítási hiba történik.
+ANSWER: C
+EXPLANATION: A `String` immutable, ezért a `concat()` nem módosítja az eredeti `String` objektumot, hanem egy új `String` példányt ad vissza. Mivel a visszatérési értéket nem tároljuk el, az eredeti `s` továbbra is `Java`. A gyakori téves válasz azért csábító, mert más, módosítható objektumok metódusai gyakran közvetlenül megváltoztatják az objektum állapotát.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: output
+QUESTION: Mi történik az alábbi kód futtatásakor?
+CODE:
+List<String> names = new ArrayList<>();
+names.add("Anna");
+names.add("Béla");
+
+System.out.println(names.get(1));
+ENDCODE
+A) `Béla` jelenik meg.
+B) `Anna` jelenik meg.
+C) `null` jelenik meg.
+D) `IndexOutOfBoundsException` történik.
+ANSWER: A
+EXPLANATION: A `List` indexelése 0-tól kezdődik. Az első elem indexe 0, a másodiké 1, ezért a `get(1)` a `Béla` értéket adja vissza. A gyakori téves válasz azért csábító, mert az emberi sorszámozás 1-től indul, míg a Java kollekciók indexelése 0-alapú.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: Exceptions
+TYPE: behavior
+QUESTION: Mi lesz a kimenet?
+CODE:
+try {
+    int result = 10 / 0;
+    System.out.println("A");
+} catch (ArithmeticException e) {
+    System.out.println("B");
+} finally {
+    System.out.println("C");
+}
+ENDCODE
+A) Csak `A`
+B) Csak `B`
+C) `A`, majd `C`
+D) `B`, majd `C`
+ANSWER: D
+EXPLANATION: A nullával való egész osztás `ArithmeticException` kivételt okoz még az `A` kiírása előtt. A `catch` kezeli a kivételt, ezért `B` jelenik meg, majd a `finally` blokk is lefut, ezért `C` következik. A gyakori téves válasz azért csábító, mert a `finally` sokszor úgy tűnik, mintha csak sikeres végrehajtás után futna, valójában normál kivételkezelési helyzetben is lefut.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: equals & hashCode
+TYPE: trap
+QUESTION: Melyik állítás helyes, ha egy osztály példányait `HashSet`-ben szeretnénk érték alapján egyedinek tekinteni?
+A) Csak az `equals()` metódust kell felülírni.
+B) Csak a `hashCode()` metódust kell felülírni.
+C) Az `equals()` és a `hashCode()` szerződését konzisztensen kell megvalósítani.
+D) A `toString()` metódust kell felülírni.
+ANSWER: C
+EXPLANATION: Hash-alapú kollekcióknál az egyenlőnek tekintett objektumoknak azonos hash kódot kell adniuk. Ezért az `equals()` és `hashCode()` együtt alkotja a szükséges szerződést. A gyakori téves válasz azért csábító, mert az `equals()` határozza meg közvetlenül az érték szerinti egyenlőséget, de a `HashSet` a hash kódot is használja a gyors kereséshez.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+List<Integer> numbers = List.of(1, 2, 3);
+
+int sum = 0;
+for (int n : numbers) {
+    sum += n;
+}
+
+System.out.println(sum);
+ENDCODE
+A) `6`
+B) `123`
+C) `0`
+D) Fordítási hiba történik.
+ANSWER: A
+EXPLANATION: A ciklus egymás után 1-et, 2-t és 3-at ad a `sum` változóhoz, így az eredmény 6. Az enhanced `for` ciklus az elemek értékeit adja át, nem stringként konkatenálja őket. A gyakori téves válasz azért csábító, mert az `Integer` objektumok és a primitív `int` közötti automatikus unboxing elfedheti a háttérben zajló konverziót.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: Memory model & GC
+TYPE: theory
+QUESTION: Mi történik egy Java objektummal, ha már nincs elérhető erős referencia rá?
+A) Azonnal felszabadítja a memóriát a JVM.
+B) Elérhetetlenné válik a GC számára, és egy későbbi garbage collection során felszabadítható.
+C) Automatikusan átkerül a stackre.
+D) A JVM azonnal meghívja rajta a `finalize()` metódust.
+ANSWER: B
+EXPLANATION: Ha egy objektum már nem érhető el erős referencialáncon keresztül, akkor garbage collection szempontjából gyűjthetővé válik. Ez nem jelenti azt, hogy a memória azonnal felszabadul. A gyakori téves válasz azért csábító, mert a garbage collectiont sok kezdő automatikus és azonnali memóriafelszabadításként képzeli el.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: theory
+QUESTION: Melyik állítás írja le helyesen a Java `final` kulcsszót egy példányváltozónál?
+A) A változó értéke csak a konstruktorban állítható be.
+B) A változó értéke soha nem lehet objektumreferencia.
+C) A `final` mezőt minden konstruktorban kötelező ugyanazzal az értékkel inicializálni.
+D) Egy `final` referencia nem rendelhető új objektumhoz az inicializálása után, de a hivatkozott objektum állapota ettől még módosulhat.
+ANSWER: D
+EXPLANATION: A `final` referencia maga nem változtatható meg újabb objektumra történő átirányítással. Ettől még az általa hivatkozott objektum lehet mutable, és annak belső állapota módosítható. A gyakori téves válasz azért csábító, mert a `final` szót sokan automatikusan teljes objektum-immutabilitással azonosítják.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: Streams & lambdas
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+List<Integer> numbers = List.of(1, 2, 3, 4);
+
+long result = numbers.stream()
+        .filter(n -> n % 2 == 0)
+        .count();
+
+System.out.println(result);
+ENDCODE
+A) `1`
+B) `2`
+C) `4`
+D) `10`
+ANSWER: B
+EXPLANATION: A `filter` csak a páros számokat engedi tovább, vagyis a 2-t és a 4-et. Ezekből két elem marad, ezért a `count()` eredménye 2. A gyakori téves válasz azért csábító, mert a stream nem módosítja a listát, így könnyű összekeverni a feldolgozott elemek számát az eredeti kollekció méretével.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: Optional
+TYPE: behavior
+QUESTION: Mi történik az alábbi kód futtatásakor?
+CODE:
+Optional<String> value = Optional.empty();
+
+System.out.println(value.orElse("default"));
+ENDCODE
+A) `null` jelenik meg.
+B) Üres sor jelenik meg.
+C) `default` jelenik meg.
+D) `NoSuchElementException` történik.
+ANSWER: C
+EXPLANATION: Az `Optional` üres, ezért az `orElse()` a megadott fallback értéket adja vissza. Az `orElse()` nem dob kivételt üres Optional esetén. A gyakori téves válasz azért csábító, mert az `Optional.get()` valóban `NoSuchElementException`-t dob üres állapotban, de az `orElse()` más célra szolgál.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: I/O & NIO
+TYPE: behavior
+QUESTION: Melyik API alkalmas modern Java alkalmazásban egy fájl teljes szöveges tartalmának egyszerű beolvasására?
+A) `Files.readString(Path)`
+B) `System.in.readString()`
+C) `Path.readText()`
+D) `File.readString()`
+ANSWER: A
+EXPLANATION: A Java NIO `Files.readString(Path)` metódusa erre a célra szolgál, és modern Java verziókban egyszerű módot ad egy fájl teljes szövegének beolvasására. A gyakori téves válasz azért csábító, mert a régebbi `File` API-val dolgozva természetesnek tűnhet, hogy a fájlobjektum maga biztosítja a szöveges olvasó metódust.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: Concurrency & threads
+TYPE: trap
+QUESTION: Mi a legfontosabb különbség a `Thread.start()` és a `Thread.run()` közvetlen meghívása között?
+A) Nincs különbség, mindkettő új szálat indít.
+B) A `run()` mindig gyorsabb, mert nincs szálváltás.
+C) A `start()` új végrehajtási szál indítását kezdeményezi, míg a `run()` közvetlen meghívása normál metódushívásként az aktuális szálban fut.
+D) A `run()` új JVM-et indít, a `start()` pedig nem.
+ANSWER: C
+EXPLANATION: A `start()` létrehozza és elindítja a Thread végrehajtását külön szálon, míg a `run()` egyszerű metódushívás. Ezért a `run()` közvetlen meghívása nem eredményez párhuzamos végrehajtást. A gyakori téves válasz azért csábító, mert mindkét esetben ugyanaz a `run()` metódus törzse fut le, csak teljesen eltérő végrehajtási környezetben.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: theory
+QUESTION: Mire szolgál elsősorban egy Java `record`?
+A) Olyan osztály definiálására, amelynek példányai automatikusan szálbiztosak.
+B) Tömör szintaxisú adatmodellek létrehozására, ahol a komponensekhez automatikus accessorok, `equals()`, `hashCode()` és `toString()` tartoznak.
+C) Olyan osztály definiálására, amelyből korlátlan számú alosztály származhat.
+D) Kizárólag adatbázis-entitások definiálására.
+ANSWER: B
+EXPLANATION: A record elsősorban adataggregátumok tömör deklarációjára szolgál. A komponensek alapján a fordító többek között accessor metódusokat, konstruktort, `equals()`, `hashCode()` és `toString()` implementációt biztosít. A gyakori téves válasz azért csábító, mert a recordok jellemzően immutable jellegű adatátadásra alkalmasak, de ettől még önmagukban nem garantálják a teljes objektum vagy minden benne lévő objektum thread safety-jét.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: JVM & class loading
+TYPE: theory
+QUESTION: Mi a JVM class loading mechanizmusának alapvető szerepe?
+A) Java forráskód fordítása bytecode-dá minden egyes futtatáskor.
+B) A Java objektumok automatikus garbage collectionje.
+C) Az alkalmazás adatbázis-kapcsolatainak létrehozása.
+D) A szükséges osztályok bytecode-jának betöltése és a JVM számára történő előkészítése.
+ANSWER: D
+EXPLANATION: A class loader a JVM számára szükséges osztályok definícióit tölti be, majd a JVM további lépései során az osztályok ellenőrzése, összekapcsolása és inicializálása történik. A Java forráskód fordítása külön fordítási folyamat, tipikusan a `javac` feladata. A gyakori téves válasz azért csábító, mert a fejlesztő szemszögéből a Java futtatásakor a fordítás és a betöltés egyetlen folyamatnak tűnhet.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: Exceptions
+TYPE: debug
+QUESTION: Mi a probléma az alábbi kóddal?
+CODE:
+try {
+    String value = null;
+    System.out.println(value.length());
+} catch (Exception e) {
+    System.out.println("error");
+}
+ENDCODE
+A) A `catch` nem tudja kezelni a `NullPointerException` kivételt.
+B) A `length()` null referencián történő meghívása `NullPointerException`-t okoz, amelyet az `Exception` elkap.
+C) A program fordítási hibát ad, mert `null` nem lehet `String`.
+D) A `catch` blokk miatt `NullPointerException` nem keletkezhet.
+ANSWER: B
+EXPLANATION: A `value` referencia `null`, ezért a példánymetódus `length()` meghívása `NullPointerException`-t eredményez. Ez a kivétel az `Exception` leszármazottja, ezért a catch kezeli. A gyakori téves válasz azért csábító, mert a `NullPointerException` speciálisnak tűnhet, de runtime exceptionként az `Exception` hierarchia része.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: trap
+QUESTION: Melyik állítás igaz a `List.of(...)` által létrehozott listára?
+A) Mutable, ezért `add()` és `remove()` szabadon használható rajta.
+B) Csak `String` elemeket fogadhat.
+C) Nem módosítható; módosító művelet például `add()` esetén `UnsupportedOperationException` keletkezik.
+D) Automatikusan thread-safe mutable listává alakul.
+ANSWER: C
+EXPLANATION: A `List.of()` immutable listát hoz létre, amelyen a strukturális módosítási műveletek nem engedélyezettek. Például az `add()` futásidőben `UnsupportedOperationException`-t okoz. A gyakori téves válasz azért csábító, mert a `List` interfész általánosságban támogat módosító műveleteket, de egy konkrét implementáció ezeket nem köteles támogatni.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: Strings & immutability
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+String a = "java";
+String b = new String("java");
+
+System.out.println(a == b);
+System.out.println(a.equals(b));
+ENDCODE
+A) `true`, majd `true`
+B) `false`, majd `false`
+C) `true`, majd `false`
+D) `false`, majd `true`
+ANSWER: D
+EXPLANATION: Az `==` referenciaazonosságot vizsgál, és az `a` valamint `b` külön objektumokra hivatkozik. Az `equals()` a `String` esetén tartalmi egyenlőséget vizsgál, ezért a két érték egyenlő. A gyakori téves válasz azért csábító, mert a string literalok internelése miatt bizonyos esetekben az `==` is `true` lehet, de az explicit `new String(...)` új objektumot hoz létre.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: equals & hashCode
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+Set<String> set = new HashSet<>();
+
+set.add(new String("Java"));
+set.add(new String("Java"));
+
+System.out.println(set.size());
+ENDCODE
+A) `1`
+B) `2`
+C) `0`
+D) `ConcurrentModificationException`
+ANSWER: A
+EXPLANATION: A `String` megfelelően felülírja az `equals()` és `hashCode()` metódusokat, ezért a két külön objektum érték alapján egyenlőnek számít. A `HashSet` csak egy példányt tart meg ugyanebből az értékből, így a méret 1. A gyakori téves válasz azért csábító, mert fizikailag két külön `String` objektum jött létre, de a `HashSet` nem referenciaazonosság alapján határozza meg az elemek egyediségét.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: Streams & lambdas
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+List<String> names = List.of("Anna", "Bela", "Adam");
+
+List<String> result = names.stream()
+        .filter(name -> name.startsWith("A"))
+        .map(String::toUpperCase)
+        .toList();
+
+System.out.println(result);
+ENDCODE
+A) `[Anna, Adam]`
+B) `[ANNA, ADAM]`
+C) `[BELA]`
+D) `[ANNA, BELA, ADAM]`
+ANSWER: B
+EXPLANATION: A `filter` csak az `A` betűvel kezdődő elemeket engedi tovább, vagyis `Anna` és `Adam` marad. A `map` ezeket nagybetűssé alakítja, így az eredmény `[ANNA, ADAM]`. A gyakori téves válasz azért csábító, mert könnyű csak a szűrés eredményére koncentrálni, és figyelmen kívül hagyni a következő stream műveletet.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Optional
+TYPE: trap
+QUESTION: Mi a különbség az `orElse()` és az `orElseGet()` között ebben a helyzetben?
+CODE:
+String value = Optional.of("Java")
+        .orElseGet(() -> expensiveOperation());
+ENDCODE
+A) Mindkettő mindig végrehajtja az `expensiveOperation()` metódust.
+B) Az `orElseGet()` csak akkor hívja meg a supplier által megadott műveletet, ha az `Optional` üres.
+C) Az `orElseGet()` mindig `null` értéket ad vissza.
+D) Az `orElseGet()` csak primitív értékekkel működik.
+ANSWER: B
+EXPLANATION: Az `orElseGet()` lazy módon értékeli ki a supplier által megadott fallback műveletet, tehát jelen esetben, mivel az Optional tartalmazza a `Java` értéket, az `expensiveOperation()` nem fut le. Az `orElse()` ezzel szemben a neki átadott argumentumot már a metódushívás előtt kiértékeli. A gyakori téves válasz azért csábító, mert mindkét API ugyanarra a fallback célra használható, de a kiértékelési stratégiájuk eltér.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+class Parent {
+    String value = "parent";
+}
+
+class Child extends Parent {
+    String value = "child";
+}
+
+Parent p = new Child();
+System.out.println(p.value);
+ENDCODE
+A) `parent`
+B) `child`
+C) `null`
+D) Fordítási hiba történik.
+ANSWER: A
+EXPLANATION: A mezők nem polymorph módon, hanem a referencia deklarált típusa alapján kerülnek feloldásra. A `p` deklarált típusa `Parent`, ezért a `Parent.value` mező kerül használatra. Ez eltér az override-olt példánymetódusok viselkedésétől, ahol a tényleges objektumtípus számít. A gyakori téves válasz azért csábító, mert a metódusoknál megszokott dinamikus dispatch miatt könnyű ugyanezt feltételezni a mezőkre.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: Memory model & GC
+TYPE: edgecase
+QUESTION: Melyik állítás igaz az alábbi helyzetre?
+CODE:
+byte[] data = new byte[1024 * 1024];
+data = null;
+ENDCODE
+A) A `byte[]` objektum azonnal törlődik a heapből.
+B) A JVM biztosan soha nem szabadítja fel a tömb memóriáját.
+C) A tömb gyűjthetővé válhat, ha nincs más elérhető referencia rá, de a garbage collection időpontja nem garantált.
+D) A tömb automatikusan átkerül a stackre.
+ANSWER: C
+EXPLANATION: A referencia nullra állítása után, feltéve hogy nincs más elérhető referencia a tömbre, az objektum garbage collectionre alkalmassá válik. A tényleges memóriafelszabadítás időpontját a GC döntése határozza meg. A gyakori téves válasz azért csábító, mert a `null` hozzárendelése az objektum elérhetetlenné válását okozza, de ez nem azonos azonnali törléssel.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: Concurrency & threads
+TYPE: behavior
+QUESTION: Mi történik, ha ugyanazon `Thread` példányon kétszer hívjuk meg a `start()` metódust?
+CODE:
+Thread thread = new Thread(() -> System.out.println("running"));
+
+thread.start();
+thread.start();
+ENDCODE
+A) A `run()` kétszer, ugyanabban a szálban fut le.
+B) A JVM automatikusan létrehoz egy második szálat ugyanahhoz az objektumhoz.
+C) A második `start()` hívás csendben figyelmen kívül marad.
+D) A második `start()` hívás `IllegalThreadStateException`-t okoz.
+ANSWER: D
+EXPLANATION: Egy `Thread` példányt csak egyszer lehet elindítani. Miután a thread már elindult, ugyanazon példány újbóli `start()` hívása `IllegalThreadStateException`-t eredményez. A gyakori téves válasz azért csábító, mert természetesnek tűnhet, hogy egy újabb `start()` újabb futást jelent, de ehhez új `Thread` példány szükséges.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: behavior
+QUESTION: Mi történik az alábbi Java 21-es kódban?
+CODE:
+Object value = "Java";
+
+if (value instanceof String s) {
+    System.out.println(s.length());
+}
+ENDCODE
+A) `0` jelenik meg.
+B) `4` jelenik meg.
+C) Fordítási hiba történik, mert pattern variable nem használható `instanceof` mellett.
+D) `String` jelenik meg.
+ANSWER: B
+EXPLANATION: A Java 16-tól véglegesített pattern matching for `instanceof` lehetővé teszi, hogy a típusellenőrzéssel együtt létrejöjjön az `s` változó. Mivel a tényleges érték egy `String`, az `s.length()` eredménye 4. A gyakori téves válasz azért csábító, mert a régebbi Java szintaxisban valóban külön cast kellett volna az `instanceof` után.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: Performance & profiling
+TYPE: performance
+QUESTION: Egy production Java alkalmazás CPU-használata tartósan 100% közelében van, miközben a válaszidő jelentősen megnőtt. Mi lenne az első szakmailag megalapozott lépés a probléma vizsgálatára?
+A) Azonnal növelni a heap méretét.
+B) Azonnal bekapcsolni a debug loggingot minden osztályra.
+C) Azonnal újraindítani az alkalmazást, és lezárni az incidenst.
+D) Profiling/thread-dump eszközökkel azonosítani, mely szálak és kódrészek használják a CPU-t.
+ANSWER: D
+EXPLANATION: Magas CPU-terhelésnél először mérni és lokalizálni kell a problémát: thread dumpokkal és profilinggal meg lehet állapítani, mely szálak aktívak, és mely kódrészek fogyasztják a CPU-időt. A heap növelése például csak memória- vagy GC-probléma esetén lehet releváns, és önmagában nem magyarázza a magas CPU-használatot. A gyakori téves válasz azért csábító, mert a JVM teljesítményproblémáinál a heap méretének módosítása gyakran felmerül, de diagnosztikai bizonyíték nélkül ez találgatás.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: behavior
+QUESTION: Mi történik az alábbi kód futtatásakor?
+CODE:
+class Counter {
+    int value;
+
+    Counter(int value) {
+        this.value = value;
+    }
+}
+
+Counter c1 = new Counter(10);
+Counter c2 = c1;
+c2.value = 20;
+
+System.out.println(c1.value);
+ENDCODE
+A) `20` jelenik meg.
+B) `10` jelenik meg.
+C) `null` jelenik meg.
+D) Fordítási hiba történik.
+ANSWER: A
+EXPLANATION: A `c2 = c1` nem másolja le az objektumot, hanem ugyanarra az objektumra állítja a második referenciát. Ezért a `c2.value = 20` módosítás ugyanazon objektum állapotát változtatja meg, amelyre `c1` is hivatkozik. A gyakori téves válasz azért csábító, mert a változó-hozzárendelést könnyű értékmásolásként értelmezni, miközben objektumreferenciáknál a referencia értéke másolódik.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: Strings & immutability
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+String a = "Hello";
+String b = a.toUpperCase();
+
+System.out.println(a);
+System.out.println(b);
+ENDCODE
+A) `HELLO`, majd `HELLO`
+B) `Hello`, majd `HELLO`
+C) `HELLO`, majd `Hello`
+D) `Hello`, majd `Hello`
+ANSWER: B
+EXPLANATION: A `toUpperCase()` új `String` értéket ad vissza, és nem módosítja az eredeti `a` objektumot. Ezért `a` továbbra is `Hello`, míg `b` értéke `HELLO`. A gyakori téves válasz azért csábító, mert a metódus neve alapján úgy tűnhet, hogy magát a meglévő stringet alakítja át.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: edgecase
+QUESTION: Mi történik az alábbi kód futtatásakor?
+CODE:
+List<String> values = new ArrayList<>();
+values.add("A");
+values.add(null);
+
+System.out.println(values.size());
+System.out.println(values.get(1));
+ENDCODE
+A) `2`, majd `null` jelenik meg.
+B) `1`, majd `null` jelenik meg.
+C) `NullPointerException` történik az `add(null)` hívásnál.
+D) `UnsupportedOperationException` történik.
+ANSWER: A
+EXPLANATION: Az `ArrayList` engedélyezi a `null` elemeket. A lista két elemet tartalmaz, ezért a mérete 2, a második elem pedig ténylegesen `null`. A gyakori téves válasz azért csábító, mert egyes kollekciók vagy alkalmazási szabályok tiltják a null értékeket, de az `ArrayList` önmagában nem.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Exceptions
+TYPE: trap
+QUESTION: Melyik állítás igaz a checked és unchecked exceptionökre?
+A) Minden `RuntimeException` checked exception.
+B) A checked exceptionöket a fordító nem ellenőrzi.
+C) A `RuntimeException` és leszármazottai unchecked exceptionök.
+D) A checked exceptionöket mindig `catch` blokkban kell kezelni, `throws` deklaráció nem használható.
+ANSWER: C
+EXPLANATION: A `RuntimeException` és annak leszármazottai unchecked exceptionök, ezért a fordító nem követeli meg kötelező kezelésüket vagy deklarálásukat. A checked exceptionök ezzel szemben a fordító által ellenőrzött kivételtípusok, amelyeket kezelni vagy deklarálni kell. A gyakori téves válasz azért csábító, mert a `RuntimeException` is az `Exception` hierarchiába tartozik, de ez önmagában nem teszi checked exceptionné.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: theory
+QUESTION: Mi a szerepe a konstruktor meghívásakor az `this(...)` hívásnak?
+A) Egy másik konstruktor meghívását teszi lehetővé ugyanazon osztályon belül.
+B) A szülőosztály konstruktorát hívja meg.
+C) Az objektumot garbage collectionre jelöli.
+D) Egy új példányt hoz létre az aktuális objektumból.
+ANSWER: A
+EXPLANATION: Az `this(...)` egy másik konstruktort hív meg ugyanazon osztályon belül, lehetővé téve a konstruktorlogika újrafelhasználását. A szülőosztály konstruktorának meghívására a `super(...)` szolgál. A gyakori téves válasz azért csábító, mert az `this` és a `super` egyaránt konstruktorláncolásban használható, de eltérő célt szolgálnak.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+Map<String, Integer> scores = new HashMap<>();
+scores.put("Anna", 10);
+scores.put("Anna", 20);
+
+System.out.println(scores.size());
+System.out.println(scores.get("Anna"));
+ENDCODE
+A) `2`, majd `20`
+B) `2`, majd `10`
+C) `1`, majd `10`
+D) `1`, majd `20`
+ANSWER: D
+EXPLANATION: A `Map` egy kulcshoz legfeljebb egy értéket társít. A második `put()` ugyanahhoz a kulcshoz új értéket rendel, ezért felülírja a korábbi 10-et. Így egyetlen bejegyzés marad, amelynek értéke 20. A gyakori téves válasz azért csábító, mert a `put()` mindkét alkalommal sikeresen lefut, de ez nem jelenti azt, hogy ugyanahhoz a kulcshoz két külön bejegyzés jön létre.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: equals & hashCode
+TYPE: behavior
+QUESTION: Melyik állítás helyes az `equals()` metódus szerződésével kapcsolatban?
+A) Az `equals()` csak akkor lehet `true`, ha két objektum fizikailag ugyanaz az objektum.
+B) Az `equals()` érték szerinti egyenlőséget is definiálhat, és megfelelő implementáció esetén reflexív, szimmetrikus, tranzitív, konzisztens, valamint nullra hamis.
+C) Az `equals()` minden esetben köteles `true` értéket adni két azonos típusú objektumra.
+D) Az `equals()` eredménye minden híváskor véletlenszerűen változhat.
+ANSWER: B
+EXPLANATION: Az `equals()` szerződése több tulajdonságot ír elő, köztük a reflexivitást, szimmetriát, tranzitivitást, konzisztenciát és azt, hogy egy nem null objektum `null`-lal nem egyenlő. Az implementáció érték szerinti egyenlőséget is definiálhat. A gyakori téves válasz azért csábító, mert az alapértelmezett `Object.equals()` valóban lényegében referenciaazonosságot használ, de ezt az alosztályok felülírhatják.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Streams & lambdas
+TYPE: behavior
+QUESTION: Mikor hajtódik végre az alábbi stream pipeline?
+CODE:
+List<String> names = List.of("Anna", "Bela", "Adam");
+
+Stream<String> stream = names.stream()
+        .filter(name -> {
+            System.out.println("checking " + name);
+            return name.startsWith("A");
+        });
+ENDCODE
+A) A `filter` azonnal lefut mindhárom elemre.
+B) Csak az első elemre fut le azonnal.
+C) Még egyik elemre sem fut le, mert nincs terminális művelet.
+D) A stream létrehozása fordítási hibát okoz.
+ANSWER: C
+EXPLANATION: A stream köztes műveletei, például a `filter`, lazy módon működnek. A pipeline deklarálása önmagában nem indítja el a feldolgozást; ehhez terminális művelet, például `collect()`, `count()` vagy `forEach()` szükséges. A gyakori téves válasz azért csábító, mert a `filter()` hívás szintaktikailag azonnal megtörténik, de maga az elemfeldolgozás csak terminális művelet hatására indul.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: Optional
+TYPE: behavior
+QUESTION: Mi történik az alábbi kóddal?
+CODE:
+Optional<String> value = Optional.ofNullable(null);
+System.out.println(value.isPresent());
+ENDCODE
+A) `true` jelenik meg.
+B) `null` jelenik meg.
+C) `NoSuchElementException` történik.
+D) `false` jelenik meg.
+ANSWER: D
+EXPLANATION: Az `Optional.ofNullable(null)` egy üres `Optional` példányt hoz létre. Az `isPresent()` ezért `false` értéket ad vissza. A gyakori téves válasz azért csábító, mert az `Optional.of(null)` valóban kivételt dobna, de az `ofNullable()` kifejezetten a null érték biztonságos kezelésére szolgál.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: I/O & NIO
+TYPE: debug
+QUESTION: Mi a probléma az alábbi kóddal, ha a megadott fájl nem létezik?
+CODE:
+Path path = Path.of("config.txt");
+String content = Files.readString(path);
+System.out.println(content);
+ENDCODE
+A) A `Files.readString()` `IOException`-t dobhat, ezért azt kezelni vagy megfelelően deklarálni kell.
+B) A `Path.of()` automatikusan létrehozza a hiányzó fájlt.
+C) A `Files.readString()` mindig `null` értéket ad vissza hiányzó fájl esetén.
+D) A kód minden esetben `NullPointerException`-t dob.
+ANSWER: A
+EXPLANATION: A `Files.readString(Path)` fájlolvasás során checked `IOException`-t dobhat, többek között akkor, ha a fájl nem létezik. Ezt a hívónak kezelnie vagy a metódus szignatúrájában deklarálnia kell. A gyakori téves válasz azért csábító, mert egy hiányzó fájlt könnyű olyan esetként elképzelni, amely egyszerűen `null` eredményt ad, de a fájl I/O hibái kivételként jelennek meg.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: Concurrency & threads
+TYPE: output
+QUESTION: Mi garantálható az alábbi programról?
+CODE:
+Thread t = new Thread(() -> System.out.println("worker"));
+
+t.start();
+t.join();
+
+System.out.println("main");
+ENDCODE
+A) Mindig a `main`, majd a `worker` jelenik meg.
+B) A `worker` biztosan megjelenik a `main` előtt.
+C) A `join()` miatt egyik szöveg sem jelenik meg.
+D) A program nem fordul le, mert `join()` nem hívható `Thread` objektumon.
+ANSWER: B
+EXPLANATION: A `join()` arra vár, hogy a meghívott `Thread` befejezze a végrehajtását. Ezért a `main` kiírása csak a `worker` szál befejezése után történhet. A `worker` szöveg kiírása természetesen magának a szálnak a futásához kötött, így annak előbb kell megtörténnie. A gyakori téves válasz azért csábító, mert a `start()` után a szálak sorrendje általában nem determinisztikus, de a `join()` explicit sorrendi garanciát ad a folytatásra.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: Memory model & GC
+TYPE: theory
+QUESTION: Melyik állítás igaz a Java heap és stack memóriáról?
+A) Minden objektum kizárólag a stacken található.
+B) A lokális változók és objektumok mindig kizárólag a heapen találhatók.
+C) A heap tipikusan az objektumok és tömbök tárolására szolgál, míg minden thread saját stackkel rendelkezik a metódushívásokhoz és lokális változókhoz.
+D) A garbage collector kizárólag a stack tartalmát kezeli.
+ANSWER: C
+EXPLANATION: A Java memória modelljében a heap tipikusan objektumok és tömbök tárolására szolgál, míg minden végrehajtási szálnak saját stackje van a stack frame-ekkel, lokális változókkal és metódushívási információkkal. A pontos JVM implementáció belső optimalizációkat is végezhet, ezért a „minden objektum mindig heapen van” leegyszerűsítés nem univerzális. A gyakori téves válasz azért csábító, mert a heap és stack fogalmát sok oktatóanyag szigorúan két fizikai memóriahelyhez köti.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: theory
+QUESTION: Melyik állítás igaz egy `sealed` osztályra Java-ban?
+A) Meghatározhatja, hogy mely osztályok vagy interfészek lehetnek közvetlen leszármazottai.
+B) Egyáltalán nem lehet példányosítani.
+C) Automatikusan immutable osztállyá válik.
+D) Csak recordok örökölhetnek belőle.
+ANSWER: A
+EXPLANATION: A `sealed` osztály vagy interfész explicit módon korlátozhatja közvetlen leszármazottait a `permits` deklarációval. Ez kontrollált öröklési hierarchiák kialakítását teszi lehetővé. A gyakori téves válasz azért csábító, mert a sealed típusok valóban szigorúbb öröklési szabályokat alkalmaznak, de ettől még nem válnak automatikusan immutable-lá vagy absztrakttá.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: JVM & class loading
+TYPE: behavior
+QUESTION: Mi történik, ha egy Java osztályban van egy `static` inicializáló blokk?
+CODE:
+class Config {
+    static {
+        System.out.println("initialized");
+    }
+}
+
+System.out.println("before");
+new Config();
+System.out.println("after");
+ENDCODE
+A) Az `initialized` soha nem jelenik meg.
+B) `initialized` jelenik meg még a `before` előtt.
+C) A `before`, majd az `after` jelenik meg, az inicializáló blokk figyelmen kívül marad.
+D) `before`, majd `initialized`, majd `after` jelenik meg.
+ANSWER: D
+EXPLANATION: A `Config` osztály inicializálásakor a `static` inicializáló blokk lefut. A `before` kiírása már az osztály első aktív használata előtt megtörténik, majd a `new Config()` aktiválja az osztály inicializálását, így megjelenik az `initialized`, végül az `after`. A gyakori téves válasz azért csábító, mert a class loading és az initialization két külön JVM-fázis, és könnyű azt feltételezni, hogy a `static` blokk már pusztán a forráskód beolvasásakor lefut.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: Performance & profiling
+TYPE: performance
+QUESTION: Egy metódusban ugyanazt a drága számítást minden ciklusiterációban újra elvégezzük, miközben az eredmény a ciklus alatt nem változik. Mi lehet a legközvetlenebb optimalizáció?
+A) Több thread létrehozása minden iterációhoz.
+B) A számítás eredményének egyszeri kiszámítása és újrafelhasználása, ha az eredmény valóban változatlan.
+C) A teljes heap méretének megduplázása.
+D) Minden iteráció után `System.gc()` meghívása.
+ANSWER: B
+EXPLANATION: Ha egy számítás eredménye a ciklus alatt invariáns, akkor érdemes egyszer kiszámítani, majd az eredményt újra felhasználni. Ez közvetlenül csökkenti a felesleges CPU-munkát. A gyakori téves válasz azért csábító, mert a párhuzamosítás általános teljesítményjavító technikának tűnhet, de a fölösleges munka megszüntetése általában egyszerűbb és hatékonyabb megközelítés.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: trap
+QUESTION: Melyik állítás igaz az absztrakt osztályokkal kapcsolatban?
+A) Egy absztrakt osztálynak nem lehet konstruktora.
+B) Egy absztrakt osztály csak absztrakt metódusokat tartalmazhat.
+C) Egy absztrakt osztály tartalmazhat konkrét metódusokat és konstruktort is, de közvetlenül nem példányosítható.
+D) Egy absztrakt osztályból nem örökölhet másik osztály.
+ANSWER: C
+EXPLANATION: Az absztrakt osztály szolgálhat közös állapot és viselkedés megosztására, ezért lehet konstruktora és konkrét metódusa is. Maga az absztrakt osztály közvetlenül nem példányosítható, de konkrét leszármazottai igen. A gyakori téves válasz azért csábító, mert az absztrakt metódusok gyakori részei az ilyen osztályoknak, de egy absztrakt osztály nem kizárólag absztrakt metódusokból áll.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: theory
+QUESTION: Miért nem engedi a Java általában azt, hogy `List<Dog>` értéket közvetlenül `List<Animal>` típushoz rendeljünk?
+A) Mert a generikus típusok mindig primitíveket tartalmaznak.
+B) Mert ez type-safety problémát okozna: egy `List<Animal>` referencia segítségével más `Animal` példányt is megpróbálhatnánk hozzáadni.
+C) Mert a `Dog` nem lehet az `Animal` leszármazottja.
+D) Mert a `List` interfész nem támogat generikus típusokat.
+ANSWER: B
+EXPLANATION: A generikus típusok invariánsak. Ha `List<Dog>` automatikusan `List<Animal>` lehetne, akkor az `Animal` listaként kezelt objektumhoz például `Cat` is hozzáadható lenne, ami sértené a tényleges lista típusbiztonságát. A gyakori téves válasz azért csábító, mert a sima objektumreferenciáknál a `Dog` valóban hozzárendelhető `Animal` referenciához, de ez nem jelenti azt, hogy a paraméterezett kollekciók ugyanígy kovariánsak.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: Exceptions
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+try {
+    System.out.println("try");
+    return;
+} finally {
+    System.out.println("finally");
+}
+ENDCODE
+A) `try`, majd `finally`
+B) Csak `try`
+C) Csak `finally`
+D) Fordítási hiba történik.
+ANSWER: A
+EXPLANATION: A `return` végrehajtása előtt a `finally` blokk lefut. Ezért először `try`, majd `finally` jelenik meg. A metódus tényleges visszatérése csak a `finally` blokk végrehajtása után történik meg. A gyakori téves válasz azért csábító, mert a `return` intuitívan azonnali metóduskilépésnek tűnik, miközben a `finally` normál vezérlésátadás esetén is lefut.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: equals & hashCode
+TYPE: edgecase
+QUESTION: Mi történik, ha egy `HashSet`-ben lévő objektum olyan mezőjét módosítjuk, amelyet az `equals()` és `hashCode()` is használ?
+CODE:
+class User {
+    String id;
+
+    User(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof User other && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+}
+
+User user = new User("1");
+Set<User> users = new HashSet<>();
+users.add(user);
+
+user.id = "2";
+
+System.out.println(users.contains(user));
+ENDCODE
+A) Mindig `true`, mert ugyanazt az objektumot keressük.
+B) Mindig `false`, mert a `HashSet` automatikusan törli a módosított objektumot.
+C) Fordítási hiba történik, mert hash-alapú kollekcióban lévő objektum nem módosítható.
+D) `false` lehet, mert az objektum hash kódja megváltozott, miközben a set a régi hash alapján helyezte el.
+ANSWER: D
+EXPLANATION: A `HashSet` az objektum beszúrásakor a hash kód alapján választ bucketet. Ha később a hash kódot meghatározó állapot megváltozik, az objektum logikailag már másik buckethez tartozhat, miközben fizikailag a régi helyen marad. Emiatt a `contains()` nem feltétlenül találja meg. A gyakori téves válasz azért csábító, mert a keresett referencia valóban ugyanarra az objektumra mutat, de a hash-alapú kollekció nem pusztán referenciaazonosság alapján keres.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: Streams & lambdas
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+List<Integer> numbers = List.of(1, 2, 3);
+
+int result = numbers.stream()
+        .map(n -> n * 2)
+        .reduce(0, Integer::sum);
+
+System.out.println(result);
+ENDCODE
+A) `6`
+B) `12`
+C) `0`
+D) `3`
+ANSWER: B
+EXPLANATION: A `map` az értékeket 2, 4 és 6 értékekre alakítja. A `reduce(0, Integer::sum)` ezeket összeadja a 0 kezdőértékkel, így az eredmény 12. A gyakori téves válasz azért csábító, mert a bemeneti lista összege 6, de a redukció előtt minden elemet megduplázunk.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: Optional
+TYPE: trap
+QUESTION: Mi történik az alábbi kóddal?
+CODE:
+Optional<String> value = Optional.empty();
+
+String result = value.get();
+
+System.out.println(result);
+ENDCODE
+A) `null` jelenik meg.
+B) Üres string jelenik meg.
+C) `NoSuchElementException` keletkezik.
+D) A `get()` automatikusan létrehoz egy alapértelmezett értéket.
+ANSWER: C
+EXPLANATION: Az `Optional` üres, ezért a `get()` nem tud értéket visszaadni, és `NoSuchElementException`-t dob. Az `Optional` használatának egyik célja éppen az, hogy a hiányzó érték explicit kezelésére ösztönözzön. A gyakori téves válasz azért csábító, mert a `null` a Java hagyományos hiányzóérték-jelölése, de az üres `Optional` nem azonos egy `null` visszatérési értékkel.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: I/O & NIO
+TYPE: behavior
+QUESTION: Mit biztosít a `Path.resolve()` használata az alábbi példában?
+CODE:
+Path base = Path.of("/app/config");
+Path file = base.resolve("application.properties");
+
+System.out.println(file);
+ENDCODE
+A) Egy új fizikai fájlt hoz létre.
+B) A két útvonalat logikailag összekapcsolja, és létrehozza a megfelelő child path-ot.
+C) Beolvassa a fájl tartalmát.
+D) Garantálja, hogy a fájl létezik.
+ANSWER: B
+EXPLANATION: A `resolve()` útvonalakat kombinál, és egy új `Path` reprezentációt ad vissza. Önmagában nem hoz létre fájlt vagy könyvtárat, és nem ellenőrzi, hogy a cél ténylegesen létezik-e. A gyakori téves válasz azért csábító, mert a metódus neve alapján fájlkezelési műveletnek tűnhet, valójában csak az útvonal objektumát állítja elő.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: output
+QUESTION: Mi lesz a kimenet Java 17 vagy újabb verzióban?
+CODE:
+record Point(int x, int y) {}
+
+Point p1 = new Point(10, 20);
+Point p2 = new Point(10, 20);
+
+System.out.println(p1.equals(p2));
+ENDCODE
+A) `false`
+B) `true`
+C) Fordítási hiba történik.
+D) `NullPointerException` történik.
+ANSWER: B
+EXPLANATION: A record automatikusan értékalapú `equals()` implementációt kap a deklarált komponensei alapján. Mivel `p1` és `p2` komponensértékei megegyeznek, az `equals()` eredménye `true`. A gyakori téves válasz azért csábító, mert a két objektum külön példány, de a record által generált `equals()` nem referenciaazonosságot, hanem a komponensek egyenlőségét vizsgálja.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: JVM & class loading
+TYPE: theory
+QUESTION: Melyik állítás igaz a Java `ClassNotFoundException` és `NoClassDefFoundError` közötti különbségre?
+A) Mindkettő mindig pontosan ugyanabban a helyzetben keletkezik.
+B) A `ClassNotFoundException` egy `Error`, a `NoClassDefFoundError` pedig checked exception.
+C) A `ClassNotFoundException` tipikusan egy osztály explicit betöltési kísérletének hibáját jelzi, míg a `NoClassDefFoundError` azt jelezheti, hogy egy futáskor szükséges osztály definíciója nem érhető el.
+D) A `NoClassDefFoundError` kizárólag fordításkor keletkezhet.
+ANSWER: C
+EXPLANATION: A `ClassNotFoundException` checked exception, amely gyakran dinamikus class loading, például `Class.forName()` során jelentkezik, ha az osztály nem található. A `NoClassDefFoundError` egy `Error`, amely például akkor fordulhat elő, amikor egy korábban elérhető vagy fordításkor ismert osztálydefiníció futáskor már nem érhető el. A gyakori téves válasz azért csábító, mert mindkettő az osztályok elérhetőségével kapcsolatos, de eltérő JVM-szituációkat jelölnek.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: scenario
+QUESTION: Egy JUnit tesztben azt szeretnénk ellenőrizni, hogy egy service meghívja-e a repository `save()` metódusát. A repository Mockito mock. Melyik megközelítés alkalmas erre?
+A) `verify(repository).save(entity);`
+B) `assertEquals(repository.save(entity), entity);`
+C) `repository.wasCalled("save");`
+D) `assertTrue(repository.save(entity));`
+ANSWER: A
+EXPLANATION: Mockito esetén a `verify()` arra szolgál, hogy ellenőrizzük, megtörtént-e egy mockon egy adott metódushívás. A `verify(repository).save(entity)` azt ellenőrzi, hogy a `save()` a megadott argumentummal meghívásra került. A gyakori téves válasz azért csábító, mert egy metódus visszatérési értékének ellenőrzése hasznos lehet egy unit tesztben, de az nem bizonyítja, hogy egy mockot a kívánt módon hívtak meg.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: Java Core & OOP
+TYPE: behavior
+QUESTION: Mi történik az alábbi kód futtatásakor?
+CODE:
+class Parent {
+    Parent() {
+        System.out.println("parent");
+    }
+}
+
+class Child extends Parent {
+    Child() {
+        System.out.println("child");
+    }
+}
+
+new Child();
+ENDCODE
+A) Csak `child` jelenik meg.
+B) `parent`, majd `child` jelenik meg.
+C) `child`, majd `parent` jelenik meg.
+D) Fordítási hiba történik, mert a `Child` konstruktora nem hívhatja a `Parent` konstruktort.
+ANSWER: B
+EXPLANATION: Egy leszármazott objektum létrehozásakor a szülőosztály konstruktorának meghívása történik meg először, ha nincs explicit `super(...)`, akkor implicit módon a paraméter nélküli konstruktor kerül meghívásra. Ezért először `parent`, majd `child` jelenik meg. A gyakori téves válasz azért csábító, mert a `new Child()` közvetlenül a gyermek konstruktort hívja meg, de a Java konstruktorláncolás részeként a szülő inicializálása megelőzi azt.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: Strings & immutability
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+String s = "Java";
+String t = s.replace("a", "o");
+
+System.out.println(s);
+System.out.println(t);
+ENDCODE
+A) `Java`, majd `Jovo`
+B) `Jovo`, majd `Jovo`
+C) `Jovo`, majd `Java`
+D) `Java`, majd `Java`
+ANSWER: A
+EXPLANATION: A `replace()` nem módosítja az eredeti `String` objektumot, hanem új stringet ad vissza. Ezért `s` továbbra is `Java`, míg `t` értéke `Jovo`. A gyakori téves válasz azért csábító, mert a metódus neve módosító műveletet sugallhat, miközben a `String` immutable.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: Collections & generics
+TYPE: behavior
+QUESTION: Melyik állítás igaz az alábbi kódra?
+CODE:
+List<String> values = new ArrayList<>();
+values.add("A");
+values.add("B");
+values.remove(0);
+
+System.out.println(values.get(0));
+ENDCODE
+A) `A` jelenik meg.
+B) `null` jelenik meg.
+C) `B` jelenik meg.
+D) `IndexOutOfBoundsException` történik.
+ANSWER: C
+EXPLANATION: A `remove(0)` az első, `A` értékű elemet távolítja el. Ezután csak `B` marad a listában, amely az új 0. indexre kerül. A gyakori téves válasz azért csábító, mert az eltávolítás után könnyű fejben megtartani az eredeti indexeket, pedig a lista elemei újraindexelődnek.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: Exceptions
+TYPE: behavior
+QUESTION: Mi történik, ha egy `catch` blokkban újabb kivételt dobunk?
+CODE:
+try {
+    throw new IllegalArgumentException();
+} catch (IllegalArgumentException e) {
+    throw new RuntimeException("wrapped");
+}
+ENDCODE
+A) Az eredeti kivétel automatikusan figyelmen kívül marad, és a program mindig folytatódik.
+B) A `catch` blokkban dobott új kivétel futásidőben továbbterjed, ha nincs megfelelően kezelve.
+C) A JVM automatikusan új `catch` blokkot hoz létre.
+D) A `catch` blokkban nem lehet új kivételt dobni.
+ANSWER: B
+EXPLANATION: A `catch` blokk normál Java kódot tartalmaz, ezért abból is dobható új kivétel. Ha azt egy külső hívó nem kezeli, továbbterjed a call stacken. A gyakori téves válasz azért csábító, mert a `catch` blokkot sokan úgy tekintik, mint amely automatikusan lezárja a kivételkezelési folyamatot, de csak az adott kivétel kezelését végzi el.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: equals & hashCode
+TYPE: edgecase
+QUESTION: Mi lesz a kimenet?
+CODE:
+String a = new String("Java");
+String b = new String("Java");
+
+System.out.println(a.equals(b));
+System.out.println(a.hashCode() == b.hashCode());
+ENDCODE
+A) `true`, majd `true`
+B) `false`, majd `false`
+C) `true`, majd `false`
+D) `false`, majd `true`
+ANSWER: A
+EXPLANATION: A `String.equals()` tartalmi egyenlőséget vizsgál, ezért a két string egyenlő. A `String.hashCode()` is a karaktertartalom alapján számol, ezért azonos tartalom esetén azonos hash kódot ad. A gyakori téves válasz azért csábító, mert a két objektum külön példány, de az `equals()` és `hashCode()` szerződését a `String` érték-alapon valósítja meg.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: Memory model & GC
+TYPE: edgecase
+QUESTION: Mi történik az alábbi kód esetén?
+CODE:
+Object a = new Object();
+Object b = new Object();
+
+a = b;
+b = null;
+ENDCODE
+A) Mindkét objektum garbage collectionre jogosult.
+B) Az első objektum biztosan azonnal felszabadul, a második pedig nem.
+C) Egyik objektum sem lehet garbage collected.
+D) Az első objektum gyűjthetővé válhat, míg a második továbbra is elérhető lehet más referencián keresztül.
+ANSWER: D
+EXPLANATION: Az első `Object` példányra már nem mutat referencia, miután `a` a második objektumra mutat. Ezért az első objektum gyűjthetővé válhat. A második objektumot `b` már nem referálja, de az `a` referencia továbbra is rá mutat, ezért elérhető marad. A gyakori téves válasz azért csábító, mert a `b = null` miatt úgy tűnhet, hogy a második objektum is elvesztette minden referenciáját.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Concurrency & threads
+TYPE: behavior
+QUESTION: Mi a legfontosabb probléma az alábbi kóddal, ha több thread párhuzamosan hajtja végre?
+CODE:
+class Counter {
+    int count = 0;
+
+    void increment() {
+        count++;
+    }
+}
+ENDCODE
+A) A `count++` garantáltan atomi művelet, ezért nincs probléma.
+B) A kód biztosan deadlockot okoz.
+C) Race condition léphet fel, mert a `count++` nem garantálja az atomi, thread-safe módosítást.
+D) A JVM automatikusan minden mezőt thread-safe-é tesz.
+ANSWER: C
+EXPLANATION: A `count++` logikailag olvasásból, növelésből és írásból áll, ezért több thread egyidejű végrehajtásakor elveszhetnek frissítések. Megfelelő szinkronizáció vagy más konkurens számlálómechanizmus szükséges. A gyakori téves válasz azért csábító, mert a `++` egyetlen rövid forráskódsornak látszik, de ettől még nem lesz automatikusan atomi.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: Streams & lambdas
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+List<String> values = List.of("a", "bb", "ccc");
+
+long result = values.stream()
+        .map(String::length)
+        .filter(length -> length > 1)
+        .count();
+
+System.out.println(result);
+ENDCODE
+A) `2`
+B) `3`
+C) `1`
+D) `6`
+ANSWER: A
+EXPLANATION: A `map` a stringeket azok hosszára alakítja, így 1, 2 és 3 keletkezik. A `filter` csak a 2-nél nagyobb vagy azzal egyenlő hosszakat engedi tovább, vagyis két elem marad. A gyakori téves válasz azért csábító, mert könnyű csak a `map` eredményére vagy az eredeti lista méretére figyelni.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: Optional
+TYPE: behavior
+QUESTION: Mi lesz a kimenet?
+CODE:
+Optional<String> value = Optional.of("Java");
+
+value.map(String::length)
+        .ifPresent(System.out::println);
+ENDCODE
+A) `Java`
+B) `0`
+C) `4`
+D) `NoSuchElementException`
+ANSWER: C
+EXPLANATION: Az `Optional` tartalmazza a `Java` értéket, ezért a `map` meghívja a `String::length` függvényt, amely 4-et ad vissza. Az így létrejött `Optional<Integer>` jelen van, ezért az `ifPresent` kiírja a 4-et. A gyakori téves válasz azért csábító, mert az eredeti Optional típusa `String`, miközben a `map` megváltoztatja a benne lévő érték típusát.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: I/O & NIO
+TYPE: behavior
+QUESTION: Mit csinál az alábbi kód?
+CODE:
+Path directory = Path.of("data");
+
+Files.createDirectories(directory);
+ENDCODE
+A) Mindig törli a `data` könyvtárat.
+B) Létrehozza a megadott könyvtárat és a hiányzó szülőkönyvtárakat is.
+C) Csak akkor hozza létre a könyvtárat, ha a szülőkönyvtár már létezik.
+D) Beolvassa a könyvtár teljes tartalmát.
+ANSWER: B
+EXPLANATION: A `Files.createDirectories()` létrehozza a megadott könyvtárat és szükség esetén a még hiányzó szülőkönyvtárakat is. Ha a könyvtár már létezik, a metódus nem azért hibázik, mert már létezik. A gyakori téves válasz azért csábító, mert a könyvtár létrehozása gyakran egyetlen konkrét könyvtár létrehozásaként jelenik meg, miközben ez az API a teljes hiányzó útvonal létrehozását kezeli.
+###END
+
+### Q61
+LEVEL: medior
+TOPIC: Collections & generics
+TYPE: trap
+QUESTION: Mit enged meg az alábbi metódus paraméterezése?
+CODE:
+static void printNumbers(List<? extends Number> numbers) {
+    for (Number number : numbers) {
+        System.out.println(number);
+    }
+}
+ENDCODE
+A) Csak `List<Integer>` adható át neki.
+B) Bármilyen `List<Number>` vagy annak leszármazott típusú elemeket tartalmazó lista átadható.
+C) Bármilyen `List<Object>` átadható neki.
+D) A metódus nem tudja az elemeket `Number` típusként kezelni.
+ANSWER: B
+EXPLANATION: A `? extends Number` azt jelenti, hogy a lista valamely `Number`-ből származó konkrét típust tartalmazhat, például `Integer`, `Double` vagy maga `Number`. Az elemek biztonságosan olvashatók `Number` típusként, de általában nem adhatunk hozzá tetszőleges `Number` értéket. A gyakori téves válasz azért csábító, mert az `extends` szó könnyen úgy értelmezhető, hogy csak egyetlen konkrét altípus engedélyezett.
+###END
+
+### Q62
+LEVEL: medior
+TOPIC: Java Core & OOP
+TYPE: behavior
+QUESTION: Mi történik az alábbi kódban?
+CODE:
+class Parent {
+    void process() {
+        System.out.println("parent");
+    }
+}
+
+class Child extends Parent {
+    @Override
+    void process() {
+        System.out.println("child");
+    }
+
+    void run() {
+        super.process();
+        process();
+    }
+}
+
+new Child().run();
+ENDCODE
+A) `child`, majd `parent` jelenik meg.
+B) Csak `parent` jelenik meg.
+C) `parent`, majd `child` jelenik meg.
+D) Fordítási hiba történik.
+ANSWER: C
+EXPLANATION: A `super.process()` explicit módon a szülőosztály implementációját hívja meg, ezért először `parent` jelenik meg. A következő `process()` virtuális metódushívás, amely a jelenlegi objektum tényleges típusa alapján a `Child` implementációját választja. A gyakori téves válasz azért csábító, mert mindkét hívás ugyanazt a metódusnevet használja, de a `super` megváltoztatja a feloldás módját.
+###END
+
+### Q63
+LEVEL: medior
+TOPIC: Exceptions
+TYPE: trap
+QUESTION: Mi történik az alábbi kóddal?
+CODE:
+static void process() {
+    try {
+        throw new IllegalStateException("failure");
+    } finally {
+        System.out.println("cleanup");
+    }
+}
+ENDCODE
+A) A kivétel elveszik, mert van `finally`.
+B) A `cleanup` nem jelenik meg, mert kivétel történt.
+C) `cleanup` jelenik meg, majd az `IllegalStateException` továbbterjed, ha nincs megfelelően kezelve.
+D) A kód nem fordul le, mert a `finally` nem tartalmazhat `println()` hívást.
+ANSWER: C
+EXPLANATION: A `finally` blokk lefut, ezért `cleanup` jelenik meg. Mivel a `finally` nem kezeli vagy nyeli el automatikusan a kivételt, az `IllegalStateException` továbbterjed, ha nincs külső kezelő. A gyakori téves válasz azért csábító, mert a `finally` gyakran cleanup logikát tartalmaz, de nem maga a kivételkezelő blokk.
+###END
+
+### Q64
+LEVEL: medior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: Egy Java szolgáltatás heap használata folyamatosan növekszik, és a GC egyre gyakrabban fut, miközben az alkalmazás által használt adatok száma nem indokolja ezt. Mi lehet az egyik legvalószínűbb irány a hibakeresésben?
+A) Meg kell vizsgálni, hogy hosszú életű referenciák, például statikus gyűjtemények vagy cache-ek nem tartanak-e feleslegesen objektumokat életben.
+B) Biztosan túl kevés CPU áll rendelkezésre.
+C) Minden `String` objektum automatikusan memória leaket okoz.
+D) A heap növelése önmagában bizonyítja, hogy a probléma megoldódott.
+ANSWER: A
+EXPLANATION: Folyamatosan növekvő élő heap és növekvő GC-terhelés esetén érdemes heap dumpot és allocation/retention elemzést végezni, különösen a hosszú életű referenciák és cache-ek irányában. A heap méretének növelése csak több rendelkezésre álló memóriát ad, az esetleges leak okát nem szünteti meg. A gyakori téves válasz azért csábító, mert a memóriafogyasztás gyors tüneti kezelésének tűnik, de diagnosztikai bizonyíték nélkül nem oldja meg a retention problémát.
+###END
+
+### Q65
+LEVEL: medior
+TOPIC: Concurrency & threads
+TYPE: scenario
+QUESTION: Két thread ugyanazt a megosztott mutable objektumot módosítja. Melyik megközelítés biztosíthatja a kritikus szakasz kölcsönös kizárását?
+A) A metódus nevét `synchronized` szövegre változtatni.
+B) Az érintett kódot megfelelő lockkal, például `synchronized` blokkal védeni.
+C) `Thread.sleep(1)` hívása minden módosítás előtt.
+D) A mezőt `static`-ról példánymezőre változtatni.
+ANSWER: B
+EXPLANATION: A megfelelően alkalmazott `synchronized` blokk ugyanazon lock monitorján egyszerre csak egy thread számára engedi a védett kritikus szakasz végrehajtását. A `sleep()` nem biztosít kölcsönös kizárást, csak időzítési változást okoz. A gyakori téves válasz azért csábító, mert a rövid késleltetés néha elfedi a race conditiont teszteléskor, de nem biztosít szinkronizációs garanciát.
+###END
+
+### Q66
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: Mi a lényegi különbség az `ExecutorService.submit()` és a `execute()` között?
+A) A `submit()` mindig új JVM-et indít.
+B) Az `execute()` csak CPU-bound feladatokra használható.
+C) A `submit()` `Future` objektumot ad vissza, amelyen keresztül a feladat eredménye vagy kivétele lekérdezhető.
+D) A két metódus között semmilyen különbség nincs.
+ANSWER: C
+EXPLANATION: Az `execute()` egy `Runnable` feladatot küld végrehajtásra és nem ad vissza `Future`-t. A `submit()` `Future`-t ad vissza, amelyen keresztül például az eredmény lekérhető, illetve a feladat végrehajtásával kapcsolatos kivétel is megfigyelhető. A gyakori téves válasz azért csábító, mert mindkét metódus executoron keresztül ütemez feladatokat, ezért első pillantásra azonosnak tűnnek.
+###END
+
+### Q67
+LEVEL: medior
+TOPIC: Streams & lambdas
+TYPE: edgecase
+QUESTION: Mi történik, ha egy streamet kétszer próbálunk terminális művelettel feldolgozni?
+CODE:
+Stream<String> stream = Stream.of("a", "b", "c");
+
+long count = stream.count();
+long countAgain = stream.count();
+ENDCODE
+A) A második `count()` ugyanazt az eredményt adja vissza.
+B) A második `count()` `IllegalStateException`-t okoz.
+C) A stream automatikusan újra létrejön.
+D) A második `count()` mindig `0` értéket ad.
+ANSWER: B
+EXPLANATION: A stream egyszer használható. Egy terminális művelet lezárja a stream pipeline-t, ezért ugyanazon streamen újabb terminális művelet végrehajtása `IllegalStateException`-t eredményezhet. A gyakori téves válasz azért csábító, mert a stream objektum változóként továbbra is elérhető, de az elérhetőség nem jelenti azt, hogy újra felhasználható.
+###END
+
+### Q68
+LEVEL: medior
+TOPIC: Optional
+TYPE: trap
+QUESTION: Miért lehet problémás az `Optional` használata egy JPA entity mezőtípusaként?
+A) Mert az `Optional` mindig serializálhatatlan.
+B) Mert az `Optional` csak primitív értékeket képes tárolni.
+C) Mert az `Optional` nem támogatja a `null` értékeket.
+D) Mert az `Optional` elsősorban visszatérési értékek reprezentálására készült, és perzisztens entity mezőként ORM-mappinggel problémákat okozhat.
+ANSWER: D
+EXPLANATION: Az `Optional` fő célja a hiányzó visszatérési érték explicit reprezentálása, nem pedig általános mezőtípus vagy entity-state konténer. JPA/Hibernate környezetben az ORM mapping és a perzisztencia kezelése miatt az entity mezőként történő használata problémás vagy nem kívánatos lehet. A gyakori téves válasz azért csábító, mert az `Optional` és a null kezelés szorosan összefügg, de az `Optional` maga éppen a null közvetlen használatát rejti el.
+###END
+
+### Q69
+LEVEL: medior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: output
+QUESTION: Mi lesz a kimenet Java 21-ben?
+CODE:
+sealed interface Shape permits Circle, Rectangle {}
+
+record Circle(double radius) implements Shape {}
+record Rectangle(double width, double height) implements Shape {}
+
+Shape shape = new Circle(2);
+
+if (shape instanceof Circle c && c.radius() == 2) {
+    System.out.println("circle");
+}
+ENDCODE
+A) `rectangle`
+B) `circle`
+C) `true`
+D) Fordítási hiba történik.
+ANSWER: B
+EXPLANATION: A `shape` tényleges típusa `Circle`, ezért a pattern matching sikeres, és a `c` változó a `Circle` példányra hivatkozik. A `radius()` értéke 2, ezért a teljes feltétel igaz, és `circle` jelenik meg. A gyakori téves válasz azért csábító, mert a referencia típusa `Shape`, de a pattern matching a tényleges objektumtípust ellenőrzi.
+###END
+
+### Q70
+LEVEL: medior
+TOPIC: JVM & class loading
+TYPE: behavior
+QUESTION: Mi történik egy osztály `static` mezőjének inicializálásakor, ha az inicializáló kód kivételt dob?
+CODE:
+class Config {
+    static int value = initialize();
+
+    static int initialize() {
+        throw new RuntimeException("init failed");
+    }
+}
+ENDCODE
+A) Az osztály inicializálása sikeresnek minősül.
+B) A kivételt a JVM mindig automatikusan elnyeli.
+C) Az osztály inicializálása sikertelen lesz, és az inicializálást kiváltó használat kivételt kap.
+D) A `static` mező automatikusan `0` értéket kap, és az inicializálás folytatódik.
+ANSWER: C
+EXPLANATION: Ha egy osztály inicializálása során nem kezelt kivétel keletkezik, az inicializálás meghiúsul. A kiváltó használat ennek megfelelő kivétellel tér vissza, és az osztály további használata is speciális inicializálási hibákhoz vezethet. A gyakori téves válasz azért csábító, mert a statikus primitív mezőknek van alapértelmezett értékük, de ez nem írja felül a sikertelen explicit inicializálást.
+###END
+
+### Q71
+LEVEL: medior
+TOPIC: Performance & profiling
+TYPE: performance
+QUESTION: Egy Java alkalmazásban a CPU használat magas, de a GC-idő alacsony. A thread dumpok alapján egyetlen thread folyamatosan ugyanabban a számításigényes ciklusban fut. Mi a legvalószínűbb következő vizsgálati lépés?
+A) Heap dump készítése kizárólag a CPU-probléma megoldására.
+B) A teljes adatbázis törlése.
+C) A JVM heap méretének csökkentése diagnosztikai mérés nélkül.
+D) CPU profilerrel megvizsgálni, mely metódusok fogyasztják a legtöbb CPU-időt.
+ANSWER: D
+EXPLANATION: Ha a GC-terhelés alacsony, de egy thread CPU-intenzív ciklusban fut, a CPU profiling segíthet pontosan azonosítani a hot spotokat. Ez lehet például végtelen vagy túl sok iteráció, drága algoritmus vagy nem hatékony számítás. A gyakori téves válasz azért csábító, mert heap dumpok általában hasznos JVM-diagnosztikai eszközök, de önmagukban nem a CPU-hotspotok feltárására szolgálnak.
+###END
+
+### Q72
+LEVEL: medior
+TOPIC: Design patterns
+TYPE: scenario
+QUESTION: Egy alkalmazásban ugyanazt az interfészt több algoritmus különböző módon valósítja meg, és futásidőben szeretnénk kiválasztani, melyik algoritmus fusson. Melyik design pattern illik erre leginkább?
+A) Strategy
+B) Singleton
+C) Adapter
+D) Observer
+ANSWER: A
+EXPLANATION: A Strategy pattern az algoritmusok családját külön objektumokba szervezi, miközben közös interfészen keresztül teszi lehetővé azok cseréjét. Ez különösen hasznos, ha az algoritmus futásidőben kiválasztható. A gyakori téves válasz azért csábító, mert az Adapter és Strategy egyaránt interfészekkel és objektumokkal dolgozik, de az Adapter elsődleges célja inkompatibilis interfészek összekapcsolása.
+###END
+
+### Q73
+LEVEL: medior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: debug
+QUESTION: Miért lehet hibás vagy félrevezető az alábbi Mockito teszt?
+CODE:
+when(repository.findById(1L)).thenReturn(Optional.of(user));
+
+service.loadUser(1L);
+
+verify(repository).findById(2L);
+ENDCODE
+A) A `verify()` csak void metódusokra használható.
+B) A stubolt hívás és az ellenőrzött hívás különböző argumentumot használ, ezért a `verify` meghiúsul, ha a service valóban az 1L értéket használta.
+C) Az `Optional` miatt a Mockito nem tudja ellenőrizni a hívást.
+D) A `when()` és `verify()` nem használható ugyanabban a tesztben.
+ANSWER: B
+EXPLANATION: A teszt az `1L` argumentummal stubolja a repositoryt, de `2L` argumentummal ellenőrzi a hívást. Ha a service a várt `1L` értékkel dolgozik, a `verify(repository).findById(2L)` meghiúsul. A gyakori téves válasz azért csábító, mert a stub és a verify ugyanarra a metódusra vonatkozik, de a Mockito az argumentumokat is figyelembe veszi.
+###END
+
+### Q74
+LEVEL: medior
+TOPIC: Production debugging
+TYPE: production
+QUESTION: Productionben egy REST endpoint időnként nagyon lassú, de az átlagos válaszidő normális. Melyik mérés lenne különösen hasznos az ilyen probléma feltárásához?
+A) Csak az alkalmazás teljes uptime értéke.
+B) Csak a JVM processz indulási ideje.
+C) Percentilisek, például p95 és p99 latency, valamint megfelelő request tracing.
+D) A fejlesztői gép CPU-hőmérséklete.
+ANSWER: C
+EXPLANATION: Az intermittáló latency problémák gyakran az átlagban elrejtve maradnak. A p95 és p99 percentilisek megmutatják a lassabb kérések viselkedését, distributed tracinggel pedig azonosítható, hogy az idő mely downstream komponensben vagy kódrészben telik el. A gyakori téves válasz azért csábító, mert az átlagos latency egyszerű és jól kommunikálható mérőszám, de a ritka lassú kéréseket elfedheti.
+###END
+
+### Q75
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: scenario
+QUESTION: Egy CPU-bound feladatokat feldolgozó alkalmazás `ExecutorService`-t használ. Miért lehet problémás, ha minden beérkező requesthez korlátlan számú új threadet hozunk létre?
+A) Mert a threadek soha nem fogyasztanak memóriát.
+B) Mert a JVM automatikusan serializálja az összes threadet.
+C) Mert a threadek csak I/O-bound feladatokra használhatók.
+D) Mert túl sok thread jelentős scheduling- és memóriaoverheadet, valamint erőforrás-kimerülést okozhat.
+ANSWER: D
+EXPLANATION: A túl sok párhuzamos thread nem növeli korlátlanul a CPU-bound feldolgozás teljesítményét. A threadeknek stack memória, scheduler-idő és egyéb erőforrás kell, és túl sok konkurens végrehajtás context switchinghez, CPU-thrashinghez vagy erőforrás-kimerüléshez vezethet. A gyakori téves válasz azért csábító, mert több thread intuitívan több párhuzamosságot jelent, de CPU-bound munkánál a fizikai CPU-k száma fontos korlát.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: Collections & generics
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+List<Integer> numbers = new ArrayList<>(List.of(1, 2, 3));
+
+Iterator<Integer> iterator = numbers.iterator();
+while (iterator.hasNext()) {
+    if (iterator.next() == 2) {
+        iterator.remove();
+    }
+}
+
+System.out.println(numbers);
+ENDCODE
+A) `[1, 3]`
+B) `[1, 2, 3]`
+C) `ConcurrentModificationException` történik.
+D) `[2]`
+ANSWER: A
+EXPLANATION: Az iterator `next()` hívása először az 1-et, majd a 2-t adja vissza. Amikor az aktuális elem 2, az `iterator.remove()` szabályosan eltávolítja azt a listából. Ezután a lista `[1, 3]` marad. A gyakori téves válasz azért csábító, mert a kollekció módosítása iterálás közben valóban gyakran `ConcurrentModificationException`-höz vezet, de az iterator saját `remove()` metódusa erre a célra támogatott.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: Java Core & OOP
+TYPE: trap
+QUESTION: Melyik állítás igaz egy Java interfésszel kapcsolatban?
+A) Egy interfésznek nem lehet semmilyen implementált metódusa.
+B) Egy interfész tartalmazhat `default` és `static` metódusokat is.
+C) Egy interfészből mindig közvetlenül példányosítható objektum.
+D) Egy interfész mezői automatikusan példánymezők.
+ANSWER: B
+EXPLANATION: A modern Java interfészek tartalmazhatnak `default` és `static` metódusokat is, így nem kizárólag absztrakt metódusdeklarációkból állnak. Az interfész mezői implicit módon `public static final` mezők. A gyakori téves válasz azért csábító, mert a Java 8 előtti interfészekről kialakult kép kizárólag absztrakt metódusokat feltételez.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: Strings & immutability
+TYPE: behavior
+QUESTION: Mi történik az alábbi kódban?
+CODE:
+StringBuilder builder = new StringBuilder("Java");
+builder.append(" 21");
+
+System.out.println(builder);
+ENDCODE
+A) `Java` jelenik meg.
+B) `21` jelenik meg.
+C) `Java 21` jelenik meg.
+D) Fordítási hiba történik.
+ANSWER: C
+EXPLANATION: A `StringBuilder` mutable karakterlánc-reprezentáció, ezért az `append()` közvetlenül módosítja ugyanazt az objektumot. A builder tartalma így `Java 21` lesz. A gyakori téves válasz azért csábító, mert a `String` immutable, és könnyű tévesen ugyanazt a viselkedést feltételezni a `StringBuilder` esetén.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: equals & hashCode
+TYPE: debug
+QUESTION: Mi a probléma az alábbi `equals()` implementációval?
+CODE:
+class User {
+    private final String id;
+
+    User(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return id == ((User) o).id;
+    }
+}
+ENDCODE
+A) Az `equals()` mindig `false` értéket ad.
+B) Az `equals()` csak primitív mezőkkel működhet.
+C) Az `id` mezőnek `static`-nak kellene lennie.
+D) Az `==` referenciaazonosságot vizsgál, ezért két azonos tartalmú külön `String` objektumot nem feltétlenül tekint egyenlőnek; emellett a cast típusa is problémát okozhat.
+ANSWER: D
+EXPLANATION: Objektum típusú `String` értékek összehasonlítására az `equals()` használata szükséges, nem az `==`, mert az utóbbi referenciaazonosságot vizsgál. Emellett az implementáció közvetlenül castol `User`-re, ezért például `null` vagy más típus átadásakor is hibásan viselkedhet. A gyakori téves válasz azért csábító, mert string literalok esetén az internelés miatt az `==` néha véletlenül `true` eredményt adhat.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Exceptions
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+static int calculate() {
+    try {
+        return 10;
+    } finally {
+        return 20;
+    }
+}
+
+System.out.println(calculate());
+ENDCODE
+A) `10`
+B) `20`
+C) `0`
+D) Fordítási hiba történik.
+ANSWER: B
+EXPLANATION: A `try` blokk előkészíti a `10` értékkel történő visszatérést, de a `finally` blokk még a tényleges metódus-visszatérés előtt lefut. A `finally` saját `return` utasítása felülírja a korábbi visszatérést, így 20 lesz az eredmény. A gyakori téves válasz azért csábító, mert a `try` blokk `return` utasítása első pillantásra véglegesnek tűnik.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: Egy alkalmazásban egy nagy objektumot egy `static` mezőben tárolnak, és az alkalmazás élettartama alatt folyamatosan nő a hozzá tartozó adatszerkezet. Miért lehet ez memória-retention probléma?
+A) Mert a `static` mezőn keresztül az objektumok hosszú ideig elérhetők maradhatnak, így a GC nem tudja őket összegyűjteni.
+B) Mert minden `static` mező automatikusan a stacken található.
+C) Mert a GC soha nem vizsgálhat `static` referenciákat.
+D) Mert a `static` mező csak primitív értéket tárolhat.
+ANSWER: A
+EXPLANATION: A statikus referencia tipikusan az alkalmazás teljes életciklusán keresztül elérhető marad. Ha egy növekvő kollekció objektumokat tart benne, azok akkor sem válnak gyűjthetővé, ha üzletileg már nincs rájuk szükség. A gyakori téves válasz azért csábító, mert a `static` élettartama miatt könnyű összekeverni a JVM memóriaterületeit és a referencia elérhetőségét.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: Concurrency & threads
+TYPE: edgecase
+QUESTION: Mi garantálható az alábbi kód esetén?
+CODE:
+volatile boolean running = true;
+
+Thread worker = new Thread(() -> {
+    while (running) {
+    }
+});
+
+worker.start();
+running = false;
+ENDCODE
+A) A `volatile` miatt a worker thread biztosan azonnal leáll.
+B) A `volatile` garantálja, hogy a ciklus legalább egyszer lefusson.
+C) A `volatile` biztosítja a változás láthatóságát a threadek között, de nem garantálja azonnali ütemezési reakciót.
+D) A `volatile` miatt a JVM automatikusan megszakítja a workert.
+ANSWER: C
+EXPLANATION: A `volatile` változó olvasása és írása között megfelelő visibility garanciát biztosít, így a worker thread nem ragad bele szükségszerűen egy régi érték gyorsítótárazott nézetébe. Ez azonban nem jelent azonnali thread-leállítást vagy ütemezési garanciát. A gyakori téves válasz azért csábító, mert a visibility és a tényleges végrehajtás megszakítása könnyen összemosódik.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: Mit csinál a `CountDownLatch` az alábbi használatban?
+CODE:
+CountDownLatch latch = new CountDownLatch(2);
+
+Thread t1 = new Thread(latch::countDown);
+Thread t2 = new Thread(latch::countDown);
+
+t1.start();
+t2.start();
+
+latch.await();
+System.out.println("ready");
+ENDCODE
+A) A `ready` azonnal megjelenik, függetlenül a threadek állapotától.
+B) A `ready` csak akkor jelenik meg, amikor mindkét thread meghívta a `countDown()` metódust.
+C) A `await()` új threadet indít.
+D) A `CountDownLatch` automatikusan újrahasznosíthatóvá válik minden `await()` után.
+ANSWER: B
+EXPLANATION: A latch kezdeti számlálója 2. Az első `countDown()` 1-re csökkenti, a második 0-ra, ekkor az `await()`-on várakozó thread folytathatja a végrehajtást. A `CountDownLatch` egyszeri használatra tervezett koordinációs eszköz, nem automatikusan újrahasznosítható barrier. A gyakori téves válasz azért csábító, mert az `await()` neve könnyen egyszerű blokkolásként értelmezhető, miközben konkrét számlálófeltételhez kötött.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: Streams & lambdas
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+List<Integer> numbers = List.of(1, 2, 3, 4);
+
+int result = numbers.stream()
+        .filter(n -> n % 2 == 0)
+        .findFirst()
+        .orElse(-1);
+
+System.out.println(result);
+ENDCODE
+A) `1`
+B) `-1`
+C) `4`
+D) `2`
+ANSWER: D
+EXPLANATION: A `filter` csak a páros értékeket engedi tovább, amelyek közül az első a 2. A `findFirst()` ezt az elemet tartalmazó `Optional`-t adja vissza, ezért az `orElse(-1)` nem kerül felhasználásra. A gyakori téves válasz azért csábító, mert az `orElse()` fallback értéke feltűnő, de csak üres Optional esetén lenne szükség rá.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: Optional
+TYPE: edgecase
+QUESTION: Mi történik az alábbi kóddal?
+CODE:
+Optional<String> value = Optional.of("Java");
+
+String result = value
+        .filter(s -> s.length() > 10)
+        .orElse("default");
+
+System.out.println(result);
+ENDCODE
+A) `default` jelenik meg.
+B) `Java` jelenik meg.
+C) `null` jelenik meg.
+D) `NoSuchElementException` történik.
+ANSWER: A
+EXPLANATION: Az `Optional` eredetileg tartalmazza a `Java` értéket, de a `filter` feltétele hamis, mert a string hossza nem nagyobb 10-nél. Emiatt az Optional üressé válik, és az `orElse("default")` fallback értéket adja. A gyakori téves válasz azért csábító, mert a kezdeti Optional valóban nem üres, de a köztes `filter` megváltoztathatja ezt az állapotot.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: I/O & NIO
+TYPE: scenario
+QUESTION: Egy alkalmazás nagy, több gigabájtos fájlt dolgoz fel soronként. Miért lehet problémás a teljes fájl `Files.readString()` használatával történő beolvasása?
+A) Mert a `Files.readString()` csak bináris fájlokat tud kezelni.
+B) Mert a metódus minden fájlt automatikusan töröl.
+C) Mert a teljes tartalom memóriába kerülhet, ami jelentős heaphasználatot és akár `OutOfMemoryError`-t okozhat.
+D) Mert a NIO nem támogat nagy fájlokat.
+ANSWER: C
+EXPLANATION: A `Files.readString()` a teljes fájlt egyetlen stringként állítja elő, ezért nagy fájlok esetén jelentős memóriát igényelhet. Több gigabájtos fájl feldolgozásánál célszerű streaming vagy soronkénti feldolgozást használni, például `Files.lines()` vagy megfelelő reader segítségével. A gyakori téves válasz azért csábító, mert a NIO modern és hatékony API-kat biztosít, de ettől még egy teljes fájl memóriába töltése nem lesz olcsó.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: trap
+QUESTION: Miért lehet problémás az alábbi kód?
+CODE:
+ExecutorService executor = Executors.newFixedThreadPool(2);
+
+Future<?> future = executor.submit(() -> {
+    try {
+        Thread.sleep(1000);
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+    }
+});
+
+future.get();
+executor.shutdown();
+ENDCODE
+A) A `Future.get()` automatikusan megszakítja a feladatot.
+B) A `shutdown()` a `Future.get()` előtt kötelező.
+C) A `submit()` nem engedélyezhet `Runnable` feladatot.
+D) A `Future.get()` blokkolhat, amíg a feladat be nem fejeződik, ezért nem szabad gondolkodás nélkül latency-érzékeny vagy request threadből használni.
+ANSWER: D
+EXPLANATION: A `Future.get()` blokkoló művelet: az aktuális thread vár a task befejezésére. Ez teljesen megfelelő lehet bizonyos koordinációs helyzetekben, de request processing vagy más latency-érzékeny kódban könnyen felesleges várakozást és thread-pool torlódást okozhat. A gyakori téves válasz azért csábító, mert a `Future` aszinkron feladat eredményét reprezentálja, de az eredmény lekérése maga lehet szinkron és blokkoló.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: theory
+QUESTION: Melyik állítás írja le helyesen a virtual threadeket Java 21-ben?
+A) Minden virtual thread külön OS threadnek felel meg.
+B) A virtual threadek elsősorban nagy számú, gyakran blokkoló I/O jellegű feladat kezelésére alkalmasak, miközben nem jelentik azt, hogy CPU-kapacitásból több áll rendelkezésre.
+C) Virtual threadek csak GUI alkalmazásokban használhatók.
+D) A virtual thread minden esetben gyorsabb a platform threadnél.
+ANSWER: B
+EXPLANATION: A virtual thread a JVM által kezelt könnyű végrehajtási egység, amelyet különösen nagy számú, blokkoló I/O-val dolgozó feladat esetén lehet hatékonyan használni. Nem növeli meg a rendelkezésre álló CPU-magok számát, ezért CPU-bound feladatoknál nem jelent automatikus teljesítménynövekedést. A gyakori téves válasz azért csábító, mert a virtual threadekből nagyon sok létrehozható, de ez nem azonos a fizikai CPU-kapacitás növekedésével.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: JVM & class loading
+TYPE: behavior
+QUESTION: Mi történik, ha ugyanazt az osztálynevet két külön class loader tölti be?
+A) A JVM mindig ugyanannak az osztálynak tekinti őket.
+B) A második class loader automatikusan felülírja az első definícióját.
+C) A két betöltött osztály külön típusnak számíthat, még akkor is, ha a teljesen kvalifikált osztálynevük azonos.
+D) A JVM minden esetben `ClassNotFoundException`-t dob.
+ANSWER: C
+EXPLANATION: A JVM-ben egy osztály identitásához az osztály neve mellett a betöltő class loader identitása is hozzátartozik. Emiatt két külön class loader által betöltött, azonos teljesen kvalifikált nevű osztály inkompatibilis típus lehet. A gyakori téves válasz azért csábító, mert a Java forráskódban az osztály teljes neve tűnik az egyetlen azonosítónak, de a JVM type identity ennél összetettebb.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Performance & profiling
+TYPE: debug
+QUESTION: Egy alkalmazás válaszideje jelentősen romlik, miközben a CPU és a heap használat normális. A thread dumpokban sok thread `BLOCKED` állapotban látható. Mi lehet a következő vizsgálati irány?
+A) Meg kell keresni a lock contentiont, és azonosítani kell, mely monitor vagy lock miatt várakoznak a threadek.
+B) Meg kell növelni a heapet anélkül, hogy további adatot gyűjtenénk.
+C) Ki kell kapcsolni a garbage collectort.
+D) Minden threadet virtual threaddé kell alakítani diagnosztika nélkül.
+ANSWER: A
+EXPLANATION: Sok `BLOCKED` thread tipikusan lock contentionre utal: a threadek egy monitor vagy más lock megszerzésére várnak. Thread dumpok és profiling segítségével azonosítható a problémás lock és az azt birtokló thread. A gyakori téves válasz azért csábító, mert a magas latency gyakran általános JVM-erőforrás problémának tűnik, de normális CPU- és heaphasználat mellett a lock contention különösen fontos nyom.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Design patterns
+TYPE: scenario
+QUESTION: Egy objektum létrehozásakor sok opcionális paraméter van, és szeretnénk olvasható módon, lépésenként felépíteni az objektumot. Melyik pattern illik erre leginkább?
+A) Observer
+B) Builder
+C) Proxy
+D) Chain of Responsibility
+ANSWER: B
+EXPLANATION: A Builder pattern lehetővé teszi összetett objektumok lépésenkénti, olvasható konfigurációját, különösen akkor, ha sok opcionális paraméter létezik. Gyakran használják immutable objektumok konstrukciójának egyszerűsítésére is. A gyakori téves válasz azért csábító, mert az Observer és más patternök is objektumok együttműködését strukturálják, de nem a komplex konstrukció a céljuk.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: scenario
+QUESTION: Egy unit tesztben egy külső API klienst szeretnénk izolálni, hogy a teszt ne végezzen valódi HTTP hívást. Mi a megfelelő Mockito-alapú megközelítés?
+A) A production HTTP kliens példányosítása, majd a valódi endpoint meghívása.
+B) A teszt teljes kikapcsolása.
+C) A külső kliens mockolása, majd a kívánt visszatérési érték stubolása.
+D) A hálózati kapcsolat sebességének mesterséges növelése.
+ANSWER: C
+EXPLANATION: Unit tesztben a külső rendszer izolálására tipikusan mockot használunk, amelyen előre definiáljuk a szükséges viselkedést. Így a teszt determinisztikus marad, és nem függ a hálózattól vagy a külső szolgáltatás állapotától. A gyakori téves válasz azért csábító, mert valódi integrációs tesztben valóban hasznos lehet a tényleges HTTP kliens, de az már más tesztelési szint.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: Production debugging
+TYPE: production
+QUESTION: Productionben egy szolgáltatás időnként `OutOfMemoryError`-ral leáll. Melyik diagnosztikai adat lenne különösen hasznos annak meghatározásához, hogy milyen objektumok tartják életben a heap nagy részét?
+A) Csak az alkalmazás verziószáma.
+B) Csak a HTTP status code-ok száma.
+C) Csak a JVM processz uptime értéke.
+D) Egy megfelelő időpontban készített heap dump és annak dominator/retention elemzése.
+ANSWER: D
+EXPLANATION: A heap dump megmutathatja, milyen objektumok vannak a heapben és milyen referenciaútvonalakon keresztül maradnak elérhetők. Dominator vagy retention elemzéssel azonosíthatók a nagy memóriát közvetve vagy közvetlenül megtartó objektumok. A gyakori téves válasz azért csábító, mert az alkalmazás működési metrikái fontosak, de önmagukban nem mutatják meg a heap objektumszintű összetételét.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: Collections & generics
+TYPE: performance
+QUESTION: Egy algoritmusban gyakran ellenőrizzük, hogy egy elem szerepel-e egy nagy kollekcióban. A kollekció nem igényel rendezést és gyakori a membership check. Melyik adatszerkezet lehet megfelelőbb egy `ArrayList`-nél, ha a megfelelő `equals()`/`hashCode()` implementáció rendelkezésre áll?
+A) `HashSet`
+B) `LinkedList`
+C) `Stack`
+D) `Vector`
+ANSWER: A
+EXPLANATION: A `HashSet` hash-alapú membership checkre optimalizált, így átlagosan konstans idejű keresést tud biztosítani megfelelő hash eloszlás mellett. Egy `ArrayList` elemkeresése lineáris idejű lehet. A gyakori téves válasz azért csábító, mert a `LinkedList` is kollekció, amelynél az elemek kezelése rugalmasnak tűnik, de érték szerinti keresése szintén lineáris.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: Concurrency & threads
+TYPE: edgecase
+QUESTION: Mi a probléma az alábbi lockolási sorrenddel?
+CODE:
+final Object lockA = new Object();
+final Object lockB = new Object();
+
+Thread t1 = new Thread(() -> {
+    synchronized (lockA) {
+        synchronized (lockB) {
+            System.out.println("t1");
+        }
+    }
+});
+
+Thread t2 = new Thread(() -> {
+    synchronized (lockB) {
+        synchronized (lockA) {
+            System.out.println("t2");
+        }
+    }
+});
+ENDCODE
+A) A kód biztosan fordítási hibát okoz.
+B) A két thread mindig ugyanabban a sorrendben szerzi meg a lockokat.
+C) Deadlock alakulhat ki, ha az egyik thread `lockA`-t, a másik pedig `lockB`-t tart, miközben a másik lockra vár.
+D) A `synchronized` blokkok automatikusan feloldják egymás lockjait.
+ANSWER: C
+EXPLANATION: Ha `t1` megszerzi `lockA`-t és vár `lockB`-re, miközben `t2` megszerzi `lockB`-t és vár `lockA`-ra, körkörös várakozás alakulhat ki. Ez klasszikus deadlock-helyzet. A probléma egyik tipikus megoldása a lockok következetesen azonos sorrendben történő megszerzése. A gyakori téves válasz azért csábító, mert mindkét blokk külön-külön helyes Java szintaxis, de a konkurens lockolási sorrend rendszer szinten okozhat holtpontot.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: Mi történik az alábbi `AtomicInteger` használatakor?
+CODE:
+AtomicInteger counter = new AtomicInteger(0);
+
+counter.incrementAndGet();
+counter.incrementAndGet();
+
+System.out.println(counter.get());
+ENDCODE
+A) `0`
+B) `1`
+C) `3`
+D) `2`
+ANSWER: D
+EXPLANATION: Az `AtomicInteger` atomikus műveleteket biztosít a benne tárolt egész értékre. A két `incrementAndGet()` egy-egy alkalommal növeli az értéket, ezért a végső érték 2. A gyakori téves válasz azért csábító, mert az atomikus osztályok működését néha kizárólag thread-safety szempontból tárgyalják, miközben a művelet eredményét ugyanúgy az aktuális érték határozza meg.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: behavior
+QUESTION: Melyik állítás igaz egy Java `record` komponensével kapcsolatban?
+CODE:
+record User(String name) {}
+
+User user = new User("Anna");
+ENDCODE
+A) `user.name()` használható az érték lekérésére.
+B) `user.getName()` kötelező az érték lekérésére.
+C) A record komponens mindig mutable settert kap.
+D) A record komponensei csak reflection segítségével érhetők el.
+ANSWER: A
+EXPLANATION: A record minden deklarált komponenséhez azonos nevű accessor metódust biztosít, ezért a `name` komponens értéke `user.name()` hívással érhető el. A hagyományos JavaBeans `getName()` konvenció nem automatikusan része a record API-nak. A gyakori téves válasz azért csábító, mert a klasszikus DTO-kban gyakoriak a `getX()` típusú accessorok.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: JVM & class loading
+TYPE: theory
+QUESTION: Melyik JVM-komponens végzi a Java bytecode futtatásának optimalizálásában kulcsszerepet játszó JIT compilationt?
+A) A garbage collector.
+B) A JIT compiler, amely a futás közben azonosított hot code-ot natív gépi kódra fordíthatja.
+C) A class loader, amely minden metódust natív kódra fordít.
+D) A Java source compiler, amely minden metódust minden híváskor újrafordít.
+ANSWER: B
+EXPLANATION: A Just-In-Time compiler futás közben képes a gyakran végrehajtott bytecode-részleteket optimalizált natív gépi kódra fordítani. Ez lehetővé teszi, hogy a JVM a tényleges futási profil alapján optimalizáljon. A gyakori téves válasz azért csábító, mert a class loading, bytecode execution és JIT compilation mind a JVM futtatási folyamatának részei, de külön szerepet töltenek be.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: Design patterns
+TYPE: behavior
+QUESTION: Egy objektum állapotának megváltozásakor több másik objektumot automatikusan értesíteni kell. Melyik design pattern illik erre leginkább?
+A) Factory Method
+B) Decorator
+C) Observer
+D) Builder
+ANSWER: C
+EXPLANATION: Az Observer pattern egy subject és több observer közötti egy-a-többhöz értesítési kapcsolatot modellez. Amikor a subject állapota vagy releváns eseménye megváltozik, az observerek értesítést kaphatnak. A gyakori téves válasz azért csábító, mert a Decorator is több objektum együttműködését használja, de annak célja a viselkedés dinamikus kiterjesztése, nem az értesítési kapcsolat.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: Production debugging
+TYPE: scenario
+QUESTION: Egy production Java alkalmazásban az egyik endpoint időnként `NullPointerException`-t dob, de lokálisan nem reprodukálható. Melyik megközelítés a leginkább alkalmas a probléma izolálására?
+A) Strukturált logok, request correlation ID, releváns inputok és stack trace-ek gyűjtése, majd az érintett requestek összevetése.
+B) A teljes production kód azonnali újraírása.
+C) Minden `NullPointerException` automatikus elnyelése egy üres `catch` blokkal.
+D) Az endpoint véletlenszerű újrahívása addig, amíg reprodukálható nem lesz.
+ANSWER: A
+EXPLANATION: Nem determinisztikusan jelentkező production hibánál először megfelelő observabilityre van szükség. A correlation ID segít egy konkrét request útját követni, a strukturált logok és stack trace-ek pedig lehetővé teszik az eltérő inputok és végrehajtási körülmények összehasonlítását. A gyakori téves válasz azért csábító, mert a reprodukálás egyszerű megoldásnak tűnik, de production környezetben a véletlenszerű újrahívás önmagában nem ad elegendő diagnosztikai információt.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: Java Core & OOP
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+class Parent {
+    void print(Number value) {
+        System.out.println("Parent Number");
+    }
+}
+
+class Child extends Parent {
+    void print(Integer value) {
+        System.out.println("Child Integer");
+    }
+}
+
+Parent obj = new Child();
+obj.print(10);
+ENDCODE
+A) `Parent Number`
+B) `Child Integer`
+C) Fordítási hiba történik.
+D) Semmi nem jelenik meg.
+ANSWER: A
+EXPLANATION: A `print(Integer)` a `Parent.print(Number)` overloadja, nem override-ja, mert a paraméterlista eltér. Az overload kiválasztása fordításkor a deklarált referencia típusa alapján történik, ezért a `Parent`-ben deklarált `print(Number)` kerül kiválasztásra. A gyakori téves válasz azért csábító, mert az objektum futásidejű típusa `Child`, de a dinamikus dispatch csak valódi override esetén választja ki a gyermekimplementációt.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: Strings & immutability
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+String a = new String("Java");
+String b = a.intern();
+String c = "Java";
+
+System.out.println(b == c);
+ENDCODE
+A) `false`
+B) `true`
+C) `null`
+D) Fordítási hiba történik.
+ANSWER: B
+EXPLANATION: Az `intern()` a string poolban található kanonikus `"Java"` példány referenciáját adja vissza. A string literal `c` ugyanerre a poolban lévő példányra mutat, ezért a két referencia azonos. A gyakori téves válasz azért csábító, mert `a` és `c` valóban külön `String` objektum lehet, de az `intern()` eredménye már a pool példányára mutat.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: Collections & generics
+TYPE: scenario
+QUESTION: Egy metódusnak különböző `List` implementációkból kell `Number` értékeket olvasnia, de a metódusnak nem kell elemeket hozzáadnia a listához. Melyik szignatúra a legmegfelelőbb?
+A) `void process(List<Object> values)`
+B) `void process(List<? super Number> values)`
+C) `void process(List<? extends Number> values)`
+D) `void process(List<Number> values)`
+ANSWER: C
+EXPLANATION: A `List<? extends Number>` lehetővé teszi például `List<Integer>`, `List<Double>` és `List<Number>` átadását, miközben az elemek biztonságosan `Number`-ként olvashatók. Az ilyen wildcard használat a PECS elv producer oldalának felel meg. A gyakori téves válasz azért csábító, mert a `List<Number>` elsőre természetesnek tűnik, de az nem fogad el például `List<Integer>` típust.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: equals & hashCode
+TYPE: edgecase
+QUESTION: Melyik állítás igaz a `BigDecimal` esetén?
+CODE:
+BigDecimal a = new BigDecimal("1.0");
+BigDecimal b = new BigDecimal("1.00");
+
+System.out.println(a.equals(b));
+System.out.println(a.compareTo(b) == 0);
+ENDCODE
+A) Mindkét kifejezés `true`.
+B) Mindkét kifejezés `false`.
+C) Az első `true`, a második `false`.
+D) Az első `false`, a második `true`.
+ANSWER: D
+EXPLANATION: A `BigDecimal.equals()` a numerikus érték mellett a scale értékét is figyelembe veszi, ezért `1.0` és `1.00` nem egyenlő `equals()` szerint. A `compareTo()` viszont numerikus összehasonlítást végez, ezért ebben az esetben nullát ad vissza. A gyakori téves válasz azért csábító, mert matematikailag a két érték egyenlő, de a `BigDecimal` objektum-egyenlősége ennél szigorúbb.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: Exceptions
+TYPE: behavior
+QUESTION: Mi történik az alábbi try-with-resources kódban?
+CODE:
+class Resource implements AutoCloseable {
+    @Override
+    public void close() {
+        throw new RuntimeException("close");
+    }
+}
+
+try (Resource resource = new Resource()) {
+    throw new RuntimeException("body");
+}
+ENDCODE
+A) Csak a `"close"` kivétel marad meg.
+B) Csak a `"body"` kivétel marad meg.
+C) A két kivétel összeolvad egyetlen új kivétellé.
+D) A `"body"` kivétel lesz a fő kivétel, a `"close"` kivétel pedig suppressed exceptionként kapcsolódik hozzá.
+ANSWER: D
+EXPLANATION: Try-with-resources esetén a resource bezárása a blokk elhagyásakor megtörténik. Ha a törzs már kivételt dobott, és a `close()` is kivételt dob, akkor a törzsből származó kivétel marad az elsődleges kivétel, a bezárás közbeni kivétel pedig suppressed exceptionként érhető el. A gyakori téves válasz azért csábító, mert a `close()` ténylegesen új kivételt dob, de a Java ezt nem egyszerűen eldobja a meglévő kivétel helyett.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: Memory model & GC
+TYPE: theory
+QUESTION: Mi a fő különbség a `WeakReference` és a normál strong reference között?
+A) A `WeakReference` által hivatkozott objektum megfelelő körülmények között GC által összegyűjthető, ha már nincs más strong reference.
+B) A `WeakReference` mindig megakadályozza a garbage collectiont.
+C) A `WeakReference` kizárólag primitív értékeket képes tárolni.
+D) A `WeakReference` automatikusan életben tartja az objektumot a JVM leállásáig.
+ANSWER: A
+EXPLANATION: A weak reference nem tartja életben az objektumot a garbage collector számára. Ha nincs más erős referencia az objektumra, az objektum gyűjthetővé válhat, és a weak reference később null értéket adhat. A gyakori téves válasz azért csábító, mert maga a `WeakReference` is egy referenciaobjektum, de GC-szemantikája eltér a strong reference-től.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Concurrency & threads
+TYPE: edgecase
+QUESTION: Miért nem elegendő egy `volatile` változó egy olyan művelethez, amelynek atomikus növelésre van szüksége?
+CODE:
+volatile int counter = 0;
+
+Thread t1 = new Thread(() -> counter++);
+Thread t2 = new Thread(() -> counter++);
+
+t1.start();
+t2.start();
+ENDCODE
+A) Mert a `volatile` csak olvasni tudja az értéket.
+B) Mert a `volatile` tiltja a threadek közötti kommunikációt.
+C) Mert a `counter++` több lépésből álló read-modify-write művelet, amelyet a `volatile` önmagában nem tesz atomikussá.
+D) Mert a `volatile` változók csak String típusúak lehetnek.
+ANSWER: C
+EXPLANATION: A `volatile` biztosítja a változó megfelelő láthatóságát, de nem teszi atomikussá a `counter++` műveletet. A művelet érték olvasásából, növeléséből és visszaírásából áll, ezért két thread elveszítheti egymás módosítását. A gyakori téves válasz azért csábító, mert a `volatile` valóban megold bizonyos visibility problémákat, de a visibility és az atomicity külön követelmény.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: Mi történik, ha egy `BlockingQueue`-ból a `take()` metódust hívjuk, miközben a queue üres?
+A) A `take()` `null` értéket ad vissza.
+B) A hívó thread blokkol, amíg egy elem elérhetővé nem válik vagy a thread meg nem szakad.
+C) A JVM azonnal `IllegalStateException`-t dob.
+D) A `take()` automatikusan létrehoz egy új elemet.
+ANSWER: B
+EXPLANATION: A `BlockingQueue.take()` blokkoló fogyasztási művelet. Üres queue esetén a hívó thread várakozik, amíg egy elem bekerül vagy a várakozó thread megszakad. A gyakori téves válasz azért csábító, mert a `poll()` hasonló célú művelet, de az alapértelmezett `poll()` üres queue esetén azonnal `null`-t ad vissza.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: Streams & lambdas
+TYPE: scenario
+QUESTION: Miért lehet problémás egy párhuzamos streamben külső mutable `ArrayList`-be gyűjteni az elemeket?
+CODE:
+List<Integer> result = new ArrayList<>();
+
+IntStream.range(0, 1000)
+        .parallel()
+        .forEach(result::add);
+ENDCODE
+A) Mert a `parallel()` automatikusan sorrendbe rendezi az elemeket.
+B) Mert az `ArrayList` csak Stringeket tárolhat.
+C) Mert a `forEach` mindig szekvenciálisan fut.
+D) Mert az `ArrayList` nem thread-safe, ezért konkurens módosításnál race condition vagy inkonzisztens eredmény alakulhat ki.
+ANSWER: D
+EXPLANATION: Párhuzamos stream esetén több worker thread is hívhatja a `result::add` műveletet. Az `ArrayList` nem biztosítja a szükséges thread-safety garanciákat, ezért ilyen külső mutable state használata hibás lehet. A stream saját collector mechanizmusa általában jobb megoldás, például `collect(Collectors.toList())`. A gyakori téves válasz azért csábító, mert az `ArrayList` szekvenciális használatban egyszerű és gyors, de ez nem jelenti azt, hogy konkurensen is biztonságos.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: Optional
+TYPE: behavior
+QUESTION: Mi történik az alábbi kódban?
+CODE:
+Optional<String> value = Optional.of("Java");
+
+Optional<Integer> result = value.flatMap(s -> Optional.of(s.length()));
+
+System.out.println(result.get());
+ENDCODE
+A) `Java` jelenik meg.
+B) `Optional[4]` jelenik meg.
+C) `4` jelenik meg.
+D) `NoSuchElementException` történik.
+ANSWER: C
+EXPLANATION: A `flatMap` segítségével a `String` értékből közvetlenül `Optional<Integer>` keletkezik, így nem jön létre egymásba ágyazott `Optional<Optional<Integer>>`. A kapott Optional a 4-es értéket tartalmazza, ezért a `get()` ezt az értéket adja vissza. A gyakori téves válasz azért csábító, mert maga a változó típusa `Optional<Integer>`, de a `get()` a benne lévő értéket adja vissza.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+int day = 2;
+
+String result = switch (day) {
+    case 1 -> "Monday";
+    case 2 -> "Tuesday";
+    default -> "Other";
+};
+
+System.out.println(result);
+ENDCODE
+A) `Monday`
+B) `Tuesday`
+C) `Other`
+D) `null`
+ANSWER: B
+EXPLANATION: A switch expressionben a `case 2 -> "Tuesday"` ág illeszkedik a `day` értékére. A `yield` használata nem szükséges az arrow syntax esetén, mert az expression közvetlenül szolgáltat értéket. A gyakori téves válasz azért csábító, mert a klasszikus switch statementeknél megszokott `break`-ek és explicit vezérlés eltérően működnek.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: JVM & class loading
+TYPE: theory
+QUESTION: Mi a parent delegation modell egyik fontos célja a Java class loading során?
+A) Minden osztályt mindig a child class loadernek kell betöltenie.
+B) A class loaderek soha nem tölthetnek be saját osztályokat.
+C) A rendszer- és alapvető osztályok egységes betöltésének és a névterek megfelelő izolációjának támogatása.
+D) A bytecode automatikus JavaScript-kóddá alakítása.
+ANSWER: C
+EXPLANATION: A parent delegation modellben egy class loader jellemzően először a szülő class loadernek delegálja a betöltési kérést. Ez segít biztosítani, hogy az alapvető platformosztályokat ne lehessen egyszerűen alkalmazásszintű definíciókkal lecserélni, és támogatja a class loader namespace-ek kezelését. A gyakori téves válasz azért csábító, mert a child class loader valóban képes saját osztályokat betölteni, de a delegation szabály ezt megelőzően a szülőnek ad lehetőséget.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: I/O & NIO
+TYPE: behavior
+QUESTION: Mi történik a `Files.walk()` használatakor az alábbi kódban?
+CODE:
+try (Stream<Path> paths = Files.walk(Path.of("/tmp"))) {
+    long count = paths.count();
+    System.out.println(count);
+}
+ENDCODE
+A) A fájlrendszer teljes tartalma automatikusan törlődik.
+B) Csak a `/tmp` könyvtár közvetlen gyermekei kerülnek feldolgozásra.
+C) A `Files.walk()` mindig pontosan egy `Path` értéket ad vissza.
+D) A stream a megadott könyvtár fájljait és alkönyvtárait rekurzívan képes bejárni, és az erőforrást célszerű try-with-resources segítségével lezárni.
+ANSWER: D
+EXPLANATION: A `Files.walk()` egy streamet ad, amely alapértelmezés szerint a megadott kezdőpont alatt található fájlokat és könyvtárakat rekurzívan bejárhatja. A stream mögött megnyitott fájlrendszer-erőforrások miatt a használata try-with-resources blokkal ajánlott. A gyakori téves válasz azért csábító, mert sok egyszerű fájlrendszer API csak egy szintű bejárást végez, míg a `walk()` alapértelmezés szerint mélyebb struktúrát is feldolgoz.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: Performance & profiling
+TYPE: scenario
+QUESTION: Egy szolgáltatás CPU-használata magas, de a memóriahasználat normális. A profiler szerint egyetlen metódus tölti az CPU-idő jelentős részét. Mi a legcélszerűbb következő lépés?
+A) Megvizsgálni az érintett hot path algoritmusát és azt, hogy csökkenthető-e a végrehajtások száma vagy költsége.
+B) Véletlenszerűen növelni a heap méretét.
+C) Kikapcsolni a JIT compilert.
+D) Minden kollekciót `LinkedList`-re cserélni.
+ANSWER: A
+EXPLANATION: Ha a profiling egy konkrét hot pathot azonosított, érdemes annak algoritmikus és végrehajtási költségét elemezni. Lehetséges például a felesleges számítások megszüntetése, jobb adatszerkezet választása vagy a hívások számának csökkentése. A gyakori téves válasz azért csábító, mert a heap mérete gyakran JVM-teljesítménybeszélgetésekben kerül elő, de normális memóriahasználat mellett nem ez a közvetlen probléma.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: Design patterns
+TYPE: scenario
+QUESTION: Egy meglévő objektum viselkedését szeretnénk futásidőben további funkcionalitással kiegészíteni anélkül, hogy az eredeti osztályt módosítanánk. Melyik pattern illik erre leginkább?
+A) Singleton
+B) Decorator
+C) Builder
+D) Factory Method
+ANSWER: B
+EXPLANATION: A Decorator egy meglévő objektumot wrapperrel vesz körül, és azon keresztül további viselkedést biztosít az eredeti osztály módosítása nélkül. Több decorator is egymásra építhető, így a viselkedés kombinálható. A gyakori téves válasz azért csábító, mert a Factory Method is objektumok létrehozásával kapcsolatos, de nem meglévő objektumok viselkedésének dinamikus kiterjesztésére szolgál.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: scenario
+QUESTION: Mockito használatakor szeretnénk ellenőrizni, hogy egy metódust pontosan egyszer, egy adott argumentummal hívtak meg. Melyik megközelítés megfelelő?
+A) `verify(service).call(any())`
+B) `verify(service, times(2)).call(42)`
+C) `verify(service, times(1)).call(42)`
+D) `verify(service, never()).call(42)`
+ANSWER: C
+EXPLANATION: A `times(1)` pontosan egy hívást vár, miközben a megadott `42` argumentum azt is ellenőrzi, hogy a hívás a kívánt paraméterrel történt. A Mockito alapértelmezett `verify(service).call(42)` viselkedése is egy hívást vár, de az explicit `times(1)` egyértelműen kifejezi a teszt szándékát. A gyakori téves válasz azért csábító, mert az alapértelmezett `verify` valóban egy hívást ellenőriz, de az explicit `times(1)` itt pontosan megfogalmazza a követelményt.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: Production debugging
+TYPE: production
+QUESTION: Egy production szolgáltatásnál időnként jelentősen megnő a garbage collectionre fordított idő, miközben a throughput visszaesik. Melyik vizsgálat adhat közvetlenebb információt a GC viselkedéséről?
+A) Csak a HTTP endpointok nevét tartalmazó lista.
+B) GC logok és JVM GC metrikák elemzése, például pause time, allocation rate és heap occupancy alapján.
+C) A frontend CSS fájljainak elemzése.
+D) Az alkalmazás package-neveinek átnevezése.
+ANSWER: B
+EXPLANATION: GC-problémák vizsgálatánál a pause time, allocation rate, heap occupancy és GC ciklusok adatai közvetlenül segíthetnek feltárni a viselkedést. Ezekből megállapítható például, hogy magas allocation rate vagy elégtelen heap-kapacitás járul-e hozzá a problémához. A gyakori téves válasz azért csábító, mert a HTTP metrikák fontosak a felhasználói hatás megértéséhez, de önmagukban nem mutatják meg a GC belső működését.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: Collections & generics
+TYPE: behavior
+QUESTION: Mi lesz a kimenet?
+CODE:
+Map<String, Integer> map = new LinkedHashMap<>();
+map.put("A", 1);
+map.put("B", 2);
+map.put("A", 3);
+
+System.out.println(map);
+ENDCODE
+A) `{A=1, B=2}`
+B) `{A=3, B=2}`
+C) `{A=3}`
+D) `{B=2, A=3}`
+ANSWER: B
+EXPLANATION: A `LinkedHashMap` insertion-order módban megőrzi a kulcsok első bekerülési sorrendjét. A második `put("A", 3)` lecseréli az A-hoz tartozó értéket, de nem hoz létre új kulcsot és nem helyezi azt a lista végére. Ezért az eredmény `{A=3, B=2}`. A gyakori téves válasz azért csábító, mert az érték frissítése könnyen összekeverhető egy új beszúrással, de ugyanannak a kulcsnak a frissítése nem változtatja meg az insertion ordert.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: Exceptions
+TYPE: scenario
+QUESTION: Egy service rétegben egy alacsonyabb szintű adatbázis kivételt szeretnénk domain-specifikus kivétellé alakítani, miközben az eredeti okot is meg akarjuk őrizni. Mi a megfelelő megközelítés?
+A) Az eredeti kivételt figyelmen kívül kell hagyni.
+B) Minden kivételt `Error` típusúvá kell alakítani.
+C) Az eredeti exceptiont el kell nyelni, és `null`-t kell visszaadni.
+D) Domain-specifikus exceptiont kell dobni, és az eredeti kivételt cause-ként megőrizni.
+ANSWER: D
+EXPLANATION: Exception translation során az alacsonyabb absztrakciós szintű kivétel egy magasabb szintű, a domainhez illeszkedő kivétellé alakítható. Az eredeti exception cause-ként történő megőrzése biztosítja, hogy a diagnosztikai információ ne vesszen el. A gyakori téves válasz azért csábító, mert a service rétegnek valóban el kell rejtenie az infrastruktúra részleteit, de ez nem jelenti az eredeti ok elvesztését.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: Egy alkalmazás heap dumpjában sok példány található egy cache-ben, és a cache mérete folyamatosan nő. Miért lehet ez memory leak-szerű probléma akkor is, ha a GC megfelelően működik?
+A) Mert a GC csak a primitív értékeket gyűjti.
+B) Mert a heap dump mindig hibás adatokat tartalmaz.
+C) Mert a cache-ben lévő objektumok továbbra is elérhetők, ezért a GC helyesen nem gyűjti össze őket, miközben az alkalmazás üzletileg már nem igényli őket.
+D) Mert minden cache automatikusan off-heap memóriát használ.
+ANSWER: C
+EXPLANATION: A garbage collector az elérhető objektumokat nem tekinti szemétnek. Ha egy cache továbbra is strong reference-ekkel tartja az objektumokat, akkor a GC helyesen életben tartja őket, még akkor is, ha az alkalmazás logikája már nem használja őket. Ezért egy nem megfelelő eviction stratégia vagy korlátlan cache növekedés memory leak-szerű problémát okozhat. A gyakori téves válasz azért csábító, mert a túlzott memóriahasználatot gyakran magának a GC-nek tulajdonítják, pedig a GC csak a reachability szabályai szerint dolgozik.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: Concurrency & threads
+TYPE: scenario
+QUESTION: Miért lehet veszélyes a `Thread.sleep()` használata egy lockot tartó kritikus szakaszban?
+CODE:
+synchronized (lock) {
+    updateState();
+    Thread.sleep(5000);
+    publishState();
+}
+ENDCODE
+A) Mert a `sleep()` automatikusan megszakítja a threadet.
+B) Mert a `sleep()` alatt a thread megtartja a `synchronized` lockot, így más threadek akár feleslegesen hosszú ideig várakozhatnak.
+C) Mert a `sleep()` mindig deadlockot okoz.
+D) Mert a `sleep()` felszabadítja az összes JVM lockot.
+ANSWER: B
+EXPLANATION: A `Thread.sleep()` a thread végrehajtását felfüggeszti, de nem engedi el az éppen birtokolt monitor lockot. Ezért a példában más threadek nem tudják megszerezni a `lock` objektumot az 5 másodperces várakozás alatt. A gyakori téves válasz azért csábító, mert a thread valóban nem dolgozik a `sleep()` alatt, de ettől még a megszerzett monitor továbbra is nála marad.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: Mi történik, ha egy `CompletableFuture` pipeline-ban az első lépés kivételt dob?
+CODE:
+CompletableFuture<String> future =
+        CompletableFuture.supplyAsync(() -> {
+            throw new RuntimeException("failure");
+        }).thenApply(String::toUpperCase);
+
+System.out.println(future.isCompletedExceptionally());
+ENDCODE
+A) `true`
+B) `false`
+C) `null`
+D) Fordítási hiba történik.
+ANSWER: A
+EXPLANATION: A `supplyAsync` által létrehozott stage kivételesen fejeződik be, ezért a következő `thenApply` normál transzformációja nem hajtódik végre. A teljes `CompletableFuture` kivételesen befejezett állapotba kerül, amit az `isCompletedExceptionally()` `true` értékkel jelez. A gyakori téves válasz azért csábító, mert a `thenApply` a pipeline része, de normál eredmény hiányában nem fut le sikeresen.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: Streams & lambdas
+TYPE: scenario
+QUESTION: Egy `List<String>` elemeit hossz szerint szeretnénk csoportosítani. Melyik stream művelet a leginkább megfelelő?
+A) `map(String::length)`
+B) `filter(String::isEmpty)`
+C) `collect(Collectors.groupingBy(String::length))`
+D) `findFirst()`
+ANSWER: C
+EXPLANATION: A `groupingBy` collector kulcs alapján csoportokba rendezi az elemeket. A `String::length` szolgáltatja a csoportosítás kulcsát, így például minden három karakteres string ugyanabba a csoportba kerül. A gyakori téves válasz azért csábító, mert a `map(String::length)` szintén a string hosszát állítja elő, de elveszíti az eredeti elemek csoportosításának struktúráját.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: I/O & NIO
+TYPE: edgecase
+QUESTION: Mi a különbség a `Path.normalize()` és egy fájl tényleges elérésének ellenőrzése között?
+A) A `normalize()` mindig létrehozza a fájlt.
+B) A `normalize()` csak Windows rendszeren működik.
+C) A `normalize()` automatikusan ellenőrzi, hogy a célfájl létezik-e.
+D) A `normalize()` logikailag egyszerűsíti a pathot, például a `.` és bizonyos `..` elemeket kezeli, de önmagában nem ellenőrzi vagy módosítja a fájlrendszert.
+ANSWER: D
+EXPLANATION: A `normalize()` egy logikai path-transzformációt végez, például eltávolíthat redundáns `.` elemeket és bizonyos `..` szegmenseket. Ettől még nem történik fájlrendszer-hozzáférés, és nem garantált, hogy az eredményül kapott path létezik. A gyakori téves válasz azért csábító, mert a normalizált path valós fájlútvonalnak tűnik, de a path objektum és a fájlrendszer állapota külön fogalom.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Production debugging
+TYPE: scenario
+QUESTION: Productionben egy alkalmazás időnként `java.lang.OutOfMemoryError: Metaspace` hibával áll le. Melyik probléma lehet különösen releváns?
+A) Kizárólag túl sok HTTP request érkezett.
+B) Túl sok vagy nem megfelelően felszabaduló class loader és az általuk megtartott class metadata felhalmozódása.
+C) Egyetlen nagy Java `String` automatikusan minden Metaspace problémát okoz.
+D) A stack méretének csökkentése minden esetben megoldja a Metaspace kimerülését.
+ANSWER: B
+EXPLANATION: A Metaspace elsősorban a class metadata tárolásához kapcsolódik. Dinamikus class loading, class loader leak vagy nagy mennyiségű generált osztály miatt a class metadata mennyisége növekedhet, különösen alkalmazásszerveres vagy plugin-alapú környezetben. A gyakori téves válasz azért csábító, mert minden `OutOfMemoryError` általános heap problémának tűnhet, miközben a `Metaspace` külön memória-korlátot és eltérő diagnosztikai irányt jelent.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: Collections & generics
+TYPE: behavior
+QUESTION: Mi lesz a kimenet?
+CODE:
+Map<String, Integer> map = new TreeMap<>();
+map.put("B", 2);
+map.put("A", 1);
+map.put("C", 3);
+
+System.out.println(map.keySet());
+ENDCODE
+A) `[A, B, C]`
+B) `[B, A, C]`
+C) `[C, B, A]`
+D) A `HashMap`-hoz hasonló, meghatározatlan sorrend.
+ANSWER: A
+EXPLANATION: A `TreeMap` a kulcsokat természetes rendezés szerint tartja, ezért a String kulcsok lexikografikus sorrendben jelennek meg. A gyakori téves válasz azért csábító, mert a `Map` interfész önmagában nem garantál általános sorrendet, de a `TreeMap` kifejezetten rendezett map implementáció.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: Java Core & OOP
+TYPE: output
+QUESTION: Mi lesz a kimenet?
+CODE:
+interface A {
+    default void run() {
+        System.out.println("A");
+    }
+}
+
+interface B {
+    default void run() {
+        System.out.println("B");
+    }
+}
+
+class C implements A, B {
+    @Override
+    public void run() {
+        A.super.run();
+    }
+}
+
+new C().run();
+ENDCODE
+A) `B`
+B) `A`
+C) `A` és `B`
+D) Fordítási hiba történik.
+ANSWER: B
+EXPLANATION: Ha egy osztály két interfésztől azonos signature-ű default metódust örökölne, explicit felülírás szükséges. A `C` ezt megteszi, majd az `A.super.run()` segítségével kifejezetten az A interfész default implementációját hívja meg. A gyakori téves válasz azért csábító, mert mindkét interfész ugyanazt a metódust biztosítja, de a `C` explicit választást tesz.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: Strings & immutability
+TYPE: performance
+QUESTION: Miért lehet teljesítmény szempontjából problémás az alábbi kód nagy iterációszám esetén?
+CODE:
+String result = "";
+
+for (int i = 0; i < 10000; i++) {
+    result += i;
+}
+ENDCODE
+A) Mert a String csak konstansként használható.
+B) Mert a `+=` mindig módosítja ugyanazt a String objektumot.
+C) Mert minden `+=` új String objektum létrehozásával járhat, ami sok felesleges allokációt és másolást okozhat.
+D) Mert a JVM nem támogatja a Stringek ciklusban történő összefűzését.
+ANSWER: C
+EXPLANATION: A `String` immutable, ezért az összefűzés eredménye új String értéket hozhat létre. Nagy ciklusoknál ez jelentős allokációt és karaktermásolást eredményezhet; ilyen esetekben explicit `StringBuilder` használata megfelelőbb lehet. A gyakori téves válasz azért csábító, mert a fordító bizonyos egyszerű esetekben optimalizálhatja a konkatenációt, de ez nem jelenti azt, hogy minden dinamikus ciklus automatikusan optimális.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: Exceptions
+TYPE: trap
+QUESTION: Melyik állítás igaz a multi-catch használatára?
+CODE:
+try {
+    process();
+} catch (IOException | SQLException e) {
+    log(e);
+}
+ENDCODE
+A) A két exception típusnak kötelező közös leszármazottnak lennie.
+B) A két kivételt egyetlen catch ágban lehet kezelni, ha a típusok nem állnak egymással öröklési kapcsolatban.
+C) A multi-catch csak unchecked exceptionökre használható.
+D) A `e` változó típusa mindig `Object`.
+ANSWER: B
+EXPLANATION: A multi-catch lehetővé teszi több egymástól független exception típus egy közös catch ágban történő kezelését. Olyan típusokat nem lehet ugyanabban a multi-catch-ban megadni, amelyek között öröklési kapcsolat van, mert az egyik típus már lefedné a másikat. A gyakori téves válasz azért csábító, mert a közös kezelési logika miatt intuitívnak tűnik egy közös ősosztály követelménye.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: Egy Java alkalmazásban sok rövid életű objektum jön létre, miközben a legtöbb objektum nagyon gyorsan elérhetetlenné válik. Melyik JVM-mechanizmus teszi ezt a mintát tipikusan hatékonyan kezelhetővé?
+A) A generációs garbage collection, amely kihasználja, hogy sok objektum rövid életű.
+B) A class loader minden objektumot automatikusan töröl.
+C) A stack minden heap objektumot azonnal felszabadít.
+D) A `finalize()` minden objektum számára garantálja a gyors felszabadítást.
+ANSWER: A
+EXPLANATION: A generációs GC abból a megfigyelésből is profitál, hogy sok objektum rövid életű. A fiatal generáció gyakori gyűjtése ezért hatékonyan kezelheti az ilyen allokációs mintát. A gyakori téves válasz azért csábító, mert a stack és a heap közötti kapcsolat valóban fontos a memóriakezelésben, de a heap objektumok gyűjtését a garbage collector végzi.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: Concurrency & threads
+TYPE: scenario
+QUESTION: Miért fontos a `Thread.interrupt()` megfelelő kezelése egy blokkoló műveletet végző worker thread esetén?
+A) Mert az interrupt automatikusan leállít minden Java threadet.
+B) Mert az interrupt törli a thread által használt összes objektumot.
+C) Mert az interrupt mindig `Error` kivételt dob.
+D) Mert az interrupt kooperatív megszakítási jelzés, amelyet a kódnak megfelelően kezelnie kell, például az `InterruptedException` továbbadásával vagy az interrupt státusz visszaállításával.
+ANSWER: D
+EXPLANATION: A Java interrupt mechanizmusa kooperatív: a thread nem feltétlenül áll le automatikusan. Sok blokkoló API `InterruptedException` formájában jelzi a megszakítást, amelyet a kódnak megfelelően kezelnie kell. Ha a kivételt nem lehet továbbadni, gyakori megoldás az interrupt státusz visszaállítása `Thread.currentThread().interrupt()` segítségével. A gyakori téves válasz azért csábító, mert az interrupt neve tényleges leállításra utal, de Java-ban ez elsősorban koordinációs mechanizmus.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: Mi a `ConcurrentHashMap.computeIfAbsent()` egyik fontos tulajdonsága?
+A) Minden híváskor új értéket hoz létre, akkor is, ha a kulcs már létezik.
+B) A mapping function csak akkor kerül meghívásra, amikor az adott kulcshoz nincs érték, és a művelet konkurens használatra tervezett mapben használható.
+C) A metódus kizárólag szekvenciális programokban használható.
+D) A metódus minden meglévő értéket automatikusan töröl.
+ANSWER: B
+EXPLANATION: A `computeIfAbsent` akkor számítja ki az értéket, ha a kulcshoz még nincs jelen megfelelő mapping. A `ConcurrentHashMap` esetén ezt a műveletet konkurens használatra tervezték, ezért gyakori választás lazy cache-szerű inicializálásokhoz. A gyakori téves válasz azért csábító, mert a mapping function kódja minden hívásban látható, de meglévő értéknél nem ez a normál működés.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: Streams & lambdas
+TYPE: edgecase
+QUESTION: Mi történik az alábbi kóddal?
+CODE:
+List<String> names = List.of("Anna", "Bela", "Adam");
+
+long count = names.stream()
+        .filter(name -> {
+            System.out.println(name);
+            return name.startsWith("A");
+        })
+        .limit(2)
+        .count();
+ENDCODE
+A) Mindhárom név kiírásra kerül, majd `2` lesz az eredmény.
+B) Csak `Anna` kerül kiírásra, majd `1` lesz az eredmény.
+C) `Anna`, `Bela` és `Adam` kerül kiírásra, majd `1` lesz az eredmény.
+D) `Anna`, `Bela` és `Adam` kerül kiírásra, majd `2` lesz az eredmény.
+ANSWER: D
+EXPLANATION: A stream pipeline lazy, és a `limit(2)` itt két megfelelő elemet keres. A `filter` az `Anna`, majd `Bela`, majd `Adam` értéket vizsgálja; az `Anna` és `Adam` felel meg, ezért kettő elem jut tovább és a `count()` eredménye 2. A gyakori téves válasz azért csábító, mert a `limit(2)` könnyen úgy értelmezhető, mintha csak a forrás első két elemét vizsgálná, de itt a filter után kialakuló streamre vonatkozik.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: Optional
+TYPE: trap
+QUESTION: Mi a különbség az `orElse()` és az `orElseGet()` között az alábbi helyzetben?
+CODE:
+String value = Optional.of("Java")
+        .orElse(expensiveCalculation());
+
+String value2 = Optional.of("Java")
+        .orElseGet(() -> expensiveCalculation());
+ENDCODE
+A) Az `orElse()` argumentuma eager módon kiértékelődhet, míg az `orElseGet()` supplierje csak szükség esetén fut le.
+B) Mindkettő mindig végrehajtja az `expensiveCalculation()` metódust.
+C) Az `orElseGet()` mindig gyorsabb, még akkor is, ha az Optional üres.
+D) Az `orElse()` nem használható nem-null String értékkel.
+ANSWER: A
+EXPLANATION: Az `orElse()` paramétere Java metódushívásként már az `orElse()` meghívása előtt kiértékelődik, ezért az `expensiveCalculation()` itt akkor is lefuthat, ha az Optional tartalmaz értéket. Az `orElseGet()` egy `Supplier`-t kap, amely csak üres Optional esetén kerül meghívásra. A gyakori téves válasz azért csábító, mert mindkét API fallback értéket biztosít, de a kiértékelési stratégia eltér.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: scenario
+QUESTION: Melyik előny kapcsolódik közvetlenül egy Java record compact constructorjához?
+A) Lehetővé teszi a record öröklését tetszőleges osztályból.
+B) Automatikusan mutable settereket generál.
+C) A konstruktorparaméterek validációját vagy normalizálását lehetővé teszi anélkül, hogy minden record mezőhöz explicit assignmentet kellene írni.
+D) Megszünteti az `equals()` generálását.
+ANSWER: C
+EXPLANATION: A compact constructorban validáció és normalizálás végezhető anélkül, hogy a record összes komponensének mezőbe történő explicit hozzárendelését meg kellene írni. A record mechanizmusa a komponensek inicializálását kezeli. A gyakori téves válasz azért csábító, mert a record konstruktor továbbra is egy normál konstrukciós pont, de nem változtatja meg a record alapvető immutable adatmodelljét.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: JVM & class loading
+TYPE: behavior
+QUESTION: Mi történik az alábbi kóddal, ha a `fail` nevű rendszer property értéke `true`?
+
+CODE:
+class Config {
+    static {
+        if (Boolean.getBoolean("fail")) {
+            throw new RuntimeException("init failed");
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        System.setProperty("fail", "true");
+        System.out.println("before");
+        System.out.println(Config.class);
+        System.out.println("after");
+    }
+}
+ENDCODE
+
+A) A program mindig kiírja a `before`, `class Config`, `after` sorokat, mert a static blokk csak példányosításkor fut le.
+B) A `RuntimeException` figyelmen kívül marad, és a program folytatja a végrehajtást.
+C) A static blokk futásakor a `RuntimeException` közvetlenül újra feldobódik minden további `Config` használatkor.
+D) A `Config` inicializálása meghiúsul; az inicializálást kiváltó használat során az exception inicializálási hibává alakulhat, a későbbi használatok pedig `NoClassDefFoundError` hibához vezethetnek.
+
+ANSWER: D
+EXPLANATION: A `Config` osztály inicializálásakor lefut a static initializer. Mivel a `fail` property értéke `true`, a static blokk `RuntimeException`-t dob. Ha egy inicializálás során egy `Exception` dobódik, a JVM az inicializálást kiváltó szál számára `ExceptionInInitializerError` formájában jelzi a hibát. Az osztály inicializálása sikertelen állapotba kerül, ezért egy későbbi használat már `NoClassDefFoundError` hibát eredményezhet. A leggyakoribb téves válasz azért tűnhet helyesnek, mert a static initializer nem példányosításkor, hanem az osztály inicializálásakor fut le, és ez az inicializálás automatikusan történik.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: I/O & NIO
+TYPE: scenario
+QUESTION: Egy alkalmazás egy nagy fájl tartalmát egy másik fájlba szeretné másolni. Miért lehet előnyös egy megfelelő NIO-alapú másolási művelet használata saját byte-onkénti ciklus helyett?
+A) Mert a NIO garantálja, hogy minden fájl teljes tartalma mindig a heapbe kerül.
+B) Mert a megfelelő NIO API-k hatékonyabb, magasabb szintű fájlmásolási mechanizmust biztosíthatnak anélkül, hogy az alkalmazásnak saját byte-onkénti másolási logikát kellene kezelnie.
+C) Mert a NIO csak szöveges fájlokat támogat.
+D) Mert a NIO minden fájlt automatikusan tömörít.
+ANSWER: B
+EXPLANATION: A NIO fájl API-k magasabb szintű műveleteket biztosítanak, például `Files.copy()` használatával, így az alkalmazásnak nem kell saját másolási ciklust implementálnia. A konkrét teljesítmény a platformtól, fájlrendszertől és implementációtól is függ, ezért nem helyes abszolút gyorsasági garanciát állítani. A gyakori téves válasz azért csábító, mert a magas szintű API kényelmesebbnek tűnik, de a fő előny az absztrakció és a megfelelő platformszintű megvalósítás lehetősége.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: Performance & profiling
+TYPE: trap
+QUESTION: Miért lehet félrevezető egy egyszerű `System.nanoTime()` alapú mikrobenchmark eredménye Java esetén?
+A) Mert a Java soha nem optimalizál futás közben.
+B) Mert a `nanoTime()` mindig milliszekundumban mér.
+C) Mert egyetlen mérés nem feltétlenül veszi figyelembe a JIT warmupot, dead-code eliminationt, GC-t és más runtime hatásokat.
+D) Mert a JVM nem támogat időmérést.
+ANSWER: C
+EXPLANATION: A JVM futás közben optimalizálhatja a kódot, ezért az első iterációk teljesítménye eltérhet a warmup utánitól. A mérésbe GC, JIT compilation és akár a fordító által végzett optimalizációk is beleszólhatnak. Komoly mikrobenchmarkokhoz ezért célszerű JMH-hoz hasonló eszközt használni. A gyakori téves válasz azért csábító, mert a `nanoTime()` nagy felbontású időmérést biztosít, de a mérési módszertan ettől még lehet hibás.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Design patterns
+TYPE: scenario
+QUESTION: Egy rendszerben egy objektumhoz hozzáférés előtt jogosultság-ellenőrzést szeretnénk végrehajtani, miközben a tényleges objektum kezelését változatlanul hagynánk. Melyik pattern illik erre leginkább?
+A) Proxy
+B) Builder
+C) Observer
+D) Strategy
+ANSWER: A
+EXPLANATION: A Proxy egy másik objektumhoz biztosít kontrollált hozzáférést, így például jogosultság-ellenőrzés, lazy initialization vagy logging helyezhető a tényleges objektum elé. A kliens ugyanazon absztrakción keresztül dolgozhat a proxyval. A gyakori téves válasz azért csábító, mert a Decoratorhoz hasonló szerkezettel működhet, de a Proxy fő célja a hozzáférés kontrollálása.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: scenario
+QUESTION: Mi a fő különbség egy Mockito mock és spy között?
+A) A mock kizárólag primitív értékeket képes kezelni.
+B) A spy mindig távoli hálózati szolgáltatást hív.
+C) A mock és a spy teljesen azonos fogalmak.
+D) A mock alapvetően egy izolált tesztduplát biztosít, míg a spy egy valós objektum viselkedését figyelheti és részben felül is írható.
+ANSWER: D
+EXPLANATION: Egy Mockito mock alapvetően egy tesztben kontrollált objektum, amelynek viselkedését stubolni és verifikálni lehet. A spy jellemzően egy valódi objektumot wrapol, így a valódi metódusok is végrehajthatók, miközben egyes viselkedések felülírhatók. A gyakori téves válasz azért csábító, mert mindkettő tesztelési célú double, de a mögöttes objektumhoz való viszonyuk eltér.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: Java Core & OOP
+TYPE: edgecase
+QUESTION: Melyik állítás igaz a covariant return type használatára?
+CODE:
+class Parent {
+    Number create() {
+        return 1;
+    }
+}
+
+class Child extends Parent {
+    @Override
+    Integer create() {
+        return 1;
+    }
+}
+ENDCODE
+A) A `Child` nem override-olhatja a metódust, mert a visszatérési típus eltér.
+B) Az override megengedett, mert az `Integer` a `Number` altípusa.
+C) Az override csak akkor lenne megengedett, ha mindkét visszatérési típus primitív lenne.
+D) A kód csak Java 21-től érvényes.
+ANSWER: B
+EXPLANATION: Java-ban egy overriding metódus visszatérési típusa lehet a felülírt metódus visszatérési típusának altípusa. Ezt covariant return type-nak nevezzük. Az `Integer` a `Number` altípusa, ezért a metódus szabályosan override-olja a szülő implementációját. A gyakori téves válasz azért csábító, mert az override esetén a metódus signature-jának változatlanságára gyakran hangsúlyt helyeznek, de a visszatérési típusra külön covariant szabály vonatkozik.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: Collections & generics
+TYPE: edgecase
+QUESTION: Mi történik egy `HashMap`-ban, ha egy kulcs `hashCode()` értéke megváltozik, miután már bekerült a mapbe?
+CODE:
+class Key {
+    int value;
+
+    Key(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public int hashCode() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Key other && value == other.value;
+    }
+}
+
+Key key = new Key(1);
+Map<Key, String> map = new HashMap<>();
+map.put(key, "value");
+
+key.value = 2;
+
+System.out.println(map.get(key));
+ENDCODE
+A) Mindig `"value"` jelenik meg.
+B) A map automatikusan áthelyezi a kulcsot az új hash bucketbe.
+C) `null` jelenhet meg, mert a lookup az új hash alapján más bucketet kereshet, mint amelybe a kulcs eredetileg bekerült.
+D) A `HashMap` automatikusan meghívja a kulcs konstruktorát újra.
+ANSWER: C
+EXPLANATION: A `HashMap` a kulcs hash alapján határozza meg, melyik bucketben keresse az elemet. Ha a kulcs hash-alapú állapota megváltozik a beszúrás után, a map nem helyezi át automatikusan a kulcsot. Emiatt a későbbi lookup az új hash alapján más helyen kereshet, és nem találja meg az eredetileg tárolt bejegyzést. A gyakori téves válasz azért csábító, mert a map belső struktúrája dinamikusan kezeli a beszúrásokat, de a már eltárolt kulcs mutációját nem követi.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: Concurrency & threads
+TYPE: scenario
+QUESTION: Egy nagy throughputú szolgáltatásban több thread ugyanazt a megosztott számlálót növeli. Miért lehet az `AtomicLong` megfelelőbb a `synchronized` blokknál egy egyszerű increment művelethez?
+A) Mert az `AtomicLong` minden esetben lock-free és ezért mindig gyorsabb.
+B) Mert az `AtomicLong` minden incrementet külön OS threadben hajt végre.
+C) Mert az `AtomicLong` megszünteti az összes konkurencia problémát az alkalmazásban.
+D) Mert egyszerű atomikus read-modify-write műveletet biztosít lock nélkül, miközben a megoldás nem igényel egy teljes monitor szinkronizációt.
+ANSWER: D
+EXPLANATION: Az `AtomicLong` CAS-alapú atomikus műveleteket biztosíthat, ezért egy egyszerű számláló növelésénél elkerülhető a teljes monitor használata. Ez azonban nem jelenti azt, hogy minden helyzetben gyorsabb, vagy hogy minden konkurencia problémát megold. A gyakori téves válasz azért csábító, mert az atomic osztályokat gyakran lock-free megoldásként említik, de a konkrét teljesítmény és progress guarantee a művelettől és platformtól függ.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: java.util.concurrent
+TYPE: scenario
+QUESTION: Egy `CompletableFuture` pipeline-ban egy lassú I/O műveletet szeretnénk egy dedikált executorral futtatni, hogy ne az alapértelmezett common poolt használjuk. Melyik megközelítés megfelelő?
+A) `supplyAsync(task, executor)` használata.
+B) `supplyAsync(task)` használata, majd a már futó task executorának utólagos lecserélése.
+C) A `CompletableFuture` nem támogat egyedi executort.
+D) Minden esetben új OS threadet kell létrehozni manuálisan.
+ANSWER: A
+EXPLANATION: A `CompletableFuture.supplyAsync()` overloadja lehetővé teszi egy explicit `Executor` megadását. Ez különösen hasznos lehet I/O-bound munkák elkülönítésére vagy a végrehajtási erőforrások kontrollálására. A gyakori téves válasz azért csábító, mert a `CompletableFuture` alapértelmezett executora kényelmes, de ettől még nem az egyetlen használható végrehajtási modell.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: Streams & lambdas
+TYPE: performance
+QUESTION: Miért lehet rossz választás egy nagy adathalmaz feldolgozására a `parallelStream()` egy I/O-bound feladat esetén?
+A) Mert a parallel stream kizárólag primitív típusokkal működik.
+B) Mert a parallel stream automatikusan sorrendbe rendezi az adatokat.
+C) Mert a parallel stream nem tud lambda kifejezéseket végrehajtani.
+D) Mert az alapértelmezett végrehajtási modell és a blokkoló I/O kombinációja nem feltétlenül illeszkedik jól az alkalmazás erőforrás- és concurrency-modelljéhez, és thread-pool torlódást okozhat.
+ANSWER: D
+EXPLANATION: A parallel stream alapértelmezett végrehajtási modellje nem feltétlenül megfelelő nagy mennyiségű blokkoló I/O kezelésére. A blokkoló műveletek hosszú ideig foglalhatják a worker threadeket, ami torlódást és erőforrás-kimerülést okozhat. A gyakori téves válasz azért csábító, mert a párhuzamosság intuitívan gyorsabbnak tűnik, de I/O-bound workload esetén a concurrency modell és a végrehajtó erőforrások legalább ilyen fontosak.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: Egy hosszú életű Java alkalmazás heap használata folyamatosan növekszik, de a GC után sem tér vissza korábbi szintre. A heap dump szerint egy alkalmazásszintű `Map` egyre több objektumot tart referenciaként. Mi a legvalószínűbb technikai magyarázat?
+A) A garbage collector hibás, mert minden GC után nullára kellene csökkentenie a heapet.
+B) Az alkalmazás által fenntartott strong reference-ek miatt az objektumok továbbra is reachable állapotban vannak, ezért a GC helyesen nem gyűjti őket.
+C) A stack overflow automatikusan heap leaket okoz.
+D) A JVM minden `Map` objektumot örökre életben tart.
+ANSWER: B
+EXPLANATION: A GC nem üríti ki a heapet, hanem az elérhetetlenné vált objektumokat gyűjti össze. Ha egy hosszú életű map strong reference-ként megtartja az objektumokat, azok reachable állapotban maradnak, ezért a collector helyesen nem szabadítja fel őket. A gyakori téves válasz azért csábító, mert a GC utáni magas heap használat hibás collector-viselkedésnek tűnhet, miközben gyakran az alkalmazás referencia-struktúrája a valódi ok.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: JVM & class loading
+TYPE: scenario
+QUESTION: Egy pluginrendszerben minden plugin új class loaderrel kerül betöltésre, de a régi class loaderekre valamelyik globális registry továbbra is referenciát tart. Mi lehet ennek következménye?
+A) A class loader és az általa betöltött class metadata nem válik gyűjthetővé, ezért idővel Metaspace növekedés és akár Metaspace exhaustion alakulhat ki.
+B) A JVM automatikusan törli a registryből a referenciákat.
+C) Csak a heap mérete nőhet, a Metaspace soha.
+D) A class loader leak kizárólag fordítási időben észlelhető.
+ANSWER: A
+EXPLANATION: Egy class loader akkor válhat gyűjthetővé, ha megfelelően elérhetetlenné válik, és az általa definiált osztályok is felszabadíthatóvá válhatnak. Ha egy globális registry továbbra is referenciát tart rá, a loader és a hozzá kapcsolódó class metadata életben maradhat. Hosszú életű pluginrendszerben ez class loader leakhez és Metaspace növekedéshez vezethet. A gyakori téves válasz azért csábító, mert a registry csak egy egyszerű referencia-tárolónak tűnik, de annak élettartama meghatározhatja a teljes class loader graph elérhetőségét.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: I/O & NIO
+TYPE: scenario
+QUESTION: Egy nagy fájl feldolgozásakor szeretnénk elkerülni, hogy az egész fájlt egyszerre memóriába töltsük. Melyik megközelítés illik legjobban ehhez a követelményhez?
+A) `Files.readString(path)` használata.
+B) `Files.readAllLines(path)` használata.
+C) Streaming vagy buffered feldolgozás használata, amely csak a szükséges részeket tartja memóriában.
+D) A fájl teljes tartalmának `byte[]` tömbbe másolása.
+ANSWER: C
+EXPLANATION: Streaming vagy buffered feldolgozás esetén nem szükséges a teljes fájlt egyszerre memóriában tartani. Ez különösen nagy fájloknál csökkentheti a heapre nehezedő nyomást és lehetővé teszi a folyamatos feldolgozást. A gyakori téves válasz azért csábító, mert a `readAllLines()` kényelmes API, de nagy fájl esetén a teljes tartalom memóriába töltése ellentétes a követelménnyel.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Performance & profiling
+TYPE: production
+QUESTION: Egy production szolgáltatás p99 latency értéke időnként jelentősen megugrik, miközben az átlagos latency alig változik. Miért fontos külön vizsgálni a tail latencyt?
+A) Mert az átlag mindig hibás mérőszám.
+B) Mert a p99 csak a JVM startup idejét méri.
+C) Mert a p99 automatikusan megmutatja a konkrét root cause-t.
+D) Mert a ritka, de jelentős késleltetések az átlagban elrejthetők, miközben a felhasználók egy része komoly teljesítményromlást tapasztalhat.
+ANSWER: D
+EXPLANATION: Az átlag egyetlen összesített értékké sűríti az eloszlást, ezért nem feltétlenül mutatja meg a ritka, de nagyon lassú requesteket. A p99 a requestek felső késleltetési tartományára ad információt, ami különösen fontos elosztott rendszerekben és user-facing szolgáltatásoknál. A gyakori téves válasz azért csábító, mert a p99 valóban hasznos diagnosztikai metrika, de önmagában nem azonosítja a root cause-t.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Production debugging
+TYPE: production
+QUESTION: Egy production Java szolgáltatásnál időnként azt látjuk, hogy a thread pool minden workerje várakozik, miközben új feladatok érkeznek, és az alkalmazás throughputja gyakorlatilag nullára esik. Melyik diagnosztikai lépés a leginkább indokolt?
+A) Thread dumpok készítése és annak vizsgálata, hogy a worker threadek lockra, más threadekre vagy blokkoló I/O műveletekre várnak-e.
+B) Azonnal meg kell duplázni a thread pool méretét diagnosztika nélkül.
+C) A garbage collectort teljesen ki kell kapcsolni.
+D) Az összes exceptiont el kell nyelni, hogy a worker threadek biztosan tovább fussanak.
+ANSWER: A
+EXPLANATION: Ha a teljes worker pool várakozó állapotban van, először azt kell meghatározni, hogy pontosan milyen erőforrásra vagy eseményre várnak. A thread dumpok megmutathatják a stack trace-eket, lock várakozásokat, joinokat és blokkoló I/O hívásokat. A gyakori téves válasz azért csábító, mert nagyobb pool több párhuzamosságot ígér, de ha az alapul szolgáló erőforrás vagy lock blokkolja a workereket, a pool vakon történő növelése akár súlyosbíthatja is a problémát.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: Concurrency & threads
+TYPE: production
+QUESTION: Egy production rendszerben időnként azt látod, hogy egy `synchronized` metódus miatt több request-thread hosszú ideig `BLOCKED` állapotban marad. A lockot birtokló thread közben egy külső HTTP hívást végez. Mi a legfontosabb probléma ebben a kialakításban?
+
+A) A lockot birtokló thread a blokkoló I/O miatt hosszú ideig megtartja a lockot, így más threadek nem tudják végrehajtani a kritikus szakaszt.
+B) A `synchronized` automatikusan megszakítja a HTTP hívást, ha más thread várakozik a lockra.
+C) A `BLOCKED` állapot kizárólag JVM garbage collection miatt alakulhat ki.
+D) A külső HTTP hívás mindig külön JVM threaden fut, ezért nincs hatása a lockra.
+
+ANSWER: A
+EXPLANATION: Ha egy `synchronized` blokk vagy metódus alatt blokkoló külső I/O történik, a lockot birtokló thread addig megtartja a monitort, amíg a hívás vissza nem tér. Ez jelentősen növelheti a lock contentiont és a request latency-t. A leggyakoribb téves válasz azért lehet csábító, mert a blokkoló I/O valóban megakasztja a thread végrehajtását, de ettől még nem engedi automatikusan el a `synchronized` lockot.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: Mit eredményez az alábbi kód?
+
+CODE:
+CompletableFuture<Integer> future =
+    CompletableFuture.supplyAsync(() -> 10)
+        .thenApply(x -> x * 2)
+        .thenApply(x -> {
+            if (x == 20) {
+                throw new IllegalStateException("failed");
+            }
+            return x + 1;
+        })
+        .exceptionally(ex -> 99);
+
+System.out.println(future.join());
+ENDCODE
+
+A) 20
+B) 99
+C) `IllegalStateException`
+D) 21
+
+ANSWER: B
+EXPLANATION: Az első két lépés eredménye 20. A következő `thenApply` kivételt dob, ezért a CompletableFuture hibás állapotba kerül. Az `exceptionally` kezeli ezt a hibát, és 99-et ad vissza eredményként, így a `join()` ezt az értéket szolgáltatja. A leggyakoribb téves válasz azért tűnhet helyesnek, mert a kivételt dobó callback valóban nem fejeződik be normálisan, de az `exceptionally` ezt az eredményt helyreállítja.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: Collections & generics
+TYPE: trap
+QUESTION: Melyik állítás írja le helyesen az alábbi metódust?
+
+CODE:
+static <T> void copyFirst(
+        List<? extends T> source,
+        List<? super T> target) {
+
+    if (!source.isEmpty()) {
+        target.add(source.get(0));
+    }
+}
+ENDCODE
+
+A) A metódus csak akkor működik, ha a két lista pontosan ugyanazt a generikus típust használja.
+B) A `source` listába tetszőleges `T` érték biztonságosan hozzáadható.
+C) A `source` biztonságosan olvasható `T` értékekként, a `target` pedig fogadhat `T` értékeket.
+D) A `target` kizárólag `List<T>` lehet, mert wildcard esetén az `add` nem fordul le.
+
+ANSWER: C
+EXPLANATION: A `? extends T` producerként viselkedik: az elemek biztonságosan olvashatók `T` típusként. A `? super T` consumerként viselkedik: `T` értékek biztonságosan hozzáadhatók. Ez a PECS-elv egyik klasszikus alkalmazása. A leggyakoribb téves válasz azért csábító, mert a wildcardok használata elsőre úgy tűnhet, mintha elveszítenénk a konkrét típust, de a `super` éppen az írási műveletet teszi biztonságossá.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: Egy alkalmazás heap dumpjában azt látod, hogy több millió domain objektum egyetlen globális `ConcurrentHashMap` példányból elérhető. A GC rendszeresen lefut, de az objektumok száma nem csökken. Mi magyarázza legjobban ezt a viselkedést?
+
+A) A garbage collector csak lokális változókat tud felszabadítani.
+B) A `ConcurrentHashMap` minden objektumot automatikusan immutable-má alakít.
+C) A GC nem tud objektumokat felszabadítani, ha azok heapen belül vannak.
+D) A mapből fennálló erős referenciák miatt az objektumok továbbra is elérhetők, ezért a GC nem tekinti őket gyűjthetőnek.
+
+ANSWER: D
+EXPLANATION: A garbage collector a reachable objektumokat nem gyűjti össze. Ha egy globális map erős referenciával tartja őket, akkor az objektumok elérhetők maradnak, függetlenül attól, hogy az alkalmazás logikailag már nem használja őket. A leggyakoribb téves válasz azért lehet csábító, mert a GC valóban heap objektumokkal dolgozik, de nem az számít, hogy hol található az objektum, hanem az, hogy elérhető-e erős referencián keresztül.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: Streams & lambdas
+TYPE: performance
+QUESTION: Egy több tízmillió elemű stream feldolgozásakor az alábbi kódot használod:
+
+CODE:
+long result = values.stream()
+    .filter(x -> expensiveCheck(x))
+    .mapToLong(x -> expensiveTransformation(x))
+    .sum();
+ENDCODE
+
+A profiling szerint az `expensiveTransformation` sokkal több számítást végez, mint amennyi a végső eredményhez feltétlenül szükséges. Melyik megközelítés lehet a legfontosabb optimalizálási irány?
+
+A) A `stream()` helyett mindig `parallelStream()` használata.
+B) Megvizsgálni, hogy a feldolgozási logika átszervezhető-e úgy, hogy minél korábban kizárhatók legyenek a nem szükséges elemek.
+C) Minden lambda kifejezést anonymous inner classra cserélni.
+D) A stream eredményét először mindig `List`-be gyűjteni.
+
+ANSWER: B
+EXPLANATION: Nagy adatmennyiségnél különösen fontos, hogy a drága transzformáció csak a valóban szükséges elemekre fusson le. A szűrés és a korai megszakítási lehetőségek csökkenthetik a teljes számítási költséget. A leggyakoribb téves válasz azért tűnhet jó ötletnek, mert a párhuzamos feldolgozás bizonyos workloadoknál gyorsíthat, de nem helyettesíti a felesleges számítások megszüntetését.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: JVM & class loading
+TYPE: scenario
+QUESTION: Egy alkalmazásszerverben dinamikusan töltenek be és távolítanak el pluginokat. Hosszabb futás után a Metaspace folyamatosan nő. A heap objektumok mennyisége viszonylag stabil. Mi lehet az egyik legvalószínűbb ok?
+
+A) A pluginokhoz tartozó class loader példányokat egy globális registry továbbra is referenciálja, ezért a class loader és az általa betöltött osztályok nem unloadolhatók.
+B) A heapben lévő String objektumok mindig közvetlenül Metaspace memóriát foglalnak.
+C) A garbage collector soha nem tud class loadert felszabadítani.
+D) A Metaspace kizárólag Java heap objektumokból áll.
+
+ANSWER: A
+EXPLANATION: A class unloadinghoz többek között arra van szükség, hogy az adott class loader elérhetetlenné váljon. Ha egy globális registry továbbra is erős referenciát tart rá, akkor az általa betöltött osztályok és kapcsolódó metadata is megtartható. Ez class-loader leakhez és Metaspace növekedéséhez vezethet. A leggyakoribb téves válasz azért csábító, mert a Metaspace és a heap is JVM által kezelt memória, de külön memóriaterületekről van szó.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: Exceptions
+TYPE: production
+QUESTION: Egy szolgáltatás egy alsóbb szintű `SQLException` hibát domain szintű `OrderPersistenceException` kivétellé alakít. Melyik megoldás őrzi meg helyesen az eredeti hibát?
+
+A) `throw new OrderPersistenceException();`
+B) `throw new OrderPersistenceException(sqlException.getMessage());`
+C) `throw new OrderPersistenceException("Order save failed", sqlException);`
+D) `throw new OrderPersistenceException(sqlException.toString());`
+
+ANSWER: C
+EXPLANATION: A cause átadásával megmarad az eredeti exception lánc, így a logolás és a hibakeresés során az alsóbb szintű ok is rendelkezésre áll. A puszta message vagy `toString()` átadása elveszíti a strukturált exception cause kapcsolatot. A leggyakoribb téves válasz azért tűnhet megfelelőnek, mert az eredeti hiba szövege továbbra is megjelenhet, de önmagában a szöveg nem helyettesíti a teljes exception láncot.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: debug
+QUESTION: Az alábbi teszt miért lehet instabil vagy hibás, ha a `service` belső implementációja megváltozik, miközben a publikus viselkedése ugyanaz marad?
+
+CODE:
+@Test
+void createsOrder() {
+    service.createOrder(request);
+
+    verify(repository).findById(request.customerId());
+    verify(repository).save(any(Order.class));
+}
+ENDCODE
+
+A) Mert a Mockito nem tud repository metódusokat ellenőrizni.
+B) Mert a `verify` kizárólag private metódusokra használható.
+C) Mert a teszt mindig pontosan ugyanazt az implementációt követeli meg.
+D) Mert a teszt csak akkor lehet helyes, ha minden repository-hívást mockolunk.
+
+ANSWER: C
+EXPLANATION: A teszt konkrét belső interakciót ír elő, például azt, hogy a szolgáltatás pontosan meghívja a `findById` metódust. Ha a publikus viselkedés változatlan marad, de az implementáció például más módon szerzi meg az adatot, a teszt feleslegesen törhet el. A leggyakoribb téves válasz azért lehet csábító, mert a repository valóban mockolt objektum, de a probléma nem a Mockito képessége, hanem a túlzott implementációs kötöttség.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Design patterns
+TYPE: scenario
+QUESTION: Egy rendszerben ugyanazt a műveletet több különböző algoritmussal kell végrehajtani. Az algoritmus futás közben konfiguráció alapján változhat, és az üzleti logikának nem kell tudnia az algoritmus részleteiről. Melyik tervezési minta illik leginkább erre?
+
+A) Singleton
+B) Strategy
+C) Observer
+D) Adapter
+
+ANSWER: B
+EXPLANATION: A Strategy minta az algoritmusokat különálló implementációkba szervezi, amelyek közül a megfelelő futás közben kiválasztható. Ez csökkenti az üzleti logika és az algoritmus konkrét megvalósítása közötti csatolást. A leggyakoribb téves válasz azért tűnhet megfelelőnek, mert az Observer is dinamikus viselkedést kezel, de annak elsődleges célja az állapotváltozások továbbítása.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: Performance & profiling
+TYPE: production
+QUESTION: Egy REST API átlagos válaszideje 80 ms, a p95 érték 120 ms, de a p99 időnként 8 másodperc. Melyik következtetés a leginkább indokolt?
+
+A) Az API biztosan minden requestnél lassú.
+B) Az átlag alapján nincs teljesítményprobléma.
+C) Az alkalmazásban valószínűleg minden requestnél garbage collection történik.
+D) A ritka, nagyon lassú requestek jelentős tail-latency problémát jeleznek, ezért ezeket külön kell vizsgálni.
+
+ANSWER: D
+EXPLANATION: A p99 azt mutatja, hogy a requestek leglassabb körülbelül 1%-a jelentősen eltérhet a tipikus viselkedéstől. Ilyen esetben érdemes tracinget, dependency latencyt, lock contentiont, GC-t és más downstream problémákat vizsgálni. A leggyakoribb téves válasz azért lehet csábító, mert az alacsony átlag valóban jó általános mutató, de elrejtheti a felhasználók egy kisebb részét érintő súlyos késleltetéseket.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: Mi történik az alábbi kóddal?
+
+CODE:
+ExecutorService executor = Executors.newFixedThreadPool(2);
+
+Future<Integer> future = executor.submit(() -> {
+    Thread.sleep(1000);
+    return 42;
+});
+
+System.out.println("before");
+System.out.println(future.get());
+System.out.println("after");
+
+executor.shutdown();
+ENDCODE
+
+A) A `before` után a `42` azonnal kiíródik.
+B) A `future.get()` megvárja, amíg a feladat befejeződik, ezért körülbelül egy másodperc múlva jelenik meg a `42`.
+C) A `future.get()` megszakítja a futó feladatot.
+D) A `executor.shutdown()` azonnal leállítja a futó feladatot.
+
+ANSWER: B
+EXPLANATION: A `submit` egy Future objektumot ad vissza, amely a feladat eredményét reprezentálja. A `get()` blokkol, amíg az eredmény elérhetővé nem válik, ezért a `42` csak a körülbelül egy másodperces várakozás után jelenik meg. A leggyakoribb téves válasz azért tűnhet helyesnek, mert a Future csak egy handle, de a `get()` konkrétan szinkronizációs pontként is viselkedik az eredményre várva.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: scenario
+QUESTION: Egy webalkalmazásban több tízezer, egymástól nagyrészt független requestet kell kezelni. A requestek jelentős része külső HTTP szolgáltatásra várakozik, miközben kevés CPU-t használnak. Melyik Java 21-es megközelítés illik leginkább ehhez a workloadhoz?
+
+A) Egyetlen platform thread használata minden requesthez.
+B) Minden requesthez egy hosszú életű platform thread és nagy stack foglalása.
+C) Virtuális threadek használata a blokkoló I/O-val járó feladatokhoz.
+D) A CPU-k számával megegyező számú threadre korlátozni minden requestet.
+
+ANSWER: C
+EXPLANATION: A virtuális threadek különösen alkalmasak nagy számú, főként blokkoló I/O-t végző feladatra, mert lényegesen kisebb erőforrásigénnyel lehet sok konkurens műveletet kezelni. Ez nem jelenti azt, hogy CPU-bound számításokat automatikusan gyorsabbá tesznek. A leggyakoribb téves válasz azért csábító, mert a platform threadek is képesek blokkoló I/O kezelésére, de nagy konkurenciaszámnál jelentős erőforrásigényük lehet.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: Java Core & OOP
+TYPE: trap
+QUESTION: Mi történik az alábbi kódban?
+
+CODE:
+class Parent {
+    static void run() {
+        System.out.println("parent");
+    }
+}
+
+class Child extends Parent {
+    static void run() {
+        System.out.println("child");
+    }
+}
+
+Parent value = new Child();
+value.run();
+ENDCODE
+
+A) `parent` kerül kiírásra, mert a static metódusokat nem polimorf módon választja ki a JVM.
+B) `child` kerül kiírásra a runtime típus alapján.
+C) A kód nem fordul le, mert static metódust nem lehet örökölni.
+D) A kód `AbstractMethodError` hibával leáll.
+
+ANSWER: A
+EXPLANATION: A static metódusokhoz nem tartozik példányalapú dinamikus dispatch. A hívott metódust a deklarált típus alapján választja ki a fordító, ezért a `Parent` típuson keresztül történő hívás a `Parent.run()` metódushoz kötődik. A leggyakoribb téves válasz azért csábító, mert példánymetódusoknál valóban a runtime típus határozza meg a felüldefiniált implementációt.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: Memory model & GC
+TYPE: edgecase
+QUESTION: Egy `WeakHashMap`-ot használsz cache-ként. Miért nem garantálható, hogy egy bekerült entry hosszú ideig megmarad?
+
+A) Mert a `WeakHashMap` minden put után véletlenszerűen töröl entryket.
+B) Mert a kulcsokat weak reference jellegű módon tartja, ezért ha a kulcs máshonnan már nem erősen elérhető, a GC után az entry eltűnhet.
+C) Mert a value-kat minden garbage collection automatikusan null értékre állítja.
+D) Mert a `WeakHashMap` nem tárolhat String kulcsokat.
+
+ANSWER: B
+EXPLANATION: A `WeakHashMap` a kulcsokat gyenge referenciákon keresztül tartja. Ha egy kulcs máshonnan már nem érhető el erős referenciával, akkor a garbage collector eltávolíthatja a kulcsot, és ennek következtében az entry is eltűnhet. A leggyakoribb téves válasz azért tűnhet logikusnak, mert a map valóban automatikusan eltávolíthat elemeket, de ennek feltétele a kulcs elérhetőségének megszűnése.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: Collections & generics
+TYPE: behavior
+QUESTION: Mi történik az alábbi kóddal?
+
+CODE:
+List<Integer> numbers = new ArrayList<>();
+numbers.add(10);
+
+List<? extends Number> values = numbers;
+
+Number value = values.get(0);
+
+System.out.println(value);
+ENDCODE
+
+A) A program nem fordul le, mert `? extends Number` esetén semmit sem lehet olvasni.
+B) A program futás közben `ClassCastException` hibát dob.
+C) A program kiírja a `10` értéket, mert az elemek `Number` típusként biztonságosan olvashatók.
+D) A `values.get(0)` eredménye csak `Object` lehet.
+
+ANSWER: C
+EXPLANATION: Az `extends` wildcard azt garantálja, hogy a lista valamely `Number`-ből származó típust tartalmaz. Ezért az elemek `Number` referenciaként biztonságosan kiolvashatók. A konkrét generikus típus viszont nem ismert, ezért tetszőleges `Number` érték hozzáadása nem lenne biztonságos. A leggyakoribb téves válasz azért lehet csábító, mert a wildcard valóban korlátozza az írást, de nem akadályozza meg a biztonságos olvasást.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: Streams & lambdas
+TYPE: edgecase
+QUESTION: Mi történik az alábbi kóddal?
+
+CODE:
+List<String> names = List.of("Anna", "Bela", "Adam");
+
+long count = names.stream()
+    .filter(name -> name.startsWith("A"))
+    .peek(name -> System.out.println(name))
+    .count();
+
+System.out.println("count=" + count);
+ENDCODE
+
+A) Csak `count=2` jelenik meg.
+B) `Anna` és `Adam`, majd `count=2` jelenik meg.
+C) `Anna`, `Bela`, `Adam`, majd `count=3` jelenik meg.
+D) A `peek` miatt a stream nem hajtható végre.
+
+ANSWER: B
+EXPLANATION: A `filter` csak az `A` betűvel kezdődő elemeket engedi tovább, ezért a `peek` csak `Anna` és `Adam` esetén fut le. A `count` két elemet számol. A leggyakoribb téves válasz azért lehet csábító, mert a `peek` mellékhatásai könnyen félrevezetők lehetnek, de a pipeline-ban a `filter` már korábban kizárta `Bela` elemét.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: JVM & class loading
+TYPE: scenario
+QUESTION: Egy alkalmazás több különböző plugin-verziót akar egyszerre betölteni. Két class loader ugyanazt a teljesen kvalifikált osztálynevet tölti be, de az osztályok különböző plugin-JAR-okból származnak. Melyik állítás helyes?
+
+A) A két osztály automatikusan ugyanaz a Java típus, mert a teljesen kvalifikált nevük megegyezik.
+B) A JVM kizárólag a package név alapján dönti el a típusazonosságot.
+C) A class loader különbség nem számít, ha az osztály bytecode-ja azonos.
+D) A JVM típusazonosságában a class loader is szerepet játszik, ezért a két példány különböző típushoz tartozhat.
+
+ANSWER: D
+EXPLANATION: A JVM számára egy osztály azonosságát a bináris név és az azt definiáló class loader együtt határozza meg. Ez lehetővé teszi ugyanazon osztálynév különböző verzióinak izolált betöltését. A leggyakoribb téves válasz azért tűnhet helyesnek, mert Java forráskódban a fully qualified class name gyakran elegendő az osztály azonosításához, de a JVM class-loader namespace-eket is kezel.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: Performance & profiling
+TYPE: production
+QUESTION: Egy Java alkalmazás CPU-terhelése 95% körül van. A heap occupancy normális, a GC pause-ok rövidek, és a request latency magas. Melyik vizsgálat adhatja a legtöbb közvetlen információt arról, melyik kód fogyasztja a CPU-t?
+
+A) CPU sampling profiler futtatása és a hot methodok megvizsgálása.
+B) A heap méretének megduplázása.
+C) Több garbage collection indítása.
+D) Minden logolás kikapcsolása és újraindítás.
+
+ANSWER: A
+EXPLANATION: Magas CPU-terhelésnél egy CPU profiler közvetlenül meg tudja mutatni, hogy mely metódusok és call pathok használják a processzoridő jelentős részét. Ez lehetővé teszi az algoritmikus vagy hot-path problémák célzott vizsgálatát. A leggyakoribb téves válasz azért lehet csábító, mert a heap és a GC gyakran kapcsolódik teljesítményproblémákhoz, de a normális GC-mutatók mellett a CPU profilozása közvetlenebb bizonyítékot ad.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: java.util.concurrent
+TYPE: scenario
+QUESTION: Egy `CompletableFuture` pipeline-ban több független, lassú külső szolgáltatást szeretnél párhuzamosan meghívni, majd az eredményeket összekombinálni. Melyik megközelítés fejezi ki legjobban ezt a kapcsolatot?
+
+A) Az első future eredményének blokkoló `get()` hívása után indítani a következő műveletet.
+B) Minden műveletet ugyanabban a szinkronizált blokkban végrehajtani.
+C) A független `CompletableFuture` műveleteket elindítani, majd `CompletableFuture.allOf(...)` segítségével megvárni a teljes készletet.
+D) Minden future-t külön `Thread.sleep()` hívással szinkronizálni.
+
+ANSWER: C
+EXPLANATION: Az `allOf` alkalmas arra, hogy több, egymástól független future befejeződését egy közös completion ponton kezeljük. Így a független műveletek konkurensen futhatnak, majd a pipeline a teljes készlet rendelkezésre állásakor folytatódhat. A leggyakoribb téves válasz azért tűnhet egyszerűbbnek, mert a blokkoló `get()` is képes eredményhez juttatni a kódot, de sorosítja a várakozást, és gyengébb konkurenciát eredményezhet.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: production
+QUESTION: Egy integration test adatbázissal dolgozik, és egy teszt futtatása után megmaradnak az adatok, amelyek miatt a következő teszt eredménye függ a futási sorrendtől. Mi a legfontosabb tesztelési probléma?
+
+A) A JUnit nem támogat adatbázis-teszteket.
+B) A tesztek között nincs megfelelő izoláció, ezért az egyik teszt állapota hatással lehet a másikra.
+C) Az adatbázis mindig gyorsabb, mint egy mock, ezért mockolni kell.
+D) Az integration tesztekben kötelező minden SQL lekérdezést mockolni.
+
+ANSWER: B
+EXPLANATION: Egy jó tesztkörnyezetben a tesztek lehetőleg egymástól izoláltan futnak, hogy a végrehajtási sorrend ne változtassa meg az eredményt. Adatbázis-integrációs teszteknél ez történhet tranzakciós rollbackkel, izolált adatbázissal vagy megfelelő cleanup mechanizmussal. A leggyakoribb téves válasz azért csábító, mert a mockok valóban hasznosak unit teszteknél, de ettől egy integration test nem válik hibássá.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: I/O & NIO
+TYPE: performance
+QUESTION: Egy szolgáltatás 20 GB-os logfájlt dolgoz fel, de csak azokat a sorokat keresi, amelyek egy adott mintát tartalmaznak. Miért lehet problémás az alábbi megoldás?
+
+CODE:
+String content = Files.readString(path);
+
+for (String line : content.split("\n")) {
+    if (line.contains("ERROR")) {
+        process(line);
+    }
+}
+ENDCODE
+
+A) A `Files.readString` csak bináris fájlokkal működik.
+B) A `split` kizárólag Windows fájlokon működik.
+C) A `contains` nem használható String objektumokon.
+D) A teljes fájl memóriába kerül, és a `split` további objektumokat is létrehozhat, ezért streaming alapú feldolgozás memóriahatékonyabb lehet.
+
+ANSWER: D
+EXPLANATION: A `readString` a teljes fájlt egyetlen Stringként tölti be, ami egy 20 GB-os fájlnál extrém memóriaigényt okozhat. A `split` további objektumokat és tömböt is létrehozhat. Nagy fájl esetén célszerűbb soronként vagy más streaming mechanizmussal feldolgozni az adatot. A leggyakoribb téves válasz azért tűnhet hihetőnek, mert maga a `contains` valóban egyszerű művelet, de a fő memóriaigényt itt nem ez, hanem a teljes input materializálása okozza.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Memory model & GC
+TYPE: trap
+QUESTION: Melyik állítás írja le helyesen a `volatile` mező és a garbage collection kapcsolatát?
+
+A) A `volatile` mező garantálja, hogy a hozzá tartozó objektum soha nem lesz garbage collected.
+B) A `volatile` minden objektumhoz automatikusan strong reference-et hoz létre a teljes alkalmazás élettartamára.
+C) A `volatile` elsősorban a memória láthatóságára és bizonyos rendezési garanciákra vonatkozik; önmagában nem akadályozza meg az objektum garbage collectionjét.
+D) A garbage collector nem olvassa a volatile mezőket.
+
+ANSWER: C
+EXPLANATION: A `volatile` a Java Memory Modelben láthatósági és ordering garanciákat biztosít, de nem tesz egy referenciát automatikusan örökké élővé. Ha egy volatile mezőből töröljük az objektumra mutató referenciát, és máshonnan sincs elérhető strong reference, az objektum később gyűjthetővé válhat. A leggyakoribb téves válasz azért lehet csábító, mert a volatile mező erős láthatósági garanciát ad, de ez nem azonos az objektum élettartamának garantálásával.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: Concurrency & threads
+TYPE: deadlock
+QUESTION: Két thread az alábbi sorrendben próbál lockokat szerezni:
+
+CODE:
+synchronized (lockA) {
+    synchronized (lockB) {
+        work();
+    }
+}
+
+synchronized (lockB) {
+    synchronized (lockA) {
+        work();
+    }
+ENDCODE
+
+Melyik probléma fordulhat elő?
+
+A) Deadlock, ha az egyik thread `lockA`-t tartva vár `lockB`-re, miközben a másik `lockB`-t tartva vár `lockA`-ra.
+B) A JVM automatikusan feloldja az egyik lockot, ha deadlock alakul ki.
+C) A két lock miatt a kód garantáltan race conditiont okoz, de deadlockot nem.
+D) A `synchronized` blokkok mindig lock-free módon működnek.
+
+ANSWER: A
+EXPLANATION: A két különböző lock eltérő sorrendben történő megszerzése klasszikus deadlock helyzetet hozhat létre. Az egyik thread megtarthatja az első lockot, miközben a másodikra vár, a másik pedig fordítva. A leggyakoribb téves válasz azért tűnhet megnyugtatónak, mert a JVM képes deadlockot diagnosztizálni bizonyos eszközökkel, de ettől még nem oldja fel automatikusan a lockokat.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: behavior
+QUESTION: Mi történik az alábbi Java 21-es kóddal?
+
+CODE:
+sealed interface Result permits Success, Failure {}
+
+record Success(String value) implements Result {}
+record Failure(String reason) implements Result {}
+
+static String describe(Result result) {
+    return switch (result) {
+        case Success s -> "success: " + s.value();
+        case Failure f -> "failure: " + f.reason();
+    };
+}
+
+System.out.println(describe(new Success("OK")));
+ENDCODE
+
+A) A `switch` nem fordul le, mert sealed interface nem használható `switch` esetén.
+B) A program `success: OK` szöveget ír ki.
+C) A program mindig a `Failure` ágat választja.
+D) A pattern matching csak classokra működik, recordokra nem.
+
+ANSWER: B
+EXPLANATION: A sealed interface ismert és korlátozott közvetlen implementációkkal rendelkezik, ezért a fordító képes ellenőrizni a `switch` teljességét. A record pattern matching itt a `Success` példányt felismeri, majd annak `value()` accessorán keresztül elérhetővé teszi az értéket. A leggyakoribb téves válasz azért csábító, mert a modern `switch` pattern matching több új nyelvi funkciót kombinál, de Java 21-ben ez támogatott.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: Production debugging
+TYPE: scenario
+QUESTION: Egy production rendszerben egy request néha több másodpercre lefagy, miközben CPU- és memóriahasználata normális. Az alkalmazás több thread poolt és több lockot használ. Melyik diagnosztikai lépés adhatja a legközvetlenebb információt arról, hogy a threadek mire várakoznak?
+
+A) Azonnal növelni a JVM heap méretét.
+B) Azonnal kikapcsolni a garbage collectort.
+C) Thread dumpokat készíteni a probléma fennállásakor, majd megvizsgálni a lockokat, WAITING/BLOCKED állapotokat és stack trace-eket.
+D) A teljes alkalmazást újratelepíteni a logok vizsgálata nélkül.
+
+ANSWER: C
+EXPLANATION: Ha a CPU- és memóriahasználat normális, de requestek hosszú ideig nem haladnak, a thread dump közvetlen képet adhat arról, hogy a threadek futnak, lockra várnak, másik threadre várnak vagy blokkoló I/O-ban vannak. Több dump időben egymáshoz közeli elkészítése különösen hasznos lehet a tartós várakozási állapot felismerésében. A leggyakoribb téves válasz azért tűnhet indokoltnak, mert a memória gyakori teljesítményprobléma-forrás, de normális memóriahasználat mellett a thread állapotok vizsgálata célzottabb.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: Concurrency & threads
+TYPE: production
+QUESTION: Egy production alkalmazásban egy `volatile boolean` flaggel szeretnéd leállítani a hosszú ideig futó worker threadet. A worker egy blokkoló `BlockingQueue.take()` hívásban várakozik. Miért nem elegendő önmagában a flag értékének `false`-ra állítása?
+
+A) A `volatile` csak íráskor biztosít láthatóságot, olvasáskor nem.
+B) A `BlockingQueue.take()` blokkoló várakozása alatt a thread nem jut el a flag újbóli ellenőrzéséig.
+C) A `volatile` mezők nem használhatók threadek közötti kommunikációra.
+D) A `BlockingQueue.take()` automatikusan megszakítja magát, amikor egy volatile mező megváltozik.
+
+ANSWER: B
+EXPLANATION: A `volatile` flag biztosítja, hogy a worker a flag aktuális értékét lássa, amikor újra ellenőrzi azt. Ha azonban a thread egy blokkoló `take()` hívásban várakozik, addig nem hajt végre újabb ellenőrzést. Ilyenkor például `interrupt()` vagy a queue megfelelő felébresztési mechanizmusa is szükséges lehet. A leggyakoribb téves válasz azért csábító, mert a `volatile` valóban megfelelő eszköz láthatósági kommunikációra, de nem szakít meg tetszőleges blokkoló műveletet.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: java.util.concurrent
+TYPE: behavior
+QUESTION: Mi történik az alábbi kóddal?
+
+CODE:
+AtomicInteger counter = new AtomicInteger(0);
+
+int result = counter.updateAndGet(value -> {
+    if (value < 10) {
+        return value + 2;
+    }
+    return value;
+});
+
+System.out.println(result);
+ENDCODE
+
+A) `0`
+B) `1`
+C) `2`
+D) `10`
+
+ANSWER: C
+EXPLANATION: Az `updateAndGet` atomikusan alkalmazza a megadott függvényt az aktuális értékre. A kezdeti érték 0, amely kisebb 10-nél, ezért az új érték 2 lesz, és ezt adja vissza a metódus. A leggyakoribb téves válasz azért tűnhet helyesnek, mert az `AtomicInteger` használata gyakran egyszerű increment műveletekkel jelenik meg, de itt a teljes update-függvény eredménye kerül alkalmazásra.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: Collections & generics
+TYPE: trap
+QUESTION: Mi történik az alábbi kóddal?
+
+CODE:
+Map<String, List<Integer>> map = new HashMap<>();
+
+map.computeIfAbsent("a", key -> new ArrayList<>()).add(10);
+map.computeIfAbsent("a", key -> new ArrayList<>()).add(20);
+
+System.out.println(map.get("a"));
+ENDCODE
+
+A) `[10, 20]`
+B) `[20]`
+C) `null`
+D) A második `computeIfAbsent` mindig új listát hoz létre, ezért a map tartalma kiszámíthatatlan.
+
+ANSWER: A
+EXPLANATION: Az első `computeIfAbsent` létrehozza és eltárolja az `"a"` kulcshoz tartozó listát. A második hívás már megtalálja ezt a nem null értéket, ezért nem hoz létre új listát, hanem ugyanazt a listát adja vissza. Így először 10, majd 20 kerül ugyanabba a listába. A leggyakoribb téves válasz azért csábító, mert a lambda minden hívásnál új listát tudna létrehozni, de a függvény csak hiányzó vagy null érték esetén kerül alkalmazásra.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Streams & lambdas
+TYPE: production
+QUESTION: Egy `parallelStream()`-et használó production feldolgozásban az egyes elemek feldolgozása egy külső REST API-ra vár. A throughput kiszámíthatatlan, és időnként más, CPU-intenzív feladatok is lelassulnak. Mi a legfontosabb gyanú?
+
+A) A parallel stream mindig sorrendben dolgozza fel az elemeket.
+B) A stream automatikusan új JVM-et indít minden elemhez.
+C) A REST API hívások mindig CPU-bound feladatnak számítanak.
+D) A blocking I/O használata a common ForkJoinPool erőforrásait hosszú ideig lekötheti, ami más feladatokkal contentiont okozhat.
+
+ANSWER: D
+EXPLANATION: A `parallelStream()` alapértelmezés szerint a common ForkJoinPoolt használhatja. Ha a feladatok hosszú ideig blokkoló I/O-ra várnak, a pool workerjei kevésbé tudnak más munkát végezni, ami erőforrás-versenyhez és kiszámíthatatlan teljesítményhez vezethet. A leggyakoribb téves válasz azért csábító, mert a REST hívás valóban jelentős időt tölthet várakozással, de éppen ez teszi problémássá a blokkoló műveletet egy korlátozott worker poolban.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: Memory model & GC
+TYPE: production
+QUESTION: Egy hosszú életű Java processben a heap occupancy minden Full GC után is fokozatosan magasabb szinten stabilizálódik. Az allocation rate nem nő jelentősen. Melyik vizsgálat adhatja a legközvetlenebb bizonyítékot arra, hogy objektumok retention problémája áll fenn?
+
+A) Heap dumpok összehasonlítása és a dominator/retained-size elemzése.
+B) A CPU core-ok számának növelése.
+C) A thread pool méretének megduplázása.
+D) A JVM startup paramétereinek újraindítás nélküli megváltoztatása.
+
+ANSWER: A
+EXPLANATION: Ha a Full GC után megmaradó heap folyamatosan nő, miközben az allokációs ráta nem magyarázza a változást, érdemes megvizsgálni, mely objektumok tartanak fenn nagy retained heapet. Heap dumpok és dominator tree elemzése segíthet feltárni a retention pathokat, például cache-eket, registryket vagy statikus referenciákat. A leggyakoribb téves válasz azért tűnhet indokoltnak, mert a CPU és a thread pool hatással lehet a teljesítményre, de nem mutatja meg közvetlenül, mely objektumok tartják életben a heap tartalmát.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: JVM & class loading
+TYPE: edgecase
+QUESTION: Egy Java alkalmazásban egy osztály statikus mezője egy másik osztály statikus inicializálására támaszkodik, miközben a második osztály inicializálása közvetetten visszautal az elsőre. Miért lehet ez veszélyes?
+
+A) A JVM minden static mezőt automatikusan exceptionre állít `null` helyett.
+B) A JVM minden ilyen esetben garantáltan végtelen ciklusba kerül.
+C) Az osztályok inicializálási sorrendje és aktuális inicializálási állapota miatt nem teljesen inicializált állapot válhat megfigyelhetővé, vagy inicializálási hiba következhet be.
+D) A static mezők soha nem válthatják ki másik osztály inicializálását.
+
+ANSWER: C
+EXPLANATION: A JVM kezeli az osztályinicializálást és annak thread-safe végrehajtását, de egymásra támaszkodó static initializerek összetett inicializálási sorrendhez vezethetnek. Bizonyos helyzetekben egy másik osztályból olyan állapot válhat megfigyelhetővé, amely még nem teljesen inicializált, például alapértelmezett értékekkel rendelkezik, illetve egy exception miatt az inicializálás sikertelen lehet. A leggyakoribb téves válasz azért csábító, mert a körkörös inicializálás könnyen végtelen rekurziónak tűnik, de a JVM class initialization mechanizmusa ennél összetettebb, és nem garantál automatikusan végtelen ciklust.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Exceptions
+TYPE: edgecase
+QUESTION: Mi történik az alábbi kóddal?
+
+CODE:
+try {
+    throw new RuntimeException("primary");
+} finally {
+    throw new IllegalStateException("cleanup");
+}
+ENDCODE
+
+A) Mindkét exception automatikusan egymás mellé kerül, és mindkettő megmarad.
+B) Az `IllegalStateException` elfedi az eredeti `RuntimeException`-t.
+C) Csak a `RuntimeException` marad meg, mert a finally nem dobhat exceptiont.
+D) A JVM automatikusan `SuppressedException` típust hoz létre.
+
+ANSWER: B
+EXPLANATION: Ha a `finally` blokk új exceptiont dob, az felülírja a korábban folyamatban lévő exceptiont. Az eredeti `RuntimeException` ebben a konkrét mintában nem válik automatikusan suppressed exceptionné. A leggyakoribb téves válasz azért tűnhet helyesnek, mert try-with-resources esetén valóban létezik automatikus suppressed-exception kezelés, de ez nem általános szabály minden `finally` blokkra.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Performance & profiling
+TYPE: performance
+QUESTION: Egy fejlesztő egy egyszerű benchmarkban egymás után 10 000 000 alkalommal meghív egy Java metódust, majd `System.nanoTime()` alapján kiszámolja az átlagos futási időt. Miért lehet ez félrevezető?
+
+A) A `nanoTime()` mindig milliszekundum pontosságú.
+B) A Java metódusok futási ideje mindig konstans.
+C) A JVM nem képes optimalizálni a cikluson belül meghívott metódusokat.
+D) JIT warmup, dead-code elimination, GC és más JVM optimalizációk jelentősen befolyásolhatják az eredményt.
+
+ANSWER: D
+EXPLANATION: A JVM futás közben optimalizálhatja a hot code-ot, például inliningot alkalmazhat, és bizonyos eredményeket akár teljesen eliminálhat, ha azoknak nincs megfigyelhető hatásuk. A GC és a környezet egyéb változásai szintén torzíthatják a mérést. Komoly benchmarkokhoz a JMH használata javasolt. A leggyakoribb téves válasz azért csábító, mert a `nanoTime()` valóban alkalmas időintervallum mérésére, de önmagában nem teszi a benchmarkot módszertanilag helyessé.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: scenario
+QUESTION: Egy Mockito tesztben egy mockolt repository egy módosítható `List` példányt kap paraméterként. A repository meghívása után a teszt vagy a production kód módosítja ugyanazt a listaobjektumot, ezért egy későbbi assertion már nem feltétlenül azt az állapotot vizsgálja, amely a mock meghívásakor fennállt. Melyik megközelítés biztosít valódi snapshotot a vizsgált állapotról?
+
+A) Minden Mockito mockot automatikusan singletonná kell tenni.
+B) Az argumentumot a meghíváskor egy független másolattá kell alakítani, például megfelelő `Answer` vagy wrapper segítségével, és ezt a másolatot kell később ellenőrizni.
+C) A `verify` automatikusan immutable snapshotot készít minden mutable argumentumról.
+D) Mutable objektumok nem használhatók Mockito argumentumként.
+
+ANSWER: B
+EXPLANATION: Az `ArgumentCaptor` önmagában nem készít másolatot az elfogott mutable objektumról, hanem ugyanarra az objektumra hivatkozik. Ha az objektumot később módosítják, az assertion már a módosított állapotot láthatja. Ha kifejezetten a hívás pillanatában fennálló állapotot kell megőrizni, akkor a meghíváskor független másolatot kell készíteni, például egy megfelelő `Answer`, wrapper vagy más snapshot-mechanizmus segítségével. A leggyakoribb téves válasz azért csábító, mert az `ArgumentCaptor` valóban lehetővé teszi a meghívás paraméterének vizsgálatát, de önmagában nem készít deep vagy immutable snapshotot.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: Design patterns
+TYPE: scenario
+QUESTION: Egy rendszerben több implementáció ugyanazt az üzleti műveletet végzi, de a kiválasztásnak konfiguráció és runtime állapot alapján kell történnie. A kódot úgy szeretnéd felépíteni, hogy új implementáció hozzáadásakor a meglévő üzleti logikát minél kevésbé kelljen módosítani. Melyik megközelítés illik leginkább ehhez?
+
+A) Egyetlen nagy `if-else` lánc minden lehetséges implementációval.
+B) Singleton, amely minden üzleti szabályt egyetlen osztályba gyűjt.
+C) Külön interfész mögé szervezett implementációk és egy kiválasztási mechanizmus, amely a megfelelő implementációt adja vissza.
+D) Minden implementációt statikus metódusokká alakítani.
+
+ANSWER: C
+EXPLANATION: Az interfész mögé szervezett implementációk és egy külön kiválasztási mechanizmus jól támogatják az új viselkedések hozzáadását anélkül, hogy a meglévő üzleti logikát folyamatosan bővíteni kellene. Ez gyakran Strategy-szerű kialakítással és dependency injectionnel valósítható meg. A leggyakoribb téves válasz azért csábító, mert egy `if-else` lánc kezdetben egyszerűnek tűnik, de az implementációk számának növekedésével egyre szorosabb csatolást és nehezebb karbantarthatóságot eredményez.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: I/O & NIO
+TYPE: scenario
+QUESTION: Egy production szolgáltatás nagy mennyiségű fájlt dolgoz fel párhuzamosan. A fájlok mérete változó, és a rendszer időnként `Too many open files` hibát kap. A CPU és heap használat normális. Mi lehet a legvalószínűbb probléma?
+
+A) Túl sok fájl van egyszerre megnyitva, és a file descriptorok nem szabadulnak fel elég gyorsan vagy megfelelően.
+B) A Java heap automatikusan file descriptorokká alakítja a byte tömböket.
+C) A `Path` objektumok önmagukban minden esetben nyitva tartanak egy operációs rendszerbeli file descriptort.
+D) A garbage collector mindig túl lassan dolgozik, ezért minden `Path` véglegesen nyitva marad.
+
+ANSWER: A
+EXPLANATION: A `Too many open files` tipikusan operációs rendszer szintű file descriptor limit elérését jelenti. Nagy párhuzamosság, nem megfelelő resource lifecycle vagy túl sok egyidejűleg nyitott stream okozhatja. A stream-eket megfelelően le kell zárni, jellemzően try-with-resources segítségével. A leggyakoribb téves válasz azért csábító, mert a Java objektumok és az OS erőforrások életciklusa összekapcsolódhat, de egy `Path` önmagában nem nyit meg fájlt.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: behavior
+QUESTION: Mi a legfontosabb különbség egy record és egy hagyományos mutable Java bean között az alábbi szempontból?
+
+CODE:
+record User(String name, int age) {}
+
+User user = new User("Anna", 30);
+ENDCODE
+
+A) A record minden mezőjét automatikusan `static` mezővé alakítja.
+B) A record példányának komponenseihez accessorok tartoznak, és a record komponensei a példány létrehozása után nem módosíthatók mező-hozzárendeléssel.
+C) A record nem lehet metódusokat tartalmazó osztály.
+D) A record példányok mindig singletonok.
+
+ANSWER: B
+EXPLANATION: A record komponenseihez accessor metódusok tartoznak, és a record által deklarált komponensmezők nem módosíthatók úgy, mint egy hagyományos mutable bean setterei. Ez azonban nem jelenti azt, hogy minden benne található objektum mélyen immutable lenne. A leggyakoribb téves válasz azért tűnhet helyesnek, mert a record valóban tömör adatmodell, de ettől még teljes értékű osztályként metódusokat is tartalmazhat.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: Java Core & OOP
+TYPE: behavior
+QUESTION: Mi történik az alábbi kóddal?
+
+CODE:
+interface A {
+    default String value() {
+        return "A";
+    }
+}
+
+interface B extends A {
+    default String value() {
+        return "B";
+    }
+}
+
+class C implements B {}
+
+System.out.println(new C().value());
+ENDCODE
+
+A) `A`
+B) `B`
+C) `null`
+D) A kód nem fordul le, mert egy interface nem írhatja felül egy másik interface default metódusát.
+
+ANSWER: B
+EXPLANATION: A `B` interface örökli az `A` default metódusát, de saját default implementációt biztosít ugyanarra a metódusra. A `C` ezt a specifikusabb, `B`-ből származó implementációt kapja, ezért a visszatérési érték `B`. A leggyakoribb téves válasz azért csábító, mert mindkét interface-ben létezik azonos nevű default metódus, de a specifikusabb interface implementációja elsőbbséget élvez.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: Collections & generics
+TYPE: edgecase
+QUESTION: Miért nem használható tetszőleges `List<? super Integer>` objektumból biztonságosan egy elem `Integer` típusként történő kiolvasása?
+
+A) Mert a `super` wildcard azt jelenti, hogy a lista kizárólag Stringeket tartalmazhat.
+B) Mert a `List<? super Integer>` akár `List<Number>` vagy `List<Object>` is lehet, ezért a kiolvasott érték konkrét típusa csak `Object`-ként ismert biztonságosan.
+C) Mert a `Integer` primitív típus.
+D) Mert a `super` wildcard tiltja a `get` műveletet.
+
+ANSWER: B
+EXPLANATION: A `List<? super Integer>` lehet `List<Integer>`, `List<Number>` vagy akár `List<Object>`. Emiatt egy kiolvasott elem konkrét típusa a fordító számára csak `Object` lehet. Ezzel szemben `Integer` értékeket biztonságosan hozzá lehet adni. A leggyakoribb téves válasz azért csábító, mert a `super` valóban az `Integer` körüli típusokat korlátozza, de nem tiltja a lista olvasását.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: java.util.concurrent
+TYPE: production
+QUESTION: Egy szolgáltatás `CompletableFuture` pipeline-ja több különböző Executoron fut. Egy exception után a hibakezelés során néha másik thread poolban folytatódik a feldolgozás, mint amire a fejlesztő számított. Melyik állítás fontos a probléma megértéséhez?
+
+A) A `CompletableFuture` minden continuationt garantáltan ugyanazon az Executoron futtat.
+B) A `thenApplyAsync` és a nem async változat minden esetben ugyanazt a végrehajtási mechanizmust használja.
+C) A különböző continuation metódusok és az általuk használt Executor meghatározhatják, melyik threaden vagy poolban folytatódik a feldolgozás.
+D) A CompletableFuture callbackek mindig a main threaden futnak.
+
+ANSWER: C
+EXPLANATION: A `CompletableFuture` async és nem async continuationjeinek végrehajtási modellje eltérhet, és explicit Executor is megadható. A pipeline tervezésekor ezért fontos pontosan követni, melyik stage milyen executoron fut, különösen blokkoló vagy CPU-intenzív műveleteknél. A leggyakoribb téves válasz azért tűnhet helyesnek, mert egy egyszerű pipeline gyakran ugyanazon végrehajtási kontextusban marad, de ez nem általános garancia minden continuationra.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Production debugging
+TYPE: scenario
+QUESTION: Egy production JVM időnként nagyon hosszú GC pause-okat produkál. A heap mérete és az objektumok száma önmagában nem magyarázza a jelenséget. Melyik további adat lehet különösen fontos az ok feltárásához?
+
+A) Csak az alkalmazás verziószáma.
+B) Az összes HTTP endpoint neve.
+C) A CPU modellje, de minden más JVM adat nélkül.
+D) GC logok, allocation rate, pause-ok időtartama, heap occupancy és az egyes GC ciklusok részletes eseményei.
+
+ANSWER: D
+EXPLANATION: A GC problémák diagnosztikájához nem elegendő a heap aktuális mérete. Fontos látni az allokációs rátát, a GC gyakoriságát és időtartamát, a heap occupancy alakulását, valamint azt, hogy mely GC ciklusok okozzák a hosszú pause-okat. A leggyakoribb téves válasz azért csábító, mert a hardver és az alkalmazásverzió releváns lehet, de önmagában nem ad elegendő információt a GC viselkedéséről.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: Exceptions
+TYPE: production
+QUESTION: Egy repository metódus adatbázis-hibát kap, majd egy domain exceptiont dob tovább. A logban azonban csak a domain exception jelenik meg, az eredeti SQL hiba részletei nélkül. Mi a legfontosabb javítás?
+
+A) Az eredeti exceptiont el kell dobni a domain exception helyett minden esetben.
+B) A domain exceptiont az eredeti exceptiont cause-ként megadva kell létrehozni, és a teljes exception cha int megfelelően logolni.
+C) Az összes exception message-et egyetlen Stringgé kell összefűzni.
+D) A stack trace-et minden esetben el kell távolítani productionben.
+
+ANSWER: B
+EXPLANATION: A domain szintű exception segíthet elválasztani az infrastruktúra részleteit az üzleti rétegtől, de a hibakereséshez az eredeti cause-t meg kell őrizni. Így a logban a teljes exception chain és az eredeti stack trace is elérhető marad. A leggyakoribb téves válasz azért csábító, mert a domain exception egyszerűbb hibamodellt ad, de az eredeti ok elvesztése jelentősen megnehezíti a production debuggingot.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: Memory model & GC
+TYPE: scenario
+QUESTION: Egy alkalmazásban egy objektum `ThreadLocal`-ban tárol egy nagy méretű cache-t. A thread pool threadjei hosszú életűek, miközben a requestek rövid életűek. Miért okozhat ez memóriaretenciós problémát?
+
+A) A `ThreadLocal` minden objektumot automatikusan globális referenciává alakít.
+B) A thread pool minden request után új JVM-et hoz létre.
+C) A thread-local érték addig a hosszú életű threadhez kapcsolódhat, amíg megfelelően el nem távolítják, ezért requestenként létrejövő nagy objektumok hosszú ideig elérhetők maradhatnak.
+D) A `ThreadLocal` mindig weak reference-ként tárolja az értékeket.
+
+ANSWER: C
+EXPLANATION: A thread pool threadjei gyakran az alkalmazás teljes élettartamáig élnek. Ha egy request során nagy objektum kerül egy thread-local értékbe, és azt nem távolítják el megfelelően, az érték a thread életciklusához kötődően hosszú ideig elérhető maradhat. A leggyakoribb téves válasz azért tűnhet helyesnek, mert a ThreadLocal belső implementációja weak referenciákat is használhat a kulcsokra, de ez nem jelenti azt, hogy maga az érték automatikusan gyűjthetővé válik.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: Concurrency & threads
+TYPE: deadlock
+QUESTION: Egy rendszerben két lockot rendszeresen különböző sorrendben kellene megszerezni. Melyik tervezési megközelítés csökkenti leginkább a deadlock kockázatát?
+
+A) Meghatározni egy globális lock-ordering szabályt, és mindenhol ugyanabban a sorrendben megszerezni a lockokat.
+B) Véletlenszerűen változtatni a lockok sorrendjét.
+C) Minden lock megszerzése előtt `Thread.sleep()` hívást használni.
+D) Több lock hozzáadásával csökkenteni a contentiont.
+
+ANSWER: A
+EXPLANATION: A konzisztens lock-ordering megszüntetheti a klasszikus ciklikus várakozás egyik alapfeltételét. Ha minden kódút ugyanabban a sorrendben szerzi meg a lockokat, sokkal kisebb az esélye annak, hogy két thread egymás erőforrására várva deadlockba kerül. A leggyakoribb téves válasz azért csábító, mert a sleep időt adhat más threadeknek, de nem biztosít helyes lock-koordinációt.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: Modern Java (records, sealed, pattern matching, virtual threads)
+TYPE: scenario
+QUESTION: Egy szolgáltatásban minden beérkező requesthez külön virtuális threadet indítasz. A request CPU-intenzív kriptográfiai számításokat végez több másodpercen keresztül. Melyik állítás a legpontosabb?
+
+A) A virtuális thread automatikusan több CPU-kapacitást biztosít, ezért a számítás mindig gyorsabb lesz.
+B) A virtuális threadek kizárólag adatbázis-hívásokhoz használhatók.
+C) A virtuális threadek használata tiltott CPU-bound feladatoknál.
+D) A virtuális threadek csökkenthetik a thread-kezelés overheadjét, de önmagukban nem növelik a rendelkezésre álló CPU-kapacitást, ezért CPU-bound munkánál a párhuzamosságot továbbra is a CPU erőforrásai korlátozzák.
+
+ANSWER: D
+EXPLANATION: A virtuális threadek fő előnye a nagy számú konkurens feladat hatékony kezelése, különösen blokkoló I/O esetén. CPU-bound feladatnál a számítási teljesítményt továbbra is a rendelkezésre álló processzoridő korlátozza. A leggyakoribb téves válasz azért csábító, mert a virtuális threadekből sokkal többet lehet létrehozni, de a nagyobb concurrency nem jelent több fizikai CPU-kapacitást.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Performance & profiling
+TYPE: scenario
+QUESTION: Egy alkalmazás latencyje az új release után romlik. A CPU usage csak kismértékben nőtt, a GC normális, de egy új adatbázis-lekérdezés miatt minden request több downstream hívást végez. Melyik módszer segíthet leginkább az end-to-end latency növekedésének feltárásában?
+
+A) Csak a heap méretének növelése.
+B) Distributed tracing használata a request teljes call chainjének és a downstream spanok latencyjének vizsgálatára.
+C) A JVM újraindítása minden request után.
+D) A GC gyakoriságának manuális növelése.
+
+ANSWER: B
+EXPLANATION: Distributed tracinggel egy request teljes útvonala láthatóvá tehető, beleértve az adatbázis- és más downstream hívások időtartamát is. Ez különösen hasznos akkor, amikor a teljes CPU- vagy GC-terhelés nem magyarázza a latency növekedését. A leggyakoribb téves válasz azért tűnhet logikusnak, mert a JVM memória- és GC-beállításai gyakori teljesítménytényezők, de egy új downstream call chain problémáját ezek nem mutatják meg közvetlenül.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Testing (JUnit, Mockito)
+TYPE: edgecase
+QUESTION: Egy unit tesztben egy szolgáltatás több külső dependencyt hív, és a teszt jelenleg minden dependency minden metódusát mockolja. A teszt nagyon törékeny lett, mert egy kisebb refaktor is sok tesztet eltör. Mi lehet egy jobb stratégia?
+
+A) Minden production osztályt mockolni.
+B) A teljes tesztet eltávolítani, hogy ne legyen törékeny.
+C) A tesztet a publikus viselkedésre és releváns együttműködésekre fókuszálni, és elkerülni a szükségtelen belső interaction ellenőrzéseket.
+D) Minden mockhoz legalább tíz `verify` hívást hozzáadni.
+
+ANSWER: C
+EXPLANATION: A unit teszt akkor értékes, ha stabilan védi a kívánt viselkedést, nem pedig minden belső implementációs részletet. A szükségtelen interaction ellenőrzések erősen összeköthetik a tesztet a konkrét megvalósítással. A leggyakoribb téves válasz azért csábító, mert a több verification látszólag nagyobb lefedettséget ad, de gyakran csak nagyobb törékenységet eredményez.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: Java Core & OOP
+TYPE: scenario
+QUESTION: Egy publikus Java API-ban egy meglévő metódus visszatérési típusát szeretnéd egy konkrétabb altípusra változtatni úgy, hogy a felüldefiniálás továbbra is szabályos maradjon. Melyik eset megengedett?
+
+CODE:
+class Animal {}
+class Dog extends Animal {}
+
+class Parent {
+    Animal create() {
+        return new Animal();
+    }
+}
+
+class Child extends Parent {
+    // Which return type is valid here?
+}
+ENDCODE
+
+A) `Dog create()`
+B) `String create()`
+C) `Object create()`
+D) `void create()`
+
+ANSWER: A
+EXPLANATION: Java-ban a felüldefiniált metódus visszatérési típusa lehet az eredeti típus kovariáns altípusa. Mivel `Dog` az `Animal` altípusa, a `Child` megengedetten szűkítheti a visszatérési típust. A leggyakoribb téves válasz azért csábító, mert a metódus szignatúrájának sok eleme nem változtatható meg override során, de a return type esetében a kovariancia kivételt jelent.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: Production debugging
+TYPE: scenario
+QUESTION: Egy production rendszerben ritkán előfordul, hogy egy request több különböző service-en keresztül halad, majd az utolsó service-ben timeouttal végződik. A lokális logok önmagukban nem teszik egyértelművé, hol töltötte az időt a request. Melyik observability megoldás segíti leginkább a teljes útvonal rekonstruálását?
+
+A) Csak a JVM heap size logolása.
+B) Csak az exception message-ek logolása.
+C) Egyetlen globális counter használata minden requestre.
+D) Correlation ID-k vagy distributed tracing használata a request különböző service-ek közötti útjának összekapcsolására.
+
+ANSWER: D
+EXPLANATION: Correlation ID vagy distributed tracing segítségével ugyanaz a request több service-en keresztüli útvonala összekapcsolható. Így megállapítható, melyik service vagy downstream dependency töltötte az idő jelentős részét, és hol alakult ki a timeout. A leggyakoribb téves válasz azért tűnhet hasznosnak, mert az exception logok valóban tartalmazhatnak hibainformációt, de önmagukban nem rekonstruálják a teljes request pathot.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: Production debugging
+TYPE: production
+QUESTION: Egy kritikus production rendszerben időszakosan jelentkező, nehezen reprodukálható latency-problémát vizsgálsz. A CPU, heap és GC metrikák önmagukban nem mutatnak egyértelmű problémát. Több service, adatbázis és külső API vesz részt egyetlen request kiszolgálásában. Melyik megközelítés adhatja a legteljesebb képet a probléma okáról?
+
+A) Csak a JVM heap méretének növelése és a probléma újraellenőrzése.
+B) Csak a leglassabbnak tűnő service újraindítása.
+C) Strukturált logolás, distributed tracing, releváns JVM/thread/GC metrikák és downstream latencyk együttes vizsgálata.
+D) A production környezetben minden logolás kikapcsolása a teljesítmény növeléséhez.
+
+ANSWER: C
+EXPLANATION: Összetett production latency-problémánál ritkán elegendő egyetlen metrikára támaszkodni. A tracing megmutatja a request útját és az egyes komponensek időigényét, a strukturált logok kontextust adnak, a JVM- és thread-metrikák pedig a runtime állapotáról szolgáltatnak információt. A downstream latencyk bevonása segít elkülöníteni az alkalmazás saját problémáit a külső függőségek hatásától. A leggyakoribb téves válasz azért csábító, mert egyetlen beavatkozás gyors eredményt ígérhet, de bizonyíték nélkül nem azonosítja a tényleges root cause-t.
+###END

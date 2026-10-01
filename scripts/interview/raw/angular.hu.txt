@@ -1,0 +1,3469 @@
+### Q1
+LEVEL: junior
+TOPIC: Components & templates
+TYPE: behavior
+QUESTION: Egy Angular komponens template-jében az alábbi kód szerepel. Mi jelenik meg a képernyőn?
+CODE:
+title = 'Angular';
+ENDCODE
+A) Angular
+B) title
+C) {{ title }}
+D) Semmi, mert a property nincs signal-ként definiálva
+ANSWER: A
+EXPLANATION: Az Angular interpolation segítségével a template-ben a komponens `title` property-jének aktuális értéke jelenik meg. A signal használata ehhez nem szükséges; a template hagyományos komponensproperty-ket is képes olvasni. A leggyakoribb rossz válasz azért csábító, mert a modern Angularban sok példa signalokat használ, de a hagyományos property binding továbbra is támogatott.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: Data binding
+TYPE: output
+QUESTION: Mi lesz a gomb feliratával az alábbi Angular template esetén?
+CODE:
+export class AppComponent {
+  label = 'Mentés';
+}
+ENDCODE
+
+<button [textContent]="label"></button>
+ENDCODE
+A) `label`
+B) `{{ label }}`
+C) `Mentés`
+D) Üres gomb
+ANSWER: C
+EXPLANATION: A `[textContent]` property binding közvetlenül a DOM elem `textContent` property-jét állítja a komponens `label` értékére, ezért a gombon a `Mentés` szöveg jelenik meg. A leggyakoribb rossz válasz azért csábító, mert az interpolation és a property binding szintaxisa hasonló célt szolgál, de itt a DOM property értéket kap.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: Directives
+TYPE: behavior
+QUESTION: Mit eredményez az alábbi template Angularban?
+CODE:
+<p [class.active]="isActive">Profil</p>
+ENDCODE
+A) Az `active` osztály mindig hozzáadódik
+B) Az `active` osztály csak akkor lesz jelen, ha `isActive` igaz
+C) Az `active` osztály csak akkor lesz jelen, ha `isActive` hamis
+D) Angular hibát dob, mert class bindinghez `ngClass` kötelező
+ANSWER: B
+EXPLANATION: A `[class.active]` class binding egyetlen CSS osztály jelenlétét vezérli. Ha `isActive` truthy, az `active` class hozzáadódik; ha falsy, eltávolításra kerül. A leggyakoribb rossz válasz azért csábító, mert a régebbi Angular-kódokban gyakran az `ngClass` látható, pedig egyetlen osztályhoz a direkt class binding egyszerűbb.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: Pipes
+TYPE: output
+QUESTION: Mi jelenik meg a template-ben, ha `name` értéke `angular`?
+CODE:
+name = 'angular';
+ENDCODE
+
+<p>{{ name | uppercase }}</p>
+ENDCODE
+A) angular
+B) Angular
+C) ANGULAR
+D) `uppercase`
+ANSWER: C
+EXPLANATION: Az Angular beépített `uppercase` pipe-ja nagybetűssé alakítja a stringet, ezért az eredmény `ANGULAR`. A pipe a template-ben rendereléskor alkalmazza a transzformációt. A leggyakoribb rossz válasz azért csábító, mert a pipe neve önmagában nem változtatja meg a komponens `name` property-jét, csak a megjelenített értéket.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: Dependency injection
+TYPE: theory
+QUESTION: Mi történik, amikor egy Angular komponens konstruktorában egy `providedIn: 'root'` service-t injektálunk?
+CODE:
+@Injectable({ providedIn: 'root' })
+export class LoggerService {}
+
+@Component({
+  selector: 'app-root',
+  template: ''
+})
+export class AppComponent {
+  constructor(private logger: LoggerService) {}
+}
+ENDCODE
+A) Az Angular nem tudja létrehozni a service-t provider nélkül
+B) Az Angular a root injectoron keresztül feloldja a service dependency-t
+C) A service csak akkor jön létre, ha a template használja
+D) A service automatikusan komponensenként külön példányt kap
+ANSWER: B
+EXPLANATION: A `providedIn: 'root'` azt jelenti, hogy a service a root injector számára regisztrált injectable, ezért a komponens dependency injection mechanizmusa fel tudja oldani. Ez tipikusan alkalmazásszintű singleton példányhoz vezet. A leggyakoribb rossz válasz azért csábító, mert sok DI-példában explicit `providers` tömböt is látni, de `providedIn: 'root'` esetén erre nincs szükség.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Services & providers
+TYPE: scenario
+QUESTION: Egy service-t egy komponens `providers` tömbjében deklarálsz. Mi a legfontosabb következmény?
+CODE:
+@Component({
+  selector: 'app-user',
+  template: '',
+  providers: [UserService]
+})
+export class UserComponent {}
+ENDCODE
+A) Az egész alkalmazás ugyanazt a példányt használja
+B) A service használata letiltja a root injectort
+C) A komponens injectorán keresztül saját service példány kapható
+D) A service csak SSR környezetben működik
+ANSWER: C
+EXPLANATION: A komponenshez tartozó provider egy komponens-szintű injectort használ, így az adott komponens és annak megfelelő injection subtree saját `UserService` példányt kaphat. Ez eltér a root-szintű provider használatától. A leggyakoribb rossz válasz azért csábító, mert a service-eket gyakran singletonként használják, de a provider hatóköre meghatározza az életciklust és példányosítást.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: Lifecycle hooks
+TYPE: behavior
+QUESTION: Mikor fut le az `ngOnInit()` egy komponens esetében?
+CODE:
+export class UserComponent implements OnInit {
+  ngOnInit() {
+    console.log('init');
+  }
+}
+ENDCODE
+A) Minden change detection ciklusban
+B) A komponens példányosítása után egyszer, az inicializáció részeként
+C) Minden alkalommal, amikor a template újrarenderelődik
+D) Csak akkor, amikor a komponens megszűnik
+ANSWER: B
+EXPLANATION: Az `ngOnInit` az Angular komponens inicializációs életciklusának része, és egy komponenspéldányhoz egyszer fut le. Nem minden change detection ciklus része. A leggyakoribb rossz válasz azért csábító, mert az `ngOnInit` időben közel van az első rendereléshez, de nem általános renderelési callback.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Change detection & OnPush
+TYPE: trap
+QUESTION: Mit jelent az `OnPush` change detection stratégia használata egy komponensen?
+CODE:
+@Component({
+  selector: 'app-user',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '{{ user.name }}'
+})
+export class UserComponent {
+  @Input() user!: User;
+}
+ENDCODE
+A) A komponens soha többé nem kerül change detection alá
+B) A komponens csak akkor renderel, ha a teljes alkalmazás újraindul
+C) Az Angular többek között input referencia-változás, esemény vagy megfelelően kezelt reaktív értesítés esetén ellenőrzi a komponenst
+D) Az `OnPush` kizárólag production buildben működik
+ANSWER: C
+EXPLANATION: Az `OnPush` nem kapcsolja ki véglegesen a change detectiont. Az Angular többek között új input referencia, a komponensben kezelt események és modern reaktív primitívek, például signalok változása miatt is ellenőrizheti a komponenst. A leggyakoribb rossz válasz azért csábító, mert az `OnPush` valóban csökkenti a felesleges ellenőrzéseket, de nem jelenti azt, hogy a komponens teljesen kimarad a change detectionből.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: Signals
+TYPE: output
+QUESTION: Mi jelenik meg a template-ben az alábbi Angular signal használatakor?
+CODE:
+count = signal(2);
+
+doubleCount = computed(() => this.count() * 2);
+ENDCODE
+
+<p>{{ doubleCount() }}</p>
+ENDCODE
+A) 2
+B) 4
+C) `doubleCount`
+D) Angular template hiba
+ANSWER: B
+EXPLANATION: A `count()` a signal aktuális értékét adja vissza, amely 2. A `computed` ezt megszorozza kettővel, ezért `doubleCount()` értéke 4. A leggyakoribb rossz válasz azért csábító, mert a `computed` deklarációjában nem látható explicit kezdeti érték, az értéket azonban a deriváló függvény számítja ki.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: RxJS & Observables
+TYPE: behavior
+QUESTION: Mi történik az alábbi Observable esetében?
+CODE:
+const numbers$ = of(1, 2, 3);
+
+numbers$.subscribe(value => console.log(value));
+ENDCODE
+A) Csak a 3 kerül kiírásra
+B) Az Observable egyetlen értéket ad, amely egy tömb
+C) 1, majd 2, majd 3 kerül kiírásra
+D) Semmi nem történik, mert Observable csak HTTP-kérésekhez használható
+ANSWER: C
+EXPLANATION: Az `of(1, 2, 3)` három egymást követő emissiont produkál, ezért a subscriber háromszor fut le: 1, 2, majd 3 értékkel. Az Observable általános aszinkron vagy szinkron adatfolyam-abstrakció. A leggyakoribb rossz válasz azért csábító, mert a több értéket tartalmazó adatfolyamot könnyű összekeverni egyetlen tömbértékkel.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: HttpClient & interceptors
+TYPE: scenario
+QUESTION: Egy Angular alkalmazás minden HTTP-kéréséhez automatikusan Authorization headert szeretnél hozzáadni. Melyik megoldás illik leginkább erre a feladatra?
+CODE:
+GET /api/users
+Authorization: Bearer <token>
+ENDCODE
+A) Minden komponensben manuálisan hozzáadni a headert
+B) Egy HttpInterceptor használata
+C) Egy pipe létrehozása
+D) A Router konfiguráció módosítása
+ANSWER: B
+EXPLANATION: A HTTP interceptor központi helyet biztosít a kérések módosítására, például Authorization header hozzáadására. Így nem kell minden HttpClient-hívásnál ugyanazt a kódot megismételni. A leggyakoribb rossz válasz azért csábító, mert a header ténylegesen minden egyes kérésen megjelenik, de ezt nem a komponensekben érdemes duplikálni.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: Routing & guards
+TYPE: behavior
+QUESTION: Mire használható elsősorban egy Angular route guard?
+CODE:
+export const authGuard: CanActivateFn = () => {
+  return isLoggedIn();
+};
+ENDCODE
+A) CSS stílusok alkalmazására
+B) HTTP válaszok transzformálására
+C) Annak meghatározására, hogy egy navigáció engedélyezhető-e
+D) Komponens template-ek fordítására
+ANSWER: C
+EXPLANATION: A route guard a routing életciklusában dönthet arról, hogy egy navigáció folytatható-e, illetve átirányítás vagy más navigációs döntés történjen. Gyakori használata például védett oldalak kezelése. A leggyakoribb rossz válasz azért csábító, mert autentikációhoz gyakran service-ek és HTTP-hívások is kapcsolódnak, de a guard közvetlen feladata a navigáció vezérlése.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: Forms
+TYPE: output
+QUESTION: Mi lesz az input aktuális értéke a komponensben, ha a felhasználó `Budapest` szöveget ír be?
+CODE:
+name = '';
+
+ENDCODE
+
+<input [(ngModel)]="name">
+<p>{{ name }}</p>
+ENDCODE
+A) Üres string marad
+B) `Budapest`
+C) `name`
+D) `undefined`
+ANSWER: B
+EXPLANATION: A kétirányú `ngModel` binding összeköti az input értékét a komponens `name` property-jével. A felhasználó által beírt `Budapest` érték bekerül a property-be, és az interpolation ugyanazt az értéket jeleníti meg. A leggyakoribb rossz válasz azért csábító, mert az input kezdeti értéke üres, de a two-way binding folyamatosan szinkronizál.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: Standalone components
+TYPE: theory
+QUESTION: Melyik állítás igaz egy standalone Angular komponensre?
+CODE:
+@Component({
+  selector: 'app-user',
+  standalone: true,
+  imports: [CommonModule],
+  template: '<p>Users</p>'
+})
+export class UserComponent {}
+ENDCODE
+A) Kötelezően deklarálni kell egy NgModule `declarations` tömbjében
+B) Nem használhat más Angular directive-eket vagy pipe-okat
+C) Közvetlenül kezelheti a saját template-jéhez szükséges importokat
+D) Csak unit tesztekben használható
+ANSWER: C
+EXPLANATION: A standalone komponens saját `imports` mezőjében deklarálhatja a template által használt komponenseket, directive-eket és pipe-okat. Emiatt nincs szüksége arra, hogy egy NgModule declarations tömbjében legyen deklarálva. A leggyakoribb rossz válasz azért csábító, mert a klasszikus Angular architektúrában az NgModule központi szerepet töltött be.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: Components & templates
+TYPE: debug
+QUESTION: Egy komponens template-je nem jeleníti meg az alábbi `UserComponent` komponenst, és a template fordításakor Angular azt jelzi, hogy az `app-user` elem nem ismert. A komponens standalone. Mi a legvalószínűbb ok?
+CODE:
+@Component({
+  selector: 'app-page',
+  standalone: true,
+  template: '<app-user></app-user>'
+})
+export class PageComponent {}
+ENDCODE
+A) A selector neve kötelezően `user-component` kell legyen
+B) A `UserComponent` nincs hozzáadva a `PageComponent` `imports` listájához
+C) Standalone komponensek nem használhatnak más komponenseket
+D) A `template` helyett mindig `templateUrl` szükséges
+ANSWER: B
+EXPLANATION: Standalone komponens esetén a template által használt standalone komponenseket explicit módon importálni kell az `imports` tömbben. Ha `UserComponent` nincs ott, az Angular nem tudja feloldani az `app-user` elemet. A leggyakoribb rossz válasz azért csábító, mert a klasszikus NgModule-os alkalmazásokban a deklarációk és importok más szinten voltak kezelve.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: Data binding
+TYPE: output
+QUESTION: Mi történik az alábbi kóddal, amikor a felhasználó rákattint a gombra?
+CODE:
+count = 0;
+
+increment() {
+  this.count++;
+}
+ENDCODE
+
+<button (click)="increment()">+</button>
+<p>{{ count }}</p>
+ENDCODE
+A) A `count` értéke eggyel nő, és a template frissül
+B) A `count` csak az oldal újratöltésekor változik
+C) Az eseménykezelő csak billentyűzetes eseményeknél működik
+D) Az Angular nem engedi metódus meghívását event bindingből
+ANSWER: A
+EXPLANATION: A `(click)` event binding a gomb click eseményét a komponens `increment()` metódusához köti. A metódus növeli a `count` értékét, majd Angular change detectionje biztosítja a template megfelelő frissítését. A leggyakoribb rossz válasz azért csábító, mert a komponens property módosítása önmagában nem tűnik explicit renderelési utasításnak, de Angular ezt kezeli.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: Directives
+TYPE: behavior
+QUESTION: Mi a különbség az alábbi két Angular binding között?
+CODE:
+<div [class.active]="isActive"></div>
+<div [style.color]="textColor"></div>
+ENDCODE
+A) Mindkettő ugyanazt a CSS class-t módosítja
+B) Az első CSS class jelenlétét, a második egy inline style property értékét vezérli
+C) Az első csak stringeket, a második csak booleant fogad el
+D) Mindkettő csak komponens property nélkül működik
+ANSWER: B
+EXPLANATION: A `[class.active]` egy konkrét CSS osztályt kapcsol be vagy ki, míg a `[style.color]` a DOM elem `style.color` property-jét állítja. Ez két külön binding mechanizmus. A leggyakoribb rossz válasz azért csábító, mert mindkettő vizuális megjelenést módosít, de különböző DOM mechanizmust használ.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: Pipes
+TYPE: trap
+QUESTION: Az alábbi template egy objektumot JSON formátumban szeretne megjeleníteni. Melyik pipe való erre?
+CODE:
+user = {
+  name: 'Anna',
+  age: 30
+};
+ENDCODE
+
+<pre>{{ user | json }}</pre>
+ENDCODE
+A) `object`
+B) `stringify`
+C) `json`
+D) `serialize`
+ANSWER: C
+EXPLANATION: Az Angular beépített `json` pipe-ja objektumok JSON-szerű szöveges reprezentációját jeleníti meg, ami különösen debugoláskor hasznos. A leggyakoribb rossz válasz azért csábító, mert JavaScriptben gyakran közvetlenül `JSON.stringify()`-t használunk, de Angular template-ben erre beépített pipe áll rendelkezésre.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: Lifecycle hooks
+TYPE: scenario
+QUESTION: Egy komponens `@Input()` értéket kap a szülőtől, és szeretnél reagálni arra, amikor ez az input érték megváltozik. Melyik lifecycle hook erre a legközvetlenebb választás?
+CODE:
+@Input() user!: User;
+ENDCODE
+A) `ngOnDestroy`
+B) `ngAfterViewInit`
+C) `ngOnChanges`
+D) `ngDoCheck`
+ANSWER: C
+EXPLANATION: Az `ngOnChanges` az input property-k változásairól ad információt, és a változás előtti illetve utáni értékeket is elérhetővé teszi a `SimpleChanges` objektumban. Ez közvetlenül erre a célra szolgál. A leggyakoribb rossz válasz azért csábító, mert az `ngDoCheck` is használható változások vizsgálatára, de sokkal általánosabb és könnyebben vezet felesleges munkához.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Signals
+TYPE: behavior
+QUESTION: Mi történik, amikor az alábbi signal értékét `set()` segítségével módosítjuk?
+CODE:
+count = signal(0);
+
+increase() {
+  this.count.set(this.count() + 1);
+}
+ENDCODE
+A) A signal új értéket kap, és az azt olvasó reaktív Angular részek értesülhetnek a változásról
+B) A signal csak lokális változót módosít, Angular nem érzékeli
+C) A signal értéke mindig `0` marad
+D) A `set()` kizárólag Observable esetén használható
+ANSWER: A
+EXPLANATION: A `set()` új értéket állít be a signalban. Az Angular signal alapú reaktivitása nyomon követi, hogy mely fogyasztók olvassák a signalt, ezért a megfelelő reaktív fogyasztók frissülhetnek. A leggyakoribb rossz válasz azért csábító, mert a `set()` egyszerű JavaScript property-módosításnak tűnik, valójában azonban a signal reaktív rendszerének része.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: RxJS & Observables
+TYPE: output
+QUESTION: Mit ír ki az alábbi kód?
+CODE:
+of(1, 2, 3)
+  .pipe(map(x => x * 10))
+  .subscribe(x => console.log(x));
+ENDCODE
+A) 1, 2, 3
+B) 10, 20, 30
+C) 0, 1, 2
+D) 30
+ANSWER: B
+EXPLANATION: A `map` RxJS operátor minden emissiont külön transzformál: 1-ből 10, 2-ből 20, 3-ból 30 lesz. Ezután a subscriber ezeket az értékeket kapja meg egymás után. A leggyakoribb rossz válasz azért csábító, mert a JavaScript `Array.map()` is transzformál, de itt Observable emissionökről van szó.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: HttpClient & interceptors
+TYPE: debug
+QUESTION: Egy komponensben az alábbi HTTP-hívás készül. A fejlesztő arra számít, hogy a backendtől érkező JSON objektum automatikusan `User` példánnyá válik saját metódusokkal együtt. Miért hibás ez a feltételezés?
+CODE:
+interface User {
+  name: string;
+}
+
+this.http.get<User>('/api/user').subscribe(user => {
+  console.log(user.name);
+});
+ENDCODE
+A) Az Angular HttpClient nem tud JSON-t kezelni
+B) A TypeScript interface automatikusan runtime class-t hoz létre
+C) A generic típus a fordításkori típusellenőrzést segíti, de nem példányosít runtime class-t
+D) A HttpClient csak string választ tud kezelni
+ANSWER: C
+EXPLANATION: A `get<User>()` generic paramétere elsősorban TypeScript compile-time információ. Nem alakítja át a szerverről érkező plain JSON objektumot valódi `User` class példánnyá, és interface runtime konstrukciót sem hoz létre. A leggyakoribb rossz válasz azért csábító, mert a kódban explicit `User` típus szerepel, ami könnyen runtime konverziónak tűnhet.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: Routing & guards
+TYPE: scenario
+QUESTION: Egy route-hoz az alábbi guard tartozik. A felhasználó nincs bejelentkezve. Mi történik, ha a guard `false` értéket ad vissza?
+CODE:
+export const authGuard: CanActivateFn = () => {
+  return false;
+};
+ENDCODE
+
+{
+  path: 'admin',
+  canActivate: [authGuard],
+  loadComponent: () => import('./admin.component')
+}
+ENDCODE
+A) A navigáció az `admin` route-ra nem engedélyezett
+B) Az Angular automatikusan a `/login` route-ra navigál
+C) Az `AdminComponent` mindig betöltődik, de nem jelenik meg
+D) A guard eredménye csak logolásra szolgál
+ANSWER: A
+EXPLANATION: Ha egy `CanActivate` guard `false` értéket ad vissza, az adott navigáció nem folytatható. A guard önmagában nem jelent automatikus `/login` redirectet; ahhoz explicit redirect döntés vagy más navigációs logika szükséges. A leggyakoribb rossz válasz azért csábító, mert autentikációs guardoknál a loginra irányítás nagyon gyakori alkalmazásminta.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: Forms
+TYPE: scenario
+QUESTION: Egy reactive formban szeretnéd kötelezővé tenni az email mezőt. Melyik megoldás helyes?
+CODE:
+this.form = new FormGroup({
+  email: new FormControl('', Validators.required)
+});
+ENDCODE
+A) `new FormControl('', required: true)`
+B) `new FormControl('', Validators.required)`
+C) `new FormControl('', RequiredValidator())`
+D) `new FormControl('', { required: true })`
+ANSWER: B
+EXPLANATION: Reactive Forms esetén a validátorokat a `FormControl` második paramétereként lehet megadni, például `Validators.required` formájában. Ez a validátor függvényreferenciája. A leggyakoribb rossz válasz azért csábító, mert konfigurációs objektumokban gyakran használunk `required: true` jellegű szintaxist, de a Reactive Forms validátor API-ja más.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: Standalone components
+TYPE: production
+QUESTION: Egy új Angular alkalmazásban standalone komponenseket használsz. Egy `@if` blokkot szeretnél alkalmazni a template-ben. Az alábbi kód Angular 17+ környezetben fut. Mi a lényeges állítás?
+CODE:
+@Component({
+  standalone: true,
+  template: `
+    @if (isLoggedIn) {
+      <p>Bejelentkezve</p>
+    }
+  `
+})
+export class HeaderComponent {
+  isLoggedIn = true;
+}
+ENDCODE
+A) Az `@if` kizárólag NgModule-ban deklarált komponensekben működik
+B) Az `@if` használatához mindig külön `NgIf` directive-et kell importálni
+C) Az `@if` az Angular modern built-in control flow szintaxisának része
+D) Az `@if` csak SSR alatt működik
+ANSWER: C
+EXPLANATION: Az Angular 17-től elérhető modern built-in control flow részeként az `@if` közvetlenül használható a template-ben, így nincs szükség a klasszikus `*ngIf` direktívára ehhez a szintaxishoz. Ez standalone komponensekben is használható. A leggyakoribb rossz válasz azért csábító, mert a korábbi Angular-verziókban a feltételes megjelenítés tipikusan `*ngIf` és a hozzá tartozó import segítségével történt.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: Components & templates
+TYPE: output
+QUESTION: Mi jelenik meg a template-ben az alábbi komponens esetén?
+CODE:
+@Component({
+  selector: 'app-user',
+  template: `
+    <h2>{{ user.name }}</h2>
+    @if (user.isAdmin) {
+      <span>Admin</span>
+    }
+  `
+})
+export class UserComponent {
+  user = {
+    name: 'Anna',
+    isAdmin: false
+  };
+}
+ENDCODE
+A) Csak az `Admin` szöveg
+B) `Anna`, majd `Admin`
+C) Semmi
+D) Csak `Anna`
+ANSWER: D
+EXPLANATION: Az interpolation megjeleníti a `user.name` értékét, ezért `Anna` látható. Az `@if` feltétele `false`, ezért az `Admin` szöveg nem kerül a DOM-ba. A leggyakoribb rossz válasz azért csábító, mert könnyű összekeverni a feltételes blokkot azzal, hogy a teljes template-et befolyásolja.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: Data binding
+TYPE: behavior
+QUESTION: Mi történik az alábbi kódban, amikor a felhasználó módosítja a kiválasztott opciót?
+CODE:
+selectedColor = 'red';
+ENDCODE
+
+<select [(ngModel)]="selectedColor">
+  <option value="red">Piros</option>
+  <option value="blue">Kék</option>
+</select>
+ENDCODE
+A) A `selectedColor` értéke automatikusan frissül a kiválasztott `value` értékére
+B) A `selectedColor` mindig `red` marad
+C) Az `ngModel` csak az input elemekkel működik
+D) A template változik, de a komponens property nem
+ANSWER: A
+EXPLANATION: A kétirányú `ngModel` binding a select aktuális értékét összekapcsolja a `selectedColor` property-vel. Ha a felhasználó a `blue` opciót választja, a property értéke `blue` lesz. A leggyakoribb rossz válasz azért csábító, mert az alapértelmezett érték `red`, de a two-way binding későbbi változásokat is továbbít a komponens felé.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: Directives
+TYPE: debug
+QUESTION: Egy fejlesztő saját attribute directive-ot készít, de a directive nem található meg az elemeken. Mi hiányzik legvalószínűbben az alábbi standalone komponensből?
+CODE:
+@Directive({
+  selector: '[appHighlight]',
+  standalone: true
+})
+export class HighlightDirective {}
+
+@Component({
+  selector: 'app-page',
+  standalone: true,
+  template: '<p appHighlight>Szöveg</p>'
+})
+export class PageComponent {}
+ENDCODE
+A) A directive-ból `@Pipe` kell
+B) A `HighlightDirective` hozzáadása a komponens `imports` tömbjéhez
+C) A directive nevét `highlight`-ra kell módosítani
+D) Az `appHighlight` helyett `[appHighlight]` kell a template-ben
+ANSWER: B
+EXPLANATION: Standalone komponensben a template által használt standalone directive-ot explicit módon az `imports` tömbben kell elérhetővé tenni. Az attribute directive selectora `[appHighlight]`, ezért az `appHighlight` template szintaxis helyes. A leggyakoribb rossz válasz azért csábító, mert a selector deklarációjában valóban szögletes zárójelek szerepelnek, de ez nem jelenti azt, hogy a használatkor is kötelezőek.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Pipes
+TYPE: edgecase
+QUESTION: Mi történik az alábbi template esetén, ha `price` értéke `null`?
+CODE:
+price: number | null = null;
+ENDCODE
+
+<p>{{ price | currency:'EUR' }}</p>
+ENDCODE
+A) Az Angular mindig `0 EUR` értéket jelenít meg
+B) A template fordítási hibát dob
+C) A currency pipe nem jelenít meg értéket
+D) A pipe automatikusan stringgé alakítja a `null` értéket
+ANSWER: C
+EXPLANATION: Az Angular `CurrencyPipe` nullable bemenet esetén nem állít elő pénznem-formázott értéket, hanem üres eredményt ad vissza. Ezért a paragraph tartalma nem lesz `0 EUR`. A leggyakoribb rossz válasz azért csábító, mert üzleti alkalmazásokban a hiányzó numerikus értékeket gyakran nulláról nullára vagy más alapértelmezett értékre alakítják, de a pipe ezt nem teszi meg automatikusan.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Dependency injection
+TYPE: scenario
+QUESTION: Egy standalone komponensben ugyanazt a service-t szeretnéd példányosítani, amelyet csak ebben a komponensben és annak leszármazott injection subtree-jában kell használni. Melyik megoldás illik erre leginkább?
+CODE:
+@Component({
+  standalone: true,
+  selector: 'app-editor',
+  template: '',
+  providers: [EditorStateService]
+})
+export class EditorComponent {}
+ENDCODE
+A) A service-t kötelezően `providedIn: 'root'`-tal kell létrehozni
+B) A service-t globális változóként kell tárolni
+C) A service-et az `EditorComponent` `providers` tömbjében kell megadni
+D) A service-et pipe-ként kell regisztrálni
+ANSWER: C
+EXPLANATION: A komponens `providers` tömbje komponens-szintű provider scope-ot hoz létre. Így az `EditorComponent` saját `EditorStateService` példányt kaphat, amelyet a megfelelő gyermekek is örökölhetnek az injector hierarchiában. A leggyakoribb rossz válasz azért csábító, mert az alkalmazásszintű service-eknél a `providedIn: 'root'` a leggyakoribb minta.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: Services & providers
+TYPE: behavior
+QUESTION: Két külön komponens ugyanazt a `providedIn: 'root'` service-t injektálja. Mi a tipikus eredmény?
+CODE:
+@Injectable({ providedIn: 'root' })
+export class CounterService {
+  count = 0;
+}
+ENDCODE
+A) Mindkét komponens külön `CounterService` példányt kap
+B) A service minden change detection ciklusban új példányt kap
+C) A service csak az első komponenshez tartozik
+D) Mindkét komponens ugyanazt a root-szintű service példányt használhatja
+ANSWER: D
+EXPLANATION: A `providedIn: 'root'` provider a root injectorhoz tartozik, ezért az alkalmazásban tipikusan ugyanaz a service példány kerül visszaadásra az ilyen injectionök számára. Emiatt a `count` állapot megosztható a két komponens között. A leggyakoribb rossz válasz azért csábító, mert az injection minden komponensben külön konstruktorparaméternek tűnik, de ez nem jelent automatikusan külön service példányt.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: Lifecycle hooks
+TYPE: trap
+QUESTION: Egy komponens `ngOnDestroy()` metódusában szeretnél cleanup műveletet végezni. Mikor hívja meg ezt Angular?
+CODE:
+export class TimerComponent implements OnDestroy {
+  ngOnDestroy() {
+    console.log('destroy');
+  }
+}
+ENDCODE
+A) Amikor a komponens példánya eltávolításra kerül az Angular view-ból
+B) Minden alkalommal, amikor az input értéke változik
+C) Minden HTTP kérés után
+D) Az alkalmazás minden change detection ciklusában
+ANSWER: A
+EXPLANATION: Az `ngOnDestroy` akkor fut le, amikor Angular megszünteti és eltávolítja az adott komponenspéldányt. Ilyenkor tipikusan subscriptionök, timer-ek vagy más erőforrások cleanupját lehet elvégezni. A leggyakoribb rossz válasz azért csábító, mert a komponens állapotának változásai gyakran együtt járnak lifecycle eseményekkel, de az `ngOnDestroy` kifejezetten a megsemmisítéshez kötődik.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Change detection & OnPush
+TYPE: output
+QUESTION: Mi történik az alábbi esetben, ha a szülő komponens `OnPush` stratégiát használ, és ugyanazt az objektumreferenciát módosítja?
+CODE:
+user = { name: 'Anna' };
+
+rename() {
+  this.user.name = 'Béla';
+}
+ENDCODE
+A) Az objektumreferencia automatikusan lecserélődik
+B) A `name` property megváltozik, de a referencia ugyanaz marad
+C) Angular mindig új objektumot készít
+D) A TypeScript hibát jelez
+ANSWER: B
+EXPLANATION: A `this.user.name = 'Béla'` mutáció módosítja az objektum belső property-jét, de maga a `user` referencia nem változik. Ez különösen fontos `OnPush` esetén, ahol a referenciaalapú input-változás nem érzékeli automatikusan az ilyen in-place mutációt. A leggyakoribb rossz válasz azért csábító, mert a property értéke ténylegesen megváltozik, de ettől az objektumreferencia még ugyanaz marad.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: Signals
+TYPE: behavior
+QUESTION: Mi a helyes módja egy writable signal értékének növelésére az alábbi kódban?
+CODE:
+count = signal(10);
+ENDCODE
+A) `count.value++`
+B) `count = count + 1`
+C) `count.update(value => value + 1)`
+D) `count.increment()`
+ANSWER: C
+EXPLANATION: A writable signal értékét a `set()` vagy `update()` API-val lehet módosítani. Az `update()` különösen hasznos, amikor az új érték az előző értéktől függ. A leggyakoribb rossz válasz azért csábító, mert egy hagyományos JavaScript property-t valóban lehet `++` operátorral módosítani, a signal azonban függvényalapú API-t használ.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: RxJS & Observables
+TYPE: scenario
+QUESTION: Egy HTTP Observable-re feliratkozol egy komponensben. Az Observable egyszer emitál egy választ, majd complete-el. Mi igaz erre a subscriptionre?
+CODE:
+this.http.get<User>('/api/user').subscribe(user => {
+  console.log(user);
+});
+ENDCODE
+A) A subscription automatikusan létrejön, és a HTTP kérés után az Observable tipikusan complete-el
+B) Az Observable minden change detection ciklusban új HTTP-kérést indít
+C) Az Observable végtelen ideig aktív marad
+D) A `subscribe()` csak akkor működik, ha `unsubscribe()` is meghívódik
+ANSWER: A
+EXPLANATION: Az Angular HttpClient által visszaadott HTTP Observable-ek tipikusan egy választ emitálnak, majd complete-elnek. Emiatt egy egyszeri HTTP kérés esetén a subscription nem marad végtelenül aktív. A leggyakoribb rossz válasz azért csábító, mert általános RxJS szabályként sok Observable esetében fontos a subscription lifecycle kezelése, de a HTTP Observable-ek speciális, finite stream-ek.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: HttpClient & interceptors
+TYPE: debug
+QUESTION: Egy interceptor módosítani szeretné a HTTP requestet, de a request objektumot közvetlenül próbálja megváltoztatni. Mi a helyes megközelítés?
+CODE:
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  req.headers.set('Authorization', 'Bearer token');
+  return next(req);
+};
+ENDCODE
+A) A request objektumot mindig `JSON.parse()` segítségével kell módosítani
+B) A requestet clone-olni kell, és a módosított példányt kell továbbadni
+C) A requestet `new Request()` segítségével újra kell példányosítani
+D) Az interceptor nem módosíthat requesteket
+ANSWER: B
+EXPLANATION: Az Angular `HttpRequest` immutable jellegű API-t használ, ezért a módosítás tipikusan `clone()` segítségével történik. Például a headers egy új request példányban adható meg, majd ezt kell továbbítani a `next` handlernek. A leggyakoribb rossz válasz azért csábító, mert a `headers.set()` szintaktikailag mutációnak tűnik, de a request immutable modellje miatt a módosított példányt kell létrehozni.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: Routing & guards
+TYPE: behavior
+QUESTION: Egy route konfigurációban `path: 'users/:id'` szerepel. Melyik URL illeszkedik erre a route-ra?
+CODE:
+{
+  path: 'users/:id',
+  component: UserComponent
+}
+ENDCODE
+A) `/users`
+B) `/users/`
+C) `/users/42`
+D) `/user?id=42`
+ANSWER: C
+EXPLANATION: A `:id` dinamikus route paramétert jelöl, ezért például a `/users/42` URL illeszkedik a route-ra, ahol az `id` értéke `42`. A query parameteres `/user?id=42` más routing mechanizmus. A leggyakoribb rossz válasz azért csábító, mert mindkettő használhat azonosító jellegű adatot, de a path parameter és a query parameter külön fogalom.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: Forms
+TYPE: debug
+QUESTION: Egy reactive formban az alábbi kód fut le. Mi lesz a form státusza?
+CODE:
+this.form = new FormGroup({
+  username: new FormControl('', Validators.required)
+});
+ENDCODE
+A) `VALID`
+B) `PENDING`
+C) `DISABLED`
+D) `INVALID`
+ANSWER: D
+EXPLANATION: A `username` mező kezdeti értéke üres string, miközben a `Validators.required` azt követeli meg, hogy legyen értéke. Emiatt a control és így a form is `INVALID` állapotú lesz. A leggyakoribb rossz válasz azért csábító, mert a form létrejön és használható, de a létrehozás és a valid állapot két külön fogalom.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: Standalone components
+TYPE: theory
+QUESTION: Melyik állítás írja le helyesen a standalone komponensek egyik előnyét?
+CODE:
+@Component({
+  standalone: true,
+  selector: 'app-dashboard',
+  imports: [UserComponent, DatePipe],
+  template: `
+    <app-user></app-user>
+    {{ today | date }}
+  `
+})
+export class DashboardComponent {
+  today = new Date();
+}
+ENDCODE
+A) A komponens nem használhat dependency injectiont
+B) A template függőségei közvetlenül a komponens importlistájában megadhatók
+C) A komponens kizárólag lazy loadinggal használható
+D) A standalone komponens nem tartalmazhat template-et
+ANSWER: B
+EXPLANATION: A standalone komponens `imports` mezője lehetővé teszi, hogy a template által használt komponenseket, directive-okat és pipe-okat közvetlenül a komponenshez rendeljük. Ez csökkenti az NgModule-okhoz kötött konfiguráció szükségességét. A leggyakoribb rossz válasz azért csábító, mert a standalone komponenseket gyakran lazy-loaded route-okkal együtt használják, de ez nem kizárólagos használati mód.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: Performance
+TYPE: performance
+QUESTION: Egy template-ben az alábbi kód szerepel. Miért lehet teljesítmény szempontjából problémás?
+CODE:
+<div>{{ calculateTotal() }}</div>
+ENDCODE
+A) Angular nem engedélyez metódushívást template-ből
+B) A metódus csak egyszer fut le az alkalmazás teljes életciklusa alatt
+C) A metódus change detection során többször is lefuthat
+D) A metódus automatikusan Web Workerben fut
+ANSWER: C
+EXPLANATION: A template-ben meghívott metódus kiértékelése change detection során többször megtörténhet. Ha a `calculateTotal()` drága számítást végez, ez felesleges CPU-terhelést okozhat. A leggyakoribb rossz válasz azért csábító, mert a metódus meghívása csak egyetlen template-kifejezésnek látszik, de a kifejezések kiértékelése a change detection folyamatának része.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: Components & templates
+TYPE: trap
+QUESTION: Az alábbi két komponens között `@Output()` segítségével szeretnél eseményt továbbítani. Melyik megoldás helyes?
+CODE:
+@Output() saved = new EventEmitter<void>();
+
+save() {
+  this.saved.emit();
+}
+ENDCODE
+A) A parent template-ben `(saved)="onSaved()"` használható
+B) A parent template-ben `[saved]="onSaved()"` szükséges
+C) Az `EventEmitter` csak HTTP eseményekhez használható
+D) Az `emit()` helyett kötelező `subscribe()`-ot hívni a child komponensben
+ANSWER: A
+EXPLANATION: Az `@Output()` eseményét a szülő komponens template-je event bindinggal, például `(saved)="onSaved()"`, kezelheti. A child az `emit()` segítségével küldi ki az eseményt. A leggyakoribb rossz válasz azért csábító, mert a szögletes zárójelek is Angular binding szintaxist jelölnek, de eseményekhez kerek zárójel szükséges.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: Data binding
+TYPE: output
+QUESTION: Mi lesz a gomb `disabled` állapota az alábbi komponensben?
+CODE:
+isSaving = true;
+ENDCODE
+
+<button [disabled]="isSaving">Mentés</button>
+ENDCODE
+A) A gomb engedélyezett lesz
+B) A gomb le lesz tiltva
+C) A gomb csak kattintás után lesz letiltva
+D) A `[disabled]` binding stringként jelenik meg
+ANSWER: B
+EXPLANATION: A `[disabled]` property binding a DOM button `disabled` property-jét a `isSaving` értékére állítja. Mivel az érték `true`, a gomb disabled lesz. A leggyakoribb rossz válasz azért csábító, mert HTML attribútumként a `disabled` jelenléte különleges jelentésű, de property binding esetén Angular a DOM property értékét kezeli.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: Directives
+TYPE: behavior
+QUESTION: Mire szolgál az `@HostListener` egy Angular directive-ban?
+CODE:
+@Directive({
+  selector: '[appHighlight]',
+  standalone: true
+})
+export class HighlightDirective {
+  @HostListener('mouseenter')
+  onMouseEnter() {
+    console.log('enter');
+  }
+}
+ENDCODE
+A) A host elem egy másik komponenssé alakítására
+B) A host elem eseményeinek figyelésére a directive-ból
+C) HTTP interceptorként való működésre
+D) A directive automatikus pipe-pá alakítására
+ANSWER: B
+EXPLANATION: A `@HostListener` lehetővé teszi, hogy a directive a host elemhez kapcsolódó eseményeket figyelje. A példában a `mouseenter` esemény hatására az `onMouseEnter()` fut le. A leggyakoribb rossz válasz azért csábító, mert a directive a host elem viselkedését módosítja, de az `@HostListener` konkrétan eseménykezelésre szolgál.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: Pipes
+TYPE: behavior
+QUESTION: Mi a fő különbség egy pure és egy impure Angular pipe között?
+CODE:
+@Pipe({
+  name: 'example',
+  pure: false
+})
+export class ExamplePipe implements PipeTransform {
+  transform(value: string) {
+    return value;
+  }
+}
+ENDCODE
+A) Az impure pipe csak SSR alatt fut
+B) A pure pipe nem használhat argumentumokat
+C) Az impure pipe nem használható template-ben
+D) Az impure pipe változások esetén gyakrabban újraértékelődhet, ezért teljesítmény szempontjából óvatosan kell használni
+ANSWER: D
+EXPLANATION: A pure pipe alapértelmezés szerint csak akkor fut újra, ha a bemenet referencia- vagy primitívértéke megváltozik. Egy impure pipe ezzel szemben change detection során gyakrabban újraértékelődhet, ami költséges lehet. A leggyakoribb rossz válasz azért csábító, mert a pure és impure megkülönböztetés könnyen úgy tűnhet, mintha csak a pipe funkcionalitását változtatná, pedig jelentős performance következménye van.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: Dependency injection
+TYPE: edgecase
+QUESTION: Mit jelent az alábbi dependency injection deklaráció?
+CODE:
+constructor(@Optional() private logger: LoggerService) {}
+ENDCODE
+A) A `LoggerService` kötelezően léteznie kell, különben az alkalmazás leáll
+B) Angular csak production buildben próbálja meg injektálni
+C) Ha nincs elérhető provider, az érték `null` lehet ahelyett, hogy normál DI hibát kapnánk
+D) A service automatikusan `providedIn: 'root'` lesz
+ANSWER: C
+EXPLANATION: Az `@Optional()` azt jelzi Angular dependency injection rendszerének, hogy a dependency hiánya nem feltétlenül legyen DI hiba. Ha nincs megfelelő provider, a dependency értéke `null` lehet. A leggyakoribb rossz válasz azért csábító, mert normál dependency injection esetén valóban hibát okozhat egy hiányzó provider, de az `Optional` éppen ezt a kötelezőséget oldja fel.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: Services & providers
+TYPE: scenario
+QUESTION: Egy service-ben egy másik service-t szeretnél injektálni. Melyik megoldás illeszkedik a modern Angular dependency injection modellhez?
+CODE:
+@Injectable({ providedIn: 'root' })
+export class UserService {
+  constructor(private api: ApiService) {}
+}
+ENDCODE
+A) Az `ApiService`-t mindig globális változóként kell elérni
+B) Az Angular dependency injection rendszere a konstruktoron keresztül feloldhatja az `ApiService` függőséget
+C) Egy service nem függhet másik service-től
+D) Csak komponensek használhatnak dependency injectiont
+ANSWER: B
+EXPLANATION: Az Angular DI rendszerében egy injectable service ugyanúgy kaphat dependency-ket, mint egy komponens. Ha az `ApiService` elérhető providerként, Angular a `UserService` példányosításakor fel tudja oldani a függőséget. A leggyakoribb rossz válasz azért csábító, mert a dependency injectiont gyakran komponensek konstruktorán keresztül mutatják be, pedig az injectable objektumok egymást is injektálhatják.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: Lifecycle hooks
+TYPE: scenario
+QUESTION: Egy komponensben DOM elemre vagy view child komponensre szeretnél hivatkozni `@ViewChild` segítségével. Melyik lifecycle pont után garantált, hogy a view inicializálása megtörtént?
+CODE:
+@ViewChild('input') input!: ElementRef<HTMLInputElement>;
+ENDCODE
+A) `ngOnDestroy`
+B) `ngOnChanges`
+C) `ngAfterViewInit`
+D) `constructor`
+ANSWER: C
+EXPLANATION: A `ngAfterViewInit` lifecycle hook akkor fut, amikor a komponens view-ja inicializálódott. Ezért tipikus hely arra, hogy olyan view child elemekkel dolgozzunk, amelyek csak a view létrehozása után érhetők el. A leggyakoribb rossz válasz azért csábító, mert a konstruktor korábban fut, de ekkor a view még nincs inicializálva.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: Change detection & OnPush
+TYPE: scenario
+QUESTION: Egy `OnPush` komponensben egy template által olvasott signal értéke megváltozik. Mi a lényeges következmény?
+CODE:
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '{{ count() }}'
+})
+export class CounterComponent {
+  count = signal(0);
+}
+ENDCODE
+A) A signal változása nem befolyásolhatja az `OnPush` komponenst
+B) A signal csak akkor működik, ha a komponens Default change detectiont használ
+C) A signal változása csak teljes oldalfrissítés után látható
+D) Angular a signal olvasását reaktív függőségként követheti, és a komponens megfelelő frissítése megtörténhet
+ANSWER: D
+EXPLANATION: Angular a template-ben olvasott signalok használatát reaktívan követi. Ha egy ilyen signal megváltozik, az `OnPush` komponens megfelelő frissítése ütemezhető, ezért nincs szükség arra, hogy a fejlesztő kézzel visszaállítsa a komponenst Default change detectionre. A leggyakoribb rossz válasz azért csábító, mert az `OnPush` erősen korlátozottnak tűnhet, valójában azonban a signalok natívan illeszkednek ehhez a modellhez.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: RxJS & Observables
+TYPE: trap
+QUESTION: Mi történik az alábbi kóddal?
+CODE:
+const observable$ = new Observable<number>(subscriber => {
+  subscriber.next(1);
+  subscriber.next(2);
+});
+
+console.log('before');
+
+observable$.subscribe(value => console.log(value));
+
+console.log('after');
+ENDCODE
+A) `before`, majd `1`, `2`, majd `after` jelenik meg
+B) `before`, majd `after`, és később `1`, `2` jelenik meg
+C) Csak `after` jelenik meg
+D) Az Observable automatikusan aszinkronná válik
+ANSWER: A
+EXPLANATION: Az Observable executor függvénye a `subscribe()` hívásakor azonnal lefut, és ebben a példában nincs benne sem timer, sem Promise, sem más aszinkron művelet. Ezért a sorrend `before`, `1`, `2`, `after`. A leggyakoribb rossz válasz azért csábító, mert az Observable-okat gyakran aszinkron adatfolyamként használjuk, de önmagában az Observable nem tesz egy műveletet automatikusan aszinkronná.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Performance
+TYPE: production
+QUESTION: Egy Angular listában több száz elem jelenik meg, és a lista gyakran frissül. Az alábbi `@for` használata mellett szeretnéd csökkenteni a DOM elemek felesleges újrahasznosítási vagy újralétrehozási költségét. Melyik megoldás a legmegfelelőbb, ha minden elemnek stabil, egyedi `id` értéke van?
+CODE:
+@for (user of users; track user.id) {
+  <app-user [user]="user" />
+}
+ENDCODE
+A) A `track` kifejezés eltávolítása
+B) `track $index` használata minden esetben
+C) `track user.id` használata stabil egyedi azonosítóként
+D) Minden elemhez új `User` objektumot kell létrehozni
+ANSWER: C
+EXPLANATION: Az `@for` `track` kifejezése segít Angularnak azonosítani, hogy egy adatlista elemei mely DOM reprezentációkhoz tartoznak. Stabil és egyedi `id` használatával Angular hatékonyabban tudja újrahasznosítani a meglévő DOM struktúrát, amikor a lista változik. A leggyakoribb rossz válasz azért csábító, mert az index mindig könnyen elérhető, de dinamikusan változó listákban nem az elem stabil identitását reprezentálja.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: Testing
+TYPE: scenario
+QUESTION: Egy standalone Angular komponens unit tesztjében ellenőrizni szeretnéd, hogy a komponens megfelelően rendereli-e a címet. Melyik megoldás a legmegfelelőbb?
+CODE:
+@Component({
+  standalone: true,
+  template: '<h1>{{ title }}</h1>'
+})
+export class HeaderComponent {
+  title = 'Dashboard';
+}
+ENDCODE
+A) A komponens konstruktorának közvetlen meghívása, majd a DOM ellenőrzése
+B) A komponens HTML-fájljának szöveges beolvasása
+C) A `TestBed` konfigurálása a komponens `declarations` tömbben történő megadásával
+D) A `TestBed` konfigurálása `imports: [HeaderComponent]` használatával, majd `createComponent()` és `detectChanges()` meghívása
+ANSWER: D
+EXPLANATION: Standalone komponenseknél a tesztelt komponenst a `TestBed.configureTestingModule()` `imports` tömbjében lehet megadni. A `createComponent()` létrehozza a komponenst, a `detectChanges()` pedig elindítja a megfelelő change detection folyamatot, így a DOM ellenőrizhető. A konstruktor közvetlen meghívása azért csábító, mert egyszerűnek tűnik, de önmagában nem hoz létre Angular által kezelt view-t és renderelt DOM-ot.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: SSR & hydration
+TYPE: scenario
+QUESTION: Egy Angular alkalmazás szerveroldali renderelést (SSR) használ. Az egyik komponens inicializálásakor közvetlenül el szeretnéd érni a `window.localStorage` objektumot. Mi a legfontosabb probléma?
+CODE:
+@Component({
+  selector: 'app-settings',
+  template: ''
+})
+export class SettingsComponent {
+  theme = window.localStorage.getItem('theme');
+}
+ENDCODE
+A) A `localStorage` kizárólag standalone komponensekben használható
+B) A `window` objektum nem feltétlenül érhető el a szerveroldali JavaScript környezetben
+C) Az SSR automatikusan minden localStorage értéket a szerverre másol
+D) A `localStorage.getItem()` minden esetben Promise-t ad vissza
+ANSWER: B
+EXPLANATION: SSR során a komponenskód szerverkörnyezetben is végrehajtódhat, ahol a böngészőspecifikus `window` objektum általában nem létezik. A böngészőhöz kötött műveleteket megfelelő platformellenőrzéssel vagy böngészőoldali render callback használatával kell kezelni. Az a feltételezés azért csábító, hogy a localStorage mindenhol elérhető, mert hagyományos kliensoldali Angular alkalmazásban valóban rendelkezésre áll.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: Components & templates
+TYPE: output
+QUESTION: Mi jelenik meg az alábbi Angular 17+ template-ben?
+CODE:
+@Component({
+  standalone: true,
+  template: `
+    @switch (status) {
+      @case ('loading') {
+        <p>Loading...</p>
+      }
+      @case ('success') {
+        <p>Completed</p>
+      }
+      @default {
+        <p>Unknown</p>
+      }
+    }
+  `
+})
+export class StatusComponent {
+  status = 'success';
+}
+ENDCODE
+A) `Completed`
+B) `Loading...`
+C) `Unknown`
+D) Mindhárom szöveg
+ANSWER: A
+EXPLANATION: Az `@switch` a `status` aktuális értékét hasonlítja össze az egyes `@case` értékekkel. Mivel a `status` értéke `success`, kizárólag a hozzá tartozó blokk renderelődik, így `Completed` jelenik meg. A `@default` blokk azért tűnhet lehetségesnek, mert fallback ágként szerepel, de csak akkor aktiválódik, ha egyik eset sem illeszkedik.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: Data binding
+TYPE: trap
+QUESTION: Mi lesz az input mező DOM `value` property-jének értéke az alábbi template első renderelése után?
+CODE:
+@Component({
+  standalone: true,
+  template: `
+    <input #searchInput value="Angular">
+    <p>{{ searchInput.value }}</p>
+  `
+})
+export class SearchComponent {}
+ENDCODE
+A) `undefined`
+B) `searchInput`
+C) `Angular`
+D) Üres string
+ANSWER: C
+EXPLANATION: A `#searchInput` template reference variable az input DOM elemére hivatkozik. A `searchInput.value` az elem aktuális értékét olvassa ki, amely az első renderelés után `Angular`. Az `undefined` azért csábító, mert a változó nincs deklarálva a komponensosztályban, de a template reference variable a template saját hatókörében létezik.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: Directives
+TYPE: output
+QUESTION: Hány listaelem jelenik meg az alábbi Angular 17+ template-ben?
+CODE:
+@Component({
+  standalone: true,
+  template: `
+    <ul>
+      @for (item of items; track item.id) {
+        @if (item.active) {
+          <li>{{ item.name }}</li>
+        }
+      }
+    </ul>
+  `
+})
+export class ListComponent {
+  items = [
+    { id: 1, name: 'A', active: true },
+    { id: 2, name: 'B', active: false },
+    { id: 3, name: 'C', active: true }
+  ];
+}
+ENDCODE
+A) 3
+B) 1
+C) 0
+D) 2
+ANSWER: D
+EXPLANATION: Az `@for` mindhárom elemet feldolgozza, de a belső `@if` csak az `active: true` elemeknél renderel `li` elemet. Ezért az `A` és `C` jelenik meg, összesen két listaelemként. A három elem megjelenése azért csábító, mert a ciklus valóban háromszor iterál, de a feltételes blokk két esetben engedélyezi a renderelést.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: Forms
+TYPE: behavior
+QUESTION: Egy reactive formban az alábbi műveletet hajtod végre. Mi történik a `name` FormControl értékével?
+CODE:
+const form = new FormGroup({
+  name: new FormControl('Anna'),
+  age: new FormControl(25)
+});
+
+form.patchValue({
+  name: 'Peter'
+});
+ENDCODE
+A) A `name` értéke `Peter` lesz, az `age` változatlan marad
+B) Hiba keletkezik, mert minden mezőt meg kell adni
+C) Mindkét mező értéke `null` lesz
+D) A `patchValue()` csak template-driven formokban működik
+ANSWER: A
+EXPLANATION: A `patchValue()` lehetővé teszi a form értékeinek részleges frissítését. A példában kizárólag a `name` változik `Peter` értékre, az `age` pedig 25 marad. A hiányzó mező miatti hiba azért csábító, mert a `setValue()` teljes FormGroup értékstruktúrát vár, de a `patchValue()` nem.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Routing & guards
+TYPE: scenario
+QUESTION: Egy Angular komponensben az aktuális route `id` paraméterét szeretnéd figyelni úgy, hogy az akkor is frissüljön, ha a router ugyanazt a komponenst új paraméterrel használja. Melyik megoldás a megfelelő?
+CODE:
+{
+  path: 'products/:id',
+  component: ProductComponent
+}
+ENDCODE
+A) A `window.location.reload()` meghívása minden navigációnál
+B) Az `ActivatedRoute.paramMap` Observable használata
+C) A route paraméter kizárólag a komponens konstruktorában olvasható
+D) A `Router` service teljes újrapéldányosítása
+ANSWER: B
+EXPLANATION: Az `ActivatedRoute.paramMap` Observable új értéket adhat, amikor az aktuális route paraméterei változnak. Így a komponens reagálhat például a `/products/1` és `/products/2` közötti navigációra anélkül, hogy újra kellene tölteni az oldalt. A snapshot használata azért csábító, mert egyszerűen elérhetővé teszi az aktuális paramétert, de önmagában nem követi a későbbi változásokat.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: HttpClient & interceptors
+TYPE: output
+QUESTION: Mi történik az alábbi kódban, ha a szerver 404-es HTTP státusszal válaszol, és az interceptorok nem alakítják át a választ?
+CODE:
+this.http.get('/api/missing').subscribe({
+  next: value => console.log('success'),
+  error: err => console.log('error')
+});
+ENDCODE
+A) A `success` kerül kiírásra
+B) Semmi nem történik
+C) Az `error` kerül kiírásra
+D) A `success` és az `error` is kiírásra kerül
+ANSWER: C
+EXPLANATION: Az Angular HttpClient alapértelmezés szerint hibaként kezeli a sikertelen HTTP státuszokat, így a 404-es válasz a subscription `error` callbackjéhez kerül. A `next` callback nem fut le a hibás válasszal. A `success` azért csábító, mert a szerver technikailag küldött HTTP választ, de a HttpClient a nem sikeres státuszt hibacsatornán továbbítja.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: Testing
+TYPE: debug
+QUESTION: Egy komponens unit tesztjében módosítod a komponens egyik property-jét, de a DOM még a régi értéket mutatja. Mi a legkézenfekvőbb következő lépés?
+CODE:
+const fixture = TestBed.createComponent(HeaderComponent);
+
+fixture.detectChanges();
+
+fixture.componentInstance.title = 'Updated';
+
+// DOM assertion follows
+ENDCODE
+A) A teljes TestBed környezet törlése
+B) A komponens újrafordítása TypeScript compilerrel
+C) A böngésző újratöltése
+D) A `fixture.detectChanges()` ismételt meghívása
+ANSWER: D
+EXPLANATION: A komponens property-jének közvetlen módosítása után a tesztben jellemzően újabb `fixture.detectChanges()` hívás szükséges a template frissítéséhez. Ezt követően a DOM már az új értéket tükrözheti. A komponens újralétrehozása azért csábító, mert az első renderelés is a fixture létrehozásához kapcsolódik, de a meglévő fixture change detectionje elegendő.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: SSR & hydration
+TYPE: theory
+QUESTION: Mi a hydration elsődleges célja egy szerveroldalon renderelt Angular alkalmazásban?
+A) A teljes szerveroldali HTML azonnali törlése, majd új DOM létrehozása
+B) A szerver által létrehozott DOM struktúra újrafelhasználása a kliensoldali Angular alkalmazás inicializálásakor
+C) Az összes HTTP-kérés letiltása a böngészőben
+D) A TypeScript futtatása közvetlenül a böngészőben fordítás nélkül
+ANSWER: B
+EXPLANATION: Hydration során Angular a szerveroldalon előállított HTML-hez kapcsolódik, és lehetőség szerint újrafelhasználja a már létező DOM struktúrát. Ez csökkentheti a felesleges DOM újralétrehozást és a vizuális villódzást. A teljes újrarenderelés azért csábító, mert hagyományos kliensoldali bootstrap esetén Angular maga építi fel a DOM-ot, a hydration azonban éppen ennek elkerülésére szolgál.
+###END
+
+### Q61
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: output
+QUESTION: Milyen sorrendben jelennek meg az értékek az alábbi RxJS kód futtatásakor? Feltételezd, hogy az összes szükséges RxJS operátor importálva van.
+CODE:
+const source$ = of(1, 2, 3, 4);
+
+source$
+  .pipe(
+    filter(x => x % 2 === 0),
+    map(x => x * 3),
+    take(1)
+  )
+  .subscribe(console.log);
+ENDCODE
+A) 6
+B) 6, 12
+C) 3, 6, 9, 12
+D) 12
+ANSWER: A
+EXPLANATION: A `filter` csak a páros értékeket engedi tovább, ezért először a 2 kerül a `map` operátorhoz. A `map` ezt hárommal megszorozza, így 6 keletkezik. A `take(1)` az első továbbított érték után lezárja a subscriptiont, ezért a 4 már nem jut el a subscriberhez. A 6 és 12 együttes megjelenése azért csábító, mert mindkét szám megfelelne a filter feltételének, de a `take(1)` korlátozza az emissionök számát.
+###END
+
+### Q62
+LEVEL: medior
+TOPIC: Signals
+TYPE: output
+QUESTION: Mi lesz a konzolra írt érték az alábbi kód végén?
+CODE:
+const count = signal(2);
+
+const doubled = computed(() => {
+  console.log('computed');
+  return count() * 2;
+});
+
+console.log(doubled());
+count.set(3);
+count.set(4);
+console.log(doubled());
+ENDCODE
+A) A `computed` háromszor fut le, a kiírt értékek 4 és 8
+B) A `computed` egyszer fut le, a kiírt értékek 4 és 4
+C) A `computed` kétszer fut le, a kiírt értékek 4 és 8
+D) A `computed` négyszer fut le, a kiírt értékek 4 és 6
+ANSWER: C
+EXPLANATION: A `computed` lazy és memoizált. Az első `doubled()` olvasáskor kiszámítja a 4 értéket, és kiírja a `computed` szöveget. A két `set()` érvényteleníti a cache-elt eredményt, de nem kényszerít azonnali újraszámítást. A következő olvasáskor az aktuális 4-es `count` alapján 8 keletkezik, így a számítás összesen kétszer fut. A háromszori számítás azért csábító, mert két signalmódosítás történik, de a `computed` nem számol újra minden módosítás pillanatában.
+###END
+
+### Q63
+LEVEL: medior
+TOPIC: Change detection & OnPush
+TYPE: scenario
+QUESTION: Egy `OnPush` child komponens `@Input()` objektumot kap. A parent egy kattintáskezelőben ugyanannak az objektumnak a property-jét módosítja, miközben a child kizárólag az inputból renderel. A child nem kap más frissítési értesítést. Melyik módosítás biztosítja a referenciaalapú input-változás felismerését?
+CODE:
+@Component({
+  selector: 'app-parent',
+  template: `
+    <button (click)="rename()">Rename</button>
+    <app-profile [user]="user" />
+  `
+})
+export class ParentComponent {
+  user = { id: 1, name: 'Anna' };
+
+  rename() {
+    this.user.name = 'Peter';
+  }
+}
+ENDCODE
+A) A `rename()` metódus átnevezése `update()`-re
+B) A child `@Input()` property-jének `private` módosítóval történő deklarálása
+C) A `user` objektum `Object.freeze()` segítségével történő zárolása
+D) Új objektumreferencia létrehozása, például `this.user = { ...this.user, name: 'Peter' }`
+ANSWER: D
+EXPLANATION: Az `OnPush` komponens inputváltozásának felismeréséhez a referencia megváltoztatása megbízható megoldás. Az object spread új objektumot hoz létre, amelynek `name` property-je már `Peter`, így Angular új inputreferenciát érzékelhet. A közvetlen property-mutáció azért csábító, mert a JavaScript objektum tartalma ténylegesen megváltozik, de az `OnPush` inputellenőrzésnél a változatlan referencia nem elegendő.
+###END
+
+### Q64
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: output
+QUESTION: Mi kerül a konzolra az alábbi kód futtatásakor?
+CODE:
+const subject = new BehaviorSubject<number>(10);
+
+subject.next(20);
+
+subject.subscribe(value => {
+  console.log(value);
+});
+
+subject.next(30);
+ENDCODE
+A) 10, 20, 30
+B) 20, 30
+C) Csak 30
+D) 10, 30
+ANSWER: B
+EXPLANATION: A `BehaviorSubject` tárolja az aktuális értékét, és új feliratkozáskor azonnal továbbítja azt. A feliratkozás pillanatában a legutóbbi érték 20, ezért először ez jelenik meg. Ezután a `next(30)` új emissiont eredményez. A 10 megjelenése azért csábító, mert ez a konstruktorban megadott kezdeti érték, de a feliratkozás előtt már 20-ra változott.
+###END
+
+### Q65
+LEVEL: medior
+TOPIC: Forms
+TYPE: debug
+QUESTION: Egy reactive formban az alábbi `setValue()` hívás történik. Mi lesz az eredmény?
+CODE:
+const form = new FormGroup({
+  firstName: new FormControl('Anna'),
+  lastName: new FormControl('Smith')
+});
+
+form.setValue({
+  firstName: 'Peter'
+} as any);
+ENDCODE
+A) A `lastName` automatikusan üres string lesz
+B) Csak a `firstName` változik meg, hiba nélkül
+C) Runtime hiba keletkezik, mert a `setValue()` teljes értékstruktúrát vár
+D) A `setValue()` figyelmen kívül hagyja a hívást
+ANSWER: C
+EXPLANATION: A `FormGroup.setValue()` megköveteli, hogy a megadott objektum a form minden szükséges controljához tartalmazzon értéket. A `lastName` hiányzik, ezért runtime hiba keletkezik. Az `as any` megkerüli a TypeScript fordításkori ellenőrzését, de nem változtatja meg az Angular runtime validációját. A részleges frissítés azért csábító, mert a `patchValue()` valóban támogatná ezt a működést, a `setValue()` azonban nem.
+###END
+
+### Q66
+LEVEL: medior
+TOPIC: Dependency injection
+TYPE: behavior
+QUESTION: Egy Angular alkalmazásban az alábbi provider konfiguráció szerepel. Mi történik, ha egy komponens `LoggerService` dependency-t kér?
+CODE:
+providers: [
+  LoggerService,
+  {
+    provide: LoggerService,
+    useClass: AdvancedLoggerService
+  }
+]
+ENDCODE
+A) A később deklarált provider érvényesül, ezért `AdvancedLoggerService` példányt kap
+B) Angular két külön példányt injektál egyszerre
+C) Fordítási hiba keletkezik a duplikált provider miatt
+D) Mindig az első provider érvényesül
+ANSWER: A
+EXPLANATION: Normál, nem multi provider esetén ugyanahhoz a tokenhez tartozó providerdeklarációk közül a későbbi felülírhatja a korábbit az adott provider-konfigurációban. Ezért a `LoggerService` token feloldásakor `AdvancedLoggerService` példány jön létre, feltéve, hogy az osztály megfelelően injektálható. A fordítási hiba azért csábító, mert a duplikált konfiguráció sok rendszerben tiltott, Angular DI esetén azonban a provider-felülírás támogatott működés.
+###END
+
+### Q67
+LEVEL: medior
+TOPIC: HttpClient & interceptors
+TYPE: scenario
+QUESTION: Egy keresőmező minden változásakor HTTP-kérést indítasz. Azt szeretnéd, hogy az új keresési kifejezés érkezésekor a korábbi, még folyamatban lévő kérés subscriptionje megszűnjön, és csak az új keresés eredménye legyen feldolgozva. Melyik RxJS operátor illik leginkább erre?
+CODE:
+searchControl.valueChanges.pipe(
+  debounceTime(300),
+  distinctUntilChanged(),
+  // missing operator
+);
+ENDCODE
+A) `mergeMap`
+B) `concatMap`
+C) `exhaustMap`
+D) `switchMap`
+ANSWER: D
+EXPLANATION: A `switchMap` új külső emission esetén leiratkozik az előző inner Observable-ről, és az újhoz kapcsolódik. Angular HttpClient esetén ez a korábbi folyamatban lévő HTTP-kérés megszakítását is eredményezheti. A `mergeMap` azért csábító, mert párhuzamos aszinkron műveletekhez jól használható, de nem szünteti meg automatikusan a korábbi keresések subscriptionjeit.
+###END
+
+### Q68
+LEVEL: medior
+TOPIC: Routing & guards
+TYPE: scenario
+QUESTION: Egy route guard nem bejelentkezett felhasználó esetén a `/login` oldalra szeretné irányítani a navigációt. Melyik megoldás illeszkedik leginkább az Angular Router ajánlott működéséhez?
+CODE:
+export const authGuard: CanActivateFn = () => {
+  const router = inject(Router);
+  const auth = inject(AuthService);
+
+  if (auth.isAuthenticated()) {
+    return true;
+  }
+
+  // What should be returned here?
+};
+ENDCODE
+A) `return false`, mert ez automatikusan a login oldalra irányít
+B) `return router.parseUrl('/login')`
+C) `return undefined`
+D) `return true`, majd a komponensben átirányítás
+ANSWER: B
+EXPLANATION: A guard visszaadhat `UrlTree` objektumot, amelyet a Router átirányítási döntésként kezel. A `router.parseUrl('/login')` megfelelő `UrlTree` értéket hoz létre, így nincs szükség külön imperatív navigációra. A `false` visszaadása azért csábító, mert az valóban megakadályozza a védett route aktiválását, de önmagában nem indít loginra irányítást.
+###END
+
+### Q69
+LEVEL: medior
+TOPIC: State management (NgRx)
+TYPE: theory
+QUESTION: Egy NgRx Store-t használó alkalmazásban új felhasználót szeretnél hozzáadni a state-hez. Melyik megközelítés követi az NgRx alapvető state-kezelési modelljét?
+A) A komponens közvetlenül módosítja a Store belső state objektumát
+B) A komponens közvetlenül meghívja a reducer függvényt, majd elmenti az eredményt
+C) A komponens actiont dispatch-el, amely alapján a reducer új state-et állít elő
+D) A Store automatikusan figyeli a komponens összes property-jét
+ANSWER: C
+EXPLANATION: NgRx Store esetén az állapotváltozást actionök írják le, a reducerek pedig az aktuális state és az action alapján új state-et számítanak ki. Ez kiszámítható, egyirányú adatfolyamot eredményez. A közvetlen state-mutáció azért csábító, mert egyszerű JavaScript objektumként tekinthetünk a state-re, de ez sérti az NgRx immutable state-kezelési modelljét.
+###END
+
+### Q70
+LEVEL: medior
+TOPIC: Performance
+TYPE: performance
+QUESTION: Egy nagy Angular oldalon több ezer sort kell megjeleníteni, de a felhasználó egyszerre csak körülbelül húszat lát. Melyik megoldás csökkentheti leginkább a renderelt DOM elemek számát úgy, hogy a teljes lista görgethető maradjon?
+A) Minden sorhoz külön `setTimeout()` létrehozása
+B) Az összes sor `display: none` stílussal történő elrejtése
+C) Az összes sor külön Angular komponensbe szervezése virtualizáció nélkül
+D) Virtual scrolling alkalmazása, például Angular CDK segítségével
+ANSWER: D
+EXPLANATION: A virtual scrolling csak a látható tartományhoz és annak közvetlen környezetéhez szükséges elemeket rendereli, miközben a felhasználó a teljes listát görgetheti. Ez jelentősen csökkentheti a DOM méretét és a renderelési költséget. A `display: none` használata azért csábító, mert vizuálisan elrejti az elemeket, de azok továbbra is a DOM-ban maradnak.
+###END
+
+### Q71
+LEVEL: medior
+TOPIC: Services & providers
+TYPE: behavior
+QUESTION: Az alábbi provider konfigurációban a `useExisting` mit eredményez?
+CODE:
+providers: [
+  PrimaryLoggerService,
+  {
+    provide: LoggerService,
+    useExisting: PrimaryLoggerService
+  }
+]
+ENDCODE
+A) A `LoggerService` token ugyanarra a példányra hivatkozik, mint a `PrimaryLoggerService`
+B) A `LoggerService` minden injectionnél új példányt kap
+C) A `useExisting` egy új `LoggerService` példányt hoz létre
+D) A két service csak akkor működik, ha ugyanaz a classnevük
+ANSWER: A
+EXPLANATION: A `useExisting` egy meglévő provider tokenjére hoz létre aliast, ezért a `LoggerService` és a `PrimaryLoggerService` feloldása ugyanazt az objektumpéldányt adja az adott injectorban. Ez eltér a `useClass` működésétől, amely külön providerpéldányt hozhat létre. Az új példány létrehozása azért csábító, mert két külön token szerepel a konfigurációban, de az alias nem jelent új példányosítást.
+###END
+
+### Q72
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: output
+QUESTION: Mi lesz az alábbi RxJS kód kimenete?
+CODE:
+const source$ = of(1, 2, 3);
+
+source$
+  .pipe(
+    scan((acc, value) => acc + value, 0)
+  )
+  .subscribe(console.log);
+ENDCODE
+A) 6
+B) 0, 1, 3, 6
+C) 1, 3, 6
+D) 1, 2, 3
+ANSWER: C
+EXPLANATION: A `scan` minden emission után továbbadja az aktuális akkumulált értéket. A kezdőérték 0, amelyhez először 1 adódik, majd 2, végül 3. Így a kibocsátott értékek 1, 3 és 6. A kizárólagos 6-os eredmény azért csábító, mert a `reduce` operátor a teljes összegzést csak a stream lezárásakor bocsátaná ki, a `scan` viszont köztes eredményeket is ad.
+###END
+
+### Q73
+LEVEL: medior
+TOPIC: Forms
+TYPE: edgecase
+QUESTION: Egy reactive formban az `age` control le van tiltva. Mi lesz a `form.value` és a `form.getRawValue()` eredménye?
+CODE:
+const form = new FormGroup({
+  name: new FormControl('Anna'),
+  age: new FormControl({ value: 30, disabled: true })
+});
+
+console.log(form.value);
+console.log(form.getRawValue());
+ENDCODE
+A) Mindkettő tartalmazza az `age` mezőt
+B) A `form.value` kihagyja az `age` mezőt, a `getRawValue()` tartalmazza
+C) Mindkettő kihagyja az `age` mezőt
+D) A `getRawValue()` hibát dob letiltott control esetén
+ANSWER: B
+EXPLANATION: Egy engedélyezett `FormGroup` `value` property-je alapértelmezés szerint csak az engedélyezett controlok értékeit tartalmazza. A `getRawValue()` ezzel szemben a letiltott controlokat is belefoglalja az eredménybe. Az összes mező megjelenése azért csábító, mert az `age` control valóban létezik és van értéke, de a disabled állapot befolyásolja a form aggregált értékét.
+###END
+
+### Q74
+LEVEL: medior
+TOPIC: Testing
+TYPE: scenario
+QUESTION: Egy service unit tesztjében szeretnéd ellenőrizni a HTTP-kérést anélkül, hogy valódi hálózati hívás történne. Melyik megoldás illeszkedik a modern Angular tesztelési API-hoz?
+CODE:
+TestBed.configureTestingModule({
+  providers: [
+    provideHttpClient(),
+    provideHttpClientTesting(),
+    UserService
+  ]
+});
+ENDCODE
+A) Valódi backend szerver indítása minden unit teszthez
+B) A `window.fetch` globális felülírása minden tesztben
+C) A `RouterTestingHarness` használata HTTP mockolásra
+D) A `HttpTestingController` injektálása és a request ellenőrzése `expectOne()` segítségével
+ANSWER: D
+EXPLANATION: A `provideHttpClientTesting()` tesztelési HTTP backendet konfigurál, a `HttpTestingController` pedig lehetővé teszi a kérések elfogását, ellenőrzését és mock válaszok küldését. Az `expectOne()` segítségével ellenőrizhető, hogy a várt request megtörtént-e. A valódi backend indítása azért csábító, mert integrációs teszteknél indokolt lehet, de izolált unit tesztekben felesleges külső függőséget vezetne be.
+###END
+
+### Q75
+LEVEL: medior
+TOPIC: SSR & hydration
+TYPE: production
+QUESTION: Egy SSR-t és hydrationt használó Angular alkalmazásban egy komponens közvetlenül módosítja a DOM-ot a hydration előtt. A szerver által renderelt HTML és a kliens által elvárt struktúra emiatt eltér. Mi lehet a következmény?
+CODE:
+@Component({
+  selector: 'app-banner',
+  template: `
+    <div>
+      <span>Welcome</span>
+    </div>
+  `
+})
+export class BannerComponent {
+  constructor() {
+    if (typeof document !== 'undefined') {
+      document.querySelector('app-banner div')
+        ?.appendChild(document.createElement('p'));
+    }
+  }
+}
+ENDCODE
+A) A hydration automatikusan minden eltérést figyelmen kívül hagy
+B) A hydration mindig teljesen újraindítja a szerveroldali alkalmazást
+C) Hydration mismatch hiba keletkezhet, mert a DOM struktúra eltér az Angular által elvárttól
+D) A DOM közvetlen módosítása garantáltan gyorsítja a hydrationt
+ANSWER: C
+EXPLANATION: Angular hydration során a szerver által létrehozott DOM struktúrát próbálja összekapcsolni a kliensoldali view-val. Ha a DOM-ot külső vagy közvetlen manipuláció megváltoztatja a hydration előtt, a várt node-struktúra eltérhet a ténylegestől, és hydration mismatch hiba jelentkezhet. A hibamentes automatikus korrekció azért csábító, mert a frameworkök sok DOM-frissítést önállóan kezelnek, de hydration során a struktúrák egyezése alapvető feltétel.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: State management (NgRx)
+TYPE: scenario
+QUESTION: Egy NgRx-alapú alkalmazásban egy komponensnek meg kell jelenítenie a store-ban tárolt felhasználók listáját. Mi a leginkább idiomatikus megoldás?
+A) A komponens `Store` példányán keresztül selectorral lekérdezni az állapotot, és az eredményt Observable-ként vagy signal-ként fogyasztani
+B) A komponens minden változáskor közvetlenül módosítsa a store belső state objektumát
+C) A reducerben közvetlenül manipulálni a komponens példányát
+D) A service minden komponens számára külön lokális másolatot tartson fenn a store helyett
+ANSWER: A
+EXPLANATION: Az NgRx-ban a komponensek tipikusan selectorokon keresztül olvassák az állapotot, így a state hozzáférése deklaratív és központilag kezelhető. A közvetlen state-módosítás megkerüli a reducer-alapú state flow-t és megtöri az architektúra alapelveit. A lokális service-másolat elveszítené a központi store előnyeit.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: Dependency injection
+TYPE: edgecase
+QUESTION: Mi történik, ha egy service konstruktorában egy olyan tokent injektálsz, amelyhez nincs provider, és nem használod az `@Optional()` dekorátort?
+A) Az Angular `undefined` értéket ad át
+B) Az Angular DI hibát dob, mert nem található provider a tokenhez
+C) Az Angular automatikusan létrehoz egy új példányt a tokenből
+D) Az Angular csak production buildben dob hibát
+ANSWER: B
+EXPLANATION: Kötelező dependency esetén az Angular injector hibát jelez, ha a tokenhez nem található megfelelő provider. Az `@Optional()` használatával a hiányzó dependency kezelhető lenne, és az eredmény `null` lehet. Az Angular nem tud tetszőleges tokenhez automatikusan példányt létrehozni.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: Standalone components
+TYPE: debug
+QUESTION: Az alábbi standalone komponens template-je használ egy saját `HighlightDirective` direktívát, de futáskor Angular hibát kapsz arról, hogy az elem vagy direktíva nem ismert. Mi a legvalószínűbb ok?
+CODE:
+@Component({
+  selector: 'app-demo',
+  standalone: true,
+  imports: [],
+  template: `<p appHighlight>Hello</p>`
+})
+export class DemoComponent {}
+ENDCODE
+A) A direktívának mindig NgModule-ban kell lennie
+B) A `standalone: true` nem használható saját direktívákkal
+C) A direktívát importálni kell a komponens `imports` tömbjébe, ha standalone direktíváról van szó
+D) A direktíva csak komponens template-jében használható
+ANSWER: C
+EXPLANATION: Standalone komponens esetén a template közvetlen függőségeit az `imports` tömbben kell deklarálni. Ha a `HighlightDirective` standalone, akkor például `imports: [HighlightDirective]` szükséges. A standalone architektúra éppen azt teszi lehetővé, hogy az ilyen függőségek NgModule nélkül legyenek deklarálhatók.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: Change detection & OnPush
+TYPE: trap
+QUESTION: Egy `OnPush` komponensben az alábbi template szerepel:
+CODE:
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <button (click)="count = count + 1">{{ count }}</button>
+  `
+})
+export class CounterComponent {
+  count = 0;
+}
+ENDCODE
+Mi történik a gombra kattintáskor?
+A) A komponens nem frissül, mert az `OnPush` letiltja a change detectiont
+B) A template csak akkor frissül, ha a szülő komponens inputot változtat
+C) Angular hibát dob, mert az `OnPush` komponensben nem lehet mezőt módosítani
+D) A komponens saját eventje change detectiont válthat ki, ezért a megjelenített érték frissül
+ANSWER: D
+EXPLANATION: Az `OnPush` nem kapcsolja ki a change detectiont. A komponensen belül kezelt DOM event olyan változást jelez Angularnak, amely miatt a komponens ellenőrzése megtörténhet, ezért a `count` új értéke megjelenik.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Signals
+TYPE: output
+QUESTION: Mi lesz az alábbi kód kimenete?
+CODE:
+const firstName = signal('Anna');
+const lastName = signal('Kovacs');
+
+const fullName = computed(() => `${firstName()} ${lastName()}`);
+
+console.log(fullName());
+lastName.set('Nagy');
+console.log(fullName());
+ENDCODE
+A) `Anna Kovacs`, majd `Anna Nagy`
+B) `Anna Kovacs`, majd `Anna Kovacs`
+C) `undefined`, majd `Anna Nagy`
+D) `Anna Nagy`, majd `Anna Nagy`
+ANSWER: A
+EXPLANATION: A `computed` automatikusan követi azokat a signalokat, amelyeket a számítás során olvas. Az első olvasáskor a vezetéknév `Kovacs`, majd a signal módosítása után a következő olvasás már az új `Nagy` értéket használja.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: scenario
+QUESTION: Egy keresőmező `valueChanges` Observable-jéből szeretnél HTTP-kéréseket indítani úgy, hogy a korábbi, még folyamatban lévő keresés eredménye ne írja felül az újabb keresés eredményét. Melyik RxJS operátor illeszkedik leginkább ehhez a viselkedéshez?
+A) `mergeMap`
+B) `switchMap`
+C) `concatMap`
+D) `reduce`
+ANSWER: B
+EXPLANATION: A `switchMap` az új külső érték érkezésekor leiratkozik az előző belső Observable-ről, így kereséseknél tipikusan csak a legfrissebb kérés eredménye marad releváns. A `mergeMap` ezzel szemben párhuzamosan futtathatja a korábbi kéréseket is.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: HttpClient & interceptors
+TYPE: debug
+QUESTION: Mi a probléma az alábbi interceptor megvalósítással?
+CODE:
+intercept(req: HttpRequest<unknown>, next: HttpHandler) {
+  req.headers.set('Authorization', 'Bearer token');
+  return next.handle(req);
+}
+ENDCODE
+A) Az `Authorization` fejléc csak GET kéréseknél használható
+B) Az interceptor nem módosíthat `HttpRequest` objektumot
+C) A `next.handle()` csak Observable helyett Promise-t fogadhat
+D) Az `HttpHeaders` mindig üres az interceptorban
+ANSWER: B
+EXPLANATION: Az `HttpRequest` és az `HttpHeaders` immutable jellegű API-k, ezért a `set()` nem módosítja helyben a meglévő objektumot. A módosított requesthez tipikusan `req.clone({ setHeaders: { Authorization: 'Bearer token' } })` használható, majd a klónt kell továbbítani.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: Routing & guards
+TYPE: scenario
+QUESTION: Egy route csak akkor legyen elérhető, ha a felhasználó admin szerepkörrel rendelkezik. Hol érdemes ezt az ellenőrzést elhelyezni?
+A) A route-hoz kapcsolt guardban, amely a navigáció előtt ellenőrzi a jogosultságot
+B) Kizárólag az admin komponens `ngOnInit()` metódusában
+C) A globális `main.ts` fájlban
+D) A route komponens CSS fájljában
+ANSWER: A
+EXPLANATION: A route guard a navigációs folyamat részeként képes a hozzáférést engedélyezni vagy megtagadni. A komponensben végzett ellenőrzés túl későn történik ahhoz, hogy önmagában megfelelő route-szintű védelmet biztosítson.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: Forms
+TYPE: edgecase
+QUESTION: Mi történik az alábbi reactive form esetén?
+CODE:
+const form = new FormGroup({
+  name: new FormControl('Anna'),
+  age: new FormControl(30)
+});
+
+form.patchValue({
+  name: 'Peter',
+  unknownField: true
+});
+ENDCODE
+A) Az egész form hibás állapotba kerül
+B) Runtime exception keletkezik az ismeretlen mező miatt
+C) Csak az `unknownField` kerül hozzáadásra a formhoz
+D) A `name` frissül, az ismeretlen mezőt pedig a `FormGroup` figyelmen kívül hagyja
+ANSWER: D
+EXPLANATION: A `patchValue()` részleges értékek frissítésére szolgál, és a megadott formstruktúrán kívüli property-ket figyelmen kívül hagyja. A `name` ezért `Peter` lesz, miközben az `age` változatlan marad.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: Performance
+TYPE: performance
+QUESTION: Egy Angular oldalon több ezer rekordot kell megjeleníteni egy hosszú listában. Melyik megközelítés csökkentheti jelentősen a DOM-ban egyszerre jelen lévő elemek számát?
+A) Minden elemhez külön `setInterval()` használata
+B) Minden listaelemhez egy külön service példány létrehozása
+C) Virtual scrolling használata, amely csak a látható elemek egy részét rendereli
+D) A lista elemeinek `JSON.stringify()` használata template-ben
+ANSWER: C
+EXPLANATION: A virtual scrolling csak a viewporthoz szükséges elemeket tartja aktívan a DOM-ban, így nagy listák esetén csökkentheti a renderelési és memóriaigényt. A többi megoldás nem csökkenti érdemben a DOM elemszámát.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: Testing
+TYPE: scenario
+QUESTION: Egy standalone komponens Angular tesztjében a komponens template-je egy másik standalone komponenst használ. Hogyan érdemes a függőséget a TestBed konfigurációjában kezelni?
+A) A használt komponenst az `imports` tömbbe kell felvenni
+B) A használt komponenst mindig `providers` alatt kell megadni
+C) A használt komponenst a `declarations` tömbbe kell helyezni
+D) Tesztben standalone komponens nem használhat másik komponenst
+ANSWER: A
+EXPLANATION: Standalone komponenseknél a template-függőségeket az `imports` kezeli, ezért a tesztben is az importstruktúrát kell követni. A `providers` dependency injection tokenekhez való, a `declarations` pedig nem a standalone komponensek elsődleges konfigurációs módja.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: SSR & hydration
+TYPE: trap
+QUESTION: Egy Angular alkalmazás SSR-rel rendereli a kezdő HTML-t, majd hydrationt használ. Miért lehet problémás, ha egy komponens `ngOnInit()` során közvetlenül módosítja a DOM-ot egy `document.querySelector()` hívással?
+A) Mert a `document` csak TypeScriptben létezik
+B) Mert a DOM mindig teljesen immutable
+C) Mert a selector csak standalone komponenseknél működik
+D) Mert a szerver által generált DOM és a kliens által várt struktúra eltérhet, ami hydration problémát okozhat
+ANSWER: D
+EXPLANATION: Hydration során Angular a szerver által előállított DOM-ot próbálja újrahasznosítani. A kézi DOM-manipuláció megváltoztathatja azt a struktúrát vagy állapotot, amelyre Angular számít, ezért eltérésekhez és hydration hibákhoz vezethet.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: Services & providers
+TYPE: behavior
+QUESTION: Mit biztosít az alábbi provider konfiguráció?
+CODE:
+providers: [
+  LoggerService,
+  {
+    provide: AuditLogger,
+    useExisting: LoggerService
+  }
+]
+ENDCODE
+A) Két külön `LoggerService` példány jön létre
+B) Az `AuditLogger` és a `LoggerService` ugyanarra a `LoggerService` példányra hivatkozik
+C) Az `AuditLogger` automatikusan örököl a `LoggerService`-ből
+D) Az `AuditLogger` nem lesz injektálható
+ANSWER: B
+EXPLANATION: A `useExisting` egy meglévő provider példányára hoz létre alias-t. Így az `AuditLogger` token feloldása ugyanazt az `LoggerService` példányt adja vissza, nem egy új példányt.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: Components & templates
+TYPE: output
+QUESTION: Mi jelenik meg a template-ben?
+CODE:
+@Component({
+  template: `
+    <p>{{ user.name }}</p>
+    <p>{{ user.address.city }}</p>
+  `
+})
+export class UserComponent {
+  user = {
+    name: 'Anna',
+    address: {
+      city: 'Budapest'
+    }
+  };
+}
+ENDCODE
+A) Csak `Anna`
+B) Csak `Budapest`
+C) `Anna`, majd `Budapest`
+D) `undefined`, majd `undefined`
+ANSWER: C
+EXPLANATION: Az interpoláció a nested property-k értékét olvassa ki a megadott objektumból. Mivel mindkét property létezik, a két bekezdés `Anna`, illetve `Budapest` értéket jelenít meg.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Pipes
+TYPE: behavior
+QUESTION: Miért lehet teljesítményproblémás egy saját, impure pipe használata egy nagy listában?
+A) Mert az impure pipe csak egyszer fut le
+B) Mert az impure pipe nem kaphat argumentumokat
+C) Mert az impure pipe csak szerveroldalon működik
+D) Mert az impure pipe gyakrabban újraértékelődhet change detection során
+ANSWER: D
+EXPLANATION: Az impure pipe-ok nincsenek kizárólag az input referencia változásához kötve, ezért gyakrabban futhatnak change detection során. Nagy adathalmazokon ez jelentős számú fölösleges számítást eredményezhet.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Lifecycle hooks
+TYPE: behavior
+QUESTION: Egy komponensben az `@Input()` értéke megváltozik a komponens élettartama során. Melyik lifecycle hook alkalmas az input változásainak feldolgozására?
+A) `ngOnChanges`
+B) `ngAfterViewInit`
+C) `ngOnDestroy`
+D) `ngAfterContentChecked`
+ANSWER: A
+EXPLANATION: Az `ngOnChanges` az Angular által kezelt input property-k változásakor fut le, és hozzáférést biztosít a korábbi és az új értékhez is. A többi hook más lifecycle eseményekhez kapcsolódik.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: Data binding
+TYPE: output
+QUESTION: Mi lesz a megjelenített szöveg?
+CODE:
+@Component({
+  template: `
+    <input [value]="name">
+    <p>{{ name }}</p>
+  `
+})
+export class ProfileComponent {
+  name = 'Anna';
+}
+ENDCODE
+A) Az inputban és a bekezdésben is `Anna` jelenik meg
+B) Csak az inputban jelenik meg `Anna`
+C) Csak a bekezdésben jelenik meg `Anna`
+D) Egyik helyen sem jelenik meg érték
+ANSWER: A
+EXPLANATION: A property binding az input `value` property-jét a komponens `name` értékére állítja, az interpoláció pedig ugyanennek a property-nek az értékét jeleníti meg a bekezdésben. Kétirányú binding nélkül azonban a felhasználói input önmagában nem írja vissza az értéket a komponensbe.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: Directives
+TYPE: behavior
+QUESTION: Egy saját attribute directive-ban ezt használod:
+CODE:
+@HostListener('mouseenter')
+onMouseEnter() {
+  this.isHovered = true;
+}
+ENDCODE
+Mi az `@HostListener` elsődleges szerepe?
+A) A directive host elemén bekövetkező események figyelése
+B) Új DOM elemek létrehozása
+C) A directive automatikus dependency injectionjének letiltása
+D) A host elem CSS osztályainak törlése
+ANSWER: A
+EXPLANATION: A `@HostListener` segítségével a directive a host elemhez kapcsolódó DOM eseményekre reagálhat. Az eseménykezelő például állapotot módosíthat vagy más UI-viselkedést indíthat el.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: State management (NgRx)
+TYPE: theory
+QUESTION: Mi a reducer elsődleges feladata egy NgRx state management rendszerben?
+A) HTTP-kérések közvetlen végrehajtása
+B) Egy action és a jelenlegi state alapján előállítani az új state-et
+C) Komponensek lifecycle hookjainak kezelése
+D) Route-ok dinamikus regisztrálása
+ANSWER: B
+EXPLANATION: A reducer egy tiszta függvény, amely a jelenlegi state és egy action alapján meghatározza az új state-et. A reducer nem végez mellékhatásos műveleteket, például HTTP-kéréseket; az ilyen műveleteket jellemzően NgRx effectek kezelik.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: output
+QUESTION: Mi lesz a konzol kimenete?
+CODE:
+of(1, 2, 3)
+  .pipe(
+    map(x => x * 2),
+    filter(x => x > 2)
+  )
+  .subscribe(x => console.log(x));
+ENDCODE
+A) `1`, `2`, `3`
+B) `2`, `4`, `6`
+C) `4`, `6`
+D) `6`
+ANSWER: C
+EXPLANATION: A `map` először 2, 4 és 6 értékeket állít elő. A `filter` eltávolítja a 2-t, mert nem nagyobb 2-nél, így 4 és 6 marad.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: Forms
+TYPE: behavior
+QUESTION: Mi a különbség a `setValue()` és a `patchValue()` között egy `FormGroup` esetén?
+A) A `setValue()` csak string értékeket fogad el
+B) A `patchValue()` mindig validálja a teljes formot
+C) A két metódus pontosan ugyanúgy működik
+D) A `setValue()` a teljes formstruktúrához illeszkedő értékeket vár, míg a `patchValue()` részleges frissítésre is alkalmas
+ANSWER: D
+EXPLANATION: A `setValue()` a form teljes struktúrájához megfelelő értéket vár, ezért hiányzó mezőknél hibát jelezhet. A `patchValue()` részleges objektummal is használható, így csak a megadott kontrollokat frissíti.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: Performance
+TYPE: production
+QUESTION: Egy `@for` ciklusban stabil, egyedi backend ID-val rendelkező rekordokat renderelsz. Melyik megoldás segíti Angularnak az elemek hatékonyabb követését?
+A) `track item.id`
+B) `track Math.random()`
+C) `track JSON.stringify(item) + Date.now()`
+D) A `track` teljes elhagyása minden esetben
+ANSWER: A
+EXPLANATION: A stabil és egyedi azonosító lehetővé teszi Angular számára, hogy felismerje, mely DOM elemek felelnek meg ugyanazoknak az adatoknak. A véletlenszerű vagy minden rendereléskor változó azonosító éppen ezt az optimalizációt akadályozza.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: HttpClient & interceptors
+TYPE: scenario
+QUESTION: Egy alkalmazásban minden HTTP-válasz esetén központilag szeretnéd naplózni a hibákat, például 500-as válaszoknál. Hol célszerű ezt megvalósítani?
+A) Minden komponens template-jében külön
+B) Minden `subscribe()` hívásban ugyanazzal a hibakezelő kóddal
+C) HTTP interceptorban, ahol központilag kezelhető a response/error stream
+D) A CSS fájlokban
+ANSWER: C
+EXPLANATION: Az interceptor központi pontot biztosít a HTTP-kommunikáció keresztmetszeti feladatainak, például loggingnak, hibakezelésnek és authentication kezelésnek. Ez csökkenti a komponensekben ismétlődő HTTP-specifikus logikát.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: Routing & guards
+TYPE: behavior
+QUESTION: Egy route paramétere az alkalmazás futása közben `/users/1` értékről `/users/2` értékre változik ugyanazon route komponens újralétrehozása nélkül. Melyik megoldás alkalmas arra, hogy a komponens reagáljon erre?
+A) Csak az `ngOnInit()` egyszeri futására hagyatkozni
+B) Az `ActivatedRoute.paramMap` Observable vagy annak megfelelő reaktív API figyelése
+C) Az oldal teljes újratöltése minden paraméterváltozáskor
+D) A route paraméter CSS változóként történő kezelése
+ANSWER: B
+EXPLANATION: Ugyanazon route komponenspéldány újrahasználható paraméterváltozáskor, ezért az egyszer lefutó inicializáció önmagában nem feltétlenül elegendő. A route paraméterek reaktív figyelése biztosítja, hogy a komponens az új ID-ra is reagáljon.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: State management (NgRx)
+TYPE: scenario
+QUESTION: Egy NgRx alkalmazásban egy effect HTTP-kérést indít egy `loadUsers` action hatására. A sikeres válasz után melyik megközelítés illeszkedik az NgRx action flow-hoz?
+A) Az effect közvetlenül módosítja a store state objektumát
+B) Az effect létrehoz egy új actiont, amelyet a reducer feldolgoz
+C) Az effect közvetlenül módosítja a komponens property-jeit
+D) Az effect figyelmen kívül hagyja a HTTP-választ, mert a reducer végzi a hálózati kérést
+ANSWER: B
+EXPLANATION: Az effect mellékhatásos műveletet, például HTTP-kérést kezel, majd a sikeres eredményből tipikusan új actiont dispatch-el. Ezt az actiont a reducer feldolgozza, és az immutable state transition részeként létrehozza az új állapotot.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: Signals
+TYPE: behavior
+QUESTION: Mi történik az alábbi kódban, amikor a `count` signal értéke megváltozik?
+CODE:
+const count = signal(1);
+
+effect(() => {
+  console.log('count:', count());
+});
+
+count.set(2);
+count.set(3);
+ENDCODE
+A) Az effect egyszer sem fut le, mert a signalokat csak template-ből lehet figyelni
+B) Az effect csak az első `set()` után fut le
+C) Az effect csak akkor fut le, ha manuálisan meghívják
+D) Az effect reaktívan újrafut, amikor az olvasott signal értéke megváltozik
+ANSWER: D
+EXPLANATION: Az `effect()` automatikusan követi azokat a signalokat, amelyeket az effect futása közben olvas. A `count()` olvasása miatt a signal változásai újrafuttatják az effectet.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: edgecase
+QUESTION: Mi történik az alábbi Observable esetén?
+CODE:
+const source$ = new Observable(subscriber => {
+  subscriber.next(1);
+  subscriber.complete();
+  subscriber.next(2);
+});
+
+source$.subscribe({
+  next: value => console.log(value),
+  complete: () => console.log('done')
+});
+ENDCODE
+A) `1`, majd `done` jelenik meg; a későbbi `next(2)` figyelmen kívül marad
+B) `1`, `done`, `2` jelenik meg
+C) Csak `done` jelenik meg
+D) Az Observable runtime hibát dob a második `next()` miatt
+ANSWER: A
+EXPLANATION: Az Observable a `complete()` után lezárult állapotba kerül, ezért további `next()` értesítéseket nem továbbít az előfizetőnek. A lezárás után az Observable nem küld újabb értéket.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: Components & templates
+TYPE: scenario
+QUESTION: Egy szülő komponens egy `@Input()` property-n keresztül ad át egy objektumot a gyermeknek. A szülőben ugyanazt az objektumreferenciát tartod meg, és csak az egyik property értékét módosítod. Mi a fő probléma `OnPush` használata esetén?
+A) Az `@Input()` automatikusan deep clone-olja az objektumot
+B) A gyermek mindig új példányt kap minden change detection ciklusban
+C) Az objektum belső módosítása önmagában nem változtatja meg a referenciaazonosságot
+D) Az `OnPush` komponens egyáltalán nem fogad `@Input()` értékeket
+ANSWER: C
+EXPLANATION: Az `OnPush` inputellenőrzése elsősorban a referencia változását használja. Ha ugyanaz az objektum marad, egy belső property módosítása nem jelent új inputreferenciát; immutable frissítéssel, például új objektum létrehozásával ez egyértelműen jelezhető.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: Dependency injection
+TYPE: scenario
+QUESTION: Egy service-t csak egy adott komponens és annak gyermekei számára szeretnél elérhetővé tenni, miközben más komponensek saját példányt használhatnak. Hol érdemes a providert deklarálni?
+A) A komponens `providers` tömbjében
+B) Mindig `providedIn: 'root'` segítségével
+C) A globális `window` objektumban
+D) Egy tetszőleges CSS fájlban
+ANSWER: A
+EXPLANATION: A komponens szintjén megadott provider az adott komponens injectorához tartozik, így a komponens és az alatta lévő injector-hierarchia számára biztosít példányt. Ezzel elkerülhető a globális singleton scope, ha lokális életciklusra van szükség.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: Services & providers
+TYPE: edgecase
+QUESTION: Mit eredményez a `useFactory` provider az Angular dependency injection rendszerében?
+CODE:
+providers: [
+  {
+    provide: API_URL,
+    useFactory: () => 'https://api.example.com'
+  }
+]
+ENDCODE
+A) Az Angular automatikusan HTTP-kérést indít az URL-re
+B) Az `API_URL` token feloldásakor a factory által visszaadott érték lesz az injektált érték
+C) A factory csak unit tesztekben használható
+D) Az `API_URL` tokenhez mindig class példányt kell visszaadni
+ANSWER: B
+EXPLANATION: A `useFactory` lehetővé teszi, hogy egy provider értékét egy factory függvény állítsa elő. Az `API_URL` token injektálásakor Angular meghívja a factoryt, és annak eredményét biztosítja dependencyként.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: Lifecycle hooks
+TYPE: edgecase
+QUESTION: Egy komponensben az `ngAfterViewInit()` után szeretnél egy `@ViewChild` által hivatkozott elemhez hozzáférni. Miért nem célszerű az elem létrehozására már az `ngOnInit()` során hagyatkozni?
+A) Az `ngOnInit()` mindig kétszer fut le
+B) Az `@ViewChild` csak service-ekben használható
+C) Az `ngOnInit()` után a komponens automatikusan megsemmisül
+D) A komponens view-ja ekkor még nem feltétlenül inicializálódott teljesen
+ANSWER: D
+EXPLANATION: Az `ngOnInit()` a komponens inicializációjához kapcsolódik, míg a view gyermekelemei később válnak elérhetővé. A view-hoz kötődő inicializációhoz az `ngAfterViewInit()` a megfelelő lifecycle pont.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Change detection & OnPush
+TYPE: behavior
+QUESTION: Mi történik egy `OnPush` komponenssel, ha egy template-ben olvasott signal értéke megváltozik?
+A) Angular a signal olvasását követő komponenst újraellenőrizhetővé teszi
+B) A komponens csak teljes oldalújratöltés után frissül
+C) A signal változása kizárólag a service-eket értesíti
+D) Az `OnPush` miatt a signal változása teljesen figyelmen kívül marad
+ANSWER: A
+EXPLANATION: Ha egy signal értékét egy komponens template-je olvassa, Angular nyomon követi ezt a függőséget. A signal változásakor a komponens újraellenőrzésre jelölhető, ezért az új érték megjelenhet az `OnPush` stratégia mellett is.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: Pipes
+TYPE: output
+QUESTION: Mi jelenik meg a template-ben?
+CODE:
+@Component({
+  template: `
+    <p>{{ name | uppercase }}</p>
+    <p>{{ price | number:'1.2-2' }}</p>
+  `
+})
+export class ProductComponent {
+  name = 'Angular';
+  price = 12.5;
+}
+ENDCODE
+A) `angular` és `12.5`
+B) `ANGULAR` és `12`
+C) `Angular` és `12.50`
+D) `ANGULAR` és `12.50`
+ANSWER: D
+EXPLANATION: Az `uppercase` pipe nagybetűssé alakítja a stringet. A `number:'1.2-2'` legalább egy egész számjegyet és pontosan két tizedesjegyet jelenít meg, ezért az eredmény `12.50`.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: Forms
+TYPE: behavior
+QUESTION: Egy reactive formban egy `FormControl` értékváltozásaira szeretnél reagálni. Melyik API erre a legalkalmasabb?
+A) `control.eventsOnly`
+B) `control.valueChanges`
+C) `control.onValueChanged`
+D) `control.formChanges`
+ANSWER: B
+EXPLANATION: A `valueChanges` Observable kibocsátja a kontroll értékének változásait, így RxJS-operátorokkal tovább feldolgozható. Ez a reactive forms egyik alapvető reaktív API-ja.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: Routing & guards
+TYPE: scenario
+QUESTION: Egy guardból a felhasználót bejelentkezési oldalra szeretnéd irányítani, ha nincs jogosultsága. Melyik megoldás illeszkedik leginkább az Angular routing modelljéhez?
+A) A guard mindig `true` értéket ad vissza, majd a komponens átirányít
+B) A guard közvetlenül `window.location.reload()`-ot hív
+C) A guard `UrlTree` értéket ad vissza az átirányításhoz
+D) A guard CSS class-t módosít a route elemén
+ANSWER: C
+EXPLANATION: A guard visszaadhat `UrlTree` értéket, amellyel Angular a jelenlegi navigáció helyett a megadott útvonalra navigálhat. Ez tisztább megoldás, mint a komponensből vagy közvetlen browser API-ból kezelt átirányítás.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: HttpClient & interceptors
+TYPE: behavior
+QUESTION: Miért lehet hasznos egy HTTP interceptorban `req.clone()` segítségével módosított requestet továbbítani?
+A) Mert az eredeti `HttpRequest` immutable
+B) Mert a clone automatikusan új HTTP-kérést küld
+C) Mert az interceptor csak clone objektumokat tud fogadni
+D) Mert a clone kikapcsolja a HTTP hibakezelést
+ANSWER: A
+EXPLANATION: Az Angular `HttpRequest` immutable API-t használ, ezért a meglévő request helyett módosított klónt kell létrehozni. A clone ugyanahhoz a HTTP-kérésfolyamathoz tartozó módosított request objektumot biztosít.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: Standalone components
+TYPE: scenario
+QUESTION: Egy standalone komponensben az Angular Router direktíváit, például a `routerLink`-et szeretnéd használni. Mi szükséges?
+A) Az egész alkalmazást újra kell konfigurálni NgModule-alapon
+B) A router direktíváit biztosító megfelelő standalone importot kell felvenni a komponens `imports` tömbjébe
+C) A `routerLink` csak service-ből használható
+D) A standalone komponens automatikusan minden Angular direktívát importál
+ANSWER: B
+EXPLANATION: Standalone komponens esetén a template-ben használt direktívák explicit template-függőségek. A routerhez tartozó megfelelő importot kell biztosítani, például a szükséges router direktívák vagy egy megfelelő router export segítségével.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: State management (NgRx)
+TYPE: scenario
+QUESTION: Egy selector több state mezőből számított értéket állít elő. Miért előnyös a selector használata a komponensben végzett manuális számítással szemben?
+A) A selector automatikusan HTTP-kérést indít
+B) A selector megváltoztatja a reducer működését
+C) A selector teljesen kikapcsolja a change detectiont
+D) A selector deklaratívan kapszulázza a state-ből származó lekérdezési logikát, és memoizációt is biztosíthat
+ANSWER: D
+EXPLANATION: A selector elkülöníti a state lekérdezésének és számított értékeinek logikáját a komponensektől. A megfelelő NgRx selectorok memoizációt használhatnak, így azonos bemenetek esetén elkerülhetők a felesleges újraszámítások.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: scenario
+QUESTION: Egy streamben minden beérkező értéket egy belső Observable-re szeretnél leképezni úgy, hogy az új értékek érkezésekor a korábbi belső Observable-ok is futhassanak párhuzamosan. Melyik operátor illik ehhez?
+A) `switchMap`
+B) `exhaustMap`
+C) `mergeMap`
+D) `takeUntil`
+ANSWER: C
+EXPLANATION: A `mergeMap` minden külső értékhez létrehozhat egy belső Observable-előfizetést, és ezek párhuzamosan futhatnak. Ez megfelelő, ha nem szeretnéd leállítani a korábbi belső műveleteket új érték érkezésekor.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: Performance
+TYPE: performance
+QUESTION: Egy komponens template-jében ugyanazt a drága számítást végző metódust több helyen meghívod. Miért lehet ez problémás?
+A) Angular csak a metódus első eredményét használhatja
+B) A template-ben hívott metódus minden esetben külön service-t hoz létre
+C) A metódus automatikusan Promise-szá alakul
+D) A metódus többször is lefuthat change detection során, így a drága számítás ismétlődhet
+ANSWER: D
+EXPLANATION: A template-ben meghívott metódusok újraértékelődhetnek change detection során. Ha a számítás drága és több helyen is szerepel, ez jelentős fölösleges CPU-terhelést okozhat; ilyen esetben reaktív vagy memoizált megközelítés lehet megfelelőbb.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: Testing
+TYPE: debug
+QUESTION: Egy komponens tesztjében megváltoztatod a komponens egy property-jét, de az elvárt DOM változás nem jelenik meg azonnal. Mi hiányozhat a tesztből?
+A) Egy új `TestBed.configureTestingModule()` minden assertion előtt
+B) Egy új komponenspéldány létrehozása minden property módosítás után
+C) A változás után szükséges `fixture.detectChanges()` hívás
+D) A böngésző teljes újratöltése
+ANSWER: C
+EXPLANATION: A komponens állapotának programozott módosítása után a tesztnek le kell futtatnia a change detectiont, ha a DOM frissülését akarjuk ellenőrizni. A `fixture.detectChanges()` újra lefuttatja a releváns template-ellenőrzést.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: SSR & hydration
+TYPE: edgecase
+QUESTION: Miért fontos SSR-es Angular alkalmazásban kerülni a böngésző-specifikus globális API-k közvetlen használatát olyan kódban, amely a szerveren is lefuthat?
+A) Mert a böngésző API-k lassabbak szerveren
+B) Mert a szerver oldali környezetben például a `window` vagy `localStorage` nem feltétlenül létezik
+C) Mert az SSR automatikusan letiltja a TypeScriptet
+D) Mert a hydration kizárólag CSS-ből áll
+ANSWER: B
+EXPLANATION: SSR során ugyanaz az alkalmazáskód szerveroldali környezetben is futhat, ahol a böngésző globális objektumai nem állnak rendelkezésre. Platformfüggő logika esetén Angular-specifikus platformellenőrzés vagy megfelelő lifecycle API használata szükséges lehet.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: Directives
+TYPE: scenario
+QUESTION: Egy attribute directive segítségével a host elem háttérszínét szeretnéd módosítani Angularban. Melyik megközelítés illeszkedik leginkább a directive szerepéhez?
+A) A host elem minden gyermekét új komponenssé alakítani
+B) Az Angular Routerrel navigálni a host elemhez
+C) A directive-ben a host elemhez kapcsolódó DOM/stílus API-t használni megfelelő Angular absztrakción keresztül
+D) A directive helyett mindig pipe-ot használni
+ANSWER: C
+EXPLANATION: Az attribute directive egyik tipikus feladata a host elem viselkedésének vagy megjelenésének módosítása. Angular környezetben erre használható például az `ElementRef` és a `Renderer2`, a megfelelő DOM-abstraction és platformkompatibilitás figyelembevételével.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: Data binding
+TYPE: trap
+QUESTION: Mi a lényegi különbség a `[value]="name"` és a `[(ngModel)]="name"` között egy input mező esetén?
+A) A `[value]` egyirányú property binding, míg a `[(ngModel)]` a komponens és a mező közötti kétirányú adatáramlást biztosítja
+B) A `[value]` mindig módosítja a komponens property-jét gépeléskor
+C) A `[(ngModel)]` kizárólag reactive forms esetén használható
+D) A két szintaxis teljesen azonos működésű
+ANSWER: A
+EXPLANATION: A `[value]` a komponensből az input felé ad értéket, de önmagában nem írja vissza a felhasználói módosítást a komponensbe. A `[(ngModel)]` a value bindinget és a változáskezelést kombinálja, így kétirányú szinkronizációt biztosít.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: Components & templates
+TYPE: behavior
+QUESTION: Egy gyermek komponens saját eseményt szeretne jelezni a szülő komponens felé. Melyik Angular mechanizmus erre a hagyományos és idiomatikus megoldás?
+A) A gyermek közvetlenül módosítja a szülő private property-jét
+B) A gyermek `@Output()` segítségével eseményt emittál, amelyet a szülő kezel
+C) A gyermek a DOM `window` objektumára írja ki az adatot
+D) A gyermek mindig route navigációval kommunikál a szülővel
+ANSWER: B
+EXPLANATION: A gyermek komponens `@Output()` segítségével eseményt publikálhat, amelyre a szülő template-je eseménybindinggal feliratkozhat. Ez lazább és jól definiált komponensközi kommunikációt biztosít.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: HttpClient & interceptors
+TYPE: edgecase
+QUESTION: Egy `HttpClient` kérésnél a `catchError` segítségével szeretnél egy hibát kezelni, majd az Observable-láncot egy helyettesítő értékkel folytatni. Melyik megközelítés alkalmas erre?
+A) A `catchError` callbackből egy új Observable-t kell visszaadni
+B) A `catchError` callbackből mindig `void` értéket kell visszaadni
+C) A `catchError` csak HTTP 200 válaszoknál fut le
+D) A `catchError` automatikusan újraküldi a kérést
+ANSWER: A
+EXPLANATION: A `catchError` egy hibás Observable helyett egy új Observable-t képes visszaadni, például `of(fallbackValue)` formában. Így a stream a helyettesítő értékkel folytatható, ha az alkalmazás üzleti logikája ezt megengedi.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: Forms
+TYPE: scenario
+QUESTION: Egy reactive form mezőjét szeretnéd úgy letiltani, hogy a `FormGroup.value` eredményében ne szerepeljen. Melyik megoldás megfelelő?
+A) `control.hide()`
+B) `control.disable()`
+C) `control.removeValue()`
+D) `control.excludeFromForm()`
+ANSWER: B
+EXPLANATION: A `disable()` deaktiválja a kontrollt, és a disabled kontrollok normál esetben nem szerepelnek a szülő `FormGroup.value` eredményében. Ha a disabled mezőket is szükséges lekérni, a `getRawValue()` használható.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: Change detection & OnPush
+TYPE: scenario
+QUESTION: Egy `OnPush` komponensben egy Observable-ból érkező adatot az `async` pipe-pal jelenítesz meg. Miért működhet a template frissítése akkor is, ha nincs új `@Input()` referencia?
+A) Az `async` pipe csak a root komponenst frissíti
+B) Az Observable minden alkalommal új komponenst hoz létre
+C) Az `async` pipe az új értékeknél értesíti Angular change detection rendszerét
+D) Az `OnPush` ilyenkor automatikusan `Default` stratégiára vált
+ANSWER: C
+EXPLANATION: Az `async` pipe feliratkozik az Observable-re, és az új kibocsátott értékeknél Angular számára jelzi, hogy a kapcsolódó view frissítése szükséges. Emiatt az `OnPush` komponens is képes reagálni új Observable-értékekre.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: scenario
+QUESTION: Egy komponenshez tartozó Observable-előfizetést szeretnél automatikusan megszüntetni, amikor a komponens megsemmisül. Melyik modern Angular-megközelítés alkalmas erre?
+A) Minden Observable-ra külön `setTimeout()` használata
+B) A subscription manuális megszüntetésének teljes elhagyása minden esetben
+C) Minden subscriptiont globális változóban tárolni
+D) Az Angular `DestroyRef` és a `takeUntilDestroyed()` használata
+ANSWER: D
+EXPLANATION: A `takeUntilDestroyed()` az Angular lifecycle-jához köti az Observable subscription megszüntetését, így a kapcsolódó komponens vagy injectable context megsemmisülésekor az előfizetés automatikusan lezárható. Ez csökkenti a kézi subscription-management szükségességét.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Performance
+TYPE: production
+QUESTION: Egy nagy Angular alkalmazásban szeretnéd csökkenteni az induláskor betöltendő JavaScript mennyiségét. Melyik megközelítés segíthet ebben?
+A) Minden komponenst egyszerre importálni a root komponensbe
+B) Minden route-hoz ugyanazt a nagy service csomagot hozzáadni
+C) Minden template-ben több pipe-ot használni
+D) Lazy loading alkalmazása a ritkábban szükséges feature-ök vagy route-ok számára
+ANSWER: D
+EXPLANATION: A lazy loading lehetővé teszi, hogy bizonyos feature-ök kódja csak akkor töltődjön be, amikor ténylegesen szükség van rá. Ez csökkentheti a kezdeti bundle méretét és javíthatja az alkalmazás indulási idejét.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: Signals
+TYPE: edgecase
+QUESTION: Mi történik az alábbi kódban, ha a `computed` belsejében csak feltételesen olvasod a `details` signalt?
+CODE:
+const showDetails = signal(false);
+const details = signal('Angular');
+
+const text = computed(() =>
+  showDetails() ? details() : 'Hidden'
+);
+
+console.log(text());
+details.set('Signals');
+console.log(text());
+showDetails.set(true);
+console.log(text());
+ENDCODE
+A) A `computed` mindig újraszámolódik a `details` változásakor
+B) A `computed` csak a ténylegesen olvasott signaloktól függ, ezért a `details` változása addig nem invalidálja, amíg `showDetails()` false
+C) A `computed` nem tud feltételes signalfüggőséget kezelni
+D) A `computed` automatikusan minden signalt függőségként regisztrál
+ANSWER: B
+EXPLANATION: A `computed` dinamikusan követi azokat a signalokat, amelyeket az adott számítás során ténylegesen olvas. Amíg `showDetails()` false, a `details()` nem kerül olvasásra, ezért annak módosítása önmagában nem érvényteleníti a számítást. Amikor `showDetails` true lesz, a következő számítás során a `details` függőséggé válik.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: RxJS & Observables
+TYPE: trap
+QUESTION: Mi a lényegi különbség az `Observable` és a `Promise` között az alábbi szempontból?
+A) Egy Observable több értéket is kibocsáthat az idő során, míg egy Promise egyetlen végső eredményt reprezentál
+B) Egy Observable mindig szinkron, míg egy Promise mindig szinkron
+C) Egy Promise több előfizetőt kezel, míg Observable csak egyet
+D) Az Observable nem tud hibát jelezni
+ANSWER: A
+EXPLANATION: Egy Observable nulla, egy vagy sok értéket is kibocsáthat, és a fogyasztó feliratkozhat a streamre. A Promise egyetlen aszinkron eredmény sikerét vagy hibáját reprezentálja.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: HttpClient & interceptors
+TYPE: scenario
+QUESTION: Egy authentication interceptor hozzáadja a tokent minden API-kéréshez, de nem szeretnéd a tokent egy külső analytics szolgáltatás felé küldött kéréshez hozzáadni. Mi a legjobb megközelítés?
+A) Minden kéréshez hozzáadni a tokent, mert az interceptor nem tudja megkülönböztetni őket
+B) A tokent a response body-ba helyezni
+C) A request URL-je vagy más megbízható request metadata alapján eldönteni, hogy szükséges-e az auth header
+D) A token hozzáadását a komponensekben kézzel megoldani
+ANSWER: C
+EXPLANATION: Az interceptor központilag megvizsgálhatja a requestet, és csak a saját backendhez tartozó kérésekhez adhatja hozzá az authentication headert. Ez csökkenti annak kockázatát, hogy érzékeny credential véletlenül külső szolgáltatáshoz kerüljön.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: Routing & guards
+TYPE: edgecase
+QUESTION: Egy route resolver HTTP-kérést indít a navigáció előtt. Mi történik, ha a resolver által visszaadott Observable hibával fejeződik be?
+A) Angular automatikusan sikeresnek tekinti a navigációt
+B) A komponens mindig létrejön, majd később kapja meg az adatot
+C) Angular figyelmen kívül hagyja a resolver hibáját
+D) A navigáció nem fejeződik be normálisan, és a resolver hibája kezelendő
+ANSWER: D
+EXPLANATION: A resolver a route aktiválása előtt szolgáltat adatot. Ha a resolver streamje hibával zárul, a navigáció hibás állapotba kerülhet, ezért a hibát megfelelően kell kezelni, például az Observable-láncban vagy a routing architektúrában.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Forms
+TYPE: debug
+QUESTION: Miért hibás az alábbi reactive forms konfiguráció, ha a `name` kontroll kezdeti értékét és validátorát is meg szeretnéd adni?
+CODE:
+const form = new FormGroup({
+  name: new FormControl(
+    'Anna',
+    Validators.required
+  )
+});
+ENDCODE
+A) A konfiguráció hibás, mert a `FormControl` nem fogadhat validátort
+B) A konfiguráció önmagában helyes, a `FormControl` második argumentuma lehet szinkron validátor
+C) A `Validators.required` csak template-driven formokban használható
+D) A kezdeti értéknek mindig objektumnak kell lennie
+ANSWER: B
+EXPLANATION: A `FormControl` konstruktorában az első argumentum lehet a kezdeti érték, a második pedig szinkron validator vagy validatorok konfigurációja. Ezért a megadott forma érvényes reactive forms konfiguráció.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: Standalone components
+TYPE: behavior
+QUESTION: Mi az egyik fő előnye annak, hogy egy Angular komponens standalone?
+A) A komponens automatikusan minden npm csomaghoz hozzáfér
+B) A komponens nem használhat dependency injectiont
+C) A komponens template-függőségei közvetlenül az `imports` tömbben deklarálhatók NgModule deklaráció nélkül
+D) A komponens csak SSR környezetben működik
+ANSWER: C
+EXPLANATION: A standalone komponensek saját template-függőségeiket közvetlenül az `imports` tömbben deklarálhatják. Ez egyszerűbb dependency struktúrát tesz lehetővé és csökkenti az NgModule-alapú deklarációs overheadet.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: Testing
+TYPE: scenario
+QUESTION: Egy service Angular `HttpClient`-et használ, és unit tesztben ellenőrizni szeretnéd, hogy pontosan milyen URL-re küldte a kérést, majd kontrollált választ adnál vissza. Melyik megoldás erre megfelelő?
+A) `HttpTestingController.expectOne()`
+B) `window.fetch.mockRequest()`
+C) `RouterTestingHarness.navigate()`
+D) `fixture.detectChanges()` önmagában
+ANSWER: A
+EXPLANATION: A `HttpTestingController` lehetővé teszi a tesztben indított HTTP-kérések elfogását és ellenőrzését. Az `expectOne()` segítségével az URL és a request további tulajdonságai is validálhatók, majd a válasz kontrolláltan visszaadható.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: SSR & hydration
+TYPE: behavior
+QUESTION: Mi a hydration egyik fő célja egy Angular SSR alkalmazásban?
+A) A szerver által generált HTML teljes törlése és újrarenderelése
+B) A CSS fájlok JavaScriptre fordítása
+C) A backend adatbázis automatikus migrálása
+D) A szerver által létrehozott DOM újrahasznosítása és kliensoldali Angular viselkedéssel való összekapcsolása
+ANSWER: D
+EXPLANATION: Hydration során Angular a szerver által már létrehozott DOM-ot használja fel, és hozzákapcsolja a kliensoldali alkalmazás működését. Ezzel elkerülhető a teljes DOM újrarenderelése és javítható a kezdeti betöltési élmény.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: State management (NgRx)
+TYPE: scenario
+QUESTION: Egy NgRx reducerben egy tömbhöz új elemet szeretnél hozzáadni immutable módon. Melyik megoldás illeszkedik a reducer szerepéhez?
+A) `state.items.push(action.item)` és az eredeti state visszaadása
+B) Az adatbázis közvetlen módosítása a reducerből
+C) Új state objektum létrehozása, amelyben az items új tömböt kap az új elemmel
+D) Egy komponens property-jének módosítása
+ANSWER: C
+EXPLANATION: A reducernek tiszta, kiszámítható state transitiont kell létrehoznia. Az eredeti tömb mutációja helyett új tömb és új state objektum készíthető például spread operátorral, így a referenciaalapú változásérzékelés is megfelelően működik.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: Performance
+TYPE: production
+QUESTION: Egy nagy táblázatban gyakran változik egyetlen sor adata, miközben több ezer másik sor változatlan marad. Melyik megközelítés segíthet elkerülni a felesleges DOM-frissítéseket?
+A) Minden sorhoz külön `setInterval()` használata
+B) Stabil `track` azonosító használata a listában és megfelelő immutable state-frissítés
+C) Minden változás után az egész oldal újratöltése
+D) Az összes sort `JSON.stringify()` eredményére cserélni
+ANSWER: B
+EXPLANATION: Stabil tracking kulccsal Angular hatékonyabban tudja azonosítani, mely listaelemek maradtak változatlanok. Immutable state-frissítéssel és megfelelő trackinggel csökkenthető a szükségtelen DOM-munka.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: Components & templates
+TYPE: edgecase
+QUESTION: Mi történik az alábbi template esetén, ha a `user` kezdetben `null`, és később objektummá válik?
+CODE:
+<p>{{ user?.profile?.name }}</p>
+ENDCODE
+A) A template azonnal runtime hibát dob, mert a `user` null
+B) Az Angular automatikusan létrehozza a `user` objektumot
+C) A template `undefined` értéket jeleníthet meg hiba nélkül, majd később az elérhető nevet
+D) Az optional chaining csak TypeScript fájlokban használható
+ANSWER: C
+EXPLANATION: Az optional chaining megakadályozza, hogy a null vagy undefined köztes érték property-hozzáférése runtime hibát okozzon. Amíg `user` vagy `profile` nem érhető el, a kifejezés nem jelenít meg nevet; később a rendelkezésre álló érték renderelhető.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: Services & providers
+TYPE: scenario
+QUESTION: Egy service konstruktorában egy másik service-re van szükséged. Mi az Angular DI idiomatikus megoldása?
+A) A dependency példányosítása minden metódusban `new` operátorral
+B) A dependency átadása a CSS-en keresztül
+C) A dependency globális változóként való tárolása
+D) A dependency injektálása a service konstruktorán keresztül
+ANSWER: D
+EXPLANATION: Angular dependency injection esetén a szükséges service-eket tipikusan konstruktorinjekcióval vagy az `inject()` API-val kérjük be. Így az injector kezeli a dependency életciklusát és konfigurációját.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: Directives
+TYPE: scenario
+QUESTION: Egy saját structural directive-szerű működést szeretnél megvalósítani, amely egy template-et feltétel alapján hoz létre. Melyik Angular fogalom kapcsolódik ehhez legközvetlenebbül?
+A) `TemplateRef` és `ViewContainerRef`
+B) `HttpClient` és `HttpHeaders`
+C) `ActivatedRoute` és `Router`
+D) `FormGroup` és `FormControl`
+ANSWER: A
+EXPLANATION: A `TemplateRef` reprezentálja a template-t, míg a `ViewContainerRef` lehetőséget ad embedded view létrehozására és kezelésére. Ezek a fogalmak alapvetőek a structural directive-ek működésének megértéséhez.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Pipes
+TYPE: behavior
+QUESTION: Egy pure pipe bemenetként egy objektumot kap. Mi történik tipikusan, ha az objektum egyik belső property-jét módosítod, de maga az objektumreferencia változatlan marad?
+A) A pipe minden esetben újrafut
+B) A pipe automatikusan deep clone-olja az objektumot
+C) A pipe tipikusan nem fut újra pusztán a belső property mutációja miatt
+D) Angular hibát dob a mutáció miatt
+ANSWER: C
+EXPLANATION: A pure pipe a bemeneti értékek változására, objektumok esetén jellemzően a referencia változására támaszkodik. Ha ugyanaz az objektumreferencia marad, egy belső property módosítása önmagában nem feltétlenül indítja újra a pipe-ot.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: Change detection & OnPush
+TYPE: scenario
+QUESTION: Egy `OnPush` komponensben egy `@Input()` tömböt jelenítesz meg. A szülő hozzáad egy elemet az eredeti tömbhöz `push()` segítségével, de a referencia változatlan marad. Mi a legjobb megoldás?
+A) A tömböt új referenciával kell frissíteni, például spread operátorral
+B) Az `OnPush` automatikusan deep compare-t végez
+C) A `push()` után minden esetben új komponenspéldány jön létre
+D) Az `@Input()` tömböket nem lehet `OnPush` komponensben használni
+ANSWER: A
+EXPLANATION: Az `OnPush` komponensnél az input referencia változása fontos jelzés Angular számára. Új tömb létrehozása, például `[...items, newItem]`, egyértelmű referencia-változást eredményez, amelyet Angular megfelelően észlelhet.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: Signals
+TYPE: architecture
+QUESTION: Egy komplex Angular alkalmazásban egy signal több komponens és service közös, hosszú életű állapotát tartalmazza. Melyik szempontot érdemes figyelembe venni az architektúra kialakításakor?
+A) Minden signalt kötelező globális változóként létrehozni
+B) A signalokat mindig komponensenként külön kell duplikálni
+C) Érdemes világosan meghatározni a state tulajdonosát és az írási hozzáférést, például service-en keresztüli API-val korlátozni a mutációt
+D) A signalok kizárják a service-ek használatát
+ANSWER: C
+EXPLANATION: Közös state esetén fontos tisztázni, melyik réteg birtokolja az állapotot, és hol történhet módosítás. Egy service által kapszulázott writable signal és kifelé csak olvasható API jól szabályozhatja az állapot hozzáférését.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: production
+QUESTION: Egy keresési folyamatban a felhasználó gyorsan egymás után gépel, és minden értékhez HTTP-kérés indulna. A cél az, hogy a korábbi keresések eredményei ne legyenek feldolgozva, amikor már újabb keresés érkezett. Melyik kombináció illeszkedik leginkább ehhez?
+A) `debounceTime` és `switchMap`
+B) `concatMap` és `delay`
+C) `mergeMap` és `scan`
+D) `reduce` és `buffer`
+ANSWER: A
+EXPLANATION: A `debounceTime` csökkenti a túl sűrű kérések számát azáltal, hogy vár a gépelés megszakadására, a `switchMap` pedig az új keresés érkezésekor leválasztja az előző belső streamet. Együtt tipikus megoldást adnak autocomplete vagy search-as-you-type esetekre.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: Performance
+TYPE: architecture
+QUESTION: Egy nagy Angular alkalmazásban a kezdeti bundle mérete jelentősen megnőtt, mert ritkán használt admin funkciók is a kezdő csomagban vannak. Melyik architekturális megközelítés célszerű?
+A) Minden admin komponenst eager módon a root komponensből betölteni
+B) Az admin funkciókat lazy-loaded route vagy feature határ mögé szervezni
+C) Minden admin service-t globális változóvá alakítani
+D) Az admin template-eket egyetlen nagy komponensbe másolni
+ANSWER: B
+EXPLANATION: A ritkán használt feature-ök lazy loadingja lehetővé teszi, hogy a hozzájuk tartozó kód ne legyen része a kezdeti betöltésnek. Ez csökkentheti az initial JavaScript mennyiségét és javíthatja a startup teljesítményt.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: HttpClient & interceptors
+TYPE: production
+QUESTION: Egy alkalmazásban access token alapú authentication működik. Ha egy API-kérés `401 Unauthorized` választ ad, meg kell próbálni a tokent frissíteni, majd az eredeti kérést újra elküldeni. Mi a legfontosabb architekturális kockázat egy interceptorban megvalósított refresh flow esetén?
+A) Az interceptor soha nem férhet hozzá Observable-höz
+B) A `401` válasz mindig azt jelenti, hogy a felhasználót azonnal ki kell jelentkeztetni
+C) Az interceptor automatikusan megoldja a párhuzamos refresh kéréseket
+D) Párhuzamos `401` válaszok esetén több refresh kérés indulhat, ezért a refresh folyamatot koordinálni kell
+ANSWER: D
+EXPLANATION: Több egyidejű kérés is kaphat `401` választ, ezért naiv implementációban mindegyik külön refresh kérést indíthat. Production környezetben gyakran szükséges egy közös refresh folyamat koordinálása, amelyhez a további kérések csatlakozhatnak.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: State management (NgRx)
+TYPE: architecture
+QUESTION: Egy NgRx alkalmazásban egy komponens közvetlenül módosítja a store state objektumának egyik property-jét. Miért tekinthető ez problémásnak?
+A) Mert a store csak stringeket képes tárolni
+B) Mert megkerüli az action → reducer alapú state transitiont, és kiszámíthatatlanná teheti az állapotváltozásokat
+C) Mert a komponens többé nem használhat template-et
+D) Mert az NgRx csak HTTP-kérések kezelésére szolgál
+ANSWER: B
+EXPLANATION: Az NgRx központi state flow-ja az actionök és reducerek által létrehozott explicit state transitionökre épül. A közvetlen mutáció megkerüli ezt a mechanizmust, megnehezíti a változások követését és sértheti az immutable state-kezelést.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: SSR & hydration
+TYPE: production
+QUESTION: Egy SSR + hydration Angular alkalmazásban egy komponens a szerver és a kliens között eltérő kezdeti adatot használ, ezért a szerver által generált DOM és a kliens által várt tartalom nem egyezik. Mi lehet ennek a következménye?
+A) A hydration mismatch vagy hydration hiba
+B) Az Angular automatikusan átnevezi a komponenseket
+C) A CSS automatikusan kikapcsol
+D) A router minden route-ot töröl
+ANSWER: A
+EXPLANATION: A hydration abból indul ki, hogy a kliens oldali alkalmazás képes megfelelni a szerver által létrehozott DOM struktúrának. Ha a kezdeti renderelés determinisztikusan eltér, Angular hydration mismatch-t érzékelhet, ami hibához vagy nem kívánt újrarendereléshez vezethet.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: Testing
+TYPE: production
+QUESTION: Egy komplex Angular komponens tesztje véletlenszerűen instabillá válik, mert aszinkron Observable-ok és timers is futnak benne. Melyik megközelítés segíthet a teszt időzítésének determinisztikus kezelésében?
+A) Minden aszinkron művelet után `window.location.reload()`
+B) Minden Observable-t globálisan letiltani
+C) Az Angular tesztkörnyezet megfelelő fake-timer/async eszközeinek használata, például `fakeAsync` és `tick` az adott esethez illeszkedően
+D) Minden tesztet végtelen timeouttal futtatni
+ANSWER: C
+EXPLANATION: A `fakeAsync` és `tick` segítségével bizonyos időalapú és aszinkron műveletek determinisztikusan vezérelhetők a tesztben. A pontos megoldás attól függ, hogy milyen aszinkron mechanizmusokat használ a komponens.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: Dependency injection
+TYPE: architecture
+QUESTION: Egy nagy Angular alkalmazásban ugyanazt a token-alapú konfigurációt több feature különböző értékkel szeretné biztosítani. Melyik DI-megközelítés teszi lehetővé, hogy egy alacsonyabb injector szint felülírja a magasabb szinten definiált providert?
+A) A `providers` deklarálása a megfelelő feature vagy komponens injectorában ugyanazzal a tokennel
+B) Egy új TypeScript interface létrehozása provider nélkül
+C) A token átnevezése minden feature-ben
+D) A dependency közvetlen módosítása runtime során
+ANSWER: A
+EXPLANATION: Az Angular hierarchikus injectorai lehetővé teszik, hogy egy child injector saját providert adjon ugyanahhoz a tokenhez. Az adott injector hatókörében ez a provider kerül feloldásra a magasabb szintű provider helyett.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Routing & guards
+TYPE: architecture
+QUESTION: Egy több szerepkörös enterprise alkalmazásban a route-ok egy része csak bizonyos jogosultságokkal érhető el. Mi a legfontosabb szempont a guardok tervezésekor?
+A) A guardokban minden üzleti logikát és adatbázis-műveletet közvetlenül meg kell valósítani
+B) A guard kizárólag CSS állapotot kezeljen
+C) A guardok mindig teljes oldalújratöltést végezzenek
+D) A guardok legyenek jól elkülönített authorization boundary-k, és az érzékeny backend jogosultság-ellenőrzést ne tekintsük kizárólag kliensoldali védelemnek
+ANSWER: D
+EXPLANATION: A route guard jó kliensoldali UX- és navigációs kontroll, de nem tekinthető biztonsági határnak önmagában, mert a klienskód módosítható vagy megkerülhető. Az érzékeny erőforrások jogosultságát a backendnek is ellenőriznie kell.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Components & templates
+TYPE: architecture
+QUESTION: Egy nagy Angular alkalmazásban egy komponens template-je több, egymástól független üzleti részlogikát és összetett számítást tartalmaz. Mi lehet egy fenntarthatóbb megközelítés?
+A) Minden számítást közvetlenül a template-ben hagyni, hogy minden change detection során újra lefusson
+B) Az összes logikát egyetlen hatalmas komponensosztályba helyezni
+C) A megjelenítési és üzleti logika megfelelő szétválasztása, például komponensenként kisebb felelősségi körök, computed state vagy dedikált service-ek használatával
+D) Minden üzleti logikát CSS selectorokkal megvalósítani
+ANSWER: C
+EXPLANATION: Nagy komponenseknél a felelősségi körök szétválasztása javítja a tesztelhetőséget, olvashatóságot és karbantarthatóságot. A template-ben végzett drága számítások helyett reaktív vagy memoizált state, illetve megfelelően kapszulázott service-ek használhatók.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: Signals
+TYPE: architecture
+QUESTION: Egy service-ben szeretnéd a belső writable signal állapotát a fogyasztók számára csak olvasható módon elérhetővé tenni. Melyik megközelítés a legmegfelelőbb?
+CODE:
+private readonly _users = signal<User[]>([]);
+
+readonly users = this._users.asReadonly();
+ENDCODE
+A) A writable signalt minden komponensnek közvetlenül átadni
+B) A signal értékét minden olvasáskor JSON-ná alakítani
+C) A writable signalt `asReadonly()` segítségével read-only signal API-ként publikálni
+D) A signal helyett minden esetben globális változót használni
+ANSWER: C
+EXPLANATION: Az `asReadonly()` lehetővé teszi, hogy a belső writable signal kívülről csak olvasható interfészként legyen elérhető. Így a state módosításának joga a service-en belül marad, ami jobb kapszulázást biztosít.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: edgecase
+QUESTION: Egy Observable több értéket bocsát ki, és egy `shareReplay({ bufferSize: 1, refCount: true })` operátorral osztod meg. Mi a `refCount: true` egyik fontos következménye?
+A) Az upstream subscription megszűnhet, amikor az utolsó subscriber is leiratkozik
+B) Az Observable automatikusan csak egyetlen értéket bocsát ki
+C) Az upstream subscription örökké aktív marad
+D) A replay buffer automatikusan végtelen méretű lesz
+ANSWER: A
+EXPLANATION: `refCount: true` esetén a megosztott upstream subscription az aktív downstream subscriberek számához kötődik. Ha az utolsó subscriber is leiratkozik, az upstream subscription megszüntethető.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: HttpClient & interceptors
+TYPE: architecture
+QUESTION: Egy interceptorban szeretnéd egységesen kezelni a HTTP hibákat, de bizonyos hibákat az egyes feature-öknek kell üzleti szinten feldolgozniuk. Melyik architektúra a legcélszerűbb?
+A) Minden HTTP hibát az interceptorban teljesen elnyelni
+B) Az interceptorban minden hibát automatikusan `null` értékre alakítani
+C) Az összes hibát közvetlenül a backendnek továbbítani
+D) Az interceptorban csak a valóban keresztmetszeti feladatokat kezelni, és a feature-szintű üzleti hibakezelést meghagyni a fogyasztónak
+ANSWER: D
+EXPLANATION: Az interceptor megfelelő hely a közös concerns, például logging, authentication vagy általános transport-szintű kezelés számára. Az üzleti jelentésű hibák gyakran feature-specifikusak, ezért azokat célszerű a fogyasztó oldalon kezelni.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: Performance
+TYPE: architecture
+QUESTION: Egy Angular alkalmazásban a felhasználói felület nagy része csak interakció után válik szükségessé. Melyik megközelítés segíthet a kezdeti renderelési költség csökkentésében?
+A) Minden UI-rész azonnali létrehozása és elrejtése CSS-sel
+B) A szükséges UI-t csak akkor létrehozni vagy betölteni, amikor ténylegesen szükség van rá
+C) Minden komponenst `setInterval()` segítségével újrarenderelni
+D) Minden adatot előre `JSON.stringify()` formára alakítani
+ANSWER: B
+EXPLANATION: A szükségtelen DOM és komponensfa létrehozásának elkerülése csökkentheti a kezdeti renderelési és change-detection költséget. Interakcióhoz kötött UI esetén a feltételes renderelés vagy lazy loading megfelelő stratégia lehet.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: State management (NgRx)
+TYPE: architecture
+QUESTION: Egy NgRx alkalmazásban egy effect egy HTTP-kérés eredménye alapján módosítani szeretné az állapotot. Melyik adatfolyam illeszkedik leginkább az NgRx architektúrához?
+A) Effect → közvetlen state mutation
+B) Component → reducer közvetlen metódushívása
+C) Effect → success action → reducer → új state
+D) Effect → közvetlen DOM manipulation
+ANSWER: C
+EXPLANATION: Az effect a mellékhatást, például a HTTP-kérést kezeli, majd az eredmény alapján actiont dispatch-elhet. A reducer ezt az actiont tiszta state transitionként dolgozza fel.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: Dependency injection
+TYPE: edgecase
+QUESTION: Egy tokenhez `useClass` providert konfigurálsz. Mi történik, amikor a tokent injektálják?
+CODE:
+providers: [
+  {
+    provide: Logger,
+    useClass: ProductionLogger
+  }
+]
+ENDCODE
+A) Az Angular a `ProductionLogger` példányosítását használja a `Logger` token feloldásakor
+B) Az Angular csak a `Logger` interface nevét tárolja
+C) Az Angular egy meglévő `Logger` példányt keres, és soha nem hoz létre `ProductionLogger` példányt
+D) A provider csak template-ekből használható
+ANSWER: A
+EXPLANATION: A `useClass` azt mondja meg az injector számára, hogy a token feloldásakor melyik konkrét osztályt használja. Így a `Logger` tokenhez a `ProductionLogger` példánya biztosítható.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: SSR & hydration
+TYPE: production
+QUESTION: Egy SSR-es Angular alkalmazásban egy komponens böngészőspecifikus API-t csak a kliensoldali renderelés után szeretne használni. Melyik megközelítés illeszkedik legjobban az Angular SSR modelljéhez?
+A) A browser API-t feltétel nélkül meghívni a konstruktorban
+B) A browser API-t minden szerveroldali renderelés során meghívni
+C) A browser API-t CSS-ből meghívni
+D) A kliensoldali, browser-only végrehajtást megfelelő Angular platform/lifecycle mechanizmussal elkülöníteni
+ANSWER: D
+EXPLANATION: SSR esetén a komponens kódja szerveren is futhat, ezért a browser-only API-k feltétel nélküli használata hibát okozhat. A kliensoldali végrehajtást Angular megfelelő platform- és lifecycle-mechanizmusaival célszerű elkülöníteni.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: Routing & guards
+TYPE: architecture
+QUESTION: Egy alkalmazásban a route-okhoz szükséges adatokat resolverek töltik be, de egyes API-kérések több másodpercig is tarthatnak. Mi a fő trade-off?
+A) A resolver mindig gyorsabbá teszi az API-kérést
+B) A navigáció a resolver adatára várhat, ezért a lassú resolver növelheti a navigáció késleltetését
+C) A resolver minden esetben háttérben fut a navigáció után
+D) A resolver kikapcsolja az Angular change detectiont
+ANSWER: B
+EXPLANATION: A resolver célja, hogy a route aktiválása előtt rendelkezésre álljon a szükséges adat. Emiatt egy lassú resolver közvetlenül befolyásolhatja a navigáció idejét; nem minden adatbetöltéshez szükséges ezért resolver.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Testing
+TYPE: architecture
+QUESTION: Egy komplex komponens tesztjében valódi backend HTTP-kéréseket szeretnél elkerülni, de a komponens valódi `HttpClient`-folyamatait szeretnéd tesztelni. Mi a legjobb megközelítés?
+A) A tesztet valódi production backendhez kapcsolni
+B) Minden HTTP-hívást kikommentelni
+C) Angular HTTP testing infrastruktúrát használni, és a kéréseket kontrollált válaszokkal kiszolgálni
+D) A komponens minden metódusát üres mockkal helyettesíteni
+ANSWER: C
+EXPLANATION: A HTTP testing infrastruktúra lehetővé teszi a valódi `HttpClient` pipeline tesztelését hálózati kapcsolat nélkül. Így a requestek URL-je, metódusa, body-ja és a különböző válaszhelyzetek is determinisztikusan ellenőrizhetők.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: Change detection & OnPush
+TYPE: architecture
+QUESTION: Egy nagy komponensfa `OnPush` stratégiát használ, de egy globális service gyakran módosít objektumokat ugyanazon referencián belül. Miért problémás ez az architektúra szempontjából?
+A) Az `OnPush` automatikusan deep clone-olja az összes objektumot
+B) Az `OnPush` csak primitive értékeket támogat
+C) A service-ek nem módosíthatnak objektumokat
+D) A referenciaalapú változásérzékelés miatt a belső mutációk könnyen rejtett vagy nehezen követhető UI-frissítési problémákat okozhatnak
+ANSWER: D
+EXPLANATION: Az `OnPush` jól együttműködik immutable state-frissítésekkel, ahol egy változás új referenciát eredményez. Ugyanazon objektum belső mutációja nem biztosít ilyen egyértelmű változási jelet, ezért nagy komponensfánál nehezen diagnosztizálható viselkedést okozhat.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: production
+QUESTION: Egy streamben egy művelet hibát dob, de azt szeretnéd, hogy a teljes outer stream ne álljon le, és a következő outer értékek tovább feldolgozhatók legyenek. Hová érdemes tenni a `catchError` kezelést egy `switchMap`-szerű belső stream esetén?
+A) A belső Observable megfelelő ágába, hogy a belső hiba ne feltétlenül fejezze be a külső streamet
+B) Mindig az alkalmazás legfelső szintű `subscribe()` hívásába
+C) A `map()` előtt minden esetben
+D) A `catchError` nem használható `switchMap` mellett
+ANSWER: A
+EXPLANATION: Ha a `catchError` a `switchMap` által létrehozott belső Observable-on belül kezeli a hibát, a belső stream helyettesíthető, miközben a külső stream továbbra is fogadhat új értékeket. Ha a hibakezelés a teljes pipeline végén történik, az outer stream is lezárulhat.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: Signals
+TYPE: architecture
+QUESTION: Egy signal state-et több komponens olvas, de csak egy service módosíthatja. Melyik kialakítás biztosítja legjobban ezt a kapszulázást?
+A) Minden komponensnek hozzáférést adni a writable signalhoz
+B) A writable signal privát tárolása a service-ben, és kifelé csak read-only signal vagy metódusok publikálása
+C) A signal értékét globális `window` propertyként tárolni
+D) Minden komponensben ugyanazt az állapotot külön lemásolni
+ANSWER: B
+EXPLANATION: A belső writable signal és a külső read-only hozzáférés szétválasztása egyértelmű ownership modellt ad. Így a komponensek megfigyelhetik az állapotot, miközben a módosítási jog a service-nél marad.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: Performance
+TYPE: production
+QUESTION: Egy Angular alkalmazásban egy nagy, összetett template több drága számítást tartalmaz, amelyek ugyanazon bemenetek mellett ismétlődnek. Melyik megközelítés csökkentheti a felesleges újraszámításokat?
+A) Minden számítást `setInterval()`-lal futtatni
+B) Minden eredményt stringgé alakítani
+C) Reaktív vagy memoizált derived state használata, például megfelelő `computed` értékekkel
+D) A teljes alkalmazást `Default` change detectionre állítani
+ANSWER: C
+EXPLANATION: A memoizált derived state lehetővé teszi, hogy egy számítás csak akkor invalidálódjon és fusson újra, amikor releváns bemenetei változnak. Ez csökkentheti a template-ben ismételten végzett drága számításokat.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: HttpClient & interceptors
+TYPE: edgecase
+QUESTION: Egy interceptor retry mechanizmust alkalmaz HTTP hibákra. Miért veszélyes automatikusan minden hibát korlátlanul újrapróbálni?
+A) Mert a HTTP-kérések soha nem lehetnek idempotensek
+B) Mert a retry mindig kikapcsolja a timeoutot
+C) Mert az interceptor nem használhat RxJS-operátorokat
+D) Végtelen retry ciklust, felesleges terhelést vagy nem kívánt ismételt side effecteket okozhat
+ANSWER: D
+EXPLANATION: Nem minden hiba átmeneti, és nem minden HTTP-művelet biztonságosan ismételhető. Retry stratégiánál korlátozott próbálkozásszámot, megfelelő hibaszűrést, backoffot és az idempotencia szempontját is figyelembe kell venni.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: State management (NgRx)
+TYPE: architecture
+QUESTION: Egy NgRx selector egy nagy state objektumból származtat egy összetett listát. A selector minden híváskor új tömböt hoz létre, még akkor is, ha a releváns bemenetek nem változtak. Mi lehet ennek a következménye?
+A) Az Angular automatikusan megszünteti a selectort
+B) Felesleges újraszámítások és referenciaváltozások miatt további renderelés vagy downstream feldolgozás történhet
+C) Az NgRx automatikusan módosítja az adatbázist
+D) A reducer többé nem kaphat actiont
+ANSWER: B
+EXPLANATION: Az új tömbreferencia minden számításkor változásnak tűnhet a fogyasztók számára, még akkor is, ha tartalmilag ugyanazt reprezentálja. A memoizált selectorok és stabil derived state segíthetnek elkerülni az ilyen felesleges munkát.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: Dependency injection
+TYPE: architecture
+QUESTION: Egy enterprise Angular alkalmazásban ugyanazt az interface-szerű absztrakciót több implementációval szeretnéd használni különböző környezetekben. Miért lehet megfelelő erre egy `InjectionToken`?
+A) Mert az `InjectionToken` runtime tokenként használható olyan dependency-khez is, amelyeknek nincs runtime class tokenje
+B) Mert az `InjectionToken` automatikusan HTTP-kérést indít
+C) Mert az `InjectionToken` kiváltja a TypeScript compiler működését
+D) Mert minden `InjectionToken` automatikusan singletonként működik scope nélkül
+ANSWER: A
+EXPLANATION: A TypeScript interface runtime környezetben nem létezik DI tokenként, ezért Angularban egy `InjectionToken` használható stabil runtime azonosítóként. Ehhez különböző providerek rendelhetők különböző környezetekben vagy injectorokban.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: Routing & guards
+TYPE: security
+QUESTION: Egy admin route guardja ellenőrzi, hogy a felhasználó rendelkezik-e admin szerepkörrel. Miért nem elegendő ez önmagában az admin API-végpontok védelmére?
+A) Mert a guard csak production buildben működik
+B) Mert a guard nem tud route-ot védeni
+C) Mert a kliensoldali kód módosítható vagy megkerülhető, ezért a backendnek is ellenőriznie kell a jogosultságot
+D) Mert az admin szerepkörök csak CSS-ben léteznek
+ANSWER: C
+EXPLANATION: A route guard kliensoldali navigációs kontroll, nem megbízható biztonsági határ. Egy támadó módosíthatja vagy megkerülheti a klienskódot, ezért az érzékeny API-műveletek jogosultságát szerveroldalon is ellenőrizni kell.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: Testing
+TYPE: architecture
+QUESTION: Egy komponens tesztje túl sok belső implementációs részletet ellenőriz, ezért egy egyszerű refaktor után is sok teszt eltörik. Mi lenne egy fenntarthatóbb tesztelési stratégia?
+A) Minden private property közvetlen tesztelése
+B) A komponens belső metódusainak teljes mockolása
+C) Az összes teszt törlése és csak manuális tesztelés használata
+D) Elsősorban a megfigyelhető viselkedést, a felhasználói interakciókat és a komponens nyilvános szerződését tesztelni
+ANSWER: D
+EXPLANATION: A viselkedésalapú tesztek kevésbé kötődnek az implementáció részleteihez, ezért egy belső refaktor kisebb eséllyel töri el őket. A teszteknek elsősorban azt kell ellenőrizniük, amit a komponens a fogyasztó vagy a felhasználó számára garantál.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: SSR & hydration
+TYPE: production
+QUESTION: Egy SSR + hydration alkalmazásban egy komponens véletlenszerű ID-t generál a template-ben minden rendereléskor. Miért lehet ez problémás?
+A) A véletlenszerűség automatikusan kikapcsolja a Routert
+B) A server és client eltérő renderelési eredményt produkálhat, ami hydration mismatchhez vezethet
+C) A template-ek nem tartalmazhatnak stringeket
+D) Az SSR nem tud komponenseket renderelni
+ANSWER: B
+EXPLANATION: Ha a szerver és a kliens ugyanarra a kezdeti állapotra különböző véletlenszerű értéket generál, a renderelt DOM eltérhet. Hydration esetén az ilyen nem determinisztikus kezdeti output mismatchhez vezethet.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: Components & templates
+TYPE: architecture
+QUESTION: Egy nagy komponens több különböző feature üzleti logikáját kezeli, és emiatt nehezen tesztelhető. Mi az egyik legfontosabb refaktorálási cél?
+A) Minden logikát egyetlen template expressionbe összevonni
+B) A komponens méretének növelése további helper metódusokkal
+C) A felelősségek szétválasztása kisebb komponensekre és megfelelő service-ekre
+D) A komponens minden dependency-jét globális változóvá tenni
+ANSWER: C
+EXPLANATION: A magas kohéziójú, kisebb felelősségi körű komponensek és service-ek könnyebben tesztelhetők és karbantarthatók. A szétválasztás csökkenti az implicit kapcsolódásokat és tisztább határokat eredményez.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: production
+QUESTION: Egy komponensben ugyanazt a cold Observable-t több különálló `subscribe()` hívás fogyasztja, és minden subscription külön HTTP-kérést indít. Mi lehet megfelelő megoldás, ha ugyanazt az eredményt szeretnéd megosztani a fogyasztók között?
+A) Minden subscription előtt új HTTP-kérést indítani
+B) `shareReplay` használata megfelelő cache/replay szemantikával
+C) A subscriptionök számának növelése
+D) Minden HTTP-kérést `setInterval()`-lal ismételni
+ANSWER: B
+EXPLANATION: A cold Observable minden subscriber számára külön executiont indíthat. Megfelelően konfigurált `shareReplay` segítségével a forrás eredménye megosztható több fogyasztó között, miközben a replay viselkedés is szabályozható.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Performance
+TYPE: production
+QUESTION: Egy dashboard több egymástól független widgetet tartalmaz, amelyek különböző időpontokban frissülnek. Melyik architekturális megközelítés segíthet elkerülni, hogy egyetlen widget változása szükségtelenül nagy komponensfát érintsen?
+A) Minden widgetet egyetlen hatalmas komponensben kezelni
+B) Minden frissítéskor az egész oldalt újrarenderelni
+C) Minden widgethez globális `setInterval()`-t használni
+D) A widgeteket jól elkülönített komponensekre bontani, és lokális vagy célzott reaktív state-et használni
+ANSWER: D
+EXPLANATION: A jól izolált komponensek és célzott reaktív state lehetővé teszik, hogy egy változás csak a releváns UI-részhez kapcsolódó munkát indítsa el. Ez különösen nagy dashboardoknál csökkentheti a fölösleges change-detection és rendering költséget.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: Signals
+TYPE: production
+QUESTION: Egy `effect()` belsejében egy signal értékét módosítod, amelyet ugyanaz az effect olvas. Miért kell ezzel óvatosan bánni?
+A) Mert a signalok soha nem módosíthatók effectből
+B) Mert minden effect automatikusan HTTP-kérést indít
+C) Mert reaktív ciklushoz vagy ismételt effect-futásokhoz vezethet, ha a módosítás újabb függőségi változást okoz
+D) Mert az effect kizárólag template-ekből hívható
+ANSWER: C
+EXPLANATION: Az effect elsődleges célja külső mellékhatások kezelése, nem pedig state deriválása. Ha egy effect saját függőségeit módosítja, könnyen nehezen követhető reaktív feedback loop alakulhat ki, ezért a derived state-hez inkább `computed()` használata célszerű.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: HttpClient & interceptors
+TYPE: security
+QUESTION: Egy interceptor automatikusan `Authorization` headert ad minden HTTP-kéréshez. Miért lehet ez biztonsági szempontból problémás?
+A) Mert az Authorization header nem használható HTTPS mellett
+B) Mert a token véletlenül olyan külső origin felé is elküldhető, amelynek nincs szüksége rá
+C) Mert az interceptor csak POST kéréseket lát
+D) Mert az Angular automatikusan törli a tokent minden request után
+ANSWER: B
+EXPLANATION: Ha az interceptor nem korlátozza megfelelően, mely origin vagy endpoint kapja meg a credentialt, a token érzékeny adatként nem kívánt címzetthez kerülhet. A request céljának explicit ellenőrzése ezért fontos része az auth interceptor tervezésének.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: State management (NgRx)
+TYPE: architecture
+QUESTION: Egy NgRx alkalmazásban egy feature state túl sok, egymástól független UI-állapotot és domain adatot tartalmaz egyetlen monolitikus struktúrában. Mi lehet ennek egyik következménye?
+A) Az NgRx automatikusan normalizálja az összes adatot
+B) A reducer automatikusan service-ekre bontja a state-et
+C) Az actionök többé nem használhatók
+D) Nehezebbé válhat a state ownership, a selectorok, a tesztelés és a változások izolálása
+ANSWER: D
+EXPLANATION: A túlzottan monolitikus state struktúra erős csatolást és nehezen követhető dependency-ket eredményezhet. A state logikus feature- vagy domainhatárok mentén történő strukturálása javíthatja a karbantarthatóságot és az izolált tesztelést.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: Signals
+TYPE: architecture
+QUESTION: Egy Angular alkalmazásban egy service egy belső állapotot Signal segítségével kezel. A komponenseknek csak olvasniuk kell az állapotot, módosítaniuk nem. Melyik API-tervezés a legmegfelelőbb?
+CODE:
+private readonly _user = signal<User | null>(null);
+
+readonly user = this._user.asReadonly();
+ENDCODE
+A) A komponensek közvetlenül kapják meg a writable signalt, hogy rugalmasabban használhassák.
+B) A writable signalt el kell rejteni, és az állapotot read-only signalon keresztül kell publikálni.
+C) A signal helyett minden esetben BehaviorSubjectet kell használni service-ekben.
+D) A signal értékét getterrel kell publikálni, mert signal nem adható át komponensnek.
+ANSWER: B
+EXPLANATION: Az állapot tulajdonosa megtartja a writable signalt, míg a fogyasztók csak az `asReadonly()` által biztosított olvasási felületet kapják. Ez csökkenti a véletlen állapotmódosítás lehetőségét és egyértelműbb ownership modellt ad. A writable signal közvetlen publikálása azért csábító, mert egyszerű, de túl széles módosítási jogosultságot ad a fogyasztóknak.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: production
+QUESTION: Egy keresőmező minden változásnál HTTP-kérést indít. A korábbi keresések eredményei már nem relevánsak, ha a felhasználó újabb keresést adott meg. Melyik megoldás fejezi ki legjobban ezt a szemantikát?
+CODE:
+this.searchControl.valueChanges.pipe(
+  debounceTime(300),
+  distinctUntilChanged(),
+  switchMap(term => this.http.get<Result[]>(`/api/search?q=${term}`))
+);
+ENDCODE
+A) `mergeMap`, mert minden keresésnek mindig le kell futnia.
+B) `concatMap`, mert a kereséseket eredeti sorrendben kell feldolgozni.
+C) `exhaustMap`, mert az első keresés fontosabb a többinél.
+D) `switchMap`, mert az új keresésre váltva az előző inner subscription megszüntethető.
+ANSWER: D
+EXPLANATION: A `switchMap` minden új külső értéknél az aktuális inner Observable-ra vált, ezért a korábbi keresések eredménye nem kerül tovább a downstreambe. Ez jól illeszkedik a latest-value-wins keresési modellhez. A `mergeMap` azért tűnhet megfelelőnek, mert minden HTTP-kérést elindít, de így egy régi válasz később felülírhatja az újabbat.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: SSR & hydration
+TYPE: production
+QUESTION: Egy SSR-rel és hydrationnel működő Angular alkalmazásban az alábbi template minden rendereléskor új azonosítót generál. Miért lehet ez problémás?
+CODE:
+<div [attr.data-id]="Math.random()">
+  {{ title }}
+</div>
+ENDCODE
+A) A `Math.random()` csak TypeScript fájlban használható.
+B) A hydration automatikusan eltávolít minden dinamikus attribútumot.
+C) A random érték miatt a böngésző nem tudja végrehajtani a template-et.
+D) A szerveren és a böngészőben eltérő érték keletkezhet, ami eltérést okozhat a server DOM és a client által várt DOM között.
+ANSWER: D
+EXPLANATION: SSR esetén a template először a szerveren fut, majd a kliens megpróbálja a meglévő DOM-ot hydrationnel újrahasznosítani. Ha a nem determinisztikus érték eltér, a server és client renderelt állapota nem feltétlenül egyezik. A probléma azért tűnhet ártalmatlannak, mert a random attribútum önmagában érvényes HTML, de hydration szempontból a determinisztikus kezdeti DOM fontos.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Performance
+TYPE: architecture
+QUESTION: Egy komplex dashboardon több, egymástól független widget található. Az egyik widget állapotváltozása jelenleg az egész dashboard jelentős részének újraszámítását eredményezi. Melyik architekturális megközelítés csökkentheti leginkább a szükségtelen munkát?
+A) A widgeteket kisebb komponensekre bontani, lokális reaktív állapotot használni és a frissítéseket az érintett részre korlátozni.
+B) Minden állapotváltozás után manuálisan meghívni az `ApplicationRef.tick()` metódust.
+C) Az összes widget állapotát egyetlen nagy objektumba helyezni.
+D) Minden template-ben gettereket használni, hogy az Angular automatikusan optimalizáljon.
+ANSWER: A
+EXPLANATION: A kisebb komponenshatárok és célzott reaktív állapotkezelés lehetővé teszi, hogy egy változás csak a ténylegesen érintett UI-részeket aktiválja. Ez különösen nagy dashboardoknál csökkentheti a renderelési és számítási költséget. Az explicit globális tick azért lehet csábító, mert biztosítja a frissítést, de éppen túl széles körű munkát indíthat.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: HttpClient & interceptors
+TYPE: security
+QUESTION: Egy interceptor automatikusan hozzáadja az `Authorization` headert minden HTTP-kéréshez. Az alkalmazás azonban külső analytics API-kat is hív. Mi a legfontosabb biztonsági probléma?
+CODE:
+intercept(req: HttpRequest<unknown>, next: HttpHandler) {
+  return next.handle(
+    req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${this.token}`
+      }
+    })
+  );
+}
+ENDCODE
+A) Az `Authorization` header nem küldhető HTTPS-en.
+B) A token olyan külső originhez is eljuthat, amelynek nincs szüksége erre a hitelesítési adatra.
+C) Az interceptor csak GET-kéréseket tud módosítani.
+D) A `clone()` használata automatikusan kétszer küldi el a kérést.
+ANSWER: B
+EXPLANATION: A globális interceptor nem feltétlenül tudja, hogy az adott célrendszer megbízható backend-e vagy külső szolgáltatás. Az Authorization header ezért csak megfelelően célzott kérésekhez adható hozzá, például origin vagy explicit request metadata alapján. A HTTPS használata védi az adatot továbbítás közben, de nem teszi helyessé a token jogosulatlan célhoz küldését.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: State management (NgRx)
+TYPE: architecture
+QUESTION: Egy NgRx feature state-je több, egymástól független domainhez tartozó adatot egyetlen hatalmas objektumban tárol. A komponensek közvetlenül ismerik az állapot belső struktúráját. Milyen probléma jelenhet meg hosszú távon?
+A) A reducer többé nem használható TypeScriptben.
+B) Az NgRx automatikusan elveszíti az összes state-et.
+C) Az állapot csak SSR alatt lesz elérhető.
+D) Az erős coupling miatt nehezebb lehet a feature-ök módosítása, tesztelése és különválasztása.
+ANSWER: D
+EXPLANATION: A túlzottan központosított és belső struktúrához kötött state-modell növeli a komponensek és az állapotkezelési réteg közötti couplingot. A feature-ök megfelelő szeparációja és selectorokon keresztüli hozzáférése könnyebben karbantartható modellt eredményez. Az egyetlen nagy state objektum azért tűnhet egyszerűnek, mert kezdetben kevés boilerplate-tel jár, de a függőségek gyorsan összekuszálódhatnak.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Dependency injection
+TYPE: edgecase
+QUESTION: Az Angular DI hierarchiában egy tokenhez a parent injector és egy child injector is szolgáltatást biztosít. Egy child komponens injektálja ezt a tokent. Melyik provider lesz használva?
+A) A child injector providerje, mert az injektálás a hierarchiában lefelé induló lokális keresést használ.
+B) Mindig a root injector providerje.
+C) Mindkét példány automatikusan egyetlen közös példánnyá egyesül.
+D) Az Angular véletlenszerűen választ a két provider között.
+ANSWER: A
+EXPLANATION: A DI keresés során az Angular a megfelelő lokális injector-környezetben keres, ezért a child injector által biztosított provider felülírhatja a magasabb szinten találhatót. Ez lehetővé teszi a feature- vagy komponensszintű testreszabást. A root provider használata azért tűnhet természetesnek, mert sok service `providedIn: 'root'` konfigurációval rendelkezik, de ez nem akadályozza meg a lokális override-ot.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Routing & guards
+TYPE: security
+QUESTION: Egy Angular alkalmazásban route guard tiltja meg, hogy egy nem admin felhasználó megnyissa az `/admin` útvonalat. A backend API azonban nem ellenőrzi az admin jogosultságot. Mi a helyes következtetés?
+A) A guard önmagában megfelelő szerveroldali hozzáférés-védelem.
+B) A guard miatt a backend automatikusan ismeri a felhasználó jogosultságait.
+C) A backendnek is ellenőriznie kell az authorizationt, mert a kliensoldali guard nem biztonsági határ.
+D) Az admin route-ot teljesen el kell távolítani az Angular alkalmazásból.
+ANSWER: C
+EXPLANATION: A route guard a kliens navigációját szabályozza, de a kliens kódja és hálózati kérései nem tekinthetők megbízható biztonsági határnak. A tényleges hozzáférés-ellenőrzést a backendnek kell végrehajtania minden védett erőforrásnál. A guard hasznos UX- és navigációs réteg, de nem helyettesíti a szerveroldali authorizationt.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: Testing
+TYPE: architecture
+QUESTION: Egy komplex komponens tesztelésekor a teszt közvetlenül ellenőrzi a komponens privát mezőit és belső metódusait. Miért lehet ez rossz hosszú távú tesztstratégia?
+A) A privát mezők nem létezhetnek Angular komponensekben.
+B) A tesztek túlságosan a megvalósítás részleteihez kötődnek, ezért egy belső refaktorálás indokolatlanul sok tesztet törhet.
+C) A TestBed csak publikus property-ket támogat.
+D) A privát metódusok mindig lassabbak a publikusaknál.
+ANSWER: B
+EXPLANATION: A viselkedésre és publikus szerződésre épülő teszt általában stabilabb, mert nem függ attól, hogy a komponens belül milyen mezőkkel vagy metódusokkal valósítja meg a működését. Egy belső refaktorálás így nem feltétlenül igényel tesztmódosítást. A belső implementation ellenőrzése azért csábító, mert részletesebb kontrollt ad, de erős couplingot hoz létre a teszt és a kód között.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: Signals
+TYPE: trap
+QUESTION: Egy computed signalból szeretnénk származtatott értéket előállítani. Az alábbi megoldás helyett miért célszerűbb `computed()`-ot használni, mint egy `effect()`-ben egy másik signalt módosítani?
+CODE:
+readonly firstName = signal('Anna');
+readonly lastName = signal('Kovacs');
+
+readonly fullName = computed(
+  () => `${this.firstName()} ${this.lastName()}`
+);
+ENDCODE
+A) A `computed()` kifejezetten származtatott állapot deklarálására szolgál, és automatikusan kezeli a függőségeket.
+B) Az `effect()` nem tud signalokat olvasni.
+C) A `computed()` nem reagál signalváltozásra.
+D) Az `effect()` kizárólag HTTP-kérésekhez használható.
+ANSWER: A
+EXPLANATION: A `computed()` deklaratívan írja le a más signalokból származó állapotot, és az Angular automatikusan követi az olvasott függőségeket. Ez tisztább és kevésbé hibára hajlamos, mint egy effectben manuálisan fenntartani egy másik signal értékét. Az effect azért tűnhet megfelelőnek, mert reakciót lehet benne végrehajtani, de elsősorban mellékhatásokhoz való, nem derived state fenntartásához.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: edgecase
+QUESTION: Egy külső Observable több HTTP-kérést indít `switchMap` segítségével. A HTTP Observable hibája azonban megszakítja a teljes keresési streamet. Melyik szerkezet teszi lehetővé, hogy egyetlen HTTP-hiba után a későbbi keresések tovább működjenek?
+CODE:
+this.search$.pipe(
+  switchMap(term =>
+    this.http.get<Result[]>(`/api/search?q=${term}`).pipe(
+      catchError(() => of([]))
+    )
+  )
+);
+ENDCODE
+A) A `catchError`-t teljesen el kell távolítani.
+B) A `catchError`-t csak az alkalmazás bootstrap során szabad használni.
+C) A `catchError`-t az egész stream után kell tenni, hogy minden hiba automatikusan újrainduljon.
+D) A `catchError`-t az inner Observable-ban kell elhelyezni, hogy az adott HTTP-hibát helyettesítő értékkel kezelje, miközben a külső stream élhet tovább.
+ANSWER: D
+EXPLANATION: Az inner `catchError` a konkrét HTTP-kérést helyettesíti például üres eredménnyel, így a külső `search$` stream nem fejeződik be a HTTP-hiba miatt. A későbbi keresési értékek ezért új inner Observable-t indíthatnak. A külső szinten elhelyezett `catchError` azért tűnhet kényelmesnek, mert központilag kezeli a hibát, de az outer stream lezáródhat.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: Performance
+TYPE: production
+QUESTION: Egy nagy listában minden elemhez egy komplex számítás tartozik, amelynek eredménye csak néhány bemeneti signal változásakor változik. Mi a legcélszerűbb megoldás?
+A) A számítást minden template rendereléskor újra végrehajtani.
+B) A számítást `setInterval()` segítségével periodikusan frissíteni.
+C) Minden elemhez külön HTTP-kérést indítani.
+D) A származtatott értéket megfelelő függőségekkel memoizálni, például `computed()` segítségével, hogy csak releváns változáskor számolódjon újra.
+ANSWER: D
+EXPLANATION: A memoizált derived state lehetővé teszi, hogy az Angular csak akkor végezze el újra a számítást, amikor annak tényleges függősége megváltozik. Ez különösen hasznos költséges számításoknál és nagy listák esetén. A template minden ellenőrzéskor történő újraszámítása azért tűnhet egyszerűnek, mert nincs külön state-kezelés, de felesleges CPU-munkát okozhat.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: HttpClient & interceptors
+TYPE: edgecase
+QUESTION: Egy interceptor 401 válasz esetén access token frissítést indít. Rövid idő alatt öt kérés is 401-et kap. Mi a tipikus production probléma, ha minden 401 saját refresh kérést indít?
+A) Az Angular letiltja az összes HTTP-kérést.
+B) Több párhuzamos refresh kérés indulhat, ami race conditionhöz és inkonzisztens tokenállapothoz vezethet.
+C) A refresh token automatikusan törlődik.
+D) A HttpClient nem támogatja az interceptorokból indított új kéréseket.
+ANSWER: B
+EXPLANATION: Több egyidejű 401 esetén koordináció nélkül több refresh folyamat indulhat párhuzamosan. Ezek különböző sorrendben fejeződhetnek be, és egymást felülíró tokenállapotot vagy felesleges hálózati forgalmat okozhatnak. Azért csábító minden hibára azonnal refresh-t indítani, mert lokálisan egyszerűnek tűnik, de konkurens kéréseknél nem biztonságos állapotkezelési modell.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: Routing & guards
+TYPE: production
+QUESTION: Egy Angular alkalmazás route resolvere egy lassú backend művelet eredményére vár. Mi történik a felhasználó navigációjával, amíg a resolver Observable-ja nem ad eredményt?
+A) A navigáció megvárhatja a resolver befejeződését, ezért a lassú resolver késleltetheti a route aktiválását.
+B) A router azonnal aktiválja a route-ot, majd később behelyettesíti az adatot.
+C) A resolver automatikusan háttérszálon fut, ezért nincs hatása a navigációra.
+D) A resolver csak statikus adatokat tud visszaadni.
+ANSWER: A
+EXPLANATION: A resolver a route aktiválása előtt szükséges adat betöltésére szolgál, ezért egy lassú vagy soha nem befejeződő Observable közvetlenül hatással lehet a navigációra. Emiatt fontos a megfelelő timeout, hiba- és loading-stratégia. Az azonnali route-aktiválás azért tűnhet intuitívnak, mert sok adatbetöltés komponensszinten történik, de a resolver eltérő navigációs életciklust használ.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: SSR & hydration
+TYPE: production
+QUESTION: Egy SSR alkalmazásban egy komponens a böngészőben elérhető API-t használja az inicializálás során. Miért kell ezt körültekintően kezelni?
+A) A böngésző API-k csak production buildben működnek.
+B) SSR esetén minden browser API automatikusan mockolva van.
+C) A szerveroldali renderelési környezetben az olyan objektumok, mint a `window` vagy `localStorage`, nem feltétlenül léteznek.
+D) A hydration automatikusan átviszi a böngésző globális objektumait a szerverre.
+ANSWER: C
+EXPLANATION: A szerveroldali renderelés nem böngészőkörnyezetben történik, ezért browser-specifikus globális objektumok nem feltétlenül érhetők el. A browser-only műveleteket megfelelő platform- vagy renderelési életciklushoz kell kötni. Az automatikus mockolás azért lehet csábító feltételezés, mert a kliensoldali Angular környezetben ezek az API-k természetesnek tűnnek.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Change detection & OnPush
+TYPE: edgecase
+QUESTION: Egy `OnPush` komponens egy objektumot kap inputként. A parent ugyanazon objektum egy belső property-jét módosítja, majd nem hoz létre új referenciát. Miért maradhat el a child várt frissítése?
+CODE:
+user = { name: 'Anna' };
+
+rename() {
+  this.user.name = 'Peter';
+}
+ENDCODE
+A) Az `OnPush` komponens inputjai csak primitív értékeket fogadhatnak.
+B) Az Angular automatikusan immutable objektummá alakítja az inputot.
+C) A child komponens csak akkor renderelhet újra, ha az input objektum `Object.freeze()` segítségével van kezelve.
+D) A referencia változatlan marad, ezért az `OnPush` inputváltozás-felismerése nem ugyanúgy működik, mint új objektumreferencia esetén.
+ANSWER: D
+EXPLANATION: Az `OnPush` stratégia egyik fontos optimalizációja a referenciaalapú inputváltozások felismerése. Ha ugyanaz az objektum marad, egy belső property mutációja nem jelent új inputreferenciát. Új objektum létrehozása, például spread operátorral, egyértelműbb változásjelet ad. A `freeze()` azért tűnhet megoldásnak, mert megakadályozhatja a mutációt, de önmagában nem oldja meg a változás propagálását.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: architecture
+QUESTION: Egy cold Observable ugyanazt a drága adatbetöltési műveletet több komponensből is elindítja. Melyik RxJS stratégia használható arra, hogy az aktív feliratkozók megoszthassák ugyanazt az eredményt?
+A) `shareReplay`
+B) `delay`
+C) `scan`
+D) `pairwise`
+ANSWER: A
+EXPLANATION: A `shareReplay` lehetővé teszi, hogy egy cold Observable több subscriber között megosztva fusson, miközben a replay bufferben tárolt értékeket új feliratkozóknak is továbbadhatja. A megfelelő konfigurációt a subscription lifecycle és a kívánt cache-viselkedés alapján kell megválasztani. A `delay` azért tűnhet relevánsnak, mert módosítja az Observable működését, de nem osztja meg a subscriptiont.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: Dependency injection
+TYPE: architecture
+QUESTION: Egy alkalmazásban egy TypeScript interface alapján szeretnénk service-t injektálni. Miért szükséges tipikusan külön DI token?
+A) A TypeScript interface runtime környezetben nem marad meg olyan konstrukcióként, amelyet Angular DI tokenként használhatna.
+B) Az interface automatikusan service példánnyá alakul build közben.
+C) Az Angular csak abstract classokat engedélyez DI tokenként.
+D) Az interface minden esetben lassabb DI-feloldást eredményez.
+ANSWER: A
+EXPLANATION: A TypeScript interface fordítás után nem rendelkezik olyan runtime reprezentációval, amely alapján az Angular DI rendszer fel tudná oldani. Erre használható például egy `InjectionToken`, amely runtime tokenként szolgál. Az interface azért tűnhet elegendőnek, mert a TypeScript típusellenőrzésben tökéletesen leírja a szerződést, de a DI runtime mechanizmusa tényleges tokent igényel.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: State management (NgRx)
+TYPE: edgecase
+QUESTION: Egy NgRx selector minden kiértékeléskor egy új tömböt hoz létre, még akkor is, ha a forrásállapot tartalmilag nem változott. Mi lehet ennek a következménye?
+CODE:
+export const selectActiveUsers = createSelector(
+  selectUsers,
+  users => users.filter(user => user.active)
+);
+ENDCODE
+A) A reducer automatikusan megsemmisül.
+B) Az NgRx letiltja a selector memoizációját.
+C) A selector nem tud tömböt visszaadni.
+D) Új referencia jöhet létre, ami szükségtelen downstream újraszámításokat vagy komponensfrissítéseket okozhat.
+ANSWER: D
+EXPLANATION: A selector által létrehozott új tömb minden tényleges kiértékelésnél új referenciát jelenthet. Ha a derivált eredmény változatlan, de a referencia folyamatosan új, az downstream fogyasztók számára szükségtelen változásnak látszhat. A `filter()` azért tűnik természetes megoldásnak, mert egyszerűen előállítja a kívánt adatot, de a referencia-stabilitást is figyelembe kell venni.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: Testing
+TYPE: production
+QUESTION: Egy komponens egy Observable eredményétől függő időzítést használ. A tesztnek determinisztikusan kell ellenőriznie az időalapú viselkedést valódi várakozás nélkül. Melyik Angular tesztelési technika lehet megfelelő?
+A) `console.log()` használata a timing ellenőrzésére.
+B) `fakeAsync` és `tick()` használata a virtuális idő előrehaladásának kontrollálására.
+C) A tesztben végtelen `setTimeout()` ciklust kell létrehozni.
+D) Minden időzítést teljesen el kell távolítani a production kódból.
+ANSWER: B
+EXPLANATION: A `fakeAsync` és a `tick()` lehetővé teszi, hogy a teszt kontrollált környezetben szimulálja az idő múlását, így az időzítőkhöz kötött viselkedés gyorsan és determinisztikusan ellenőrizhető. Ez csökkenti a valódi időzítésekből származó flakiness kockázatát. A valódi `setTimeout` azért tűnhet egyszerűbbnek, mert productionhű, de lassú és instabil teszteket eredményezhet.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Components & templates
+TYPE: architecture
+QUESTION: Egy több ezer soros Angular komponens egyszerre kezeli a megjelenítést, üzleti szabályokat, HTTP-hívásokat, state-transzformációt és összetett formlogikát. Mi a legfontosabb architekturális probléma?
+A) A komponens túl kevés lifecycle hookot használ.
+B) A template-ben kötelező minden adatot signalból olvasni.
+C) A komponens felelősségei túlzottan össze vannak sűrítve, ezért nehezebb tesztelni, újrahasznosítani és módosítani.
+D) A komponensek nem tartalmazhatnak üzleti logikát.
+ANSWER: C
+EXPLANATION: A túl sok felelősség egyetlen komponensbe sűrítve erős couplingot és nehéz karbantarthatóságot eredményez. A prezentációs részek, domain logika, state-kezelés és infrastruktúra megfelelő határok közé szervezése javíthatja a tesztelhetőséget és a változtatások lokalizálhatóságát. Az üzleti logika teljes tiltása azért lenne túlzó, mert kisebb UI-specifikus döntések természetesen maradhatnak a komponensben.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Signals
+TYPE: production
+QUESTION: Egy effect egy signal változására reagál, majd ugyanazt a signalt módosítja. Miért lehet ez veszélyes architekturálisan?
+CODE:
+const count = signal(0);
+
+effect(() => {
+  const value = count();
+  count.set(value + 1);
+});
+ENDCODE
+A) Reaktív visszacsatolási ciklust hozhat létre, ezért derived state esetén inkább `computed()` használata célszerű.
+B) Az effect nem képes signalértéket olvasni.
+C) A `set()` minden esetben leállítja az Angular alkalmazást.
+D) Az effect kizárólag HTTP interceptorból indítható.
+ANSWER: A
+EXPLANATION: Az effect olvassa a `count` signalt, majd ugyanannak a signalnak a módosítása újabb reakciót válthat ki, ami feedback loophoz vagy legalább nehezen követhető reaktív működéshez vezethet. Származtatott állapot esetén a `computed()` általában tisztább modell. A signal írása önmagában nem tiltott, de az effect által olvasott állapot visszaírását körültekintően kell megtervezni.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: Performance
+TYPE: production
+QUESTION: Egy Angular alkalmazás kezdeti betöltési ideje túl magas, mert egy ritkán használt admin felülethez tartozó kód is bekerül a kezdeti bundle-be. Melyik architekturális megoldás célszerű?
+A) Az admin kódot minden komponens template-jébe beilleszteni.
+B) A feature-t lazy loadinggal csak akkor betölteni, amikor a hozzá tartozó route vagy funkció ténylegesen szükséges.
+C) Az admin modult minden service-ben újra importálni.
+D) A teljes alkalmazást egyetlen nagy standalone komponensbe összevonni.
+ANSWER: B
+EXPLANATION: A lazy loading a ritkán használt feature kódját elkülönítheti a kezdeti betöltéstől, így az admin felület csak szükség esetén kerül letöltésre. Ez különösen nagy alkalmazásoknál csökkentheti a kezdeti JavaScript-terhelést. Az admin kód korai betöltése azért tűnhet egyszerűbbnek, mert elkerüli a későbbi hálózati kérést, de feleslegesen növeli a kezdeti költséget.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: RxJS & Observables
+TYPE: production
+QUESTION: Egy Observable streamben a komponens megszűnésekor garantálni szeretnénk, hogy a subscription megfelelően lezáruljon. Modern Angularban melyik megoldás illeszkedik jól ehhez?
+CODE:
+this.searchControl.valueChanges.pipe(
+  debounceTime(300),
+  takeUntilDestroyed(this.destroyRef)
+).subscribe(value => {
+  this.search(value);
+});
+ENDCODE
+A) Minden subscriptionhöz kötelező kézzel `unsubscribe()` metódust hívni egy `setTimeout()` segítségével.
+B) A subscriptiont nem kell kezelni, mert minden Observable automatikusan complete-el.
+C) A komponensből minden RxJS operátort el kell távolítani.
+D) A `DestroyRef` és `takeUntilDestroyed()` használata a komponens lifecycle-jához kötheti a subscription lezárását.
+ANSWER: D
+EXPLANATION: A `takeUntilDestroyed()` az Angular destroy lifecycle eseményéhez köti az Observable subscription életciklusát, így a komponens megszűnésekor automatikusan leállhat a stream. Ez csökkenti a manuális subscription-kezelésből eredő hibák lehetőségét. Az automatikus cleanup feltételezése azért csábító, mert egyes Observable-ok valóban befejeződnek maguktól, de például `valueChanges` jellegű stream hosszú életű lehet.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: SSR & hydration
+TYPE: architecture
+QUESTION: Egy SSR + hydration Angular alkalmazásban a szerver és a kliens ugyanahhoz a komponenshez eltérő kezdeti adatot használ. A server HTML-ben egy termék ára 10 000 Ft, a kliens első renderelésekor viszont 12 000 Ft jelenik meg. Miért különösen problémás ez hydration során?
+A) A hydration csak akkor működik, ha minden adat statikus.
+B) A kliensnek újra kell töltenie az egész HTML-dokumentumot.
+C) Az Angular nem tud HTTP-kéréseket végrehajtani hydration alatt.
+D) A server-renderelt DOM és a kliens által elvárt kezdeti struktúra/érték eltérése hydration mismatchhez vagy újrarenderelési problémához vezethet.
+ANSWER: D
+EXPLANATION: A hydration abból indul ki, hogy a szerver által létrehozott DOM megfelel annak, amit a kliens ugyanazon kezdeti állapotból vár. Ha a kezdeti adatok eltérnek, az Angular nem tudja megbízhatóan újrahasznosítani a server DOM-ot. Az eltérő adat azért tűnhet ártalmatlannak, mert a kliens később helyes értéket jeleníthet meg, de a hydration szempontjából már a kezdeti egyezés is lényeges.
+###END
