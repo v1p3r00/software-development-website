@@ -319,7 +319,7 @@ export default function ContactTerminal() {
                 <dt className="label">{k}</dt>
                 <dd className="text-right font-mono text-[12px] tracking-tech text-text">
                   {href ? (
-                    <a href={href as string} data-cursor="follow" className="hover:text-accent">
+                    <a href={href as string} data-cursor="follow" className="hover:text-accent [overflow-wrap:anywhere]">
                       {v}
                     </a>
                   ) : (
