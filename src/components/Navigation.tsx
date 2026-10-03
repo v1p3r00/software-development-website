@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { stripLang } from '../i18n/paths';
@@ -8,7 +8,9 @@ import { useActiveSection } from '../hooks/useMisc';
 import { useTheme } from '../hooks/useTheme';
 import LanguageSwitcher from './LanguageSwitcher';
 import { usePageTransition } from '../lib/pageTransition';
-import { ArticlesPage, InterviewPage } from '../pages/lazy';
+import { ArticlesPage, labPreload } from '../pages/lazy';
+import LabIcon from './LabIcon';
+import { labs } from '../data/labs';
 import { Arrow, cx } from './ui';
 
 function Monogram({ compact }: { compact: boolean }) {
@@ -27,8 +29,120 @@ function Monogram({ compact }: { compact: boolean }) {
   );
 }
 
+/** "Projects" entry of the desktop nav: a dropdown listing the interactive projects. */
+function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.MouseEvent) => void }) {
+  const { t, lp, lang } = useI18n();
+  const { link } = usePageTransition();
+  const { pathname } = useLocation();
+  // remembers the page it was opened on, so navigating anywhere closes it
+  const [openOn, setOpenOn] = useState<string | null>(null);
+  const open = openOn === pathname;
+  const setOpen = (next: boolean | ((o: boolean) => boolean)) =>
+    setOpenOn((typeof next === 'function' ? next(open) : next) ? pathname : null);
+  const ref = useRef<HTMLDivElement>(null);
+  const hoverTimer = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpenOn(null);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenOn(null);
+    };
+    document.addEventListener('pointerdown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  const hover = (next: boolean) => () => {
+    window.clearTimeout(hoverTimer.current);
+    hoverTimer.current = window.setTimeout(() => setOpen(next), next ? 60 : 180);
+  };
+
+  return (
+    <div ref={ref} className="relative" onMouseEnter={hover(true)} onMouseLeave={hover(false)}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        onFocus={() => labs.forEach((l) => void labPreload[l.id]?.())}
+        aria-expanded={open}
+        aria-haspopup="true"
+        data-cursor="follow"
+        className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[11px] uppercase tracking-tech"
+      >
+        <span className={cx('transition-colors', active || open ? 'text-text' : 'text-muted group-hover:text-text')}>
+          {t.nav.labs}
+        </span>
+        <svg
+          viewBox="0 0 8 8"
+          aria-hidden
+          className={cx('h-2 w-2 self-center transition-transform duration-300', open ? 'rotate-180 text-accent' : 'text-dim')}
+        >
+          <path d="M1 2.5l3 3 3-3" fill="none" stroke="currentColor" />
+        </svg>
+        <span
+          className={cx(
+            'absolute -bottom-0.5 left-0 h-px bg-accent transition-all duration-300 ease-tech',
+            active ? 'w-full' : 'w-0 group-hover:w-full',
+          )}
+        />
+      </button>
+
+      <div
+        className={cx(
+          'absolute left-1/2 top-full z-50 w-[320px] -translate-x-1/2 pt-4 transition-all duration-300 ease-tech',
+          open ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-1 opacity-0',
+        )}
+      >
+        <div className="relative border border-line-strong bg-bg shadow-2xl">
+          <div className="label border-b border-line px-4 py-2.5">// {t.labs.subtitle}</div>
+          <ul>
+            {labs.map((lab) => (
+              <li key={lab.id} className="border-b border-line">
+                <Link
+                  to={lp(lab.path)}
+                  onClick={link(lp(lab.path), 'slide', labPreload[lab.id] ? { prepare: labPreload[lab.id] } : {})}
+                  data-cursor="follow"
+                  tabIndex={open ? 0 : -1}
+                  className="group flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-surface"
+                >
+                  <LabIcon id={lab.id} className="mt-0.5 h-6 w-6 shrink-0 text-muted transition-colors group-hover:text-text" />
+                  <span className="flex-1">
+                    <span className="block font-display text-base font-extrabold uppercase leading-tight tracking-tight transition-colors group-hover:text-accent">
+                      {lab.title[lang]}
+                    </span>
+                    <span className="mt-1 line-clamp-2 block text-[12px] leading-snug text-muted">{lab.desc[lang]}</span>
+                  </span>
+                  <Arrow className="mt-1 shrink-0 text-dim transition-all duration-300 group-hover:translate-x-1 group-hover:text-accent" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <a
+            href="#interactive"
+            onClick={(e) => {
+              setOpen(false);
+              onAll(e);
+            }}
+            tabIndex={open ? 0 : -1}
+            data-cursor="follow"
+            className="flex items-center justify-between px-4 py-2.5 font-mono text-2xs uppercase tracking-tech text-dim transition-colors hover:text-accent"
+          >
+            {t.nav.labsAll}
+            <span>↓</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Navigation({ onOpenPalette }: { onOpenPalette: () => void }) {
-  const { t, lp } = useI18n();
+  const { t, lp, lang } = useI18n();
   const { theme, toggle } = useTheme();
   const { link } = usePageTransition();
   const toArticles = link(lp('/articles/'), 'slide', { prepare: ArticlesPage.preload });
@@ -135,22 +249,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
               )}
             />
           </Link>
-          <Link
-            to={lp('/interview/')}
-            onClick={() => InterviewPage.preload()}
-            data-cursor="follow"
-            className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[11px] uppercase tracking-tech"
-          >
-            <span className={cx('transition-colors', onInterview ? 'text-text' : 'text-muted group-hover:text-text')}>
-              {t.nav.interview}
-            </span>
-            <span
-              className={cx(
-                'absolute -bottom-0.5 left-0 h-px bg-accent transition-all duration-300 ease-tech',
-                onInterview ? 'w-full' : 'w-0 group-hover:w-full',
-              )}
-            />
-          </Link>
+          <ProjectsMenu active={onInterview || active === 'interactive'} onAll={goTo('interactive')} />
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -249,16 +348,41 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
               [{String(items.length + 1).padStart(2, '0')}]
             </span>
           </Link>
-          <Link
-            to={lp('/interview/')}
-            onClick={() => setOpen(false)}
-            className="flex items-baseline justify-between border-b border-line py-4 font-display text-2xl font-extrabold uppercase tracking-tight last:border-b-0"
-          >
-            {t.nav.interview}
-            <span className="font-mono text-2xs tracking-tech text-accent">
-              [{String(items.length + 2).padStart(2, '0')}]
-            </span>
-          </Link>
+          <div className="border-b border-line py-4">
+            <a
+              href="#interactive"
+              onClick={(e) => {
+                setOpen(false);
+                goTo('interactive')(e);
+              }}
+              className="flex items-baseline justify-between font-display text-2xl font-extrabold uppercase tracking-tight"
+            >
+              {t.nav.labs}
+              <span className="font-mono text-2xs tracking-tech text-accent">
+                [{String(items.length + 2).padStart(2, '0')}]
+              </span>
+            </a>
+            <ul className="mt-3 space-y-1 border-l border-line pl-4">
+              {labs.map((lab) => (
+                <li key={lab.id}>
+                  <Link
+                    to={lp(lab.path)}
+                    onClick={() => {
+                      setOpen(false);
+                      void labPreload[lab.id]?.();
+                    }}
+                    className="flex items-center justify-between py-1.5 font-mono text-[12px] uppercase tracking-tech text-muted hover:text-accent"
+                  >
+                    <span>
+                      <span className="mr-2 text-accent">{lab.num}</span>
+                      {lab.title[lang]}
+                    </span>
+                    <Arrow className="text-dim" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="label">{site.email}</span>
             <LanguageSwitcher />

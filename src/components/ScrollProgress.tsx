@@ -16,6 +16,7 @@ export default function ScrollProgress() {
     about: t.nav.about,
     projects: t.nav.projects,
     services: t.nav.services,
+    interactive: t.nav.labs,
     contact: t.nav.contact,
   };
 

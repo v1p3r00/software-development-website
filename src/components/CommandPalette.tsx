@@ -6,7 +6,7 @@ import { projects } from '../data/projects';
 import { site } from '../data/site';
 import { cx } from './ui';
 import { usePageTransition } from '../lib/pageTransition';
-import { ArticlesPage, InterviewPage } from '../pages/lazy';
+import { ArticlesPage, CvMakerPage, InterviewPage } from '../pages/lazy';
 
 interface Command {
   id: string;
@@ -41,12 +41,13 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
       { id: 'about', group: t.palette.navigate, label: t.palette.goAbout, hint: '02', run: goTo('about') },
       { id: 'projects', group: t.palette.navigate, label: t.palette.goProjects, hint: '03', run: goTo('projects') },
       { id: 'services', group: t.palette.navigate, label: t.palette.goServices, hint: '04', run: goTo('services') },
-      { id: 'contact', group: t.palette.navigate, label: t.palette.goContact, hint: '05', run: goTo('contact') },
+      { id: 'interactive', group: t.palette.navigate, label: t.palette.goLabs, hint: '05', run: goTo('interactive') },
+      { id: 'contact', group: t.palette.navigate, label: t.palette.goContact, hint: '06', run: goTo('contact') },
       {
         id: 'articles',
         group: t.palette.navigate,
         label: t.palette.goArticles,
-        hint: '06',
+        hint: '07',
         run: () => {
           setOpen(false);
           void go(lp('/articles/'), 'slide', { prepare: ArticlesPage.preload });
@@ -56,10 +57,20 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
         id: 'interview',
         group: t.palette.navigate,
         label: t.palette.goInterview,
-        hint: '07',
+        hint: '08',
         run: () => {
           setOpen(false);
           void go(lp('/interview/'), 'slide', { prepare: InterviewPage.preload });
+        },
+      },
+      {
+        id: 'cv',
+        group: t.palette.navigate,
+        label: t.palette.goCv,
+        hint: '09',
+        run: () => {
+          setOpen(false);
+          void go(lp('/cv-maker/'), 'slide', { prepare: CvMakerPage.preload });
         },
       },
     ];

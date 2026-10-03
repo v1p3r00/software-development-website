@@ -19,7 +19,7 @@ export const site = {
     { label: 'LinkedIn', short: 'IN', href: 'https://www.linkedin.com/in/meszdav' },
     { label: 'Email', short: 'EM', href: 'mailto:meszarosdavid@softwaredevelopment.hu' },
   ],
-  sections: ['home', 'about', 'projects', 'services', 'contact'] as const,
+  sections: ['home', 'about', 'projects', 'services', 'interactive', 'contact'] as const,
 };
 
 export type SectionId = (typeof site.sections)[number];

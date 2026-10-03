@@ -28,3 +28,11 @@ export const ArticlePage = lazyPage(() => import('./Article'));
 // the interview simulator and its question sets
 export const InterviewPage = lazyPage(() => import('./Interview'));
 export const InterviewTrackPage = lazyPage(() => import('./InterviewTrack'));
+// the CV maker, its templates and guide
+export const CvMakerPage = lazyPage(() => import('./CvMaker'));
+
+/** preloaders for the interactive projects, by `labs` id */
+export const labPreload: Record<string, () => Promise<void>> = {
+  interview: InterviewPage.preload,
+  cv: CvMakerPage.preload,
+};

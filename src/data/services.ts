@@ -99,4 +99,64 @@ export const services: Service[] = [
       output: { en: 'A product that fits exactly', hu: 'Az adott problémára pontosan illeszkedő digitális termék' },
     },
   },
+  {
+    num: '07',
+    id: 'ai',
+    title: { en: 'AI integration & automation', hu: 'AI-integráció és automatizálás' },
+    desc: {
+      en: 'Language models put to work on your own data and tools — assistants, document search (RAG), agents and MCP connections, with clear limits on what they may do.',
+      hu: 'Nyelvi modellek a saját adataidon és eszközeiden: asszisztensek, dokumentumkeresés (RAG), ágensek és MCP-kapcsolatok, világos keretekkel arra, mit tehetnek meg és mit nem.',
+    },
+    flow: {
+      input: { en: 'Repetitive, text-heavy work', hu: 'Ismétlődő, szövegigényes munka' },
+      process: { en: 'Use-case + data assessment', hu: 'Felhasználási eset és adatok felmérése' },
+      system: { en: 'LLM + RAG / agents / MCP', hu: 'LLM + RAG / ágensek / MCP' },
+      output: { en: 'Measurable time saved', hu: 'Mérhető időmegtakarítás' },
+    },
+  },
+  {
+    num: '08',
+    id: 'integration',
+    title: { en: 'System integration & APIs', hu: 'Rendszerintegráció és API-k' },
+    desc: {
+      en: 'Making the systems you already pay for talk to each other — ERP, CRM, webshop, billing — so data is entered once and stays consistent everywhere.',
+      hu: 'A már meglévő rendszereid összekötése — ERP, CRM, webshop, számlázás —, hogy az adatot egyszer kelljen rögzíteni, és mindenhol ugyanaz legyen.',
+    },
+    flow: {
+      input: { en: 'Disconnected systems', hu: 'Egymástól elszigetelt rendszerek' },
+      process: { en: 'Data mapping + API contracts', hu: 'Adatleképezés és API-szerződések' },
+      system: { en: 'REST / events / sync jobs', hu: 'REST / események / szinkronfolyamatok' },
+      output: { en: 'One source of truth', hu: 'Egyetlen hiteles adatforrás' },
+    },
+  },
+  {
+    num: '09',
+    id: 'modernization',
+    title: { en: 'Legacy modernisation', hu: 'Régi rendszerek modernizálása' },
+    desc: {
+      en: 'Moving old software and spreadsheet-run processes onto a maintainable stack step by step — without a risky big-bang rewrite or stopping daily work.',
+      hu: 'Elavult szoftverek és Excelből vitt folyamatok fokozatos átvitele egy karbantartható technológiára — kockázatos „mindent egyszerre” újraírás és a napi munka leállítása nélkül.',
+    },
+    flow: {
+      input: { en: 'Ageing system or spreadsheets', hu: 'Elöregedett rendszer vagy táblázatok' },
+      process: { en: 'Audit + migration roadmap', hu: 'Átvilágítás és migrációs ütemterv' },
+      system: { en: 'Incremental replacement', hu: 'Lépésenkénti kiváltás' },
+      output: { en: 'Maintainable modern platform', hu: 'Karbantartható, modern platform' },
+    },
+  },
+  {
+    num: '10',
+    id: 'visibility',
+    title: { en: 'Websites & search visibility', hu: 'Weboldalak és kereshetőség' },
+    desc: {
+      en: 'Fast, mobile-first websites and webshops built to be found — technical SEO plus structured content that AI search engines can cite (GEO / AEO).',
+      hu: 'Gyors, mobilra optimalizált weboldalak és webshopok, amelyeket meg is találnak — technikai SEO és olyan strukturált tartalom, amelyet az AI-alapú keresők is idézni tudnak (GEO / AEO).',
+    },
+    flow: {
+      input: { en: 'A site that brings no leads', hu: 'Ügyfelet nem hozó weboldal' },
+      process: { en: 'Content + technical audit', hu: 'Tartalmi és technikai átvilágítás' },
+      system: { en: 'Fast static / CMS / shop', hu: 'Gyors statikus oldal / CMS / webshop' },
+      output: { en: 'Visitors who become clients', hu: 'Ügyféllé váló látogatók' },
+    },
+  },
 ];

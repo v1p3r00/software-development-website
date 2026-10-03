@@ -1,6 +1,7 @@
 import About from '../components/About';
 import ContactTerminal from '../components/ContactTerminal';
 import Hero from '../components/Hero';
+import InteractiveProjects from '../components/InteractiveProjects';
 import ProjectGrid from '../components/ProjectGrid';
 import Services from '../components/Services';
 import TechStack from '../components/TechStack';
@@ -16,6 +17,7 @@ export default function Home() {
       <About />
       <ProjectGrid />
       <Services />
+      <InteractiveProjects />
       <TechStack />
       <ContactTerminal />
     </>

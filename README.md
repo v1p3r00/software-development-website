@@ -72,6 +72,15 @@ Content lives in `src/data` and `src/i18n`; components contain no copy.
   While there are no articles, `/articles/` shows a "coming soon" state and is
   kept out of search results.
 - **Search titles and descriptions** — `seo` in `src/i18n/en.ts` / `hu.ts`.
+- **Interactive projects** (home-page Projects section and the Projects menu) —
+  `src/data/labs.ts`; each entry's page preloader is in `labPreload`
+  (`src/pages/lazy.ts`) and its icon in `components/LabIcon.tsx`.
+- **CV Maker** (`/cv-maker/`) — `src/pages/CvMaker.tsx` plus `src/components/cv/`:
+  `model.ts` (data shape, section kinds), `text.ts` (EN/HU interface copy and
+  tips), `guideContent.ts` (the “How to write an ideal CV” guide), `examples.ts`
+  (the sample CV), `CvSheet.tsx` + `cv.css` (the four layouts and print rules).
+  PDF export uses the browser's print dialog, so the text stays selectable; the
+  CV is autosaved in `localStorage` and can be exported/imported as JSON.
 
 ## Interactions
 

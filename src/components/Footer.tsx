@@ -33,6 +33,7 @@ export default function Footer() {
               ['about', t.nav.about],
               ['projects', t.nav.projects],
               ['services', t.nav.services],
+              ['interactive', t.nav.labs],
               ['contact', t.nav.contact],
             ].map(([id, label]) => (
               <a
@@ -59,6 +60,13 @@ export default function Footer() {
               className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
             >
               {t.nav.interview}
+            </Link>
+            <Link
+              to={lp('/cv-maker/')}
+              data-cursor="follow"
+              className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
+            >
+              {t.palette.goCv}
             </Link>
           </nav>
 

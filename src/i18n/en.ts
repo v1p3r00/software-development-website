@@ -27,11 +27,13 @@ export const en = {
   nav: {
     home: 'Home',
     about: 'About',
-    projects: 'Projects',
+    projects: 'Work',
     services: 'Services',
     contact: 'Contact',
     articles: 'Articles',
     interview: 'Interview',
+    labs: 'Projects',
+    labsAll: 'All projects',
     talk: "Let's talk",
     menu: 'Menu',
     close: 'Close',
@@ -136,8 +138,21 @@ export const en = {
     flow: { input: 'Input', process: 'Process', system: 'System', output: 'Output' },
   },
 
-  stack: {
+  labs: {
     index: '05',
+    title: 'Projects',
+    subtitle: 'Interactive',
+    hint: 'Built by me, running on this site',
+    live: 'Live',
+    open: 'Open',
+    tracks: 'Tracks',
+    questions: 'Questions',
+    jumpIn: 'Jump straight into a track',
+    more: 'More interactive projects are on the way.',
+  },
+
+  stack: {
+    index: '06',
     title: 'Tech stack',
     subtitle: 'System map',
     hint: 'Drag to rotate \u2014 select a node to inspect it',
@@ -157,7 +172,7 @@ export const en = {
   },
 
   contact: {
-    index: '06',
+    index: '07',
     title: 'Contact',
     subtitle: 'Open a channel',
     boot: 'initializing connection',
@@ -218,11 +233,13 @@ export const en = {
     language: 'Language',
     goHome: 'Go home',
     goAbout: 'About',
-    goProjects: 'View projects',
+    goProjects: 'View work',
+    goLabs: 'Interactive projects',
     goServices: 'Services',
     goContact: 'Contact',
     goArticles: 'Articles',
     goInterview: 'Interview simulator',
+    goCv: 'CV maker',
     theme: 'Change theme',
     copyEmail: 'Copy email address',
     copied: 'Copied',
@@ -246,11 +263,14 @@ export const en = {
     interviewTrackTitle: '{name} Interview Challenge: 200 questions — David Mészáros',
     interviewTrackDescription:
       '200 {name} technical interview questions from junior to senior, each with an explanation. {text}',
+    cvTitle: 'Free CV Maker with templates and PDF export — David Mészáros',
+    cvDescription:
+      'Build a professional CV step by step with a live preview, four layouts and PDF export — plus a practical guide to writing a CV that gets read. Free, no sign-up.',
     notFoundTitle: 'Page not found — David Mészáros',
   },
 
   articles: {
-    index: '07',
+    index: '08',
     title: 'Articles',
     subtitle: 'Notes & writing',
     count: 'Entries',
@@ -269,7 +289,7 @@ export const en = {
   },
 
   interview: {
-    index: '08',
+    index: '09',
     title: 'Interview simulator',
     subtitle: 'Technical interview prep',
     intro:

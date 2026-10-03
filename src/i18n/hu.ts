@@ -29,11 +29,13 @@ export const hu: Dict = {
   nav: {
     home: 'Kezdőlap',
     about: 'Rólam',
-    projects: 'Projektek',
+    projects: 'Munkáim',
     services: 'Szolgáltatások',
     contact: 'Kapcsolat',
     articles: 'Cikkek',
     interview: 'Interjú',
+    labs: 'Projektek',
+    labsAll: 'Összes projekt',
     talk: 'Beszéljünk',
     menu: 'Menü',
     close: 'Bezárás',
@@ -147,8 +149,21 @@ export const hu: Dict = {
     },
   },
 
-  stack: {
+  labs: {
     index: '05',
+    title: 'Projektek',
+    subtitle: 'Interaktív',
+    hint: 'Saját fejlesztés, itt az oldalon fut',
+    live: 'Élő',
+    open: 'Megnyitás:',
+    tracks: 'Témák',
+    questions: 'Kérdések',
+    jumpIn: 'Ugorj egyenesen egy témára',
+    more: 'Újabb interaktív projektek hamarosan.',
+  },
+
+  stack: {
+    index: '06',
     title: 'Technológiák',
     subtitle: 'Rendszertérkép',
     hint: 'Húzd a forgatáshoz — válassz egy elemet a részletekért',
@@ -168,7 +183,7 @@ export const hu: Dict = {
   },
 
   contact: {
-    index: '06',
+    index: '07',
     title: 'Kapcsolat',
     subtitle: 'Kapcsolatfelvétel',
     boot: 'kapcsolat inicializálása',
@@ -229,11 +244,13 @@ export const hu: Dict = {
     language: 'Nyelv',
     goHome: 'Ugrás a kezdőlapra',
     goAbout: 'Rólam',
-    goProjects: 'Projektek',
+    goProjects: 'Munkáim',
+    goLabs: 'Interaktív projektek',
     goServices: 'Szolgáltatások',
     goContact: 'Kapcsolat',
     goArticles: 'Cikkek',
     goInterview: 'Interjú-szimulátor',
+    goCv: 'Önéletrajz-készítő',
     theme: 'Téma váltása',
     copyEmail: 'E-mail cím másolása',
     copied: 'Másolva',
@@ -257,11 +274,14 @@ export const hu: Dict = {
     interviewTrackTitle: '{name} Interview Challenge: 200 kérdés — Mészáros Dávid',
     interviewTrackDescription:
       '200 {name} technikai interjúkérdés juniortól seniorig, mindegyik magyarázattal. {text}',
+    cvTitle: 'Ingyenes önéletrajz-készítő sablonokkal és PDF exporttal — Mészáros Dávid',
+    cvDescription:
+      'Készíts profi önéletrajzot lépésről lépésre élő előnézettel, négy elrendezéssel és PDF exporttal — gyakorlati útmutatóval ahhoz, hogy el is olvassák. Ingyenes, regisztráció nélkül.',
     notFoundTitle: 'Az oldal nem található — Mészáros Dávid',
   },
 
   articles: {
-    index: '07',
+    index: '08',
     title: 'Cikkek',
     subtitle: 'Jegyzetek és írások',
     count: 'Bejegyzések',
@@ -280,7 +300,7 @@ export const hu: Dict = {
   },
 
   interview: {
-    index: '08',
+    index: '09',
     title: 'Interjú-szimulátor',
     subtitle: 'Felkészülés technikai interjúra',
     intro:

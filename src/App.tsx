@@ -9,7 +9,7 @@ import ScrollProgress from './components/ScrollProgress';
 import TechnicalCursor from './components/TechnicalCursor';
 import Home from './pages/Home';
 import ProjectDetail from './pages/ProjectDetail';
-import { ArticlePage, ArticlesPage, InterviewPage, InterviewTrackPage } from './pages/lazy';
+import { ArticlePage, ArticlesPage, CvMakerPage, InterviewPage, InterviewTrackPage } from './pages/lazy';
 import { useRouteCommitSignal } from './lib/pageTransition';
 
 export default function App() {
@@ -39,6 +39,7 @@ export default function App() {
             <Route path="/hu?/articles/:slug" element={<ArticlePage />} />
             <Route path="/hu?/interview" element={<InterviewPage />} />
             <Route path="/hu?/interview/:id" element={<InterviewTrackPage />} />
+            <Route path="/hu?/cv-maker" element={<CvMakerPage />} />
             <Route path="*" element={<Home />} />
           </Routes>
         </Suspense>

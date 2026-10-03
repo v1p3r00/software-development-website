@@ -156,6 +156,7 @@ function pages(root: string): Page[] {
     });
 
     list.push({ path: at('/interview/'), lang, alternates: both('/interview/'), title: t.seo.interviewTitle, description: t.seo.interviewDescription });
+    list.push({ path: at('/cv-maker/'), lang, alternates: both('/cv-maker/'), title: t.seo.cvTitle, description: t.seo.cvDescription });
     for (const tr of tracks) {
       // only tracks whose question set is in the build
       if (!fs.existsSync(path.join(root, `src/data/interview/${tr.id}.${lang}.json`))) continue;
