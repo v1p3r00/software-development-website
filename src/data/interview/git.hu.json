@@ -1,0 +1,3219 @@
+[
+ {
+  "id": 1,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Melyik állítás írja le helyesen, hogyan tárolja a Git a commitokhoz tartozó tartalmat?",
+  "options": [
+   "A commit közvetlenül az összes fájl teljes tartalmát tartalmazza, és nem hivatkozik más objektumokra.",
+   "A commit egy tree objektumra, valamint a szülő commit(ok)ra és metaadatokra hivatkozik.",
+   "A commit kizárólag a módosított fájlok diffjét tárolja, a teljes fájlrendszer-állapotot nem.",
+   "A commit csak egy branch nevét és egy időbélyeget tárol."
+  ],
+  "answer": 1,
+  "explanation": "A commit objektum többek között egy tree objektumra hivatkozik, amely az adott commit fájlrendszer-pillanatképének szerkezetét írja le, továbbá tartalmazza a szülő commit(ok) azonosítóját és a szerzői/commit metaadatokat. A Git objektummodellje ezért nem egyszerűen commitonként eltárolt diffek sorozata. A leggyakoribb téves válasz azért csábító, mert a Git diff-alapú működésűnek tűnik a felhasználói parancsok, például a log és diff alapján."
+ },
+ {
+  "id": 2,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "output",
+  "question": "Mit fog tartalmazni a commit az alábbi műveletek után?",
+  "code": "echo \"one\" > file.txt\ngit add file.txt\necho \"two\" >> file.txt\ngit commit -m \"Add file\"",
+  "options": [
+   "A commitban a file.txt két soros, \"one\" és \"two\" tartalommal lesz.",
+   "A commit sikertelen lesz, mert a fájlt a git add után már nem lehet módosítani.",
+   "A commit csak a \"two\" sort tartalmazza.",
+   "A commit a staging területre került, egy soros \"one\" tartalmú verziót tartalmazza."
+  ],
+  "answer": 3,
+  "explanation": "A `git add` az adott pillanatban a fájl tartalmát a staging area-ba helyezi. A későbbi módosítás a working tree-ben történik, és automatikusan nem kerül bele a staging area-ba. Ezért a commit az `one` tartalmú, egy soros állapotot rögzíti. A leggyakoribb rossz válasz azért csábító, mert sokan úgy gondolják, hogy a staging egy fájlhoz kötött folyamatos állapot, nem pedig egy adott tartalom pillanatfelvétele."
+ },
+ {
+  "id": 3,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "behavior",
+  "question": "Egy Git repositoryban a `main` branch jelenleg a `A-B-C` commitlánc végén áll. Létrehozod a `feature` branchet a `C` commitnál, majd készítesz egy új commitot a feature branchen. Mi történik a `main` branch-csel?",
+  "options": [
+   "A `main` automatikusan az új feature commitra lép.",
+   "A `main` és a `feature` automatikusan merge-elődik.",
+   "A `main` változatlanul a `C` commitra mutat.",
+   "A Git új közös commitot hoz létre a két branch számára."
+  ],
+  "answer": 2,
+  "explanation": "A branch Gitben alapvetően egy commitra mutató mozgatható referencia. A `feature` létrehozása után annak referenciája továbbmozoghat az új commitra, de a `main` referencia ettől nem változik. A leggyakoribb téves válasz azért csábító, mert a branch létrehozását egyes fejlesztők különálló példányként képzelik el, nem pedig egy commitra mutató referenciaként."
+ },
+ {
+  "id": 4,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "scenario",
+  "question": "A `main` és a `feature` branch is a közös `C` commitból indult. Mindkettőn pontosan egy-egy új commit készült, és különböző fájlokat módosítottak. Mit tesz alapértelmezés szerint a `git merge feature`, ha a `main` branchen állsz?",
+  "options": [
+   "Mindig merge conflict keletkezik, mert mindkét branch új commitot tartalmaz.",
+   "A Git törli a feature commitot, és csak a main állapotát tartja meg.",
+   "A Git automatikusan squasholja a két commitot egyetlen commitba.",
+   "A Git egy merge commitot hoz létre, amelynek két szülője van."
+  ],
+  "answer": 3,
+  "explanation": "Mivel mindkét branch eltért a közös őstől, és nincs fast-forward lehetőség, a Git alapértelmezésben merge commitot hoz létre, feltéve hogy nincs konfliktus és a merge nincs másképp konfigurálva. A merge commit két szülőre hivatkozik. A leggyakoribb rossz válasz azért csábító, mert a konfliktust sokan az ágak közötti bármilyen eltérés kötelező következményének tekintik."
+ },
+ {
+  "id": 5,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "theory",
+  "question": "Mi a legfontosabb különbség a `git fetch origin` és a `git pull origin main` között normál esetben?",
+  "options": [
+   "A fetch frissíti a távoli referenciákat anélkül, hogy a jelenlegi branch munkafájába automatikusan beolvasná a változásokat, míg a pull fetch után integrációt is végez.",
+   "A fetch csak tageket tölt le, a pull pedig csak brancheket.",
+   "A fetch módosítja a working tree-t, a pull pedig soha nem módosítja.",
+   "A két parancs teljesen azonos, csak más néven érhetők el."
+  ],
+  "answer": 0,
+  "explanation": "A `git fetch` lekéri a távoli repository új objektumait és frissíti a remote-tracking referenciákat, például az `origin/main` állapotát, de nem merge-öli vagy rebase-eli automatikusan a jelenlegi branch-et. A `git pull` lényegében fetch és azt követő integráció, amely a konfigurációtól függően merge vagy rebase lehet. A leggyakoribb téves válasz azért csábító, mert mindkét parancs hálózati műveletként jelenik meg a mindennapi használatban."
+ },
+ {
+  "id": 6,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "trap",
+  "question": "Van egy már publikált commitod a `main` branchen, amely hibás változtatást tartalmaz. A commitot más fejlesztők is letöltötték. Melyik megoldás a leginkább megfelelő, ha az előzmények átírását szeretnéd elkerülni?",
+  "options": [
+   "`git reset --hard HEAD~1` majd force push",
+   "`git restore --source HEAD~1 --staged --worktree .`",
+   "`git revert HEAD`",
+   "A `.git` könyvtár törlése és új repository inicializálása"
+  ],
+  "answer": 2,
+  "explanation": "A `git revert HEAD` egy új commitot hoz létre, amely visszafordítja a kiválasztott commit változtatásait, így a már publikált history érintetlenül megmarad. A `reset --hard` ezzel szemben a branch referenciáját és a munkakönyvtárat is visszaállíthatja, ami megosztott branchen history-átíráshoz vezethet. A leggyakoribb rossz válasz azért csábító, mert a reset közvetlenül láthatóan visszaviszi a branch-et a korábbi állapotra."
+ },
+ {
+  "id": 7,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "behavior",
+  "question": "Mit csinál alapértelmezés szerint a `git stash` egy módosított, de még nem commitolt working tree esetén?",
+  "options": [
+   "Commitot készít a módosításokból egy ideiglenes branch-en.",
+   "A módosításokat eltárolja a stash-ben, majd a working tree-t visszaállítja a HEAD állapotára.",
+   "A módosításokat véglegesen törli a Git objektumtárából.",
+   "A módosításokat automatikusan áthelyezi a következő commit staging area-jába."
+  ],
+  "answer": 1,
+  "explanation": "A `git stash` elmenti a megfelelő, alapértelmezésben tracked working-tree változásokat, majd tisztább munkakönyvtárat állít elő. A stash később például `git stash pop` vagy `git stash apply` segítségével visszaállítható. A leggyakoribb rossz válasz azért csábító, mert a stash ideiglenes tárolóként működik, és könnyű összekeverni egy ideiglenes commit vagy branch fogalmával."
+ },
+ {
+  "id": 8,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "output",
+  "question": "Egy branch-en lévő egyetlen commit módosítja a `config.txt` fájlt. Egy másik branch-en állsz, és kiadod a `git cherry-pick <commit>` parancsot konfliktus nélkül. Mi történik?",
+  "options": [
+   "A Git átmozgatja az eredeti commitot az aktuális branch-re, így az eredeti branch elveszíti.",
+   "A Git csak a commit üzenetét másolja át, a fájlváltozásokat nem.",
+   "A Git az eredeti commit objektumot új szülővel módosítja.",
+   "A Git az adott commit változtatásait alkalmazza az aktuális branch-en, és új commitot hoz létre."
+  ],
+  "answer": 3,
+  "explanation": "A cherry-pick nem az eredeti commitot helyezi át. A kiválasztott commit változtatásait alkalmazza az aktuális HEAD-re, majd ebből rendszerint új commit jön létre, amelynek más lehet a commitazonosítója és a szülője. A leggyakoribb téves válasz azért csábító, mert a parancs úgy tűnik, mintha egy meglévő commitot \"átvinne\" egyik branchből a másikba."
+ },
+ {
+  "id": 9,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "output",
+  "question": "Mit jelent az alábbi parancs kimenetében a `HEAD -> main` jelölés?",
+  "code": "$ git log --oneline --decorate -3\n8f12abc (HEAD -> main) Fix login bug\n4ab56de Add validation\n1c23aaa Initial commit",
+  "options": [
+   "A `main` branch az `8f12abc` commitra mutat, és a HEAD jelenleg ezt a branch-et követi.",
+   "Az `8f12abc` commit a repository legelső commitja.",
+   "A `main` branch három commitot tartalmaz, és a HEAD különálló commitra mutat.",
+   "A `main` branch távoli branch, amelyet a HEAD automatikusan letölt."
+  ],
+  "answer": 0,
+  "explanation": "A `HEAD -> main` azt jelzi, hogy a HEAD jelenleg a `main` branch-re mutat, amelynek aktuális commitja az `8f12abc`. A többi sor a korábbi commitokat mutatja. A leggyakoribb rossz válasz azért csábító, mert a log dekorációs jelöléseket könnyű úgy értelmezni, mintha azok további commitok vagy távoli referenciák lennének."
+ },
+ {
+  "id": 10,
+  "level": "junior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "theory",
+  "question": "Mi történik egy egyszerű lightweight tag létrehozásakor a `git tag v1.0` paranccsal, ha nincs más commit megadva?",
+  "options": [
+   "A Git új commitot készít `v1.0` néven.",
+   "A Git egy új branchet hoz létre `v1.0` néven.",
+   "A Git egy referenciát hoz létre, amely az aktuális commitra mutat.",
+   "A Git feltölti a taget az összes konfigurált remote-ra."
+  ],
+  "answer": 2,
+  "explanation": "A lightweight tag egyszerű névvel ellátott referencia, amely az aktuális commitra mutat. Nem hoz létre új commitot, és létrehozása önmagában nem pusholja a taget remote-ra. A leggyakoribb rossz válasz azért csábító, mert a tag és a branch is egy commitra mutató referencia, ezért kezdőként könnyű őket azonos működésűnek tekinteni."
+ },
+ {
+  "id": 11,
+  "level": "junior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "scenario",
+  "question": "A `.gitignore` fájlod tartalmazza ezt a sort: `*.log`. A repositoryban már korábban commitolt `app.log` fájlt módosítod. Mi történik?",
+  "options": [
+   "A Git automatikusan eltávolítja az `app.log` fájlt a repositoryból.",
+   "A módosítás nem jelenik meg a Gitben, mert a `.gitignore` minden ilyen fájlt kizár.",
+   "A fájl csak akkor lesz figyelmen kívül hagyva, ha előbb újra inicializálod a repositoryt.",
+   "A `.gitignore` nem vonatkozik automatikusan a már tracked fájlra, ezért a módosítása továbbra is követett lesz."
+  ],
+  "answer": 3,
+  "explanation": "A `.gitignore` elsősorban a még nem tracked fájlok és útvonalak figyelmen kívül hagyására szolgál. Egy már tracked `app.log` fájl módosításait továbbra is látja és követi a Git. A leggyakoribb rossz válasz azért csábító, mert a `.gitignore` neve alapján sokan azt feltételezik, hogy minden illeszkedő fájlt univerzálisan elrejt a Git elől."
+ },
+ {
+  "id": 12,
+  "level": "junior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "theory",
+  "question": "Egy Git repository submodule-t használ egy másik repository beágyazására. Mit rögzít a szülő repository commitja a submodule tartalmáról?",
+  "options": [
+   "A teljes submodule repository összes fájljának tartalmát.",
+   "Egy Git object ID-t, amely a submodule egy konkrét commitjára mutat.",
+   "Csak a submodule aktuális branch nevét.",
+   "A submodule összes branch-ének aktuális HEAD-jét."
+  ],
+  "answer": 1,
+  "explanation": "A superproject egy speciális gitlink bejegyzéssel egy konkrét submodule commitot rögzít. Ez biztosítja, hogy a superproject adott commitja determinisztikusan meghatározza, melyik submodule commit tartozik hozzá. A leggyakoribb rossz válasz azért csábító, mert a submodule a fájlrendszerben könyvtárként látszik, ezért könnyű normál tracked könyvtárként gondolni rá."
+ },
+ {
+  "id": 13,
+  "level": "junior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "edgecase",
+  "question": "Véletlenül lefuttattad a `git reset --hard HEAD~2` parancsot, és szeretnéd megtalálni a branch korábbi HEAD-jét. Melyik eszköz a legközvetlenebb segítség?",
+  "options": [
+   "`git reflog`",
+   "`gitignore`",
+   "`git clean`",
+   "`git archive`"
+  ],
+  "answer": 0,
+  "explanation": "A reflog lokálisan nyilvántartja a referenciaértékek, például a HEAD, korábbi mozgásait. Ez gyakran lehetővé teszi egy reset, rebase vagy más véletlen referenciaátírás utáni commit megtalálását és visszaállítását. A leggyakoribb rossz válasz azért csábító, mert a `git log` is historyt mutat, de az nem feltétlenül tartalmazza a branch korábban elhagyott referenciapozícióit."
+ },
+ {
+  "id": 14,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "Mit eredményez a `git status` szempontjából az alábbi műveletsor?",
+  "code": "echo \"hello\" > a.txt\ngit add a.txt\ngit status",
+  "options": [
+   "A fájl csak a working tree-ben létezik, stagingben nem.",
+   "A fájl automatikusan commitolódik.",
+   "A fájl az indexben staged new file-ként jelenik meg, és még nincs commitban.",
+   "A Git törli a fájlt, mert még nincs commit."
+  ],
+  "answer": 2,
+  "explanation": "A `git add` az új fájl tartalmát az indexbe, vagyis a staging area-ba helyezi. A fájl ekkor már staged, de commit még nem készült belőle. A leggyakoribb rossz válasz azért csábító, mert a `git add` elnevezése alapján könnyű azt hinni, hogy a fájl már ténylegesen hozzáadódott a repository historyjához."
+ },
+ {
+  "id": 15,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "debug",
+  "question": "Egy fejlesztő ezt futtatja:\nA commit után észreveszi, hogy egy korábban módosított fájl nem került bele. Mi lehet a legvalószínűbb magyarázat?",
+  "code": "git add .\ngit commit -m \"Feature\"",
+  "options": [
+   "A Git commitokban legfeljebb 10 fájlt enged tárolni.",
+   "A fájl olyan állapotban volt, amelyet a `git add .` nem stagingelt, például megfelelő ignore-szabály miatt nem tracked fájl volt.",
+   "A `git commit` mindig véletlenszerűen választja ki a staged fájlokat.",
+   "A Git csak a módosított Java fájlokat stage-eli."
+  ],
+  "answer": 1,
+  "explanation": "A `git add .` a jelenlegi könyvtárhoz viszonyított, illetve a Git szabályai által meghatározott fájlokat stagingeli; például egy ignore-szabállyal kizárt, nem tracked fájl nem kerül automatikusan stage-be. Már tracked fájloknál más okok, például fájlútvonal vagy az aktuális könyvtár helyzete is számíthat. A leggyakoribb rossz válasz azért csábító, mert az `add .` rövid parancs könnyen úgy tűnik, mintha minden lehetséges fájlt korlátozás nélkül hozzáadna."
+ },
+ {
+  "id": 16,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "output",
+  "question": "Mi lesz a `git branch` kimenetében az alábbi művelet után?",
+  "code": "git switch -c feature\ngit switch main\ngit branch",
+  "options": [
+   "Csak a `feature` branch jelenik meg.",
+   "A `feature` és `main` branch is megjelenik, és a `main` mellett lesz a `*`.",
+   "Csak a `main` branch jelenik meg, mert a feature branch-ről visszaváltottunk.",
+   "A Git automatikusan törli a `feature` branchet a visszaváltáskor."
+  ],
+  "answer": 1,
+  "explanation": "A `git switch -c feature` létrehozza a feature branchet, majd az új branchről a `main` branchre váltás nem törli azt. A `git branch` mindkét lokális branchet felsorolja, és a `*` az aktuálisan checkoutolt `main` branchet jelöli. A leggyakoribb rossz válasz azért csábító, mert a branch és a rajta való tartózkodás fogalma könnyen összekeverhető."
+ },
+ {
+  "id": 17,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "Egy merge konfliktust kapsz. A konfliktusjelölők eltávolítása és a fájl helyes szerkesztése után melyik lépéssor fejezi be helyesen a konfliktusos merge-et?",
+  "options": [
+   "`git commit` közvetlenül, staging nélkül, minden esetben.",
+   "`git reset --hard` majd `git push`.",
+   "`git add <resolved-file>` majd `git commit`.",
+   "`git branch --delete <resolved-file>` majd `git merge --continue`."
+  ],
+  "answer": 2,
+  "explanation": "Konfliktus feloldása után a Gitnek jelezni kell, hogy az érintett fájl megoldott állapotban van; erre szolgál a `git add`. Ezután a merge commit létrehozható a `git commit` paranccsal, vagy bizonyos esetekben a `git merge --continue` használható. A leggyakoribb rossz válasz azért csábító, mert a fájl szerkesztése után szemmel láthatóan már helyesnek tűnik az állapot, de Gitnek ezt külön is jelezni kell."
+ },
+ {
+  "id": 18,
+  "level": "junior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "behavior",
+  "question": "Mi történik egy egyszerű `git rebase main` során, ha a `feature` branchen állsz, és a feature két commitja a régi main HEAD-ről indult?",
+  "options": [
+   "A feature commitokat a Git újraalkalmazza a jelenlegi `main` végére, új commitazonosítókkal.",
+   "A Git mindig merge commitot készít a feature és main között.",
+   "A Git törli a feature commitokat, és csak a main historyját tartja meg.",
+   "A rebase kizárólag a working tree fájljait módosítja, commitokat nem."
+  ],
+  "answer": 0,
+  "explanation": "A rebase a feature commitjait leválasztja a régi bázisról, majd a megadott új bázis, jelen esetben a `main` aktuális csúcsa után alkalmazza őket. Az újonnan létrehozott commitoknak jellemzően új azonosítójuk lesz. A leggyakoribb rossz válasz azért csábító, mert a rebase eredménye lineáris history, amely kívülről hasonlíthat egy merge-re."
+ },
+ {
+  "id": 19,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "scenario",
+  "question": "A lokális `main` branch-ed egy commitnyira előrébb van, mint `origin/main`, és nincs más eltérés. Mit tesz egy sikeres `git push origin main`?",
+  "options": [
+   "Letölti az `origin/main` változásait, de nem küldi fel a lokális commitot.",
+   "Törli a lokális commitot, mert a remote állapota az elsődleges.",
+   "Új merge commitot hoz létre minden push alkalmával.",
+   "Feltölti a szükséges objektumokat, és az `origin/main` referenciát a lokális `main` commitjára mozgatja."
+  ],
+  "answer": 3,
+  "explanation": "Ha a remote branch fast-forward módon frissíthető, a push feltölti a hiányzó Git objektumokat, majd a remote branch referenciáját a lokális commitra állítja. Nem szükséges merge commit. A leggyakoribb rossz válasz azért csábító, mert a push és fetch irányának összekeverése gyakori kezdő hiba."
+ },
+ {
+  "id": 20,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "output",
+  "question": "Mi történik az alábbi parancs után, ha `file.txt` módosítása még nincs staged állapotban?",
+  "code": "git restore file.txt",
+  "options": [
+   "A módosítás bekerül a staging area-ba.",
+   "A fájl working-tree módosítását visszaállítja az indexben lévő verzióra.",
+   "A teljes Git repository összes commitját törli.",
+   "Új commit készül a módosítás visszavonásáról."
+  ],
+  "answer": 1,
+  "explanation": "A `git restore file.txt` alapértelmezésben a working tree fájlját állítja vissza az indexben szereplő tartalomra. Egy nem staged módosítás ezért elveszhet. A parancs nem hoz létre commitot, és nem mozgatja a branch referenciáját. A leggyakoribb rossz válasz azért csábító, mert a restore szó alapján sokan azt feltételezik, hogy Git historyból történő általános visszaállításról van szó."
+ },
+ {
+  "id": 21,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "edgecase",
+  "question": "Van egy módosított tracked fájlod és egy új, még nem tracked fájlod. Mit tesz alapértelmezés szerint a `git stash`?",
+  "options": [
+   "Mindkettőt eltárolja.",
+   "Csak az új, untracked fájlt tárolja el.",
+   "A tracked módosítást stash-eli, az untracked fájlt alapértelmezésben nem.",
+   "Hibával leáll, mert untracked fájl található a working tree-ben."
+  ],
+  "answer": 2,
+  "explanation": "A sima `git stash` alapértelmezésben a tracked working-tree változásokat stash-eli, míg az untracked fájlokat nem. Az untracked fájlok bevonásához például a `git stash -u` használható. A leggyakoribb rossz válasz azért csábító, mert a stash-t sokan a teljes working directory pillanatfelvételének tekintik."
+ },
+ {
+  "id": 22,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "scenario",
+  "question": "Egy bugfix commitot szeretnél egy release branchre átvinni, de a release branch nem tartalmazza az adott feature branch további fejlesztéseit. Melyik Git művelet illeszkedik leginkább ehhez a célhoz?",
+  "options": [
+   "`git cherry-pick <bugfix-commit>`",
+   "`git reset --hard <bugfix-commit>`",
+   "`git stash push <bugfix-commit>`",
+   "`git branch --move <bugfix-commit>`"
+  ],
+  "answer": 0,
+  "explanation": "A cherry-pick kifejezetten arra alkalmas, hogy egy meglévő commit változtatásait egy másik history-vonalra alkalmazd anélkül, hogy az egész feature branchet merge-ölnéd. Konfliktus esetén a cherry-pick folyamatot fel kell oldani vagy meg kell szakítani. A leggyakoribb rossz válasz azért csábító, mert a reset is képes egy branch állapotát egy másik commitra helyezni, de teljesen más célt szolgál."
+ },
+ {
+  "id": 23,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "Egy regresszió valamikor az utóbbi 40 commit egyikében került be, és minden commit egyértelműen reprodukálhatóan tesztelhető. Melyik Git eszköz használható a hibás commit hatékony megkeresésére?",
+  "options": [
+   "`git blame`",
+   "`git bisect`",
+   "`git archive`",
+   "`git tag`"
+  ],
+  "answer": 1,
+  "explanation": "A `git bisect` bináris keresést végez a megadott jó és rossz commitok között, és minden lépésben egy köztes commit tesztelését kéri. Körülbelül logaritmikus számú lépéssel szűkíthető a regressziót okozó commit. A leggyakoribb rossz válasz azért csábító, mert a `git blame` is képes egy konkrét sorhoz kapcsolódó commitot megmutatni, de nem regressziók bináris keresésére szolgál."
+ },
+ {
+  "id": 24,
+  "level": "junior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Egy csapat olyan workflow-t használ, ahol minden fejlesztés külön rövid életű branch-en történik, majd code review után a közös `main` branchbe kerül. Mi a legfontosabb előnye ennek a megközelítésnek?",
+  "options": [
+   "A feature branchek automatikusan megakadályoznak minden merge conflictot.",
+   "A Git többé nem készít commitokat a feature brancheken.",
+   "A code review mindig garantálja, hogy productionben nem lesz hiba.",
+   "A változtatások elkülönítve fejleszthetők és review-olhatók, mielőtt bekerülnek a közös főágba."
+  ],
+  "answer": 3,
+  "explanation": "A rövid életű feature branchek izolálják a munkát, így a fejlesztés és a code review külön kezelhető, miközben a közös `main` branch kontrolláltabban változik. Ez nem garantálja a konfliktusmentességet vagy a hibamentes production deployt. A leggyakoribb rossz válasz azért csábító, mert a branch izolációját sokan túl erős biztonsági garanciaként értelmezik."
+ },
+ {
+  "id": 25,
+  "level": "junior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "Egy pull requestben egy fejlesztő 2 soros hibajavítást ad be, de a branch közben 35 teljesen független commitot is tartalmaz. Melyik megközelítés javítja leginkább a review minőségét, ha a csapat workflow-ja ezt támogatja?",
+  "options": [
+   "A teljes branch history törlése és a repository újrainicializálása.",
+   "A branch teljes tartalmának force push nélküli automatikus törlése.",
+   "A változtatások logikailag fókuszált, áttekinthető commitokra vagy szükség esetén egy megfelelően előkészített branch historyra rendezése.",
+   "Minden commit üzenetének átnevezése `fix` értékre."
+  ],
+  "answer": 2,
+  "explanation": "A code review hatékonyságát jelentősen javíthatja, ha a PR valóban a releváns változtatásokat tartalmazza, és a history érthető. Ennek megvalósítása történhet például interaktív rebase-szel, squasholással vagy a csapat által meghatározott workflow szerint. A history átírását csak a branch megosztási és review-szabályaival összhangban érdemes végezni. A leggyakoribb rossz válasz azért csábító, mert a commit üzenetek egyszerű átnevezése látszólag rendezettebb historyt ad, de a tényleges változtatásokat nem teszi fókuszáltabbá."
+ },
+ {
+  "id": 26,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Melyik Git objektumtípus tárolja egy könyvtár tartalmának struktúráját, vagyis azt, hogy mely fájlok és alkönyvtárak mely blobokra és tree objektumokra hivatkoznak?",
+  "options": [
+   "tree",
+   "commit",
+   "blob",
+   "tag"
+  ],
+  "answer": 0,
+  "explanation": "A `tree` objektum egy könyvtár pillanatnyi struktúráját írja le: fájlneveket, módokat és a hozzájuk tartozó blob- vagy tree-objektumokat tartalmazó hivatkozásokat tárol. A `blob` a fájl tartalmát, a `commit` pedig többek között egy tree-re és szülő commitokra hivatkozik. A leggyakoribb rossz válasz azért csábító, mert a commit reprezentálja a repository egy teljes állapotát, ezért könnyű azt hinni, hogy maga tartalmazza a könyvtárstruktúrát."
+ },
+ {
+  "id": 27,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "output",
+  "question": "Mit fog jelezni a `git status` az alábbi műveletek után?",
+  "code": "echo \"hello\" > app.txt\ngit add app.txt\necho \"world\" >> app.txt\ngit status",
+  "options": [
+   "Semmilyen módosítást nem fog jelezni, mert az `app.txt` már staged.",
+   "Az `app.txt` egyszerre staged és unstaged változást is tartalmazhat.",
+   "Az `app.txt` csak unstaged változásként jelenik meg.",
+   "Az `app.txt` automatikusan commitolódik."
+  ],
+  "answer": 1,
+  "explanation": "A `git add` az első, `hello` tartalmú állapotot helyezte az indexbe. A későbbi `world` sor már csak a working tree-ben található, ezért ugyanahhoz a fájlhoz egyszerre tartozhat staged és unstaged változás. A leggyakoribb rossz válasz azért csábító, mert sokan úgy gondolják, hogy egy fájl staged állapota minden későbbi módosítására automatikusan kiterjed."
+ },
+ {
+  "id": 28,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "output",
+  "question": "Mit eredményez az alábbi parancssor, ha a `feature` branch már létezik?",
+  "code": "git switch main\ngit switch feature",
+  "options": [
+   "A `feature` branch újra létrejön a `main` alapján.",
+   "A `feature` branch törlődik, majd újra létrejön.",
+   "A Git a `feature` branchre vált, és annak aktuális commitján folytatja a munkát.",
+   "A Git automatikusan merge-öli a `feature` branchet a `main`-be."
+  ],
+  "answer": 2,
+  "explanation": "A `git switch feature` egy már létező lokális branchre vált. A branch referenciaértéke ettől nem változik, és merge sem történik. A leggyakoribb rossz válasz azért csábító, mert a `switch` parancsot könnyű összekeverni a branch létrehozására szolgáló `switch -c` formával."
+ },
+ {
+  "id": 29,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "scenario",
+  "question": "A `feature` branch teljes egészében a `main` történetének része, vagyis a `main` aktuális commitja a `feature` őse. A `main` branchen állsz, és kiadod a `git merge feature` parancsot. Mi történik konfliktus nélkül?",
+  "options": [
+   "A Git mindig létrehoz egy két szülős merge commitot.",
+   "A Git törli a `feature` branchet.",
+   "A Git létrehoz egy új commitot, amelynek egyetlen szülője a `feature`.",
+   "A Git fast-forward módon előremozdítja a `main` referenciát a `feature` aktuális commitjára."
+  ],
+  "answer": 3,
+  "explanation": "Ha az aktuális `main` commitja őse a merge-elni kívánt `feature` csúcsának, nincs szükség külön merge commitra. A Git egyszerűen előremozdítja a `main` referenciát a `feature` commitjára, ezt nevezzük fast-forward merge-nek. A leggyakoribb rossz válasz azért csábító, mert a `merge` parancsról sokan automatikusan a merge commit létrehozására gondolnak."
+ },
+ {
+  "id": 30,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "Mit jelent az `origin/main` egy tipikus Git repositoryban?",
+  "options": [
+   "Egy lokális branch, amelyet mindig automatikusan merge-el a `main`.",
+   "Egy remote-tracking referencia, amely a Git szerint az `origin` remote `main` branchének ismert állapotát jelöli.",
+   "Egy speciális tag, amely a production verziót jelenti.",
+   "Egy lokális commit, amelyet a Git csak push közben hoz létre."
+  ],
+  "answer": 1,
+  "explanation": "Az `origin/main` egy remote-tracking referencia, amely az `origin` remote-ról ismert `main` branch állapotát jelzi. `git fetch` után ez a referencia frissülhet, de ettől a lokális `main` branch nem változik automatikusan. A leggyakoribb rossz válasz azért csábító, mert az `origin/main` név nagyon hasonlít egy normál lokális branch nevére."
+ },
+ {
+  "id": 31,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "trap",
+  "question": "Mi a lényegi különbség a `git reset HEAD~1` és a `git revert HEAD` között, ha az utolsó commitot szeretnéd visszavonni?",
+  "options": [
+   "A reset mindig törli az összes fájlt, a revert pedig csak a commit üzenetét.",
+   "A két parancs minden esetben pontosan ugyanazt eredményezi.",
+   "A reset a branch történetét módosíthatja úgy, hogy az előző commitra mozgatja a referenciát, míg a revert új commitot hoz létre a változtatások visszafordítására.",
+   "A revert csak untracked fájlokon működik."
+  ],
+  "answer": 2,
+  "explanation": "A `git reset HEAD~1` az aktuális branch referenciáját egy korábbi commitra mozgatja, és az alkalmazott reset módjától függően az index és a working tree állapota is változhat. A `git revert HEAD` ezzel szemben megtartja az eredeti commitot a historyban, és egy új commitban fordítja vissza annak változtatásait. A leggyakoribb rossz válasz azért csábító, mert mindkét parancs után hasonló fájltartalom látható, miközben a historyra gyakorolt hatásuk jelentősen eltér."
+ },
+ {
+  "id": 32,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "output",
+  "question": "Mit tesz az alábbi parancs a stash legutóbbi elemével?",
+  "code": "git stash apply",
+  "options": [
+   "Alkalmazza a legutóbbi stash változtatásait, de alapértelmezés szerint nem távolítja el a stash elemet.",
+   "Alkalmazza a stash változtatásait, majd automatikusan törli azt.",
+   "Véglegesen törli a legutóbbi stash változtatásait.",
+   "Új branch-et hoz létre a stashből, és törli az eredeti stash-t."
+  ],
+  "answer": 0,
+  "explanation": "A `git stash apply` visszaalkalmazza a legutóbbi stash változtatásait a jelenlegi working tree-re, de a stash bejegyzést alapértelmezés szerint megtartja. A `git stash pop` ezzel szemben sikeres alkalmazás után eltávolítja az alkalmazott stash-t. A leggyakoribb rossz válasz azért csábító, mert a stash visszaállítása után sokan automatikusan a stash elem törlését feltételezik."
+ },
+ {
+  "id": 33,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "debug",
+  "question": "Egy `git cherry-pick abc1234` konfliktusba ütközik. A konfliktust szeretnéd megszakítani, és visszatérni a cherry-pick előtti állapothoz. Melyik parancs szolgál erre?",
+  "options": [
+   "`git cherry-pick --continue`",
+   "`git merge --abort`",
+   "`git reset --soft HEAD~1`",
+   "`git cherry-pick --abort`"
+  ],
+  "answer": 3,
+  "explanation": "A `git cherry-pick --abort` megszakítja a folyamatban lévő cherry-picket, és megpróbálja visszaállítani a repositoryt a művelet előtti állapotba. A `--continue` ezzel szemben a konfliktus feloldása után folytatja a cherry-picket. A leggyakoribb rossz válasz azért csábító, mert a `merge --abort` is hasonló nevű helyreállító művelet, de más Git művelet megszakítására szolgál."
+ },
+ {
+  "id": 34,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "output",
+  "question": "Melyik parancs alkalmas arra, hogy egy adott fájl korábbi módosításait és az azokhoz tartozó commitokat áttekintsd?",
+  "options": [
+   "`git log -- <file>`",
+   "`git clean -- <file>`",
+   "`git branch -- <file>`",
+   "`git stash -- <file>`"
+  ],
+  "answer": 0,
+  "explanation": "A `git log -- <file>` segítségével a megadott fájlhoz kapcsolódó commit history szűrhető. A `--` egyértelműen elválasztja a revíziókat a fájlútvonaltól. A leggyakoribb rossz válasz azért csábító, mert több Git parancs is elfogad fájlútvonalakat, de nem mindegyik történeti lekérdezésre szolgál."
+ },
+ {
+  "id": 35,
+  "level": "junior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "scenario",
+  "question": "Egy annotated tag létrehozásakor ezt használod: `git tag -a v2.0 -m \"Release 2.0\"`. Mi a lényeges különbség egy egyszerű lightweight taghez képest?",
+  "options": [
+   "Az annotated tag mindig automatikusan létrehoz egy új branch-et.",
+   "Az annotated tag csak lokálisan létezhet.",
+   "Az annotated tag saját Git objektumként metaadatokat, például üzenetet és taggert tárol, és egy objektumra hivatkozik.",
+   "Az annotated tag nem mutathat commitra."
+  ],
+  "answer": 2,
+  "explanation": "Az annotated tag egy külön tag objektum, amely többek között üzenetet, tagger-információt és időbélyeget tárol, és egy másik Git objektumra hivatkozik, tipikusan egy commitra. A lightweight tag ezzel szemben közvetlen referencia. A leggyakoribb rossz válasz azért csábító, mert mindkét tag ugyanúgy használható egy release megjelölésére a mindennapi workflow-ban."
+ },
+ {
+  "id": 36,
+  "level": "junior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "output",
+  "question": "Egy `.gitignore` fájlban ez szerepel:\nMi történik egy olyan könyvtárban, ahol mindkét fájl létezik?",
+  "code": "*.tmp\n!important.tmp",
+  "options": [
+   "Mindkét fájlt figyelmen kívül hagyja a Git.",
+   "Egyik fájlt sem hagyja figyelmen kívül.",
+   "Csak az `important.tmp` lesz tracked, de csak akkor, ha már korábban commitolták.",
+   "A `*.tmp` által illeszkedő fájlokat figyelmen kívül hagyja, de az `important.tmp` kivételként engedélyezett."
+  ],
+  "answer": 3,
+  "explanation": "A `*.tmp` szabály minden megfelelő `.tmp` fájlt ignorál, az ezt követő `!important.tmp` pedig kivételt képez az adott fájlra. A szabályok sorrendje is számít, ezért a későbbi negatív minta felülírhatja az előző általános kizárást az adott útvonalon. A leggyakoribb rossz válasz azért csábító, mert a `*.tmp` egyszerű szabályt könnyű kizárólagosnak tekinteni, és figyelmen kívül hagyni a negációs mintát."
+ },
+ {
+  "id": 37,
+  "level": "junior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "scenario",
+  "question": "Klónoztál egy repositoryt, amely submodule-t használ. A sima `git clone` után a submodule könyvtára létezik, de nincs benne a várt tartalom. Melyik parancs tölti be és checkoutolja a submodule-okat a superproject által rögzített commitokra?",
+  "options": [
+   "`git submodule update --init --recursive`",
+   "`git branch --submodule`",
+   "`git fetch --submodule-only`",
+   "`git restore --submodules`"
+  ],
+  "answer": 0,
+  "explanation": "A `git submodule update --init --recursive` inicializálja a szükséges submodule konfigurációt, letölti és checkoutolja a superproject által hivatkozott commitokat, valamint rekurzívan kezeli a nested submodule-okat. A leggyakoribb rossz válasz azért csábító, mert a sima `git clone` után a könyvtárszerkezet már látható lehet, miközben a submodule repository tényleges tartalma még nincs inicializálva."
+ },
+ {
+  "id": 38,
+  "level": "junior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "scenario",
+  "question": "Egy fejlesztő lefuttatta a `git reset --hard HEAD~1` parancsot, de később rájött, hogy szüksége van az elveszettnek hitt commitra. Melyik folyamat a legéletszerűbb helyreállítás?",
+  "options": [
+   "A `git status` automatikusan visszaállítja az előző HEAD-et.",
+   "A `git reflog` segítségével megkeresi a korábbi HEAD-et, majd arra egy új branch-et vagy más referenciát hoz létre.",
+   "A `.gitignore` segítségével visszaállítja a commitot.",
+   "A `git clean -fd` visszahozza a korábbi commitot."
+  ],
+  "answer": 1,
+  "explanation": "A reflogban a korábbi HEAD-pozíció általában megtalálható, például `HEAD@{1}` vagy az ahhoz tartozó commitazonosító formájában. Ezt az objektumot egy új branch-csel vagy más referenciával ismét elérhetővé lehet tenni. A leggyakoribb rossz válasz azért csábító, mert a `git status` is információt ad a repository állapotáról, de nem a korábbi referenciaértékek történetét tárolja."
+ },
+ {
+  "id": 39,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "Mit csinál a `git cat-file -t <object-id>` parancs?",
+  "options": [
+   "Kiírja a commit teljes diffjét.",
+   "Megmutatja, melyik branch tartalmazza az objektumot.",
+   "Kiírja a megadott Git objektum típusát, például `commit`, `tree` vagy `blob`.",
+   "Törli az objektumot, ha az nincs branch által elérve."
+  ],
+  "answer": 2,
+  "explanation": "A `git cat-file -t` az objektum típusát jeleníti meg. Ez hasznos alacsony szintű diagnosztikához, amikor egy object ID-ról szeretnéd megállapítani, hogy commit, tree, blob vagy más objektumtípus-e. A leggyakoribb rossz válasz azért csábító, mert a `cat-file` általános lekérdező eszköz, és könnyű azt hinni, hogy automatikusan az objektum teljes tartalmát vagy diffjét mutatja."
+ },
+ {
+  "id": 40,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "scenario",
+  "question": "Egy fájl módosítását staged állapotba tetted, de commit előtt rájössz, hogy a változtatás egy részét nem szeretnéd commitolni. Mi a legjobb Git-eszköz arra, hogy interaktívan kiválaszd, mely változtatási részek kerüljenek stagingbe?",
+  "options": [
+   "`git commit --amend`",
+   "`git reset --hard`",
+   "`git clean -fd`",
+   "`git add -p`"
+  ],
+  "answer": 3,
+  "explanation": "A `git add -p` patch-alapú interaktív staginget biztosít, így a fájl módosításainak egyes részei külön kiválaszthatók stagingre. Ez különösen hasznos, amikor egy fájlban több logikailag különálló módosítás található. A leggyakoribb rossz válasz azért csábító, mert a reset is képes staginggel kapcsolatos állapotot módosítani, de nem ugyanazt az interaktív részletességet nyújtja."
+ },
+ {
+  "id": 41,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "edgecase",
+  "question": "Mi történik, ha egy branch-et törölni próbálsz a `git branch -d feature` paranccsal, miközben a `feature` branch olyan commitokat tartalmaz, amelyek még nincsenek beolvasztva egy elérhető historyba?",
+  "options": [
+   "A Git alapértelmezés szerint figyelmeztet, és nem törli a branchet.",
+   "A Git automatikusan merge-öli a branchet, majd törli.",
+   "A Git mindig törli a branchet, és a commitokat is azonnal megsemmisíti.",
+   "A Git átmásolja a commitokat a `main` branchre."
+  ],
+  "answer": 0,
+  "explanation": "A `git branch -d` biztonságos branch-törlésre szolgál, ezért ha a Git úgy látja, hogy a branch commitjai még nincsenek megfelelően beolvasztva, megtagadja a törlést. A kényszerített törléshez `git branch -D` használható, de ez elveszítheti a commitok könnyen elérhető referenciáját. A leggyakoribb rossz válasz azért csábító, mert a branch törlését sokan úgy értik, hogy az csak egy név eltávolítása, miközben a Git tudatosan védi a még nem integrált munkát."
+ },
+ {
+  "id": 42,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "output",
+  "question": "Egy merge után az alábbi állapotot látod:\nMit jelentenek a jelölések?",
+  "code": "<<<<<<< HEAD\ntimeout = 30\n=======\ntimeout = 60\n>>>>>>> feature",
+  "options": [
+   "A `HEAD` és a `feature` nevű fájlok közötti bináris különbséget.",
+   "A konfliktus két oldalát: a jelenlegi branch állapotát és a merge-ölni kívánt branch változatát.",
+   "Két egymást követő commitot, amelyeket a Git automatikusan újra fog futtatni.",
+   "Két remote repository közötti konfliktust."
+  ],
+  "answer": 1,
+  "explanation": "A konfliktusjelölők a konfliktusban érintett két változatot választják el: a `<<<<<<< HEAD` és `=======` közötti rész az aktuális checkoutolt oldal, a `=======` és `>>>>>>> feature` közötti rész pedig a beolvasztani kívánt branch változata. A fejlesztőnek a kívánt végső tartalmat kell kialakítania, majd staginggel jeleznie a feloldást. A leggyakoribb rossz válasz azért csábító, mert a jelölőkben szereplő nevek első pillantásra fájl- vagy remote-neveknek tűnhetnek."
+ },
+ {
+  "id": 43,
+  "level": "junior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "trap",
+  "question": "Miért veszélyes egy már mások által használt és pusholt branch historyját módosítani például `git rebase` segítségével?",
+  "options": [
+   "Mert a rebase mindig törli a working tree-t.",
+   "Mert a rebase nem működik remote branch-ekkel.",
+   "Mert a rebase új commitokat hozhat létre, így a korábbi commitok azonosítói megváltozhatnak, és a közös history eltérhet a többiek lokális historyjától.",
+   "Mert a rebase automatikusan minden fájlt binaryként kezel."
+  ],
+  "answer": 2,
+  "explanation": "A rebase a commitokat újraalkalmazza egy másik bázisra, ezért a commit ID-k megváltozhatnak. Ha más fejlesztők már a régi historyra építettek, a módosított history összehangolása extra munkát és gyakran force push-t igényel. A leggyakoribb rossz válasz azért csábító, mert a rebase helyi parancsnak tűnik, és kevésbé nyilvánvaló, hogy egy publikált history struktúráját is megváltoztathatja."
+ },
+ {
+  "id": 44,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "debug",
+  "question": "Egy fejlesztő pusholni próbál:\nMi a legvalószínűbb oka?",
+  "code": "$ git push origin main\nTo github.example.com:team/app.git\n ! [rejected]        main -> main (non-fast-forward)\nerror: failed to push some refs",
+  "options": [
+   "A remote `main` branch olyan commitokat tartalmaz, amelyek nincsenek a lokális `main` historyjában.",
+   "A Git repositoryban túl sok fájl van.",
+   "A `main` branch neve túl rövid.",
+   "A push parancs csak annotated tagekre működik."
+  ],
+  "answer": 0,
+  "explanation": "A non-fast-forward push rejection tipikusan azt jelenti, hogy a remote branch előrébb van vagy eltérő historyt tartalmaz, ezért a lokális branch nem tudja egyszerűen előremozdítani a remote referenciát. A megfelelő megoldás általában a remote változásainak fetch-elése és tudatos integrálása, majd a push újrapróbálása. A leggyakoribb rossz válasz azért csábító, mert a hibaüzenet nem írja le közvetlenül, melyik commit hiányzik lokálisan."
+ },
+ {
+  "id": 45,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "output",
+  "question": "Mi történik az alábbi parancs után?",
+  "code": "git restore --staged file.txt",
+  "options": [
+   "A fájl módosításai véglegesen törlődnek a working tree-ből.",
+   "A fájl legutóbbi commitja törlődik.",
+   "A fájl automatikusan visszaáll a remote branch állapotára.",
+   "A fájl kikerül a staging area-ból, miközben a working-tree módosítás alapértelmezés szerint megmarad."
+  ],
+  "answer": 3,
+  "explanation": "A `--staged` azt mondja meg, hogy az index, vagyis a staging area állapotát állítsuk vissza. A working tree fájl tartalma ettől alapértelmezés szerint nem változik, ezért a módosítás unstaged állapotba kerülhet. A leggyakoribb rossz válasz azért csábító, mert a `restore` szó alapján könnyű azt feltételezni, hogy maga a fájl tartalma is visszaáll."
+ },
+ {
+  "id": 46,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "scenario",
+  "question": "Egy fejlesztőnek több, egymástól független ideiglenes munkája van, és ezeket külön stash-elemekként szeretné kezelni. Melyik állítás helyes?",
+  "options": [
+   "A Git repositoryban legfeljebb egy stash létezhet.",
+   "Több stash is létrehozható, és a `git stash list` felsorolja őket.",
+   "Minden új stash automatikusan törli az előzőt.",
+   "A stash csak egyetlen fájlra használható."
+  ],
+  "answer": 1,
+  "explanation": "A Git stash egy stack jellegű tárolót biztosít, amelyben több stash bejegyzés is lehet, például `stash@{0}`, `stash@{1}` és így tovább. A `git stash list` ezek listáját mutatja, és egy konkrét elem később külön alkalmazható vagy törölhető. A leggyakoribb rossz válasz azért csábító, mert a legtöbb egyszerű workflow-ban csak a legutóbbi stash-t használják."
+ },
+ {
+  "id": 47,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "edgecase",
+  "question": "Egy commitot cherry-pickelsz egy másik branchre, de az alkalmazandó változtatás már részben vagy teljesen jelen van azon a branchen. Mi történhet?",
+  "options": [
+   "A Git automatikusan törli az eredeti commitot.",
+   "A cherry-pick mindig sikeresen létrehoz egy teljesen azonos commitot.",
+   "A cherry-pick ütközhet vagy akár üres változtatást eredményezhet, attól függően, hogy az eredeti változtatás mennyire van már jelen.",
+   "A Git automatikusan merge-öli az egész eredeti branchet."
+  ],
+  "answer": 2,
+  "explanation": "A cherry-pick egy commit által bevezetett patch-et próbál alkalmazni az aktuális állapotra. Ha annak változtatásai már jelen vannak, a művelet konfliktusba futhat, vagy az alkalmazás után nem marad tényleges változás, ami üres cherry-picket eredményezhet. A leggyakoribb rossz válasz azért csábító, mert a cherry-pick célját sokan egyszerű commitmásolásként értelmezik, holott valójában változtatásokat alkalmaz egy másik alapra."
+ },
+ {
+  "id": 48,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "output",
+  "question": "Mire használható leginkább a `git blame file.txt`?",
+  "options": [
+   "Annak megállapítására, hogy egy fájl jelenlegi soraihoz mely commitok és szerzők kapcsolódnak.",
+   "A fájl teljes historyjának bináris keresésére.",
+   "A fájl összes korábbi verziójának automatikus visszaállítására.",
+   "A fájlban lévő összes merge conflict automatikus feloldására."
+  ],
+  "answer": 0,
+  "explanation": "A `git blame` soronként megmutatja, hogy a fájl aktuális tartalmának egyes soraihoz mely commit és szerző kapcsolódik. Ez hasznos lehet például annak felderítésére, hogy egy adott sor mikor és milyen commitban változott. A leggyakoribb rossz válasz azért csábító, mert a blame történeti információt mutat, de nem a teljes history bináris keresésére szolgál."
+ },
+ {
+  "id": 49,
+  "level": "junior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "scenario",
+  "question": "Egy release tag már lokálisan létrejött, és azt szeretnéd feltölteni az `origin` remote-ra. Melyik parancs erre a célra?",
+  "options": [
+   "`git push origin --branch v1.0`",
+   "`git push origin v1.0`",
+   "`git fetch origin v1.0`",
+   "`git pull origin v1.0`"
+  ],
+  "answer": 1,
+  "explanation": "A `git push origin v1.0` kifejezetten a `v1.0` tag remote-ra történő feltöltésére használható. A tag létrehozása önmagában nem jelenti azt, hogy az automatikusan megjelenik a remote repositoryban. A leggyakoribb rossz válasz azért csábító, mert a branch pusholás szintaxisa hasonló, és a tag fogalmát könnyű branchként kezelni."
+ },
+ {
+  "id": 50,
+  "level": "junior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "production",
+  "question": "Egy csapat azt szeretné, hogy a `main` branch mindig deployolható állapotban legyen, miközben a nagyobb feature-ök több napon át fejlesztés alatt állnak. Melyik workflow támogatja ezt a célt a legközvetlenebbül?",
+  "options": [
+   "Minden fejlesztő közvetlenül a `main` branchre commitoljon, review nélkül.",
+   "A nagyobb feature-öket egyetlen hatalmas commitban kell a `main` branchre írni.",
+   "Minden feature külön branch-en készüljön, és csak ellenőrzés után kerüljön integrálásra a `main` branchbe.",
+   "A `main` branchet minden nap törölni és újra létrehozni kell."
+  ],
+  "answer": 2,
+  "explanation": "A külön feature branchek lehetővé teszik, hogy a folyamatban lévő munkát elkülönítsék a stabilabb `main` ágtól, majd a megfelelő ellenőrzések után integrálják. Ez önmagában nem garantálja, hogy a `main` mindig hibamentes, de támogatja a kontrollált integrációt. A leggyakoribb rossz válasz azért csábító, mert egyetlen nagy commit látszólag egyszerűbb historyt eredményez, de nem oldja meg a hosszabb ideig fejlesztett változtatások izolációját."
+ },
+ {
+  "id": 51,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "Mit jelenít meg a `git rev-parse HEAD` parancs egy normál, nem detached HEAD állapotban?",
+  "options": [
+   "Az aktuális commit teljes SHA-azonosítóját.",
+   "Az aktuális branch nevét.",
+   "Az aktuális remote URL-jét.",
+   "Az utolsó commit üzenetét."
+  ],
+  "answer": 0,
+  "explanation": "A `git rev-parse HEAD` feloldja a `HEAD` referenciát, és az aktuális commit teljes objektumazonosítóját írja ki. Ez gyakran hasznos szkriptekben és diagnosztikában, amikor egy pontos commitazonosítóra van szükség. A leggyakoribb rossz válasz azért csábító, mert a `HEAD` gyakran egy branchhez kapcsolódik, de maga a referencia végül egy commitra oldódik fel."
+ },
+ {
+  "id": 52,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "trap",
+  "question": "Mi történik, ha egy fájlt staged állapotba tettél, majd módosítod, és ezt követően kiadod a `git commit -a -m \"Update\"` parancsot?",
+  "options": [
+   "A Git csak a korábban staged állapotot commitolja, és semmilyen más fájlt nem vesz figyelembe.",
+   "A Git a tracked fájlok working-tree módosításait is automatikusan stagingeli, majd commitolja az aktuális index tartalmát.",
+   "A Git minden untracked fájlt is automatikusan hozzáad.",
+   "A Git törli a staging area korábbi tartalmát, majd minden fájlt újra stagingel."
+  ],
+  "answer": 1,
+  "explanation": "A `git commit -a` a már tracked fájlok módosításait és törléseit automatikusan stagingeli a commit előtt, de új, untracked fájlokat nem ad hozzá. Ezért egy korábban staged fájl későbbi módosítása is bekerülhet a commitba. A leggyakoribb rossz válasz azért csábító, mert a `git commit` önmagában csak az index tartalmát commitolja, de a `-a` ezt a tracked fájlok esetében kibővíti."
+ },
+ {
+  "id": 53,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "scenario",
+  "question": "Mi a különbség a `git branch feature` és a `git switch -c feature` között, ha a `feature` branch még nem létezik?",
+  "options": [
+   "Mindkettő létrehozza a branchet, de egyik sem vált át rá.",
+   "Az első törli az aktuális branchet, a második átnevezi.",
+   "Az első létrehozza a branchet, a második pedig létrehozza és azonnal át is vált rá.",
+   "Az első remote branchet hoz létre, a második lokálisat."
+  ],
+  "answer": 2,
+  "explanation": "A `git branch feature` létrehozza a `feature` referenciát, de az aktuális branch változatlan marad. A `git switch -c feature` létrehozza az új branchet és egyben át is vált rá. A leggyakoribb rossz válasz azért csábító, mert mindkét parancs létrehoz egy új branch nevet, ezért a váltás implicit hatása könnyen elsikkad."
+ },
+ {
+  "id": 54,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "Merge közben ezt kapod:\nMelyik állítás helyes?",
+  "code": "$ git merge feature\nAuto-merging app.txt\nCONFLICT (content): Merge conflict in app.txt\nAutomatic merge failed; fix conflicts and then commit the result.",
+  "options": [
+   "A Git automatikusan létrehozta a merge commitot, csak még nem pusholta.",
+   "A konfliktus csak a remote repositoryban létezik.",
+   "Az `app.txt` törlődött, ezért újra létre kell hozni.",
+   "A merge félbemaradt, és az `app.txt` konfliktusos állapotát fel kell oldani a merge befejezése előtt."
+  ],
+  "answer": 3,
+  "explanation": "A merge nem fejeződött be, mert a Git nem tudta automatikusan egyesíteni az `app.txt` változtatásait. A konfliktus feloldása után a fájlt stagingelni kell, majd a merge folyamatot be kell fejezni. A leggyakoribb rossz válasz azért csábító, mert az automatikus merge üzenete alapján könnyű azt hinni, hogy csak a push hiányzik."
+ },
+ {
+  "id": 55,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "output",
+  "question": "Mit csinál az alábbi parancs?",
+  "code": "git fetch origin main",
+  "options": [
+   "Letölti az `origin` remote `main` branchének szükséges objektumait, és frissíti a hozzá tartozó remote-tracking referenciát anélkül, hogy a lokális `main` branch-et automatikusan módosítaná.",
+   "A lokális `main` branchet automatikusan merge-öli az `origin/main` állapotával.",
+   "Feltölti a lokális `main` branchet az `origin` remote-ra.",
+   "Törli az `origin/main` remote-tracking referenciát."
+  ],
+  "answer": 0,
+  "explanation": "A `fetch` lekéri a remote-ról az elérhető objektumokat és frissíti a remote-tracking állapotot. A lokális `main` branch ettől nem mozdul el automatikusan. A leggyakoribb rossz válasz azért csábító, mert a `pull` és `fetch` közötti különbség gyakran elmosódik a napi Git-használatban."
+ },
+ {
+  "id": 56,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "behavior",
+  "question": "Mi a tipikus hatása a `git reset --soft HEAD~1` parancsnak egy olyan repositoryban, ahol az utolsó commitot szeretnéd \"visszavenni\", de a változtatásokat újra commitolható állapotban akarod tartani?",
+  "options": [
+   "A commit megszűnik a branch aktuális historyjának része lenni, miközben a változtatásai staged állapotban maradnak.",
+   "A commit és minden változtatása véglegesen törlődik.",
+   "A working tree változatlan marad, de az index teljesen kiürül.",
+   "A Git új revert commitot hoz létre."
+  ],
+  "answer": 0,
+  "explanation": "A `--soft` reset a branch referenciáját mozgatja vissza, de az indexet és a working tree-t nem állítja vissza. Emiatt az utolsó commit változtatásai az új HEAD-hez képest staged állapotban maradnak. A leggyakoribb rossz válasz azért csábító, mert a `reset` szót sokan automatikusan a fájltartalom törlésével azonosítják."
+ },
+ {
+  "id": 57,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "output",
+  "question": "Mi történik, ha egy stash létrehozása után ezt futtatod?",
+  "code": "git stash list",
+  "options": [
+   "A working tree összes fájlját újra stagingeli.",
+   "Kilistázza a repositoryban található stash bejegyzéseket.",
+   "Törli a legutóbbi stash bejegyzést.",
+   "Megmutatja az összes korábbi commitot a repositoryban."
+  ],
+  "answer": 1,
+  "explanation": "A `git stash list` a stash stackben található bejegyzéseket jeleníti meg, jellemzően `stash@{0}`, `stash@{1}` és hasonló azonosítókkal. A parancs nem módosítja a working tree-t és nem törli a stash elemeket. A leggyakoribb rossz válasz azért csábító, mert a stash és a commit history egyaránt időrendi listaként jelenhet meg."
+ },
+ {
+  "id": 58,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "scenario",
+  "question": "Egy `feature` branchből csak egyetlen bugfix commitot szeretnél átvinni a `release/1.0` branchre. A bugfix commitnak nincs olyan függősége, amelyet a feature branch további commitjai biztosítanak. Mi a megfelelő megközelítés?",
+  "options": [
+   "A teljes `feature` branchet mindig merge-ölni kell.",
+   "A `release/1.0` branchet át kell nevezni `feature` névre.",
+   "A bugfix commitot cherry-pickelni lehet a `release/1.0` branchen.",
+   "A release branchet resetelni kell a bugfix commitra."
+  ],
+  "answer": 2,
+  "explanation": "A cherry-pick lehetővé teszi egy konkrét commit változtatásainak alkalmazását egy másik branchen anélkül, hogy a teljes feature branchet integrálnád. A commit valódi függőségeit azonban mindig ellenőrizni kell. A leggyakoribb rossz válasz azért csábító, mert a merge általános branch-integrációs eszköz, de itt csak egy jól körülhatárolt változtatásra van szükség."
+ },
+ {
+  "id": 59,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "output",
+  "question": "Melyik parancs mutatja meg egy commit változtatásait patch formátumban?",
+  "options": [
+   "`git show <commit>`",
+   "`git branch <commit>`",
+   "`git remote <commit>`",
+   "`git clean <commit>`"
+  ],
+  "answer": 0,
+  "explanation": "A `git show <commit>` alapértelmezésben megjeleníti a commit metaadatait és az általa bevezetett patch-et. Ez gyors módja annak, hogy megvizsgáld, pontosan milyen változtatást tartalmaz egy adott commit. A leggyakoribb rossz válasz azért csábító, mert a `git log` is commitokat jelenít meg, de alapértelmezésben nem ugyanilyen részletességgel mutatja a patch tartalmát."
+ },
+ {
+  "id": 60,
+  "level": "junior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "edgecase",
+  "question": "Mi a legfontosabb korlátja a reflog alapú helyreállításnak?",
+  "options": [
+   "A reflog csak remote repositorykban létezik.",
+   "A reflog kizárólag tageket rögzít.",
+   "A reflog mindig megőrzi az objektumokat korlátlan ideig.",
+   "A reflog lokális, és a már elérhetetlenné vált objektumok idővel garbage collection miatt eltűnhetnek."
+  ],
+  "answer": 3,
+  "explanation": "A reflog alapvetően lokális referencia-mozgásokat rögzít, nem egy központi, mindenki által megosztott historyt. A Git idővel garbage collection során eltávolíthat olyan objektumokat, amelyek már nem érhetők el megfelelő referenciákon keresztül és lejárt a megőrzési idejük. A leggyakoribb rossz válasz azért csábító, mert a reflog nagyon hatékony recovery-eszköznek tűnik, ezért könnyű azt feltételezni, hogy minden korábbi állapot örökre visszaállítható."
+ },
+ {
+  "id": 61,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Egy commit objektum egy tree-re és egy vagy több parent commitra hivatkozik. Mi következik ebből a Git history szerkezetére nézve?",
+  "options": [
+   "A commitok mindig pontosan egy parenttel rendelkeznek.",
+   "A commitok közötti kapcsolat egy irányított gráfot alkot, amelyben merge commitoknak több parentjük lehet.",
+   "A Git minden commitot egyetlen globális sorszámmal azonosít.",
+   "A tree objektumok közvetlenül branch-eket reprezentálnak."
+  ],
+  "answer": 1,
+  "explanation": "A Git commit historyja gráfként értelmezhető, nem egyszerű lineáris listaként. Egy normál commitnak tipikusan egy parentje van, míg egy merge commitnak kettő vagy több parentje lehet. A leggyakoribb rossz válasz azért csábító, mert a legtöbb feature history lineárisnak látszik, miközben a Git objektummodellje általánosabb gráfot támogat."
+ },
+ {
+  "id": 62,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "performance",
+  "question": "Egy nagy repositoryban egy fejlesztő csak a legutóbbi commit óta módosult fájlokat szeretné gyorsan átvizsgálni, mielőtt commitol. Melyik megközelítés ad közvetlen összehasonlítást a working tree és a HEAD között?",
+  "options": [
+   "`git diff HEAD`",
+   "`git log --all`",
+   "`git branch -vv`",
+   "`git clean -n`"
+  ],
+  "answer": 0,
+  "explanation": "A `git diff HEAD` az aktuális working tree állapotát hasonlítja össze a HEAD által jelölt commitban rögzített állapottal, így a staged és unstaged különbségek együtt is láthatók. Nagy repositoryban is közvetlenül ezt az összehasonlítást fejezi ki. A leggyakoribb rossz válasz azért csábító, mert a `git status` is módosult fájlokról ad információt, de nem mutatja a tényleges tartalmi diffet."
+ },
+ {
+  "id": 63,
+  "level": "medior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "edgecase",
+  "question": "Egy branchre váltás előtt módosítottad a working tree-t. A `git switch other-branch` parancs hibával leáll. Mi a legvalószínűbb ok?",
+  "options": [
+   "A Git soha nem enged branch-váltást módosított working tree mellett.",
+   "A `other-branch` remote branch, ezért nem lehet rá váltani.",
+   "A lokális módosítások ütköznének a cél branch fájljaival, ezért a váltás felülírná vagy elveszítené őket.",
+   "A branch-váltás csak commitolt repositoryban működik."
+  ],
+  "answer": 2,
+  "explanation": "Git bizonyos esetekben engedi a branch-váltást nem commitolt módosítások mellett is. Ha azonban a cél branch checkoutja olyan fájlokat változtatna, amelyeket a lokális módosítások érintenek, a Git megáll, hogy ne írja felül ezeket. A leggyakoribb rossz válasz azért csábító, mert biztonsági okból sokan úgy gondolják, hogy bármilyen unstaged módosítás automatikusan tiltja a branch-váltást."
+ },
+ {
+  "id": 64,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "trap",
+  "question": "Egy merge konfliktus feloldásakor miért nem elegendő egyszerűen eltávolítani a `<<<<<<<`, `=======` és `>>>>>>>` jelölőket?",
+  "options": [
+   "Mert a Git csak a jelölők törlésétől automatikusan eldönti, melyik tartalom helyes.",
+   "Mert a konfliktus feloldása során a két oldal megfelelő tartalmát is össze kell állítani, majd a Gitnek staginggel jelezni kell a megoldott állapotot.",
+   "Mert a konfliktusjelölőket minden esetben commitban is meg kell hagyni.",
+   "Mert merge konfliktus esetén a fájlokat mindig törölni kell."
+  ],
+  "answer": 1,
+  "explanation": "A konfliktusjelölők csak azt mutatják, hogy a Git mely tartalmakat nem tudta automatikusan egyesíteni. A fejlesztőnek a helyes végső tartalmat kell kialakítania, majd `git add` segítségével jeleznie, hogy az adott fájl konfliktusa megoldódott. A leggyakoribb rossz válasz azért csábító, mert a jelölők eltávolítása után a fájl vizuálisan rendezettnek tűnik, de a tartalmi döntést és a staginget még el kell végezni."
+ },
+ {
+  "id": 65,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "output",
+  "question": "Egy `feature` branch két commitot tartalmaz, és a `main` időközben három új commitot kapott. A feature branchen kiadod a `git rebase main` parancsot konfliktus nélkül. Melyik állítás helyes?",
+  "options": [
+   "A két feature commit újraalkalmazódik a `main` aktuális csúcsa után, így a feature history lineárissá válik.",
+   "A `main` branch három új commitja törlődik.",
+   "A Git mindig egyetlen merge commitot készít a hat commitból.",
+   "A feature branch automatikusan megszűnik."
+  ],
+  "answer": 0,
+  "explanation": "A rebase a feature saját commitjait a `main` aktuális csúcsa fölé helyezi újra. Az eredmény tipikusan egy lineáris history, amelyben a három main commit után következik a két újraalkotott feature commit. A leggyakoribb rossz válasz azért csábító, mert a rebase végső állapota hasonló lehet ahhoz, mintha a feature-t merge-ölted volna, de a history szerkezete eltér."
+ },
+ {
+  "id": 66,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "scenario",
+  "question": "A `main` branchen dolgozol, és szeretnéd először csak megnézni, milyen új commitok kerültek az `origin/main` branchre anélkül, hogy módosítanád a lokális `main` branchet. Melyik workflow a legcélszerűbb?",
+  "options": [
+   "`git pull origin main`, majd `git reset --hard HEAD~1`",
+   "`git push origin main`, majd `git log`",
+   "`git fetch origin`, majd például `git log HEAD..origin/main`",
+   "`git merge origin/main`, majd `git fetch origin`"
+  ],
+  "answer": 2,
+  "explanation": "A `git fetch origin` frissíti az `origin/main` remote-tracking referenciát anélkül, hogy a lokális `main` branchet integrálná. A `git log HEAD..origin/main` ezután megmutathatja azokat a commitokat, amelyek a remote-tracking ágon elérhetők, de a jelenlegi HEAD-ben nem. A leggyakoribb rossz válasz azért csábító, mert a `pull` is lekéri a remote változásait, de egyben integrációt is kezdeményez."
+ },
+ {
+  "id": 67,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "output",
+  "question": "Egy commitot szeretnél eltávolítani a lokális branch végéről úgy, hogy a commit változtatásai megmaradjanak a working tree-ben, de ne legyenek staged állapotban. Melyik parancs felel meg ennek a célnak?",
+  "options": [
+   "`git reset --hard HEAD~1`",
+   "`git reset --mixed HEAD~1`",
+   "`git revert HEAD`",
+   "`git restore --source HEAD~1 --staged --worktree .`"
+  ],
+  "answer": 1,
+  "explanation": "A `--mixed` reset a branch referenciáját az előző commitra mozgatja, és visszaállítja az indexet az új HEAD állapotára, miközben a working tree módosításai megmaradnak. Emiatt a korábbi commit változtatásai unstaged working-tree módosításként jelennek meg. A leggyakoribb rossz válasz azért csábító, mert a `--hard` is visszamozgatja a branch-et, de az a working-tree változtatásokat is eldobhatja."
+ },
+ {
+  "id": 68,
+  "level": "medior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "edgecase",
+  "question": "Egy stash-t szeretnél létrehozni úgy, hogy az untracked fájlok is bekerüljenek, de az ignored fájlok továbbra se kerüljenek bele. Melyik parancs felel meg ennek?",
+  "options": [
+   "`git stash -u`",
+   "`git stash -a`",
+   "`git stash --ignored`",
+   "`git stash --tracked-only`"
+  ],
+  "answer": 0,
+  "explanation": "A `git stash -u`, vagyis `--include-untracked`, bevonja az untracked fájlokat is, de az ignored fájlokat nem. A `-a` az ignored fájlokat is stash-eli, ezért ebben a helyzetben túl széles. A leggyakoribb rossz válasz azért csábító, mert az untracked és ignored fájlok egyaránt nem tracked állapotúak, de a Git külön kezeli őket."
+ },
+ {
+  "id": 69,
+  "level": "medior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "debug",
+  "question": "Cherry-pick közben konfliktus keletkezik. A konfliktust helyesen feloldottad és stagingelted a fájlt. Mi a következő lépés, ha folytatni szeretnéd a műveletet?",
+  "options": [
+   "`git cherry-pick --continue`",
+   "`git cherry-pick --abort`",
+   "`git merge --continue`",
+   "`git rebase --continue`"
+  ],
+  "answer": 0,
+  "explanation": "A konfliktus feloldása és stagingelése után a `git cherry-pick --continue` folytatja a folyamatot, és szükség esetén létrehozza a cherry-pick eredményét. A `--abort` ezzel szemben megszakítja a folyamatot. A leggyakoribb rossz válasz azért csábító, mert a merge és rebase is rendelkezik hasonló `--continue` mechanizmussal."
+ },
+ {
+  "id": 70,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "performance",
+  "question": "Egy nagy repositoryban a commit historyt szeretnéd áttekinteni úgy, hogy a branch-ek közötti kapcsolatok vizuálisan is jól láthatók legyenek, és a merge commitok is szerepeljenek. Melyik parancs erre a legmegfelelőbb?",
+  "options": [
+   "`git status --branches`",
+   "`git log --all --oneline --graph`",
+   "`git blame --graph`",
+   "`git show --branches`"
+  ],
+  "answer": 1,
+  "explanation": "A `git log --all --oneline --graph` az összes elérhető ref historyját bevonhatja, rövid commitformátumot használ, és ASCII gráffal jeleníti meg az ágak és merge-ek szerkezetét. A leggyakoribb rossz válasz azért csábító, mert a `git status` és a `git branch` is ad branch-információt, de nem a commit history gráfját jeleníti meg."
+ },
+ {
+  "id": 71,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "trap",
+  "question": "Egy annotated tag már létezik lokálisan, de a release commitot módosítani szeretnéd, ezért ugyanazt a tagnevet egy másik commitra akarod mozgatni. Miért problémás ez egy már publikált release esetén?",
+  "options": [
+   "A Git nem enged taget commitra mutatni.",
+   "Az annotated tagek nem pusholhatók remote-ra.",
+   "A tag csak a working tree állapotát jelöli, ezért nincs hatása a historyra.",
+   "Egy már publikált tag átmozgatása megváltoztatja azt, hogy a tag mely objektumot azonosítja, ami felhasználóknál és release-artifactoknál inkonzisztenciát okozhat."
+  ],
+  "answer": 3,
+  "explanation": "Egy publikált release tag általában stabil névként szolgál egy konkrét Git objektum azonosítására. Ha ugyanazt a taget később másik commitra vagy tagolt objektumra mozgatják, a különböző kliensek és artifactok eltérő tartalomhoz köthetik ugyanazt a verziónevet. A leggyakoribb rossz válasz azért csábító, mert a tag technikailag csak egy referencia, és könnyű figyelmen kívül hagyni a release-folyamatban betöltött stabil azonosító szerepét."
+ },
+ {
+  "id": 72,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "scenario",
+  "question": "Egy repositoryban minden fejlesztő ugyanazt a fájltípusra vonatkozó ignorálási szabályt használja, de egyetlen lokális fájlt mégis figyelmen kívül szeretnél hagyni anélkül, hogy a repository `.gitignore` fájlját módosítanád. Melyik megoldás alkalmas erre?",
+  "options": [
+   "A `.git/` könyvtár törlése.",
+   "A `.git/info/exclude` használata.",
+   "Egy új remote létrehozása.",
+   "A fájl átnevezése `HEAD` névre."
+  ],
+  "answer": 1,
+  "explanation": "A `.git/info/exclude` repository-lokális ignore szabályokat tartalmazhat anélkül, hogy azok a repositoryban verziókezelve lennének. Ez hasznos például lokális IDE- vagy környezetspecifikus fájlok esetén. A leggyakoribb rossz válasz azért csábító, mert a `.gitignore` a legismertebb ignore-mechanizmus, de nem ez az egyetlen lehetőség."
+ },
+ {
+  "id": 73,
+  "level": "medior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "production",
+  "question": "Egy production build során a superproject egy commitja egy submodule adott commitjára hivatkozik. Miért fontos, hogy a build környezet pontosan ezt a submodule commitot checkoutolja?",
+  "options": [
+   "Mert a submodule mindig a saját `main` branch legújabb commitját használja.",
+   "Mert a superproject commit csak a submodule könyvtár nevét tárolja.",
+   "Mert a rögzített submodule commit biztosítja, hogy ugyanahhoz a superproject commithez ugyanaz a submodule verzió tartozzon.",
+   "Mert a submodule commitja automatikusan befolyásolja a superproject összes branchét."
+  ],
+  "answer": 2,
+  "explanation": "A superproject egy konkrét submodule commitot rögzít, így a build determinisztikus módon ugyanahhoz a submodule állapothoz köthető. A submodule saját branchének későbbi változásai önmagukban nem módosítják a superproject által rögzített commitot. A leggyakoribb rossz válasz azért csábító, mert sok fejlesztő a submodule-t úgy kezeli, mintha a legfrissebb remote branch állapotát követné."
+ },
+ {
+  "id": 74,
+  "level": "medior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "scenario",
+  "question": "Egy fejlesztő egy hosszabb rebase után rájön, hogy az eredeti branchállapothoz szeretne visszatérni. A branch referenciája már az új historyra mutat. Melyik megközelítés a legcélszerűbb?",
+  "options": [
+   "A reflogban megkeresi a rebase előtti branch/HEAD pozíciót, majd arra állítja vissza a megfelelő referenciát.",
+   "A `git clean -fd` paranccsal visszaállítja a régi commitokat.",
+   "A `git fetch --all` automatikusan visszaállítja a korábbi lokális branch historyt.",
+   "A `.gitignore` fájl módosításával újra elérhetővé teszi a commitokat."
+  ],
+  "answer": 0,
+  "explanation": "A rebase előtt és után a lokális referencia mozgásai jellemzően bekerülnek a reflogba. A megfelelő korábbi commitazonosító megkeresése után például egy új recovery branch hozható létre, vagy a branch referencia visszaállítható. A leggyakoribb rossz válasz azért csábító, mert a `fetch --all` sok remote adatot frissít, de nem állítja vissza a lokális history korábbi állapotát."
+ },
+ {
+  "id": 75,
+  "level": "medior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Egy 8 fős csapat azt tapasztalja, hogy a több héten át életben tartott feature branchek integrációjakor nagy és nehezen kezelhető merge conflictok keletkeznek. Melyik változtatás csökkentheti leginkább az ilyen konfliktusok felhalmozódását?",
+  "options": [
+   "Minden feature branchet a fejlesztés végéig teljesen el kell zárni a `main` változásaitól.",
+   "A feature brancheket rövidebb életűvé tenni, és rendszeresen integrálni a friss `main` változásokat a csapat workflow-jának megfelelően.",
+   "Minden merge conflictot force push segítségével kell megoldani.",
+   "A `main` branchet időszakosan törölni kell, hogy új history induljon."
+  ],
+  "answer": 1,
+  "explanation": "A rövidebb életű branchek és a gyakoribb integráció csökkenthetik azt az időt, amely alatt a párhuzamos változtatások eltérnek egymástól, így a konfliktusok kisebb, kezelhetőbb egységekben jelenhetnek meg. Ez nem szünteti meg automatikusan a konfliktusokat, de csökkenti a nagy, felhalmozott divergencia kockázatát. A leggyakoribb rossz válasz azért csábító, mert a hosszú izoláció kezdetben kevesebb merge-munkát jelent, később azonban nagyobb integrációs költséget okozhat."
+ },
+ {
+  "id": 76,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "behavior",
+  "question": "Mi történik, ha két külön fájl tartalma byte-ról byte-ra azonos, és mindkettőt hozzáadod a Git repositoryhoz?",
+  "options": [
+   "A Git mindig két külön blob objektumot hoz létre, mert a fájlnevek különböznek",
+   "A Git csak az első fájlt tárolja, a második fájl nem jelenik meg a tree-ben",
+   "Ugyanaz a blob objektum használható mindkét fájlhoz, miközben a tree külön fájlneveket rendel hozzá",
+   "A Git automatikusan hard linket hoz létre a két fájl között a working tree-ben"
+  ],
+  "answer": 2,
+  "explanation": "A blob tartalma alapján azonosítható, ezért azonos tartalmú fájlok ugyanarra a blob objektumra hivatkozhatnak. A fájlnevek és könyvtárstruktúra a tree objektumokban jelennek meg. Az a feltételezés lehet megtévesztő, hogy minden fájlhoz külön objektum tartozik, mert a Git tartalom-alapú objektumtárolást használ."
+ },
+ {
+  "id": 77,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "output",
+  "question": "Van egy módosított, tracked `app.java` fájlod. Először lefuttatod a `git add app.java` parancsot, majd további módosítást végzel ugyanazon a fájlon. Mit mutat a `git diff --cached`?",
+  "options": [
+   "Csak az első `git add` előtti állapothoz képest végzett összes módosítást",
+   "A staging area-ban lévő verzió és a jelenlegi HEAD közötti különbséget",
+   "A working tree és a staging area közötti különbséget",
+   "A legutóbbi commit és a working tree közötti különbséget"
+  ],
+  "answer": 1,
+  "explanation": "A `git diff --cached` a staging area tartalmát hasonlítja a HEAD-hez, ezért a már staged állapotban lévő első módosítást mutatja. A későbbi módosítás csak a working tree-ben van, így az a `git diff` eredményében jelenik meg. Az a feltételezés csábító, hogy a `--cached` a working tree aktuális állapotát vizsgálja, de valójában az indexet használja."
+ },
+ {
+  "id": 78,
+  "level": "medior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "behavior",
+  "question": "Létezik egy `origin/feature` remote-tracking branch, és abból szeretnél új lokális `feature` branchet létrehozni úgy, hogy az automatikusan kövesse az upstream branchet. Melyik parancs erre alkalmas?",
+  "options": [
+   "`git switch -c feature --track origin/feature`",
+   "`git branch --remote feature origin/feature`",
+   "`git switch origin/feature -c feature`",
+   "`git checkout origin/feature --track`"
+  ],
+  "answer": 0,
+  "explanation": "A `--track` beállítja az új lokális branch upstream kapcsolatát az `origin/feature` remote-tracking branchhez. Így például a push és pull alapértelmezett célja is meghatározható. Az önmagában történő remote-tracking branchre váltás nem hoz létre normál lokális branchet."
+ },
+ {
+  "id": 79,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "behavior",
+  "question": "A `main` és `feature` között nincs valódi divergencia, ezért a `git merge feature` fast-forward merge-t tudna végrehajtani. Mi történik `git merge --no-ff feature` esetén?",
+  "options": [
+   "A Git elutasítja a merge-t, mert nincs konfliktus",
+   "A Git létrehoz egy új merge commitot a feature commitjainak megtartásával",
+   "A Git újraírja a feature összes commitját rebase segítségével",
+   "A Git automatikusan squasholja a feature változásait egyetlen commitba"
+  ],
+  "answer": 1,
+  "explanation": "A `--no-ff` megakadályozza a fast-forward frissítést, ezért a Git külön merge commitot hoz létre. Ez hasznos lehet például akkor, ha a branch integrációját külön eseményként szeretnéd láthatóvá tenni a historyban. A squash azért lehet csábító válasz, mert az is csökkenti a historyban látható commitstruktúrát, de a `--no-ff` nem squashol."
+ },
+ {
+  "id": 80,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "scenario",
+  "question": "A `feature` branch két saját commitot tartalmaz. A `main` közben három új commitot kapott. A feature commitjait a `main` legfrissebb állapotára szeretnéd áthelyezni úgy, hogy a feature commitok újra létrejöjjenek az új alapon. Melyik műveletet használod?",
+  "options": [
+   "`git merge main`",
+   "`git reset --hard main`",
+   "`git cherry-pick main`",
+   "`git rebase main`"
+  ],
+  "answer": 3,
+  "explanation": "A `git rebase main` a feature saját commitjait új alapra helyezi, és új commitobjektumokat hoz létre a `main` aktuális csúcsa után. Ez lineárisabb historyt eredményezhet. A merge ezzel szemben megőrzi a két fej közötti elágazást, és nem helyezi át a meglévő feature commitokat."
+ },
+ {
+  "id": 81,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "production",
+  "question": "Egy közös remote branch historyját egy másik fejlesztő időközben módosította. Te is újraírtad a saját lokális branch-ed historyját, és a frissített historyt szeretnéd pusholni, de csak akkor, ha a remote branch nem változott tovább azóta, hogy utoljára lekérted. Melyik megoldás szolgál erre?",
+  "options": [
+   "`git push --force`",
+   "`git push --force-with-lease`",
+   "`git push --delete`",
+   "`git push --mirror`"
+  ],
+  "answer": 1,
+  "explanation": "A `--force-with-lease` feltételes force push: alapértelmezésben csak akkor engedi az átírást, ha a remote ref továbbra is azon az állapoton van, amelyet a lokális remote-tracking információ alapján vársz. Ez csökkenti annak kockázatát, hogy más friss munkáját felülírod. A sima `--force` azért tűnhet egyszerűbbnek, mert szintén átengedi a nem-fast-forward push-t, de nem biztosít ugyanilyen védelmet."
+ },
+ {
+  "id": 82,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "behavior",
+  "question": "Melyik parancs segítségével tudod egyetlen fájl working-tree tartalmát egy korábbi commitból visszaállítani anélkül, hogy a branch pointert mozgatnád?",
+  "options": [
+   "`git reset --hard <commit>`",
+   "`git revert <commit>`",
+   "`git restore --source=<commit> -- file.txt`",
+   "`git branch --force <commit>`"
+  ],
+  "answer": 2,
+  "explanation": "A `git restore --source=<commit> -- file.txt` egy adott forráscommitból állítja vissza a megadott fájl tartalmát, miközben nem mozgatja a branch pointert. A `reset --hard` a HEAD-et és a working tree-t is érintheti, ezért sokkal szélesebb hatású művelet."
+ },
+ {
+  "id": 83,
+  "level": "medior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "behavior",
+  "question": "Mi a hatása a `git stash branch my-feature` parancsnak, ha van egy stash bejegyzésed?",
+  "options": [
+   "Új branchet hoz létre a stashből, majd azon alkalmazza a stash változásait",
+   "A stash összes commitját véglegesen beépíti a jelenlegi branchbe",
+   "A stash tartalmát remote branchként pusholja",
+   "A jelenlegi branchet átnevezi a stash nevére"
+  ],
+  "answer": 0,
+  "explanation": "A `git stash branch my-feature` egy új branchet hoz létre abból a commitból, amelyen a stash készült, majd megpróbálja alkalmazni a stash változásait. Sikeres alkalmazás esetén a stash bejegyzés törlődik. Azért lehet megtévesztő a sima `stash pop`, mert az is alkalmazza a változásokat, de nem hoz létre külön branchet."
+ },
+ {
+  "id": 84,
+  "level": "medior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "edgecase",
+  "question": "Mit jelent a `git cherry-pick A^..B` tipikus használata, ha `A` és `B` ugyanazon branch egymást követő commitjai?",
+  "options": [
+   "Csak az `A` commit parentjét alkalmazza",
+   "Az `A` és `B` közötti teljes repository historyt merge-eli",
+   "Csak a `B` commit fájljait másolja át az eredeti commit-metaadatokkal együtt",
+   "Az `A`-tól `B`-ig terjedő commitokat választja ki alkalmazásra, beleértve `A`-t és `B`-t"
+  ],
+  "answer": 3,
+  "explanation": "Az `A^..B` revision range az `A` parentjétől induló tartományt jelenti, így a felsorolt commitok között `A` és `B` is szerepel. A cherry-pick ezek változásait új commitokként alkalmazza az aktuális HEAD-en. A `^` jel itt nem azt jelenti, hogy maga az `A` commit kimarad, hanem a tartomány alsó határát a parentre helyezi."
+ },
+ {
+  "id": 85,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "behavior",
+  "question": "Egy több merge commitot tartalmazó `main` branch historyját szeretnéd úgy vizsgálni, hogy elsősorban a `main` fővonalán létrejött commitokat lásd, és az egyes feature branchek részletes belső historyja ne jelenjen meg teljes egészében. Melyik opció segít ebben?",
+  "options": [
+   "`git log --all`",
+   "`git log --first-parent`",
+   "`git log --no-merges`",
+   "`git log --reverse`"
+  ],
+  "answer": 1,
+  "explanation": "A `--first-parent` a merge commitok első parentjén keresztül követi a fővonalat, így a topic branchek belső historyja nem kerül automatikusan kibontásra. Ez különösen hasznos integrációs vagy release history áttekintésére. A `--no-merges` ezzel szemben teljesen elrejti a merge commitokat, így más információt veszítünk el."
+ },
+ {
+  "id": 86,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "output",
+  "question": "Mit célszerű használni, ha egy scriptben szeretnéd lekérdezni, hogy egy commit melyik közeli Git taghez kapcsolódik, és a tagtől való távolságot is meg szeretnéd jeleníteni?",
+  "options": [
+   "`git branch --contains`",
+   "`git tag --points-at`",
+   "`git describe --tags`",
+   "`git log --decorate-only`"
+  ],
+  "answer": 2,
+  "explanation": "A `git describe --tags` egy közeli, megfelelő annotált vagy könnyű tagből kiindulva emberileg értelmezhető leírást tud készíteni, amely tartalmazhatja a commit és a tag közötti távolságot és az aktuális commit azonosítóját. A `git tag --points-at` csak azokat a tageket keresi, amelyek közvetlenül az adott objektumra mutatnak."
+ },
+ {
+  "id": 87,
+  "level": "medior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Egy csapat gyakran deployol, a változtatások kicsik, és azt szeretnék, hogy a `main` branch lehetőleg mindig release-képes legyen. Melyik stratégia illeszkedik ehhez leginkább?",
+  "options": [
+   "Hosszú életű feature branchek, ritka integrációval",
+   "Minden fejlesztő saját, hónapokig élő integration branche",
+   "Kizárólag release branchek használata, folyamatosan növekvő divergenciával",
+   "Rövid életű branchek és gyakori integráció a main branchbe"
+  ],
+  "answer": 3,
+  "explanation": "A rövid életű branchek és a gyakori integráció csökkenti a hosszú ideig felhalmozódó divergenciát, és támogatja a folyamatosan integrált, release-képes főágat. Ez a trunk-based fejlesztési megközelítés egyik gyakori mintája. A hosszú életű branchek azért tűnhetnek biztonságosabbnak, mert elkülönítik a munkát, de növelik az integrációs költséget."
+ },
+ {
+  "id": 88,
+  "level": "medior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "Egy pull requestben 15 commit van, amelyek közül több csak review-kommentek miatt végzett javítás. A csapat azt szeretné, hogy a review során a teljes változtatás könnyen áttekinthető legyen. Mi a legfontosabb szempont?",
+  "options": [
+   "A branch neve legyen rövid",
+   "A commitok száma mindig pontosan öt legyen",
+   "A reviewer a PR által bevezetett teljes diffet és a releváns commit historyt is ellenőrizze",
+   "A PR-ben csak az utolsó commitot kell megvizsgálni"
+  ],
+  "answer": 2,
+  "explanation": "A review elsődleges célja annak ellenőrzése, hogy a branch teljes változtatása megfelel-e a követelményeknek, ezért a teljes PR diff fontos. A commit history további kontextust adhat, különösen összetett változtatásoknál. Az utolsó commit önmagában azért lehet félrevezető, mert nem feltétlenül tartalmazza az összes korábbi változtatást."
+ },
+ {
+  "id": 89,
+  "level": "medior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "theory",
+  "question": "Melyik állítás írja le helyesen a Git client-side `pre-commit` hook tipikus szerepét?",
+  "options": [
+   "A commit elkészítése előtt fut, és például lintelést vagy validációt végezhet",
+   "Csak a remote szerveren fut push után",
+   "Kizárólag merge conflictok automatikus feloldására szolgál",
+   "A Git objektumtároló garbage collectionjét végzi"
+  ],
+  "answer": 0,
+  "explanation": "A `pre-commit` hook a commit létrehozása előtt fut, ezért alkalmas például formázás, lintelés vagy egyéb lokális ellenőrzések futtatására. A hookok nem általános célú merge-mechanizmusok, és a client-side hookok önmagukban nem garantálják, hogy minden fejlesztő vagy CI ugyanazokat az ellenőrzéseket futtatja."
+ },
+ {
+  "id": 90,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "behavior",
+  "question": "Mit ér el az alábbi `.gitattributes` beállítás?",
+  "code": "*.sh text eol=lf",
+  "options": [
+   "Minden `.sh` fájlt binárisként kezel, ezért nem történik newline-normalizáció",
+   "A `.sh` fájlok repositorybeli szövegként kezelését és LF használatát kéri checkoutkor",
+   "Minden `.sh` fájlt automatikusan executable-ként állít",
+   "A `.sh` fájlokat automatikusan kizárja a repositoryból"
+  ],
+  "answer": 1,
+  "explanation": "A `text` attribútum szövegként kezeli a fájlokat, az `eol=lf` pedig LF sorvégződést ír elő a working tree checkoutolt példányaira. Ez nem állítja be a Unix executable bitet, és nem helyettesíti a `.gitignore` szabályokat. Az executable jogosultság kezelése külön Git fájlmóddal történik."
+ },
+ {
+  "id": 91,
+  "level": "medior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "behavior",
+  "question": "Egy superproject egy submodule-ra mutat, de a submodule könyvtár még nincs inicializálva. Melyik parancs tölti le és inicializálja a szükséges submodule-t a superproject által rögzített állapotban?",
+  "options": [
+   "`git clone --submodule-only`",
+   "`git submodule fetch --all`",
+   "`git submodule update --init`",
+   "`git checkout --submodule`"
+  ],
+  "answer": 2,
+  "explanation": "A `git submodule update --init` inicializálja a még nem inicializált submodule-t, majd a superproject által rögzített commitra állítja. Rekurzív nested submodule-ok esetén a `--recursive` kapcsoló is szükséges lehet. Azért lehet csábító a sima fetch, mert az is Git objektumokat tölt le, de önmagában nem inicializálja a working tree-t a kívánt commitra."
+ },
+ {
+  "id": 92,
+  "level": "medior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "recovery",
+  "question": "Van egy lokális `feature` branch, amelyet véletlenül `git reset --hard` paranccsal egy korábbi commitra állítottál. A korábbi branch tipet szeretnéd megtalálni. Melyik reflog-bejegyzés a legrelevánsabb?",
+  "options": [
+   "`git reflog show feature`",
+   "`git log origin/feature`",
+   "`git fsck --lost-found` kizárólag",
+   "`git remote show feature`"
+  ],
+  "answer": 0,
+  "explanation": "A lokális branch reflogja rögzíti a branch ref korábbi értékeit, így a `git reflog show feature` segítségével megtalálható a reset előtti tip. A megfelelő commit azonosítása után a branch visszaállítható például `git reset --hard <recovered-commit>` paranccsal. A remote history csak akkor segít, ha a korábbi állapot ténylegesen fel volt pusholva."
+ },
+ {
+  "id": 93,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "trap",
+  "question": "Mit jelent a Gitben a content-addressed storage ebben a kontextusban?",
+  "options": [
+   "Az objektumokat kizárólag a fájlnevük alapján azonosítja",
+   "Az objektumokat a repositoryban elfoglalt könyvtár alapján azonosítja",
+   "Az objektumazonosító az objektum tartalmához és típusához kapcsolódó hashből származik",
+   "Minden commit objektumazonosítója véletlenszerűen generálódik"
+  ],
+  "answer": 2,
+  "explanation": "A Git objektumazonosítói hash-alapúak, és az objektum típusa, mérete és tartalma része annak az adatnak, amelyből az azonosító származik. Emiatt ugyanaz a tartalom ugyanazon hash-algoritmus mellett ugyanazt az objektumazonosítót eredményezheti. Az a feltételezés csábító, hogy a hash csak a fájl tartalmát használja, de a Git objektumformátuma további metaadatot is bevon a hash-elésbe."
+ },
+ {
+  "id": 94,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "debug",
+  "question": "A `git pull` során merge commit keletkezik, miközben a fejlesztő azt várta, hogy a saját lokális commitjai a remote változások után jelenjenek meg lineárisan. Melyik beállítás vagy parancs biztosíthatja, hogy a pull rebase-t használjon?",
+  "options": [
+   "`git pull --no-edit`",
+   "`git pull --rebase`",
+   "`git pull --force`",
+   "`git pull --tags`"
+  ],
+  "answer": 1,
+  "explanation": "A `git pull --rebase` először lekéri a remote változásokat, majd a lokális, nem pusholt commitokat az új remote alapra rebase-eli. Így általában nem keletkezik a pull miatt külön merge commit. A `--no-edit` csak a merge commit üzenetének kezelését módosítja, a merge mechanizmusát nem cseréli le rebase-re."
+ },
+ {
+  "id": 95,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "edgecase",
+  "question": "Egy fájl staged állapotban van, de szeretnéd eltávolítani a staging area-ból úgy, hogy a working-tree módosítás megmaradjon. Melyik parancs erre a megfelelő?",
+  "options": [
+   "`git restore --staged file.txt`",
+   "`git restore --worktree file.txt`",
+   "`git reset --hard HEAD file.txt`",
+   "`git revert --no-commit HEAD`"
+  ],
+  "answer": 0,
+  "explanation": "A `git restore --staged file.txt` az indexben lévő változatot állítja vissza a HEAD-hez igazodó állapotra, miközben a working-tree módosítást meghagyja. Ez pontosan a staging visszavonására szolgál egy fájl esetén. A hard reset ezzel szemben a working-tree tartalmat is elveszítheti."
+ },
+ {
+  "id": 96,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "Egy regresszióról tudod, hogy a `good` és `bad` commitok között jelent meg, de több száz commit található közöttük. Melyik Git funkció alkalmas arra, hogy automatikusan bináris kereséssel szűkítsd a hibás commitot?",
+  "options": [
+   "`git blame`",
+   "`git log --stat`",
+   "`git bisect`",
+   "`git reflog`"
+  ],
+  "answer": 2,
+  "explanation": "A `git bisect` a megadott good és bad állapotok között bináris keresést végez, és minden lépésben egy köztes commitot teszteltet. Ezzel nagy history esetén is logaritmikus nagyságrendben csökkenthető a keresési tartomány. A `git blame` azt mutatja meg, mely commit utoljára módosított egy adott sort, de nem végez regressziókeresést."
+ },
+ {
+  "id": 97,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "behavior",
+  "question": "Mi a lényeges különbség egy lightweight tag és egy annotated tag között?",
+  "options": [
+   "A lightweight tag mindig remote-only objektum",
+   "Az annotated tag külön tag objektumot és metaadatot is tartalmazhat, míg a lightweight tag egyszerű ref",
+   "A lightweight tag nem mutathat commitra",
+   "Az annotated tag csak merge commitokra használható"
+  ],
+  "answer": 1,
+  "explanation": "A lightweight tag lényegében egy név egy objektumra mutató refként, míg az annotated tag külön tag objektumot hoz létre, amely például taggert, dátumot és üzenetet is tartalmazhat, valamint aláírható. Ezért release-ekhez gyakran az annotated tag szemantikája hasznosabb. Az a feltételezés téves, hogy a lightweight tag ne mutathatna commitra; tipikusan éppen erre használják."
+ },
+ {
+  "id": 98,
+  "level": "medior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "scenario",
+  "question": "Egy pull requestben a branch több, egymástól független problémát old meg, és a reviewer számára nehéz megállapítani, hogy minden módosítás ugyanahhoz a célhoz tartozik-e. Melyik megközelítés javítja leginkább a review fókuszát?",
+  "options": [
+   "További, nem kapcsolódó módosítások hozzáadása",
+   "A teljes PR-t egyetlen hatalmas commitba squasholni minden további magyarázat nélkül",
+   "A PR méretét és scope-ját csökkenteni, és a független változtatásokat külön review-ként kezelni",
+   "A branch history teljes törlése"
+  ],
+  "answer": 2,
+  "explanation": "A kisebb, koherens scope-pal rendelkező PR-ek könnyebben ellenőrizhetők, mert a reviewer egy jól körülhatárolt problémára koncentrálhat. A squash önmagában nem oldja meg a túl széles scope problémáját. A history törlése pedig információvesztést okozna anélkül, hogy a változtatások logikai szétválasztását megoldaná."
+ },
+ {
+  "id": 99,
+  "level": "medior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "debug",
+  "question": "Egy csapat `pre-commit` hookot használ, amely lokálisan lefuttatja a lintelést. Egy fejlesztő gépén a hook nem fut le, de a commit sikeresen elkészül. Melyik magyarázat technikailag helyes?",
+  "options": [
+   "A Git minden hookot automatikusan kikapcsol, ha a repositoryban több branch van",
+   "A `pre-commit` hook csak Linuxon működik",
+   "A Git csak annotated tag létrehozásakor futtat hookokat",
+   "A client-side hookok lokális konfigurációhoz tartoznak, ezért egy másik klónban külön telepítés vagy konfiguráció szükséges lehet"
+  ],
+  "answer": 3,
+  "explanation": "A client-side hookok alapvetően a lokális repositoryhoz kapcsolódnak, és nem kerülnek automatikusan verziókezelésre csak azért, mert a repository többi tartalma Gitben van. Emiatt egy új clone-ban a hook hiányozhat vagy külön telepítést igényelhet. A hookok platformfüggő részleteket tartalmazhatnak, de nem igaz, hogy kizárólag Linuxon működnének."
+ },
+ {
+  "id": 100,
+  "level": "medior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "performance",
+  "question": "Egy nagyon nagy monorepo esetén egy fejlesztő csak egy kisebb könyvtáron dolgozik, és szeretné elkerülni a repository teljes munkafa-struktúrájának checkoutját. Melyik Git funkció használható erre?",
+  "options": [
+   "`git sparse-checkout`",
+   "`git clean -fd`",
+   "`git archive --delete`",
+   "`git gc --partial`"
+  ],
+  "answer": 0,
+  "explanation": "A `git sparse-checkout` lehetővé teszi, hogy csak a repository kiválasztott részei jelenjenek meg a working tree-ben, miközben a repository history és objektumai továbbra is a Git adatmodelljének részei. Nagy monorepók esetén ez csökkentheti a working-tree kezelésének és a fejlesztői környezetnek a terhelését. A `git clean` csak nem követett fájlokat töröl, ezért nem alkalmas a repository részleges checkoutjának konfigurálására."
+ },
+ {
+  "id": 101,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Melyik állítás írja le helyesen, hogy mit tárol egy commit objektum?",
+  "options": [
+   "Kizárólag a módosított fájlok teljes tartalmát",
+   "Egy tree-re való hivatkozást, parent commitokra való hivatkozásokat és commit metaadatokat",
+   "A teljes repository összes branchének aktuális állapotát",
+   "Csak a working tree és az index közötti diffet"
+  ],
+  "answer": 1,
+  "explanation": "A commit egy tree objektumra hivatkozik, amely a commitban rögzített fájlstruktúrát reprezentálja, továbbá parent commitokra és metaadatokra, például authorra, committerre és üzenetre hivatkozik. Nem közvetlenül a fájlok teljes tartalmát tárolja. Az a feltételezés lehet csábító, hogy egy commit maga tartalmazza az összes fájl tartalmát, de ezt az objektumgráf tree és blob objektumai biztosítják."
+ },
+ {
+  "id": 102,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "behavior",
+  "question": "Egy tracked fájlt módosítottál, de még nem staged állapotban van. Mit eredményez a `git commit --amend` ilyen esetben, ha a commit üzenetét nem módosítod?",
+  "options": [
+   "A módosítást automatikusan hozzáadja az előző commit staging area-ba nem került részeihez",
+   "Új commitot hoz létre az aktuális branch végén",
+   "Az előző commitot újraírja az index aktuális tartalmával, de a nem staged módosítást nem veszi bele",
+   "A teljes working tree tartalmát hozzáadja az előző commit pótlásához"
+  ],
+  "answer": 2,
+  "explanation": "A `git commit --amend` az indexben lévő staged tartalmat használja az előző commit új változatának elkészítéséhez. A csak working tree-ben lévő módosítások nem kerülnek automatikusan bele. Az a feltételezés csábító, hogy az amend az egész aktuális fájlrendszer-állapotot commitolja, de a commit tartalma továbbra is az indexből származik."
+ },
+ {
+  "id": 103,
+  "level": "medior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "edgecase",
+  "question": "Van egy `feature` branch, amelyet már teljes egészében merge-eltél a `main` branchbe. Mit tesz alapértelmezés szerint a `git branch -d feature`?",
+  "options": [
+   "Biztonságosan törli a branch refet, mert a commitjai már elérhetők a `main` historyjából",
+   "Törli a branchhez tartozó összes commit objektumot is",
+   "Automatikusan törli a remote `origin/feature` branchet is",
+   "Mindig megtagadja a törlést, mert csak `-D` használható merge után"
+  ],
+  "answer": 0,
+  "explanation": "A `git branch -d` biztonságosan törli a lokális branch refet, ha Git meg tudja állapítani, hogy a branch commitjai már integrálva vannak egy megfelelő upstream vagy HEAD által elérhető historyba. A commit objektumok ettől nem törlődnek azonnal, mert más refek továbbra is hivatkozhatnak rájuk. Az a feltételezés téves, hogy egy branch törlése automatikusan törli a hozzá tartozó commitokat."
+ },
+ {
+  "id": 104,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "Merge conflict feloldásakor egy konfliktusos fájlban a merge másik ágának teljes verzióját szeretnéd megtartani. Melyik parancs használható erre a merge közben?",
+  "options": [
+   "`git restore --theirs file.txt`",
+   "`git restore --source=HEAD~1 file.txt`",
+   "`git revert --theirs file.txt`",
+   "`git reset --merge-theirs file.txt`"
+  ],
+  "answer": 0,
+  "explanation": "Konfliktusos merge közben a `git restore --theirs file.txt` a merge másik ágának verzióját állítja vissza, míg a `--ours` a jelenlegi ág verzióját választaná. A kívánt verzió kiválasztása után a fájlt staged állapotba kell tenni, például `git add file.txt` paranccsal, hogy Git a konfliktust feloldottnak tekintse. Az `ours` és `theirs` elnevezések azért lehetnek megtévesztők, mert mindig a merge aktuális kontextusához viszonyítva értendők."
+ },
+ {
+  "id": 105,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "scenario",
+  "question": "A `feature` branch a `old-base` commitból ágazik ki, de a változtatásait egy új `new-base` commitra szeretnéd átültetni úgy, hogy az eredeti base commit ne kerüljön újra a branch historyjába. Melyik parancs erre alkalmas?",
+  "options": [
+   "`git rebase --onto new-base old-base feature`",
+   "`git rebase new-base old-base feature`",
+   "`git merge --onto new-base old-base feature`",
+   "`git reset --onto new-base old-base feature`"
+  ],
+  "answer": 0,
+  "explanation": "A `git rebase --onto new-base old-base feature` a `feature` azon commitjait választja ki, amelyek az `old-base` után következnek, majd a `new-base` tetejére helyezi őket. Ez lehetővé teszi a base célzott cseréjét. Azért lehet csábító egy egyszerű `rebase new-base`, mert az is új alapra helyezhet commitokat, de nem ugyanazt a pontos commit-tartományt határozza meg."
+ },
+ {
+  "id": 106,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "Egy remote repositoryból töröltek egy branchet. A lokális `origin/feature` remote-tracking ref azonban továbbra is létezik. Melyik művelet segít a már nem létező remote-tracking ref eltávolításában?",
+  "options": [
+   "`git pull --force`",
+   "`git fetch --prune`",
+   "`git push --prune origin`",
+   "`git remote delete origin`"
+  ],
+  "answer": 1,
+  "explanation": "A `git fetch --prune` a fetch során eltávolítja azokat a remote-tracking refeket, amelyeknek már nincs megfelelőjük a remote-on. Ez csak a lokális remote-tracking refeket tisztítja, nem töröl branchet a remote repositoryból. A `git push --prune` más irányú művelet, ezért nem ezt a problémát oldja meg."
+ },
+ {
+  "id": 107,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "production",
+  "question": "Egy már productionben lévő commitot szeretnél visszavonni úgy, hogy a repository history megőrizze az eredeti commitot és egy új, ellenkező változtatást tartalmazó commit jöjjön létre. Melyik megoldás illeszkedik ehhez?",
+  "options": [
+   "`git reset --hard HEAD~1`",
+   "`git restore --source=HEAD~1 -- .`",
+   "`git revert <commit>`",
+   "`git branch -D main`"
+  ],
+  "answer": 2,
+  "explanation": "A `git revert` egy új commitot hoz létre, amely visszafordítja a megadott commit változtatásait. Ez különösen alkalmas már megosztott vagy production history esetén, mert nem írja át a meglévő commitláncot. A reset ezzel szemben refmozgatást és adott esetben working-tree módosítást végez, ami megosztott historynál problémás lehet."
+ },
+ {
+  "id": 108,
+  "level": "medior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "edgecase",
+  "question": "Módosítottál több fájlt, de az egyik fájlt staged állapotban szeretnéd hagyni, miközben a többi módosítást stashbe teszed. Melyik kapcsoló segíthet ebben?",
+  "options": [
+   "`git stash --include-untracked`",
+   "`git stash --keep-index`",
+   "`git stash --all`",
+   "`git stash --patch-only`"
+  ],
+  "answer": 1,
+  "explanation": "A `--keep-index` megőrzi a staging area jelenlegi állapotát, miközben a stash a többi munkafa-módosítást kezeli. Ez hasznos például akkor, ha egy már elkészített részletet szeretnél commitolni, miközben más, félkész módosításokat ideiglenesen félreteszel. Az `--include-untracked` más problémát old meg: a nem követett fájlok stashbe vételét."
+ },
+ {
+  "id": 109,
+  "level": "medior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "behavior",
+  "question": "Egy commitot egy másik branchre cherry-pickelsz, és szeretnéd, hogy az új commit üzenetében látható legyen, melyik eredeti commitból származik. Melyik kapcsoló szolgál erre?",
+  "options": [
+   "`git cherry-pick --signoff`",
+   "`git cherry-pick --edit`",
+   "`git cherry-pick --no-commit`",
+   "`git cherry-pick -x`"
+  ],
+  "answer": 3,
+  "explanation": "A `git cherry-pick -x` az új commit üzenetéhez hozzáad egy sort, amely az eredeti commitot azonosítja. Ez hasznos lehet például olyan branch-ek között, ahol fontos a változtatás eredetének nyomon követhetősége. A `--no-commit` ezzel szemben csak az alkalmazott változtatásokat készíti elő commit létrehozása nélkül."
+ },
+ {
+  "id": 110,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "behavior",
+  "question": "Egy fájlt átneveztél `old-name.java` névről `new-name.java` névre, és szeretnéd a fájl történetét a korábbi néven is követni. Melyik parancs erre a leginkább megfelelő?",
+  "options": [
+   "`git log --follow -- new-name.java`",
+   "`git log --rename-only -- new-name.java`",
+   "`git blame --history new-name.java`",
+   "`git show --follow new-name.java`"
+  ],
+  "answer": 0,
+  "explanation": "A `git log --follow -- new-name.java` lehetővé teszi, hogy egyetlen fájl historyját rename-en keresztül is kövesd. Ez különösen hasznos hosszabb életű fájlok refaktorálása után. A Git a rename-eket historyelemzés során hasonlóság alapján ismeri fel, ezért a követés nem egyszerűen egy külön, explicit rename objektum meglétén alapul."
+ },
+ {
+  "id": 111,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "production",
+  "question": "Egy release folyamatban egy annotált taget szeretnél létrehozni az aktuális commiton, majd a tag pontosan azonosítható legyen a release üzenetével és metaadataival. Melyik parancs megfelelő?",
+  "options": [
+   "`git tag release-2.0`",
+   "`git tag -a release-2.0 -m \"Release 2.0\"`",
+   "`git branch release-2.0`",
+   "`git tag --delete release-2.0`"
+  ],
+  "answer": 1,
+  "explanation": "A `git tag -a` annotált taget hoz létre, amelyhez üzenet és további tag metaadatok kapcsolódhatnak. Ez megfelelő release tagekhez, ahol a tag nem csupán egy név egy commiton. A sima `git tag` lightweight taget hoz létre, amelynek nincs külön annotált tag objektuma."
+ },
+ {
+  "id": 112,
+  "level": "medior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Egy csapat Git Flow-szerű munkafolyamatot használ, ahol a fejlesztés és a production release-ek eltérő ciklusban történnek. Mi a release branch egyik tipikus célja?",
+  "options": [
+   "A teljes repository history törlése a release előtt",
+   "A fejlesztési és a stabilizálási/release munkafolyamat elkülönítése",
+   "Az összes feature branch automatikus squasholása",
+   "A remote repository elérésének letiltása a release alatt"
+  ],
+  "answer": 1,
+  "explanation": "A release branch tipikusan lehetővé teszi, hogy egy adott kiadás stabilizálása külön történjen, miközben az új fejlesztések tovább folytatódnak a fejlesztési ágon. Ez szervezési és integrációs célokat szolgál, nem Git technikai kötelezettség. A release branch használata önmagában nem jelent automatikus squasholást vagy history-átírást."
+ },
+ {
+  "id": 113,
+  "level": "medior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "Egy reviewer egy API-módosítást vizsgál, amely több száz sor kódot változtat, de a PR leírása csak annyit mond, hogy „refactor”. Mi hiányzik leginkább ahhoz, hogy a review célzott legyen?",
+  "options": [
+   "A PR branchének SHA-256 hash-e",
+   "A reviewer lokális Git konfigurációjának teljes tartalma",
+   "A változtatás céljának, scope-jának és várható viselkedésének világos leírása",
+   "Egy új remote repository létrehozása"
+  ],
+  "answer": 2,
+  "explanation": "Egy jó PR-leírás kontextust ad arról, miért készült a változtatás, milyen problémát old meg, és milyen viselkedést várunk tőle. Ez segít a reviewernek a technikai diffet az üzleti vagy funkcionális céllal összevetni. A puszta diff megmutatja, mi változott, de nem feltétlenül azt, hogy miért."
+ },
+ {
+  "id": 114,
+  "level": "medior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "theory",
+  "question": "Melyik állítás igaz egy server-side `pre-receive` hookra?",
+  "options": [
+   "A kliens lokális commitja előtt fut",
+   "A Git working tree checkoutolásakor fut",
+   "A remote repositoryba érkező push reffrissítéseinek elfogadása előtt futhat",
+   "Csak egy lokális stash létrehozásakor fut"
+  ],
+  "answer": 2,
+  "explanation": "A `pre-receive` hook a szerver oldalon fut, amikor push érkezik, és a reffrissítések elfogadása előtt ellenőrzéseket végezhet. Ilyen helyen például policy-k, jogosultsági szabályok vagy commitokra vonatkozó ellenőrzések alkalmazhatók. A client-side hookok ezzel szemben a fejlesztő lokális repositoryjában futnak."
+ },
+ {
+  "id": 115,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "edgecase",
+  "question": "Egy fájl szerepel a `.gitignore` fájlban, de már korábban commitoltad és tracked állapotban van. Mi történik egy újabb módosításakor?",
+  "options": [
+   "A `.gitignore` automatikusan untrackeli a fájlt",
+   "A fájl módosításait továbbra is követi a Git, amíg külön el nem távolítod a trackingből",
+   "A Git törli a fájlt a következő `git pull` során",
+   "A fájl csak merge conflict esetén lesz tracked"
+  ],
+  "answer": 1,
+  "explanation": "A `.gitignore` elsősorban a nem követett fájlok figyelmen kívül hagyására szolgál. Egy már tracked fájlt nem tesz automatikusan untrackeddé, ezért a későbbi módosításait továbbra is követi a Git. Az ilyen fájl trackingből való eltávolításához külön művelet, például `git rm --cached`, szükséges."
+ },
+ {
+  "id": 116,
+  "level": "medior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "scenario",
+  "question": "Egy monorepóban egy fejlesztő csak egy nagyobb projekt alkönyvtárával dolgozik, és a repository többi részét ritkán módosítja. Miért lehet előnyös a sparse-checkout használata?",
+  "options": [
+   "Automatikusan több külön Git repositoryra bontja a monorepót",
+   "Csökkentheti a working tree-ben jelen lévő fájlok mennyiségét, miközben a repository közös historyja megmarad",
+   "Minden commitot automatikusan squashol",
+   "A remote repository teljes historyját törli"
+  ],
+  "answer": 1,
+  "explanation": "A sparse-checkout a working tree-ben megjelenő útvonalak körét szűkíti, ezért nagy monorepókban csökkentheti a lokálisan kezelt fájlok számát. Nem bontja fel a repositoryt külön Git repositorykra, és nem változtatja meg automatikusan a commit historyt. Azért lehet csábító a repository-felbontás, mert a sparse-checkout hasonló célt szolgálhat a fejlesztői munkakörnyezet egyszerűsítésében, de technikailag más megoldás."
+ },
+ {
+  "id": 117,
+  "level": "medior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "behavior",
+  "question": "Miért lehet egy korábban elvesztett commit egy ideig még visszaállítható akkor is, ha már egyetlen branch vagy tag sem mutat rá?",
+  "options": [
+   "Mert a Git minden commitot örökre megőriz",
+   "Mert a remote automatikusan visszaállít minden elvesztett commitot",
+   "Mert a reflog és más elérhetőségi mechanizmusok ideiglenesen hivatkozhatnak a korábbi objektumokra",
+   "Mert a working tree minden korábbi commitot külön fájlban tárol"
+  ],
+  "answer": 2,
+  "explanation": "A lokális reflog bizonyos refek korábbi értékeit őrzi, így egy branchből kiesett commit még elérhető lehet rajta keresztül. Az ilyen objektumok azonban nem feltétlenül maradnak örökre megőrizve; a reflog lejárata és garbage collection után véglegesen eltűnhetnek. Az a feltételezés téves, hogy a Git minden létrehozott commitot korlátlan ideig garantáltan megtart."
+ },
+ {
+  "id": 118,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "Mit jelez tipikusan a `git cat-file -p <object>` parancs egy commit objektum esetén?",
+  "options": [
+   "A commit objektum olvasható tartalmát, például a tree-t, parenteket, author/committer adatokat és üzenetet",
+   "A teljes working tree bináris snapshotját egyetlen fájlban",
+   "Csak a commit SHA-ját",
+   "A remote repository teljes reflistáját"
+  ],
+  "answer": 0,
+  "explanation": "A `git cat-file -p` az objektum típusának megfelelő, formázott tartalmat jeleníti meg. Egy commit esetén ez többek között a tree és parent hivatkozásokat, valamint az author, committer és commit message adatokat tartalmazza. A blobok és tree-k tényleges tartalma külön objektumokban található."
+ },
+ {
+  "id": 119,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "scenario",
+  "question": "Egy nagy módosításban csak néhány hunkot szeretnél commitolni, a többi módosítást pedig későbbre hagynád. Melyik parancs támogatja legközvetlenebbül az interaktív staginget?",
+  "options": [
+   "`git commit --only`",
+   "`git add -p`",
+   "`git stage --all`",
+   "`git commit --interactive-history`"
+  ],
+  "answer": 1,
+  "explanation": "A `git add -p` hunkonként engedi kiválasztani, mely módosításokat szeretnéd az indexbe tenni. Így egyetlen nagy working-tree változtatásból logikailag elkülönített commit készíthető. Az interaktív staging azért hasznos, mert nem szükséges előbb manuálisan külön fájlokra vagy branch-ekre szétbontani a teljes módosítást."
+ },
+ {
+  "id": 120,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "Egy CI környezetben azt szeretnéd biztosítani, hogy a `git pull` ne hozzon létre automatikusan merge commitot, hanem sikertelen legyen, ha a lokális és remote history nem fast-forward módon egyeztethető. Melyik opció felel meg ennek?",
+  "options": [
+   "`git pull --rebase`",
+   "`git pull --merge`",
+   "`git pull --ff-only`",
+   "`git pull --no-tags`"
+  ],
+  "answer": 2,
+  "explanation": "A `--ff-only` megköveteli, hogy a frissítés fast-forward módon végrehajtható legyen; ellenkező esetben a pull hibával leáll. Ez hasznos lehet automatizált környezetben, ahol nem szeretnénk implicit merge commitot létrehozni. A `--rebase` más stratégiát alkalmaz: a lokális commitokat új alapra helyezi."
+ },
+ {
+  "id": 121,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "trap",
+  "question": "Mi történik egy olyan branch rebase-elésekor, amelyet már más fejlesztők is használnak és a hozzá tartozó commitokat már felpusholták?",
+  "options": [
+   "A remote history automatikusan változatlan marad",
+   "A meglévő commitok azonos SHA-val maradnak, mert a rebase csak refet mozgat",
+   "A branch commitjai új commitobjektumokként jöhetnek létre, ezért a pushhoz gyakran history-átírás szükséges",
+   "A rebase automatikusan létrehoz egy merge commitot a remote branchben"
+  ],
+  "answer": 2,
+  "explanation": "A rebase új alapra helyezi a commitokat, ezért a commitok új objektumazonosítókat kaphatnak. Ha ezek a commitok már megosztott remote history részei, a frissített history nem fast-forward módon kerülhetne felpusholásra, ami együttműködési problémákat okozhat. Az a feltételezés hibás, hogy a rebase csak egy branch pointert mozgat, mert magukat a commitokat is újra létrehozhatja."
+ },
+ {
+  "id": 122,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "scenario",
+  "question": "Egy merge konfliktus feloldásakor a fájlban lévő konfliktusjelölők (`<<<<<<<`, `=======`, `>>>>>>>`) eltávolítása után mi a következő szükséges lépés a merge folytatásához?",
+  "options": [
+   "`git add` segítségével staged állapotba kell tenni a feloldott fájlt",
+   "Azonnal `git push --force` szükséges",
+   "A branch-et törölni kell",
+   "Új repositoryt kell inicializálni"
+  ],
+  "answer": 0,
+  "explanation": "A konfliktus manuális feloldása után a fájlt staged állapotba kell tenni, hogy Git tudja, hogy a konfliktust a fájl esetében rendezted. Ezután a merge commit létrehozható például `git commit` segítségével. A konfliktusjelölők puszta eltávolítása önmagában nem jelzi Gitnek, hogy a konfliktus fel lett oldva."
+ },
+ {
+  "id": 123,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "performance",
+  "question": "Egy nagy repositoryban csak az aktuális branch által elérhető historyt szeretnéd megvizsgálni, és nem akarod az összes refből származó commitot beemelni a log eredményébe. Melyik parancs felel meg ennek leginkább?",
+  "options": [
+   "`git log --all`",
+   "`git log --branches`",
+   "`git log --remotes`",
+   "`git log`"
+  ],
+  "answer": 3,
+  "explanation": "A sima `git log` alapértelmezés szerint az aktuális HEAD-ből elérhető historyt jeleníti meg. Az `--all` ezzel szemben minden refből elérhető historyt bevonhat, ami jelentősen nagyobb eredményt adhat. A kérdésben szereplő célhoz ezért nincs szükség az összes ref explicit bevonására."
+ },
+ {
+  "id": 124,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "behavior",
+  "question": "Egy csapat azt szeretné, hogy minden fejlesztő ugyanazokat a repository-specifikus ignore szabályokat használja, és ezek a szabályok verziókezelve legyenek. Hol célszerű ezeket definiálni?",
+  "options": [
+   "`.git/info/exclude`",
+   "A globális Git konfigurációban minden fejlesztő gépén",
+   "A repositoryban verziókezelt `.gitignore` fájlban",
+   "A reflogban"
+  ],
+  "answer": 2,
+  "explanation": "A repositoryban lévő `.gitignore` verziókezelhető, így a szabályok a repositoryval együtt megoszthatók a csapattal. A `.git/info/exclude` lokális repository-specifikus kivételekhez alkalmas, míg a globális ignore szabályok egy adott fejlesztő gépére vonatkoznak. Az a megközelítés lehet csábító, hogy globálisan konfiguráljuk az ignore szabályokat, de ez nem biztosít egységes repository-szintű viselkedést."
+ },
+ {
+  "id": 125,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "production",
+  "question": "Egy release pipeline-nak egy konkrét commitot kell megbízhatóan azonosítania, és a release neve mellett azt is szeretnéd, hogy a taghez hitelesíthető metaadat tartozzon. Melyik megoldás illeszkedik ehhez?",
+  "options": [
+   "Lightweight tag használata további metaadat nélkül",
+   "Annotated, lehetőleg aláírt tag használata",
+   "Egy ideiglenes stash létrehozása release névvel",
+   "Egy lokális branch létrehozása és azonnali törlése"
+  ],
+  "answer": 1,
+  "explanation": "Az annotált tag külön tag objektumot biztosít metaadatokkal, és megfelelő eszközökkel alá is írható, így a release azonosítása és eredetének ellenőrzése erősebb lehet. Ez nem helyettesíti a teljes release-integritási folyamatot, de jól illeszkedik kiadási pontok megjelölésére. A lightweight tag egyszerűbb ref, ezért kevesebb beépített metaadatot hordoz."
+ },
+ {
+  "id": 126,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "Egy repositoryban szeretnéd megnézni, hogy egy adott commit tree-je milyen fájlokra és alkönyvtárakra hivatkozik anélkül, hogy checkoutolnád azt. Melyik parancs alkalmas erre?",
+  "options": [
+   "`git show-ref <commit>`",
+   "`git diff-tree --no-tree <commit>`",
+   "`git cat-file -t <commit>`",
+   "`git ls-tree <commit>`"
+  ],
+  "answer": 3,
+  "explanation": "A `git ls-tree <commit>` közvetlenül a commit által hivatkozott tree tartalmát jeleníti meg, így megmutathatja a fájlokat, alkönyvtárakat, módokat és a hozzájuk tartozó objektumokat. Ez checkout nélkül teszi lehetővé egy adott snapshot struktúrájának vizsgálatát. A `git cat-file -t` csak az objektum típusát mutatná meg, nem a tree bejegyzéseit."
+ },
+ {
+  "id": 127,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "behavior",
+  "question": "Egy új, még üres fájlt szeretnél úgy felvenni az indexbe, hogy Git már követett fájlként kezelje, miközben a fájl tényleges tartalma még nincs a következő commitban. Melyik parancs erre alkalmas?",
+  "options": [
+   "`git add -N file.txt`",
+   "`git add --empty file.txt`",
+   "`git commit --intent-to-add file.txt`",
+   "`git stage --placeholder file.txt`"
+  ],
+  "answer": 0,
+  "explanation": "A `git add -N` intent-to-add bejegyzést hoz létre az indexben, így a fájl státusza és későbbi diffje kezelhető trackedként anélkül, hogy a teljes tartalma bekerülne az indexbe. Ez különösen hasznos lehet új fájlok módosításainak diffeléséhez még a tényleges staging előtt. Az intent-to-add nem azonos azzal, hogy a fájl teljes tartalma már commitra kész állapotban lenne."
+ },
+ {
+  "id": 128,
+  "level": "medior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "behavior",
+  "question": "Egy commitról szeretnéd megtudni, hogy mely lokális branchek tartalmazzák azt a historyjukban. Melyik parancs erre szolgál?",
+  "options": [
+   "`git branch --merged <commit>`",
+   "`git branch --contains <commit>`",
+   "`git branch --points-at <commit>`",
+   "`git branch --track <commit>`"
+  ],
+  "answer": 1,
+  "explanation": "A `git branch --contains <commit>` azokat a brancheket listázza, amelyek historyjában az adott commit elérhető. A `--points-at` ezzel szemben csak azokat a brancheket mutatja, amelyek közvetlenül az adott commitra mutatnak. Ez fontos különbség, mert egy branch tartalmazhat egy commitot úgy is, hogy a branch tipje már sokkal későbbi."
+ },
+ {
+  "id": 129,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "scenario",
+  "question": "Egy integrációs ágba egyszerre több, egymástól független branchet szeretnél merge-elni. A branchek között nincs konfliktus, és mindegyiknek egyetlen közös merge commitban való integrációja megfelelő. Melyik Git funkció támogatja ezt?",
+  "options": [
+   "`git merge --linear`",
+   "`git merge --squash-all`",
+   "`git merge --octopus`",
+   "`git merge --multi-parent`"
+  ],
+  "answer": 2,
+  "explanation": "Az octopus merge több head egyidejű merge-elésére szolgál, tipikusan egymástól független változtatások esetén. Git általában nem használ octopus merge-t olyan helyzetben, ahol valódi content conflictok feloldása szükséges. Az octopus működését azért lehet összekeverni a normál merge-gel, mert mindkettő egy közös merge commitot hozhat létre, de az octopus több headet integrál egyszerre."
+ },
+ {
+  "id": 130,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "behavior",
+  "question": "Egy feature branch történetében több korábbi merge commitot is meg szeretnél őrizni, miközben a teljes branch-et egy új base-re rebase-eled. Melyik opció szolgál erre?",
+  "options": [
+   "`git rebase --flatten`",
+   "`git rebase --preserve`",
+   "`git rebase --keep-merges`",
+   "`git rebase --rebase-merges`"
+  ],
+  "answer": 3,
+  "explanation": "A `git rebase --rebase-merges` lehetővé teszi, hogy a rebase során a branch historyjában található merge struktúrák is újra létrejöjjenek, ahelyett hogy a rebase minden commitot egyszerű lineáris sorozattá alakítana. Ez hasznos lehet összetett feature history megőrzésénél. A régebbi `--preserve-merges` megoldás elavultabb és kevésbé rugalmas megközelítés."
+ },
+ {
+  "id": 131,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "Egy lokális `feature` branch upstream branchhez van kötve, és `git push` használatakor azt szeretnéd, hogy alapértelmezés szerint pontosan a konfigurált upstream branchet célozza. Melyik `push.default` érték illeszkedik ehhez?",
+  "options": [
+   "`matching`",
+   "`current`",
+   "`nothing`",
+   "`upstream`"
+  ],
+  "answer": 3,
+  "explanation": "A `push.default=upstream` a jelenlegi branch konfigurált upstream branchére pushol. Ez különösen egyértelművé teszi, hogy a push célja az a remote-tracking vagy remote branch legyen, amelyet a branch upstream konfigurációja meghatároz. A `current` ezzel szemben a lokális branch azonos nevű remote branchét célozza, ami nem feltétlenül ugyanaz."
+ },
+ {
+  "id": 132,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "edgecase",
+  "question": "Egy merge commitot szeretnél visszavonni `git revert` segítségével. Miért kell tipikusan megadnod a `-m` kapcsolót?",
+  "options": [
+   "Mert a merge commitnak nincs commit message-e",
+   "Mert a revert csak annotated tagekre működik",
+   "Mert a merge commitnak több parentje van, ezért meg kell adni, melyik parentet tekinted fővonalnak",
+   "Mert a revert mindig hard resetet hajt végre"
+  ],
+  "answer": 2,
+  "explanation": "Egy merge commitnak több parentje van, ezért a Gitnek tudnia kell, melyik parenthez viszonyítva határozza meg a visszafordítandó változtatást. A `-m <parent-number>` ezt a mainline parentet adja meg. A parent kiválasztása kritikus, mert más parent megadásával eltérő változtatásokat tekintünk a merge eredményének."
+ },
+ {
+  "id": 133,
+  "level": "medior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "behavior",
+  "question": "Szeretnél egy stash bejegyzést létrehozni, de nem akarod azonnal alkalmazni vagy eltávolítani, és egy scriptben az új stash objektum azonosítójára is szükséged van. Melyik parancs erre alkalmas?",
+  "options": [
+   "`git stash create`",
+   "`git stash object`",
+   "`git stash save-id`",
+   "`git stash hash`"
+  ],
+  "answer": 0,
+  "explanation": "A `git stash create` létrehoz egy stash-szerű commitot, és visszaadja annak objektumazonosítóját, miközben nem feltétlenül frissíti a stash reflogot ugyanúgy, mint a normál `git stash push`. Ez alacsony szintű vagy scriptelt felhasználásnál lehet hasznos. A `git stash push` ezzel szemben normál stash bejegyzést hoz létre a stash ref alatt."
+ },
+ {
+  "id": 134,
+  "level": "medior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "edgecase",
+  "question": "Egy merge commitot szeretnél cherry-pickelni egy másik branchre. Miért lehet szükség a `-m` kapcsolóra?",
+  "options": [
+   "Mert a cherry-pick csak working-tree változásokat tud alkalmazni",
+   "Mert a merge commitnak több parentje van, ezért meg kell határozni a mainline parentet",
+   "Mert a cherry-pick automatikusan rebase-elné a teljes branch-et",
+   "Mert a merge commitokat csak tagként lehet cherry-pickelni"
+  ],
+  "answer": 1,
+  "explanation": "Egy merge commit változásait nem lehet egyértelműen meghatározni egyetlen szülőhöz viszonyítva, ezért a `git cherry-pick -m <parent-number> <merge-commit>` megadja, melyik parenthez képest számítsa ki az alkalmazandó diffet. A választott parent meghatározza, hogy a merge melyik oldalához viszonyított változtatást viszed át. Ezért merge commit cherry-pickelése különösen körültekintő művelet."
+ },
+ {
+  "id": 135,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "behavior",
+  "question": "Egy nagy historyban egy adott fájl egyetlen függvényének soronkénti változásait szeretnéd vizsgálni, nem pedig az egész fájl teljes historyját. Melyik Git funkció támogatja ezt?",
+  "options": [
+   "`git log --function`",
+   "`git blame --commit`",
+   "`git log -L`",
+   "`git bisect --function`"
+  ],
+  "answer": 2,
+  "explanation": "A `git log -L` egy fájl adott sor- vagy függvénytartományának történetét képes követni. Ez hasznos lehet például egy függvény fokozatos átalakulásának vizsgálatakor nagy repositoryban. A `git blame` az aktuális sorokhoz kapcsolódó utolsó módosító commitokat mutatja, de nem ugyanazt a történeti tartománykövetést végzi."
+ },
+ {
+  "id": 136,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "output",
+  "question": "Egy annotated tag nevét használod egy parancsban, de magát a commitot szeretnéd egyértelműen megkapni a tag objektum helyett. Melyik revision syntax használható erre?",
+  "options": [
+   "`<tag>^{}`",
+   "`<tag>@@`",
+   "`<tag>..`",
+   "`<tag>:commit`"
+  ],
+  "answer": 0,
+  "explanation": "A `<tag>^{}` dereferencia segítségével egy annotated tag mögötti tényleges objektumhoz lehet eljutni, és ha a tag commitra mutat, a commitot kapod eredményül. Ez különösen hasznos scriptelésnél, amikor nem szeretnéd, hogy az annotated tag objektum és a mögötte lévő commit összekeveredjen. A sima `<tag>` maga az annotated tag objektumra oldódhat fel."
+ },
+ {
+  "id": 137,
+  "level": "medior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Egy csapat külön hotfix branchet használ a productionben futó verzió sürgős javítására, miközben az új funkciók fejlesztése külön ágon folytatódik. Mi ennek a stratégiai előnye?",
+  "options": [
+   "A hotfix branch automatikusan megakadályozza az összes merge conflictot",
+   "A production javítás izolálható a még ki nem adott fejlesztésektől",
+   "A hotfix branch garantálja, hogy minden commit signed legyen",
+   "A hotfix branch megszünteti a release tagek szükségességét"
+  ],
+  "answer": 1,
+  "explanation": "A külön hotfix branch lehetővé teszi, hogy egy sürgős production javítás elkülönüljön a még fejlesztés alatt álló változtatásoktól. A javítás ezután szükség szerint visszakerülhet más aktív ágakba is. A branch használata nem garantálja sem a konfliktusmentességet, sem a commitok aláírását."
+ },
+ {
+  "id": 138,
+  "level": "medior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "scenario",
+  "question": "A `feature` branch review-jához azt szeretnéd látni, hogy a branch milyen teljes változtatást vezet be a `main` közös őspontjához képest, nem csak az utolsó commit diffjét. Melyik parancs erre megfelelő?",
+  "options": [
+   "`git diff feature~1 feature`",
+   "`git diff main..feature`",
+   "`git diff main...feature`",
+   "`git show feature`"
+  ],
+  "answer": 2,
+  "explanation": "A hárompontos `git diff main...feature` a `main` és `feature` közös ősétől a `feature` tipjéig terjedő változtatást mutatja, ami tipikusan megfelel egy pull request teljes diffjének. A kétpontos forma más revision összehasonlítási szemantikát használ. Az utolsó commit diffje csak a branch legutóbbi commitjának változásait mutatná."
+ },
+ {
+  "id": 139,
+  "level": "medior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "production",
+  "question": "Egy csapat azt szeretné, hogy push előtt lokálisan lefusson egy automatizált teszt, és sikertelen teszt esetén a push ne induljon el. Melyik hook illeszkedik ehhez?",
+  "options": [
+   "`post-commit`",
+   "`pre-receive`",
+   "`post-receive`",
+   "`pre-push`"
+  ],
+  "answer": 3,
+  "explanation": "A `pre-push` client-side hook a push végrehajtása előtt fut, ezért alkalmas lokális ellenőrzések, például tesztek vagy validációk futtatására. Ha a hook hibakóddal tér vissza, a push megakad. A `pre-receive` hasonló policy-ellenőrzésekre használható, de az a remote szerveren fut."
+ },
+ {
+  "id": 140,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "behavior",
+  "question": "Egy repositoryban egy adott fájltípusnál speciális merge szabályt szeretnél használni, amelyet a `.gitattributes` alapján a Git merge során alkalmaz. Melyik attribútummechanizmus kapcsolódik ehhez?",
+  "options": [
+   "`merge`",
+   "`ignore`",
+   "`checkout`",
+   "`remote`"
+  ],
+  "answer": 0,
+  "explanation": "A `.gitattributes` fájlban a `merge` attribútummal fájltípusonként vagy útvonalanként merge drivert lehet hozzárendelni. Ez lehetővé teszi speciális merge-stratégia alkalmazását például generált vagy strukturált fájlokra. A `.gitignore` ettől eltérő célt szolgál: a nem követett fájlok figyelmen kívül hagyását szabályozza."
+ },
+ {
+  "id": 141,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "edgecase",
+  "question": "Egy submodule konfigurációjában egy remote branch követését szeretnéd beállítani, hogy később a submodule újabb commitjára frissíthesd. Mit kell figyelembe venni?",
+  "options": [
+   "A superproject automatikusan mindig a remote branch legfrissebb commitját használja",
+   "A submodule branch konfigurációja meghatározhatja, melyik remote branchről történjen az update, de a superproject továbbra is egy konkrét submodule commitot rögzít",
+   "A submodule soha nem követhet remote branchet",
+   "A `git submodule update --remote` minden esetben automatikusan commitolja a superproject változását"
+  ],
+  "answer": 1,
+  "explanation": "A submodule konfigurációja megadhatja, hogy a `git submodule update --remote` melyik remote branch aktuális állapotát kövesse. Ettől még a superproject egy gitlinken keresztül egy konkrét submodule commitot rögzít, ezért az update után a superprojectben bekövetkező gitlink-változást külön commitolni kell. Az automatikus követés és a reprodukálható, rögzített superproject állapot ezért két külön fogalom."
+ },
+ {
+  "id": 142,
+  "level": "senior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "trap",
+  "question": "Egy fejlesztő egy `origin/main` remote-tracking ref korábbi állapotát szeretné reflogból visszakeresni. Melyik állítás a legpontosabb?",
+  "options": [
+   "A remote-tracking refekhez minden repositoryban kötelezően korlátlan idejű reflog tartozik",
+   "A `git reflog origin/main` mindig a remote szerver teljes reflogját jeleníti meg",
+   "A remote-tracking ref lokális reflogja létezhet és hasznos lehet, de a reflog megléte és megőrzése konfiguráció- és repositoryfüggő",
+   "A remote-tracking ref korábbi állapotai kizárólag a `.git/objects` könyvtárban kereshetők"
+  ],
+  "answer": 2,
+  "explanation": "A remote-tracking refekhez is létezhet lokális reflog, de ennek megléte és megőrzési ideje nem úgy értendő, mint egy kötelező, korlátlan history. A reflog mindig lokális információ, és nem a remote szerver reflogját mutatja. Ezért recovery célból először azt kell ellenőrizni, hogy a kívánt refhez ténylegesen rendelkezésre áll-e megfelelő reflogbejegyzés."
+ },
+ {
+  "id": 143,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "performance",
+  "question": "Egy nagy repositoryban a Gitnek gyakran kell commitok elérhetőségét és a history gráfját gyorsan bejárnia. Melyik Git mechanizmus szolgálhat a commit gráfhoz kapcsolódó számítások felgyorsítására?",
+  "options": [
+   "Commit-graph",
+   "`.gitignore`",
+   "Stash reflog",
+   "Merge driver"
+  ],
+  "answer": 0,
+  "explanation": "A commit-graph egy külön metaadatszerkezet, amely a commitok gráfjának bizonyos információit előre kiszámítva és hatékony formában tárolja. Ez felgyorsíthat több history- és reachability-jellegű műveletet nagy repositorykban. Nem helyettesíti a commit objektumokat, hanem kiegészítő indexelési mechanizmusként szolgál."
+ },
+ {
+  "id": 144,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "scenario",
+  "question": "Egy nagy monorepóban sok fájl módosul egyszerre, és a csapat a Git index memória- és I/O-terhelését szeretné csökkenteni úgy, hogy a normál staging workflow megmaradjon. Melyik Git funkció szolgálhat erre?",
+  "options": [
+   "`git clean`",
+   "`git archive`",
+   "Split index",
+   "`git revert`"
+  ],
+  "answer": 2,
+  "explanation": "A split index lehetővé teszi, hogy a Git az index változatlan részét külön shared indexben tárolja, miközben a változó részt kisebb indexstruktúrában kezeli. Ez nagy repositorykban csökkentheti az index frissítésének költségét. Nem változtatja meg a commit szemantikáját, és nem a working tree fájljainak törlésére szolgál."
+ },
+ {
+  "id": 145,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "behavior",
+  "question": "Egy csapat rendszeresen ugyanazokkal a merge konfliktusokkal találkozik ugyanazon fájlokban. Melyik Git funkció segíthet abban, hogy egy korábban már kézzel feloldott konfliktus feloldását a Git később újra felhasználhassa?",
+  "options": [
+   "`git rerere`",
+   "`git reflog`",
+   "`git replace`",
+   "`git notes`"
+  ],
+  "answer": 0,
+  "explanation": "A `rerere` a \"reuse recorded resolution\" mechanizmust biztosítja: Git rögzítheti a konfliktus feloldását, és egy későbbi, hasonló konfliktusnál megpróbálhatja újra alkalmazni. Ez különösen hasznos lehet hosszú életű branchek ismétlődő merge vagy rebase folyamataiban. A reflog és a notes más célokat szolgál, és nem konfliktusfeloldási cache-ként működik."
+ },
+ {
+  "id": 146,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "production",
+  "question": "Egy commitot `fixup!` prefixszel hoztál létre, és azt szeretnéd, hogy egy későbbi interaktív rebase során automatikusan azonosítsa a hozzá tartozó korábbi commitot, majd squasholja bele. Melyik opció támogatja ezt?",
+  "options": [
+   "`git rebase --merge`",
+   "`git rebase --autostash`",
+   "`git rebase --exec`",
+   "`git rebase --autosquash`"
+  ],
+  "answer": 3,
+  "explanation": "Az `--autosquash` felismeri a `fixup!` és `squash!` prefixszel létrehozott commitokat, és az interaktív rebase todo listájában a kapcsolódó commit mellé rendezi őket. Ez jelentősen egyszerűsítheti a review közben felhalmozott javító commitok rendezését. Az `--autostash` a munkafa ideiglenes stash-elését kezeli, nem a fixup commitok automatikus rendezését."
+ },
+ {
+  "id": 147,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "Egy remote konfigurációjában azt szeretnéd, hogy egyetlen fetch művelet egy adott namespace alatt több remote refet is lokális remote-tracking refekre képezzen le. Melyik mechanizmus határozza meg ezt?",
+  "options": [
+   "`branch.*.merge`",
+   "`remote.<name>.fetch` refspec",
+   "`push.default`",
+   "`merge.conflictStyle`"
+  ],
+  "answer": 1,
+  "explanation": "A `remote.<name>.fetch` refspec határozza meg, hogy a remote-ról mely refek kerüljenek lekérésre, és milyen lokális refre legyenek leképezve. A refspec akár wildcardot is tartalmazhat, ezért több branch egyetlen szabállyal kezelhető. A `branch.*.merge` elsősorban egy adott lokális branch upstream konfigurációját írja le, nem a teljes fetch mappinget."
+ },
+ {
+  "id": 148,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "recovery",
+  "question": "Egy összetett művelet, például merge vagy rebase után szeretnéd megvizsgálni, hogy mi volt a korábbi HEAD állapota, mielőtt a művelet megváltoztatta volna. Melyik mechanizmus adhat közvetlenül erre használható hivatkozást?",
+  "options": [
+   "`ORIG_HEAD`",
+   "`.gitignore`",
+   "`FETCH_HEAD`",
+   "`MERGE_MSG`"
+  ],
+  "answer": 0,
+  "explanation": "Git bizonyos history-átíró vagy nagyobb refmozgató műveletek során az előző HEAD-re az `ORIG_HEAD` névvel is hivatkozhat. Ez hasznos lehet például egy merge vagy rebase előtti állapot ellenőrzésére vagy bizonyos recovery műveleteknél. Az `ORIG_HEAD` nem általános, örök history, ezért hosszú távú recoveryhez a reflog is fontos lehet."
+ },
+ {
+  "id": 149,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "Két commit közötti historyban csak azokat a commitokat szeretnéd megvizsgálni, amelyek egy adott ancestry útvonalon, például egy branch és annak közös őse között helyezkednek el. Melyik revision opció segíthet ennek szűkítésében?",
+  "options": [
+   "`--decorate`",
+   "`--ancestry-path`",
+   "`--author`",
+   "`--reverse`"
+  ],
+  "answer": 1,
+  "explanation": "A `--ancestry-path` a megadott commitok közötti olyan commitokra szűkítheti a historyt, amelyek tényleges ancestry útvonalon helyezkednek el. Ez különösen összetett, sok párhuzamos ágat tartalmazó historyban lehet hasznos, amikor csak egy meghatározott leszármazási út érdekel. A `--author` például csak szerző alapján szűr, nem a gráf topológiája alapján."
+ },
+ {
+  "id": 150,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "performance",
+  "question": "Egy több gigabájtos monorepót szeretnél CI környezetben klónozni úgy, hogy a teljes objektumtörténet helyett kezdetben csak a szükséges objektumokat töltsd le, majd szükség esetén további objektumokat kérj le a szervertől. Melyik Git képesség illeszkedik ehhez?",
+  "options": [
+   "`git sparse-checkout`",
+   "`git archive`",
+   "Partial clone",
+   "`git clean`"
+  ],
+  "answer": 2,
+  "explanation": "A partial clone lehetővé teszi, hogy a kliens kezdetben ne töltse le a repository összes objektumát, hanem bizonyos objektumokat később, szükség esetén kérjen le. Ez különösen nagy monorepók és CI környezetek esetén csökkentheti a kezdeti adatátvitelt és tárhelyigényt. A sparse-checkout elsősorban azt szabályozza, mely fájlok jelenjenek meg a working tree-ben, míg a partial clone magának az objektumletöltésnek a mennyiségét befolyásolja."
+ },
+ {
+  "id": 151,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "behavior",
+  "question": "Egy Git repositoryban ugyanazt a commitot több különböző branch vagy tag is eléri. Mi történik a commit objektummal, ha az egyik branch törlésre kerül, de egy tag továbbra is rámutat?",
+  "options": [
+   "A commit objektum azonnal törlődik, mert egy branch már nem hivatkozik rá",
+   "A commit SHA-ja megváltozik, mert a branch törlése újraszámolja a historyt",
+   "A commit továbbra is elérhető marad a tagből, ezért a garbage collection számára továbbra is reachable",
+   "A Git automatikusan átmásolja a commitot a tag alá új objektumként"
+  ],
+  "answer": 2,
+  "explanation": "A Git objektumok elérhetőségét a refekből bejárható objektumgráf határozza meg. Ha egy tag továbbra is eléri a commitot, a commit reachable marad, ezért egy normál garbage collection nem tekinti elhagyott objektumnak. Az a feltételezés lehet csábító, hogy egy branch törlése törli a branchhez tartozó commitokat, de a commitok nem a branch tulajdonát képezik."
+ },
+ {
+  "id": 152,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "edgecase",
+  "question": "Egy commitot szeretnél módosítani úgy, hogy a commit üzenete és a már staged tartalom változatlan maradjon, de a commit dátumát vagy más commit-metaadatot módosító folyamatot szeretnél végrehajtani. Miért fontos tudni, hogy a `git commit --amend` új commitot hoz létre?",
+  "options": [
+   "Mert az amend minden esetben egy új branch-et is létrehoz",
+   "Mert az új commit új objektumazonosítót kap, ezért a korábbi commitra mutató history megváltozhat",
+   "Mert az amend kizárólag a working tree fájljait módosítja",
+   "Mert az amend soha nem módosíthat commit-metaadatokat"
+  ],
+  "answer": 1,
+  "explanation": "Az amend a korábbi commit új változatát hozza létre, ezért annak hash-e általában megváltozik, még akkor is, ha a fájlok tartalma nem változik. A commit SHA-jának része a commit metaadata és a hivatkozott tree és parent információ is. Az a feltételezés lehet megtévesztő, hogy az amend csak a branch pointerét mozgatja, miközben valójában új commit objektum keletkezik."
+ },
+ {
+  "id": 153,
+  "level": "senior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "scenario",
+  "question": "Egy repositoryban egy régi branchből szeretnél egy új branch-et létrehozni egy konkrét korábbi commitból, miközben a jelenlegi branchhez nem akarsz hozzányúlni. Melyik parancs a legközvetlenebb megoldás?",
+  "options": [
+   "`git switch -c hotfix <commit>`",
+   "`git switch <commit> -c hotfix --force`",
+   "`git branch --move hotfix <commit>`",
+   "`git branch --track hotfix <commit>`"
+  ],
+  "answer": 0,
+  "explanation": "A `git switch -c hotfix <commit>` új branchet hoz létre a megadott commitból, majd az új branchre vált. A jelenlegi branch refje ettől nem változik. A `git branch --move` meglévő branch átnevezésére szolgál, nem egy új branch adott commitból történő létrehozására."
+ },
+ {
+  "id": 154,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "trap",
+  "question": "Egy merge során ugyanazt a fájlt mindkét ág módosította, de a módosítások külön, nem átfedő sorokat érintenek. Mi történik tipikusan?",
+  "options": [
+   "Git mindig merge conflictot jelez, ha ugyanaz a fájl mindkét ágon módosult",
+   "Git mindig az aktuális branch teljes fájlját választja",
+   "Git automatikusan squasholja a két módosítást",
+   "Git megpróbálja automatikusan összeilleszteni a változásokat, ezért nem feltétlenül lesz conflict"
+  ],
+  "answer": 3,
+  "explanation": "A merge algoritmus nem pusztán azt vizsgálja, hogy ugyanaz a fájl változott-e, hanem azt is, hogy a változások hogyan viszonyulnak egymáshoz. Különálló, nem átfedő módosításokat gyakran automatikusan össze tud illeszteni. Az a feltételezés, hogy azonos fájl módosítása automatikusan konfliktust jelent, túl leegyszerűsíti a háromutas merge működését."
+ },
+ {
+  "id": 155,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "production",
+  "question": "Egy rebase közben konfliktusba ütközöl, és azt állapítod meg, hogy az aktuális commitot valójában nem szeretnéd újra alkalmazni az új base-en. Mit tehetsz?",
+  "options": [
+   "`git rebase --abort`",
+   "`git rebase --skip`",
+   "`git reset --merge`",
+   "`git merge --continue`"
+  ],
+  "answer": 1,
+  "explanation": "A `git rebase --skip` kihagyja az éppen alkalmazás alatt lévő commitot, és folytatja a rebase folyamatot a következő commitnál. Ez akkor lehet megfelelő, ha az adott változtatás már szerepel az új base-ben vagy más okból nincs szükség rá. Az `--abort` ezzel szemben az egész rebase folyamatot megszakítja."
+ },
+ {
+  "id": 156,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "production",
+  "question": "Miért lehet veszélyes a `git push --mirror` használata egy normál, megosztott távoli repozitóriummal szemben?",
+  "options": [
+   "Csak az aktuálisan checkoutolt branchet pusholja, és soha nem módosít más refeket.",
+   "Minden push előtt automatikusan létrehoz egy biztonsági mentés branchet.",
+   "Az összes remote-tracking branchet lokális branché alakítja.",
+   "Az összes refet tükrözi, és törölheti a céloldalon azokat a refeket, amelyek lokálisan nem léteznek."
+  ],
+  "answer": 3,
+  "explanation": "A `git push --mirror` az összes refet tükrözi a céloldalra, és a céloldalon azokat a refeket is törölheti, amelyek lokálisan nem léteznek. Ez hasznos lehet repozitóriumok tükrözésére, de normál együttműködési remote esetén veszélyes, mert más fejlesztők refjeit is érintheti. A megtévesztő feltételezés az, hogy a push parancsok csak az aktuálisan módosított branchet frissítik, miközben a `--mirror` ennél jóval szélesebb hatókörű."
+ },
+ {
+  "id": 157,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "scenario",
+  "question": "Egy korábbi commitot már több későbbi commit követett, és csak az adott régi commit változtatásait szeretnéd visszafordítani anélkül, hogy a későbbi commitokat eltávolítanád. Miért megfelelő erre a `git revert <commit>`?",
+  "options": [
+   "Mert a revert átmozgatja a branch pointert a régi commitra",
+   "Mert a revert törli a régi commit objektumot",
+   "Mert a revert az összes későbbi commitot újraírja",
+   "Mert a revert egy új commitban alkalmazza a megadott commit ellentétes változtatását"
+  ],
+  "answer": 3,
+  "explanation": "A `git revert` az adott commit által bevezetett változtatásokat fordítja vissza egy új commitban, miközben a későbbi history megmarad. Ez különösen hasznos megosztott history esetén. A reset ezzel szemben a ref mozgatásával képes elrejteni későbbi commitokat a branch tipjéről."
+ },
+ {
+  "id": 158,
+  "level": "senior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "scenario",
+  "question": "Egy stashben külön szeretnéd megőrizni a staged és a working-tree állapotot, és később azt is szeretnéd megérteni, hogy a stash melyik komponense mit tartalmazott. Melyik Git-információs modell írja le helyesen a stash szerkezetét?",
+  "options": [
+   "A stash mindig pontosan egy blob objektum",
+   "A stash egyetlen branch ref, amely nem tartalmaz commitot",
+   "A stash commit objektumként reprezentálható, amelyhez a munkafa és az index állapotát reprezentáló további commitok is kapcsolódhatnak",
+   "A stash kizárólag a working-tree fájlok másolatait tárolja a `.git/stash` fájlban"
+  ],
+  "answer": 2,
+  "explanation": "A stash belsőleg commit objektumokat használ, és a tipikus stash struktúrában külön szülői kapcsolatok reprezentálják többek között a HEAD és az index állapotát. A stash így képes a working tree és a staging area állapotának ideiglenes megőrzésére. Az a modell, hogy a stash egyszerű fájlmásolat, elrejti a mögöttes Git objektumstruktúrát."
+ },
+ {
+  "id": 159,
+  "level": "senior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "production",
+  "question": "Egy hibajavítást egy release branchre szeretnél átvinni egy fejlesztési branchről, de a teljes fejlesztési branch még nem release-kész. Melyik megközelítés illeszkedik ehhez?",
+  "options": [
+   "A teljes fejlesztési branch merge-elése a release branchbe",
+   "A konkrét bugfix commit cherry-pickelése a release branchre",
+   "A release branch teljes rebase-elése a fejlesztési branchre",
+   "A teljes repository history resetelése a bugfix commitra"
+  ],
+  "answer": 1,
+  "explanation": "A cherry-pick lehetővé teszi egy konkrét commit változtatásainak új commitként történő alkalmazását egy másik branchen, így nem kell a teljes fejlesztési ágat integrálni. Ez gyakori hotfix vagy release backport esetén. A teljes branch merge-elése olyan, még nem release-kész változtatásokat is behozhatna, amelyekre nincs szükség."
+ },
+ {
+  "id": 160,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "scenario",
+  "question": "Egy nagy repositoryban egy adott commit pontos változtatásait szeretnéd megvizsgálni úgy, hogy a patch mellett a commit által módosított fájlok nevei és az alapvető metaadatok is láthatók legyenek. Melyik parancs a legközvetlenebb?",
+  "options": [
+   "`git show <commit>`",
+   "`git status <commit>`",
+   "`git branch --show-current <commit>`",
+   "`git reflog <commit>`"
+  ],
+  "answer": 0,
+  "explanation": "A `git show <commit>` alapértelmezés szerint megjeleníti a commit metaadatait és a hozzá kapcsolódó diffet, így közvetlenül vizsgálható, milyen változtatást vezetett be. A pontos formázás opciókkal tovább szabályozható. A `git status` a working tree és az index állapotát írja le, nem egy tetszőleges commit patchét."
+ },
+ {
+  "id": 161,
+  "level": "senior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "security",
+  "question": "Egy release tag eredetét és integritását szeretnéd kriptográfiailag ellenőrizhetővé tenni. Melyik megközelítés szolgál erre?",
+  "options": [
+   "Lightweight tag használata",
+   "Annotated tag létrehozása aláírás nélkül",
+   "Aláírt annotated tag létrehozása és az aláírás ellenőrzése",
+   "A tag branchnévként való használata"
+  ],
+  "answer": 2,
+  "explanation": "Az aláírt annotated tag kriptográfiai aláírást tartalmazhat, amely lehetővé teszi annak ellenőrzését, hogy a taghez tartozó adatok az adott kulccsal lettek-e aláírva és nem változtak-e meg. Ez erősebb eredet- és integritásellenőrzést ad, mint egy egyszerű lightweight tag. Az aláírás önmagában nem garantálja, hogy a release tartalma biztonságos vagy helyes, csak az aláírt adatok hitelességének ellenőrzésében segít."
+ },
+ {
+  "id": 162,
+  "level": "senior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Egy nagy csapat szeretné csökkenteni a hosszú életű feature branchek által okozott integrációs kockázatot, miközben a nem kész funkciókat még nem akarják minden felhasználó számára elérhetővé tenni. Melyik kombináció illeszkedik ehhez?",
+  "options": [
+   "Hosszú életű branchek és ritka merge-ek",
+   "Rövid életű branchek, gyakori integráció és feature flag-ek használata",
+   "Minden funkció közvetlen commitolása production branchre",
+   "A main branch rendszeres resetelése a release tagekre"
+  ],
+  "answer": 1,
+  "explanation": "A rövid életű branchek és a gyakori integráció csökkentheti a felhalmozódó divergenciát, míg a feature flag-ek lehetővé tehetik, hogy a még nem kész funkciók kódja integrálva legyen anélkül, hogy minden felhasználó számára aktiválódna. A két mechanizmus külön problémát kezel: az egyik az integrációt, a másik a runtime aktiválást."
+ },
+ {
+  "id": 163,
+  "level": "senior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "Egy pull request merge-elése után egy reviewer azt állítja, hogy egy korábbi commitra már nincs szükség, mert a teljes változtatás megjelent a merge eredményében. Miért nem helyes automatikusan törölni az ilyen commit objektumokat?",
+  "options": [
+   "Mert a commitok csak remote repositoryban létezhetnek",
+   "Mert a merge commit minden korábbi commitot fizikailag bemásol",
+   "Mert a Git commit objektumok nem tartalmaznak parent kapcsolatokat",
+   "Mert a commit history és az objektumok más refekből vagy reflogokból továbbra is elérhetők lehetnek"
+  ],
+  "answer": 3,
+  "explanation": "Egy merge nem másolja fizikailag új objektumba a korábbi commitokat; a merge commit parentként hivatkozhat a már létező commitokra. Emiatt ugyanazok az objektumok több historyból is elérhetők lehetnek, és reflogok is ideiglenesen fenntarthatják az elérhetőségüket. A PR bezárása vagy merge-elése önmagában nem jelent objektumtörlést."
+ },
+ {
+  "id": 164,
+  "level": "senior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "edgecase",
+  "question": "Egy csapat kötelező commit message formátumot akar ellenőrizni minden fejlesztő lokális repositoryjában. Melyik hook alkalmas közvetlenül a commit üzenetének validálására?",
+  "options": [
+   "`commit-msg`",
+   "`post-commit`",
+   "`pre-push`",
+   "`post-checkout`"
+  ],
+  "answer": 0,
+  "explanation": "A `commit-msg` hook a commit message fájl ellenőrzésére szolgál, ezért közvetlenül használható például ticketazonosító vagy meghatározott üzenetformátum validálására. A `pre-commit` inkább a commit létrehozása előtti tartalmi ellenőrzésekhez használatos. A client-side hookok önmagukban nem biztosítják, hogy egy szabály minden fejlesztőnél megkerülhetetlen legyen."
+ },
+ {
+  "id": 165,
+  "level": "senior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "behavior",
+  "question": "Egy repositoryban különböző operációs rendszereken dolgoznak fejlesztők, és egységes LF sorvégződést szeretnének a repositoryban, miközben a checkout viselkedését explicit módon szabályoznák. Melyik `.gitattributes` beállítás felel meg ennek leginkább?",
+  "options": [
+   "`* binary`",
+   "`* text eol=lf`",
+   "`* ignore=lf`",
+   "`* merge=lf`"
+  ],
+  "answer": 1,
+  "explanation": "A `text` attribútum szöveges fájlként kezeli a mintára illeszkedő fájlokat, az `eol=lf` pedig LF sorvégződést ír elő a working tree-ben. Ez explicit módon kezeli a sorvégződéseket, és segít elkerülni a platformok közötti eltéréseket. A bináris kezelés éppen a szöveges normalizáció elkerülésére szolgálna."
+ },
+ {
+  "id": 166,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "scenario",
+  "question": "Egy monorepo CI pipeline-jában csak egy adott alkönyvtárhoz tartozó teszteket és fájlokat szeretnéd hatékonyan checkoutolni, miközben a repository historyja továbbra is közös marad. Melyik megoldás kombinálható erre különösen jól?",
+  "options": [
+   "`git sparse-checkout` és szükség esetén partial clone",
+   "`git revert` és `git clean`",
+   "`git branch -D` és `git archive`",
+   "`git stash` és `git tag`"
+  ],
+  "answer": 0,
+  "explanation": "A sparse-checkout korlátozhatja, hogy mely útvonalak jelenjenek meg a working tree-ben, míg partial clone esetén a kliens bizonyos objektumokat csak szükség esetén tölthet le. Együtt különösen nagy monorepók CI környezetében csökkenthetik a szükséges lokális fájl- és objektumterhelést. Ezek nem választják szét a repository historyját külön repositorykra."
+ },
+ {
+  "id": 167,
+  "level": "senior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "recovery",
+  "question": "Egy `git reset --hard` után a branch korábbi tipjét már megtaláltad a reflogban, és azt szeretnéd biztosítani, hogy a recovery során létrehozott állapotnak legyen egy stabil, névvel elérhető refje. Mi a legegyszerűbb megoldás?",
+  "options": [
+   "`git clean -fd`",
+   "`git branch recovery <commit>`",
+   "`git reflog delete <commit>`",
+   "`git fsck --prune <commit>`"
+  ],
+  "answer": 1,
+  "explanation": "A `git branch recovery <commit>` egy új branch refet hoz létre a visszakeresett commiton, így az objektumot egy stabil névvel elérhetővé teszi. Ezután biztonságosan vizsgálható vagy tovább kezelhető anélkül, hogy kizárólag a reflog bejegyzésére támaszkodnál. A branch létrehozása nem módosítja az eredeti branch aktuális tipjét."
+ },
+ {
+  "id": 168,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Miért lehet gyorsabb egy Git history művelet commit-graph használatával nagy repositoryban?",
+  "options": [
+   "Mert a commit-graph a teljes working tree fájljait előre tömöríti",
+   "Mert minden commit tartalmát egyetlen blobba másolja",
+   "Mert a commitok közötti gráfkapcsolatokból származó információkat hatékony, előre kiszámított formában tárolhatja",
+   "Mert automatikusan törli a már nem használt brancheket"
+  ],
+  "answer": 2,
+  "explanation": "A commit-graph olyan előre kiszámított gráfinformációkat tárolhat, amelyek segítik a Git history- és reachability-műveleteit. Emiatt kevesebb gráfbejárásra lehet szükség bizonyos számítások során. Nem a working tree tömörítését vagy branch-ek automatikus törlését végzi."
+ },
+ {
+  "id": 169,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "performance",
+  "question": "Egy nagyon nagy repositoryban a Git indexének mérete és frissítési költsége jelentős. Melyik megoldás csökkentheti az index változatlan részének minden módosításkor történő teljes újraírását?",
+  "options": [
+   "Sparse checkout",
+   "Split index",
+   "Rebase",
+   "Shallow clone"
+  ],
+  "answer": 1,
+  "explanation": "A split index a változatlan indexrészt shared indexben tarthatja, míg a lokális indexben főként a változások maradnak. Ez bizonyos nagy repositorykban csökkentheti az index frissítésének költségét. A sparse-checkout a working tree útvonalait korlátozza, a shallow clone pedig a history mélységét csökkenti; egyik sem ugyanazt a problémát célozza."
+ },
+ {
+  "id": 170,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "Egy konfliktusos merge során szeretnéd pontosan megvizsgálni a konfliktusos fájl három indexbeli stage-változatát. Melyik Git mechanizmus teszi ezt lehetővé?",
+  "options": [
+   "`git ls-files -u`",
+   "`git branch --conflicts`",
+   "`git show --stages`",
+   "`git merge --inspect`"
+  ],
+  "answer": 0,
+  "explanation": "A `git ls-files -u` a konfliktusos indexbejegyzéseket jeleníti meg, beleértve a különböző stage-ekhez tartozó blobokat. Ezekből külön vizsgálható az ours, theirs és a közös ancestor változata. Ez mélyebb hibakeresésnél hasznos, amikor a munkafa fájljának aktuális tartalma önmagában nem elég az index állapotának megértéséhez."
+ },
+ {
+  "id": 171,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "edgecase",
+  "question": "Egy rebase során egy commitot a Git üresnek talál, mert a változtatása már más módon bekerült az új base-be. Mi történhet a rebase folyamatban?",
+  "options": [
+   "A Git kötelezően létrehoz egy üres merge commitot",
+   "A commit automatikusan taggé alakul",
+   "A Git automatikusan visszaállítja a régi base-t",
+   "A commit kihagyható, mert nincs új változtatás, amelyet alkalmazni kellene"
+  ],
+  "answer": 3,
+  "explanation": "Ha egy commit változtatása már jelen van az új base-ben, annak újraalkalmazása eredményezhet üres commitot. Ilyen helyzetben a Git a commit kihagyását javasolhatja vagy lehetővé teheti, és a rebase folytatható a következő commitokkal. Az üres eredmény nem jelenti automatikusan merge commit létrehozását."
+ },
+ {
+  "id": 172,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "production",
+  "question": "Egy shared branchre historyt átíró force push helyett olyan megoldást szeretnél, amely csak akkor engedi az átírást, ha a remote ref még azon az állapoton van, amelyet a lokális remote-tracking ref alapján vársz. Melyik mechanizmus a megfelelő?",
+  "options": [
+   "`git push --force`",
+   "`git push --force-with-lease`",
+   "`git push --delete`",
+   "`git push --tags`"
+  ],
+  "answer": 1,
+  "explanation": "A `--force-with-lease` feltételhez köti a nem-fast-forward frissítést, így védelmet adhat az ellen, hogy egy másik fejlesztő időközben felpusholt változtatásait vakon felülírd. A sima `--force` nem ugyanilyen módon ellenőrzi a remote állapotát. Shared branch esetén azonban még a lease sem helyettesíti az együttműködési szabályokat."
+ },
+ {
+  "id": 173,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "recovery",
+  "question": "Egy rebase után rájössz, hogy a branch új historyja nem megfelelő, és a rebase előtti HEAD állapothoz szeretnél visszatérni. Melyik megoldás lehet közvetlenül használható, ha az `ORIG_HEAD` még a kívánt állapotot tartalmazza?",
+  "options": [
+   "`git reset --hard ORIG_HEAD`",
+   "`git revert ORIG_HEAD`",
+   "`git restore --source=ORIG_HEAD --branch`",
+   "`git branch --delete ORIG_HEAD`"
+  ],
+  "answer": 0,
+  "explanation": "Ha az `ORIG_HEAD` a rebase előtti kívánt HEAD-re mutat, a `git reset --hard ORIG_HEAD` visszaállítja az aktuális branch refjét erre az állapotra, és a working tree-t is ehhez igazítja. Ezért előtte ellenőrizni kell, hogy nincs-e megőrzendő lokális módosítás. A revert más célt szolgálna: új commitban fordítaná vissza egy commit változtatásait."
+ },
+ {
+  "id": 174,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "Egy regressziót szeretnél automatizáltan megtalálni, és már rendelkezel egy olyan script-tel, amely exit code alapján eldönti, hogy egy commit good vagy bad. Melyik Git funkció teszi lehetővé a teszt automatizálását a bisect folyamatban?",
+  "options": [
+   "`git bisect run <script>`",
+   "`git blame --run <script>`",
+   "`git log --test <script>`",
+   "`git reflog --run <script>`"
+  ],
+  "answer": 0,
+  "explanation": "A `git bisect run <script>` minden kiválasztott commiton lefuttatja a megadott parancsot, és annak exit code-ja alapján próbálja meghatározni, hogy az adott állapot good vagy bad. Ez automatizálhatja a regressziókeresést, ha a teszt determinisztikusan jelzi az eredményt. A scriptnek megfelelő exit code-konvenciót kell követnie ahhoz, hogy a bisect helyesen értelmezze az eredményt."
+ },
+ {
+  "id": 175,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "production",
+  "question": "Egy production buildben egy submodule pontos, tesztelt állapotát szeretnéd reprodukálhatóan használni, miközben a submodule saját remote branchén később újabb commitok jelennek meg. Mi biztosítja leginkább a build determinisztikus submodule-állapotát?",
+  "options": [
+   "A submodule remote branch aktuális tipjének automatikus követése minden buildben",
+   "A submodule könyvtár helyi fájlnevének rögzítése",
+   "A superproject által rögzített submodule commit, amelyet a build checkoutol",
+   "A submodule utolsó commitjának reflogja"
+  ],
+  "answer": 2,
+  "explanation": "A superproject gitlinkként egy konkrét submodule commitot rögzít, így ugyanaz a superproject commit ugyanahhoz a submodule állapothoz köthető. A submodule remote branchének későbbi változásai önmagukban nem módosítják ezt a rögzített gitlinket. Ez biztosítja a reprodukálható build alapját, feltéve hogy a hivatkozott commit továbbra is elérhető."
+ },
+ {
+  "id": 176,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "edgecase",
+  "question": "Egy Git repozitóriumban két különböző commit ugyanarra a blob objektumra hivatkozik, mert egy fájl tartalma byte-ról byte-ra megegyezik. Mi történik az objektumtárolás szempontjából?",
+  "options": [
+   "Git alapértelmezés szerint egyetlen közös blob objektumot tárolhat mindkét fájlhoz.",
+   "Git minden fájlnévhez külön blobot hoz létre.",
+   "A blob csak akkor osztható meg, ha a fájlnevek is azonosak.",
+   "A blob objektumot Git csak commitok között tudja megosztani, fájlok között nem."
+  ],
+  "answer": 0,
+  "explanation": "A Git blob objektum a fájl tartalmát azonosítja, nem a fájlnevét vagy elérési útját. Ha két fájl tartalma azonos, ugyanarra a blob objektumra hivatkozhatnak, így a tartalom nem szükségszerűen kerül többször eltárolásra. A megtévesztő feltételezés az, hogy minden fájlhoz külön objektum tartozik, miközben a fájlnév és az objektumtartalom külön rétegben jelenik meg."
+ },
+ {
+  "id": 177,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "behavior",
+  "question": "Egy fájlt módosítasz, majd `git add` után újabb módosítást végzel ugyanazon a fájlon. Mit fog tartalmazni egy ezután végrehajtott `git commit`, ha nem futtatod újra a `git add` parancsot?",
+  "options": [
+   "Mindkét módosítást, mert Git mindig a working tree aktuális állapotát commitolja.",
+   "Csak az első, már staged állapotba került módosítást.",
+   "Csak a második módosítást, mert az mindig felülírja a staging area tartalmát.",
+   "Egyik módosítást sem, mert a fájl kétszer módosult."
+  ],
+  "answer": 1,
+  "explanation": "A commit alapvetően a staging area tartalmát rögzíti. Az első `git add` után bekerült változás staged marad, míg a későbbi módosítás csak a working tree-ben jelenik meg, ezért az újabb módosítást külön kell stage-elni. A megtévesztő feltételezés az, hogy a commit mindig a fájl legfrissebb teljes állapotát veszi alapul."
+ },
+ {
+  "id": 178,
+  "level": "senior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "scenario",
+  "question": "Egy régi commitból szeretnél új ágat létrehozni úgy, hogy a jelenlegi branch állapota és a working tree változatlan maradjon. Melyik megközelítés alkalmas erre?",
+  "options": [
+   "`git reset --hard <commit>`",
+   "`git switch --detach <commit>`",
+   "`git branch recovery <commit>`",
+   "`git merge <commit>`"
+  ],
+  "answer": 2,
+  "explanation": "A `git branch recovery <commit>` létrehoz egy új branchet a megadott commitra mutatva, miközben nem vált át erre a branchre, és nem módosítja a jelenlegi working tree állapotát. Ez különösen hasznos történelmi állapotokból való biztonságos kiindulópont létrehozására. A megtévesztő alternatíva a detached HEAD állapot, amely ugyan elérhetővé teszi a commitot, de nem hoz létre automatikusan stabil branch referenciát."
+ },
+ {
+  "id": 179,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "Egy merge során Git konfliktust jelez, de a konfliktusos fájl végleges tartalmát már kézzel elkészítetted. Mi szükséges ahhoz, hogy Git a konfliktust feloldottnak tekintse?",
+  "options": [
+   "`git commit --amend`",
+   "`git merge --continue`",
+   "`git reset --hard HEAD`",
+   "A konfliktusos fájlt hozzá kell adni a staging area-hoz, például `git add file.txt` paranccsal."
+  ],
+  "answer": 3,
+  "explanation": "A konfliktus feloldása után a fájl végleges tartalmát staged állapotba kell helyezni, például `git add file.txt` segítségével. Ezzel Git indexben rögzíti, hogy az adott fájlt már feloldottnak tekinted, és a merge folytatható. A megtévesztő feltételezés az, hogy a konfliktusjelölők kézi eltávolítása önmagában elegendő, de Gitnek az index állapotából is tudnia kell, hogy a konfliktus rendezve van."
+ },
+ {
+  "id": 180,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "production",
+  "question": "Egy feature branchet újra szeretnél alapozni a `main` aktuális állapotára, de előtte szeretnéd elkerülni, hogy egy véletlenül nem commitolt working-tree módosítás problémát okozzon. Melyik megközelítés a legbiztonságosabb?",
+  "options": [
+   "A nem commitolt módosításokat előbb commitolod vagy stash-eled, majd lefuttatod a rebase-t.",
+   "`git rebase --hard main`",
+   "`git reset --merge main`",
+   "A rebase automatikusan minden nem commitolt változást biztonságosan megőriz."
+  ],
+  "answer": 0,
+  "explanation": "A rebase előtt érdemes a working tree-t tiszta állapotba hozni, például a módosítások commitolásával vagy stash-elésével. Így a rebase által végrehajtott commit-átjátszás nem ütközik a lokális változásokkal, és kisebb a véletlen adatvesztés kockázata. A megtévesztő feltételezés az, hogy a rebase minden working-tree módosítást automatikusan megőriz, pedig a nem commitolt változások bizonyos helyzetekben blokkolhatják a műveletet."
+ },
+ {
+  "id": 181,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "output",
+  "question": "Egy remote-ról már korábban fetch-eltél, majd a remote-on töröltek egy branchet. Melyik parancs segít a lokális remote-tracking refekből eltávolítani azokat, amelyek már nem léteznek a remote-on?",
+  "options": [
+   "`git fetch --all`",
+   "`git fetch --prune`",
+   "`git pull --delete`",
+   "`git remote reset`"
+  ],
+  "answer": 1,
+  "explanation": "A `git fetch --prune` a fetch során eltávolítja azokat a remote-tracking refeket, amelyeknek már nincs megfelelő refjük a távoli repozitóriumban. Ez segít elkerülni az elavult `origin/*` branchek felhalmozódását. A megtévesztő feltételezés az, hogy egy normál fetch automatikusan minden lokális remote-tracking refet töröl, de a pruning külön viselkedés."
+ },
+ {
+  "id": 182,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "edgecase",
+  "question": "Egy már publikált commitot szeretnél visszavonni úgy, hogy a branch történetében maga az eredeti commit továbbra is látható maradjon. Melyik megoldás felel meg ennek?",
+  "options": [
+   "`git reset --hard HEAD~1`",
+   "`git restore --source=HEAD~1 .`",
+   "`git revert <commit>`",
+   "`git branch --delete <commit>`"
+  ],
+  "answer": 2,
+  "explanation": "A `git revert <commit>` egy új commitot hoz létre, amely megfordítja a kiválasztott commit hatását, miközben az eredeti commit a történet része marad. Ezért alkalmas publikált történelem biztonságos visszavonására. A megtévesztő alternatívák közül a reset a branch mutatóját mozgatja, a restore pedig fájlok állapotát módosítja, nem pedig egy új történeti visszavonó commitot készít."
+ },
+ {
+  "id": 183,
+  "level": "senior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "behavior",
+  "question": "Mi a különbség a `git stash apply` és a `git stash pop` között sikeres alkalmazás esetén?",
+  "options": [
+   "Az `apply` alkalmazza a stash-t és eltávolítja azt, míg a `pop` csak megjeleníti.",
+   "Az `apply` csak staged változásokat alkalmaz, a `pop` minden változást.",
+   "Az `apply` új stash-t készít, a `pop` pedig branch-et.",
+   "Az `apply` alkalmazza a stash-t, de megtartja a stash bejegyzést; a `pop` sikeres alkalmazás után eltávolítja azt."
+  ],
+  "answer": 3,
+  "explanation": "A `git stash apply` visszaállítja a stash-ben tárolt változásokat, de magát a stash bejegyzést megtartja. A `git stash pop` szintén alkalmazza a változásokat, és sikeres alkalmazás után eltávolítja a stash bejegyzést. A megtévesztő feltételezés az, hogy a két parancs csak eltérő szintaxist jelent, miközben a stash életciklusa különbözik."
+ },
+ {
+  "id": 184,
+  "level": "senior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "debug",
+  "question": "Egy `git cherry-pick <commit>` konfliktussal áll meg. A konfliktusokat feloldottad és a fájlokat staged állapotba tetted. Mi a következő megfelelő lépés?",
+  "options": [
+   "`git cherry-pick --continue`",
+   "`git cherry-pick --abort`",
+   "`git cherry-pick --skip`",
+   "`git commit --amend --no-edit`"
+  ],
+  "answer": 0,
+  "explanation": "Konfliktusos cherry-pick során a konfliktusok feloldása és az érintett fájlok stage-elése után a `git cherry-pick --continue` folytatja a megszakadt műveletet. Az abort a teljes cherry-picket visszavonja, míg a skip az aktuális commit kihagyására szolgál. A megtévesztő lehetőség az önálló commit, mert technikailag lehet commitot létrehozni, de az aktív cherry-pick állapot kezelésére a continue parancs szolgál."
+ },
+ {
+  "id": 185,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "performance",
+  "question": "Egy nagyon nagy repozitóriumban gyakran szeretnéd gyorsan megvizsgálni, hogy egy adott commit őse-e egy másik commitnak. Melyik Git-mechanizmus kifejezetten segíthet az ilyen gráf-alapú lekérdezések gyorsításában?",
+  "options": [
+   "`.gitignore`",
+   "Commit-graph",
+   "Stash index",
+   "Lightweight tag"
+  ],
+  "answer": 1,
+  "explanation": "A commit-graph előre kiszámított információkat tárol a commitgráfról, például generációs adatokat, amelyek bizonyos ancestry és reachability műveleteket gyorsíthatnak. Nagy repozitóriumokban ez jelentős teljesítményelőnyt adhat. A megtévesztő feltételezés az, hogy a branch vagy tag struktúrája önmagában gyorsítja az őskapcsolatok vizsgálatát, miközben a commit-graph kifejezetten erre optimalizált infrastruktúra."
+ },
+ {
+  "id": 186,
+  "level": "senior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "scenario",
+  "question": "Egy release-t pontosan azonosítható Git-objektumhoz szeretnél rögzíteni, és a release-hez nevet, üzenetet és további metaadatot is szeretnél tárolni. Melyik megoldás illik ehhez?",
+  "options": [
+   "Lightweight tag",
+   "Remote-tracking branch",
+   "Annotated tag",
+   "Stash entry"
+  ],
+  "answer": 2,
+  "explanation": "Az annotated tag önálló Git-objektumként tárolja a tag nevét, célobjektumát, üzenetét és további metaadatait, például a tagger adatait. Ezért alkalmas release-ek tartós és dokumentált megjelölésére. A megtévesztő lightweight tag egyszerű refként működik, ezért nem rendelkezik ugyanezzel a tagobjektum-szintű metaadattal."
+ },
+ {
+  "id": 187,
+  "level": "senior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Egy csapat azt szeretné, hogy a `main` branch lehetőleg mindig integrálható és telepíthető állapotban maradjon, miközben nagyobb funkciók fejlesztése több héten át tart. Melyik technika segíthet ennek elérésében?",
+  "options": [
+   "Hosszú életű feature branchek összeolvasztása csak a fejlesztés végén.",
+   "A teljes funkció kódjának lokálisan tartása a merge után is.",
+   "Minden fejlesztés közvetlen commitolása a production branchre.",
+   "Inkrementális, gyakori integráció feature flag-ek segítségével."
+  ],
+  "answer": 3,
+  "explanation": "A feature flag lehetővé teszi, hogy a kód korábban bekerüljön az integrált branchbe anélkül, hogy a még készülő funkció minden felhasználó számára aktívvá válna. A gyakori, kisebb integráció csökkenti a hosszú ideig divergáló branchek közötti integrációs kockázatot. A megtévesztő hosszú életű branch stratégia rövid távon elszigeteli a munkát, de nagyobb integrációs különbségeket halmozhat fel."
+ },
+ {
+  "id": 188,
+  "level": "senior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "Egy pull request review-ja során a reviewer olyan változást lát, amely nem kapcsolódik a PR céljához, és nehéz ellenőrizni, hogy valóban szükséges-e. Melyik gyakorlat segít leginkább a review hatékonyságán?",
+  "options": [
+   "A PR scope-jának szűkítése, és a nem kapcsolódó változások külön kezelése.",
+   "Minden változás egyetlen nagy PR-ba történő összevonása.",
+   "A reviewer számára a commit history teljes elrejtése.",
+   "A review teljes elhagyása, ha a kód lefordul."
+  ],
+  "answer": 0,
+  "explanation": "A fókuszált PR megkönnyíti annak ellenőrzését, hogy a változások valóban a célhoz kapcsolódnak-e, és csökkenti a review során feldolgozandó információ mennyiségét. A nem kapcsolódó refaktorokat vagy javításokat külön változásként érdemes kezelni, ha erre van lehetőség. A megtévesztő nagy PR elsőre hatékonyabbnak tűnhet, mert kevesebb review-t eredményez, de jelentősen növelheti az ellenőrzés komplexitását."
+ },
+ {
+  "id": 189,
+  "level": "senior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "production",
+  "question": "Egy központi Git szerveren szeretnéd megakadályozni, hogy bizonyos szabályokat megszegő pushok bekerüljenek a repozitóriumba. Melyik hook alkalmas erre a szerveroldalon?",
+  "options": [
+   "`post-commit`",
+   "`pre-commit`",
+   "`pre-receive`",
+   "`post-checkout`"
+  ],
+  "answer": 2,
+  "explanation": "A `pre-receive` szerveroldali hook a push elfogadása előtt fut, és lehetővé teszi a beérkező refváltozások ellenőrzését és szükség esetén elutasítását. Ez alkalmas központi policy-k kikényszerítésére. A kliensoldali hookok, például a pre-commit, önmagukban nem tekinthetők megbízható központi enforcement mechanizmusnak, mert a fejlesztő lokálisan megkerülheti őket."
+ },
+ {
+  "id": 190,
+  "level": "senior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "edgecase",
+  "question": "Egy fájl már tracked állapotban van, majd bekerül a `.gitignore` fájlba. Mi történik alapértelmezés szerint?",
+  "options": [
+   "Git automatikusan törli a fájlt a repository követéséből.",
+   "A fájl tracked marad, és a `.gitignore` nem távolítja el automatikusan a követésből.",
+   "A következő commit automatikusan törli a fájlt a repositoryból.",
+   "A fájl azonnal átkerül a stash-be."
+  ],
+  "answer": 1,
+  "explanation": "A `.gitignore` elsősorban a nem tracked fájlok figyelmen kívül hagyására szolgál. Egy már követett fájlt nem távolít automatikusan a repository indexéből csak azért, mert később bekerül az ignore szabályba. A megtévesztő feltételezés az, hogy az ignore szabály minden további Git-műveletből kizárja a fájlt, függetlenül attól, hogy korábban már tracked volt."
+ },
+ {
+  "id": 191,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "edgecase",
+  "question": "Egy superproject commitja egy submodule egy konkrét commitjára hivatkozik. Mi történik, ha a submodule remote branchén később új commitok jelennek meg?",
+  "options": [
+   "A superproject automatikusan az új commitokra vált.",
+   "A superproject következő commitja nélkül is minden checkout az új branch headet használja.",
+   "A superproject által rögzített gitlink továbbra is az eredeti konkrét commitra mutat.",
+   "A submodule automatikusan beolvad a superproject történetébe."
+  ],
+  "answer": 2,
+  "explanation": "A superproject egy gitlink segítségével egy konkrét submodule commitot rögzít. A remote branch későbbi változásai önmagukban nem módosítják ezt a hivatkozást, ezért ugyanaz a superproject commit ugyanazt a submodule állapotot azonosítja. A megtévesztő feltételezés az, hogy a submodule automatikusan követi a remote branch legújabb állapotát, pedig a superproject commitja explicit módon rögzíti a gitlinket."
+ },
+ {
+  "id": 192,
+  "level": "senior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "recovery",
+  "question": "Egy lokális branch korábbi állapotát szeretnéd megtalálni, miután a branch mutatóját átmozgattad. Melyik parancsot használhatod a branch korábbi refértékeinek megtekintésére?",
+  "options": [
+   "`git reflog show <branch>`",
+   "`git remote show <branch>`",
+   "`git branch --history <branch>`",
+   "`git log --refs-only <branch>`"
+  ],
+  "answer": 0,
+  "explanation": "A `git reflog show <branch>` megmutatja az adott branch refjének korábbi értékeit, amelyek segítségével például egy reset vagy rebase előtti állapot visszakereshető. A reflog lokális mechanizmus, és a bejegyzések megőrzése konfigurációtól és garbage collectiontől is függ. A megtévesztő feltételezés az, hogy a normál `git log` minden korábbi branchmutatót megőriz, miközben az elsősorban a commitgráf történetét mutatja."
+ },
+ {
+  "id": 193,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Melyik állítás írja le helyesen a Git objektumazonosítás alapelvét?",
+  "options": [
+   "Egy objektum azonosítója kizárólag a fájl nevétől függ.",
+   "A commit SHA csak a commit üzenetéből származik.",
+   "A Git minden objektumhoz véletlenszerű, tartós azonosítót generál.",
+   "Az objektumazonosító az objektum típusához, méretéhez és tartalmához kapcsolódó hash alapján származik."
+  ],
+  "answer": 3,
+  "explanation": "A Git tartalomcímezett objektumtárolást használ: az objektumazonosító a megfelelő objektumtípus, méret és tartalom alapján képzett hash-hez kötődik. Emiatt ugyanaz a tartalom ugyanabban a típusban ugyanazt az objektumazonosítót eredményezheti. A megtévesztő feltételezés az, hogy Git véletlenszerű ID-kat oszt ki, mint egy hagyományos adatbázis, miközben az objektumazonosítás tartalomhoz kötött."
+ },
+ {
+  "id": 194,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "production",
+  "question": "Egy nagyon nagy repozitóriumban a Git indexének kezelése jelentős teljesítményköltséget okoz. Melyik Git-funkció kifejezetten az index újraírásának költségét próbálja csökkenteni?",
+  "options": [
+   "Shallow clone",
+   "Split index",
+   "Annotated tag",
+   "Reflog expiration"
+  ],
+  "answer": 1,
+  "explanation": "A split index lehetővé teszi, hogy az index viszonylag változatlan része egy megosztott base indexben maradjon, miközben a változások egy kisebb split indexben jelennek meg. Ez különösen sok tracked fájlt tartalmazó repozitóriumokban csökkentheti az index kezelési költségét. A megtévesztő shallow clone a repository történetének mélységét csökkenti, de nem az index újraírásának problémáját célozza."
+ },
+ {
+  "id": 195,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "edgecase",
+  "question": "Egy visszatérően ugyanúgy felmerülő merge konfliktust több alkalommal kézzel feloldottál. Melyik Git-funkció képes bizonyos korábbi konfliktusfeloldásokat rögzíteni és később újra felhasználni?",
+  "options": [
+   "`git rerere`",
+   "`git reflog`",
+   "`git bisect`",
+   "`git clean`"
+  ],
+  "answer": 0,
+  "explanation": "A `git rerere` a korábban feloldott konfliktusok eredményeit képes rögzíteni, és ha később ugyanaz vagy nagyon hasonló konfliktushelyzet jelenik meg, megpróbálhatja automatikusan alkalmazni a korábbi megoldást. Ez különösen hasznos lehet ismételt merge vagy rebase műveleteknél. A megtévesztő reflog a branch refek korábbi állapotait követi, nem konfliktusfeloldásokat tárol."
+ },
+ {
+  "id": 196,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "production",
+  "question": "Egy feature branch commitjai között több olyan \"fixup\" commit van, amelyeket a megfelelő korábbi commitokba szeretnél automatikusan beolvasztani rebase során. Melyik megoldás támogatja ezt?",
+  "options": [
+   "`git rebase --autosquash`",
+   "`git merge --squash-only`",
+   "`git reset --fixup`",
+   "`git cherry-pick --autosquash`"
+  ],
+  "answer": 0,
+  "explanation": "A `git rebase --autosquash` felismeri a megfelelő `fixup!` és `squash!` commitokat, és a rebase során a célcommitokhoz rendezi őket a megfelelő összevonáshoz. Ez kényelmes módja a fejlesztés közben létrehozott javító commitok rendezésének. A megtévesztő lehetőség azért tűnhet megfelelőnek, mert a squash hasonló célt szolgálhat, de az autosquash kifejezetten rebase-folyamat részeként működik."
+ },
+ {
+  "id": 197,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "algorithm",
+  "question": "Egy Git remote konfigurációjában melyik beállítás határozza meg, hogy egy `fetch` milyen remote refeket milyen lokális refekre képezzen le?",
+  "options": [
+   "`remote.<name>.url`",
+   "`branch.<name>.merge`",
+   "`remote.<name>.fetch`",
+   "`push.default`"
+  ],
+  "answer": 2,
+  "explanation": "A `remote.<name>.fetch` konfigurációs beállítás refspec-eket tartalmaz, amelyek meghatározzák, hogy a remote-ról lekért refek milyen lokális remote-tracking refekre kerüljenek. A `remote.<name>.url` elsősorban a remote címét határozza meg, míg a branch és push beállítások más műveletekhez kapcsolódnak. A megtévesztő feltételezés az, hogy a remote URL önmagában meghatározza a leképezést, de az URL és a refspec külön fogalom."
+ },
+ {
+  "id": 198,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "scenario",
+  "question": "Egy `git reset --hard` után rájössz, hogy szükséged van a reset előtti branch tipre, és a reflogban megtaláltad a megfelelő commitot. Mi a biztonságosabb első lépés a helyreállított állapot megőrzésére?",
+  "options": [
+   "Azonnal futtasd a `git gc --prune=now` parancsot.",
+   "Hozz létre egy új stabil refet, például `git branch recovery <commit>` paranccsal.",
+   "Töröld a reflogot, hogy ne legyen több régi állapot.",
+   "Futtass egy újabb `git reset --hard` parancsot egy tetszőleges commitra."
+  ],
+  "answer": 1,
+  "explanation": "A recovery branch létrehozása stabil refet biztosít a megtalált commit számára, így a helyreállítandó állapot nem csak egy lejárható reflog-bejegyzéstől függ. Ezután biztonságosan megvizsgálható vagy visszaállítható a szükséges állapot. A megtévesztő cleanup megoldások azért tűnhetnek hasznosnak, mert Git objektumkezelésével kapcsolatosak, de ebben a helyzetben éppen a megtalált commit megőrzése a cél."
+ },
+ {
+  "id": 199,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "Egy regressziót egy több ezer commitot tartalmazó történetben keresel. Miért hatékony a `git bisect` alapvető megközelítése?",
+  "options": [
+   "Minden commitot időrendben egymás után tesztel.",
+   "Csak a merge commitokat vizsgálja.",
+   "A keresési tartományt ismételten körülbelül felére csökkenti egy jó és egy rossz állapot alapján.",
+   "Csak a commit üzenetekben keres hibakulcsszavakat."
+  ],
+  "answer": 2,
+  "explanation": "A `git bisect` bináris keresési stratégiát használ: egy ismerten jó és egy ismerten rossz commit között köztes commitokat tesztel, majd az eredmény alapján a keresési tartomány egyik felét elveti. Emiatt nagyszámú commit esetén jóval kevesebb teszt szükséges, mint lineáris keresésnél. A megtévesztő feltételezés az, hogy a bisect szövegesen elemzi a commit üzeneteket, pedig a regresszió viselkedését használja a keresés irányítására."
+ },
+ {
+  "id": 200,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "production",
+  "question": "Egy CI pipeline egy nagy monorepóból csak egyetlen komponenshez tartozó fájlokat és objektumokat szeretne a lehető legkisebb mennyiségben letölteni és checkoutolni. Melyik kombináció szolgálhat erre?",
+  "options": [
+   "`git sparse-checkout` és partial clone használata.",
+   "Csak `git clean -fd` használata a teljes clone után.",
+   "Csak annotated tagek használata.",
+   "Minden komponenshez külön stash létrehozása."
+  ],
+  "answer": 0,
+  "explanation": "A sparse-checkout a working tree-ben materializált útvonalakat korlátozza, míg a partial clone lehetővé teszi, hogy bizonyos Git-objektumokat ne kelljen azonnal letölteni. Együtt jelentősen csökkenthetik egy megfelelően kialakított monorepo CI-folyamat kezdeti költségét. A megtévesztő `git clean` megoldás azért tűnhet hasznosnak, mert eltávolít fájlokat a working tree-ből, de a már letöltött Git-objektumokat nem takarítja meg."
+ }
+]

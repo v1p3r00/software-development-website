@@ -1,0 +1,2742 @@
+### Q1
+LEVEL: junior
+TOPIC: Injection
+TYPE: theory
+QUESTION: Egy Java alkalmazásban a felhasználó által megadott `username` értéket közvetlenül egy SQL lekérdezésbe fűzik. Melyik megoldás csökkenti közvetlenül az SQL injection kockázatát?
+A) Az input HTML escapingje
+B) Paraméterezett SQL lekérdezés használata
+C) Az adatbázis kapcsolat HTTPS-re cserélése
+D) A jelszó mező hosszának növelése
+ANSWER: B
+EXPLANATION: A paraméterezett lekérdezésben az SQL struktúrája és a felhasználói adat külön paraméterként kerül kezelésre, ezért az input nem tud egyszerűen SQL kóddá válni. A HTML escaping más kontextus, például HTML/XSS ellen használható, nem SQL injection ellen. Az adatbázis-kapcsolat titkosítása és a jelszóhossz növelése nem akadályozza meg az SQL lekérdezés manipulációját. A HTML escaping azért csábító, mert általános "escape input" megoldásnak tűnhet, de minden output/input kontextushoz más biztonsági mechanizmus szükséges.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: XSS
+TYPE: output
+QUESTION: Egy weboldal az alábbi kódot használja. Ha a `name` értéke `<img src=x onerror=alert(1)>`, mi történik?
+CODE:
+const name = new URLSearchParams(location.search).get("name");
+document.getElementById("welcome").innerHTML = "Hello " + name;
+ENDCODE
+A) A böngésző automatikusan szöveggé alakítja az `<img>` taget
+B) A CSP minden esetben megakadályozza az eseménykezelő futását
+C) A böngésző DOM-elemként értelmezheti az `<img>` taget, és az `onerror` esemény futtathat JavaScriptet
+D) A kód csak akkor veszélyes, ha az adatbázisban is tárolják a `name` értéket
+ANSWER: C
+EXPLANATION: Az `innerHTML` HTML-ként parse-olja a behelyezett stringet. Az `<img src=x>` elem létrejöhet, a hibás képbetöltés pedig kiválthatja az `onerror` eseményt, amely JavaScriptet futtat. A DOM-alapú XSS-hez nincs szükség adatbázisra. Egy megfelelően konfigurált CSP csökkentheti bizonyos XSS payloadok hatását, de nem helyes abból kiindulni, hogy minden CSP minden inline eseménykezelőt engedélyez vagy blokkol. Azért csábító azt gondolni, hogy a böngésző automatikusan szövegként kezeli az inputot, mert az input eredetileg URL-paraméterként érkezik, de az `innerHTML` megváltoztatja a feldolgozási kontextust.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: Authentication & password storage
+TYPE: theory
+QUESTION: Hogyan érdemes egy webalkalmazásban a felhasználói jelszavakat tárolni?
+A) Erős, modern password-hashing algoritmussal, például Argon2id-del, egyedi salt használatával
+B) SHA-256-tal salt nélkül
+C) AES-256-tal egy közös, alkalmazásba égetett kulccsal
+D) Base64 kódolással
+ANSWER: A
+EXPLANATION: A jelszavakat dedikált password-hashing algoritmussal, például Argon2id-del, megfelelő paraméterezéssel és egyedi saltokkal kell tárolni. A salt megakadályozza, hogy azonos jelszavak azonos hashhez vezessenek, a költséges hashing pedig lassítja a tömeges offline próbálkozásokat. A SHA-256 túl gyors erre a célra, az AES visszafejthető titkosítás, a Base64 pedig egyáltalán nem biztonsági védelem. Azért csábító a SHA-256 használata, mert kriptográfiailag erős hashként ismert, de a jelszóhashingnél a számítási költség is alapvető követelmény.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: CSRF
+TYPE: scenario
+QUESTION: Egy hagyományos session cookie-t használó webalkalmazásban a böngésző automatikusan elküldi a cookie-t a banki átutalást végző POST kéréshez. Miért jelenthet ez CSRF kockázatot?
+A) Mert a cookie-kat mindig titkosítatlanul továbbítják
+B) Mert a POST kérések nem tartalmazhatnak session cookie-t
+C) Mert a CSRF kizárólag GET kérések ellen működik
+D) Mert egy másik oldal ráveheti a böngészőt olyan kérés küldésére, amelyhez a böngésző automatikusan hozzáadja a session cookie-t
+ANSWER: D
+EXPLANATION: A CSRF lényege, hogy egy támadó oldal egy áldozat böngészőjét egy másik origin felé irányuló állapotmódosító kérés elküldésére próbálja rávenni, miközben a böngésző a megfelelő cookie-kat automatikusan csatolhatja. Védekezés lehet például CSRF token, megfelelő `SameSite` cookie-beállítás és origin ellenőrzés. A POST önmagában nem jelent CSRF-védelmet. Azért csábító a POST-ot önmagában biztonságosnak tekinteni, mert nem látható az adat az URL-ben, de a CSRF nem az URL láthatóságáról szól.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: Sessions & JWT
+TYPE: trap
+QUESTION: Egy szerver JWT access tokent ad a kliensnek. Melyik állítás helyes a JWT-ről?
+A) A JWT payloadja alapértelmezés szerint titkosított
+B) A JWT aláírása biztosítja, hogy a token tartalma ne legyen módosítható érvényes aláírás nélkül, de önmagában nem rejti el a payloadot
+C) A JWT automatikusan visszavonható minden kliensoldali böngészőből
+D) A JWT használata miatt nincs szükség HTTPS-re
+ANSWER: B
+EXPLANATION: A tipikus JWT JWS formátumú token, amelynek headerje és payloadja Base64URL-kódolt és olvasható a birtokos számára. A digitális aláírás vagy MAC integritásvédelmet és hitelességet ad, de nem biztosít titkosságot. A JWT használata nem teszi lehetővé automatikusan az azonnali visszavonást, és a TLS továbbra is szükséges a token védelméhez továbbítás közben. Azért csábító a JWT-t titkosított tokennek tekinteni, mert a token karakterlánca kódoltnak és olvashatatlannak tűnik, de a Base64URL nem titkosítás.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Security headers & CSP
+TYPE: theory
+QUESTION: Mi a Content-Security-Policy egyik legfontosabb célja?
+A) Az adatbázis-jelszó titkosítása
+B) A TLS tanúsítvány automatikus megújítása
+C) Annak korlátozása, hogy a böngésző milyen erőforrásokat és scriptforrásokat tölthet be vagy hajthat végre
+D) A szerveroldali SQL injection automatikus javítása
+ANSWER: C
+EXPLANATION: A CSP böngészőoldali policy, amely többek között meghatározhatja, hogy milyen script-, kép-, stílus- vagy egyéb erőforrás-források engedélyezettek. Egy jól kialakított CSP jelentősen csökkentheti bizonyos XSS és code-injection támadások hatását, de nem javítja ki magát az SQL injectiont és nem helyettesíti a TLS-t vagy a secrets managementet. Azért csábító a CSP-t univerzális webes biztonsági mechanizmusnak tekinteni, mert sokféle kliensoldali támadás hatását képes csökkenteni, de a szerveroldali hibákat önmagában nem javítja.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: CORS
+TYPE: behavior
+QUESTION: Egy API a következő HTTP választ adja egy kérésre:
+CODE:
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: https://example.com
+Content-Type: application/json
+ENDCODE
+Egy `https://evil.example` oldal JavaScriptje `fetch()` segítségével próbálja olvasni a választ. Mi történik normál böngészős környezetben?
+A) A böngésző blokkolja a cross-origin JavaScript hozzáférést a válasz tartalmához, mert az origin nem egyezik
+B) A szerver automatikusan átirányítja a kérést az engedélyezett originre
+C) A böngésző figyelmen kívül hagyja az `Access-Control-Allow-Origin` fejlécet
+D) A kérés és a válasz minden körülmények között teljesen elérhető lesz a JavaScript számára
+ANSWER: A
+EXPLANATION: A CORS policy alapján a böngésző csak az engedélyezett origin számára teszi hozzáférhetővé a cross-origin választ JavaScriptből. A szerver ettől még feldolgozhatja a HTTP kérést, de a böngésző a választ elérhetetlenné teheti a támadó oldal scriptje számára. A CORS nem klasszikus szerveroldali hozzáférés-szabályozás. Azért csábító azt gondolni, hogy a szervernek kell elutasítania a kérést, mert a CORS fejlécek a HTTP válaszban jelennek meg, de a böngésző enforcement mechanizmusa kulcsfontosságú.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Input validation & deserialization
+TYPE: debug
+QUESTION: Egy endpoint csak pozitív egész `age` értéket vár. Melyik megoldás a legmegfelelőbb a szerveroldali ellenőrzéshez?
+A) Megkérni a frontend fejlesztőt, hogy HTML `min="1"` attribútumot használjon
+B) Feltételezni, hogy a kliens csak számot küldhet
+C) Az értéket JavaScriptben ellenőrizni, majd ellenőrzés nélkül továbbítani a szervernek
+D) A szerveren validálni, hogy az érték egész szám és a megengedett tartományba esik, és hibás input esetén elutasítani
+ANSWER: D
+EXPLANATION: A kliensoldali validáció hasznos UX-eszköz, de nem biztonsági határ, mert a kliens által küldött HTTP kérés közvetlenül is módosítható. A szervernek saját maga kell ellenőriznie a típust, tartományt és egyéb üzleti korlátokat. A kliens inputjának megbízhatónak feltételezése tipikus hibás megközelítés. Azért csábító csak a frontend validációra hagyatkozni, mert a normál felhasználói felületen az valóban megakadályozza a hibás adatot, de egy támadó nem köteles a UI-t használni.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: Cryptography & TLS
+TYPE: trap
+QUESTION: Egy fejlesztő azt mondja: "Az API HTTPS-en fut, ezért a szerverre érkező felhasználói adat biztosan megbízható és manipulációmentes." Miért hibás ez a következtetés?
+A) Mert a HTTPS csak képeket képes titkosítani
+B) Mert a TLS kizárólag a szerver CPU-ját védi
+C) Mert a TLS a hálózati csatornát védi, de nem garantálja, hogy az alkalmazás számára küldött adat üzletileg vagy szintaktikailag érvényes
+D) Mert HTTPS esetén semmilyen hitelesítés nem történik
+ANSWER: C
+EXPLANATION: A TLS védi az adatot a kommunikációs csatornán lehallgatással és módosítással szemben, megfelelően konfigurált kapcsolat és tanúsítvány-ellenőrzés mellett. Ettől azonban egy legitim kliens rosszindulatú vagy hibás adatot küldhet, amelyet az alkalmazásnak továbbra is validálnia kell. A TLS nem üzleti logikai validáció. Azért csábító a HTTPS-t teljes adatbiztonsággal azonosítani, mert a hálózati támadások ellen erős védelmet nyújt, de nem védi meg az alkalmazást a legitim kliensektől érkező rosszindulatú inputtól.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: Egy fejlesztő ezt találja egy Git repositoryban:
+CODE:
+const dbPassword = "ProdDbPassword123!";
+ENDCODE
+Mi a legfontosabb első lépés, ha ez valódi production credential volt?
+A) Átnevezni a változót
+B) Törölni a sort a jelenlegi fájlból, majd folytatni a munkát
+C) Base64-re kódolni a jelszót
+D) A credentialt visszavonni/rotálni, majd kivizsgálni a kitettséget és eltávolítani a titkot a forráskódból
+ANSWER: D
+EXPLANATION: Ha egy production secret bekerült a repositoryba, azt kompromittáltnak kell tekinteni, még akkor is, ha később törlik a fájlból. Elsőként a credential érvénytelenítése és rotációja csökkenti annak további felhasználhatóságát, majd érdemes ellenőrizni a repository történetét és az esetleges hozzáférési/log eseményeket. A Git history miatt egyszerű törlés nem feltétlenül távolítja el a titkot minden példányból. Azért csábító csak törölni a sort, mert a jelenlegi fájlban már nem látszik a secret, de a korábbi commitok továbbra is tartalmazhatják.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: OWASP Top 10
+TYPE: theory
+QUESTION: Egy fejlesztő egy új funkción dolgozik, amelyben a kliens által küldött objektumok alapján szerveroldali műveletek történnek. Melyik megközelítés illeszkedik leginkább az OWASP Top 10 szemléletéhez?
+A) Csak a frontend kinézetének ellenőrzése
+B) A bemenet, hitelesítés, jogosultság, konfiguráció, dependency-k és egyéb alkalmazásbiztonsági kontrollok együttes vizsgálata
+C) Kizárólag az SQL injection tesztelése
+D) Kizárólag a hálózati tűzfal szabályainak ellenőrzése
+ANSWER: B
+EXPLANATION: Az OWASP Top 10 nem egyetlen sérülékenységtípusra koncentrál, hanem az alkalmazásbiztonsági kockázatok széles körét fedi le, például authorization, injection, security misconfiguration és vulnerable components problémákat. A biztonságot ezért több kontroll együtteseként kell kezelni. Azért csábító csak az SQL injectionre koncentrálni, mert az klasszikus és könnyen demonstrálható webes sérülékenység, de sok súlyos hiba teljesen más rétegben található.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: Authorization & access control
+TYPE: scenario
+QUESTION: Egy API endpoint így működik: a felhasználó megkapja a saját user ID-ját, majd meghívhatja a `/api/users/{id}/profile` endpointot. Mi a legfontosabb szerveroldali ellenőrzés?
+A) Ellenőrizni, hogy a bejelentkezett felhasználó jogosult-e a megadott `id` erőforrás elérésére
+B) Ellenőrizni, hogy az `id` pozitív szám-e
+C) Ellenőrizni, hogy a kliens Angular alkalmazást használ-e
+D) Ellenőrizni, hogy az URL HTTPS-sel kezdődik-e
+ANSWER: A
+EXPLANATION: Az objektumazonosító formátumának ellenőrzése nem bizonyítja, hogy a felhasználó hozzáférhet az objektumhoz. A szervernek minden érzékeny erőforrásnál authorization ellenőrzést kell végeznie. Ez az IDOR/BOLA jellegű hibák megelőzésének egyik alapvető eleme. Azért csábító az ID formátumát ellenőrizni elegendőnek gondolni, mert azonosítja az objektumot, de nem határozza meg, hogy ki férhet hozzá.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: SSRF
+TYPE: scenario
+QUESTION: Egy backend szolgáltatás URL-t kap a klienstől, majd szerveroldalon HTTP GET kérést indít erre az URL-re. Mi a fő SSRF-kockázat?
+A) A kliens böngészője mindig hozzáférhet a backend belső hálózatához
+B) A szerver automatikusan XSS-vé alakítja az URL-t
+C) A támadó olyan belső vagy érzékeny címre veheti rá a szervert, amelyet a kliens közvetlenül nem érne el
+D) A HTTPS automatikusan megszűnik működni
+ANSWER: C
+EXPLANATION: SSRF esetén a támadó a szerver által kezdeményezett hálózati kapcsolatot használhatja arra, hogy belső szolgáltatásokat, localhostot, cloud metadata endpointokat vagy más korlátozott hálózati célpontokat érjen el. A szerver hálózati jogosultságai ezért biztonsági szempontból fontosak. Azért csábító azt hinni, hogy csak a kliens tudna ilyen címekre kapcsolódni, mert a felhasználó által irányított URL eredetileg a kliensből származik, de a tényleges hálózati kérés a szerverről indul.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: Supply chain security
+TYPE: production
+QUESTION: Egy alkalmazás 80 külső npm csomagot használ. Miért jelent ez application security szempontból kockázatot?
+A) Mert az npm csomagok mindig lassabbak a saját kódnál
+B) Mert minden dependency automatikusan hozzáfér az adatbázishoz
+C) Mert a package-ek nem használhatók productionben
+D) Mert egy sérülékeny vagy kompromittált dependency az alkalmazás biztonságára is hatással lehet
+ANSWER: D
+EXPLANATION: A dependency-k a supply chain részét képezik. Egy sérülékeny vagy kompromittált csomag olyan kódot futtathat az alkalmazás részeként, amely sebezhetőséget vagy akár közvetlen támadási lehetőséget jelent. Ezért fontos a dependency inventory, frissítés, vulnerability scanning, lockfile-kezelés és megfelelő review. Azért csábító a dependency-ket pusztán teljesítménykérdésnek tekinteni, mert a fejlesztők gyakran funkcionalitás és build time alapján gondolnak rájuk, miközben biztonsági határvonalat is jelenthetnek.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: Logging & incident response
+TYPE: scenario
+QUESTION: Egy login endpointnál biztonsági események vizsgálatához melyik adat a leghasznosabb, miközben érzékeny adatokat nem szabad feleslegesen logolni?
+A) A felhasználó teljes jelszava
+B) Sikertelen/sikeres autentikáció ténye, időpont, releváns azonosító és megfelelően kezelt kliensinformáció
+C) A session cookie teljes értéke
+D) A felhasználó teljes bankkártyaszáma
+ANSWER: B
+EXPLANATION: A biztonsági logoknak elegendő kontextust kell adniuk az események vizsgálatához, például időpontot, eseménytípust, releváns user ID-t vagy request correlation ID-t, miközben nem szabad jelszavakat, session tokeneket vagy teljes fizetési adatokat logolni. A cél az auditálhatóság és az incident response támogatása, nem az érzékeny adatok lemásolása. Azért csábító a teljes request vagy credential logolása, mert incident során több információ állna rendelkezésre, de ezzel maga a logrendszer is érzékeny adatforrássá válna.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: Threat modeling
+TYPE: scenario
+QUESTION: Egy új webalkalmazás tervezésekor a csapat elkészíti a frontend, backend, adatbázis és külső payment provider közötti adatfolyamot. Miért hasznos ez threat modeling során?
+A) Segít azonosítani a trust boundary-ket, adatáramlásokat és potenciális támadási felületeket
+B) Automatikusan kijavítja a sérülékenységeket
+C) Kizárólag a UI teljesítményét méri
+D) Kiváltja a penetration testinget
+ANSWER: A
+EXPLANATION: Az adatfolyamok és trust boundary-k feltérképezése segít megérteni, hol lép át adat egyik komponensből egy másikba, hol változik a bizalmi szint, és hol lehet támadási felület. A threat modeling nem automatikus javítómechanizmus és nem helyettesít minden security testinget. Azért csábító azt gondolni, hogy a threat model önmagában kiváltja a pentestet, mert már a tervezési szakaszban számos hibát képes feltárni, de más biztonsági kontrollok más hibákat találnak.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: theory
+QUESTION: Melyik állítás írja le helyesen a SAST és DAST közötti alapvető különbséget?
+A) A SAST kizárólag production rendszereket vizsgál
+B) A DAST csak dependency verziókat ellenőriz
+C) A SAST forráskódot vagy build artefactot statikusan elemez, míg a DAST futó alkalmazást tesztel
+D) A SAST és DAST pontosan ugyanazt a vizsgálatot végzi
+ANSWER: C
+EXPLANATION: A SAST statikus elemzéssel a kód vagy kapcsolódó artefactok alapján kereshet biztonsági problémákat, míg a DAST futó alkalmazással interakcióba lépve vizsgálhat például inputkezelési és konfigurációs problémákat. A két megközelítés kiegészíti egymást, és egyik sem talál meg minden hibát. Azért csábító őket azonosnak tekinteni, mert mindkettő automated security testingként jelenhet meg a CI/CD pipeline-ban, de más megfigyelési pontból dolgoznak.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: theory
+QUESTION: Egy webalkalmazásban a fejlesztő azt szeretné, hogy a felhasználó egy külső Identity Providernél jelentkezzen be, és az alkalmazás megbízhatóan megkapja a felhasználó identitását. Melyik technológia szolgál erre közvetlenül?
+A) CSRF
+B) OpenID Connect
+C) CORS
+D) SFTP
+ANSWER: B
+EXPLANATION: Az OpenID Connect az OAuth 2.0-ra épülő identitási protokoll, amely standardizált módon biztosít információt az autentikált felhasználó identitásáról, többek között ID token segítségével. Az OAuth 2.0 önmagában elsősorban authorization framework, nem teljes értékű authentication protocol. Azért csábító az OAuth 2.0-t önmagában authentication protokollnak nevezni, mert login folyamatokban gyakran együtt jelenik meg az OpenID Connecttel.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: Authentication & password storage
+TYPE: output
+QUESTION: Egy alkalmazás a jelszóellenőrzéshez Argon2id-et használ. A felhasználó kétszer ugyanazt a jelszót választja, de a két tárolt hash eltér. Miért lehet ez teljesen helyes?
+A) Az egyik jelszó biztosan hibás
+B) Az Argon2id nem determinisztikus és nem használható jelszóhoz
+C) A szerver véletlenszerűen módosítja a jelszót
+D) A különböző egyedi saltok miatt ugyanaz a jelszó különböző hash értékeket eredményezhet
+ANSWER: D
+EXPLANATION: A password hashing során minden jelszóhoz egyedi véletlen salt használata ajánlott. Emiatt ugyanaz a jelszó különböző salt mellett különböző hash értéket ad. Ellenőrzéskor az algoritmus a megfelelő salt és paraméterek felhasználásával ellenőrzi, hogy a megadott jelszó egyezik-e. Azért csábító azt hinni, hogy az eltérő hash eltérő jelszót jelent, mert a hagyományos determinisztikus hash-fogalomból indulunk ki, de a password hashing szándékosan saltolt.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Sessions & JWT
+TYPE: edgecase
+QUESTION: Egy session cookie-t az alábbi attribútumokkal állítanak be:
+CODE:
+Set-Cookie: session=abc123; Secure; HttpOnly; SameSite=Lax
+ENDCODE
+Melyik állítás helyes?
+A) A `Secure` miatt a cookie csak HTTPS kapcsolaton küldhető, az `HttpOnly` pedig megakadályozza a JavaScriptből való közvetlen olvasását
+B) A `HttpOnly` miatt a cookie csak localhoston használható
+C) A `SameSite=Lax` minden cross-site navigációt és minden CSRF helyzetet automatikusan blokkol
+D) A cookie értéke titkosított, ezért akkor is biztonságos, ha ellopják
+ANSWER: A
+EXPLANATION: A `Secure` attribútum HTTPS-en keresztüli küldést ír elő, míg az `HttpOnly` megakadályozza, hogy normál kliensoldali JavaScript a cookie-t a `document.cookie` API-n keresztül kiolvassa. A `SameSite=Lax` hasznos CSRF-védelmi mechanizmus, de nem jelent univerzális védelmet minden cross-site helyzet ellen. A cookie értéke önmagában nem lesz titkosított attól, hogy ezek az attribútumok szerepelnek rajta. Azért csábító a cookie-t automatikusan titkosított adatként kezelni, mert HTTPS-en továbbítódik, de a cookie attribútumai és a transport encryption külön biztonsági tulajdonságok.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: XSS
+TYPE: debug
+QUESTION: Egy fejlesztő ezt a javítást készíti:
+CODE:
+const message = userInput;
+document.getElementById("message").textContent = message;
+ENDCODE
+Miért biztonságosabb ez az előző `innerHTML` használatánál, ha egyszerű szöveget szeretnénk megjeleníteni?
+A) Mert a `textContent` automatikusan titkosítja az inputot
+B) Mert a `textContent` a stringet szövegként kezeli, nem HTML markupként értelmezi
+C) Mert a `textContent` minden SQL injectiont is blokkol
+D) Mert a `textContent` automatikusan ellenőrzi a felhasználó jogosultságát
+ANSWER: B
+EXPLANATION: A `textContent` a megadott értéket szöveges tartalomként helyezi a DOM-ba, így egy `<script>` vagy `<img>` jellegű string nem válik automatikusan HTML-elemmé. Ez megfelelő megoldás lehet, amikor valóban csak szöveget akarunk megjeleníteni. Nem véd SQL injection, authorization vagy egyéb szerveroldali problémák ellen. Azért csábító az input általános "biztonságosítását" várni tőle, mert XSS ellen nagyon hasznos, de csak az adott DOM sink kontextusát kezeli.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: Injection
+TYPE: output
+QUESTION: Egy Python alkalmazásban ez a kód fut:
+CODE:
+username = request.args["username"]
+query = "SELECT id FROM users WHERE username = '" + username + "'"
+ENDCODE
+Ha a `username` értéke `admin' --` lesz, miért veszélyes ez a kód?
+A) Mert a Python automatikusan törli az adatbázist
+B) Mert a HTTP GET kérés nem használható adatbázis-lekérdezéshez
+C) Mert a felhasználói input módosíthatja az SQL szerkezetét, például kommentként kezelheti a lekérdezés további részét
+D) Mert az SQL minden apostrófot automatikusan fájlnévvé alakít
+ANSWER: C
+EXPLANATION: A string konkatenáció miatt a felhasználói érték bekerül az SQL szintaxisába. Az `admin' --` lezárhatja a stringet, majd a `--` az SQL dialektustól és whitespace-szabályoktól függően kommentálhatja a lekérdezés hátralévő részét. A helyes megoldás paraméterezett lekérdezés használata. Azért csábító a HTTP GET-et hibáztatni, mert a példa URL-paraméterből kapja az inputot, de az injection oka az SQL string konkatenációja, nem a HTTP metódus.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: CORS
+TYPE: trap
+QUESTION: Melyik állítás igaz a CORS-ról?
+A) A CORS minden szerveroldali authorization hibát automatikusan megakadályoz
+B) A CORS csak akkor működik, ha a szerver és a kliens ugyanazon a gépen fut
+C) A CORS a TLS alternatívája
+D) A CORS elsősorban azt szabályozza, hogy egy böngészőben futó script cross-origin választ olvashat-e
+ANSWER: D
+EXPLANATION: A CORS egy böngésző által érvényesített mechanizmus, amely meghatározza, hogy egy originről futó script hozzáférhet-e egy másik origin HTTP válaszához. Nem helyettesíti a szerveroldali authorizationt, a TLS-t vagy az autentikációt. A nem böngésző kliensek gyakran figyelmen kívül hagyják a CORS policy-t, ezért szerveroldali access controlra nem szabad alapozni. Azért csábító a CORS-t authorization mechanizmusnak tekinteni, mert engedélyezett és tiltott originokról beszél, de valójában browser-enforcement mechanizmus.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: Input validation & deserialization
+TYPE: behavior
+QUESTION: Egy Java API JSON objektumot fogad, amelyet közvetlenül egy domain objektummá deszerializál. A kliens elküldi:
+CODE:
+{
+  "username": "alice",
+  "isAdmin": true
+}
+ENDCODE
+A domain objektumban az `isAdmin` mező normál esetben csak adminisztrátor által módosítható. Mi a biztonsági probléma?
+A) A JSON formátum önmagában nem támogat boolean értékeket
+B) A kliens által vezérelt mező jogosultság-emelést okozhat, ha a szerver vakon bindolja az inputot a domain objektumra
+C) A boolean érték mindig SQL injectiont okoz
+D) A JSON body miatt nem használható HTTPS
+ANSWER: B
+EXPLANATION: Ha a kliens közvetlenül olyan domain mezőket is beállíthat, amelyeknek módosítására nincs jogosultsága, mass assignment vagy over-posting jellegű authorization probléma alakulhat ki. Célszerű külön request DTO-t használni, amely csak a kliens által módosítható mezőket tartalmazza, és a jogosultságokat szerveroldalon ellenőrizni. Azért csábító minden JSON mezőt automatikusan domain objektumba bindolni, mert fejlesztési szempontból kényelmes és kevés kódot igényel, de biztonsági határt is jelenthet.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: Cryptography & TLS
+TYPE: production
+QUESTION: Egy production API TLS-t használ, de a szerver engedélyezi a régi, nem biztonságos TLS-verziókat és gyenge cipher suite-okat is. Mi a helyes következtetés?
+A) A HTTPS szó önmagában garantálja a modern kriptográfiai biztonságot
+B) A TLS konfiguráció soha nem befolyásolja a kapcsolat biztonságát
+C) A TLS-verziókat, cipher suite-okat és tanúsítványkezelést megfelelően kell konfigurálni; a TLS használata önmagában nem elegendő
+D) A TLS kizárólag teljesítményoptimalizálási kérdés
+ANSWER: C
+EXPLANATION: A TLS biztonsága nem pusztán abból következik, hogy a kapcsolat neve HTTPS. A szervernek támogatott és megfelelően konfigurált TLS-verziókat, erős kriptográfiai algoritmusokat, megfelelő tanúsítványláncot és biztonságos kulcskezelést kell használnia. Elavult protokollok vagy gyenge cipher suite-ok növelhetik a támadási felületet. Azért csábító a HTTPS-t önmagában biztonsági garanciának tekinteni, mert a böngésző lakat ikonja ezt a benyomást keltheti, de a tényleges biztonság a TLS konfigurációjától is függ.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: Injection
+TYPE: debug
+QUESTION: Egy Java alkalmazásban a fejlesztő a PreparedStatement használatára váltott:
+CODE:
+String sql = "SELECT id FROM users WHERE username = ?";
+PreparedStatement ps = connection.prepareStatement(sql);
+ps.setString(1, username);
+ResultSet rs = ps.executeQuery();
+ENDCODE
+Miért csökkenti ez az SQL injection kockázatát?
+A) Mert a `setString` automatikusan törli az összes speciális karaktert
+B) Mert a paraméter értékét az adatbázis a lekérdezés struktúrájától elkülönített adatként kezeli
+C) Mert a PreparedStatement titkosítja az SQL lekérdezést
+D) Mert csak adminisztrátorok használhatják
+ANSWER: B
+EXPLANATION: A paraméterezett lekérdezésnél az SQL struktúrája előre meghatározott, a felhasználói érték pedig külön paraméterként kerül átadásra. Emiatt az input nem tud egyszerűen SQL szintaxissá válni. A `setString` nem általános karaktertörlő mechanizmus, és a PreparedStatement nem az SQL titkosításával biztosít védelmet. Azért csábító azt gondolni, hogy a `setString` speciális karaktereket töröl, mert az inputot kezeli és biztonságosabbá teszi, de a lényeg a kód és az adat szétválasztása.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: XSS
+TYPE: trap
+QUESTION: Egy fejlesztő a következő megoldást használja XSS ellen:
+CODE:
+const safe = userInput.replace("<", "").replace(">", "");
+element.innerHTML = safe;
+ENDCODE
+Miért nem tekinthető ez megbízható általános XSS-védelemnek?
+A) Mert a string `replace` nem minden HTML/DOM kontextust kezel biztonságosan
+B) Mert az `innerHTML` mindig biztonságos
+C) Mert a `<` és `>` karaktereket soha nem lehet eltávolítani
+D) Mert XSS csak szerveroldali alkalmazásokban létezik
+ANSWER: A
+EXPLANATION: Az XSS-védelem kontextusfüggő, és az ad hoc karaktercsere nem kezeli megbízhatóan a HTML parsing, attribútum-, URL- vagy JavaScript-kontextusok összes lehetőségét. Ha egyszerű szöveget kell megjeleníteni, a `textContent` megfelelőbb sink. Ha valódi HTML-t kell engedélyezni, célzott, biztonságos HTML-sanitization szükséges. Azért csábító néhány veszélyesnek gondolt karakter eltávolítása, mert egyszerű payloadok ellen működhet, de az XSS nem egyetlen karakterpárra vezethető vissza.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: CSRF
+TYPE: scenario
+QUESTION: Egy alkalmazás session cookie-ja `SameSite=Strict` beállítást használ. Mit jelent ez a CSRF szempontjából?
+A) A cookie minden cross-origin és same-origin kérésből eltűnik
+B) A cookie csak HTTP-n küldhető
+C) A böngésző szigorúan korlátozza a cookie cross-site elküldését
+D) A szervernek többé nincs szüksége authorization ellenőrzésre
+ANSWER: C
+EXPLANATION: A `SameSite=Strict` erősen korlátozza, hogy a böngésző mikor küldi el a cookie-t cross-site környezetben, így csökkenti a klasszikus cookie-alapú CSRF támadások lehetőségét. Ez azonban nem helyettesíti az authorizationt, és az alkalmazás egyéb támadási felületeit sem szünteti meg. Azért csábító úgy értelmezni, hogy minden cross-origin kérés blokkolódik, mert a Strict beállítás nagyon szigorúnak hangzik, de a SameSite működését a böngésző cookie-küldési szabályai szerint kell értelmezni.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Authentication & password storage
+TYPE: edgecase
+QUESTION: Egy felhasználó elfelejtette a jelszavát, ezért a rendszer egy "reset linket" küld e-mailben. Melyik megoldás a legbiztonságosabb?
+A) A régi jelszó elküldése e-mailben
+B) Egy hosszú, véletlenszerű, egyszer használható és időkorlátos reset token küldése
+C) Egy rövid, hatjegyű, állandó admin PIN használata
+D) A felhasználó jelszavának Base64-kódolása az URL-ben
+ANSWER: B
+EXPLANATION: A jelszó-visszaállítás során célszerű nagy entrópiájú, véletlenszerű, egyszer használható és rövid élettartamú tokent használni. A token birtoklása ideiglenesen jogosultságot ad a reset folyamat folytatására, ezért annak kitettségét minimalizálni kell. A régi jelszó visszaküldése arra utalna, hogy visszafejthetően van tárolva, az állandó PIN pedig könnyen támadható. Azért csábító a rövid PIN, mert a felhasználók számára kényelmes, de egy webes reset folyamatnál túl alacsony lehet az entrópiája.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Sessions & JWT
+TYPE: behavior
+QUESTION: Egy szerver oldali session alapú alkalmazásban a felhasználó sikeresen bejelentkezik. Miért célszerű a session azonosítót login után újragenerálni?
+A) Mert a session ID újragenerálása gyorsítja az adatbázist
+B) Mert így a cookie automatikusan titkosítottá válik
+C) Mert ettől a felhasználó jelszava erősebb lesz
+D) Mert csökkenti a session fixation kockázatát
+ANSWER: D
+EXPLANATION: Session fixation esetén a támadó megpróbálhat egy ismert session azonosítót rávenni az áldozatra, majd a sikeres login után ugyanazt a sessiont használni. Ha a szerver autentikációkor új session azonosítót generál, a korábban ismert azonosító használhatatlanná válik az autentikált sessionhez. Azért csábító a session cookie titkosítását várni ettől, mert a session ID érzékeny adatnak tűnik, de itt az azonosító lecserélése a lényeg.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: scenario
+QUESTION: Egy SPA OAuth 2.0 authorization code flow-t használ PKCE-vel. Mi a PKCE egyik fő célja?
+A) A böngésző és az API közötti TLS kiváltása
+B) Annak csökkentése, hogy egy ellopott authorization code önmagában felhasználható legyen token megszerzésére
+C) A felhasználói jelszó tárolása az access tokenben
+D) A CORS policy automatikus kikapcsolása
+ANSWER: B
+EXPLANATION: PKCE esetén a kliens egy `code_verifier` értéket hoz létre, abból `code_challenge` készül, majd a tokenkéréskor a verifierrel bizonyítja, hogy ugyanaz a kliens folytatja a folyamatot. Így egy elfogott authorization code önmagában nem elegendő a token megszerzéséhez. A PKCE nem helyettesíti a TLS-t, és nem jelszótárolási mechanizmus. Azért csábító a PKCE-t egyszerűen "titkosított authorization code"-nak tekinteni, mert plusz titkos érték kapcsolódik a flow-hoz, de a mechanizmus a code és a kliens közötti kötést erősíti.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: Authorization & access control
+TYPE: production
+QUESTION: Egy `/api/orders/{id}` endpoint autentikált felhasználók számára elérhető. A backend csak azt ellenőrzi, hogy a kérésben van érvényes access token, majd betölti a megadott ordert. Mi a legfontosabb hiányzó kontroll?
+A) Ellenőrizni kell, hogy az autentikált felhasználó jogosult-e az adott order elérésére
+B) Ellenőrizni kell, hogy az order ID páros szám-e
+C) Ellenőrizni kell, hogy az access token JWT-e
+D) Ellenőrizni kell, hogy a kliens mobilalkalmazás-e
+ANSWER: A
+EXPLANATION: Az autentikáció csak azt bizonyítja, hogy ki a felhasználó vagy milyen principal küldte a kérést; nem bizonyítja, hogy hozzáférhet az adott orderhez. Az objektum szintű authorization ellenőrzésnek a szerveren kell megtörténnie. Ez különösen fontos olyan endpointoknál, ahol a kliens objektumazonosítót ad meg. Azért csábító az érvényes access tokent elegendőnek tekinteni, mert az erős hitelesítési bizonyítéknak tűnik, de authentication és authorization külön fogalom.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Cryptography & TLS
+TYPE: theory
+QUESTION: Miért nem célszerű saját, egyedi kriptográfiai algoritmust vagy protokollt készíteni egy webalkalmazáshoz?
+A) Mert a kriptográfiai primitívek mindig túl lassúak
+B) Mert a TLS minden alkalmazásoldali titkosítást megakadályoz
+C) Mert a saját algoritmusok biztonságát nehéz helyesen megtervezni és bizonyítani, ezért bevált szabványos primitíveket és könyvtárakat célszerű használni
+D) Mert a titkosítás csak jelszavakhoz használható
+ANSWER: C
+EXPLANATION: A modern kriptográfia nem pusztán egy algoritmus kiválasztásáról szól, hanem kulcskezelésről, nonce-ról, random generálásról, autentikált titkosításról, protokollról és hibakezelésről is. Bevált primitívek és auditált könyvtárak használata jelentősen csökkenti az implementációs hibák kockázatát. Azért csábító saját algoritmust készíteni, mert egyszerűbbnek tűnhet az adott üzleti problémára szabni, de a kriptográfiai biztonságot nehéz intuitívan megítélni.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: Security headers & CSP
+TYPE: behavior
+QUESTION: Egy webalkalmazás az alábbi fejlécet küldi:
+CODE:
+Content-Security-Policy: default-src 'self'; script-src 'self'
+ENDCODE
+Mit jelent ez a `script-src` szabály szempontjából?
+A) Minden JavaScript inline kód és minden külső script engedélyezett
+B) Csak a `self` forrásból származó script erőforrások engedélyezettek, inline script pedig alapértelmezés szerint nem
+C) Csak inline JavaScript engedélyezett
+D) A szerveroldali JavaScript teljesen letiltásra kerül
+ANSWER: B
+EXPLANATION: A `script-src 'self'` azt jelenti, hogy a script erőforrások között a dokumentum saját originjéről származók engedélyezettek. Inline script és inline event handler alapértelmezés szerint nem engedélyezett, hacsak más CSP-mechanizmus, például nonce vagy hash, nem teszi lehetővé. A CSP a böngészőben futó erőforrásokra vonatkozik, nem a szerveroldali JavaScript futtatására. Azért csábító minden "self" scriptet engedélyezettnek tekinteni, mert az oldal saját originje megbízhatónak tűnik, de az inline kód külön szabályozás alá esik.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: CORS
+TYPE: debug
+QUESTION: Egy API a következő választ adja:
+CODE:
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+ENDCODE
+Mi a probléma ezzel a kombinációval böngészőből indított credentialed CORS kérések esetén?
+A) A `*` minden esetben ugyanazt jelenti, mint a kliens pontos originje
+B) A credentials automatikusan kikapcsolják a HTTPS-t
+C) A wildcard csak POST kéréseknél hibás
+D) Credentialed CORS esetén a wildcard `*` nem használható az engedélyezett origin helyett
+ANSWER: D
+EXPLANATION: Ha credentialed CORS kérésről van szó, a szerver nem használhatja a `*` wildcardot az `Access-Control-Allow-Origin` értékeként. Ilyenkor konkrét origin megadása szükséges, megfelelő `Access-Control-Allow-Credentials` beállítással. A helytelen kombináció miatt a böngésző nem teszi hozzáférhetővé a választ a JavaScript számára. Azért csábító a wildcardot használni, mert egyszerűen "minden originnek engedélyezett" konfigurációnak tűnik, de credentials mellett a böngésző szigorúbb szabályt alkalmaz.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: Egy Docker image build során ez szerepel:
+CODE:
+ARG API_KEY
+ENV API_KEY=$API_KEY
+ENDCODE
+Miért problémás lehet ez production secret kezelésére?
+A) Mert a secret ilyen módon image vagy build metadata rétegekben, illetve futási környezetben nem kívánt helyeken megjelenhet
+B) Mert az `ENV` változók soha nem érhetők el a konténerben
+C) Mert a Docker nem támogat string típusú változókat
+D) Mert az API key csak adatbázisban tárolható
+ANSWER: A
+EXPLANATION: A Docker build argumentok és image layer-ek használata érzékeny adatokhoz nem megfelelő, mert a secret bizonyos build artefactokban vagy metadata-rétegekben megmaradhat, és az `ENV` változó runtime környezetben is hozzáférhető lehet. Productionben célszerű dedikált secret management megoldást vagy megfelelő runtime secret injectiont használni. Azért csábító a Docker `ARG` és `ENV` használata, mert egyszerű és jól automatizálható konfigurációs mechanizmusnak tűnik, de nem minden konfigurációs változó secret.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: Input validation & deserialization
+TYPE: edgecase
+QUESTION: Egy API `Content-Type: application/json` fejlécet vár, de a szerver kizárólag a kliens által küldött fejléc alapján dönti el, hogyan dolgozza fel a body-t. Miért nem elég ez biztonsági szempontból?
+A) Mert a Content-Type fejlécet a TLS automatikusan eltávolítja
+B) Mert a kliens által küldött HTTP fejlécek megbízható biztonsági bizonyítékként nem kezelhetők
+C) Mert JSON body-t csak GET kérés tartalmazhat
+D) Mert a Content-Type csak képekhez használható
+ANSWER: B
+EXPLANATION: A HTTP kliens a kérések fejléceit tetszőlegesen módosíthatja, ezért a szervernek nem szabad pusztán ezekre biztonsági bizalomként támaszkodnia. A szervernek a tényleges body feldolgozását, méretét, struktúráját és engedélyezett típusait is megfelelően kezelnie kell. A TLS a hálózati kapcsolatot védi, nem garantálja, hogy az autentikált kliens által küldött adat üzletileg vagy formailag helyes. Azért csábító a Content-Type fejlécet megbízhatónak tekinteni, mert a framework gyakran automatikusan használja a deszerializáció kiválasztására, de a header maga kliens által kontrollált input.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: SSRF
+TYPE: scenario
+QUESTION: Egy URL-fetching szolgáltatásnak csak a `https://example.com/...` domainekről kellene adatot lekérnie. A fejlesztő ezt ellenőrzi:
+CODE:
+if (url.startsWith("https://example.com")) {
+    fetch(url);
+}
+ENDCODE
+Miért nem megfelelő ez az ellenőrzés?
+A) Mert a `startsWith` túl lassú
+B) Mert HTTPS URL-eket nem lehet programból lekérni
+C) Mert például `https://example.com.attacker.com/...` is megfelelhet az ellenőrzésnek
+D) Mert az URL-ek mindig IP-címekből állnak
+ANSWER: C
+EXPLANATION: A string prefix ellenőrzése nem az URL host komponensének tényleges jelentését ellenőrzi. Az `https://example.com.attacker.com` például karakterláncként az engedélyezett prefixszel kezdődik, de a tényleges host `example.com.attacker.com`. SSRF-védelemnél strukturált URL-parsingra, pontos host- és protokoll-ellenőrzésre, valamint szükség esetén hálózati egress korlátozásra van szükség. Azért csábító a prefix ellenőrzés, mert egyszerű és olvasható, de az URL-ek szemantikai elemzése nem helyettesíthető egyszerű stringművelettel.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: Supply chain security
+TYPE: production
+QUESTION: Egy dependency scanner egy kritikus sérülékenységet jelez egy közvetlenül használt libraryben. A fejlesztő szerint "nincs exploit, mert a kódot nem használjuk". Mi a legjobb következő lépés?
+A) A finding automatikus figyelmen kívül hagyása
+B) A teljes alkalmazás törlése
+C) A sérülékenység verzió-, komponens- és tényleges használati környezetének elemzése, majd megfelelő frissítés vagy mitigáció
+D) Az összes dependency eltávolítása
+ANSWER: C
+EXPLANATION: A vulnerability severity és a tényleges kockázat értékeléséhez meg kell érteni, melyik komponens érintett, milyen verzióról van szó, milyen útvonalon érhető el, és valóban használja-e az alkalmazás a sérülékeny funkciót. Ettől még a findingot nem célszerű automatikusan elvetni; frissítés vagy dokumentált mitigáció szükséges lehet. Azért csábító azonnal false positive-nak minősíteni, mert egy adott funkció közvetlenül nem látszik a saját kódban, de tranzitív használat vagy runtime behavior is számíthat.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: Logging & incident response
+TYPE: scenario
+QUESTION: Egy production alkalmazásban sok sikertelen login történik ugyanarról az IP-ről rövid idő alatt. Melyik logolási megoldás támogatja legjobban a későbbi incident response-t?
+A) Minden próbálkozásnál csak a "login failed" stringet eltárolni
+B) Az összes felhasználó jelszavát is logolni
+C) Csak az alkalmazás újraindításakor létrehozni egy összesített logbejegyzést
+D) Strukturált eseményt rögzíteni időponttal, eseménytípussal, releváns user/account azonosítóval, request/correlation ID-val és megfelelő hálózati kontextussal
+ANSWER: D
+EXPLANATION: A strukturált és megfelelően kontextualizált logok lehetővé teszik a támadási minták korrelációját és az események időbeli rekonstruálását. Érdemes kerülni az érzékeny adatok, például jelszavak vagy session tokenek logolását. A logokat megfelelő védelemmel, retentionnel és hozzáférés-szabályozással is kezelni kell. Azért csábító csak egy egyszerű hibaüzenetet logolni, mert az minimális adatot jelent, de incident során a kontextus hiánya jelentősen korlátozza az elemzést.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: Threat modeling
+TYPE: scenario
+QUESTION: Egy alkalmazásban egy publikus API gateway továbbít kéréseket egy belső admin service felé. A threat modeling során melyik kérdés a legfontosabb?
+A) Milyen színű az admin service logója?
+B) Milyen trust boundary van a gateway és az admin service között, és milyen authorization ellenőrzések történnek ezen a határon?
+C) Milyen frontend framework verziót használ az admin service UI-ja?
+D) Milyen betűtípust használ a gateway dokumentációja?
+ANSWER: B
+EXPLANATION: A publikus és belső komponens közötti trust boundary kritikus pont, mert a belső service nem feltétlenül tekintheti automatikusan megbízhatónak a gatewayből érkező kéréseket. A jogosultságot és a caller identitását megfelelően kell ellenőrizni a bizalmi határon. Azért csábító csak a gatewayt biztonsági kontrollnak tekinteni, mert az egyetlen publikus komponensnek látszik, de a belső service-eknek is saját védelmi kontrollokra lehet szükségük.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: output
+QUESTION: Egy SAST eszköz ezt a kódrészletet találja:
+CODE:
+String query = "SELECT * FROM users WHERE id = " + request.getParameter("id");
+ENDCODE
+Milyen finding várható leginkább?
+A) Lehetséges SQL injection
+B) Biztos memory leak
+C) Biztos CSRF
+D) TLS certificate expiration
+ANSWER: A
+EXPLANATION: A felhasználói input közvetlenül SQL stringbe kerül konkatenációval, ezért statikus elemző eszköz ezt tipikusan injection sinkként azonosíthatja. A tényleges kihasználhatóság függhet a környezettől és a query végrehajtásától, de a kódminta önmagában erős jelzés. A megfelelő javítás paraméterezett query használata. Azért csábító CSRF-re vagy TLS-problémára gondolni, mert ezek is gyakori webes biztonsági témák, de a kódból közvetlenül az SQL injection mintázata látható.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: edgecase
+QUESTION: Egy OpenID Connect kliens ID tokent kap. Miért kell ellenőriznie többek között az `iss` és `aud` claim értékét?
+A) Mert ezekből lehet visszafejteni a felhasználó jelszavát
+B) Mert az `iss` és `aud` csak UI megjelenítésre szolgál
+C) Mert ezek segítenek ellenőrizni, hogy a token a várt issuerből származik-e és a megfelelő kliensnek szól-e
+D) Mert ezek automatikusan visszavonják a tokent
+ANSWER: C
+EXPLANATION: Az `iss` az identitást szolgáltató issuerét, az `aud` pedig a token címzettjét jelöli. A kliensnek ellenőriznie kell, hogy a token a számára megbízható issuerhez és a saját client azonosítójához tartozik-e, a protokoll további követelményeivel együtt. Ezek a claim-ek nem jelszó-visszafejtési vagy token-visszavonási mechanizmusok. Azért csábító csak az aláírást ellenőrizni, mert az bizonyítja a token kriptográfiai hitelességét, de egy érvényesen aláírt, más célra kiadott token sem feltétlenül használható az adott kliensnél.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: Authorization & access control
+TYPE: trap
+QUESTION: Egy alkalmazásban a frontend elrejti az "Admin" gombot a nem admin felhasználók elől. A backend endpoint viszont nem ellenőrzi az admin jogosultságot. Mi a probléma?
+A) A frontendnek mindig szerveroldali Java kódot kell futtatnia
+B) A frontend önmagában nem biztonsági határ; a backendnek is ellenőriznie kell a jogosultságot
+C) Az admin gomb elrejtése automatikusan authorizationt jelent
+D) A böngésző minden rejtett gombot automatikusan visszaállít
+ANSWER: B
+EXPLANATION: A frontend kódját a felhasználó kontrollálhatja vagy közvetlenül megkerülheti, ezért a UI-ban elrejtett funkció nem jelent valódi hozzáférés-korlátozást. A backendnek minden védett műveletnél szerveroldali authorization ellenőrzést kell végeznie. Azért csábító a frontend kontrollt elegendőnek tekinteni, mert a normál UI-ban valóban eltűnik a gomb, de az endpoint közvetlenül is meghívható.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: Security headers & CSP
+TYPE: theory
+QUESTION: Mire szolgál elsősorban a `Strict-Transport-Security` HTTP response header?
+A) Annak jelzésére a böngésző számára, hogy a webhelyet a továbbiakban csak HTTPS-en keresztül érje el
+B) Az összes JavaScript kód automatikus blokkolására
+C) A cookie-k HTTP-onlyvá tételére
+D) Az SQL injection automatikus megszüntetésére
+ANSWER: A
+EXPLANATION: A HSTS arra utasítja a böngészőt, hogy a megadott hostot a policy érvényességi ideje alatt HTTPS-en keresztül érje el, és ezzel csökkenti bizonyos downgrade és HTTP interception helyzetek kockázatát. Nem módosítja automatikusan a cookie attribútumait, és nem véd közvetlenül SQL injection vagy XSS ellen. Azért csábító a HSTS-t általános HTTPS-védelemként értelmezni, mert a HTTPS kikényszerítéséhez kapcsolódik, de a header csak egy meghatározott browser policyt vezérel.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: Input validation & deserialization
+TYPE: debug
+QUESTION: Egy Java alkalmazás egy JSON requestet közvetlenül egy `User` domain objektumba deszerializál, amelynek több belső állapotmezője is van. Melyik megoldás csökkenti leginkább az over-posting kockázatát?
+A) A JSON mezők számának növelése
+B) A kliens által küldött JSON teljes elfogadása és minden mező automatikus bindingja
+C) Külön request DTO használata a kliens által módosítható mezőkkel, majd kontrollált mapping a domain objektumra
+D) A JSON Base64-kódolása
+ANSWER: C
+EXPLANATION: A külön request DTO explicit módon meghatározza, hogy a kliens mely mezőket módosíthatja, így nem kap automatikusan hozzáférést a domain objektum belső állapotához. Ez csökkenti a mass assignment és over-posting jellegű problémák kockázatát. A Base64-kódolás nem jelent authorization kontrollt. Azért csábító a közvetlen binding, mert kevesebb boilerplate kódot igényel, de a domain modell és a kliens inputmodell összekapcsolása veszélyes lehet.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: SSRF
+TYPE: edgecase
+QUESTION: Egy SSRF-védelem blokkolja a `127.0.0.1` címet, de az alkalmazás DNS-nevet is elfogad. Miért lehet ez önmagában elégtelen?
+A) Mert DNS csak e-mailhez használható
+B) Mert minden domain automatikusan a publikus internetre mutat
+C) Mert a loopback címek soha nem oldhatók fel DNS-sel
+D) Mert egy domain feloldása során olyan IP-címre is kerülhet a kapcsolat, amely a tiltott belső vagy loopback tartományba esik
+ANSWER: D
+EXPLANATION: Ha az alkalmazás csak a bemeneti stringet ellenőrzi, de nem a tényleges hálózati célpontot, egy támadó DNS-feloldással vagy DNS-változással belső címre irányíthatja a kérést. Ezért SSRF-védelemnél a hostname validáció mellett a DNS resolution és a tényleges kapcsolat célpontja is fontos lehet. A hálózati egress policy további védelmet adhat. Azért csábító csak a `127.0.0.1` stringet blokkolni, mert az a legismertebb loopback cím, de a szerver többféle formában és címfeloldáson keresztül is elérheti ugyanazt a belső hálózati tartományt.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: Supply chain security
+TYPE: production
+QUESTION: Egy npm projektben a lockfile szerepe elsősorban miért fontos security szempontból?
+A) Mert automatikusan eltávolít minden sérülékenységet
+B) Mert segít reprodukálhatóan rögzíteni a dependency-k konkrét verzióit és feloldott csomagjait
+C) Mert titkosítja a package-ek forráskódját
+D) Mert minden dependency-t automatikusan saját kódra cserél
+ANSWER: B
+EXPLANATION: A lockfile rögzíti a dependency tree konkrét feloldását, így a build és deployment során kisebb az esélye annak, hogy ugyanaz a verziótartomány idővel eltérő csomagverziót eredményezzen. Ez támogatja a reprodukálhatóságot és a supply chain kontrollját, de önmagában nem javítja ki a sérülékenységeket. Azért csábító a lockfile-t automatikus security patchnek tekinteni, mert konkrét verziókat rögzít, de egy rögzített verzió lehet maga is sérülékeny.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: Logging & incident response
+TYPE: scenario
+QUESTION: Egy támadó több felhasználói fiókkal próbál sikertelenül bejelentkezni. A biztonsági csapat szeretné felismerni a password spraying mintát. Melyik logolási adat segíti ezt leginkább?
+A) Az egyes próbálkozások időpontja, account azonosítója és releváns klienshálózati adatai, megfelelő korrelációval
+B) Csak az alkalmazás verziószáma
+C) Csak a sikeres loginok száma havonta
+D) A felhasználók plaintext jelszavai
+ANSWER: A
+EXPLANATION: A password spraying felismeréséhez össze kell tudni kapcsolni több sikertelen próbálkozást idő, account, forrás és egyéb releváns kontextus alapján. Ehhez strukturált logok és megfelelő korreláció szükséges. Plaintext jelszavakat semmilyen ilyen célból nem szabad logolni. Azért csábító csak a sikertelen loginok összesített számát nézni, mert egyszerűbb metrikát ad, de abból nem látható a támadás eloszlása több account és forrás között.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: production
+QUESTION: Egy csapat minden pull requestben SAST vizsgálatot futtat, és a production release előtt DAST-ot is használ. A security engineer szerint ettől már nincs szükség penetration testingre. Miért nem helyes ez az állítás?
+A) Mert a SAST és DAST semmilyen biztonsági problémát nem képes megtalálni
+B) Mert a penetration test kizárólag compliance célokra használható
+C) Mert a penetration testing ugyanazt a tesztet futtatja lassabban
+D) Mert a pentest manuális, kontextusfüggő vizsgálatokkal olyan összetett támadási láncokat és üzleti logikai hibákat is feltárhat, amelyeket automatizált eszközök nem feltétlenül azonosítanak
+ANSWER: D
+EXPLANATION: A SAST és DAST értékes automatizált kontrollok, de eltérő típusú problémákat látnak, és korlátozottan képesek az alkalmazás üzleti logikájának megértésére. Egy jól végzett penetration test manuális feltárással, több lépésből álló támadási láncokkal és üzleti folyamatok elemzésével olyan hibákat is azonosíthat, amelyeket az automatizált eszközök kihagyhatnak. Azért csábító a pentestet feleslegesnek tekinteni, mert már két security scanning réteg jelen van a pipeline-ban, de a különböző tesztelési módszerek eltérő vakfoltokkal rendelkeznek.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: Injection
+TYPE: output
+QUESTION: Egy alkalmazásban a keresési feltételt az alábbi módon állítják elő. Mit eredményezhet a `keyword` értékének megfelelő manipulációja?
+CODE:
+String sql = "SELECT * FROM products WHERE name LIKE '%" + keyword + "%'";
+ENDCODE
+A) A felhasználói input az SQL lekérdezés szerkezetét is módosíthatja
+B) A `LIKE` operátor automatikusan paraméterezetté teszi a lekérdezést
+C) A string konkatenáció csak teljesítményproblémát okozhat
+D) A lekérdezés csak akkor lenne sérülékeny, ha POST kérésből érkezne az input
+ANSWER: A
+EXPLANATION: A felhasználói input közvetlenül az SQL stringbe kerül, ezért megfelelően kialakított inputtal az SQL szintaxisa is befolyásolható. A `LIKE` nem jelent automatikus paraméterezést, és az injection kockázata nem függ attól, hogy GET vagy POST kérésből származik-e az adat. A helyes megoldás paraméterezett lekérdezés használata. Azért csábító a `LIKE`-ot biztonságosnak tekinteni, mert kereséshez használjuk, de maga a lekérdezés összeállításának módja továbbra is meghatározza az injection kockázatát.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: XSS
+TYPE: behavior
+QUESTION: Egy alkalmazás egy felhasználói kommentet az alábbi módon jelenít meg:
+CODE:
+element.innerHTML = `<p>${comment}</p>`;
+ENDCODE
+Melyik megközelítés a legmegfelelőbb, ha a kommentnek csak egyszerű szöveget kell tartalmaznia?
+A) A teljes HTML dokumentum Base64-kódolása
+B) A komment `textContent` segítségével történő behelyezése egy megfelelő elembe
+C) A komment minden karakterének URL-encodingja, majd `innerHTML` használata
+D) A felhasználó IP-címének ellenőrzése megjelenítés előtt
+ANSWER: B
+EXPLANATION: Ha a kommentnek csak szöveget kell megjelenítenie, a `textContent` megakadályozza, hogy a bemenet HTML markupként legyen értelmezve. Az URL-encoding nem általános HTML/XSS-védelem, a Base64 pedig nem biztonságos HTML-renderelési mechanizmus. Az IP-címnek nincs releváns szerepe az output encodingban. Azért csábító az encodingot általános megoldásként használni, mert bizonyos speciális karaktereket átalakít, de a megfelelő védelem mindig az adott output kontextushoz igazodik.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: CSRF
+TYPE: edgecase
+QUESTION: Egy alkalmazás cookie-alapú authentikációt használ, és minden állapotmódosító POST kéréshez CSRF tokent is megkövetel. Miért kell a CSRF tokent a támadó számára nehezen megszerezhetővé tenni?
+A) Mert a token mérete közvetlenül meghatározza a HTTP teljesítményt
+B) Mert a CSRF tokennek azonosnak kell lennie minden felhasználónál
+C) Mert ha a támadó megszerzi az áldozat érvényes tokenjét, a cookie-alapú CSRF-védelem megkerülhető lehet
+D) Mert a token titkosítja a session cookie-t
+ANSWER: C
+EXPLANATION: A CSRF token egyik fontos szerepe, hogy a támadó által nem ismert, megfelelően validált értékkel kelljen rendelkezni egy állapotmódosító kéréshez. Ha egy támadó képes megszerezni az áldozat tokenjét, akkor az adott védelem elveszítheti a hatékonyságát. A token nem a session cookie titkosítására szolgál. Azért csábító a CSRF tokent egyszerű formmezőként kezelni, mert technikailag csak egy string, de biztonsági értékét a kiszámíthatatlanság és a megfelelő kötés adja.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: Authentication & password storage
+TYPE: production
+QUESTION: Egy login endpoint minden hibás bejelentkezéskor azonnal megválaszolja, hogy "A felhasználó nem létezik" vagy "Helytelen jelszó". Mi lehet ennek a biztonsági problémája?
+A) Az adatbázis mindig lelassul
+B) A támadó felhasználói fiókok létezését tudja felderíteni
+C) A TLS kapcsolat megszűnik
+D) A password hash automatikusan visszafejthetővé válik
+ANSWER: B
+EXPLANATION: Az eltérő hibák felhasználónév- vagy e-mail-cím-enumerációt tehetnek lehetővé, amellyel a támadó először érvényes accountokat gyűjthet. Általában célszerű kifelé hasonló hibaválaszt adni, miközben a részletes információt megfelelően védett belső logokban lehet kezelni. Ez nem jelenti azt, hogy minden authentication hibának teljesen azonos belső kezelésűnek kell lennie. Azért csábító részletes hibát adni, mert ez jobb felhasználói visszajelzésnek tűnik, de biztonsági szempontból érzékeny információt árulhat el.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: Sessions & JWT
+TYPE: output
+QUESTION: Egy JWT payloadja a következő:
+CODE:
+{
+  "sub": "123",
+  "role": "user"
+}
+ENDCODE
+A fejlesztő a böngészőben átírja a `role` értékét `admin`-ra, majd visszaküldi a módosított tokent. Mi határozza meg, hogy a szerver elfogadja-e?
+A) A böngésző URL-je
+B) A JWT hosszúsága
+C) Az, hogy a token payloadja olvasható-e
+D) A token integritásának megfelelő ellenőrzése, például érvényes digitális aláírás vagy MAC
+ANSWER: D
+EXPLANATION: A JWT payload önmagában módosítható, mert tipikusan csak Base64URL-kódolt. A szervernek ellenőriznie kell a token kriptográfiai integritását és az algoritmushoz, kulcshoz és tokenhez kapcsolódó egyéb validációkat. Egy módosított payload érvényes aláírás nélkül nem tekinthető megbízhatónak. Azért csábító a payloadot megbízható adatforrásnak tekinteni, mert strukturált JSON-ként néz ki, de a bizalom alapját az érvényes kriptográfiai ellenőrzés adja.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: theory
+QUESTION: Mi a különbség az OAuth 2.0 access token és az OpenID Connect ID token tipikus szerepe között?
+A) Az access token jellemzően erőforrások elérésére szolgáló authorization credential, az ID token pedig a felhasználó autentikációjával kapcsolatos információt hordoz
+B) Az ID token kizárólag adatbázis-kapcsolatok titkosítására szolgál
+C) Az access token mindig tartalmazza a felhasználó jelszavát
+D) Az OAuth 2.0 access token és az OIDC ID token mindig teljesen azonos célú
+ANSWER: A
+EXPLANATION: Az OAuth 2.0 access token tipikusan egy erőforrás-szerver felé használható authorization credential. Az OpenID Connect ID token a kliens számára az autentikáció eredményéről és a felhasználó identitásáról hordoz információt. A két token szerepe és validálási kontextusa ezért nem cserélhető fel automatikusan. Azért csábító azonosnak tekinteni őket, mert ugyanabban a login flow-ban együtt jelenhetnek meg, de külön protokollszerepük van.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Authorization & access control
+TYPE: debug
+QUESTION: Egy backend endpoint az alábbi ellenőrzést végzi:
+CODE:
+if (user.getRole().equals("admin")) {
+    deleteUser(targetUserId);
+}
+ENDCODE
+Mi a legfontosabb biztonsági probléma, ha az alkalmazásnak többféle erőforrásra és műveletre is vannak jogosultsági szabályai?
+A) A string összehasonlítás mindig SQL injectiont okoz
+B) Az admin role ellenőrzése miatt nem kell authentication
+C) A jogosultsági döntés túl egyszerű lehet, és nem veszi figyelembe például az adott erőforráshoz vagy művelethez tartozó policyt
+D) A `deleteUser` metódus csak GET kérésből hívható
+ANSWER: C
+EXPLANATION: Egyetlen globális role ellenőrzés nem feltétlenül modellezi helyesen az összetett authorization szabályokat. A szervernek az adott műveletet, erőforrást, felhasználói kontextust és policyt is figyelembe kell vennie, ahol szükséges. Például lehet olyan admin, aki csak egy tenant erőforrásaihoz férhet hozzá. Azért csábító egyetlen `admin` flaggel megoldani mindent, mert egyszerű és könnyen implementálható, de összetett rendszerekben túl széles jogosultságot adhat.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: Cryptography & TLS
+TYPE: edgecase
+QUESTION: Egy alkalmazás AES-sel szeretne adatot titkosítani, de csak "titkosítást" akar, az integritás ellenőrzését nem. Miért problémás ez?
+A) Mert az AES csak jelszavakhoz használható
+B) Mert a titkosított adatot megfelelő integritásvédelem nélkül módosíthatja a támadó anélkül, hogy ezt szükségszerűen észlelnék
+C) Mert AES használata mindig plaintextet eredményez
+D) Mert TLS mellett minden alkalmazásszintű titkosítás automatikusan hibás
+ANSWER: B
+EXPLANATION: A titkosság önmagában nem biztosítja az adatok sértetlenségét vagy hitelességét. Olyan modern authenticated encryption megoldások, például AES-GCM, amelyek megfelelően kezelik az integritást is, általában jobb választást jelentenek, mint egy önmagában alkalmazott titkosítási mód. A konkrét biztonság természetesen a nonce- és kulcskezeléstől is függ. Azért csábító csak a titkosítást megvalósítani, mert a plaintext olvashatatlanná tétele látványos biztonsági eredménynek tűnik, de a manipuláció elleni védelem külön követelmény.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: Security headers & CSP
+TYPE: scenario
+QUESTION: Egy webalkalmazás cookie-alapú sessiont használ. Melyik cookie-beállítás csökkenti annak kockázatát, hogy kliensoldali JavaScript közvetlenül kiolvassa a session cookie-t?
+A) `HttpOnly`
+B) `SameSite=None`
+C) `Domain=*`
+D) `Path=/public`
+ANSWER: A
+EXPLANATION: Az `HttpOnly` megakadályozza, hogy a normál kliensoldali JavaScript a session cookie-t például `document.cookie` segítségével kiolvassa. Ez csökkentheti egy XSS sérülékenység esetén a session token közvetlen ellopásának lehetőségét, de nem akadályozza meg magát az XSS-t. Azért csábító a `SameSite` beállítást választani, mert az is fontos cookie-biztonsági attribútum, de elsősorban a cross-site cookie-küldést szabályozza.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: CORS
+TYPE: behavior
+QUESTION: Egy frontend `https://app.example.com` originről API-t hív a `https://api.example.com` címről. A böngésző szerint ez cross-origin kérés. Miért?
+A) Mert a két URL különböző HTTPS protokollt használ
+B) Mert a path mindig meghatározza az origint
+C) Mert az origin a scheme, host és port kombinációja, és a két host eltér
+D) Mert CORS esetén minden HTTPS URL automatikusan cross-origin
+ANSWER: C
+EXPLANATION: A browser origin alapvetően a scheme, host és port hármasából áll. Bár mindkét cím HTTPS-t használ és ugyanahhoz a szervezeti domainhez tartozhat, az `app.example.com` és `api.example.com` külön host, ezért külön originnek számítanak. Azért csábító same-originnek tekinteni őket, mert ugyanazt a `example.com` alapdomaint használják, de az origin összehasonlítás ennél pontosabb.
+###END
+
+### Q61
+LEVEL: junior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: Egy alkalmazás Kubernetesben fut, és egy API kulcsot ConfigMapben tárolnak. Mi a legfontosabb biztonsági szempont?
+A) A ConfigMap automatikusan erős végponttól végpontig tartó titkosítást biztosít
+B) Érzékeny credentialt nem célszerű normál konfigurációként kezelni; megfelelő secrets management mechanizmus szükséges
+C) A ConfigMap kizárólag frontend konfigurációt tárolhat
+D) A Kubernetes minden ConfigMap értéket automatikusan rotál
+ANSWER: B
+EXPLANATION: Egy API kulcs credentialnek minősül, ezért nem célszerű normál konfigurációs adatként kezelni. Kubernetes környezetben erre megfelelő Secret-mechanizmus vagy külső secrets manager használható, megfelelő hozzáférés-szabályozással, encryption-at-rest beállításokkal és rotációval. A konkrét Kubernetes Secret önmagában sem jelent teljes körű titkosítási garanciát minden környezetben. Azért csábító a ConfigMap használata, mert technikailag egyszerűen elérhető az alkalmazás számára, de a konfiguráció és a secret eltérő biztonsági követelményeket támaszt.
+###END
+
+### Q62
+LEVEL: junior
+TOPIC: Input validation & deserialization
+TYPE: trap
+QUESTION: Egy endpoint csak egész számként dokumentálja az `id` paramétert. A fejlesztő ezért nem végez további validációt, mert "a framework integerként parse-olja". Miért lehet ez elégtelen?
+A) Mert minden integer automatikusan XSS payload
+B) Mert a frameworkök mindig figyelmen kívül hagyják a típusokat
+C) Mert az integer parse önmagában nem ellenőrzi az authorizationt, tartományt vagy üzleti szabályokat
+D) Mert integer paraméterek csak PUT kérésekben használhatók
+ANSWER: C
+EXPLANATION: A típuskonverzió hasznos első ellenőrzés lehet, de nem mondja meg, hogy az érték megengedett tartományban van-e, vagy hogy az adott felhasználó jogosult-e a hozzá tartozó erőforrás elérésére. Üzleti szabályokat és authorizationt külön kell ellenőrizni. Azért csábító a framework parsingot teljes validációnak tekinteni, mert a bemenet típusa már kontrolláltnak tűnik, de a security validation jóval több a típusellenőrzésnél.
+###END
+
+### Q63
+LEVEL: junior
+TOPIC: SSRF
+TYPE: debug
+QUESTION: Egy szolgáltatás csak HTTP és HTTPS URL-eket akar engedélyezni. A fejlesztő ezt használja:
+CODE:
+if (url.startsWith("http://") || url.startsWith("https://")) {
+    fetch(url);
+}
+ENDCODE
+Mi a legfontosabb probléma ezzel a megközelítéssel?
+A) A séma ellenőrzése önmagában nem akadályozza meg, hogy a megengedett protokollon keresztül belső címre küldjön kérést
+B) A `https://` URL-ek mindig SQL injectiont okoznak
+C) A `http://` és `https://` stringek nem lehetnek URL-ek
+D) A `startsWith` automatikusan DNS lookupot végez
+ANSWER: A
+EXPLANATION: Az URL scheme ellenőrzése csak azt mutatja meg, milyen protokollt használ a kapcsolat. Egy `http://127.0.0.1`, belső IP vagy cloud metadata endpoint ugyanúgy HTTP URL lehet. SSRF ellen a célhostot, IP-tartományokat, DNS-feloldást és a tényleges hálózati elérést is kontrollálni kell. Azért csábító csak a protokollt whitelistelni, mert az URL leglátványosabb része könnyen ellenőrizhető, de a veszélyt elsősorban a célpont határozza meg.
+###END
+
+### Q64
+LEVEL: junior
+TOPIC: Supply chain security
+TYPE: theory
+QUESTION: Mit jelent a dependency confusion jellegű supply chain támadás?
+A) A dependency-k fordítás közben véletlenszerűen más architektúrára fordulnak
+B) A package manager nem tudja megkülönböztetni a production és development dependency-ket
+C) A támadó minden esetben közvetlenül feltöri a package registryt
+D) Egy belső package névhez hasonló vagy azzal azonos publikus package miatt a build tévesen rosszindulatú külső csomagot oldhat fel
+ANSWER: D
+EXPLANATION: Dependency confusion esetén a package resolution mechanizmusa egy belsőnek szánt csomagnevet publikus registryből származó csomaggal oldhat fel, ha a konfiguráció ezt lehetővé teszi. Ez különösen veszélyes lehet vállalati build környezetekben. A védekezés része lehet a registry policy, namespace-ek megfelelő használata, package source korlátozása és dependency resolution kontrollja. Azért csábító a problémát registry kompromittálásának tekinteni, mert külső csomag kerül a buildbe, de a támadás gyakran a feloldási mechanizmus kihasználására épül.
+###END
+
+### Q65
+LEVEL: junior
+TOPIC: Logging & incident response
+TYPE: production
+QUESTION: Egy alkalmazásban minden exception stack trace-et közvetlenül visszaadnak a kliensnek production környezetben. Miért jelent ez biztonsági kockázatot?
+A) Mert a stack trace mindig SQL injectiont hajt végre
+B) Mert belső osztályneveket, fájlutakat, konfigurációs részleteket vagy más érzékeny információkat fedhet fel
+C) Mert a stack trace miatt megszűnik a TLS
+D) Mert a böngésző automatikusan admin jogosultságot ad a felhasználónak
+ANSWER: B
+EXPLANATION: A részletes stack trace információt adhat a támadónak az alkalmazás belső felépítéséről, könyvtárairól, fájlrendszeréről és konfigurációjáról. Productionben célszerű általános hibaüzenetet adni, miközben a részletes hibát megfelelően védett szerveroldali logba írják. Azért csábító a teljes stack trace-et visszaadni, mert fejlesztés és hibakeresés során rendkívül hasznos, de productionben információszivárgást okozhat.
+###END
+
+### Q66
+LEVEL: junior
+TOPIC: Threat modeling
+TYPE: algorithm
+QUESTION: Egy csapat egy új funkció threat modelingjét végzi. Melyik sorrend a legésszerűbb kiindulópont?
+A) Azonosítani az eszközöket és adatokat, feltérképezni a folyamatokat és trust boundary-ket, majd azonosítani a fenyegetéseket és kontrollokat
+B) Azonnal penetration testet futtatni anélkül, hogy a rendszert megértenék
+C) Csak a frontend HTML-t átnézni
+D) Először minden lehetséges támadást kódolni, majd megrajzolni az architektúrát
+ANSWER: A
+EXPLANATION: A threat modeling akkor működik jól, ha először megértjük, mit védünk, hogyan mozog az adat, hol vannak trust boundary-k, majd ezek alapján azonosítjuk a releváns fenyegetéseket és szükséges kontrollokat. Így a security döntések már a tervezés során megjelenhetnek. Azért csábító azonnal pentestet futtatni, mert az kézzelfogható biztonsági tesztnek tűnik, de a tesztelés hatékonyságát is javítja, ha előtte értjük a rendszer támadási felületét.
+###END
+
+### Q67
+LEVEL: junior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: debug
+QUESTION: Egy DAST eszköz egy futó alkalmazás egyik endpointját nem tudja elérni, mert authentication szükséges. Mi a legjobb megoldás, ha az endpointot is tesztelni szeretnék?
+A) Az endpoint törlése
+B) A DAST teljes kikapcsolása
+C) A tesztkörnyezetben megfelelő authenticated scanning konfigurációt létrehozni, például tesztfelhasználóval és biztonságos session/token kezelésével
+D) A production authentication kikapcsolása
+ANSWER: C
+EXPLANATION: A DAST csak azt tudja tesztelni, amit megfelelően elér és be tud járni. Authenticated scanning segítségével egy kontrollált tesztidentitás használható a védett endpointok vizsgálatára. A production authentication kikapcsolása biztonsági szempontból elfogadhatatlan lenne. Azért csábító a védett endpointot egyszerűen kihagyni, mert így nincs konfigurációs munka, de jelentős vakfoltot hozna létre a tesztelésben.
+###END
+
+### Q68
+LEVEL: junior
+TOPIC: OWASP Top 10
+TYPE: theory
+QUESTION: Egy fejlesztő azt állítja: "Ha nincs SQL injection az alkalmazásban, akkor az OWASP Top 10 szempontjából biztonságos." Miért hibás ez az állítás?
+A) Mert az SQL injection nem is létezik webalkalmazásokban
+B) Mert az OWASP Top 10 kizárólag infrastruktúrabiztonságról szól
+C) Mert az OWASP Top 10 csak authentication hibákat tartalmaz
+D) Mert számos más alkalmazásbiztonsági kockázat létezik, például hibás authorization, security misconfiguration vagy sérülékeny komponensek
+ANSWER: D
+EXPLANATION: Az OWASP Top 10 több kategórián keresztül mutatja be a jelentős webalkalmazás-biztonsági kockázatokat. Egy alkalmazás lehet SQL injectiontől mentes, miközben például hibás object-level authorization, rossz konfiguráció vagy sérülékeny dependency miatt továbbra is komoly kockázatot hordoz. Azért csábító egyetlen jól ismert sérülékenységtípust a teljes application securityvel azonosítani, mert az SQL injection klasszikus és könnyen demonstrálható példa.
+###END
+
+### Q69
+LEVEL: junior
+TOPIC: Authentication & password storage
+TYPE: performance
+QUESTION: Egy csapat Argon2id password hashinget használ, de a production szervereken a login válaszideje jelentősen megnőtt. Mi a megfelelő security engineering megközelítés?
+A) Az Argon2id azonnali eltávolítása és SHA-1 használata
+B) A password hash teljes kikapcsolása
+C) A paraméterek mérése és biztonságos újrakalibrálása a rendelkezésre álló erőforrásokhoz, megfelelő támadási költség megtartása mellett
+D) A jelszavak plaintext tárolása a gyorsabb login érdekében
+ANSWER: C
+EXPLANATION: A password hashing szándékosan költséges, de a paramétereket úgy kell megválasztani, hogy a rendszer elfogadható felhasználói válaszidőt biztosítson, miközben az offline támadásokat megfelelően drágává teszi. Ezt méréssel és kontrollált benchmarkkal kell meghatározni, nem az algoritmus teljes elhagyásával. Azért csábító a hashing költségét minimálisra csökkenteni, mert az azonnal javítja a login latencyt, de ezzel az offline password cracking is olcsóbbá válik.
+###END
+
+### Q70
+LEVEL: junior
+TOPIC: Sessions & JWT
+TYPE: scenario
+QUESTION: Egy webalkalmazás hosszú élettartamú JWT access tokent használ, és nincs refresh token vagy egyéb token lifecycle mechanizmus. Mi az egyik fő kockázat?
+A) A token kompromittálódása esetén a támadó hosszú ideig használhatja, amíg a token le nem jár vagy más módon érvénytelenné nem válik
+B) A JWT automatikusan minden requestet kétszer küld el
+C) A token rövid élettartamúvá válik
+D) A TLS tanúsítvány lejár
+ANSWER: A
+EXPLANATION: Hosszú élettartamú access token kompromittálódása esetén a támadó a token érvényességi ideje alatt használhatja azt. A kockázatot megfelelő rövid token-élettartam, biztonságos token-kezelés, szükség esetén refresh-token mechanizmus és megfelelő revocation/lifecycle stratégia csökkentheti. Azért csábító hosszú expirationt használni, mert kényelmesebb és kevesebb újrahitelesítést eredményez, de a kompromittált credential expozíciós ideje is hosszabb lesz.
+###END
+
+### Q71
+LEVEL: junior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: trap
+QUESTION: Egy frontend alkalmazás az OAuth 2.0 authorization code flow helyett közvetlenül access tokent kér a böngészőben, mert "így kevesebb lépés van". Miért problémás ez a modern webes környezetben?
+A) Mert az access tokenek csak Java backendekben használhatók
+B) Mert a böngésző soha nem tud HTTPS kapcsolatot létrehozni
+C) Mert a token közvetlenebbül lehet kitéve a böngészőben, és a korszerű flow-k, például authorization code + PKCE, jobb védelmi tulajdonságokat adnak
+D) Mert OAuth 2.0 kizárólag mobilalkalmazásokra készült
+ANSWER: C
+EXPLANATION: A modern public client alkalmazásoknál az authorization code flow PKCE-vel bevett megközelítés, amely csökkenti bizonyos authorization code interception kockázatokat és jobb kliens-hitelesítési tulajdonságokat ad. Az access token közvetlen böngészőoldali kezelése további expozíciós kockázatokat jelenthet. Azért csábító a közvetlen token flow, mert egyszerűbbnek és rövidebbnek tűnik, de a kevesebb lépés nem feltétlenül jelent jobb security posture-t.
+###END
+
+### Q72
+LEVEL: junior
+TOPIC: Authorization & access control
+TYPE: production
+QUESTION: Egy multi-tenant SaaS alkalmazásban a backend minden requestnél ellenőrzi, hogy a user authenticated, de az adatbázis-lekérdezés csak `order_id` alapján keres. Mi a legfontosabb kockázat?
+A) A SQL lekérdezés biztosan lassú lesz
+B) Egy tenant felhasználója más tenant erőforrását is elérheti, ha ismeri annak azonosítóját
+C) A HTTPS nem fog működni
+D) A session cookie automatikusan törlődik
+ANSWER: B
+EXPLANATION: Multi-tenant környezetben az authentication önmagában nem választja el az egyes tenantok adatait. A lekérdezésnek és az authorization logikának biztosítania kell, hogy a felhasználó csak a saját tenantjához tartozó erőforrásokat érhesse el. Ennek hiánya cross-tenant data access vagy BOLA jellegű problémához vezethet. Azért csábító csak az objektumazonosítót használni, mert az egyedileg azonosítja a rekordot, de nem fejezi ki annak tenant-hovatartozását.
+###END
+
+### Q73
+LEVEL: junior
+TOPIC: Cryptography & TLS
+TYPE: output
+QUESTION: Egy TLS kapcsolat során a kliens figyelmeztetést kap, hogy a szerver tanúsítványa nem megbízható. A fejlesztő azt javasolja, hogy productionben egyszerűen kapcsolják ki a certificate validationt. Miért veszélyes ez?
+A) Mert ettől minden HTTP kérés POST lesz
+B) Mert a TLS titkosítása automatikusan megszűnik
+C) Mert a kapcsolat lassabb lesz
+D) Mert lehetővé teheti, hogy a kliens egy támadó által kontrollált szerverrel kommunikáljon, miközben azt a várt szervernek hiszi
+ANSWER: D
+EXPLANATION: A TLS nemcsak titkosítást, hanem megfelelő tanúsítvány- és hostname-ellenőrzés mellett a szerver identitásának hitelesítését is biztosítja. Ha ezt kikapcsolják, egy támadó által kontrollált végpont is elfogadhatóvá válhat, ami klasszikus man-in-the-middle helyzethez vezethet. Azért csábító a validation kikapcsolása, mert fejlesztési környezetben gyorsan megszünteti a certificate hibákat, de productionben ez a TLS egyik alapvető biztonsági tulajdonságát távolítja el.
+###END
+
+### Q74
+LEVEL: junior
+TOPIC: Security headers & CSP
+TYPE: production
+QUESTION: Egy alkalmazásban CSP-t vezetnek be, de a policy mindenhol `script-src 'unsafe-inline'` értéket használ. Miért gyengíti ez a CSP XSS elleni védelmi értékét?
+A) Mert az `unsafe-inline` engedélyezi az inline script és bizonyos inline script-szerű végrehajtási formák használatát
+B) Mert az `unsafe-inline` letilt minden külső scriptet
+C) Mert az `unsafe-inline` bekapcsolja a CORS-t
+D) Mert az `unsafe-inline` automatikusan letiltja a TLS-t
+ANSWER: A
+EXPLANATION: Az `unsafe-inline` lehetővé teszi az inline JavaScript használatát, amely jelentősen csökkenti egy szigorú CSP azon képességét, hogy az injected inline script végrehajtását megakadályozza. Modern CSP-kben gyakran nonce- vagy hash-alapú scriptengedélyezés használható szigorúbb kontrollhoz. Azért csábító az `unsafe-inline` engedélyezése, mert meglévő alkalmazásoknál könnyen kompatibilissé teszi a CSP-t, de ezzel jelentős biztonsági védelmet engedünk fel.
+###END
+
+### Q75
+LEVEL: junior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: scenario
+QUESTION: Egy SAST eszköz egy egyszerű helper metóduson keresztül adatbázisba írt felhasználói inputot jelez SQL injectionként. A fejlesztő szerint ez biztosan false positive. Mi a legjobb security engineering megközelítés?
+A) Minden SAST findingot automatikusan elfogadni
+B) A findingot azonnal törölni a scannerből
+C) Követni az adatfolyamot a source-tól a sinkig, ellenőrizni a tényleges query-building és parameterization mechanizmust, majd ennek alapján eldönteni a finding státuszát
+D) A teljes adatbázis lecserélése
+ANSWER: C
+EXPLANATION: A statikus elemző által jelzett findingot nem célszerű sem automatikusan valósnak, sem automatikusan false positive-nak tekinteni. A source-to-sink adatfolyam vizsgálatával meg kell állapítani, hogy a felhasználói adat valóban eljut-e veszélyes SQL sinkhez, és történik-e megfelelő paraméterezés. Ez alapján lehet indokolt a finding javítása vagy dokumentált false positive-ként való kezelése. Azért csábító azonnal false positive-nak minősíteni, mert a helper réteg elrejtheti a tényleges adatfolyamot, de éppen ezt kell először bizonyítani.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: Injection
+TYPE: debug
+QUESTION: Egy Java alkalmazásban a fejlesztő az alábbi kódot használja kereséshez. Mi a legfontosabb javítás?
+CODE:
+String sql = "SELECT id, name FROM users WHERE name = '" + name + "'";
+Statement statement = connection.createStatement();
+ResultSet rs = statement.executeQuery(sql);
+ENDCODE
+A) A `name` értéket URL-encode-olni kell SQL futtatás előtt.
+B) A `name` értéket Base64-be kell kódolni.
+C) PreparedStatement használata és a `name` paraméterként történő bindolása.
+D) A bemeneti értékből minden aposztrófot el kell távolítani.
+ANSWER: C
+EXPLANATION: A PreparedStatement külön kezeli az SQL szerkezetét és a paraméterértéket, ezért a bemenet nem tudja ugyanúgy módosítani a lekérdezés szerkezetét. Az URL- vagy Base64-kódolás nem SQL-biztonsági mechanizmus, az aposztrófok kézi eltávolítása pedig könnyen megkerülhető és hibás lehet.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: XSS
+TYPE: behavior
+QUESTION: Egy SPA egy URL query paraméterből származó értéket jelenít meg. A fejlesztő `innerHTML` helyett `textContent`-et használ. Mi történik egy olyan bemenettel, mint `<img src=x onerror=alert(1)>`?
+A) A böngésző HTML-ként értelmezi, de az eseménykezelőt letiltja.
+B) A tartalom szövegként jelenik meg, ezért az adott sinken keresztül nem jön létre HTML elem.
+C) A böngésző automatikusan eltávolítja az `onerror` attribútumot.
+D) A JavaScript kód ugyanúgy lefut, mert a query paraméter megbízhatatlan.
+ANSWER: B
+EXPLANATION: A `textContent` a bemenetet szövegként kezeli, ezért a `<img ...>` karakterei nem HTML markupként kerülnek feldolgozásra. Az `innerHTML` használata lenne veszélyes ebben a helyzetben, mert HTML parsingot indít.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: CSRF
+TYPE: edgecase
+QUESTION: Egy alkalmazás session cookie-ja `SameSite=Lax`, és egy támadó egy másik oldalról POST kérést próbál küldeni az alkalmazásnak. Melyik állítás írja le helyesen a helyzetet?
+A) A `SameSite=Lax` minden cross-site kérést automatikusan engedélyez.
+B) A `SameSite=Lax` teljes körű CSRF-védelmet biztosít minden alkalmazási környezetben.
+C) A cookie mindig elküldésre kerül, ha a kérés HTTPS.
+D) A `SameSite=Lax` korlátozza a cross-site cookie-küldést, de az alkalmazásnak továbbra is megfelelő CSRF-védelmet és állapotváltoztató műveletek ellenőrzését kell alkalmaznia.
+ANSWER: D
+EXPLANATION: A `SameSite=Lax` jelentősen csökkenti bizonyos cross-site cookie-alapú támadások lehetőségét, de nem tekinthető minden környezetben önmagában elegendő védelemnek. Különösen az alkalmazás által támogatott request-típusokat és autentikációs mechanizmusokat is figyelembe kell venni.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: Authentication & password storage
+TYPE: scenario
+QUESTION: Egy jelszó-visszaállító endpoint minden kérésre azonnal azt válaszolja, hogy „A megadott e-mail címhez nem tartozik fiók”. Milyen biztonsági problémát okozhat ez?
+A) Lehetővé teszi a felhasználói fiókok létezésének felderítését.
+B) Automatikusan lehetővé teszi a jelszó módosítását.
+C) Megakadályozza a rate limiting alkalmazását.
+D) A session cookie titkosítását töri fel.
+ANSWER: A
+EXPLANATION: Az eltérő válasz alapján egy támadó meg tudja különböztetni a létező és nem létező fiókokat, ami account enumerationhöz vezethet. Az egységes válaszüzenet és megfelelő rate limiting csökkenti ezt a problémát.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Sessions & JWT
+TYPE: trap
+QUESTION: Egy backend JWT access tokent fogad el, és csak a token dekódolt payloadját ellenőrzi, például az `exp` mezőt, de nem ellenőrzi a token aláírását. Mi a legsúlyosabb probléma?
+A) A token túl hosszú lehet.
+B) A JWT nem lesz Base64-kompatibilis.
+C) A kliens nem tudja majd frissíteni a tokent.
+D) A támadó módosíthatja a tokenben lévő claim-eket, és az alkalmazás hamis identitást vagy jogosultságot fogadhat el.
+ANSWER: D
+EXPLANATION: A JWT payload Base64URL-kódolt adat, nem önmagában megbízható állítás. Az aláírás vagy megfelelő MAC ellenőrzése nélkül a kliens által módosított claim-ek hitelesnek tűnhetnek. A payload dekódolása és az aláírás validálása két külön művelet.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: scenario
+QUESTION: Egy webalkalmazás authorization code flow-t használ, de az OAuth callbackben nem ellenőrzi a `state` értéket. Miért jelent ez problémát?
+A) A refresh token mindig automatikusan lejár.
+B) Az authorization code rövidebb lesz.
+C) Az alkalmazás nem tudja megállapítani, hogy a callback ugyanahhoz a böngészőfolyamathoz tartozik-e, ami login CSRF jellegű támadásokhoz vezethet.
+D) Az ID token nem tartalmazhat `sub` claimet.
+ANSWER: C
+EXPLANATION: A `state` összeköti az authorization requestet a callbackkel, így a kliens ellenőrizheti, hogy a válasz a saját kezdeményezett folyamatához tartozik-e. Ennek hiányában egy támadó manipulált authorization response-ot próbálhat egy másik felhasználó böngészőjéhez kötni.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: Authorization & access control
+TYPE: production
+QUESTION: Egy multi-tenant alkalmazásban az endpoint `/api/orders/{id}` csak azt ellenőrzi, hogy a felhasználó be van-e jelentkezve. Az order lekérdezése kizárólag az `id` alapján történik. Mi a helyes javítás?
+A) A frontendben el kell rejteni az order ID-ket.
+B) A backendnek az order lekérdezésekor és a művelet végrehajtásakor is ellenőriznie kell a tenant- és felhasználói jogosultsági kontextust.
+C) Az order ID-ket hosszabb integerre kell cserélni.
+D) A kliensnek minden kéréshez új sessiont kell létrehoznia.
+ANSWER: B
+EXPLANATION: Az objektumazonosító önmagában nem bizonyítja, hogy a felhasználó hozzáférhet az objektumhoz. A szerveroldali authorization checknek a tenantot és az adott művelethez szükséges jogosultságot is figyelembe kell vennie. Az ID elrejtése vagy megváltoztatása nem jelent hozzáférés-vezérlést.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: Cryptography & TLS
+TYPE: theory
+QUESTION: Miért nem elegendő önmagában az, hogy egy alkalmazás HTTPS-en keresztül kommunikál?
+A) Mert a HTTPS kizárólag a DNS-t titkosítja.
+B) Mert a TLS nem biztosít szerverhitelesítést.
+C) Mert a HTTPS csak POST kéréseket véd.
+D) Mert a TLS a kommunikációs csatornát védi, miközben az alkalmazásnak továbbra is helyesen kell kezelnie az autorizációt, inputot, sessionöket és az üzleti logikát.
+ANSWER: D
+EXPLANATION: A TLS a hálózati kommunikáció bizalmasságát és integritását, valamint megfelelő konfiguráció mellett a szerver hitelesítését segíti. Nem akadályozza meg például a hibás authorization checkeket vagy az alkalmazási szintű injection támadásokat.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: Security headers & CSP
+TYPE: debug
+QUESTION: Egy alkalmazás CSP-je a következő:
+CODE:
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'
+ENDCODE
+A fejlesztő azt állítja, hogy ez teljes körűen megakadályozza az inline XSS-t. Miért hibás az állítás?
+A) Az `unsafe-inline` kifejezetten engedélyezi az inline script-ek bizonyos formáit, ezért gyengíti a CSP scriptvédelmét.
+B) A `default-src 'self'` automatikusan letilt minden JavaScriptet.
+C) A CSP csak képekre vonatkozik.
+D) Az `unsafe-inline` kizárólag CSS-re vonatkozik.
+ANSWER: A
+EXPLANATION: Az `unsafe-inline` engedélyezi az inline JavaScript bizonyos formáinak végrehajtását, így jelentősen csökkenti az ilyen CSP célját. Erősebb megoldás a nonce- vagy hash-alapú scriptengedélyezés, a megfelelő alkalmazási környezetben.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: CORS
+TYPE: behavior
+QUESTION: Egy API ezt küldi:
+CODE:
+Access-Control-Allow-Origin: https://app.example.com
+ENDCODE
+A kérés `https://admin.example.com` originről érkezik. A felhasználó érvényes session cookie-val rendelkezik. Mi történik egy böngészőből indított cross-origin fetch esetén?
+A) A böngésző automatikusan figyelmen kívül hagyja a CORS szabályt, mert a cookie érvényes.
+B) A szerver minden esetben 401-et fog válaszolni.
+C) A böngésző CORS miatt nem engedi a JavaScriptnek hozzáférni a válaszhoz, ha a válasz nem engedélyezi ezt az origint.
+D) A CORS automatikusan megváltoztatja az origin fejlécet.
+ANSWER: C
+EXPLANATION: A CORS a böngésző cross-origin hozzáférési szabálya. A szerver akár feldolgozhatja is a kérést, de a böngésző nem teszi elérhetővé a választ a JavaScript számára, ha az origin nincs megfelelően engedélyezve. A session cookie megléte nem helyettesíti a CORS konfigurációt.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: Egy production API kulcs véletlenül bekerült egy Git repositoryba, majd a commitot eltávolították a branch aktuális állapotából. Mi legyen az elsődleges biztonsági intézkedés?
+A) Csak a repository README-jét kell módosítani.
+B) A kulcsot kompromittáltnak kell tekinteni, vissza kell vonni vagy rotálni, és meg kell vizsgálni a repository történetét és a lehetséges használatát.
+C) A repositoryt private-ra kell állítani, és a régi kulcs változatlan maradhat.
+D) A kulcsot Base64-be kell kódolni.
+ANSWER: B
+EXPLANATION: Egy már publikált secretet nem tesz biztonságossá az, hogy az aktuális fájlból eltávolították. A kulcs rotációja vagy revokációja megszünteti a régi credential használhatóságát, miközben az incidens kivizsgálása feltárhatja az esetleges jogosulatlan használatot.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: Input validation & deserialization
+TYPE: edgecase
+QUESTION: Egy Java API polimorf JSON deszerializációt használ, és a kliens által küldött típusinformáció alapján különböző Java osztályokat példányosít. Mi a biztonságosabb megközelítés?
+A) Minden osztály engedélyezése, mert a JSON nem tartalmazhat Java kódot.
+B) A kliens által küldött típusnevet egyszerűen lowercase-re kell alakítani.
+C) A deszerializálást csak Base64-dekódolás után szabad elvégezni.
+D) Explicit, korlátozott típuslistát és biztonságos DTO-kat kell használni, és kerülni kell a nem megbízható input tetszőleges osztályokra történő bindolását.
+ANSWER: D
+EXPLANATION: A nem megbízható típusinformáció veszélyes lehet, ha az alkalmazás tetszőleges osztályok példányosítását engedi. Az explicit allowlist és a domainhez illeszkedő DTO-k csökkentik a váratlan objektumok és veszélyes gadget-láncok kockázatát.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: SSRF
+TYPE: edgecase
+QUESTION: Egy szerver az URL-t csak úgy ellenőrzi, hogy az URL hostname része nem lehet pontosan `127.0.0.1`. Ezután HTTP klienssel lekéri az URL-t. Miért nem megfelelő ez a védelem?
+A) Mert a HTTP kliens soha nem tud localhostra kapcsolódni.
+B) Mert csak HTTPS esetén létezik SSRF.
+C) Mert az ellenőrzés nem feltétlenül védi ki a DNS-feloldást, redirecteket és egyéb címzési trükköket, amelyek belső címre vezethetik a kérést.
+D) Mert a 127.0.0.1 mindig nyilvános IP-cím.
+ANSWER: C
+EXPLANATION: Az SSRF-védelemnél nem elég egyetlen hostname string összehasonlítása. A végső hálózati célpontot, az IP-címek típusát, a redirecteket és a kliens hálózati útvonalát is kontrollálni kell. A puszta string-alapú blacklist könnyen megkerülhető.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: Supply chain security
+TYPE: production
+QUESTION: Egy CI pipeline automatikusan frissíti az összes dependencyt minden build előtt a legújabb elérhető verzióra. Mi a fő biztonsági és üzemeltetési probléma?
+A) A build determinisztikussága és az ismert dependency-állapot elveszhet, valamint egy kompromittált vagy hibás új verzió automatikusan bekerülhet.
+B) A dependency-k nem használhatnak verziószámot.
+C) A CI pipeline csak lokális gépen futhat.
+D) A package manager nem tud tranzitív dependencyket kezelni.
+ANSWER: A
+EXPLANATION: A kontroll nélküli automatikus frissítés növeli a supply chain kockázatát és nehezíti annak meghatározását, hogy pontosan milyen dependency-verzió futott productionben. A verziók kontrollált frissítése, lockfile-ok, review és megfelelő automatizált ellenőrzések reprodukálhatóbbá és auditálhatóbbá teszik a buildet.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Logging & incident response
+TYPE: scenario
+QUESTION: Egy webalkalmazás minden sikertelen loginhoz csak a felhasználó által megadott e-mail címet logolja, de nincs timestamp, source context vagy request/correlation ID. Miért nehéz így egy credential stuffing támadás kivizsgálása?
+A) Mert az e-mail cím önmagában mindig titkos adat.
+B) Mert a logok nem tartalmazhatnak szöveget.
+C) Mert a login sikertelensége önmagában lehetetlenül sok eseményt generál.
+D) Mert a megfelelő időbeli, kliens- és kéréskontekstus nélkül nehéz eseményeket összekapcsolni, mintázatokat felismerni és az érintett rendszereket azonosítani.
+ANSWER: D
+EXPLANATION: Az incidensvizsgálathoz fontos az időpont, a releváns klienskontekstus, a célfiók és lehetőség szerint egy korrelációs azonosító. Ezek segítségével az események összekapcsolhatók anélkül, hogy érzékeny autentikációs titkokat kellene logolni.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Threat modeling
+TYPE: algorithm
+QUESTION: Egy új rendszer threat modelingjét kezded el. Melyik sorrend a legcélszerűbb?
+A) Először kiválasztani a titkosítási algoritmusokat, majd felrajzolni az architektúrát.
+B) Azonosítani az eszközöket és adatokat, feltérképezni az adatfolyamokat és trust boundaryket, majd azonosítani a releváns fenyegetéseket és kontrollokat.
+C) Először minden lehetséges támadót listázni, a rendszer megértése nélkül.
+D) Először penetration testet futtatni productionben.
+ANSWER: B
+EXPLANATION: A threat modeling először a rendszer és annak bizalmi határainak megértésére épül, majd ezek alapján lehet a fenyegetéseket és kontrollokat azonosítani. A kontrollok kiválasztása az architektúra és a fenyegetési modell ismerete nélkül könnyen irreleváns vagy hiányos lesz.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: scenario
+QUESTION: Egy SAST eszköz SQL injection gyanút jelez egy repositoryban. A kód azonban egy belső utilityn keresztül egy paraméterezett query builderhez továbbítja az adatot. Mi a legjobb következő lépés?
+A) Azonnal törölni a findinget, mert a SAST tévedhet.
+B) Az egész repositoryt újraírni.
+C) A teljes source-to-sink adatfolyamot ellenőrizni, és bizonyítani, hogy a bemenet valóban paraméterezett módon jut el az adatbázisréteghez.
+D) Kikapcsolni az SQL injection szabályt minden projekten.
+ANSWER: C
+EXPLANATION: A SAST finding önmagában nem bizonyít sebezhetőséget. A forrásból a sinkig követett adatfolyam megmutatja, hogy a bemenet valóban elérheti-e veszélyes SQL-konstrukcióként az adatbázist. A false positive elutasításához technikai bizonyíték szükséges, nem pusztán az eszközben való bizalom vagy bizalmatlanság.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: Injection
+TYPE: trap
+QUESTION: Egy fejlesztő az SQL injection ellen ezt a megoldást használja:
+CODE:
+String safe = input.replace("'", "''");
+String sql = "SELECT * FROM users WHERE name = '" + safe + "'";
+ENDCODE
+Miért nem ez a preferált általános védelem?
+A) Mert a string replacement mindig gyorsabb a PreparedStatementnél.
+B) Mert az SQL nem használhat string literálokat.
+C) Mert az aposztrófok duplázása minden SQL dialektusban ugyanúgy működik.
+D) Mert az escaping dialektus- és kontextusfüggő, könnyen hibásan alkalmazható, míg a paraméterezett query a kód és az adat strukturális szétválasztását biztosítja.
+ANSWER: D
+EXPLANATION: A kézi escaping könnyen hibás lehet különböző adatbázisok, SQL-kontekstusok vagy későbbi módosítások esetén. A paraméterezett lekérdezés célzottan azt biztosítja, hogy az input értékként, ne SQL-szintaxisként legyen kezelve.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: XSS
+TYPE: production
+QUESTION: Egy alkalmazásnak felhasználói által megadott rich text tartalmat kell HTML-ként megjelenítenie. Mi a megfelelő megközelítés?
+A) A HTML-t minden esetben változtatás nélkül renderelni, mert a felhasználó saját tartalma.
+B) Csak a `<script>` tageket eltávolítani.
+C) Megbízható HTML sanitizert használni megfelelő allowlisttel, és a veszélyes attribútumokat, URL-sémákat és struktúrákat is kezelni.
+D) A teljes HTML-t Base64-be kódolni, majd a böngészőben visszakódolni.
+ANSWER: C
+EXPLANATION: Rich text esetén a puszta output escaping megváltoztatná a kívánt HTML jelentését, ezért kontrollált sanitization szükséges. A sanitizationnak nemcsak `<script>` elemeket kell kezelnie, hanem például veszélyes eseménykezelőket és URL-eket is.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: Authentication & password storage
+TYPE: performance
+QUESTION: Egy alkalmazás Argon2id használatára vált, de a jelszó-hash művelet productionben olyan lassú, hogy jelentősen növeli a login latencyt és CPU-terhelést. Mi a helyes megközelítés?
+A) Visszaállni gyors hash-re, például SHA-256-ra.
+B) Minden felhasználónál ugyanazt a saltot használni a teljesítmény javítására.
+C) Kikapcsolni a password hashinget és csak TLS-re támaszkodni.
+D) Az Argon2id paramétereit a production erőforrásokra benchmarkolni és úgy beállítani, hogy megfelelő támadási költség mellett elfogadható legyen a normál login terhelése.
+ANSWER: D
+EXPLANATION: A password hashingnél a cél nem a maximális késleltetés, hanem a támadások költségének növelése a legitim műveletek elfogadható teljesítménye mellett. A paramétereket valós környezetben kell mérni és idővel újrakalibrálni, miközben minden jelszóhoz egyedi salt marad.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: Sessions & JWT
+TYPE: edgecase
+QUESTION: Egy JWT access tokenben szerepel `exp`, `iss` és `aud`, de a resource server csak az aláírást ellenőrzi. Miért nem elegendő ez?
+A) Mert az aláírás ellenőrzése után minden claim automatikusan igaznak tekinthető.
+B) Mert az `iss` és `aud` ellenőrzése segít biztosítani, hogy a token a megfelelő issuerhez és erőforráshoz tartozik, az `exp` pedig az érvényességi időt korlátozza.
+C) Mert JWT-ben nem használható `aud` claim.
+D) Mert az `exp` kizárólag a frontend számára értelmezhető.
+ANSWER: B
+EXPLANATION: Az érvényes aláírás azt bizonyítja, hogy a token egy megbízható kulccsal készült, de önmagában nem garantálja, hogy az adott token ezt a resource servert célozza, megfelelő issuerből származik és még érvényes. Az `iss`, `aud` és időbeli claim-ek validálása ezért az alkalmazás biztonsági döntésének része.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: production
+QUESTION: Egy mobil/public kliens authorization code flow-t használ PKCE nélkül. Miért jelent ez problémát?
+A) Mert PKCE nélkül az access token soha nem lehet rövid életű.
+B) Mert PKCE csak confidential backend kliensekhez használható.
+C) Mert az authorization code elfogása esetén nincs olyan code verifierhez kötött bizonyíték, amely megakadályozná annak jogosulatlan beváltását.
+D) Mert PKCE titkosítja az ID tokent.
+ANSWER: C
+EXPLANATION: A PKCE a code flow-t egy kliensoldali titokként kezelt, dinamikusan létrehozott verifierhez köti. Ha az authorization code illetéktelen félhez kerül, a verifier hiánya megakadályozhatja a code tokenre váltását. A PKCE nem az ID token titkosítására szolgál.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: Authorization & access control
+TYPE: scenario
+QUESTION: Egy alkalmazásban egy felhasználó `manager` szerepkört kap. A manager jogosult a saját csapatának rekordjait módosítani, de nem minden rekordot. Melyik authorization modell fejezi ki ezt jobban, mint egy egyszerű globális role check?
+A) Olyan policy, amely a felhasználó szerepkörét és az adott erőforrás tulajdonosi vagy szervezeti kapcsolatát is figyelembe veszi.
+B) Egy frontendben tárolt `isManager` boolean.
+C) Egyetlen globális `isAdmin()` ellenőrzés.
+D) Az összes rekord ID-jának elrejtése a kliensből.
+ANSWER: A
+EXPLANATION: Ilyen esetben a jogosultság nemcsak a szerepkörtől, hanem az erőforráshoz való konkrét kapcsolattól is függ. A resource- vagy attribute-alapú policy képes kifejezni például azt, hogy a manager csak a saját szervezeti egységéhez tartozó rekordokat módosíthatja.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: SSRF
+TYPE: scenario
+QUESTION: Egy URL-fetching szolgáltatás engedélyez egy külső URL-t, majd követi a HTTP redirecteket. A kezdeti URL publikus domainre mutat, de az átirányítás végül egy belső hálózati címre vezet. Miért veszélyes ez?
+A) Mert a redirect kizárólag böngészőkben működik.
+B) Mert a végső célpont eltérhet attól a célponttól, amelyet az első URL validálásakor ellenőriztek.
+C) Mert HTTPS redirect esetén a TLS mindig megszűnik.
+D) Mert egy publikus domain soha nem használhat redirectet.
+ANSWER: B
+EXPLANATION: SSRF-védelemnél nem elég csak a kezdeti URL-t ellenőrizni, ha a HTTP kliens automatikusan követi a redirecteket. Minden végső hálózati célpontot megfelelően kell validálni, vagy a redirecteket korlátozni kell, hogy a belső hálózat ne legyen elérhető a fetcheren keresztül.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: Supply chain security
+TYPE: scenario
+QUESTION: Egy dependency scanner kritikus sérülékenységet jelez egy könyvtárban. A projekt ezt a könyvtárat közvetlenül nem használja, csak egy tranzitív dependency hozza be. Mi a helyes első lépés?
+A) Azonnal figyelmen kívül hagyni, mert a dependency nem közvetlen.
+B) Azonnal törölni minden dependencyt.
+C) Csak a package nevét megváltoztatni.
+D) Megvizsgálni a pontos dependency tree-t, az érintett verziót, a sérülékeny komponens tényleges használatát és az elérhető javítást vagy mitigációt.
+ANSWER: D
+EXPLANATION: Egy tranzitív dependency is futó kód része lehet, ezért a közvetettség önmagában nem jelenti azt, hogy a finding irreleváns. A tényleges dependency tree, verzió és használati útvonal alapján lehet meghatározni a kockázatot és a megfelelő javítást. A puszta package-név vagy közvetlenség alapján történő elutasítás félrevezető lehet.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: Injection
+TYPE: output
+QUESTION: Mi lesz a lekérdezés eredménye az alábbi Python-kódban, ha a `username` értéke `admin' OR '1'='1`?
+CODE:
+username = "admin' OR '1'='1"
+query = "SELECT id FROM users WHERE username = '" + username + "'"
+print(query)
+ENDCODE
+A) `SELECT id FROM users WHERE username = 'admin' OR '1'='1'`
+B) `SELECT id FROM users WHERE username = 'admin' OR 1=1'`
+C) `SELECT id FROM users WHERE username = 'admin'' OR ''1''=''1'`
+D) A Python automatikusan SQL-paraméterré alakítja a bemenetet.
+ANSWER: A
+EXPLANATION: A string konkatenáció változtatás nélkül beilleszti a bemenetet az SQL-be, ezért az `OR '1'='1'` feltétel az eredeti feltétel mellett jelenik meg. Ez klasszikus SQL injection minta; a legfontosabb védelem a paraméterezett query használata.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: XSS
+TYPE: edgecase
+QUESTION: Egy alkalmazás HTML attribútumba helyez be egy felhasználói értéket. A fejlesztő HTML body escapinget használ, de nem escape-eli megfelelően az attribútum kontextust. Miért lehet ez veszélyes?
+A) Mert az attribútumokban soha nem lehet felhasználói adatot használni.
+B) Mert az escapingnek a kimeneti kontextushoz kell igazodnia; a HTML body és az attribútum kontextusa eltérő szabályokat igényelhet.
+C) Mert minden HTML escaping automatikusan JavaScript-kódot generál.
+D) Mert a böngésző minden attribútumot szerveroldalon értelmez.
+ANSWER: B
+EXPLANATION: Az output encoding kontextusfüggő. A HTML szöveges tartalom, attribútumérték, JavaScript, CSS és URL kontextusok eltérő parsing szabályokkal rendelkeznek, ezért egy általános escaping rutin nem feltétlenül biztonságos minden helyen.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: CSRF
+TYPE: scenario
+QUESTION: Egy alkalmazás cookie-alapú autentikációt használ. Egy state-changing POST endpoint nem követel CSRF tokent, és a session cookie `SameSite=None; Secure`. Miért különösen fontos itt explicit CSRF-védelmet alkalmazni?
+A) Mert a `Secure` attribútum kikapcsolja a HTTPS-t.
+B) Mert a `SameSite=None` megakadályozza a cross-site kéréseket.
+C) Mert a cookie csak localhoston működik.
+D) Mert a `SameSite=None` lehetővé teszi a cross-site cookie-küldést, ezért egy támadó másik originről is kezdeményezhet olyan kérést, amelyhez a böngésző automatikusan csatolja a session cookie-t.
+ANSWER: D
+EXPLANATION: A `SameSite=None` cookie-k cross-site kontextusban is küldhetők, ezért cookie-alapú session esetén önmagában nem nyújt CSRF-védelmet. State-changing műveleteknél megfelelő CSRF-token vagy más erős védelem szükséges.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: Authentication & password storage
+TYPE: production
+QUESTION: Egy password reset token adatbázisban plaintext formában van tárolva. Egy adatbázis-leak esetén mi a probléma, ha a tokenek még nem jártak le?
+A) A támadó közvetlenül felhasználhatja az érvényes tokeneket jelszó-visszaállításra.
+B) A tokenek automatikusan újrahash-elődnek a leak után.
+C) A session cookie-k érvénytelenné válnak.
+D) A TLS kapcsolat megszakad.
+ANSWER: A
+EXPLANATION: Ha a reset token bearer credentialként működik, annak birtoklása elegendő lehet a jelszó módosításához. A tokeneket célszerű megfelelően védeni, például csak hash formában tárolni, és rövid élettartammal, egyszeri felhasználással és revokációs mechanizmussal kezelni.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: Sessions & JWT
+TYPE: production
+QUESTION: Egy alkalmazás access tokenként JWT-t használ, amelynek élettartama 24 óra. A biztonsági csapat azt szeretné, hogy egy ellopott token kompromittálódása után gyorsan csökkenthető legyen a hozzáférési időablak. Melyik megközelítés segít közvetlenül ezen?
+A) A JWT payload Base64URL-kódolásának megváltoztatása.
+B) Az access token élettartamának jelentős csökkentése és szükség esetén rövid életű tokenek megújítása megfelelő refresh-token mechanizmussal.
+C) Az `aud` claim eltávolítása.
+D) A JWT-k JSON helyett XML-ben történő tárolása.
+ANSWER: B
+EXPLANATION: A rövid életű access token korlátozza azt az időt, ameddig egy ellopott token használható maradhat. A refresh token külön kezelhető, és megfelelő rotációval, revokációval és tárolással biztonságosabb tokenéletciklus alakítható ki.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: edgecase
+QUESTION: Egy OIDC kliens egy ID tokent kap, amelynek `aud` claimje nem tartalmazza a kliens saját client ID-ját, de az aláírás érvényes. Miért nem szabad elfogadni a tokent?
+A) Mert az ID tokenek nem lehetnek aláírva.
+B) Mert az `aud` csak access tokenekben használható.
+C) Mert az érvényes aláírás önmagában nem bizonyítja, hogy az ID token az adott kliensnek lett kiadva.
+D) Mert az OIDC nem használ `client_id` értéket.
+ANSWER: C
+EXPLANATION: Az ID tokennek az adott OIDC klienshez kell tartoznia. Az `aud` validálása biztosítja, hogy a token célközönsége megfelel a kliensnek; egy másik kliensnek kiadott, bár érvényesen aláírt token nem használható automatikusan ebben a kontextusban.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Authorization & access control
+TYPE: debug
+QUESTION: Egy REST API-ban a fejlesztő az alábbi ellenőrzést használja egy dokumentum módosítására:
+CODE:
+if (currentUser.hasRole("EDITOR")) {
+    documentService.update(documentId, request);
+}
+ENDCODE
+Az alkalmazásban az editorok csak a saját projektjük dokumentumait módosíthatják. Mi hiányzik az ellenőrzésből?
+A) A felhasználó jelszavának újra bekérése minden update előtt.
+B) A `documentId` kliensoldali titkosítása.
+C) Annak ellenőrzése, hogy a dokumentum a felhasználó által módosítható projekthez vagy erőforráskörhöz tartozik.
+D) Az HTTP metódus GET-re módosítása.
+ANSWER: C
+EXPLANATION: A szerepkör önmagában csak egy általános jogosultsági információ. A resource-level authorizationnak azt is ellenőriznie kell, hogy az adott dokumentum a felhasználó által kezelhető projektbe vagy erőforráskörbe tartozik. A frontend vagy az azonosító elrejtése nem helyettesíti ezt a szerveroldali ellenőrzést.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: Cryptography & TLS
+TYPE: scenario
+QUESTION: Egy mobilalkalmazás fejlesztője saját tanúsítvány-ellenőrzést ír, amely csak azt vizsgálja, hogy a tanúsítvány Common Name mezője megegyezik-e a hostnévvel. Miért nem elegendő ez?
+A) Mert a Common Name mindig titkosított.
+B) Mert a TLS-ben nincs hostname ellenőrzés.
+C) Mert a tanúsítványt nem kell ellenőrizni mobilalkalmazásokban.
+D) Mert a TLS tanúsítvány-validációja több tényezőt foglal magában, például a megbízhatósági láncot, érvényességet, megfelelő hostname-ellenőrzést és egyéb policy-ket.
+ANSWER: D
+EXPLANATION: A tanúsítvány Common Name mezőjének puszta összehasonlítása nem ellenőrzi a teljes tanúsítványláncot és annak érvényességét. A TLS stack szabványos hostname- és certificate validation mechanizmusait kell használni a saját, hiányos ellenőrzés helyett.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: Security headers & CSP
+TYPE: production
+QUESTION: Egy webalkalmazás dinamikusan generál inline script elemeket, és erős CSP-t szeretne használni `unsafe-inline` nélkül. Melyik megközelítés alkalmas erre?
+A) Minden scriptet `eval()` segítségével futtatni.
+B) Minden scriptet `http://*` forrásból engedélyezni.
+C) Egy megfelelően generált nonce használata a CSP-ben és az engedélyezett inline script elemeken.
+D) A CSP teljes eltávolítása productionből.
+ANSWER: C
+EXPLANATION: Egy egyedi, megfelelően generált nonce lehetővé teszi a konkrét engedélyezett inline script-ek végrehajtását anélkül, hogy minden inline scriptet általánosan engedélyeznénk. A nonce-t megfelelően kell generálni és minden response esetén kezelni.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: CORS
+TYPE: trap
+QUESTION: Egy fejlesztő azért állítja be ezt:
+CODE:
+Access-Control-Allow-Origin: *
+ENDCODE
+mert azt szeretné, hogy az API-t „bármilyen kliens biztonságosan használhassa”. Mi a legfontosabb probléma ezzel az érveléssel?
+A) A `*` csak POST kérésekre érvényes.
+B) A `*` önmagában nem jelent hitelesítést vagy authorizationt, és nem teszi biztonságossá az API-t.
+C) A `*` automatikusan bekapcsolja a cookie-küldést.
+D) A `*` minden esetben letiltja a preflight kéréseket.
+ANSWER: B
+EXPLANATION: A CORS azt szabályozza, hogy egy böngészőből futó script hozzáférhet-e cross-origin válaszokhoz; nem helyettesíti az autentikációt vagy authorizationt. A wildcard különösen nem jelent „bármilyen kliens számára megbízható” hozzáférést.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: Secrets management
+TYPE: scenario
+QUESTION: Egy Kubernetes alkalmazás secretet használ adatbázis-jelszó tárolására. A fejlesztő azt állítja, hogy a Kubernetes Secret használata önmagában garantálja, hogy az adatbázis-jelszó titkosítva van mindenhol. Miért pontatlan ez?
+A) Mert a Kubernetes Secret soha nem tartalmazhat jelszót.
+B) Mert a Secret csak Java alkalmazásokkal használható.
+C) Mert a Secret mindig plaintextként kerül a hálózaton továbbításra.
+D) Mert a Secret objektum kezelése és tárolása önmagában nem garantál teljes körű védelmet; például a cluster konfigurációjától és az etcd encryption-at-rest beállításától is függ a védelem.
+ANSWER: D
+EXPLANATION: A Kubernetes Secret egy secret-kezelési primitív, de a teljes védelemhez a cluster megfelelő konfigurációja és hozzáférés-vezérlése is szükséges. Különösen fontos az etcd védelme, a megfelelő RBAC, az auditálás és szükség esetén külső secrets manager használata.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: Input validation & deserialization
+TYPE: debug
+QUESTION: Egy REST endpoint `amount` mezője Java `BigDecimal` típusra kerül deszerializálásra, majd az alkalmazás közvetlenül levonja ezt az összeget a felhasználó egyenlegéből. Mi hiányzik a biztonságos feldolgozásból?
+A) Az input JSON Base64-kódolása.
+B) A kliens IP-címének SQL-lekérdezése.
+C) A JSON mező nevének megváltoztatása.
+D) A típushelyesség mellett tartomány-, pontosság-, előjel- és üzleti szabályok ellenőrzése.
+ANSWER: D
+EXPLANATION: A `BigDecimal` csak azt biztosítja, hogy az érték numerikus típusként feldolgozható legyen. Nem akadályozza meg például a negatív összeget, a túl nagy értéket vagy a nem megengedett tizedes pontosságot. A szerveroldali validációnak az üzleti szabályokat is ellenőriznie kell.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: SSRF
+TYPE: scenario
+QUESTION: Egy szerver lehetővé teszi, hogy a kliens által megadott URL-t letöltse, és a válasz tartalmát visszaadja a kliensnek. A fejlesztő csak a `http` és `https` scheme-eket engedélyezi. Miért nem elegendő ez SSRF ellen?
+A) Mert az SSRF csak FTP scheme esetén lehetséges.
+B) Mert a HTTP/HTTPS URL is mutathat belső vagy érzékeny hálózati célpontra.
+C) Mert a scheme ellenőrzése mindig letiltja a DNS-t.
+D) Mert a HTTPS URL-ek nem tartalmazhatnak hostnevet.
+ANSWER: B
+EXPLANATION: Az URL scheme megengedett értéke nem mondja meg, hogy a célpont biztonságos-e. HTTP vagy HTTPS használható belső IP-k, localhost, cloud metadata endpointok vagy más érzékeny címek elérésére is, ezért a hálózati célpontot is megfelelően korlátozni kell.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: Supply chain security
+TYPE: theory
+QUESTION: Miért fontos a dependency lockfile használata egy production alkalmazás buildjénél?
+A) Mert rögzítheti a konkrét dependency-feloldást és verziókat, ezáltal reprodukálhatóbbá és auditálhatóbbá teszi a buildet.
+B) Mert a lockfile automatikusan eltávolít minden sérülékenységet.
+C) Mert a lockfile helyettesíti a dependency scanninget.
+D) Mert lockfile esetén nincs szükség dependency frissítésre.
+ANSWER: A
+EXPLANATION: A lockfile a konkrét dependency-feloldás reprodukálhatóságát segíti, beleértve a tranzitív dependencyket is. Nem helyettesíti a sérülékenységvizsgálatot vagy a kontrollált frissítést, de fontos alapot ad a build integritásának és nyomon követhetőségének biztosításához.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: Logging & incident response
+TYPE: edgecase
+QUESTION: Egy alkalmazás minden bejelentkezéskor logolja a felhasználó által küldött `Authorization` headert hibakeresési célból. Mi a fő probléma?
+A) Az Authorization header mindig túl rövid.
+B) A HTTP header mezők nem logolhatók.
+C) A header gyakran bearer tokent vagy más hitelesítő adatot tartalmazhat, amely logba kerülve kompromittálható.
+D) A logging automatikusan törli a tokeneket.
+ANSWER: C
+EXPLANATION: Az `Authorization` header gyakran közvetlenül felhasználható credentialt tartalmaz. Ha ezt logolják, a logokhoz hozzáférő személy vagy kompromittált rendszer megszerezheti a tokent. Érzékeny credentialeket nem szabad szükségtelenül logolni, és a logolási szabályokat redactionnel kell védeni.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: Threat modeling
+TYPE: scenario
+QUESTION: Egy rendszerben a publikus API gateway belső admin service-ekhez továbbít kéréseket. A threat modeling során melyik elem különösen fontos?
+A) A gateway és az admin service közötti trust boundary és az azon áthaladó jogosultsági ellenőrzések.
+B) Csak a frontend színeinek dokumentálása.
+C) Az összes SQL query alphabetikus rendezése.
+D) A production logok törlése minden deploy után.
+ANSWER: A
+EXPLANATION: A trust boundary ott jelzi, ahol eltérő bizalmi szintek vagy biztonsági kontextusok találkoznak. Egy publikus gateway és egy belső admin service között ezért különösen fontos annak meghatározása, hogy milyen identitás- és authorization-információt kell újra ellenőrizni.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: performance
+QUESTION: Egy DAST teszt csak anonim oldalakat vizsgál, miközben az alkalmazás legfontosabb üzleti funkciói autentikáció mögött vannak. Mi a fő probléma?
+A) A DAST mindig csak SQL injectiont képes keresni.
+B) A teszt nem éri el az autentikáció mögötti attack surface jelentős részét.
+C) A DAST nem használhat HTTP kéréseket.
+D) Az autentikáció automatikusan letilt minden sebezhetőséget.
+ANSWER: B
+EXPLANATION: Authenticated functionality nélkül a DAST nem tudja érdemben tesztelni a védett endpointokat és workflow-kat. Tesztkörnyezetben megfelelő tesztfelhasználóval és biztonságosan kezelt hitelesítési folyamattal az autentikált attack surface is bevonható.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: OWASP Top 10
+TYPE: scenario
+QUESTION: Egy fejlesztő egy alkalmazást „biztonságosnak” minősít azért, mert nem talált SQL injectiont. Miért hibás ez a következtetés?
+A) Mert SQL injection csak frontend alkalmazásokban fordul elő.
+B) Mert SQL injection mindig magasabb kockázatú, mint minden más sérülékenység.
+C) Mert egyetlen sérülékenységtípus hiánya nem zárja ki például az authorization, authentication, SSRF, XSS vagy supply chain problémákat.
+D) Mert az OWASP Top 10 kizárólag SQL injectionnel foglalkozik.
+ANSWER: C
+EXPLANATION: Az alkalmazásbiztonság több független kockázati területből áll. Egy konkrét vulnerability class hiánya csak az adott kockázatra ad információt, nem bizonyítja a teljes rendszer biztonságát.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: Injection
+TYPE: production
+QUESTION: Egy alkalmazás dinamikus SQL ORDER BY oszlopot enged a kliensnek megadni. A fejlesztő PreparedStatement paraméterrel próbálja behelyettesíteni az oszlopnevet. Miért nem működik megfelelően ez a megközelítés?
+A) Mert a PreparedStatement csak DELETE lekérdezésekhez használható.
+B) Mert az ORDER BY mindig tiltott SQL konstrukció.
+C) Mert a JDBC nem támogat stringeket.
+D) Mert a paraméterek tipikusan értékeket helyettesítenek, nem SQL azonosítókat; az oszlopnevet explicit allowlistből kell kiválasztani.
+ANSWER: D
+EXPLANATION: A bind paraméterek az SQL értékpozícióira szolgálnak, nem tetszőleges SQL-szintaxis vagy azonosítók helyettesítésére. Dinamikus oszlopnévnél a biztonságos megoldás egy előre meghatározott allowlist használata, amelyből a kliens által kért logikai mezőt konkrét SQL azonosítóra képezik.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: XSS
+TYPE: debug
+QUESTION: Egy frontendben a fejlesztő ezt használja:
+CODE:
+element.innerHTML = userInput;
+ENDCODE
+A bemenetet korábban egy JavaScript regexszel ellenőrzi, amely eltávolítja a `<script>` szöveget. Miért nem megbízható ez a védelem?
+A) Mert az `innerHTML` csak CSS-t értelmez.
+B) Mert a regex automatikusan SQL injectiont okoz.
+C) Mert az XSS nem függ a HTML parsingtól.
+D) Mert a `<script>` tagek eltávolítása nem kezeli az összes veszélyes HTML struktúrát, attribútumot és URL-sémát; a megfelelő sink és kontextus szerinti védelem szükséges.
+ANSWER: D
+EXPLANATION: XSS nem kizárólag `<script>` elemekből származhat. Eseménykezelő attribútumok, veszélyes URL-ek és más HTML-konstrukciók is problémát okozhatnak, ezért egy egyszerű regexes blacklist nem tekinthető általános XSS-védelemnek.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: Authentication & password storage
+TYPE: scenario
+QUESTION: Egy login endpoint minden sikertelen próbálkozásnál egyre hosszabb késleltetést alkalmaz ugyanahhoz a felhasználói fiókhoz. Miért lehet ez jobb megoldás, mint a végleges account lockout?
+A) Mert lassítja az automatizált próbálkozásokat anélkül, hogy egy támadó egyszerűen végleges lockouttal megtagadhatná a hozzáférést a felhasználótól.
+B) Mert megszünteti a jelszóhasználat szükségességét.
+C) Mert a támadó IP-címét automatikusan titkosítja.
+D) Mert garantálja, hogy minden jelszó erős.
+ANSWER: A
+EXPLANATION: Az adaptív késleltetés és rate limiting növeli az online brute-force és credential stuffing költségét, miközben elkerülheti a merev lockout egyik problémáját, amikor egy támadó szándékosan zárolhat más felhasználói fiókokat. A megoldást megfelelő monitoringgal és több dimenziós rate limitinggel érdemes kombinálni.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: Sessions & JWT
+TYPE: debug
+QUESTION: Egy webalkalmazás a JWT access tokent `localStorage`-ban tárolja, és ugyanazon az oldalon több olyan JavaScript dependency fut, amely nem teljesen megbízható. Mi a fő kockázat?
+A) A JWT automatikusan lejár, ha localStorage-ban van.
+B) A böngésző minden localStorage értéket titkosít a szerver kulcsával.
+C) Egy XSS vagy kompromittált script hozzáférhet a tokenhez, és ellophatja azt.
+D) A localStorage csak szerveroldali alkalmazásokban használható.
+ANSWER: C
+EXPLANATION: A `localStorage` tartalma JavaScriptből hozzáférhető, ezért egy sikeres XSS vagy kompromittált third-party script megszerezheti az ott tárolt tokent. A token tárolási stratégiáját az alkalmazás threat modeljéhez kell igazítani, és ahol megfelelő, HttpOnly cookie-alapú session is használható.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: scenario
+QUESTION: Egy kliens OAuth authorization code flow során wildcard redirect URI-t engedélyez, például `https://*.example.com/callback`. Miért jelent ez kockázatot?
+A) Mert az OAuth csak localhost redirect URI-t engedélyezhet.
+B) Mert egy kompromittált vagy nem megfelelően kontrollált subdomainre is kerülhet authorization response, ami code vagy token leakage kockázatát növelheti.
+C) Mert a wildcard automatikusan kikapcsolja a TLS-t.
+D) Mert a redirect URI csak IP-cím lehet.
+ANSWER: B
+EXPLANATION: A redirect URI az authorization response egyik kritikus biztonsági célpontja. Túl széles mintázat esetén egy támadó által kontrollált vagy kompromittált subdomain is jogosult lehet callback fogadására, ezért a redirect URI-kat a lehető legszűkebben és pontosabban kell regisztrálni.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: Authorization & access control
+TYPE: edgecase
+QUESTION: Egy alkalmazásban a felhasználó csak a saját profilját módosíthatja. Az endpoint azonban elfogad egy `userId` path paramétert, és csak azt ellenőrzi, hogy a kéréshez érvényes access token tartozik. Mi a probléma?
+A) A JWT-k nem használhatnak `userId` értéket.
+B) A path paramétert mindig titkosítani kell.
+C) A GET endpointok automatikusan authorizationt igényelnek.
+D) A hitelesítés nem bizonyítja, hogy a token tulajdonosa jogosult a megadott `userId` erőforrás módosítására; objektumszintű authorization check szükséges.
+ANSWER: D
+EXPLANATION: Az authentication azt bizonyítja, hogy ki a kérés kezdeményezője, az authorization pedig azt, hogy az adott erőforrással milyen műveletet végezhet. A `userId` alapján elérhető profilnál a backendnek össze kell vetnie a kért erőforrást az autentikált identitással és a vonatkozó policyvel.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Cryptography & TLS
+TYPE: production
+QUESTION: Egy backend csak TLS 1.2-t és TLS 1.3-at engedélyez, de a fejlesztő saját titkosítási protokollt épít az alkalmazási adatokra, mert „a TLS önmagában nem elég biztonságos”. Mi a legfontosabb probléma ezzel a megközelítéssel?
+A) A TLS és az alkalmazási titkosítás nem használható egyszerre.
+B) Az alkalmazási adatok soha nem titkosíthatók.
+C) A TLS mindig gyengébb, mint bármilyen saját algoritmus.
+D) A saját kriptográfiai protokoll növeli a hibás tervezés és implementáció kockázatát; speciális alkalmazási igény esetén is szabványos, auditált primitívekre és jól meghatározott protokollokra kell támaszkodni.
+ANSWER: D
+EXPLANATION: A saját kriptográfiai protokollok gyakran olyan hibákat vezetnek be, amelyeket nehéz észrevenni vagy tesztelni. Ha az alkalmazásnak a TLS-en túlmenő, például end-to-end vagy adattárolási védelmet kell biztosítania, azt bevált kriptográfiai primitívekre és megfelelően elemzett protokollokra érdemes építeni.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: Injection
+TYPE: scenario
+QUESTION: Egy alkalmazás dinamikus SQL WHERE feltételt épít a kliens által megadott szűrők alapján. A fejlesztő minden szűrőértéket PreparedStatement paraméterként kezel, de a kliens által megadott operátort (`=`, `>`, `<`, `LIKE`) közvetlenül beilleszti az SQL-be. Mi a biztonságos megközelítés?
+A) Az operátorokat explicit allowlistből kell kiválasztani, miközben az értékeket továbbra is paraméterként kell bindolni.
+B) Az operátorokat Base64-be kell kódolni.
+C) Az operátorokat URL-encode-olni kell.
+D) Az egész WHERE feltételt egyetlen string paraméterként kell átadni.
+ANSWER: A
+EXPLANATION: A bind paraméterek értékekhez használhatók, SQL-szintaxist vagy operátorokat nem helyettesítenek. A dinamikus SQL-elemeket szűk allowlistből kell kiválasztani, az adatértékeket pedig továbbra is paraméterezni kell. A kódolás önmagában nem teszi biztonságossá az SQL-szintaxist.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: XSS
+TYPE: output
+QUESTION: Egy oldal az alábbi JavaScriptet futtatja. Mi történik, ha `name` értéke `<b>Admin</b>`?
+CODE:
+const name = "<b>Admin</b>";
+document.getElementById("result").textContent = name;
+ENDCODE
+A) A böngésző félkövér HTML-ként jeleníti meg az `Admin` szöveget.
+B) A böngésző csak a `<b>` taget távolítja el.
+C) A böngésző szövegként jeleníti meg a teljes `<b>Admin</b>` értéket.
+D) A böngésző JavaScriptként próbálja végrehajtani a tartalmat.
+ANSWER: C
+EXPLANATION: A `textContent` nem HTML-ként, hanem szövegként kezeli az értéket, ezért a HTML tagek látható karakterekként jelennek meg. Ez eltér az `innerHTML` viselkedésétől, amely HTML parsingot végezne.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: CSRF
+TYPE: debug
+QUESTION: Egy alkalmazás CSRF tokent használ, amelyet a kliens egy rejtett HTML mezőben kap meg. A fejlesztő a tokent az oldal betöltésekor generálja, de minden felhasználónál ugyanazt az értéket használja. Mi a fő probléma?
+A) A CSRF tokennek mindig URL-ben kell szerepelnie.
+B) A tokennek minden HTTP kérésben plaintextként kell szerepelnie.
+C) A token használata teljesen felesleges, mert minden POST kérés biztonságos.
+D) Az azonos, minden felhasználónál megosztott token nem kötődik megfelelően a felhasználó vagy session biztonsági kontextusához, ezért kompromittálódás esetén széles körben felhasználható.
+ANSWER: D
+EXPLANATION: A CSRF tokennek kiszámíthatatlannak és megfelelő biztonsági kontextushoz kötöttnek kell lennie. Egy globálisan megosztott token esetén egy megszerzett érték más felhasználók sessionjei ellen is felhasználható lehet.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: Authentication & password storage
+TYPE: scenario
+QUESTION: Egy alkalmazás lehetővé teszi a jelszó megváltoztatását úgy, hogy a felhasználó csak az új jelszót küldi el, a régi jelszó vagy más erős újrahitelesítés nélkül. A session cookie azonban már több napja érvényes. Mi a fő biztonsági probléma?
+A) A session cookie mérete túl nagy.
+B) Egy ellopott vagy eltérített session esetén a támadó közvetlenül módosíthatja a jelszót, ezért érzékeny műveleteknél szükség lehet step-up authenticationre vagy újrahitelesítésre.
+C) A jelszó csak akkor változtatható meg, ha GET kérést használunk.
+D) A régi jelszó bekérése automatikusan kikapcsolja a sessiont.
+ANSWER: B
+EXPLANATION: Egy hosszú életű, már kompromittálódott session önmagában nem feltétlenül elegendő biztosíték egy nagy hatású művelethez. Jelszóváltoztatásnál és más érzékeny műveleteknél megfelelő újrahitelesítés vagy step-up authentication csökkentheti a session-lopásból eredő kockázatot.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Sessions & JWT
+TYPE: trap
+QUESTION: Egy JWT-ben a `role=admin` claim szerepel, és az alkalmazás csak azt ellenőrzi, hogy a token aláírása érvényes. Miért nem feltétlenül elég ez az authorizationhez?
+A) Mert JWT-ben nem lehet role claim.
+B) Mert minden admin szerepkört titkosítani kell.
+C) Mert az aláírás érvényessége nem garantálja, hogy az adott role claim az aktuális authorization policy szerint használható vagy még aktuális.
+D) Mert a role claim csak frontendben értelmezhető.
+ANSWER: C
+EXPLANATION: A hitelesen aláírt claim azt mutatja, hogy a token kibocsátója ezt az állítást tette, de az alkalmazásnak még ellenőriznie kell a token kontextusát, érvényességét és a saját authorization policyjét. Visszavont vagy időközben megváltozott jogosultságok esetén a hosszú életű statikus claim problémát okozhat.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: scenario
+QUESTION: Egy webalkalmazás OIDC login után csak az ID token `email` claimje alapján azonosítja a felhasználót. Két különböző identity providerből is érkezhetnek felhasználók. Miért veszélyes ez?
+A) Mert az email claim mindig titkosított.
+B) Mert az email cím nem feltétlenül globálisan egyedi az identity providerek között; az issuer és a subject együtt alkot megbízhatóbb identitás-azonosítót.
+C) Mert az OIDC nem használ email claimet.
+D) Mert az ID token nem tartalmazhat string értékeket.
+ANSWER: B
+EXPLANATION: Több issuer esetén ugyanaz az email cím különböző identitásokhoz tartozhat. Az OIDC identitás egyik stabil azonosítója az issuer és a subject együttese, ezért az alkalmazásnak ezeket megfelelően validálnia és tárolnia kell.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: Authorization & access control
+TYPE: production
+QUESTION: Egy admin endpoint kizárólag frontend oldali route guarddal védi az `/admin` oldalt. A backend endpoint közvetlenül is elérhető megfelelő HTTP kéréssel. Mi a helyes javítás?
+A) A backend endpointon is szerveroldali authorizationt kell alkalmazni minden védett műveletre.
+B) Az `/admin` URL-t véletlenszerű stringre kell cserélni.
+C) A route guardot kétszer kell meghívni.
+D) Az endpointot csak JavaScriptből szabad meghívni.
+ANSWER: A
+EXPLANATION: A frontend route guard csak felhasználói navigációt vagy UI-viselkedést szabályozhat, nem jelent biztonsági határt. A tényleges jogosultságot minden védett backend műveletnél a szervernek kell ellenőriznie.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: Cryptography & TLS
+TYPE: edgecase
+QUESTION: Egy backend AES-GCM titkosítást használ, de ugyanazzal a kulccsal és ugyanazzal a nonce értékkel titkosít több különböző üzenetet. Miért súlyos probléma ez?
+A) Mert a GCM csak jelszavakhoz használható.
+B) Mert a nonce csak plaintext esetén használható.
+C) Mert azonos nonce újrahasználata ugyanazzal a kulccsal sértheti a GCM bizalmassági és integritási garanciáit.
+D) Mert az AES-GCM mindig plaintextet generál.
+ANSWER: C
+EXPLANATION: Az AES-GCM esetén a nonce megfelelő kezelése kritikus biztonsági követelmény. Ugyanazon kulcs mellett a nonce veszélyes újrahasználata komoly kriptográfiai hibához vezethet, ezért a nonce-kezelést a választott konstrukció követelményei szerint kell megtervezni.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: Security headers & CSP
+TYPE: scenario
+QUESTION: Egy alkalmazás CSP-je `script-src 'self'` szabályt használ. Egy harmadik féltől származó JavaScript CDN-ről töltött script nem fut le. Mi a legközvetlenebb magyarázat?
+A) A CSP csak HTTPS esetén működik.
+B) A `script-src 'self'` kizárólag a dokumentum saját originjéről engedélyez scriptforrást, ezért a külső CDN nincs engedélyezve.
+C) A böngésző minden külső scriptet automatikusan blokkol, CSP-től függetlenül.
+D) A `script-src` csak inline scriptekre vonatkozik.
+ANSWER: B
+EXPLANATION: A `self` az alkalmazás saját originjére utal. Ha külső CDN-ről kell scriptet betölteni, annak originjét a CSP-ben explicit módon kell engedélyezni, miközben a szükséges biztonsági korlátozásokat fenn kell tartani.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: CORS
+TYPE: edgecase
+QUESTION: Egy API credentialed CORS kéréseket támogat. A szerver ezt küldi:
+CODE:
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+ENDCODE
+Mi a probléma?
+A) A wildcard origin és a credentialed CORS kombinációja nem engedélyezett ilyen formában; konkrét origin szükséges.
+B) A `true` érték csak GET esetén használható.
+C) A wildcard mindig biztonságosabb, mint egy konkrét origin.
+D) A böngésző minden esetben automatikusan kicseréli a `*` értéket a kliens originjére.
+ANSWER: A
+EXPLANATION: Credentialed CORS esetén az `Access-Control-Allow-Origin` nem használhat `*` értéket. A szervernek megfelelő konkrét origin alapján kell engedélyeznie a hozzáférést, és a credentialed kéréseket csak megbízható origin-ekre kell korlátozni.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: Egy CI/CD pipeline secretként használ egy cloud access tokent. A pipeline minden build logjában kiírja az összes environment változót hibakeresési célból. Mi a fő kockázat?
+A) Az environment változók nem használhatók CI/CD-ben.
+B) A cloud token automatikusan lejár minden build után.
+C) A build logok csak lokálisan léteznek.
+D) A secret bekerülhet a build logokba, ahonnan jogosulatlan személyek vagy rendszerek megszerezhetik és felhasználhatják.
+ANSWER: D
+EXPLANATION: A secret management nem védi meg a credentialt, ha azt a pipeline szándékosan plaintextként logolja. A credentialeket maszkolni kell, kerülni kell a teljes environment dumpot, és rövid életű, minimális jogosultságú tokeneket érdemes használni.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: Input validation & deserialization
+TYPE: scenario
+QUESTION: Egy API egy `status` mezőt fogad el stringként, és a backend közvetlenül enumra alakítja. A kliens olyan értéket küld, amely ugyan technikailag érvényes enumérték, de az adott művelethez üzletileg nem megengedett. Mi a helyes megoldás?
+A) Az enum használata önmagában elegendő.
+B) A hibás értéket csendben egy másik statusra kell alakítani.
+C) Az értéket Base64-be kell kódolni.
+D) A típusvalidáció mellett az adott művelethez tartozó üzleti állapotátmenetet és engedélyezett értékeket is ellenőrizni kell.
+ANSWER: D
+EXPLANATION: A deszerializáció csak azt biztosíthatja, hogy az érték megfelel egy technikai típusnak. Az üzleti invariánsokat és megengedett state transitionöket külön kell ellenőrizni, különösen olyan műveleteknél, amelyek állapotot módosítanak.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: SSRF
+TYPE: debug
+QUESTION: Egy SSRF-védelem a hostname feloldása után ellenőrzi az IP-címet, majd külön HTTP klienshívásban újra feloldja a hostnevet. Miért lehet ez problémás?
+A) Mert a DNS-feloldás mindig csak egyszer történhet.
+B) Mert a HTTP kliens nem használhat DNS-t.
+C) Mert a második feloldás eltérő IP-címet adhat, így az ellenőrzött és ténylegesen elért célpont különbözhet.
+D) Mert IP-cím alapján soha nem lehet hálózati kapcsolatot létrehozni.
+ANSWER: C
+EXPLANATION: Ha az ellenőrzés és a tényleges kapcsolat között új DNS-feloldás történik, a támadó kihasználhatja, hogy a hostname másik címre oldódik fel. Az ellenőrzésnek és a tényleges kapcsolódásnak konzisztens módon kell ugyanahhoz a biztonságosan validált célponthoz kötődnie, és a hálózati egress korlátozása további védelmet ad.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Supply chain security
+TYPE: scenario
+QUESTION: Egy fejlesztő egy nyílt forrású dependency új verzióját közvetlenül productionbe telepíti, mert a release mellett csak egy aláírt checksum található, amelyet egy ismeretlen mirror szolgáltat. Miért nem elegendő önmagában a checksum?
+A) Mert a checksum soha nem használható dependencykhez.
+B) Mert a checksum nem ad információt a fájl eredetéről vagy arról, hogy a checksumot megbízható forrásból kaptuk-e.
+C) Mert az aláírás automatikusan kikapcsolja a checksumot.
+D) Mert productionben nem lehet open source dependencyt használni.
+ANSWER: B
+EXPLANATION: A checksum az adott byte-szekvencia integritását ellenőrizheti, de csak akkor jelent erős garanciát, ha maga az ellenőrző érték megbízható forrásból származik. A provenance, aláírások, trusted release csatornák és más supply chain kontrollok együtt adnak erősebb bizalmi alapot.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: Logging & incident response
+TYPE: scenario
+QUESTION: Egy production rendszerben egy admin felhasználó rövid idő alatt több száz sikertelen jogosultsági ellenőrzést generál. A rendszer minden eseményt logol, de nincs riasztás vagy korrelációs mechanizmus. Mi lenne a leghasznosabb következő fejlesztés?
+A) Az összes authorization log törlése.
+B) A sikertelen események logolásának kikapcsolása.
+C) Minden eseményhez a teljes access tokent hozzáadni.
+D) Észlelési szabályok és korreláció bevezetése, amelyek időablak és releváns kontextus alapján kiemelik a szokatlan mintákat.
+ANSWER: D
+EXPLANATION: A logok önmagukban nem garantálják, hogy egy incidens időben észlelhető. Korrelációs és detection szabályokkal az ismétlődő vagy szokatlan authorization hibákból riasztás vagy további vizsgálati jelzés készíthető anélkül, hogy érzékeny tokeneket kellene logolni.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: Threat modeling
+TYPE: algorithm
+QUESTION: Egy nagy, microservice-alapú rendszer threat modelingjét végzed. Több service különböző trust boundaryken keresztül kommunikál, és egyes service-ek más service-ek nevében hívnak downstream rendszereket. Melyik megközelítés adja a legjobb alapot a modellhez?
+A) Minden service-t azonos trust levelűnek tekinteni, mert ugyanabban a clusterben futnak.
+B) Csak az internet felől érkező kéréseket modellezni.
+C) Csak az adatbázisok köré felrajzolni security boundaryket.
+D) Adatfolyamokat, identitásdelegációt, trust boundaryket, érzékeny asseteket és service-to-service jogosultságokat modellezni, majd ezekhez fenyegetéseket és kontrollokat rendelni.
+ANSWER: D
+EXPLANATION: Microservice környezetben a hálózati elhelyezkedés önmagában nem jelent azonos bizalmi szintet. A modellnek látnia kell, hogy mely identitás milyen jogosultsággal és milyen delegációval mozog a service-ek között, hol lép át trust boundaryt, és milyen érzékeny adatot érint.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: Authorization & access control
+TYPE: scenario
+QUESTION: Egy multi-tenant rendszerben egy felhasználó több tenant tagja lehet, különböző szerepkörökkel. A backend egy JWT-ben lévő globális `role=ADMIN` claim alapján engedélyez minden admin műveletet. Mi a legfontosabb hiányosság?
+A) A JWT nem tartalmazhat role claimet.
+B) Az authorization döntésnek figyelembe kell vennie, hogy a felhasználó mely tenantban, milyen szerepkörrel és milyen konkrét erőforráson végezheti az adott műveletet.
+C) A tenantokat csak frontendben szabad kezelni.
+D) Az admin műveleteket GET endpointokra kell korlátozni.
+ANSWER: B
+EXPLANATION: A globális szerepkör nem fejezi ki a tenant-specifikus jogosultságokat. A policynek a felhasználó, tenant, erőforrás és művelet kapcsolatát kell vizsgálnia, és nem szabad pusztán egy globális claimre támaszkodnia, ha a jogosultság ennél részletesebb.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: Cryptography & TLS
+TYPE: edgecase
+QUESTION: Egy szolgáltatás TLS-en keresztül kommunikál egy belső service-szel. A fejlesztő azt mondja, hogy mivel a hálózat „belső”, nincs szükség service certificate validationre. Mi a legfontosabb biztonsági következmény?
+A) Egy kompromittált hálózati komponens vagy DNS/útvonal-manipuláció esetén a kliens nem tudja megbízhatóan ellenőrizni, hogy valóban a megfelelő service-hez kapcsolódik.
+B) A TLS automatikusan kikapcsol, ha nincs certificate validation.
+C) A belső hálózatokon nincs IP-cím.
+D) A certificate validation csak böngészőkben használható.
+ANSWER: A
+EXPLANATION: A TLS szerverhitelesítésének megkerülése megszünteti annak egyik alapvető célját: a kliens nem tudja megbízhatóan azonosítani a peer oldalt. A „belső hálózat” nem jelent automatikusan megbízható vagy támadásmentes környezetet.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: scenario
+QUESTION: Egy OIDC rendszerben egy backend JWT-ként használ egy ID tokent API access tokenként, mert az ID token tartalmazza a felhasználó nevét és szerepkörét. Mi a fő probléma?
+A) Az ID token nem lehet aláírva.
+B) Az ID token kizárólag plaintext lehet.
+C) Az ID token célja az autentikációs esemény és a kliens identitásának leírása; API authorization credentialként csak akkor használható, ha a protokoll és az adott szolgáltatás ezt kifejezetten erre tervezi.
+D) Az access token nem tartalmazhat claim-eket.
+ANSWER: C
+EXPLANATION: Az ID token az OIDC kliens számára hordoz identitással kapcsolatos információt, míg az access token erőforrás-hozzáférési credential. Egy ID token érvényes aláírása önmagában nem teszi azt egy tetszőleges API számára megfelelő authorization tokenné.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: Authorization & access control
+TYPE: production
+QUESTION: Egy backend authorization policyja több mikroszolgáltatásban külön-külön implementálja ugyanazokat a tenant- és role-szabályokat. Idővel az egyik service eltérő szabályt kezd alkalmazni. Melyik architekturális megközelítés csökkentheti leginkább az ilyen eltérések kockázatát?
+A) Az authorization teljes áthelyezése a frontendbe.
+B) Közös, jól definiált authorization policy-k vagy központi policy decision mechanizmus használata, miközben minden service továbbra is szerveroldalon érvényesíti a döntést.
+C) Az összes endpoint nyilvánossá tétele.
+D) Minden service-ben különböző szerepkör-neveket használni.
+ANSWER: B
+EXPLANATION: A közös policy és következetes enforcement csökkenti annak kockázatát, hogy ugyanazt a jogosultsági szabályt különböző service-ek eltérően értelmezzék. A frontend továbbra sem lehet biztonsági határ, és a service-eknek a saját védett műveleteiket szerveroldalon kell érvényesíteniük.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: Input validation & deserialization
+TYPE: scenario
+QUESTION: Egy Java szolgáltatás több különböző DTO-t fogad ugyanazon endpointon, és a kliens által küldött `type` mező alapján dinamikusan választja ki, melyik osztályra deszerializálja a teljes objektumot. Az egyik új DTO olyan mezőt is tartalmaz, amely callback URL-t definiál. Mi a legfontosabb biztonsági megfontolás?
+A) A `type` mezőt elég lowercase-re alakítani.
+B) A DTO neveket Base64-be kell kódolni.
+C) Minden DTO minden mezőjét automatikusan engedélyezni kell.
+D) A támogatott típusokat és mezőket explicit korlátozni kell, valamint a callback URL-t külön validálni és a hozzá kapcsolódó hálózati műveleteket is SSRF-szempontból kontrollálni kell.
+ANSWER: D
+EXPLANATION: A típusválasztás és a mezők automatikus bindolása több biztonsági kockázatot kombinálhat. A típusallowlist, DTO-szintű input validation és a callback URL külön biztonsági kezelése szükséges, mert egy kliens által kontrollált URL downstream hálózati kérést indíthat.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: SSRF
+TYPE: scenario
+QUESTION: Egy felhőben futó alkalmazás URL-fetchet biztosít, és a fejlesztők úgy védekeznek, hogy csak a publikus IP-tartományokat tiltják. A szolgáltatásnak viszont el kell érnie néhány belső API-t is. Mi a legbiztonságosabb általános architekturális irány?
+A) Minden privát IP tiltása, még akkor is, ha az alkalmazás működéséhez szükséges.
+B) Csak a hostname stringet ellenőrizni.
+C) A fetcher hálózati egressét és elérhető célpontjait allowlistelni, a célpontot és protokollt validálni, valamint a szükséges belső szolgáltatásokat explicit módon engedélyezni.
+D) A teljes belső hálózatot elérhetővé tenni, mert az autentikált felhasználó indítja a kérést.
+ANSWER: C
+EXPLANATION: SSRF ellen a pozitív, célpont-alapú kontroll általában robusztusabb, mint egy folyamatosan bővítendő blacklist. A hálózati egress korlátozása, a célpont validálása és az explicit engedélyezett belső szolgáltatások kombinációja csökkenti annak esélyét, hogy a fetcher érzékeny hálózati erőforrásokat érjen el.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: Supply chain security
+TYPE: scenario
+QUESTION: Egy build pipeline-ban egy dependency csomag telepítés után futó lifecycle scriptet tartalmaz. A pipeline a dependency telepítésekor production credentialekkel rendelkezik. Mi a legfontosabb biztonsági kockázat?
+A) A telepítési script kompromittálódása esetén a dependency futása alatt a build környezetében elérhető credentialekhez vagy más érzékeny erőforrásokhoz férhet hozzá.
+B) A lifecycle script automatikusan csak Windows rendszeren fut.
+C) A package install script soha nem fut CI környezetben.
+D) A dependencyk nem tartalmazhatnak executable fájlokat.
+ANSWER: A
+EXPLANATION: A package manager által futtatott lifecycle script a build folyamat részeként kódot hajthat végre. Ha a build környezet túl széles jogosultságú credentialeket vagy érzékeny erőforrásokat biztosít, egy kompromittált dependency jelentős supply chain támadási felületet kaphat.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Logging & incident response
+TYPE: scenario
+QUESTION: Egy incidens során kiderül, hogy a támadó több szolgáltatáson keresztül haladt, de az egyes service-ek különböző request ID formátumot használnak, és nincs közös trace context. Miért jelent ez komoly problémát?
+A) Mert a request ID-knek mindig UUID formátumúnak kell lenniük.
+B) Mert a logok nem tartalmazhatnak service nevet.
+C) Mert a támadó csak akkor tud több service-t elérni, ha azonos request ID-t használ.
+D) Mert nehezebb megbízhatóan összekapcsolni a több service-en átívelő eseményeket, így az incidens idővonala és a támadási lánc rekonstruálása jelentősen nehezebbé válik.
+ANSWER: D
+EXPLANATION: Elosztott rendszerekben a közös correlation vagy trace context lehetővé teszi az események összekapcsolását a service-határokon keresztül. Enélkül a vizsgálóknak különböző logfolyamokból kell következtetniük az események kapcsolatára, ami növeli a hibás vagy hiányos rekonstrukció kockázatát.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: production
+QUESTION: Egy nagyvállalati alkalmazásban SAST, DAST és rendszeres penetration test is fut, mégis több üzleti logikai sebezhetőség kerül productionbe. Melyik megközelítés javíthatja leginkább a lefedettséget?
+A) Az összes SAST szabály érzékenységének maximálisra állítása.
+B) A DAST futtatásának kizárólag éjszakára ütemezése.
+C) Security testing integrálása a threat modelingbe és abuse case-ekbe, valamint célzott üzleti logikai tesztek és manuális security review-k alkalmazása a kritikus workflow-kra.
+D) A penetration test teljes megszüntetése, mert automatizált tesztek pontosabbak.
+ANSWER: C
+EXPLANATION: A SAST és DAST fontos kontrollok, de az üzleti logikai hibák gyakran a rendszer helyesnek tűnő komponenseinek és workflow-inak kombinációjából adódnak. A threat modelingből származó abuse case-ek és célzott manuális tesztek segíthetnek olyan hibák feltárásában, amelyeket általános automatizált szabályok nehezebben azonosítanak.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: Injection
+TYPE: production
+QUESTION: Egy alkalmazás dinamikus SQL lekérdezést épít egy opcionális `sortBy` és `sortDirection` paraméterből. A fejlesztő a `sortBy` értéket allowlistből választja, de a `sortDirection` értéket közvetlenül beilleszti az SQL-be. Mi a legjobb megoldás?
+A) A `sortDirection` értékét is explicit allowlistből, például `ASC` és `DESC` értékekből kell kiválasztani.
+B) A `sortDirection` értékét Base64-be kell kódolni.
+C) A teljes SQL lekérdezést URL-encode-olni kell.
+D) A `sortDirection` értékét PreparedStatement paraméterként kell használni.
+ANSWER: A
+EXPLANATION: Az SQL irány (`ASC` vagy `DESC`) szintaktikai elem, ezért nem kezelhető hagyományos bind paraméterként. A biztonságos megoldás az engedélyezett értékek explicit allowlistje, amelyből a kliens által kért logikai értékhez konkrét SQL kulcsszó rendelhető.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: XSS
+TYPE: production
+QUESTION: Egy alkalmazás egy Markdown szerkesztőből származó tartalmat HTML-re alakít, majd közvetlenül `innerHTML` segítségével jelenít meg. A Markdown parser támogatja a nyers HTML tageket is. Mi a legfontosabb biztonsági kontroll?
+A) A generált HTML-t megbízható HTML sanitizerrel kell megtisztítani, megfelelő allowlisttel, mielőtt veszélyes HTML sinkbe kerül.
+B) A Markdown forrást Base64-be kell kódolni.
+C) Csak a `<script>` tageket kell eltávolítani a Markdownból.
+D) A böngészőben ki kell kapcsolni a JavaScriptet.
+ANSWER: A
+EXPLANATION: A Markdown parser önmagában nem garantálja, hogy a generált HTML biztonságos, különösen akkor, ha nyers HTML engedélyezett. A renderelés előtt kontextusnak megfelelő sanitization szükséges, amely a veszélyes elemeket, attribútumokat és URL-eket is kezeli.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: CSRF
+TYPE: scenario
+QUESTION: Egy banki alkalmazás ugyanazt a cookie-alapú sessiont használja böngészőből és egy natív mobil kliensből. A fejlesztők teljesen kikapcsolják a CSRF-védelmet, mert a mobil kliens nem böngésző. Miért hibás ez a megközelítés?
+A) A natív mobil kliens minden HTTP kérést automatikusan CSRF-védetté tesz.
+B) A CSRF csak GET kérésekre vonatkozik.
+C) Ha a session cookie böngészőből is használható, a böngészőalapú state-changing műveleteket továbbra is védeni kell; a mobil kliens jelenléte ezt nem szünteti meg.
+D) A cookie-alapú authentication nem használható mobil klienssel.
+ANSWER: C
+EXPLANATION: A CSRF-kockázatot az határozza meg, hogy a böngésző automatikusan csatol-e hitelesítő adatot egy cross-site kéréshez, nem az, hogy ugyanazt a backendet mobil kliens is használja-e. A böngészőből elérhető cookie-alapú state-changing endpointok megfelelő védelmet igényelnek.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: Authentication & password storage
+TYPE: production
+QUESTION: Egy vállalat több alkalmazása ugyanazt a felhasználói jelszó-adatbázist használja. Az egyik régi alkalmazás csak gyors SHA-256 hash-t tárol, míg az új rendszer Argon2id-t használna. Mi a biztonságos migrációs irány?
+A) A meglévő SHA-256 hash-eket egyszerűen SHA-256-tal újra kell hash-elni.
+B) A felhasználó sikeres bejelentkezésekor a régi hash alapján ellenőrizni kell a jelszót, majd sikeres hitelesítés után Argon2id-re kell migrálni.
+C) Minden felhasználónak ugyanazt az új saltot kell kiosztani.
+D) A régi hash-eket vissza kell fejteni az eredeti jelszavakra.
+ANSWER: B
+EXPLANATION: A hashből az eredeti jelszó visszaállítása nem cél és nem is általánosan lehetséges. A fokozatos migráció során a régi hash ellenőrzése után, sikeres login esetén az ismert plaintext jelszóból már létrehozható az erősebb Argon2id hash. Minden felhasználónak továbbra is egyedi salt szükséges.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: Sessions & JWT
+TYPE: edgecase
+QUESTION: Egy JWT-alapú rendszerben a refresh tokeneket rotálják. Egy már felhasznált refresh token ismét megjelenik ugyanahhoz a token családhoz kapcsolódóan. Miért lehet ez fontos biztonsági jel?
+A) Ez jelezheti, hogy egy korábban kiadott refresh token kompromittálódott, ezért a token family visszavonása indokolt lehet.
+B) Ez bizonyítja, hogy az access token aláírása hibás.
+C) A refresh tokeneknek mindig többször felhasználhatónak kell lenniük.
+D) A refresh token újrafelhasználása csak teljesítményproblémát okoz.
+ANSWER: A
+EXPLANATION: A refresh-token rotation egyik célja, hogy egy ellopott token újrafelhasználása észlelhető legyen. Ha egy már rotált token ismét felbukkan, az token reuse-ra utalhat, ami kompromittálódás jele lehet, és megfelelő policy szerint a kapcsolódó token family visszavonását válthatja ki.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: production
+QUESTION: Egy OIDC kliens discovery endpointből tölti le az issuer konfigurációját, majd egy ID token `iss` claimjét csak stringként összehasonlítja a kliens által használt issuerrel. Miért fontos az issuer és a konfiguráció megbízható kezelése?
+A) Mert az issuer és a hozzá tartozó kulcsok határozzák meg, hogy mely identitás-szolgáltatótól fogad el hiteles állításokat a kliens.
+B) Mert az issuer kizárólag UI-megjelenítésre szolgál.
+C) Mert az `iss` claim mindig titkosított.
+D) Mert az OIDC discovery csak development környezetben használható.
+ANSWER: A
+EXPLANATION: Az issuer trust anchorként szolgál az OIDC tokenek validálásában, és a discovery konfiguráció hatással lehet például a JWKS endpointokra is. Ezért a discovery dokumentumot és az issuer azonosságát megbízható módon kell kezelni, nem szabad tetszőleges kliens által befolyásolható konfigurációra építeni.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: Authorization & access control
+TYPE: scenario
+QUESTION: Egy dokumentumkezelő rendszerben a felhasználó `editor` szerepkört kap, de egy dokumentumhoz külön ACL is tartozik. Az ACL és a szerepkör szabályai konfliktusba kerülhetnek. Mi a legfontosabb tervezési követelmény?
+A) A frontendnek kell eldöntenie, hogy melyik szabály erősebb.
+B) A policynek explicit módon definiálnia kell a szerepkörök és resource-level szabályok kombinációját és prioritását.
+C) Minden ACL-t törölni kell, ha role-based access controlt használunk.
+D) A konfliktust véletlenszerűen kell feloldani.
+ANSWER: B
+EXPLANATION: Több authorization réteg esetén egyértelmű policy-szemantikára van szükség. Meg kell határozni például, hogy egy explicit deny felülírhat-e egy role-based allow szabályt, és hogyan öröklődnek vagy kombinálódnak az engedélyek. Az implicit vagy eltérő service-ekben újraértelmezett szabályok veszélyesek.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: Cryptography & TLS
+TYPE: production
+QUESTION: Egy API gateway TLS terminationt végez, majd plaintext HTTP-n továbbítja a kéréseket egy másik adatközpontban lévő belső service felé. A fejlesztők szerint ez biztonságos, mert „a backend belső hálózaton van”. Mi a legfontosabb szempont?
+A) A belső hálózat automatikusan ugyanolyan biztonságos, mint a processz memóriája.
+B) A TLS termination mindig megszünteti az authenticationt.
+C) A belső service-ek között soha nincs szükség titkosításra.
+D) Ha a belső hálózaton is fennáll lehallgatás, manipuláció vagy service impersonation kockázata, a service-to-service TLS, megfelelő peer authenticationnel, indokolt lehet.
+ANSWER: D
+EXPLANATION: A TLS termination és a következő hálózati szakasz között új trust boundary jöhet létre. Elosztott vagy részben nem megbízható infrastruktúrában a belső forgalom védelme és a peer hitelesítése is szükséges lehet, különösen érzékeny adatok esetén.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Security headers & CSP
+TYPE: edgecase
+QUESTION: Egy CSP nonce értéke ugyanaz marad minden HTTP response esetén. A fejlesztő szerint ez biztonságos, mert a nonce hosszú és véletlenszerűen generált. Mi a probléma?
+A) A nonce kizárólag CSS esetén használható.
+B) A nonce csak POST response-okban használható.
+C) A CSP nonce-nak response-onként megfelelően újra kell generálódnia; egy statikus nonce idővel kiszivároghat és újra felhasználhatóvá válhat.
+D) A nonce értéknek minden response-ban üresnek kell lennie.
+ANSWER: C
+EXPLANATION: A nonce célja, hogy az adott response-ban engedélyezett inline scripthez kössön egy nehezen kitalálható értéket. Ha ugyanaz a nonce tartósan újrahasználható, egy egyszer megszerzett érték későbbi response-okban is felhasználható lehet, ami gyengíti a CSP védelmét.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: CORS
+TYPE: scenario
+QUESTION: Egy API dinamikusan állítja be az `Access-Control-Allow-Origin` fejlécet a kliens `Origin` fejlécének értékére, és credentialed CORS-t engedélyez. A fejlesztő nem használ `Vary: Origin` fejlécet. Miért okozhat ez problémát cache-elés esetén?
+A) A cache minden HTTP requestet POST-ra változtat.
+B) Egy shared cache egy adott origin számára generált választ más origin számára is kiszolgálhat, ha nem veszi figyelembe az `Origin` variációt.
+C) A `Vary` fejléc automatikusan bekapcsolja a CSRF-védelmet.
+D) A CORS válaszokat soha nem cache-elheti böngésző.
+ANSWER: B
+EXPLANATION: Ha a response tartalma vagy CORS policyje az `Origin` értékétől függ, a cache-nek ezt a request header különbséget figyelembe kell vennie. A `Vary: Origin` jelzi a cache-ek számára, hogy az eltérő originű kérések külön reprezentációt igényelhetnek.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: Egy cloud alkalmazás hosszú életű, account-szintű access key-t használ minden backend komponensből ugyanahhoz az API-hoz. Egy komponens kompromittálódik. Mi a legfontosabb architekturális javítás?
+A) Rövid életű, workload-hoz kötött identitásokat és minimális jogosultságú credentialeket használni, ahol lehetséges.
+B) Ugyanezt a kulcsot minden service-hez külön fájlba másolni.
+C) A kulcsot Base64-ben tárolni.
+D) A kulcsot frontend JavaScriptbe áthelyezni.
+ANSWER: A
+EXPLANATION: A közös, hosszú életű credential egyetlen kompromittált komponensből széles körű hozzáférést eredményezhet. Workload identity, rövid életű credentialek és least privilege alkalmazásával a blast radius csökkenthető.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: Input validation & deserialization
+TYPE: production
+QUESTION: Egy API automatikusan egy domain entityre deszerializálja a kliens teljes JSON bodyját, és az entity tartalmaz olyan mezőket is, mint `isAdmin`, `accountBalance` és `internalStatus`. Mi a legfontosabb javítás?
+A) A kliens által módosítható mezőket explicit DTO-kba kell korlátozni, és a domain entityt nem szabad közvetlenül request binding céljára használni.
+B) Az összes mezőnevet lowercase-re kell alakítani.
+C) A JSON-t XML-re kell konvertálni.
+D) Az entity mezőket Base64-be kell kódolni.
+ANSWER: A
+EXPLANATION: A teljes entity automatikus bindingja mass assignment vagy over-posting kockázatot okozhat, mert a kliens olyan mezőket is módosíthat, amelyekhez nincs jogosultsága. A request DTO explicit módon meghatározza a kliens által írható mezőket, a domain modell pedig külön maradhat.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: SSRF
+TYPE: edgecase
+QUESTION: Egy URL-fetcher blokkolja a private IPv4 tartományokat, de nem ellenőrzi az IPv6 címeket. A támadó IPv6 loopback címet ad meg. Miért jelent ez problémát?
+A) Mert az IPv6 címek nem használhatók HTTP kapcsolatokhoz.
+B) Mert a loopback és egyéb belső címek IPv6 formában is elérhetők lehetnek, ezért csak IPv4 blacklist nem ad teljes hálózati célpontvédelmet.
+C) Mert az IPv6 mindig publikus.
+D) Mert az SSRF kizárólag DNS-en keresztül működik.
+ANSWER: B
+EXPLANATION: A hálózati célpontok validálásának minden támogatott címzési családra ki kell terjednie. IPv6 esetén is léteznek loopback, link-local és egyéb nem publikus tartományok, ezért a védelemnek nem szabad kizárólag IPv4-re támaszkodnia.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: Supply chain security
+TYPE: production
+QUESTION: Egy build pipeline sikeresen ellenőrzi a dependency checksumját, de a dependency egy olyan build artifactből származik, amelynek provenance információja nincs. Miért fontos a provenance?
+A) Mert a provenance megmutathatja, milyen forrásból, build folyamatból és környezetből származott az artifact.
+B) Mert a provenance helyettesíti a checksumot.
+C) Mert provenance nélkül a dependency nem lehet open source.
+D) Mert provenance csak licencelési információt tartalmaz.
+ANSWER: A
+EXPLANATION: Az integritás és az eredet két külön biztonsági kérdés. A checksum azt segít ellenőrizni, hogy az artifact tartalma megfelel-e egy ismert digestnek, míg a provenance arról adhat információt, hogy milyen forrásból és build folyamatból származott.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: Logging & incident response
+TYPE: production
+QUESTION: Egy authentication rendszer nagyon részletes logokat készít, de a logokhoz ugyanazt az admin jogosultságot használják, mint az alkalmazás adatbázisához. Egy támadó megszerzi ezt a jogosultságot. Mi a legfontosabb probléma?
+A) A logok túl sok eseményt tartalmaznak.
+B) A logok nem lehetnek JSON formátumúak.
+C) A támadó módosíthatja vagy törölheti a forenzikai bizonyítékokat, ezért a logging infrastruktúrát külön jogosultságokkal és megfelelő integritásvédelemmel kell kezelni.
+D) A logok csak productionen lehetnek elérhetők.
+ANSWER: C
+EXPLANATION: A logok incidensvizsgálati bizonyítékok is lehetnek, ezért fontos az alkalmazási adatoktól elkülönített hozzáférés, a megfelelő retention és az integritás védelme. Ha ugyanaz a kompromittált credential kezeli az alkalmazást és a logokat, a támadó a saját nyomainak eltávolítására is lehetőséget kaphat.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: Threat modeling
+TYPE: algorithm
+QUESTION: Egy threat modeling workshop során a csapat kizárólag technikai sebezhetőségeket listáz, de nem vizsgálja, hogy egy támadó milyen üzleti célt próbálhat elérni. Mi egészítheti ki legjobban a modellt?
+A) Abuse case-ek és attacker goalok modellezése a rendszer üzleti folyamatain keresztül.
+B) A production adatbázis összes rekordjának bemásolása a workshopba.
+C) Az összes logolási szabály eltávolítása.
+D) A threat modeling kizárása a fejlesztési folyamatból.
+ANSWER: A
+EXPLANATION: A business-logic támadások gyakran nem egyetlen technikai komponens hibájából adódnak, hanem abból, hogy egy támadó legitim funkciókat kombinál egy nem kívánt cél eléréséhez. Az abuse case-ek ezt a perspektívát közvetlenül beépítik a threat modelbe.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: scenario
+QUESTION: Egy SAST pipeline minden merge requestnél lefut, de a kritikus biztonsági findingeket csak a release végén ellenőrzik manuálisan. Mi a fő probléma?
+A) A biztonsági findingek túl korán kerülnek elő.
+B) A kritikus hibák javítása későre tolódik, így drágább és nehezebb lehet a remediation, miközben sérülékeny kód hosszú ideig bekerülhet a fejlesztési ágba.
+C) A SAST csak productionben működik.
+D) A merge request nem tartalmazhat source code-ot.
+ANSWER: B
+EXPLANATION: A security findingek korai kezelése csökkenti a javítás költségét és annak esélyét, hogy a sérülékenység további komponensekbe terjedjen. A kritikus findingekhez érdemes megfelelő CI policy-t és risk-based gate-eket kialakítani, nem kizárólag a release végére hagyni a döntést.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: OWASP Top 10
+TYPE: scenario
+QUESTION: Egy szervezet minden fejlesztői projektben ugyanazt a security checklistet használja, függetlenül attól, hogy az alkalmazás public web API, belső batch rendszer vagy adminisztrációs platform. Miért lehet ez elégtelen?
+A) Mert minden alkalmazásnak teljesen más programozási nyelvet kell használnia.
+B) Mert a security checklist mindig értelmetlen.
+C) Mert a kockázatok az alkalmazás architektúrájától, adatvagyonától, threat modeljétől és használati környezetétől is függenek, ezért a kontrollokat a konkrét kockázatokhoz kell igazítani.
+D) Mert az OWASP Top 10 csak mobilalkalmazásokra vonatkozik.
+ANSWER: C
+EXPLANATION: A standard kontrollok jó kiindulópontot adhatnak, de az alkalmazás konkrét attack surface-e és üzleti célja meghatározza, mely kockázatok relevánsak. A threat modeling és a kockázatalapú security requirements segítik a kontrollok megfelelő testreszabását.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: Injection
+TYPE: debug
+QUESTION: Egy SQL injection finding egy repositoryban azért tűnik false positive-nak, mert a bemenet először egy helperen megy át. A helper azonban csak whitespace-t trimel, majd string konkatenációval építi tovább az SQL-t. Mi a helyes következtetés?
+A) A finding továbbra is valós kockázat lehet, mert a trimelés nem választja szét az adatot az SQL-szintaxistól.
+B) A helper automatikusan SQL-safe-é teszi az inputot.
+C) A whitespace eltávolítása egyenértékű a PreparedStatement használatával.
+D) A SAST finding csak akkor lehet valódi, ha nincs helper metódus.
+ANSWER: A
+EXPLANATION: Egy köztes helper megléte önmagában nem jelent sanitizationt vagy parametrizációt. Ha a bemenet végül kontrollálatlanul SQL stringbe kerül, az injection kockázata továbbra is fennáll. A source-to-sink elemzésnek a tényleges adatkezelést kell vizsgálnia.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: XSS
+TYPE: scenario
+QUESTION: Egy alkalmazás egy harmadik féltől származó WYSIWYG editorból kap HTML-t, amelyet sanitizálás nélkül `innerHTML`-be helyez. A fejlesztő szerint ez elfogadható, mert az editor „megbízható”. Mi a helyes biztonsági megközelítés?
+A) A külső komponens által előállított HTML-t is untrusted inputként kell kezelni, és megfelelő sanitization vagy biztonságos rendering szükséges.
+B) A third-party komponens minden kimenete automatikusan trusted.
+C) Csak productionben kell sanitizálni.
+D) A HTML-t azért nem kell ellenőrizni, mert a böngésző végzi a parsingot.
+ANSWER: A
+EXPLANATION: A third-party komponens kimenete is tartalmazhat nem megbízható felhasználói adatot vagy hibásan kezelt HTML-t. A biztonsági határt nem szabad egyetlen kliensoldali komponens megbízhatóságára alapozni, különösen veszélyes HTML sink használatakor.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: CSRF
+TYPE: scenario
+QUESTION: Egy alkalmazás cookie-alapú sessiont használ, és minden POST kéréshez CSRF tokent kér. Egy új `/api/import` endpoint azonban JSON bodyt fogad, és a fejlesztő kihagyta a CSRF-védelmet, mert „HTML formból nem lehet JSON POST-ot küldeni”. Mi a legfontosabb probléma?
+A) A böngésző cross-origin JavaScript kérései megfelelő CORS-engedély nélkül nem biztos, hogy hozzáférnek a válaszhoz, de a szerveroldali CSRF-modellnek továbbra is figyelembe kell vennie, hogy a cookie automatikusan küldhető-e és milyen más cross-origin requestek lehetségesek.
+B) A JSON requestek automatikusan CSRF-védettek.
+C) A Content-Type fejléc önmagában mindig bizonyítja, hogy a kérés same-origin.
+D) A CSRF csak URL-encoded form adatoknál létezik.
+ANSWER: A
+EXPLANATION: A „JSON request” önmagában nem biztonsági határ. A browser cross-origin request szabályai csökkenthetik bizonyos támadások megvalósíthatóságát, de a védelemnek az alkalmazás teljes autentikációs és request-modelljét kell figyelembe vennie. Cookie-alapú authentication esetén a state-changing endpointok explicit védelme továbbra is fontos.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Authentication & password storage
+TYPE: performance
+QUESTION: Egy nagy rendszerben a password hashing paramétereit úgy választották meg, hogy egyetlen login körülbelül 2 másodperc CPU-időt igényel. Normál forgalom mellett ez elfogadható, de egy támadó több százezer párhuzamos login próbálkozást indít. Mi a legfontosabb védelmi stratégia?
+A) Csak még magasabb Argon2id költséget kell beállítani.
+B) A password hashing mellett több rétegű rate limitinget, abuse detectiont és megfelelő infrastruktúra-védelmet kell alkalmazni, hogy az online támadás ne tudja könnyen kimeríteni az erőforrásokat.
+C) A password hashinget ki kell kapcsolni nagy forgalomnál.
+D) A jelszavakat gyors SHA-256 hashre kell cserélni.
+ANSWER: B
+EXPLANATION: A password hashing paraméterek növelése az offline támadások költségét emeli, de online login endpointon DoS-kockázatot is növelhet. Az erős password hashinget ezért rate limitinggel, abuse detectionnel, megfelelő concurrency kontrollal és infrastruktúra-szintű védelemmel kell kombinálni.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: Sessions & JWT
+TYPE: production
+QUESTION: Egy rendszer JWT access tokeneket használ, és egy felhasználó admin jogosultságát azonnal vissza kell vonni. A már kiadott, hosszú életű JWT-k továbbra is érvényesek. Miért jelent ez architekturális problémát?
+A) A JWT mindig automatikusan visszavonható a kliens oldalán.
+B) A JWT payload módosítása megoldja a revokációt.
+C) A stateless token validáció önmagában nem biztosít azonnali globális revokációt; rövid token lifetime, központi revokációs ellenőrzés vagy megfelelő session/token architecture szükséges lehet.
+D) Az admin role claim soha nem kerülhet JWT-be.
+ANSWER: C
+EXPLANATION: A már kiadott, érvényes aláírású JWT-t a resource server stateless módon általában továbbra is elfogadja a lejáratig. Ha azonnali jogosultság-visszavonás követelmény, a token lifetime, revokációs lista/introspection vagy más központi kontroll beépítése szükséges lehet.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: edgecase
+QUESTION: Egy authorization server több resource server számára ad ki access tokeneket. Az egyik API elfogad egy másik API számára kiadott tokent, mert az aláírás és az issuer valid. Mi a fő probléma?
+A) A token mérete túl nagy.
+B) Az access tokenek nem lehetnek aláírva.
+C) Az issuer ellenőrzése automatikusan minden resource authorizationt megold.
+D) A resource servernek az audience és a tokenhez tartozó scope/permission alapján is ellenőriznie kell, hogy a token az adott erőforráshoz és művelethez használható-e.
+ANSWER: D
+EXPLANATION: Egy token megbízható issuerből származhat, mégsem feltétlenül az adott resource serverhez vagy művelethez lett kiadva. Az audience, scope-ok és egyéb releváns authorization információk validálása korlátozza a token jogosultsági hatókörét.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: production
+QUESTION: Egy kritikus webalkalmazás release pipeline-ja úgy van kialakítva, hogy minden penetration test finding automatikusan blokkolja a release-t, függetlenül a súlyosságtól vagy a tényleges exploitálhatóságtól. Mi a legfontosabb probléma ezzel a megközelítéssel?
+A) A penetration test findingek mindig false positive-ok.
+B) A release gate nem használhat biztonsági findingeket.
+C) A security gate-eknek kizárólag a finding darabszámát kell figyelniük.
+D) A merev, kontextus nélküli gate túl sok irreleváns blokkolást okozhat; risk-based severity, exploitability, asset criticality és megfelelő exception process alapján kell kialakítani a release döntési szabályait.
+ANSWER: D
+EXPLANATION: A security finding jelentősége függhet a sérülékenység súlyosságától, kihasználhatóságától, az érintett asset értékétől és a rendelkezésre álló mitigációktól. A jól kialakított release gate-ek kockázatalapúak, miközben az exception folyamatnak auditálhatónak és kontrolláltnak kell lennie.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: Injection
+TYPE: production
+QUESTION: Egy alkalmazásnak dinamikusan kell meghatároznia egy SQL-lekérdezés WHERE feltételének operátorát, például `=` vagy `LIKE`. A felhasználó az operátort közvetlenül megadhatja. Mi a legbiztonságosabb megoldás?
+A) Az operátort egy explicit allowlist alapján validálni, és csak az engedélyezett SQL-operátorokat elfogadni
+B) Az operátort PreparedStatement paraméterként átadni
+C) Az operátort HTML-escape-elni SQL-be illesztés előtt
+D) Az operátort Base64-be kódolni, majd dekódolni a lekérdezésben
+ANSWER: A
+EXPLANATION: Az SQL-operátor a lekérdezés szintaxisának része, ezért nem kezelhető ugyanúgy paraméterként, mint egy adatérték. Egy kis, explicit allowlist biztosítja, hogy csak a támogatott operátorok kerülhessenek a lekérdezésbe. A megtévesztő alternatíva a PreparedStatement használata minden dinamikus elemre, de a paraméterek jellemzően értékekhez használhatók, nem tetszőleges SQL-szintaktikai elemekhez.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: XSS
+TYPE: edgecase
+QUESTION: Egy SPA egy API-válaszból származó URL-t biztonságosnak tekint, majd egy `href` attribútumba helyezi. Az API azonban támadó által befolyásolható adatot is visszaadhat. Mi a legfontosabb további ellenőrzés?
+A) Az URL hosszának maximum 100 karakterre korlátozása
+B) A URL sémájának és céljának validálása, például a veszélyes `javascript:` séma elutasítása
+C) Az URL Base64-kódolása
+D) Az URL HTML-entitásokká alakítása minden esetben
+ANSWER: B
+EXPLANATION: Egy URL-attribútum megfelelő védelme nem pusztán HTML-escape kérdése: a veszélyes sémák, például a `javascript:`, külön biztonsági kockázatot jelenthetnek. A URL-t az adott kontextusnak megfelelően kell validálni és biztonságosan beilleszteni. A megtévesztő alternatíva a puszta HTML-escaping, mert az megakadályozhat bizonyos markup-injekciókat, de önmagában nem teszi biztonságossá a veszélyes URL-sémákat.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: CSRF
+TYPE: production
+QUESTION: Egy webalkalmazás SameSite=Lax cookie-t használ, de egy érzékeny POST végpontnál a CSRF-védelem teljesen hiányzik. A fejlesztő szerint a SameSite beállítás önmagában elegendő. Mi a leghelyesebb megközelítés?
+A) A SameSite=Lax minden CSRF-támadást garantáltan megakadályoz
+B) A POST végpontot GET-re kell cserélni
+C) A kritikus állapotváltoztató műveletekhez továbbra is megfelelő CSRF-védelmet kell alkalmazni, és nem kizárólag a SameSite viselkedésére támaszkodni
+D) A cookie-t localStorage-ban kell tárolni
+ANSWER: C
+EXPLANATION: A SameSite cookie-attribútum fontos védelmi réteg, de nem minden alkalmazási környezetben és böngészési helyzetben helyettesíti a kifejezett CSRF-védelmet. Érzékeny állapotváltoztató műveleteknél a CSRF-token vagy más megfelelő védelem további biztonsági réteget jelent. A megtévesztő alternatíva a SameSite-ra való teljes hagyatkozás, mert az adott böngésző- és alkalmazási viselkedés összetettsége miatt ez túlzott biztonsági feltételezés lehet.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Authentication & password storage
+TYPE: scenario
+QUESTION: Egy rendszer jelszó nélküli bejelentkezést vezet be passkey-ekkel WebAuthn segítségével. A backendnek hogyan kell kezelnie a felhasználóhoz tartozó hitelesítési adatokat?
+A) A felhasználó privát kulcsát is el kell mentenie az adatbázisban
+B) A sikeres hitelesítés után plaintext jelszót kell generálnia
+C) Minden felhasználóhoz ugyanazt a szerveroldali titkot kell használni
+D) A regisztráció során kapott nyilvános kulcsot és a szükséges credential metaadatokat kell tárolnia, a privát kulcsot nem
+ANSWER: D
+EXPLANATION: WebAuthn esetén a hitelesítő eszköz tartja a privát kulcsot, míg a szerver a hozzá tartozó nyilvános kulcsot és a credential azonosításához szükséges adatokat tárolja. A szerver így aláírás-ellenőrzéssel tudja ellenőrizni a hitelesítést anélkül, hogy hozzáférne a privát kulcshoz. A megtévesztő alternatíva a privát kulcs szerveroldali tárolása, mert a hagyományos jelszóalapú modellekhez hasonló központi titoktárnak tűnhet, de ez ellentétes a WebAuthn kulcsmodelljével.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: Sessions & JWT
+TYPE: debug
+QUESTION: Egy webalkalmazás session fixation elleni védelemként a sikeres bejelentkezés után ugyanazt a session ID-t tartja meg, csak az authenticated flag értékét állítja át true-ra. Mi hiányzik ebből a megoldásból?
+A) A session ID-t sikeres autentikáció után regenerálni kell
+B) A session ID-t URL-paraméterként is elérhetővé kell tenni
+C) A session ID-t localStorage-ban kell duplikálni
+D) A session ID-t minden kérésnél meg kell változtatni
+ANSWER: A
+EXPLANATION: Ha a bejelentkezés előtt ismert session ID az autentikáció után is érvényes marad, egy támadó által előre meghatározott session azonosító hitelesített sessionné válhat. Sikeres autentikáció után ezért új session ID-t kell létrehozni, miközben a szükséges session-adatokat biztonságosan át kell vinni. A megtévesztő alternatíva az azonosító minden kérés utáni cseréje, mert az túlzottan agresszív és felesleges session-kezelési komplexitást okozna.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: edgecase
+QUESTION: Egy OIDC kliens validálja az ID token aláírását, az issuer értékét és a lejáratot, de nem ellenőrzi a nonce értéket. Mi lehet ennek a következménye?
+A) Az access token automatikusan lejár
+B) A kliens nem tudja ellenőrizni a saját kliensazonosítóját
+C) Bizonyos authorization response replay vagy token-injection helyzetek ellen hiányzik egy fontos ellenőrzés
+D) A TLS-kapcsolat automatikusan megszűnik
+ANSWER: C
+EXPLANATION: A nonce a kliens által kezdeményezett autentikációs folyamat és a visszakapott ID token összekapcsolására szolgál, így segíthet a replay és a nem a kezdeményezett folyamathoz tartozó token elfogadásának megakadályozásában. A megtévesztő alternatíva az aláírás teljes körű ellenőrzését tekinteni elegendőnek, de az aláírás hitelessége önmagában nem bizonyítja, hogy a token az adott kliens aktuális autentikációs folyamatához tartozik.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Authorization & access control
+TYPE: scenario
+QUESTION: Egy többtenantos SaaS-alkalmazásban egy felhasználó rendelkezik `admin` szerepkörrel, de az admin szerepkör csak a saját tenantjára vonatkozik. Egy API csak az `admin` role claimet ellenőrzi, a tenant azonosítóját nem. Mi a fő probléma?
+A) Az admin szerepkör önmagában mindig globális jogosultságot jelent
+B) A role claim típusa túl hosszú
+C) A JWT-k nem használhatók többtenantos rendszerekben
+D) Hiányzik a jogosultság tenant-kontekstushoz kötött ellenőrzése, ezért cross-tenant hozzáférés alakulhat ki
+ANSWER: D
+EXPLANATION: Többtenantos rendszerekben a szerepkör önmagában gyakran nem írja le a jogosultság teljes hatókörét. Az erőforrást és a felhasználó jogosultságát ugyanahhoz a tenant-kontekstushoz kell kötni. A megtévesztő alternatíva az, hogy az admin role automatikusan globálisnak tekinthető, de a tenant-specifikus szerepkörök esetén ez súlyos jogosultság-eszkalációhoz vezethet.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Cryptography & TLS
+TYPE: production
+QUESTION: Egy szolgáltatás saját maga generál TLS-tanúsítványt, majd a kliens oldalon kikapcsolják a tanúsítvány-ellenőrzést, hogy elkerüljék a kapcsolat megszakadását. Mi a legfontosabb probléma?
+A) A TLS csak HTTP/1.1 esetén működik
+B) A kliens elveszíti annak lehetőségét, hogy megbízhatóan ellenőrizze, kivel kommunikál, így MITM-támadás válhat lehetővé
+C) A tanúsítványok csak böngészőkben ellenőrizhetők
+D) A titkosított adatfolyam automatikusan plaintextté válik
+ANSWER: B
+EXPLANATION: A TLS-tanúsítvány ellenőrzése a szerver identitásának hitelesítéséhez szükséges. Ha a kliens minden tanúsítványt elfogad, a kapcsolat ugyan lehet titkosított, de a kliens nem tudja megfelelően ellenőrizni a peer identitását. A megtévesztő alternatíva az a feltételezés, hogy a titkosítás önmagában elég, de titkosítás hitelesítés nélkül nem biztosít megfelelő MITM-védelmet.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: Security headers & CSP
+TYPE: production
+QUESTION: Egy CSP `script-src 'nonce-...'` direktívát használ. Egy fejlesztő ugyanazt a statikus nonce-ot konfigurációs fájlban tárolja, és minden válaszban ezt küldi. Mi a helyes javítás?
+A) A nonce-ot minden válaszhoz kriptográfiailag biztonságos véletlen értékként újra kell generálni
+B) A nonce-ot a frontend localStorage-ába kell menteni
+C) A nonce-ot az URL query stringjébe kell tenni
+D) A nonce-ot minden felhasználó számára ugyanarra az értékre kell állítani
+ANSWER: A
+EXPLANATION: A CSP nonce célja, hogy egy adott válaszhoz tartozó, kiszámíthatatlan engedélyezési értéket biztosítson. Ha ugyanaz az érték minden válaszban szerepel, a nonce elveszíti fontos biztonsági tulajdonságait. A megtévesztő alternatíva a nonce hosszú, statikus titokként való kezelése, de a nonce nem hosszú távú megosztott titoknak készült.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: CORS
+TYPE: edgecase
+QUESTION: Egy API csak a `https://app.example.com` originről akarja engedélyezni a credentialed CORS-kéréseket. A fejlesztő ezt használja: `Access-Control-Allow-Origin: https://*.example.com`. Mi a probléma?
+A) A CORS csak IP-címeket engedélyezhet
+B) A wildcard használata minden böngészőben támogatott credentialed CORS esetén
+C) A wildcardot használó origin minta nem jelent automatikus, biztonságos subdomain-allowlistet; az engedélyezett origin-eket explicit módon kell kezelni
+D) A CORS nem tud HTTPS origin-eket kezelni
+ANSWER: C
+EXPLANATION: Az `Access-Control-Allow-Origin` nem általános wildcard-pattern matching mechanizmus. Credentialed CORS esetén különösen fontos, hogy az alkalmazás csak pontosan meghatározott, megbízható origin-eket engedélyezzen. A megtévesztő alternatíva a `*.example.com` intuitív wildcardként való értelmezése, de ez nem az ACAO szabványos használata.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: Egy Kubernetes-alapú rendszerben a Secret objektumok alapértelmezett formában kerülnek az etcd-be. A fejlesztők szerint ez azt jelenti, hogy az adatbázisban titkosítva vannak, tehát nincs további teendő. Mi a helyes állítás?
+A) A Kubernetes Secret mindig hardveres HSM-ben van tárolva
+B) Az etcd-ben tárolt Secret-ekhez megfelelő encryption-at-rest, RBAC és hozzáférés-védelem is szükséges
+C) A Secret objektumokat nem lehet RBAC-kal védeni
+D) A Kubernetes automatikusan rotál minden Secret-et óránként
+ANSWER: B
+EXPLANATION: A Kubernetes Secret objektum önmagában nem jelenti azt, hogy minden környezetben megfelelő encryption-at-rest védelem van beállítva. Az etcd védelme, a Kubernetes encryption-at-rest konfigurációja, az RBAC, a hozzáférési jogosultságok és a secret-rotáció együtt alkotják a megfelelő védelmi modellt. A megtévesztő alternatíva az objektum nevéből következtetett automatikus titkosítás, de a tárolási és hozzáférési védelem külön konfigurációs kérdés.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: Input validation & deserialization
+TYPE: trap
+QUESTION: Egy REST API egy `status` mezőt Java enumra deszerializál, amelynek értékei `ACTIVE`, `SUSPENDED` és `DELETED`. A fejlesztő szerint az enum használata önmagában garantálja az üzleti szabályok betartását. Miért nem feltétlenül igaz ez?
+A) Az enumok soha nem használhatók REST API-kban
+B) Az enum minden üzleti szabályt automatikusan ellenőriz
+C) Az enum csak a megengedett szintaktikai értékeket korlátozza; az aktuális állapotváltozási szabályokat külön kell ellenőrizni
+D) A JSON nem képes enumokat reprezentálni
+ANSWER: C
+EXPLANATION: Az enum segít korlátozni, hogy milyen értékek kerülhetnek a mezőbe, de nem feltétlenül írja le az állapotátmenetek üzleti szabályait. Például egy `DELETED` állapotú rekordot nem biztos, hogy megengedett `ACTIVE` állapotba visszaállítani. A megtévesztő alternatíva az enum validációját teljes üzleti validációként kezelni, de a típusellenőrzés és az üzleti invariánsok külön rétegek.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: SSRF
+TYPE: production
+QUESTION: Egy SSRF-védelmi réteg először feloldja a hostname-et IP-címre, ellenőrzi, hogy az IP nem privát tartományba esik, majd később egy HTTP kliens újra feloldja ugyanazt a hostname-et. Mi a fő kockázat?
+A) A hostname mindig ugyanahhoz az IP-címhez tartozik
+B) A HTTP csak numerikus IP-címeket támogat
+C) A második DNS-feloldás nem tud IPv6-címet visszaadni
+D) DNS rebinding vagy eltérő DNS-válasz miatt az ellenőrzött és a ténylegesen elért IP-cím különbözhet
+ANSWER: D
+EXPLANATION: Ha az alkalmazás külön lépésben ellenőrzi a DNS-feloldás eredményét, majd a tényleges kapcsolatfelépítéskor újra feloldja a hostnevet, a két feloldás eredménye eltérhet. Így egy kezdetben nyilvánosnak tűnő cím után a kapcsolat egy belső címre irányulhat. A megtévesztő alternatíva az egyszeri IP-ellenőrzést elegendőnek tekinteni, de a TOCTOU jellegű eltérés miatt az ellenőrzésnek és a kapcsolatfelépítésnek konzisztensnek kell lennie.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: Supply chain security
+TYPE: scenario
+QUESTION: Egy build pipeline egy külső dependency legújabb verzióját automatikusan letölti minden build során, és csak a package manager által visszaadott verziót logolja. Mi a legfontosabb supply-chain kockázat?
+A) A build-ek nem reprodukálhatók megbízhatóan, és egy később kompromittált vagy megváltozott dependency új kódot juttathat a rendszerbe
+B) A package manager mindig sérült fájlt tölt le
+C) A dependency-k csak production környezetben veszélyesek
+D) A verziófrissítés önmagában SQL injectiont okoz
+ANSWER: A
+EXPLANATION: A nem rögzített dependency-verziók és ellenőrzött artifactok hiánya csökkenti a build reprodukálhatóságát és növeli annak kockázatát, hogy egy későbbi build váratlan vagy kompromittált kódot használjon. Lockfile-ok, verziórögzítés, integrity ellenőrzések és kontrollált frissítési folyamatok csökkentik ezt a kockázatot. A megtévesztő alternatíva az, hogy minden automatikus dependency-frissítés szükségszerűen rossz, de a probléma elsősorban a kontrollálatlan és nem reprodukálható frissítés.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: Logging & incident response
+TYPE: production
+QUESTION: Egy támadó sikeresen bejelentkezik egy admin fiókkal, majd több szolgáltatáson keresztül érzékeny műveleteket hajt végre. Az egyes szolgáltatások különböző request ID-kat generálnak. Melyik megoldás segíti leginkább az incidens rekonstruálását?
+A) Minden logból el kell távolítani az időbélyeget
+B) Egy egységes trace/correlation context továbbítása a szolgáltatások között
+C) Csak a gateway logjainak megtartása
+D) Minden szolgáltatás saját, véletlenszerű felhasználói azonosítót generáljon
+ANSWER: B
+EXPLANATION: A közös correlation vagy trace context lehetővé teszi, hogy egy több szolgáltatáson áthaladó kéréshez tartozó eseményeket később össze lehessen kapcsolni. Ez különösen fontos elosztott rendszerek incidensvizsgálatánál. A megtévesztő alternatíva csak a gateway logjaira támaszkodni, mert az nem feltétlenül tartalmazza a downstream szolgáltatások biztonsági eseményeit és részletes műveleteit.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Threat modeling
+TYPE: algorithm
+QUESTION: Egy threat model elkészítésekor a csapat azonosítja az asseteket és a trust boundary-kat, de nem elemzi, hogy egy kompromittált komponensből milyen további rendszerek érhetők el. Melyik elemzés hiányzik leginkább?
+A) A komponensek forráskódjának újraírása
+B) A deploymentek számának növelése
+C) A támadási utak és a kompromittált komponensek lehetséges laterális hatásának elemzése
+D) Az összes hálózati kapcsolat eltávolítása
+ANSWER: C
+EXPLANATION: A threat modeling egyik fontos célja annak megértése, hogy egy kompromittált komponens milyen további erőforrásokhoz, szolgáltatásokhoz vagy trust boundary-khez biztosíthat hozzáférést. A laterális támadási utak elemzése segít a blast radius csökkentésében. A megtévesztő alternatíva az assetek és trust boundary-k azonosítását teljes threat modelként kezelni, de a komponensek közötti támadási utak nélkül a támadás lehetséges következményei hiányosan láthatók.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: scenario
+QUESTION: Egy SAST eszköz több száz potenciális SQL injection találatot jelez, de a fejlesztők szerint ezek nagy része false positive. Mi a legjobb következő lépés?
+A) Az összes SAST szabályt kikapcsolni
+B) Minden találatot automatikusan kritikusnak jelölni
+C) Csak productionben futtatni újra a SAST-ot
+D) Néhány reprezentatív találatnál végigkövetni a dataflow-t a forrástól a sinkig, majd a szabályt és a sanitizer/parameterization környezetet ennek alapján finomítani
+ANSWER: D
+EXPLANATION: A SAST találatok minősítéséhez érdemes a tainted adat útját a forrástól a veszélyes sinkig követni, és megvizsgálni, hogy valóban elérhető-e injection. Az így szerzett tapasztalatok alapján lehet szabályokat és false-positive kezelést javítani. A megtévesztő alternatíva minden találat automatikus kritikusnak minősítése, mert ez gyorsan alert fatigue-hoz és a valódi problémák figyelmen kívül hagyásához vezethet.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: OWASP Top 10
+TYPE: production
+QUESTION: Egy csapat az OWASP Top 10-et használja egy új rendszer teljes biztonsági követelményspecifikációjaként, és kijelenti, hogy ami nincs benne, azzal nem kell foglalkozni. Mi a fő probléma?
+A) Az OWASP Top 10 kizárólag frontend alkalmazásokra vonatkozik
+B) Az OWASP Top 10 nem helyettesíti a rendszer-specifikus threat modelinget, biztonsági követelményeket és egyéb kontrollokat
+C) Az OWASP Top 10 csak Java alkalmazásokhoz használható
+D) Az OWASP Top 10 kizárólag penetration testinghez használható
+ANSWER: B
+EXPLANATION: Az OWASP Top 10 hasznos awareness- és kockázati kiindulópont, de nem teljes biztonsági specifikáció. Egy konkrét rendszer esetén további követelményekre lehet szükség az architektúra, üzleti folyamatok, adatvédelem, infrastruktúra és fenyegetési modell alapján. A megtévesztő alternatíva az OWASP Top 10 teljes biztonsági kontrollkészletként való kezelése, mert széles körű, de nem minden rendszer minden követelményét fedi le.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: Injection
+TYPE: production
+QUESTION: Egy alkalmazásnak egyedi, felhasználó által definiált keresési szűrőnyelvet kell támogatnia, amelyből SQL WHERE feltétel készül. A fejlesztő a teljes szűrőkifejezést közvetlenül SQL-be fordítja. Mi a biztonságosabb architekturális megközelítés?
+A) A saját DSL-t parserrel AST-vá alakítani, a támogatott operátorokat és mezőket allowlist alapján kezelni, az értékeket pedig paraméterezni
+B) A teljes DSL-t Base64-kódolni SQL-be illesztés előtt
+C) Minden idézőjelet backslash-sel escape-elni
+D) A felhasználótól érkező teljes kifejezést SQL kommentként hozzáfűzni
+ANSWER: A
+EXPLANATION: Egy saját filter DSL esetén a bemenetet először strukturált formára, például AST-ra érdemes parse-olni, majd csak az engedélyezett mezőket és operátorokat SQL-szintaktikává alakítani, miközben az adatértékeket paraméterezni kell. Ez elválasztja a felhasználói nyelvet az SQL-szintaxistól. A megtévesztő alternatíva a kézi escaping, mert összetett SQL-szintaxis esetén nehéz teljes és helyes védelmet biztosítani.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: XSS
+TYPE: scenario
+QUESTION: Egy alkalmazás biztonságosnak tekinti a szerver által renderelt HTML-t, ezért minden HTML-részletet közvetlenül `innerHTML` segítségével illeszt be. Később egy új backend endpoint lehetővé teszi a felhasználói tartalom mentését. Mi a legfontosabb biztonsági következtetés?
+A) Az innerHTML mindig biztonságos, ha az adat adatbázisból származik
+B) Az adatbázis automatikusan megtisztítja az XSS payloadokat
+C) Az adatbázisból visszaolvasott adatot is untrusted inputként kell kezelni, és a megfelelő output contexthez illeszkedő biztonságos renderelést kell használni
+D) A szerveroldali rendering automatikusan kikapcsolja a kliensoldali XSS-t
+ANSWER: C
+EXPLANATION: Az adatbázis nem biztonsági határ: ha támadó által befolyásolható adat kerül bele, annak későbbi megjelenítése továbbra is XSS-kockázatot jelenthet. A biztonságot az output contexthez illeszkedő encoding vagy biztonságos DOM API, illetve szükség esetén megfelelő HTML-sanitization biztosítja. A megtévesztő alternatíva az adatbázisból származó adat automatikus megbízhatónak tekintése, de a tárolás ténye nem változtatja meg az adat eredetét.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Authentication & password storage
+TYPE: performance
+QUESTION: Egy login endpointon Argon2id fut minden sikertelen jelszópróbára, miközben nincs IP-, account- vagy eszközszintű abuse detection. Egy támadó nagy mennyiségű párhuzamos kérést küld. Melyik védelmi kombináció a legcélszerűbb?
+A) Az Argon2id költségét nullára csökkenteni
+B) A jelszavakat MD5-re cserélni
+C) Csak kliensoldali CAPTCHA-t használni
+D) Megfelelő password hashing mellett rate limitinget, abuse detectiont és erőforrás-korlátokat alkalmazni
+ANSWER: D
+EXPLANATION: A lassú password hashing védi a tárolt jelszavakat, de egy online támadó számára a hitelesítési endpoint számítási költsége erőforrás-kimerítési lehetőséget is jelenthet. Rate limiting, account- és IP-alapú korlátozás, abuse detection és megfelelő infrastruktúra együtt csökkentik ezt a kockázatot. A megtévesztő alternatíva az Argon2id költségének csökkentése, mert ez ugyan mérsékelheti a DoS-hatást, de gyengíti a jelszavak offline feltörése elleni védelmet.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Sessions & JWT
+TYPE: production
+QUESTION: Egy böngészőben futó alkalmazás hosszú élettartamú access JWT-t localStorage-ban tárol. Egy harmadik féltől származó script kompromittálódik, és tetszőleges JavaScriptet tud futtatni az oldalon. Mi a legfontosabb kockázat?
+A) A támadó kiolvashatja a localStorage-ban lévő tokent, és felhasználhatja az API-kérésekhez
+B) A JWT automatikusan új kulccsal lesz aláírva
+C) A localStorage megakadályozza az XSS-t
+D) A böngésző automatikusan visszavonja a tokent
+ANSWER: A
+EXPLANATION: A localStorage-ban tárolt token hozzáférhető a JavaScript számára, ezért egy XSS vagy kompromittált third-party script képes lehet kiolvasni és exfiltrálni. Rövidebb token-élettartam, megfelelő CSP, dependency-k kontrollja és más architekturális megoldások csökkenthetik a kockázatot. A megtévesztő alternatíva a localStorage kliensoldali elszigetelésére támaszkodni, de ugyanazon origin JavaScriptje hozzáférhet a tárolt értékhez.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: scenario
+QUESTION: Egy OAuth 2.0 kliens authorization code flow-t használ. A redirect URI-ket részleges domain-matching alapján ellenőrzi, így például `https://evil.example.com` is elfogadható egy `https://example.com/callback` szabály mellett. Mi a legfontosabb javítás?
+A) A redirect URI-t csak HTTP-re kell korlátozni
+B) A redirect URI-t Base64-kódolva kell tárolni
+C) A redirect URI-kat pontos, előre regisztrált értékekhez kell kötni, és kerülni kell a laza wildcard vagy substring matchinget
+D) A redirect URI-t a felhasználó által megadott értékre kell állítani
+ANSWER: C
+EXPLANATION: A túl laza redirect URI-ellenőrzés lehetővé teheti, hogy az authorization code vagy más érzékeny authorization response nem megbízható végpontra kerüljön. A redirect URI-t ezért szigorúan a klienshez regisztrált, pontos értékekhez kell kötni. A megtévesztő alternatíva a domain substring alapján történő ellenőrzés, mert intuitívnak tűnik, de könnyen engedélyezhet nem kívánt hostneveket vagy pathokat.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: Authorization & access control
+TYPE: algorithm
+QUESTION: Egy dokumentum API-ban a backend először ellenőrzi, hogy a felhasználó bejelentkezett-e, majd közvetlenül a `GET /documents/{id}` válaszban visszaadja a dokumentumot. A dokumentumok tenant- és owner-alapú hozzáférési szabályokat is tartalmaznak. Mi hiányzik?
+A) A JWT payload Base64-dekódolása
+B) Objektumszintű authorization ellenőrzés az adott dokumentumra, tenantre és a felhasználó konkrét jogosultságára
+C) A HTTP metódus POST-ra cserélése
+D) A dokumentum ID-jának hash-elése
+ANSWER: B
+EXPLANATION: Az autentikáció csak azt igazolja, hogy ki a felhasználó; nem mondja meg, hogy hozzáférhet-e a konkrét dokumentumhoz. Az objektum szintjén ellenőrizni kell a tenant-kötést, az ownershipet és az adott művelethez szükséges jogosultságot. A megtévesztő alternatíva az objektumazonosító elrejtése vagy hash-elése, mert ez megnehezítheti a találgatást, de nem helyettesíti az authorizationt.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: production
+QUESTION: Egy alkalmazás security pipeline-ja SAST-ot és DAST-ot futtat, de a pentest során ismételten olyan hibák derülnek ki, amelyek több legitim funkció kombinációjából álló üzleti logikai visszaélések. Mi a legfontosabb következtetés?
+A) A SAST-ot és DAST-ot teljesen ki kell kapcsolni
+B) A security testinget kizárólag dependency scanningre kell cserélni
+C) A statikus és dinamikus automatizált tesztek önmagukban nem fedik le teljesen az üzleti logikát, ezért célzott abuse-case tesztelésre és manuális biztonsági vizsgálatra is szükség van
+D) Minden üzleti logikai hibát a compilernek kell felismernie
+ANSWER: C
+EXPLANATION: A SAST és DAST fontos automatizált kontrollok, de korlátozottan képesek felismerni olyan támadási láncokat, amelyek több önmagában legitim művelet kombinációjából jönnek létre. Az abuse-case alapú tesztelés, manuális business-logic review és célzott penetration testing ezért fontos kiegészítés. A megtévesztő alternatíva az automatizált tesztek teljes elhagyása, de ezek továbbra is értékesek az általuk jól felismerhető sérülékenységek korai detektálására.
+###END

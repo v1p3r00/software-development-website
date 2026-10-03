@@ -1,0 +1,2992 @@
+### Q1
+LEVEL: junior
+TOPIC: Filesystem hierarchy
+TYPE: theory
+QUESTION: On a Linux system, you want to place a system-wide configuration file that is used by multiple applications and administrative tools. Which directory is the most appropriate location for general system configuration?
+A) /etc
+B) /opt
+C) /var
+D) /srv
+ANSWER: A
+EXPLANATION: The `/etc` directory is the conventional location for system-wide configuration files. `/opt` is used for optionally installed software, `/var` for variable data, and `/srv` for data served by system services. `/opt` may be tempting because it often contains application-related files, but it is not the standard location for general system configuration.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: Permissions & ownership
+TYPE: output
+QUESTION: What will be the result of the following commands on a typical Linux system?
+CODE:
+touch report.txt
+chmod 640 report.txt
+ls -l report.txt
+ENDCODE
+A) -rw-r----- 1 ... report.txt
+B) -rwxr----- 1 ... report.txt
+C) -rw-r--r-- 1 ... report.txt
+D) -rw------- 1 ... report.txt
+ANSWER: A
+EXPLANATION: The `640` permission mode gives the owner `rw-`, the group `r--`, and others `---`. Therefore, the permission bits are `-rw-r-----`. The `640` mode is a common interview trap because it is easy to overlook the group's read permission.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: Users & groups
+TYPE: behavior
+QUESTION: After creating a user, you want the new user to have a dedicated primary group with the same name. Which command ensures this on a typical Linux system?
+A) useradd -G alice alice
+B) useradd -g users alice
+C) useradd -m alice
+D) useradd -U alice
+ANSWER: D
+EXPLANATION: `useradd -U alice` creates a group for the new user and assigns it as the user's primary group. `-G` manages supplementary groups, `-g users` would set an existing group as the primary group, and `-m` controls creation of the home directory. `-m` may be tempting because creating a home directory is also commonly needed when creating a user, but it does not control group creation.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: Processes & signals
+TYPE: behavior
+QUESTION: A running process has PID 1234. Which command sends it a normal termination signal that allows the process to shut down gracefully?
+A) kill -9 1234
+B) kill 1234
+C) kill -STOP 1234
+D) kill -KILL 1234
+ANSWER: B
+EXPLANATION: `kill 1234` sends `SIGTERM` by default, allowing the process to handle the termination request and perform cleanup. `SIGKILL` causes immediate termination and cannot be handled, while `SIGSTOP` suspends the process. `kill -9` may be tempting because it reliably terminates a stuck process, but in production, `SIGTERM` is generally the appropriate first choice.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: Bash scripting
+TYPE: output
+QUESTION: What does the following Bash script print?
+CODE:
+#!/usr/bin/env bash
+name="Linux"
+echo "Hello $name"
+ENDCODE
+A) Hello $name
+B) Hello Linux
+C) Hello "Linux"
+D) name=Linux
+ANSWER: B
+EXPLANATION: Inside double quotes, Bash performs variable expansion, so `$name` is replaced with `Linux`. The result is `Hello Linux`. Single quotes would prevent variable expansion in a similar situation, making quote type a common shell-scripting trap.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Pipes & redirection
+TYPE: output
+QUESTION: What does the following command do?
+CODE:
+grep "ERROR" application.log > errors.log
+ENDCODE
+A) Appends the `ERROR` lines to the end of `errors.log`.
+B) Deletes the `ERROR` lines from `application.log`.
+C) Writes the `ERROR` lines to `errors.log`, overwriting its previous contents.
+D) Copies the entire contents of `application.log` to `errors.log`.
+ANSWER: C
+EXPLANATION: `>` redirects standard output and overwrites the target file if it already exists. `grep` writes only lines containing the `ERROR` pattern to standard output. `>>` would append instead, which is why it is easy to confuse these two redirection operators.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: Text processing (grep, sed, awk)
+TYPE: output
+QUESTION: What does the following command print?
+CODE:
+printf 'alice\nbob\ncarol\n' | grep '^a'
+ENDCODE
+A) alice
+B) bob
+C) alice
+carol
+D) The entire input
+ANSWER: A
+EXPLANATION: In a regular expression, `^` represents the beginning of a line, so only lines beginning with `a` match. Among the three lines, that is `alice`. It is tempting to think that `grep '^a'` finds every line containing the letter `a`, because the meaning of `^` is easy to overlook when analyzing the command quickly.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Package management
+TYPE: theory
+QUESTION: On an Ubuntu or Debian system, which tool can be used to install a package and handle its dependencies from configured APT repositories?
+A) rpm
+B) tar
+C) apt
+D) systemctl
+ANSWER: C
+EXPLANATION: On Debian-based systems, `apt` handles package installation, upgrades, and dependency resolution using configured repositories. `rpm` is a lower-level package manager for RPM packages, `tar` handles archives, and `systemctl` manages systemd units. `rpm` may be tempting because it also deals with Linux packages, but it is not the primary high-level package management tool on Ubuntu/Debian.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: systemd & services
+TYPE: behavior
+QUESTION: You want to start an `nginx.service` managed by systemd and also configure it to start automatically during the next boot. Which command pair is appropriate?
+A) systemctl start nginx && systemctl enable nginx
+B) systemctl enable nginx && systemctl reload nginx
+C) systemctl start nginx && systemctl reload nginx
+D) systemctl enable nginx && systemctl restart nginx
+ANSWER: A
+EXPLANATION: `systemctl start` starts the service on the currently running system, while `systemctl enable` configures it to start automatically during boot. `enable` by itself does not necessarily start the service immediately. `restart` may be tempting because it is often used with running services, but it does not configure the service to start automatically at boot.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: Networking
+TYPE: output
+QUESTION: What does the following command primarily show?
+CODE:
+ip addr show
+ENDCODE
+A) The system's DNS cache contents
+B) Network interfaces and their assigned IP addresses
+C) The current state of TCP connections
+D) The complete routing table
+ANSWER: B
+EXPLANATION: `ip addr show` displays network interfaces, their state, and their assigned IPv4/IPv6 addresses. `ss` can be used to inspect TCP connections, while `ip route` displays routing information. The `ip` command is a general networking tool, so it is easy to assume that the same subcommand displays all types of network information.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: SSH
+TYPE: scenario
+QUESTION: You want to connect via SSH to `server.example.com` as the `deploy` user, and the SSH server is listening on port 2222. Which command is correct?
+A) ssh deploy@server.example.com:2222
+B) ssh -p 2222 deploy@server.example.com
+C) ssh deploy@server.example.com 2222
+D) ssh --port=22 deploy@server.example.com
+ANSWER: B
+EXPLANATION: The OpenSSH client uses the `-p` option to specify the destination port, so the correct form is `ssh -p 2222 deploy@server.example.com`. The `host:port` syntax is common in many other networking tools, but the OpenSSH client does not use that syntax for specifying the port. This is a common SSH command-line interview trap.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: Disks & storage
+TYPE: output
+QUESTION: What are you primarily inspecting with the following command?
+CODE:
+df -h
+ENDCODE
+A) The number of files in a directory
+B) Current memory and swap usage
+C) Free and used space on filesystems in human-readable form
+D) Files currently open by running processes
+ANSWER: C
+EXPLANATION: `df -h` shows filesystem disk-space usage, such as total, used, and available capacity, using human-readable units. `du` is more appropriate for examining how much space individual directories and files consume. `du` may be tempting because it is also commonly used when investigating disk-space problems, but it answers a different question.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: Logs & journald
+TYPE: output
+QUESTION: Which command can you use to query journal entries for a systemd service such as `nginx.service`?
+A) journalctl -u nginx.service
+B) systemctl -l nginx.service
+C) logctl --service nginx.service
+D) systemd-log nginx.service
+ANSWER: A
+EXPLANATION: `journalctl -u nginx.service` filters journal entries for the specified systemd unit. This is particularly useful when investigating service startup failures and runtime errors. `systemctl` is used to inspect and control services, so it may be tempting to use it for all systemd-related diagnostics, but `journalctl` is the tool for querying the journal.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: Cron & scheduling
+TYPE: behavior
+QUESTION: You want a cron job to run every day at 02:30. Which entry achieves this?
+A) 30 2 * * * /usr/local/bin/backup.sh
+B) 2 30 * * * /usr/local/bin/backup.sh
+C) * 30 2 * * /usr/local/bin/backup.sh
+D) 30 * 2 * * /usr/local/bin/backup.sh
+ANSWER: A
+EXPLANATION: The five cron fields are, in order: minute, hour, day of month, month, and day of week. Therefore, `30 2 * * *` runs every day at 02:30. `2 30 * * *` would not represent 02:30 because the fields are not in hour-minute order, which is a common source of confusion.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: Environment variables
+TYPE: output
+QUESTION: What is the result of the following Bash commands?
+CODE:
+export APP_ENV=production
+bash -c 'echo "$APP_ENV"'
+ENDCODE
+A) production
+B) APP_ENV
+C) An empty line
+D) bash: APP_ENV: command not found
+ANSWER: A
+EXPLANATION: `export` marks `APP_ENV` as an exported environment variable, so a child process started from the current shell, in this case a new Bash process, inherits it. Therefore, the child shell prints `production`. The misconception that shell variables are never inherited is tempting because variables that are not exported are indeed not automatically passed to child processes.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: Performance troubleshooting
+TYPE: output
+QUESTION: You observe unexpectedly high CPU usage on a server. Which command provides a quick, interactive overview of running processes and their CPU and memory usage?
+A) df -h
+B) top
+C) ip addr
+D) free -d
+ANSWER: B
+EXPLANATION: `top` provides a continuously updated view of processes, including CPU and memory usage. `df` shows filesystem capacity, `ip addr` shows network addresses, and `free` shows memory usage. `free` may be tempting because memory is an important part of performance troubleshooting, but it does not show which processes are consuming CPU.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: Boot & kernel
+TYPE: theory
+QUESTION: Which command can be used to quickly display the version of the currently running Linux kernel?
+A) uname -r
+B) kernelctl --version
+C) systemctl kernel-version
+D) lsmod -r
+ANSWER: A
+EXPLANATION: `uname -r` displays the release version of the currently running kernel. `lsmod` lists loaded kernel modules, while `systemctl` manages systemd units. `uname -a` can also provide kernel information, but `uname -r` is the more targeted command for retrieving the kernel release.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: Security hardening
+TYPE: trap
+QUESTION: On an SSH server, you want to prevent the root user from logging in directly via SSH. Which `sshd_config` setting is used for this?
+A) RootLogin disabled
+B) PermitRootLogin no
+C) DisableRootSSH yes
+D) AllowRootLogin false
+ANSWER: B
+EXPLANATION: In the OpenSSH configuration, `PermitRootLogin no` disables direct SSH login for root. After changing the setting, the configuration should be validated and the SSH service should be reloaded or restarted as appropriate. `RootLogin disabled` may be tempting because it sounds like natural English, but it is not a valid OpenSSH configuration directive.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: Filesystem hierarchy
+TYPE: scenario
+QUESTION: An application continuously generates logs and temporary runtime state data whose size can change over time. Which directory is most appropriate for variable system data?
+A) /bin
+B) /usr
+C) /var
+D) /boot
+ANSWER: C
+EXPLANATION: `/var` contains variable data such as logs, spool files, caches, and other runtime data. `/usr` primarily contains installed user and system programs and their relatively static components, `/boot` contains files required for booting, and `/bin` contains essential executable programs. `/tmp` may be tempting because temporary files can be stored there, but `/var` is more appropriate for general variable system data.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Permissions & ownership
+TYPE: output
+QUESTION: A file has the permissions `-rwxr-x---`. Which statement is correct?
+A) The owner can read and write the file but cannot execute it.
+B) The owner has all permissions, the group can read and execute it, and others have no permissions.
+C) The owner and everyone else can read and execute the file.
+D) The group can also write to the file but cannot execute it.
+ANSWER: B
+EXPLANATION: `rwx` gives the owner read, write, and execute permissions; `r-x` gives the group read and execute permissions; and `---` gives others no permissions. It is tempting to think the group can also write to the file because the permission characters are easy to misread when scanning them quickly.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: Bash scripting
+TYPE: edgecase
+QUESTION: What does the following script print?
+CODE:
+#!/usr/bin/env bash
+value=""
+if [ -n "$value" ]; then
+    echo "set"
+else
+    echo "empty"
+fi
+ENDCODE
+A) set
+B) empty
+C) 0
+D) The script exits with a syntax error
+ANSWER: B
+EXPLANATION: The `-n` test is true when the string has a non-zero length. Since `value` is an empty string, the condition is false and `empty` is printed. `-z` is used to test for an empty string. It is tempting to assume that a defined variable is automatically non-empty, but a variable can exist while containing an empty value.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: Pipes & redirection
+TYPE: output
+QUESTION: What does the following command print?
+CODE:
+printf 'one\ntwo\nthree\n' | wc -l
+ENDCODE
+A) 0
+B) 2
+C) 3
+D) 4
+ANSWER: C
+EXPLANATION: `printf` produces three lines, each terminated by a newline character. `wc -l` counts newline characters, so the result is 3. It may be tempting to count three content lines plus an additional empty line, but there is no fourth newline in this input.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: Networking
+TYPE: debug
+QUESTION: An application is accessible from localhost but not from another machine. Which investigation directly helps determine which TCP ports are listening on the local system?
+A) ss -lnt
+B) df -h
+C) ip neigh flush all
+D) uname -a
+ANSWER: A
+EXPLANATION: `ss -lnt` displays TCP listening sockets in numeric form, allowing you to determine, for example, which port an application is listening on. If an application is bound only to `127.0.0.1`, it will not be directly reachable from a remote machine. `ip addr` is also useful for network diagnostics, but it does not show which TCP ports have listening sockets.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: Logs & journald
+TYPE: scenario
+QUESTION: A systemd service starts and then immediately stops. Which approach is the most appropriate first step for investigating the service state and recent logs?
+A) rm -rf /var/log/*
+B) systemctl status service-name, then journalctl -u service-name
+C) reboot, then start it again
+D) chmod 777 /etc/systemd/system/service-name.service
+ANSWER: B
+EXPLANATION: `systemctl status` shows the current unit state and often includes recent log messages, while `journalctl -u` provides more detailed journal entries. The other approaches either risk data loss or make unjustified system changes without meaningfully diagnosing the problem. A reboot may sometimes resolve transient issues, but in production troubleshooting it is generally more important to collect evidence first.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: Processes & signals
+TYPE: output
+QUESTION: In a Bash shell, you run the following commands. What happens?
+CODE:
+sleep 100 &
+echo $!
+ENDCODE
+A) `echo` always prints the exit status of `sleep`.
+B) `echo` prints the PID of the current shell.
+C) `echo` prints the PID of the most recently started background process.
+D) `echo` prints the number of seconds remaining for `sleep`.
+ANSWER: C
+EXPLANATION: `&` starts `sleep` in the background, and `$!` contains the PID of the most recently executed background pipeline or process in the current shell. This value can, for example, later be used with `kill $!` to terminate the background process. `$?` contains the exit status of the previous command, so confusing `$?` with `$!` is a common shell interview trap.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: Filesystem hierarchy
+TYPE: theory
+QUESTION: On a Linux system, you want to install a third-party application that uses its own directory structure without mixing its files with those managed by the operating system. Which directory is most appropriate for this?
+A) /opt
+B) /etc
+C) /run
+D) /proc
+ANSWER: A
+EXPLANATION: The `/opt` directory is intended for optional software packages, commonly including third-party applications with their own directory structures. `/etc` is used for configuration, `/run` for runtime state, and `/proc` for a virtual representation of kernel and process information. `/usr` can also contain applications, but `/opt` is more typical for self-contained, third-party software installations.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: Permissions & ownership
+TYPE: output
+QUESTION: A directory has the following permissions:
+CODE:
+drwxr-x---
+ENDCODE
+What do these permissions mean for members of the group?
+A) They can read and delete files inside the directory.
+B) They can enter the directory and access objects inside it for which they otherwise have permission, and they can also list its contents.
+C) They have full access to the directory.
+D) They have no access to the directory in any way.
+ANSWER: B
+EXPLANATION: For directories, `x` grants traversal permission, while `r` grants permission to list directory entries. Therefore, `r-x` allows group members both to list the directory and traverse it. The `x` permission on a directory is an important interview trap because it does not mean "execute" in the same sense as it does for a regular file; it controls traversal and access to entries.
+NOTE: The original explanation incorrectly stated that `r-x` does not allow directory listing. The correct behavior is that `r-x` allows both listing and traversal.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: Users & groups
+TYPE: scenario
+QUESTION: You want to add an existing user `alice` to the `developers` group while preserving her existing supplementary group memberships. Which command is appropriate?
+A) usermod -G developers alice
+B) groupadd developers alice
+C) usermod -aG developers alice
+D) useradd -G developers alice
+ANSWER: C
+EXPLANATION: `usermod -aG developers alice` adds `developers` to the user's supplementary groups. The `-a` option means append; without it, `-G` can replace the existing supplementary group list. Therefore, `usermod -G developers alice` can be dangerous in production because it may accidentally remove the user's existing group memberships.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Processes & signals
+TYPE: output
+QUESTION: What does the following command display?
+CODE:
+ps -ef
+ENDCODE
+A) The free space of all filesystems.
+B) Detailed information about processes started by the current shell.
+C) Only kernel threads.
+D) A detailed list of running processes, including information such as the user and PID.
+ANSWER: D
+EXPLANATION: `ps -ef` displays running processes in full-format listing, including information such as the user, PID, PPID, and full command line. The default `ps` invocation can show a different process scope, so understanding the options is important. `ps -ef` is easy to confuse with plain `ps`, which focuses on processes associated with the current terminal/session.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Bash scripting
+TYPE: edgecase
+QUESTION: What is the output of the following script?
+CODE:
+#!/usr/bin/env bash
+files="one two three"
+for file in $files; do
+    echo "[$file]"
+done
+ENDCODE
+A) [one]
+[two]
+[three]
+B) [one two three]
+C) [files]
+D) The script exits with an error
+ANSWER: A
+EXPLANATION: Because `$files` is unquoted, after parameter expansion the shell performs word splitting, producing three separate words: `one`, `two`, and `three`. Therefore, three separate lines are printed. Quoting the variable would produce different behavior, so missing quotes around shell variables are a common and important Bash interview trap.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: Pipes & redirection
+TYPE: behavior
+QUESTION: What does the following command do?
+CODE:
+command 2>/dev/null
+ENDCODE
+A) Discards standard output.
+B) Redirects standard input from `/dev/null`.
+C) Redirects standard error to `/dev/null`.
+D) Redirects all output from the command to `/dev/null`.
+ANSWER: C
+EXPLANATION: `2` is the file descriptor for standard error, so `2>/dev/null` redirects only the standard error stream to `/dev/null`. Standard output remains unchanged. It is tempting to assume that all output is discarded because `/dev/null` is commonly used to suppress output, but the file descriptor determines which stream is affected.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: Text processing (grep, sed, awk)
+TYPE: output
+QUESTION: What is the output of the following command?
+CODE:
+printf 'alice:1000\nbob:1001\n' | awk -F: '{print $2}'
+ENDCODE
+A) alice
+bob
+B) 1000
+1001
+C) alice:1000
+bob:1001
+D) 2
+ANSWER: B
+EXPLANATION: `-F:` sets the colon as the field separator. Therefore, on the first line `$1` is `alice` and `$2` is `1000`; on the second line `$2` is `1001`. Distinguishing `$0`, which represents the entire record, from `$1`, `$2`, and other fields is a common `awk` interview trap.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Package management
+TYPE: scenario
+QUESTION: On an Ubuntu server, you want to refresh the package indexes from the configured repositories without installing or upgrading any packages yet. Which command is appropriate?
+A) apt update
+B) apt upgrade
+C) apt install
+D) apt refresh-packages
+ANSWER: A
+EXPLANATION: `apt update` downloads and refreshes the package indexes from the configured repositories. `apt upgrade` upgrades installed packages, while `apt install` installs a specified package. `apt refresh-packages` is not a standard APT command. `apt upgrade` may be tempting because "update" and "upgrade" are often used interchangeably in everyday language, but they perform different operations in APT.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: systemd & services
+TYPE: debug
+QUESTION: You modified a systemd unit file and then ran:
+CODE:
+sudo systemctl restart myapp
+ENDCODE
+The service restarts, but it appears that systemd is still using the old unit configuration. What is the most likely next step?
+A) systemctl enable myapp
+B) systemctl daemon-reload
+C) systemctl mask myapp
+D) systemctl reset-failed myapp
+ANSWER: B
+EXPLANATION: When a unit file itself has been modified, the systemd manager needs to reload its unit definitions with `systemctl daemon-reload` before the new configuration is used. A `restart` by itself does not necessarily cause systemd to reread modified unit definitions. `enable` may be tempting because it is also a unit-related operation, but it configures startup behavior rather than reloading unit definitions.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: Networking
+TYPE: debug
+QUESTION: You cannot connect to a server by hostname, but you can connect using its IP address directly. Which command is the most direct choice for checking whether the hostname can be resolved through DNS?
+A) ss -tuln
+B) ip route
+C) ping -c 1 127.0.0.1
+D) dig server.example.com
+ANSWER: D
+EXPLANATION: `dig` performs a direct DNS query and provides detailed information about the resolution result and the DNS server involved. `ss` examines sockets, `ip route` examines routing, and a loopback ping only tests basic local TCP/IP stack functionality. `ping` may be tempting because it can perform hostname resolution, but the absence of an ICMP response and a DNS failure are separate issues.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: SSH
+TYPE: scenario
+QUESTION: You frequently connect to a server via SSH and want the client to automatically use the `deploy` user, port `2222`, and a specific private key. Where should this be configured on the client?
+A) /etc/hosts
+B) ~/.ssh/config
+C) ~/.ssh/authorized_keys
+D) /etc/ssh/sshd_config
+ANSWER: B
+EXPLANATION: `~/.ssh/config` is the SSH client configuration file, where settings such as `User`, `Port`, and `IdentityFile` can be configured per host. `authorized_keys` contains public keys authorized for a user on the server, while `sshd_config` is the server-side SSH daemon configuration. `/etc/hosts` may be tempting because it also deals with hostnames, but it does not store SSH connection settings.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: Disks & storage
+TYPE: output
+QUESTION: You want to examine the size of a directory, including the files and subdirectories beneath it. Which command is the most direct choice?
+CODE:
+du -sh /var/log
+ENDCODE
+A) The total space occupied by `/var/log`, summarized in human-readable form.
+B) The free space of the entire `/var` filesystem.
+C) The mount options of the `/var/log` filesystem.
+D) The number of files in the `/var/log` directory.
+ANSWER: A
+EXPLANATION: `du` reports disk space consumed by files and directories; `-s` requests only the summary and `-h` requests human-readable units. `df`, by contrast, shows capacity and usage for an entire filesystem. `df` may be tempting because it is also commonly used when investigating disk-space issues, but it does not measure the size of a specific directory's contents.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: Logs & journald
+TYPE: output
+QUESTION: You want to follow the latest log entries from a systemd service in real time, similar to `tail -f`. Which command is appropriate?
+A) journalctl -u nginx.service --boot
+B) journalctl -u nginx.service --vacuum-time=1h
+C) journalctl -u nginx.service -f
+D) journalctl -u nginx.service --clear
+ANSWER: C
+EXPLANATION: `-f` tells `journalctl` to continuously follow the journal, displaying new entries as they arrive. `--boot` filters entries by boot, `--vacuum-time` removes old journal data, and `--clear` is not the appropriate operation for following logs. Because `tail -f` is familiar, it can be tempting to look for a `journalctl` option containing the word `tail`, but `-f` provides the equivalent follow behavior.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: Cron & scheduling
+TYPE: trap
+QUESTION: A cron job needs to execute a script located under `/opt/app`. The script uses relative paths and assumes a specific working directory. What is the safest approach?
+A) Assume cron starts in the same working directory as the administrator's interactive shell.
+B) Leave all relative paths unchanged because cron automatically changes to the script's directory.
+C) Always run the script from `/tmp`.
+D) Explicitly define the required absolute paths and working directory in the script or cron command.
+ANSWER: D
+EXPLANATION: A cron job's execution environment is not the same as an interactive user's shell environment, so relying on an implicit working directory or relative paths can be unreliable. Using absolute paths and, when necessary, an explicit `cd` makes execution more deterministic. Assuming that cron automatically starts in the script's directory is a common but unsafe assumption.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: Environment variables
+TYPE: behavior
+QUESTION: What happens when the following commands are executed?
+CODE:
+APP_ENV=production
+bash -c 'echo "$APP_ENV"'
+ENDCODE
+A) The second command prints `production`.
+B) The second command prints an empty line.
+C) The second command always exits with an error.
+D) `bash` does not start because `APP_ENV` is not exported.
+ANSWER: B
+EXPLANATION: `APP_ENV=production` creates a shell variable in the current shell, but it does not export it to the environment. Therefore, the child Bash process does not receive the variable, and the expansion produces an empty string. With `export APP_ENV=production`, the child shell would receive the value. `production` may be tempting because the variable does indeed exist in the current shell.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: Performance troubleshooting
+TYPE: scenario
+QUESTION: A server's application is intermittently very slow, and you suspect memory pressure or swap usage. Which command provides a quick overview of RAM and swap usage?
+A) free -h
+B) lsof -i
+C) lsblk -f
+D) uptime -p
+ANSWER: A
+EXPLANATION: `free -h` shows total, used, and available memory as well as swap usage in human-readable units. `lsof -i` shows network-related open files and sockets, `lsblk` displays block devices, and `uptime` shows uptime and load information. `uptime` may be tempting because load average is often relevant to performance problems, but it does not provide a direct view of memory usage.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: Boot & kernel
+TYPE: output
+QUESTION: What does the following command show?
+CODE:
+lsmod
+ENDCODE
+A) A list of currently loaded kernel modules.
+B) All filesystem mount points currently present on the system.
+C) The kernel parameters used during boot.
+D) The shared libraries used by running processes.
+ANSWER: A
+EXPLANATION: `lsmod` lists currently loaded Linux kernel modules, including information such as module name, size, and dependency relationships. Mount points can be inspected with tools such as `findmnt`, while kernel parameters can be examined through other interfaces. Shared libraries can be investigated with tools such as `ldd` or `/proc/<pid>/maps`.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: Security hardening
+TYPE: scenario
+QUESTION: On a Linux server, you want a regular user to be allowed to execute only one specific administrative command with root privileges. What is the appropriate general solution?
+A) Give the user 777 permissions on the command.
+B) Add the user to the root group.
+C) Create a targeted `sudoers` rule for the required command.
+D) Give the user the root password.
+ANSWER: C
+EXPLANATION: A targeted `sudoers` rule allows the required command to be executed with root privileges without granting the user full root access. Relaxing file permissions or adding the user to a privileged group can grant broader access than necessary. Sharing the root password is also poor practice from both security and auditability perspectives, so the least-privilege principle should be followed.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: Permissions & ownership
+TYPE: behavior
+QUESTION: A file is owned by `alice`, its group is `developers`, and its permissions are `640`. `bob` is a member of the `developers` group. What can `bob` do with the file?
+A) He can read it, but cannot write to or execute it.
+B) He can read and write it, but cannot execute it.
+C) He has full access to it.
+D) He has no access to it.
+ANSWER: A
+EXPLANATION: `640` means the owner has `rw-`, the group has `r--`, and others have `---`. Since `bob` is a member of the file's group, the group permissions apply to him, so he can read the file but cannot write to or execute it. A common trap is to incorrectly apply the owner's permissions to a member of the file's group.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: Bash scripting
+TYPE: debug
+QUESTION: What is the problem with the following Bash code if the goal is to check the first argument passed to the script?
+CODE:
+#!/usr/bin/env bash
+if [ $1 = "start" ]; then
+    echo "starting"
+fi
+ENDCODE
+A) The `[` command cannot be used for string comparisons.
+B) The missing quotes mean the script can fail if `$1` is empty or contains whitespace; it should be written as `"$1"`.
+C) `$1` is always the first environment variable.
+D) `if` supports only numeric comparisons.
+ANSWER: B
+EXPLANATION: If no first argument is provided, the expression can expand into something like `[ = "start" ]`, resulting in a syntax error. Quoting `"$1"` keeps the argument as a single shell word and is therefore safer. The `[` command supports string comparisons, so the actual problem is the missing quoting.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: Text processing (grep, sed, awk)
+TYPE: algorithm
+QUESTION: You want to print only lines in a file whose entire content is exactly `ERROR`, with no other characters before or after it. Which command does this?
+A) grep "ERROR" application.log
+B) grep "^ERROR" application.log
+C) grep "ERROR$" application.log
+D) grep "^ERROR$" application.log
+ANSWER: D
+EXPLANATION: `^` anchors the match to the beginning of the line, while `$` anchors it to the end. Therefore, `^ERROR$` matches only lines whose entire content is exactly `ERROR`. A plain `ERROR` pattern would also match longer strings containing `ERROR`. Anchoring only one side of the pattern is easily confused with matching the entire line.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: SSH
+TYPE: debug
+QUESTION: You use key-based authentication to connect to an SSH server. The client finds the private key, but the server rejects the authentication. Which server-side file typically contains the public keys authorized for the user?
+A) ~/.ssh/known_hosts
+B) /etc/ssh/ssh_config
+C) ~/.ssh/authorized_keys
+D) ~/.ssh/id_rsa.pub
+ANSWER: C
+EXPLANATION: `~/.ssh/authorized_keys` contains the public SSH keys authorized for the user on the server. `known_hosts` stores host keys for servers known to the client, while `id_rsa.pub` is typically the client's own public key. `known_hosts` may be tempting because it also contains SSH keys, but it serves a different purpose.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: Disks & storage
+TYPE: scenario
+QUESTION: You attached a new block device to a Linux server and want to determine which disks and partitions are visible to the system and where their filesystems are mounted. Which command is the most appropriate starting point?
+A) lsblk
+B) chmod
+C) ps aux
+D) journalctl -k
+ANSWER: A
+EXPLANATION: `lsblk` displays block devices and their hierarchy, including partitions and, with appropriate options, filesystem and mount information. `journalctl -k` shows kernel logs, which can also be useful after attaching new hardware, but it is not the most direct tool for inspecting the device hierarchy. `ps aux` lists processes, while `chmod` changes permissions.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: Logs & journald
+TYPE: scenario
+QUESTION: On a server, you want to determine which kernel messages were recorded during the current boot. Which command is most appropriate?
+A) journalctl --user
+B) journalctl -k -b
+C) journalctl --disk-usage
+D) journalctl --list-boots
+ANSWER: B
+EXPLANATION: `journalctl -k -b` filters journal entries to kernel messages from the current boot. `--list-boots` lists available boots, `--disk-usage` reports journal disk usage, and `--user` focuses on user-level units. `dmesg` is also associated with kernel messages, but on a system using systemd, this journal query provides a targeted way to combine kernel filtering with the current boot.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Performance troubleshooting
+TYPE: output
+QUESTION: On a server, you see the following `uptime` output:
+CODE:
+15:42:10 up 12 days,  3:17,  2 users,  load average: 8.20, 7.90, 7.50
+ENDCODE
+The machine has 8 logical CPUs. Which interpretation is the most accurate?
+A) The system is definitely 8.20 times faster than under normal conditions.
+B) 8.20 means that exactly 8 processes are currently using the CPU.
+C) Load average is always equal to CPU utilization as a percentage.
+D) The short-term load average is 8.20, which can indicate significant load on an 8-logical-CPU machine, but by itself does not prove CPU saturation.
+ANSWER: D
+EXPLANATION: Load average reflects runnable tasks and, on Linux, tasks in certain uninterruptible states, reported over 1-, 5-, and 15-minute intervals. On an 8-logical-CPU system, a load around 8 can be compared roughly with the system's CPU capacity, but load average is not the same as CPU utilization percentage. Assuming that 8.20 simply means 820% CPU utilization is a common interview trap.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: Filesystem hierarchy
+TYPE: scenario
+QUESTION: An application needs to store data that survives a reboot but changes frequently, such as processing state or a local cache. Which of the following directories best fits this use case according to the Linux filesystem hierarchy?
+A) /run
+B) /proc
+C) /var
+D) /dev
+ANSWER: C
+EXPLANATION: `/var` contains variable data that changes during system operation, and parts of it can persist across reboots. `/run` typically contains runtime state created during each boot, `/proc` provides a virtual view of kernel and process information, and `/dev` contains device files. `/run` may be tempting because it also contains runtime-related data, but its contents are generally not persistent across reboots.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: Permissions & ownership
+TYPE: output
+QUESTION: What is the result of the following commands on a file?
+CODE:
+touch script.sh
+chmod u+x,g+r,o-rwx script.sh
+ls -l script.sh
+ENDCODE
+A) -rwxr----- 1 ... script.sh
+B) -rwxr--r-- 1 ... script.sh
+C) -rw-r----- 1 ... script.sh
+D) -rwxrw---- 1 ... script.sh
+ANSWER: A
+EXPLANATION: A newly created regular file is typically created with mode `666` before the process umask is applied. The symbolic `chmod` operations then add execute permission for the owner (`u+x`), ensure read permission for the group (`g+r`), and remove read, write, and execute permissions from others (`o-rwx`). However, because the final mode also depends on the file's initial permissions and umask, the exact result cannot be determined solely from these commands without knowing the initial mode. With the typical `touch` result under a common umask such as `022`, the file starts as `644`, `u+x` produces `744`, and removing all permissions from others produces `740`, resulting in `-rwxr-----`.
+NOTE: The original explanation incorrectly claimed that the result was independent of the initial mode and did not account for the typical `touch` permissions and umask. The corrected answer assumes the standard newly-created file mode under a typical umask and yields `-rwxr-----`.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: Users & groups
+TYPE: scenario
+QUESTION: You want to set an existing user's primary group to `developers` while leaving the user's other supplementary group memberships unchanged. Which command is appropriate?
+A) usermod -g developers alice
+B) usermod -G developers alice
+C) groupmod -g developers alice
+D) useradd -g developers alice
+ANSWER: A
+EXPLANATION: `usermod -g developers alice` changes the user's primary group to the specified group. The primary group is separate from supplementary groups, so this operation does not itself replace the user's supplementary group memberships. `-G` manages supplementary groups, which is why the two options are easy to confuse.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: Processes & signals
+TYPE: behavior
+QUESTION: You want to temporarily suspend a process so that you can resume it later. Which signal can be used for this?
+A) SIGTERM
+B) SIGSTOP
+C) SIGINT
+D) SIGHUP
+ANSWER: B
+EXPLANATION: `SIGSTOP` suspends a process, and the process cannot handle or ignore this signal. `SIGCONT` can later be used to resume execution. `SIGTERM` requests graceful termination, `SIGINT` typically indicates an interrupt, and `SIGHUP` has other semantics. `SIGTERM` may be tempting because it is also commonly used for process control, but it requests termination rather than suspension.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: Bash scripting
+TYPE: output
+QUESTION: What is the output of the following script?
+CODE:
+#!/usr/bin/env bash
+count=5
+if (( count > 3 )); then
+    echo "high"
+else
+    echo "low"
+fi
+ENDCODE
+A) low
+B) 5
+C) high
+D) The script exits with a syntax error
+ANSWER: C
+EXPLANATION: Bash's arithmetic conditional syntax `(( ... ))` can be used for numeric comparisons. Since `count` is 5, the condition `count > 3` is true, so `high` is printed. Confusing string-comparison syntax with arithmetic comparison is a common Bash mistake.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: Pipes & redirection
+TYPE: behavior
+QUESTION: What happens when the following command is executed?
+CODE:
+cat missing.txt > output.txt
+ENDCODE
+A) `output.txt` is not created because `cat` reports an error.
+B) `output.txt` can be created or truncated, while the `cat` error is written to the standard error stream.
+C) `missing.txt` is automatically created.
+D) `output.txt` will contain the error message.
+ANSWER: B
+EXPLANATION: The shell sets up the redirection before executing the command, so `output.txt` can be created or truncated if it already exists. `cat` then attempts to open the nonexistent `missing.txt` and writes the error message to standard error, which is not redirected by `>`. It is tempting to think the error goes into the output file because people often mentally treat all command output as a single stream, but standard output and standard error are separate streams.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Text processing (grep, sed, awk)
+TYPE: output
+QUESTION: What is the output of the following command?
+CODE:
+printf 'error\nERROR\nwarning\n' | grep -i '^error$'
+ENDCODE
+A) error
+B) ERROR
+C) error
+ERROR
+D) error
+ERROR
+warning
+ANSWER: C
+EXPLANATION: `-i` makes the `grep` search case-insensitive. The `^error$` pattern matches the entire line, so both `error` and `ERROR` match, while `warning` does not. It is tempting to select only one line because the regular expression contains lowercase `error`, but `-i` changes the case-sensitivity of the match.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: Package management
+TYPE: debug
+QUESTION: On a Debian-based server, you want to determine which files were installed by a particular installed package. Which command is suitable?
+A) dpkg -L package-name
+B) apt list-files package-name
+C) rpm -ql package-name
+D) apt show-files package-name
+ANSWER: A
+EXPLANATION: On Debian-based systems, `dpkg -L package-name` lists the files installed by the specified package. `rpm -ql` is used on RPM-based systems, while the other commands shown are not standard commands for this purpose. `apt` may be tempting because it is the higher-level package manager used for installation, but `dpkg` is the appropriate tool for querying the installed file list.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: systemd & services
+TYPE: output
+QUESTION: What does the following command primarily check?
+CODE:
+systemctl is-active nginx
+ENDCODE
+A) Whether `nginx` is enabled to start during boot.
+B) Whether the `nginx` configuration file is syntactically valid.
+C) Whether the `nginx` unit is currently in an active state.
+D) Which ports `nginx` is listening on.
+ANSWER: C
+EXPLANATION: `systemctl is-active nginx` checks whether the specified unit is currently active and also returns an appropriate status code. `is-enabled` can be used to check whether the unit is configured to start automatically at boot. `is-enabled` may be tempting because it is also an important question for a running service, but it describes boot-time enablement rather than current runtime state.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: Networking
+TYPE: scenario
+QUESTION: An application is accessible only from localhost, and its configuration contains the following bind address:
+CODE:
+127.0.0.1:8080
+ENDCODE
+You want to connect to it from another machine. What is the most likely problem?
+A) The server's DNS is definitely broken.
+B) Port 8080 supports only UDP.
+C) The application cannot communicate over IPv4.
+D) The application is listening only on the loopback interface and is therefore not reachable through a remote interface.
+ANSWER: D
+EXPLANATION: `127.0.0.1` refers to the loopback interface, so the application is accessible through this socket only from the local machine. For remote clients, the application needs to bind to an appropriate network address or, for example, `0.0.0.0`, together with suitable firewall and network configuration. DNS may be tempting because it is often involved in remote connectivity problems, but direct testing with an IP address can distinguish DNS issues from binding issues.
+###END
+
+### Q61
+LEVEL: medior
+TOPIC: SSH
+TYPE: debug
+QUESTION: You are troubleshooting an SSH connection and want detailed client-side information about which authentication methods the SSH client is attempting. Which command is the most direct choice?
+A) ssh -q user@host
+B) ssh -v user@host
+C) ssh -n user@host
+D) ssh -f user@host
+ANSWER: B
+EXPLANATION: `ssh -v` enables verbose client-side diagnostic output, which is useful when troubleshooting connection establishment and authentication. Multiple `-v` options can provide even more detail, for example with `-vvv`. `-q` suppresses diagnostic output, so choosing it for troubleshooting is a common interview trap.
+###END
+
+### Q62
+LEVEL: medior
+TOPIC: Disks & storage
+TYPE: scenario
+QUESTION: On a server, `df -h` shows tens of gigabytes of free space on a filesystem, yet you cannot create a new file. Which additional check can be particularly important?
+A) Check the number of free inodes, for example with `df -i`.
+B) Check the CPU temperature with `top`.
+C) Check DNS records with `dig`.
+D) Check the kernel version with `uname -r`.
+ANSWER: A
+EXPLANATION: A filesystem can run out of inodes even when a significant amount of space remains available in bytes. In that situation, creating new files can fail, especially on filesystems containing very large numbers of small files. `df -i` shows inode capacity and usage. `df -h` only reports storage capacity and therefore does not rule out inode exhaustion.
+###END
+
+### Q63
+LEVEL: medior
+TOPIC: Processes & signals
+TYPE: behavior
+QUESTION: A parent process starts a child process, and the child exits. The parent does not perform the appropriate wait operation. What can happen to the child?
+A) The child automatically becomes a daemon process.
+B) The child always restarts.
+C) The child can remain in a zombie state until its exit status is reaped by its parent or an appropriate reaper process.
+D) The child immediately loses its PID and leaves no trace.
+ANSWER: C
+EXPLANATION: A child that has exited but has not yet been reaped can remain in a zombie state so that its parent can retrieve its termination status. `wait()` or one of its variants performs this reaping operation. A zombie is no longer executing, so it does not consume CPU like a normal active process. It is tempting to assume that an exited process immediately disappears completely because it no longer executes any code, but its process table entry can remain until it is reaped.
+###END
+
+### Q64
+LEVEL: medior
+TOPIC: Bash scripting
+TYPE: output
+QUESTION: What does the following Bash script print?
+CODE:
+#!/usr/bin/env bash
+set -e
+false
+echo "after"
+ENDCODE
+A) after
+B) false
+C) Nothing, because the shell exits after `false`.
+D) `false after`
+ANSWER: C
+EXPLANATION: `set -e` causes the shell to exit when a command returns a non-zero status in contexts where the errexit rule applies. Here, `false` returns status 1 and is executed as a simple command, so the shell exits and does not execute `echo "after"`. The exact behavior of `set -e` is more nuanced in constructs such as `if`, `while`, `&&`, `||`, and pipelines, so it should not be treated as a universal "exit on every non-zero status" switch.
+###END
+
+### Q65
+LEVEL: medior
+TOPIC: Pipes & redirection
+TYPE: trap
+QUESTION: What is the exit status of the following pipeline in a default Bash shell?
+CODE:
+false | true
+echo $?
+ENDCODE
+A) 0
+B) 1
+C) 2
+D) The pipeline always causes a syntax error.
+ANSWER: A
+EXPLANATION: By default, the exit status of a Bash pipeline is the exit status of its last command, which here is `true`. Since `true` returns 0, `echo $?` prints 0 even though the first command, `false`, returned a non-zero status. `set -o pipefail` changes this behavior, so understanding the distinction is important when troubleshooting pipelines.
+###END
+
+### Q66
+LEVEL: medior
+TOPIC: Text processing (grep, sed, awk)
+TYPE: algorithm
+QUESTION: You want to calculate the average value of the third whitespace-delimited field in a log file using `awk`. Which solution is correct?
+A) awk '{sum += $3} END {print sum}' application.log
+B) awk '{sum += $3} END {print sum/NR}' application.log
+C) awk '{sum = $3} END {print sum/NR}' application.log
+D) awk '{sum += $3/NR} END {print sum}' application.log
+ANSWER: B
+EXPLANATION: `sum += $3` adds the third field from every record to the total, and the `END` block divides the total by the number of records (`NR`). This produces the average. Simply calculating the sum does not produce an average, while `sum = $3` would overwrite the previous value on every line.
+###END
+
+### Q67
+LEVEL: medior
+TOPIC: Package management
+TYPE: scenario
+QUESTION: On a Debian-based production server, you want to prevent a particular package from being upgraded automatically by `apt upgrade`. Which mechanism is intended for this?
+A) apt lock package-name
+B) dpkg --disable package-name
+C) apt-mark hold package-name
+D) apt freeze package-name
+ANSWER: C
+EXPLANATION: `apt-mark hold package-name` places the package on hold, preventing normal APT upgrade operations from automatically upgrading it. The hold can later be removed with, for example, `apt-mark unhold`. "Lock" may sound like the natural term for this operation, but on Debian-based systems the appropriate mechanism is the APT hold state.
+###END
+
+### Q68
+LEVEL: medior
+TOPIC: systemd & services
+TYPE: production
+QUESTION: You modified the configuration of a production service, and the change takes effect only when the service reloads its configuration. Fully stopping the service would cause a brief outage, so you first want to determine whether it supports configuration reloads. Which systemd operation is most appropriate?
+A) systemctl reload myapp
+B) systemctl disable myapp
+C) systemctl isolate myapp
+D) systemctl kill myapp
+ANSWER: A
+EXPLANATION: `systemctl reload` requests that the service reload its configuration without fully stopping and restarting the service, provided the service supports a reload operation. Not every service supports reload, so the unit definition and service documentation should be checked. `restart` is often used to apply configuration changes, but it involves a full service restart and therefore potentially causes an interruption.
+###END
+
+### Q69
+LEVEL: medior
+TOPIC: Networking
+TYPE: output
+QUESTION: On a server, you see the following output:
+CODE:
+ip route
+default via 192.168.1.1 dev eth0
+192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.20
+ENDCODE
+Which statement is correct about a packet destined for `8.8.8.8`?
+A) It is delivered directly to the host `192.168.1.20`.
+B) It is forwarded through the `eth0` interface toward the `192.168.1.1` default gateway.
+C) The system automatically uses the loopback interface.
+D) The kernel forwards the packet through DNS.
+ANSWER: B
+EXPLANATION: `8.8.8.8` does not belong to the directly connected `192.168.1.0/24` network, so the default route is the matching route. The packet is sent through `eth0` toward the `192.168.1.1` gateway. Routing decisions are based on IP addresses and prefixes, not DNS.
+###END
+
+### Q70
+LEVEL: medior
+TOPIC: SSH
+TYPE: production
+QUESTION: An SSH connection is regularly disconnected after several minutes of inactivity, while the underlying network connection otherwise works correctly. You want the client to send keepalive messages. Which configuration setting is intended for this?
+A) ServerAliveInterval
+B) StrictHostKeyChecking
+C) ForwardAgent
+D) Compression
+ANSWER: A
+EXPLANATION: `ServerAliveInterval` specifies how often the SSH client sends a protocol-level keepalive message to the server when no data has been received from the server. This can help with network devices or firewalls that terminate idle connections. `TCPKeepAlive` is a separate mechanism, so distinguishing SSH-level keepalives from TCP keepalives is important.
+###END
+
+### Q71
+LEVEL: medior
+TOPIC: Disks & storage
+TYPE: edgecase
+QUESTION: You deleted a file on a Linux server, but `df -h` shows that the expected several gigabytes of space have not been freed. The file is no longer visible in its directory. What is a common cause?
+A) `df` is always delayed by exactly one hour.
+B) The file was automatically moved to `/tmp`.
+C) A running process still has the deleted file open.
+D) Linux does not free space after files are deleted.
+ANSWER: C
+EXPLANATION: On Linux, the storage occupied by a file is actually released when there are no remaining directory entries referencing it and no open file descriptors referring to it. If a running process still has the deleted file open, the space can remain occupied. Commands such as `lsof +L1` can help identify deleted-but-open files. It is tempting to think Linux never frees space from deleted files because the problem can indeed persist as long as a process keeps the file open.
+###END
+
+### Q72
+LEVEL: medior
+TOPIC: Logs & journald
+TYPE: performance
+QUESTION: On a server, the disk space used by the systemd journal is growing rapidly. Which command directly helps determine how much disk space the journal currently uses?
+A) journalctl --vacuum-size=1G
+B) journalctl --disk-usage
+C) journalctl --rotate-now
+D) journalctl --verify-size
+ANSWER: B
+EXPLANATION: `journalctl --disk-usage` reports the amount of disk space currently occupied by journal files. `--vacuum-size` performs a cleanup operation rather than merely measuring usage. In production, it is good practice to assess actual usage before performing deletion or retention changes.
+###END
+
+### Q73
+LEVEL: medior
+TOPIC: Cron & scheduling
+TYPE: scenario
+QUESTION: A cron job must run every Monday at 03:15. Which entry is correct using the traditional five-field cron syntax?
+A) 15 3 * * 1 /usr/local/bin/job.sh
+B) 3 15 * * 1 /usr/local/bin/job.sh
+C) 15 3 1 * * /usr/local/bin/job.sh
+D) 15 3 * 1 * /usr/local/bin/job.sh
+ANSWER: A
+EXPLANATION: The five fields are minute, hour, day of month, month, and day of week. Therefore, `15 3 * * 1` runs at 03:15 every Monday. The `1` in the fifth field represents the day of the week, while the third field represents the day of the month. This is a common cron trap because the same number can have different meanings depending on which field it appears in.
+###END
+
+### Q74
+LEVEL: medior
+TOPIC: Environment variables
+TYPE: debug
+QUESTION: A script works from an interactive shell, but when run from cron it fails with `java: command not found`. The `java` command works when run manually. What is one of the most likely causes?
+A) Cron automatically disables Java execution.
+B) Java can only be run by root.
+C) Cron does not support the `PATH` environment variable.
+D) The cron environment can differ from the interactive shell, so the required `PATH` or other environment settings may not be present.
+ANSWER: D
+EXPLANATION: The environment of a cron job can differ from that of an interactive login shell, so a different `PATH` and different environment variables may be in effect. It is often preferable to use an absolute path to the required executable or explicitly define the required environment in the script. Assuming cron inherits exactly the same shell environment as the administrator's terminal is a common source of failures.
+###END
+
+### Q75
+LEVEL: medior
+TOPIC: Performance troubleshooting
+TYPE: scenario
+QUESTION: On a Linux server, application response times have increased significantly. CPU utilization is only 20%, but I/O wait is high and storage latency has also increased. Which conclusion is most justified?
+A) The CPU is definitely running at 100%; `top` must be wrong.
+B) System performance is likely being limited by storage/I/O subsystem waiting.
+C) DNS is definitely the cause.
+D) Low CPU utilization proves there is no performance problem.
+ANSWER: B
+EXPLANATION: With high I/O wait and increased storage latency, processes may spend significant time blocked while waiting for I/O operations, while overall CPU utilization remains relatively low. This is a typical example of why low CPU utilization alone does not mean that there is no performance problem. Assuming that every performance problem is CPU-bound is a common interview trap.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: Filesystem hierarchy
+TYPE: theory
+QUESTION: Which statement most accurately describes the role of the `/run` directory on a modern Linux system?
+CODE:
+ENDCODE
+A) It primarily contains runtime state information and PID files created during the current boot.
+B) It contains only binary files for kernel modules loaded by the system.
+C) It is the central location for users' personal configuration files.
+D) All persistent application data on the system should be stored here.
+ANSWER: A
+EXPLANATION: `/run` is typically backed by tmpfs and contains state data needed while the system is running, such as PID and socket files. Its contents generally do not persist across reboots. It is tempting to confuse it with user configuration directories because services also create files there, but those are runtime data.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: Permissions & ownership
+TYPE: output
+QUESTION: What is the effect of the `chmod 2755 shared` command if `shared` is a directory?
+CODE:
+ENDCODE
+A) It automatically sets the setuid bit on every file in the directory.
+B) It sets the setgid bit, causing newly created files to inherit the directory's group.
+C) It sets the sticky bit, so only the owner can delete files.
+D) It only grants read permission to the group and does not change any special bits.
+ANSWER: B
+EXPLANATION: The `2` represents the setgid special bit. On a directory, this causes newly created files and subdirectories to inherit the directory's group. The sticky bit is represented by `1`, so it is easy to confuse the two special bits.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: Users & groups
+TYPE: scenario
+QUESTION: A user belongs to multiple groups, and a file belongs to the `developers` group. How can you reliably verify that `developers` is among the user's effective groups?
+CODE:
+id alice
+ENDCODE
+A) `groups alice`
+B) `whoami developers`
+C) `id alice`
+D) `passwd -S alice`
+ANSWER: C
+EXPLANATION: `id alice` displays the user's UID, primary group, and supplementary group memberships. `groups` can also be used to view group memberships, so it is a tempting alternative, but `id` provides a more detailed and unambiguous check.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: Processes & signals
+TYPE: behavior
+QUESTION: What happens to a file opened by a process if, while the process is running, you delete the file's directory entry from another shell?
+CODE:
+ENDCODE
+A) The process immediately receives `SIGTERM`.
+B) The file contents are immediately truncated to zero bytes.
+C) The file is automatically moved to `/tmp`.
+D) The file's inode and data may remain until all open references to it are closed.
+ANSWER: D
+EXPLANATION: `rm` removes the directory entry; it does not directly invalidate the open file descriptor used by the process. If there are no other hard links, the space is freed when the last open reference is closed. It is tempting to assume that the file is immediately deleted because its name disappears from the directory right away.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Bash scripting
+TYPE: output
+QUESTION: What will the script output?
+CODE:
+x=5
+
+if (( x >= 5 )); then
+    echo "yes"
+else
+    echo "no"
+fi
+ENDCODE
+A) `no`
+B) `5`
+C) `yes`
+D) Nothing.
+ANSWER: C
+EXPLANATION: `(( ... ))` can be used as an arithmetic condition in Bash. The expression `x >= 5` is true, so the first branch executes. It is tempting to expect the variable's value as output because `x` is 5, but the script only prints the text from the selected branch.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: Pipes & redirection
+TYPE: debug
+QUESTION: In a script, you find `command > output.log 2>&1`. What is the correct interpretation of these redirections?
+CODE:
+ENDCODE
+A) Both standard output and standard error are written to `output.log`.
+B) Only standard error is written to the file, while standard output remains in the terminal.
+C) Standard output is written to the file, while standard error is discarded.
+D) The command runs only if `output.log` already exists.
+ANSWER: A
+EXPLANATION: First, standard output is redirected to `output.log`, and then `2>&1` redirects standard error to the current destination of standard output. Therefore, both streams go to the same file. The order of redirections matters, so the two operations cannot always be swapped.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: Text processing (grep, sed, awk)
+TYPE: algorithm
+QUESTION: Which `awk` command correctly calculates the sum of the first column of a whitespace-delimited file?
+CODE:
+awk '{ sum += $1 } END { print sum }' data.txt
+ENDCODE
+A) It adds only the first line of the file.
+B) It adds the first field of every record to the `sum` variable and then prints the total when processing finishes.
+C) It adds the total number of characters instead of the first column.
+D) It works only if the file is comma-delimited.
+ANSWER: B
+EXPLANATION: The default `awk` field separator is whitespace, so `$1` represents the first field. `sum += $1` increases the sum for every processed line, while the `END` block runs once after the entire input has been processed. It is tempting to assume it processes only one line because the `awk` code is short, but by default it executes for every record.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: Package management
+TYPE: behavior
+QUESTION: On a Debian-based system, what is the key difference between `apt remove package` and `apt purge package`?
+CODE:
+ENDCODE
+A) `remove` removes the package, while `purge` also removes the system configuration associated with the package.
+B) `remove` deletes only the binaries, while `purge` also removes the package from the kernel.
+C) `remove` performs an upgrade, while `purge` only deletes the repository index.
+D) The two commands always perform exactly the same operation.
+ANSWER: A
+EXPLANATION: `apt remove` removes the package's installed files, while `purge` can also remove system configuration files associated with the package. User-created or separately managed data is not necessarily removed by either operation. It is tempting to treat them as identical because both remove the package.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: systemd & services
+TYPE: scenario
+QUESTION: A systemd service stops with an error and then restarts shortly afterward. Which setting should you check first in the unit file?
+CODE:
+ENDCODE
+A) `Description=`
+B) `Documentation=`
+C) `Restart=`
+D) `After=`
+ANSWER: C
+EXPLANATION: `Restart=` determines when systemd should restart a service, for example with `on-failure`. `After=` only controls startup ordering, so by itself it does not explain a restart after a failed stop.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: Networking
+TYPE: output
+QUESTION: You get the following output. What does `state UNREACHABLE` indicate for a routing entry?
+CODE:
+ip route
+10.10.0.0/16 dev eth0 proto kernel scope link src 10.10.1.20
+10.20.0.0/16 via 10.10.1.1 dev eth0
+unreachable 10.30.0.0/16
+ENDCODE
+A) All packets for the `10.30.0.0/16` network should be sent to the `10.10.1.1` gateway.
+B) The kernel considers this destination network unreachable and rejects traffic destined for it.
+C) The network becomes reachable only after DNS resolution.
+D) The network interface is physically disconnected.
+ANSWER: B
+EXPLANATION: An `unreachable` route explicitly tells the kernel that the specified destination network is not reachable, so traffic to it is rejected. This is not the same as a general network connectivity or interface failure. It is tempting to assume a gateway should be used because other routes use the `via` field to specify the next hop.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: SSH
+TYPE: production
+QUESTION: You leave an SSH connection idle for an extended period, and the network infrastructure occasionally drops it. Which client-side setting can help by sending SSH keepalive messages?
+CODE:
+ENDCODE
+A) `Compression yes`
+B) `ForwardAgent yes`
+C) `ServerAliveInterval 60`
+D) `StrictHostKeyChecking no`
+ANSWER: C
+EXPLANATION: `ServerAliveInterval 60` tells the SSH client to send protocol-level keepalive messages at the specified interval when the connection is otherwise idle. This can help with certain idle timeouts. It is tempting to choose `Compression` because it is also a connection setting, but it is not a keepalive mechanism.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: Disks & storage
+TYPE: performance
+QUESTION: On an ext4 filesystem, you see plenty of free disk space, yet creating new files fails. Which check could be particularly relevant?
+CODE:
+df -h
+df -i
+ENDCODE
+A) `hostnamectl`
+B) `df -i`
+C) `uname -a`
+D) `uptime`
+ANSWER: B
+EXPLANATION: A filesystem can run out of inodes even when a significant amount of space remains available in bytes. `df -i` shows inode utilization. This can be a real limitation when a filesystem contains many small files, so `df -h` alone is not sufficient.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: Logs & journald
+TYPE: output
+QUESTION: What does the `-p warning` option add to the `journalctl --since "1 hour ago" -p warning` query?
+CODE:
+ENDCODE
+A) It displays only kernel logs.
+B) It restricts the logs exclusively to the current boot.
+C) It filters log entries around the warning priority, including more severe priorities.
+D) It shows only entries whose text contains the word `warning`.
+ANSWER: C
+EXPLANATION: journald priority filtering is not a simple text search. The `warning` priority and more severe levels are included in the query. The `--since` option independently limits the query to the last hour.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: Cron & scheduling
+TYPE: debug
+QUESTION: A script running from cron can execute `ls`, but invoking a custom program by its absolute path fails. What is the best first step?
+CODE:
+ENDCODE
+A) Check the cron environment's `PATH` value and use an absolute path where necessary.
+B) Restart the entire server.
+C) Change the program's owner to root.
+D) Change the cron entry to run every minute without testing anything else.
+ANSWER: A
+EXPLANATION: The cron environment can differ from an interactive shell environment, especially with respect to `PATH`. Using absolute program paths or explicitly defining required environment variables makes jobs more reliable. It is tempting to suspect permissions because starting a program can indeed fail due to permissions, but differences in the execution environment are among the first things to check.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Environment variables
+TYPE: edgecase
+QUESTION: What is the result of the following commands in a Bash shell?
+CODE:
+VAR=hello
+bash -c 'echo "$VAR"'
+ENDCODE
+A) `hello`
+B) `VAR`
+C) An empty line
+D) `hello` only if `VAR` is exported.
+ANSWER: D
+EXPLANATION: A regular shell variable is not automatically inherited by a child process's environment. After `export VAR=hello` or `export VAR`, the `bash -c` process receives it as an environment variable. It is tempting to expect `hello` because the variable does exist in the parent shell.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Performance troubleshooting
+TYPE: scenario
+QUESTION: A web application has become significantly slower. CPU utilization is low, while disk latency and I/O wait are high. Which hypothesis best fits these observations?
+CODE:
+ENDCODE
+A) A CPU cache failure definitely occurred.
+B) An I/O subsystem bottleneck is likely delaying processes.
+C) DNS definitely stopped working.
+D) The kernel definitely exhausted all available PIDs.
+ANSWER: B
+EXPLANATION: High I/O wait and disk latency combined with low CPU utilization can indicate that processes are waiting for I/O operations. This is a strong hypothesis that should be validated with additional I/O metrics. It is tempting to suspect a CPU problem because that is a common first assumption when an application is slow, but low CPU utilization does not support it.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: Boot & kernel
+TYPE: theory
+QUESTION: What is the primary role of initramfs during the Linux boot process?
+CODE:
+ENDCODE
+A) It replaces the kernel's final configuration files.
+B) It loads users' shell configuration settings.
+C) It can provide the early userspace environment needed by the kernel, for example with drivers and tools required to access the root filesystem.
+D) It contains the entire package manager database of the system.
+ANSWER: C
+EXPLANATION: initramfs is an early userspace environment that the kernel can use during boot to load required modules, discover devices, and prepare access to the real root filesystem. It is tempting to equate it with kernel configuration because it is closely associated with the kernel boot process, but it serves a different purpose.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: Security hardening
+TYPE: production
+QUESTION: A service on a Linux server needs only one TCP port, and it does not require root privileges. Which approach best follows the principle of least privilege?
+CODE:
+ENDCODE
+A) Run the service as root to ensure it can access every required resource.
+B) Allow all incoming ports to avoid network compatibility problems.
+C) Give the service full sudo access.
+D) Run it under a dedicated, minimally privileged user and allow only the required network access.
+ANSWER: D
+EXPLANATION: The principle of least privilege means that a process should receive only the permissions and resources required for its operation. A dedicated user and narrowly scoped network rules reduce the impact of a potential compromise. It is tempting to run the service as root because that can simplify permission management, but it creates a larger risk surface.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: Bash scripting
+TYPE: trap
+QUESTION: What is the output?
+CODE:
+name="Alice Bob"
+printf '<%s>\n' $name
+ENDCODE
+A) `<Alice Bob>`
+B) `<Alice>`
+`<Bob>`
+C) `<name>`
+D) It exits with an error because the variable contains a space.
+ANSWER: B
+EXPLANATION: Because the variable is used without quotes, Bash performs word splitting, so `name` becomes two separate arguments. The `printf` format is applied to both arguments, producing two lines. It is tempting to expect a single line because the variable was initially assigned as one string.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: Pipes & redirection
+TYPE: behavior
+QUESTION: What happens in the following command?
+CODE:
+grep "ERROR" app.log | tee errors.log
+ENDCODE
+A) The `grep` output is written only to `errors.log`, not to the terminal.
+B) `tee` deletes the `app.log` file.
+C) The `grep` output is displayed on the terminal and simultaneously written to the `errors.log` file.
+D) `tee` only copies the standard error stream.
+ANSWER: C
+EXPLANATION: `tee` sends its input to standard output and to one or more files at the same time. In this pipeline, the lines produced by `grep` are therefore displayed on the terminal and written to `errors.log`. It is tempting to interpret it as file-only redirection because saving logs is one of the common uses of `tee`.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: Text processing (grep, sed, awk)
+TYPE: debug
+QUESTION: In a configuration file, you want to remove empty lines and comments beginning with `#`. Which command best matches this simple requirement?
+CODE:
+grep -Ev '^[[:space:]]*(#|$)' config.conf
+ENDCODE
+A) It deletes only the first character of comments.
+B) It removes only empty lines.
+C) It reverses every line in the file.
+D) It filters out empty lines and lines beginning with `#` after optional whitespace, thereby keeping the remaining lines.
+ANSWER: D
+EXPLANATION: `-E` enables extended regular expressions, while `-v` inverts the match selection. The pattern identifies empty lines and lines beginning with `#` after any amount of whitespace, so those lines are excluded from the output. It is tempting to think only about empty lines because `$` is part of the empty-line pattern, but the `#` alternative also handles comments.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: systemd & services
+TYPE: output
+QUESTION: What does an `enabled` result from `systemctl is-enabled nginx` mean?
+CODE:
+ENDCODE
+A) The nginx process is definitely running at this moment.
+B) The nginx configuration is definitely syntactically valid.
+C) The nginx service is enabled to start automatically through the appropriate systemd target.
+D) nginx will automatically reload after every system reboot.
+ANSWER: C
+EXPLANATION: `is-enabled` checks whether the unit is enabled for the boot process. This is different from its current runtime state, which can be checked with `is-active`. It is tempting to equate enabled with running because an enabled service typically starts during boot, but it can also be stopped afterward.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: Networking
+TYPE: edgecase
+QUESTION: A server application is listening on `127.0.0.1:8080`. It cannot be reached from another machine, while `curl http://127.0.0.1:8080` works on the same server. What is the most likely explanation?
+CODE:
+ENDCODE
+A) The service is listening only on the loopback interface, so it cannot accept connections from external machines.
+B) DNS always blocks port 8080.
+C) TCP does not support local interfaces.
+D) `curl` automatically bypasses all security rules in the network stack.
+ANSWER: A
+EXPLANATION: `127.0.0.1` refers to the loopback interface, so a service listening on that address accepts connections only from the local machine. For external access, it must listen on an appropriate reachable interface address, such as `0.0.0.0` or a specific server address if supported by the service. It is tempting to blame the firewall because it is a common cause of external connectivity problems, but the bind address alone explains this behavior.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: Logs & journald
+TYPE: scenario
+QUESTION: A service has restarted, and you want to determine why systemd stopped or restarted it. Which approach is most appropriate?
+CODE:
+journalctl -u myservice --since "30 minutes ago"
+ENDCODE
+A) Only `/etc/passwd` needs to be checked.
+B) Inspect the journald entries for the service's unit and restrict them to the relevant time window.
+C) Only the output of `df -h` needs to be checked.
+D) The shell history is sufficient to determine the reason for the restart.
+ANSWER: B
+EXPLANATION: `journalctl -u myservice` filters journald entries for the specified systemd unit, while `--since` limits the query to the relevant time period. This is a good starting point for investigating events around a stop and restart. It is tempting to use shell history because it can reveal manual commands, but it may not contain automatically triggered service events.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: Processes & signals
+TYPE: production
+QUESTION: A service supports graceful shutdown on SIGTERM and needs time to close its connections. Which approach is most appropriate for a controlled shutdown?
+CODE:
+kill -TERM 12345
+ENDCODE
+A) `kill -KILL 12345`
+B) `kill -STOP 12345`
+C) `kill -HUP 12345`
+D) `kill -TERM 12345`, then check the process state if necessary and use a stronger signal only when justified.
+ANSWER: D
+EXPLANATION: SIGTERM gives the process an opportunity to execute its shutdown logic, such as closing connections and saving state. SIGKILL cannot be handled by the process, so it is not the first choice for a graceful shutdown. It is tempting to use SIGKILL because it guarantees process termination, but it can prevent the process from performing necessary cleanup.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: Filesystem hierarchy
+TYPE: theory
+QUESTION: Which statement most accurately describes the role of the `/dev` directory on a modern Linux system?
+CODE:
+ENDCODE
+A) It contains device files and special files associated with devices through which kernel-managed devices can be accessed.
+B) It stores only kernel modules required for system boot.
+C) It is the standard location for users' personal documents.
+D) It contains all persistent system log files.
+ANSWER: A
+EXPLANATION: `/dev` contains device files such as representations of disks, terminals, and pseudo-devices. On modern systems, these are typically managed dynamically by the kernel and userspace, for example through `udev`. It is tempting to associate `/dev` with kernel modules because devices may require modules to operate, but the two concepts are different.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: Permissions & ownership
+TYPE: output
+QUESTION: What will the result be with the following commands if the `report.txt` file is owned by `alice`, belongs to the `developers` group, and has permissions `640`?
+CODE:
+ls -l report.txt
+id bob
+ENDCODE
+A) Bob can definitely write to the file if he is a member of the `developers` group.
+B) Bob can read the file if he is a member of the `developers` group, but cannot write to it.
+C) Bob can read the file only if he is the file owner.
+D) Bob cannot access the file under any circumstances.
+ANSWER: B
+EXPLANATION: Mode `640` gives the owner `rw-`, the group `r--`, and others `---`. If Bob is a member of the `developers` group, he can read the file through the group permissions, but cannot write to it. It is tempting to assume write access because the owner can write to the file, but the group has only read permission.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: Users & groups
+TYPE: scenario
+QUESTION: You want to change a user's primary group while keeping their existing supplementary group memberships. Which command is appropriate?
+CODE:
+ENDCODE
+A) `usermod -G developers alice`
+B) `groupmod -g developers alice`
+C) `usermod -g developers alice`
+D) `passwd -g developers alice`
+ANSWER: C
+EXPLANATION: `usermod -g` changes the user's primary group and does not by itself remove supplementary group memberships. `-G` sets the supplementary group list, and using it requires care because it can replace the existing list if used incorrectly. It is tempting to choose `-G` because it is related to group membership, but it is not used to set the primary group.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: Processes & signals
+TYPE: edgecase
+QUESTION: What is the difference between `SIGTERM` and `SIGKILL` when terminating a process?
+CODE:
+ENDCODE
+A) SIGTERM can only be used for kernel processes, while SIGKILL can only be used for userspace processes.
+B) SIGTERM and SIGKILL are identical in every respect.
+C) SIGTERM always terminates the process immediately, while SIGKILL only tells the process that it should terminate.
+D) SIGTERM can be handled or ignored, while SIGKILL cannot be caught, blocked, or ignored.
+ANSWER: D
+EXPLANATION: SIGTERM is intended for graceful termination and can be handled by the process to perform its own cleanup logic. SIGKILL is used by the kernel for forced termination and cannot be caught, blocked, or ignored by the process. It is tempting to treat the two signals as equivalent because both can be used to terminate a process, but their handling is fundamentally different.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: Bash scripting
+TYPE: output
+QUESTION: What will the following script output?
+CODE:
+for file in *.log; do
+    echo "$file"
+done
+ENDCODE
+A) It prints the contents of all files in the directory.
+B) It prints only the name of the first `.log` file.
+C) The shell expands the `*.log` pattern to matching filenames, and the loop prints the name of each match.
+D) The loop always terminates with a syntax error.
+ANSWER: C
+EXPLANATION: During Bash pathname expansion, the `*.log` pattern is expanded to filenames matching it in the current directory, and the `for` loop processes each resulting word. Quoting `"$file"` preserves whitespace characters within individual filenames. It is tempting to expect file contents because the loop works with files, but the glob expands to names, not contents.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: Pipes & redirection
+TYPE: debug
+QUESTION: Why does the behavior of the following two commands differ?
+CODE:
+command 2>&1 | tee output.log
+command | tee output.log 2>&1
+ENDCODE
+A) The two commands are completely identical in all circumstances.
+B) The first sends standard error from `command` into the pipeline, while in the second, the redirection applies to `tee` itself.
+C) The second command does not use a pipeline.
+D) The first command discards standard output.
+ANSWER: B
+EXPLANATION: In the first command, `command` redirects its standard error to its standard output before that output enters the pipeline, so both streams are sent to `tee`. In the second command, `2>&1` applies to the `tee` process, not to the preceding `command`. It is tempting to treat them as identical because they contain the same redirection elements, but redirections belong to the command they are attached to.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Text processing (grep, sed, awk)
+TYPE: output
+QUESTION: What does the following `sed` command do?
+CODE:
+sed 's/[[:space:]]\+$//' file.txt
+ENDCODE
+A) It removes whitespace characters from the beginning of every line.
+B) It replaces every whitespace character with a hyphen.
+C) It deletes only empty lines.
+D) It removes trailing whitespace characters from the end of every line.
+ANSWER: D
+EXPLANATION: The regular expression `[[:space:]]\+$` matches one or more whitespace characters at the end of a line, and the replacement is an empty string. By default, the command writes the modified lines to standard output without modifying the original file. It is tempting to think about leading whitespace because trimming whitespace is commonly needed at both ends, but `$` identifies the end of the line.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: Package management
+TYPE: scenario
+QUESTION: On a Debian-based system, while troubleshooting a package installation problem, you want to inspect the state of installed packages and identify potentially problematic package states. Which tool provides relevant package database information?
+CODE:
+ENDCODE
+A) `dpkg -l`
+B) `hostname`
+C) `uname -m`
+D) `lsmod`
+ANSWER: A
+EXPLANATION: `dpkg -l` lists package states from the Debian package database. This is a useful starting point when diagnosing package installation or dependency problems, although higher-level `apt` commands are also important for resolving dependencies. It is tempting to focus only on general system information because the failure occurred during installation, but the package database state is directly relevant.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: systemd & services
+TYPE: behavior
+QUESTION: What happens with a systemd unit when it has `Requires=database.service` and the application unit is started?
+CODE:
+ENDCODE
+A) systemd considers the `database.service` dependency, and failure to start it can affect the application's startup.
+B) `database.service` is always stopped when the application starts.
+C) `Requires=` only checks the network DNS configuration.
+D) `Requires=` is used only for documentation purposes.
+ANSWER: A
+EXPLANATION: `Requires=` declares a strong runtime dependency: the specified unit is also activated, and certain failures involving that unit can affect the dependent unit. `Requires=` alone does not define the startup order; `After=` may also be needed for that. It is tempting to confuse `Requires=` with `After=` because they are often used together.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: Networking
+TYPE: output
+QUESTION: What does the `LISTEN` state indicate in the following output?
+CODE:
+ss -lnt
+State   Recv-Q  Send-Q  Local Address:Port  Peer Address:Port
+LISTEN  0       128     0.0.0.0:443        0.0.0.0:*
+ENDCODE
+A) The machine is actively initiating a connection to a remote HTTPS server.
+B) A UDP socket is waiting for incoming packets.
+C) A TCP socket is waiting to accept incoming connections on port 443.
+D) Port 443 is definitely blocked by the firewall.
+ANSWER: C
+EXPLANATION: `ss -lnt` displays TCP listening sockets, and `LISTEN` indicates that the socket is waiting to accept incoming TCP connections. `0.0.0.0:443` means the socket is listening on port 443 on all IPv4 interfaces. It is tempting to think of a UDP socket because `ss` can handle multiple socket types, but `-t` selects TCP.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: SSH
+TYPE: production
+QUESTION: An automated process needs to connect to a server over SSH using passwordless authentication. Which approach is most appropriate?
+CODE:
+ENDCODE
+A) Store the password directly in the shell script.
+B) Use an SSH key pair and place the public key in the server's appropriate `authorized_keys` file.
+C) Disable `StrictHostKeyChecking` to solve the authentication problem.
+D) Export the root password as an environment variable.
+ANSWER: B
+EXPLANATION: SSH key-based authentication allows passwordless login without storing a shared password in the script. The server verifies the user's public key against the appropriate `authorized_keys` file. It is tempting to disable `StrictHostKeyChecking` because it often comes up in automation-related problems, but it controls host key verification, not user authentication.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: Disks & storage
+TYPE: scenario
+QUESTION: An LVM volume has run out of free space, while the volume group still has free extents. What is an appropriate next step?
+CODE:
+ENDCODE
+A) Restart the network interface.
+B) Downgrade the kernel version.
+C) Increase the logical volume size using free space from the volume group.
+D) Change the file ownerships.
+ANSWER: C
+EXPLANATION: If the volume group has free space, the logical volume can be extended, for example with `lvextend`. The filesystem must then also be grown as appropriate. It is tempting to focus on permissions because a "no space" problem can cause various errors, but free LVM extents represent capacity that can directly be allocated to the logical volume.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: Logs & journald
+TYPE: debug
+QUESTION: After rebooting a server, the logs from previous boots are no longer available through `journalctl`. What is one common reason?
+CODE:
+ENDCODE
+A) journald can store only kernel errors.
+B) A system can never have logs from more than one boot.
+C) `journalctl` always deletes the entire journal database on reboot.
+D) The journal preserves logs across boots only when persistent storage is configured; otherwise, the logs may be stored only temporarily.
+ANSWER: D
+EXPLANATION: journald storage can be runtime-only, for example under `/run/log/journal`, or persistent, for example under `/var/log/journal`. Without persistent journal storage, logs from previous boots can be lost during reboot. It is tempting to assume that the journal database is automatically deleted on every reboot because older entries may be missing afterward, but the storage mode can explain this behavior.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: Cron & scheduling
+TYPE: output
+QUESTION: What does the following cron expression mean?
+CODE:
+0 0 1 * *
+ENDCODE
+A) It runs at midnight on the first day of every month.
+B) It runs at midnight every day.
+C) It runs at midnight every Monday.
+D) It runs at midnight on the last day of every month.
+ANSWER: A
+EXPLANATION: In the traditional five-field cron format, the fields are minute, hour, day of month, month, and day of week. Therefore, `0 0 1 * *` runs at 00:00 on the first day of every month. It is tempting to interpret it as a daily job because the first two fields are both zero, but the third field restricts execution to the first day of the month.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: Environment variables
+TYPE: debug
+QUESTION: Why does the following command sequence not behave the way many people initially expect?
+CODE:
+PATH=/opt/tools:$PATH
+./run.sh
+ENDCODE
+A) The `PATH` variable can only be modified by root.
+B) Modifying `PATH` always removes all previously configured directories.
+C) `./run.sh` cannot use environment variables.
+D) The modified `PATH` is available in the current shell, but programs started by `run.sh` inherit it only if `PATH` is exported as an environment variable.
+ANSWER: D
+EXPLANATION: `PATH=/opt/tools:$PATH` assigns a shell variable but does not by itself export it to child processes. If the script or programs it starts also need to see the modified PATH, you can use, for example, `export PATH=/opt/tools:$PATH`. It is tempting to assume that every child process automatically receives it because the variable's value has changed in the parent shell.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: Performance troubleshooting
+TYPE: performance
+QUESTION: A server has a high load average, but CPU utilization is not particularly high. Which additional investigation is especially important?
+CODE:
+ENDCODE
+A) Check only the contents of `/etc/hostname`.
+B) Investigate I/O wait and processes blocked in uninterruptible states.
+C) Check the color of the shell prompt.
+D) Change all user passwords.
+ANSWER: B
+EXPLANATION: Linux load average does not reflect only CPU utilization; runnable tasks and certain tasks waiting in uninterruptible states also contribute. Therefore, a high load average with low CPU utilization can indicate I/O or another blocking problem. It is tempting to look only for a CPU problem because load average is often presented as a CPU load metric, but its meaning is broader.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: Boot & kernel
+TYPE: output
+QUESTION: What can you learn from the following command?
+CODE:
+cat /proc/cmdline
+ENDCODE
+A) The boot parameters passed to the currently running kernel.
+B) All installed kernel versions.
+C) The status of all systemd units.
+D) All instruction sets supported by the CPU.
+ANSWER: A
+EXPLANATION: `/proc/cmdline` contains the kernel command-line parameters passed to the currently running kernel. These can include boot parameters related to the root filesystem or kernel behavior, for example. It is tempting to interpret this as information about all installed kernels because it describes the kernel selected during boot, but it shows only the current kernel's command line.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: Security hardening
+TYPE: scenario
+QUESTION: A service on a Linux server does not require direct shell access. Which solution can reduce unnecessary login access?
+CODE:
+ENDCODE
+A) Give the service account root privileges.
+B) Use the same user for every service.
+C) Configure an appropriately restricted or disabled login shell for the service account.
+D) Disable SSH host key verification.
+ANSWER: C
+EXPLANATION: For a dedicated service account, disabling or restricting shell access can reduce the interactive login surface when it is not required. The exact solution should match how the service operates. It is tempting to leave an interactive shell for every user because that can simplify administration, but it creates an unnecessary access surface.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: Filesystem hierarchy
+TYPE: edgecase
+QUESTION: You want to store temporary files used by a program that are not needed after a reboot. Which directory is the most appropriate for this purpose on a traditional Linux system?
+CODE:
+ENDCODE
+A) `/boot`
+B) `/tmp`
+C) `/etc`
+D) `/usr`
+ANSWER: B
+EXPLANATION: `/tmp` is intended for temporary files, and the lifetime of its contents varies by system and configuration, so applications should not rely on it for persistent storage. `/etc` is used for configuration, `/boot` for boot-related files, and `/usr` primarily for installed programs and related static data. It is tempting to choose `/var` because it also contains variable data, but `/tmp` is more appropriate for explicitly temporary data.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: Permissions & ownership
+TYPE: trap
+QUESTION: A directory has permissions `drwx--x--x`. Which statement is correct?
+CODE:
+ENDCODE
+A) Anyone can list the contents of the directory.
+B) Only the owner can enter the directory.
+C) The group and others cannot access the directory.
+D) The group and others can traverse the directory, but their permissions alone do not allow them to list its contents.
+ANSWER: D
+EXPLANATION: On a directory, `x` allows traversal and access to objects when their names are known, while `r` allows listing directory entries. Therefore, `--x` does not by itself allow the directory's names to be listed, but known filenames may still be accessible if the necessary additional permissions are present. It is tempting to equate `x` with read access because `x` means execution on regular files, but it has a different role on directories.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: Users & groups
+TYPE: behavior
+QUESTION: What happens if you remove a Linux user from a supplementary group while the user is already logged in?
+CODE:
+ENDCODE
+A) The running shell always immediately loses all group memberships.
+B) The group credentials of already running processes generally do not change automatically; a new login session may be required for the updated membership to take effect.
+C) The user is automatically deleted.
+D) File ownership is automatically changed.
+ANSWER: B
+EXPLANATION: Process credentials and group memberships are established when processes and sessions are created, so a later group database change does not necessarily update already running processes. A new login session is often required for the modified group list to take effect. It is tempting to expect an immediate change because the modification can appear immediately in the system's user and group database.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: Processes & signals
+TYPE: output
+QUESTION: What does the `Z` state mean in the following `ps` output?
+CODE:
+ps -eo pid,ppid,state,comm
+ENDCODE
+A) The process is in a zombie state.
+B) The process is currently loading a kernel module.
+C) The process is definitely using CPU.
+D) The process is waiting for a network connection.
+ANSWER: A
+EXPLANATION: `Z` denotes a zombie process: the process has finished execution, but its parent has not yet collected its exit status, so the kernel retains certain process information. It is tempting to interpret it as a running process because it still appears in the `ps` listing, but it is no longer executing code.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: Bash scripting
+TYPE: algorithm
+QUESTION: Which solution safely reads a file line by line without unwanted word splitting or backslash processing?
+CODE:
+while IFS= read -r line; do
+    printf '%s\n' "$line"
+done < input.txt
+ENDCODE
+A) `for line in $(cat input.txt); do echo "$line"; done`
+B) `while read line; do echo $line; done < input.txt`
+C) `while IFS= read -r line; do printf '%s\n' "$line"; done < input.txt`
+D) `cat input.txt | for line in $line; do echo "$line"; done`
+ANSWER: C
+EXPLANATION: `IFS=` prevents unwanted whitespace processing by `read`, while `-r` prevents backslashes from being interpreted as escape characters. Quoting the variable in `printf` preserves the contents of each line. It is tempting to use command substitution with a `for` loop because it looks shorter, but word splitting and pathname expansion make it unreliable for general line-by-line reading.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: Pipes & redirection
+TYPE: edgecase
+QUESTION: What happens in the following command?
+CODE:
+cmd 2>&1 >/tmp/output.log
+ENDCODE
+A) Both standard output and standard error are written to `/tmp/output.log`.
+B) Only standard output is written to the file, while standard error is discarded.
+C) The shell exits with a syntax error because the two redirections cannot be combined.
+D) Standard error remains directed to the original standard output, while standard output is redirected to `/tmp/output.log`.
+ANSWER: D
+EXPLANATION: Redirections are processed from left to right. `2>&1` first redirects standard error to the current standard output, which at that point is typically the terminal. Then `>/tmp/output.log` redirects only standard output to the file; the previously established standard error destination does not automatically follow that change. It is tempting to expect both streams in the file because the same redirection elements appear in the common `>file 2>&1` form.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Text processing (grep, sed, awk)
+TYPE: scenario
+QUESTION: From a large log file, you want to output only lines that begin with `ERROR` and pass each complete matching line unchanged to the next command. Which solution meets this requirement?
+CODE:
+grep '^ERROR' application.log | next_command
+ENDCODE
+A) `grep 'ERROR$' application.log | next_command`
+B) `grep '^ERROR' application.log | next_command`
+C) `grep '$ERROR' application.log | next_command`
+D) `grep '[ERROR]' application.log | next_command`
+ANSWER: B
+EXPLANATION: `^` denotes the beginning of a line, so `^ERROR` selects every line that starts with the text `ERROR`. `grep` passes the entire matching line to its output, not just the matched text. It is tempting to use `ERROR$` because it is also a regular expression that anchors a match to a specific position, but it requires `ERROR` at the end of the line rather than at the beginning.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: Filesystem hierarchy
+TYPE: theory
+QUESTION: What is the main difference between the traditional roles of the `/usr/bin` and `/usr/sbin` directories?
+CODE:
+ENDCODE
+A) `/usr/bin` contains only kernel modules, while `/usr/sbin` contains only configuration files.
+B) `/usr/bin` typically contains general-purpose user commands, while `/usr/sbin` mainly contains system administration programs.
+C) `/usr/sbin` is reserved exclusively for temporary files.
+D) The two directories have no functional difference.
+ANSWER: B
+EXPLANATION: `/usr/bin` traditionally contains general-purpose command-line programs, while `/usr/sbin` mainly contains tools related to system administration. On modern distributions, the exact layout and location of binaries can vary, especially on merged-usr systems. It is tempting to treat them as completely identical because both contain executable programs.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: Permissions & ownership
+TYPE: behavior
+QUESTION: A file has permissions `-rw-r-----`, is owned by `alice`, and belongs to the `developers` group. Bob is a member of the `developers` group. What happens when Bob tries to modify the file?
+CODE:
+ENDCODE
+A) He can successfully write to it because he is a member of the group.
+B) He can successfully write to it because every group member is automatically treated as the owner.
+C) The operation fails with a permission error because the group does not have write permission.
+D) The kernel automatically grants him the owner's permissions.
+ANSWER: C
+EXPLANATION: With mode `rw-r-----`, the owner can read and write, the group can only read, and others have no access. Because Bob is a member of the file's group, he uses the group permissions, which do not include write access. It is tempting to allow writing because Bob is indeed a member of the file's group, but group membership alone does not grant additional permissions.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: Users & groups
+TYPE: output
+QUESTION: What does a `nologin` shell in the output for a service account indicate?
+CODE:
+getent passwd appuser
+ENDCODE
+A) The user's password has definitely expired.
+B) The user automatically has root privileges.
+C) The user does not exist on the system.
+D) Interactive shell access for the account can be intentionally restricted, for example for a service account.
+ANSWER: D
+EXPLANATION: Using `/usr/sbin/nologin` or a similar login shell can prevent interactive shell logins while still allowing the account to be used for running services. This does not by itself mean that the account is disabled or nonexistent. It is tempting to assume a password problem because the user cannot log in interactively, but here the login shell configuration is responsible.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: Processes & signals
+TYPE: debug
+QUESTION: You suspended a process with `kill -STOP`, but after sending `kill -TERM`, it still does not resume execution. What explains this?
+CODE:
+ENDCODE
+A) SIGTERM is automatically converted into SIGCONT.
+B) A process cannot resume execution from a SIGSTOP state by itself; SIGCONT is required first.
+C) SIGTERM is always stronger than SIGSTOP, so the process should immediately resume.
+D) SIGSTOP applies only to network processes.
+ANSWER: B
+EXPLANATION: SIGSTOP suspends a process and cannot be handled by the process itself. SIGTERM requests that the process terminate, but a process in the stopped state does not resume execution merely because SIGTERM is delivered. SIGCONT is required to resume execution, for example with `kill -CONT PID`.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Bash scripting
+TYPE: output
+QUESTION: What will the following code output?
+CODE:
+count=0
+
+while (( count < 3 )); do
+    ((count++))
+done
+
+echo "$count"
+ENDCODE
+A) `0`
+B) `2`
+C) `3`
+D) The loop runs forever.
+ANSWER: C
+EXPLANATION: The loop runs while `count` is less than 3. During the three iterations, the value changes from 0 to 1, then 2, and finally 3, after which the condition becomes false. It is tempting to expect `2` because that is the value during the last successful comparison, but the loop body then increments it to 3.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: Pipes & redirection
+TYPE: scenario
+QUESTION: You want to write a command's output to a file while also seeing it in the terminal, without losing the existing file contents. Which solution is appropriate?
+CODE:
+ENDCODE
+A) `command | tee -a output.log`
+B) `command > output.log`
+C) `command | cat > output.log`
+D) `command 2> output.log`
+ANSWER: A
+EXPLANATION: `tee -a` displays standard output in the terminal and appends it to the specified file. The `-a` option ensures that existing contents are not overwritten. It is tempting to use plain `tee` because it also writes to both the file and terminal, but by default it overwrites the target file.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: Text processing (grep, sed, awk)
+TYPE: algorithm
+QUESTION: From a whitespace-delimited file, you want to select lines whose second field is exactly `ERROR`. Which solution is the most direct?
+CODE:
+awk '$2 == "ERROR" { print }' application.log
+ENDCODE
+A) It prints every line in the file.
+B) It examines only the first field.
+C) It prints only lines whose second field is exactly `ERROR`.
+D) It prints only lines containing the text `ERROR` anywhere.
+ANSWER: C
+EXPLANATION: In `awk`, `$2` represents the second field, and `==` performs an exact equality comparison. Therefore, only records whose second field is exactly `ERROR` are printed. It is tempting to think in terms of text searching because we are looking for the string `ERROR`, but this is a field-based condition.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: Package management
+TYPE: behavior
+QUESTION: On a Debian-based system, what does a package state of `rc` in the output of `dpkg -l` mean?
+CODE:
+ENDCODE
+A) The package is installed and running.
+B) The package is not installed, but its associated configuration files may still remain.
+C) The package is currently being downloaded.
+D) The package contains a broken kernel module.
+ANSWER: B
+EXPLANATION: In the `dpkg` status notation, `r` indicates that the package is removed, while `c` indicates that configuration files remain. This typically occurs when a package has been removed without being purged. It is tempting to interpret this as an installed state because the package still appears in the dpkg database.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: systemd & services
+TYPE: debug
+QUESTION: After modifying a unit file, `systemctl restart myservice` does not behave according to the modified unit definition. What may be missing?
+CODE:
+ENDCODE
+A) `systemctl daemon-reload`
+B) `systemctl enable myservice`
+C) `systemctl is-active myservice`
+D) `systemctl mask myservice`
+ANSWER: A
+EXPLANATION: After modifying systemd unit files, the systemd manager must reload its configuration with `systemctl daemon-reload` so that it processes the new definitions. This is separate from restarting the service. It is tempting to use only `restart` because it does restart the process, but it does not necessarily reload modified unit files.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: Networking
+TYPE: scenario
+QUESTION: A server has two network interfaces, and multiple routes exist for a particular destination network. Which factor determines the most specific route selected by the Linux routing subsystem?
+CODE:
+ENDCODE
+A) It always selects the route that was created most recently in the configuration.
+B) It always selects the interface with the alphabetically lowest name.
+C) It prefers the longest prefix matching the destination; additional route metrics can decide between routes with the same prefix length.
+D) It selects randomly among the available routes.
+ANSWER: C
+EXPLANATION: One fundamental routing principle is longest prefix match: a more specific network prefix takes precedence over a more general one. If multiple routes with the same prefix length remain, additional attributes such as the route metric can influence the selection. It is tempting to consider creation order because the most recent configuration change is often visible during troubleshooting, but it is not the fundamental selection rule.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: SSH
+TYPE: edgecase
+QUESTION: You connect to multiple servers using an SSH client and do not want to use the same key for every connection. Which configuration option is suitable for specifying different keys per host?
+CODE:
+ENDCODE
+A) `IdentityFile` in the appropriate `Host` block
+B) `PortForward` in the appropriate `Match` block
+C) `KnownHostsFile` for each host
+D) `CompressionLevel` for each user
+ANSWER: A
+EXPLANATION: In the SSH client configuration, `IdentityFile` specifies a private key that can be used for authentication, and different values can be provided in host-specific `Host` blocks. This allows different keys to be used for different servers. It is tempting to choose `KnownHostsFile` because it is also related to host identification, but it controls storage of server host keys, not the user's authentication key.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: Disks & storage
+TYPE: output
+QUESTION: What can the following command show?
+CODE:
+lsblk -f
+ENDCODE
+A) Only filesystems supported by the CPU.
+B) In addition to block devices and partitions, information such as filesystem type, UUID, and mount point.
+C) Only the disk space currently used by processes.
+D) Only encryption keys for LVM logical volumes.
+ANSWER: B
+EXPLANATION: `lsblk -f` displays filesystem-related information such as filesystem type, LABEL, UUID, and mount point, depending on the available version and configuration. It is useful for quickly inspecting block devices and filesystems. It is tempting to think only about partition layout because plain `lsblk` also primarily shows the block-device hierarchy.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: Logs & journald
+TYPE: scenario
+QUESTION: You want to find journal entries associated with a specific PID among a service's logs. Which `journalctl` filter is the most direct?
+CODE:
+journalctl _PID=1234
+ENDCODE
+A) `_PID=1234`
+B) `-k`
+C) `-b`
+D) `-u`
+ANSWER: A
+EXPLANATION: Using the `_PID=1234` filter with journald's structured fields retrieves entries associated with the specified process ID. `-k` filters kernel messages, `-b` filters by boot, and `-u` filters by unit. It is tempting to use `-u` because it is common when working with service logs, but it does not provide PID-specific filtering.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Cron & scheduling
+TYPE: behavior
+QUESTION: A cron job needs to run every 30 seconds. Why can this not be expressed precisely with a single traditional five-field cron expression?
+CODE:
+ENDCODE
+A) Cron can run only as root.
+B) Cron cannot execute commands.
+C) The traditional five-field cron syntax has minute-level granularity, so a second-level interval cannot be expressed directly.
+D) Cron can run tasks only once per week.
+ANSWER: C
+EXPLANATION: The smallest time field in the traditional cron format is minutes, so a 30-second interval cannot be represented by a single standard cron entry. A different mechanism, such as a systemd timer or separate scheduling logic, may be more appropriate for such a requirement. It is tempting to use a `*/30`-style cron expression because the syntax supports similar intervals, but those intervals are measured in minutes.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: Environment variables
+TYPE: output
+QUESTION: What will the following code output?
+CODE:
+export APP_ENV=production
+bash -c 'printf "%s\n" "$APP_ENV"'
+ENDCODE
+A) `production`
+B) `APP_ENV`
+C) An empty line
+D) `bash`
+ANSWER: A
+EXPLANATION: `export` makes `APP_ENV` part of the shell's environment, so the `bash` child process inherits it. `printf` then prints the value of the environment variable. It is tempting to expect an empty line because there is no explicit assignment in the child shell, but exported environment variables are inherited.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: Performance troubleshooting
+TYPE: production
+QUESTION: On a server with 16 logical CPUs, a single process is consistently using around 100% CPU. Which conclusion is the most accurate?
+CODE:
+ENDCODE
+A) The entire machine's CPU capacity is definitely at 100%.
+B) The process is definitely running 16 threads.
+C) The process may be using approximately one full CPU while other CPUs on the machine remain available.
+D) The process is definitely running in kernel space.
+ANSWER: C
+EXPLANATION: In classic `top`-style process CPU reporting, a process's CPU percentage can be expressed relative to one CPU's full capacity, so a single-threaded process can reach roughly 100% on a 16-CPU machine without saturating the entire system. A multithreaded process can report substantially higher values. It is tempting to interpret 100% as full machine utilization because that intuitively sounds like total utilization.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: Security hardening
+TYPE: scenario
+QUESTION: A web application only needs to read the contents of a specific directory and does not need access to the rest of the system. Which approach can most effectively reduce its filesystem access surface?
+CODE:
+ENDCODE
+A) Make the entire `/` filesystem writable by the application user.
+B) Run the application as root.
+C) Set `777` permissions on every file.
+D) Use appropriate permissions and, where necessary, sandboxing/chroot-style isolation so the application can access only the resources it needs.
+ANSWER: D
+EXPLANATION: To reduce the access surface, the application should receive permissions only for the files and directories it actually needs, with additional isolation mechanisms used where appropriate. chroot alone should not be considered a complete security boundary for every threat model, so other sandboxing mechanisms may also be relevant. It is tempting to use root or `777` because that eliminates permission errors, but it significantly increases the impact of a compromise.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: Boot & kernel
+TYPE: debug
+QUESTION: During boot, a Linux system cannot find the root filesystem, while the required storage driver is built as a module rather than directly into the kernel. What can be a key role of initramfs in this situation?
+CODE:
+ENDCODE
+A) Restore the user's shell history.
+B) Provide the required storage drivers and device discovery logic during the early stages of boot.
+C) Reinstall all applications on the system.
+D) Modify the BIOS firmware.
+ANSWER: B
+EXPLANATION: If the driver required to access the root filesystem is not built into the kernel, the initramfs can contain and load the appropriate module during early userspace. This can allow the kernel to detect and access the root storage device before handing control over to the actual root filesystem. It is tempting to think about reinstalling applications because the failure occurs during boot, but the primary role of initramfs is to provide the early boot environment.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: Permissions & ownership
+TYPE: trap
+QUESTION: A file has permissions `-rwxrwxrwx`, but a user still cannot delete the file from its directory. What could be the reason?
+CODE:
+ENDCODE
+A) Deleting a file always requires root privileges.
+B) The file's execute permission prevents deletion.
+C) File deletion is primarily controlled by the parent directory's write and execute permissions and, for example, its sticky bit.
+D) The kernel automatically prevents deletion because all three `rwx` sets are present.
+ANSWER: C
+EXPLANATION: Permission to delete a file is primarily related to permissions on the directory because deletion modifies the directory entry. A sticky bit on the directory can impose additional restrictions, as in `/tmp`. It is tempting to focus on the file's own `rwx` permissions because they visibly grant full access, but deletion does not depend on the file's write permission.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: Networking
+TYPE: production
+QUESTION: A server exposes an application on multiple interfaces, but only connections from a specific network should be allowed. Why is relying solely on the application's bind address insufficient for access control?
+CODE:
+ENDCODE
+A) The bind address determines only which local address the socket listens on; source-address-based access control may require additional network filtering, such as a firewall.
+B) The bind address automatically encrypts the connection.
+C) The bind address automatically authenticates the client user.
+D) The bind address disables all TCP connections.
+ANSWER: A
+EXPLANATION: A socket's bind address determines which local address or interface the application listens on, but it is not a general source-address-based access-control rule. If access needs to be limited to a particular subnet, firewall or application-level controls may also be required. It is tempting to treat the bind address as a complete access-control rule because it does affect which local interfaces can expose the service in certain topologies, but it does not replace traffic filtering.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: Disks & storage
+TYPE: performance
+QUESTION: An ext4 filesystem is 90% full according to `df -h`, but an application unexpectedly receives an `ENOSPC` error when creating a new file. Which additional factors should be investigated?
+CODE:
+ENDCODE
+A) Only the CPU temperature.
+B) Only the SSH host key.
+C) Only the kernel version.
+D) Inode exhaustion, quotas, reserved blocks, and other actual capacity limits of the filesystem.
+ANSWER: D
+EXPLANATION: `ENOSPC` does not necessarily mean that the byte-based capacity shown by `df -h` has been completely exhausted. Inodes may be exhausted, a user or project quota may have been reached, or filesystem-specific reserved space and other limits may be relevant. It is tempting to focus only on the percentage of disk usage because `ENOSPC` is commonly associated with a traditional lack-of-space condition.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: Logs & journald
+TYPE: scenario
+QUESTION: On a production server, a unit continuously restarts and rapidly generates a large amount of logs. Which approach helps investigate both the root cause and systemd's restart behavior?
+CODE:
+journalctl -u myservice -b
+systemctl status myservice
+ENDCODE
+A) Delete only the log files.
+B) Examine the unit's journal entries together with `systemctl status`, including the exit status and restart settings.
+C) Immediately reinstall the server.
+D) Randomly change the service's port.
+ANSWER: B
+EXPLANATION: `journalctl` can provide detailed chronological events for the service, while `systemctl status` summarizes the current state, recent failure, and startup result. Together, they can help identify the exit status, restart loop, and relevant unit configuration. It is tempting to delete the logs because they are growing rapidly, but deletion does not address the underlying cause.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: Security hardening
+TYPE: edgecase
+QUESTION: A Linux service needs to bind to TCP port 443, but you do not want to run it as root. Which solution can grant permission to use the low-numbered port without giving the process full root privileges?
+CODE:
+ENDCODE
+A) Set the permissions of the service's entire filesystem to `777`.
+B) Put the root password in an environment variable.
+C) Use an appropriate Linux capability, such as `CAP_NET_BIND_SERVICE`, for the required process.
+D) Grant write permission to the entire `/etc` directory.
+ANSWER: C
+EXPLANATION: `CAP_NET_BIND_SERVICE` can allow a process to bind to privileged ports below 1024 without giving it full root privileges. The exact configuration should match how the service is launched and the security model being used. It is tempting to run the service as root because that straightforwardly solves the bind permission problem, but it grants unnecessarily broad privileges.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Processes & signals
+TYPE: production
+QUESTION: A thread in a multithreaded application is causing high CPU usage. Which approach can help identify exactly which thread is consuming the CPU?
+CODE:
+ENDCODE
+A) `top -H -p <PID>`
+B) `df -h`
+C) `ip route`
+D) `journalctl --disk-usage`
+ANSWER: A
+EXPLANATION: `top -H -p <PID>` can display the threads of the specified process as separate entries, making it possible to identify the thread with unusually high CPU usage. Further profiling may be needed to determine which code path is consuming the CPU. It is tempting to inspect only the overall process CPU value because it quickly reveals the load, but it does not identify individual threads.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Bash scripting
+TYPE: production
+QUESTION: In a Bash script, you want a pipeline to be considered failed when any command in the pipeline fails, even if the final command succeeds. Which setting is required?
+CODE:
+set -o pipefail
+false | true
+echo "$?"
+ENDCODE
+A) `set -u`
+B) `set -x`
+C) `set -e`
+D) `set -o pipefail`
+ANSWER: D
+EXPLANATION: By default, a Bash pipeline's exit status is the status of its last command, so `false | true` would return 0. With `pipefail`, the pipeline returns a non-zero status if any command fails, specifically the status of the rightmost command that exited with a non-zero status. It is tempting to choose `set -e` because it is also related to error handling, but it does not by itself change the pipeline exit-status rule.
+###END
+
+### Q151
+LEVEL: senior
+TOPIC: Processes & signals
+TYPE: scenario
+QUESTION: A service starts multiple worker processes, and when the parent process terminates, you want to ensure that the entire process tree is stopped. Why is sending SIGTERM only to the parent process insufficient?
+A) SIGTERM automatically stops only the youngest child process.
+B) Child processes always ignore SIGTERM.
+C) SIGTERM can only be applied to kernel threads.
+D) The signal is sent to the specified PID, so child processes do not automatically receive it.
+ANSWER: D
+EXPLANATION: A normal kill sends the signal to a single PID. To manage an entire process tree, a separate mechanism such as a process group or cgroup is needed. Child processes can handle SIGTERM using their own signal handlers or default behavior, but they do not automatically inherit a signal sent to their parent.
+###END
+
+### Q152
+LEVEL: senior
+TOPIC: Security hardening
+TYPE: theory
+QUESTION: A Linux service only needs access to TCP port 443 and does not require root privileges. Which approach best follows the principle of least privilege?
+A) Run the service as root continuously.
+B) Use a dedicated user and grant only the required capabilities or other restricted privileges.
+C) Run the service with full privileges for every user.
+D) Give the service access to the entire `/dev` directory.
+ANSWER: B
+EXPLANATION: A dedicated service user and the minimum required capabilities reduce the impact of a compromised service. Running as root creates a significantly larger attack surface. For example, `CAP_NET_BIND_SERVICE` may be sufficient to bind to a privileged port when appropriate, but a capability should only be granted when it is actually required.
+###END
+
+### Q153
+LEVEL: senior
+TOPIC: Filesystem hierarchy
+TYPE: behavior
+QUESTION: What is the most important difference between a bind mount and a symbolic link?
+A) A bind mount makes a file or directory available at another mount point, while a symbolic link is a filesystem reference.
+B) A symbolic link is always faster than a bind mount.
+C) A bind mount can only be used with regular files.
+D) A symbolic link always prevents the target from being deleted.
+ANSWER: A
+EXPLANATION: A bind mount makes an existing file or directory available at another location at the kernel mount-namespace level. A symbolic link is a special filesystem object that contains a path. As a result, the two mechanisms differ in how they are resolved, how permissions behave, and how they interact with namespaces.
+###END
+
+### Q154
+LEVEL: senior
+TOPIC: Bash scripting
+TYPE: trap
+QUESTION: What does the `trap` do in the following Bash script if the `cleanup` function deletes a temporary file?
+CODE:
+cleanup() {
+    rm -f "$tmp"
+}
+
+trap cleanup EXIT
+
+tmp=$(mktemp)
+printf '%s\n' "work" > "$tmp"
+ENDCODE
+A) `cleanup` runs immediately when the `trap` is registered.
+B) `cleanup` runs only if the script receives SIGTERM.
+C) `cleanup` runs when the shell exits.
+D) `cleanup` runs only if the script terminates with `exit 0`.
+ANSWER: C
+EXPLANATION: An `EXIT` trap is executed when the shell exits, regardless of whether the script terminates normally or, for example, through an explicit `exit`. This is a common pattern for cleaning up temporary resources. The explicit `exit 0` case can be misleading because it does trigger the EXIT trap, but it is not the only case that does so.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: Pipes & redirection
+TYPE: edgecase
+QUESTION: What is the key difference between Bash process substitution and a traditional pipe in the following example?
+CODE:
+diff <(sort file1) <(sort file2)
+ENDCODE
+A) Process substitution always writes the output to disk.
+B) `diff` receives two file-like inputs connected to the outputs of the two commands, while the two commands run as separate processes.
+C) The `sort` commands run sequentially, so there is no parallelism.
+D) Process substitution works exclusively with binary data.
+ANSWER: B
+EXPLANATION: `<(command)` process substitution provides the command with a file-like reference while the command runs in the background. This allows `diff` to treat the two inputs as file arguments without requiring the outputs to be manually saved to temporary files first. This approach is useful when commands need to provide multiple file-like inputs rather than a simple pipeline.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: Performance troubleshooting
+TYPE: performance
+QUESTION: On a production Linux server, CPU utilization is low while application response times have increased significantly. `iostat` shows a high `%util` value and increasing I/O await on a specific block device. What is the most likely conclusion?
+A) The CPU cache is too small.
+B) The system is definitely slow because of insufficient memory.
+C) I/O latency on the storage device is likely a bottleneck.
+D) The network interface is definitely faulty.
+ANSWER: C
+EXPLANATION: Low CPU utilization combined with high storage I/O wait suggests that processes may be waiting for I/O operations to complete. `await` provides information about the average time spent waiting for and processing I/O operations. This does not prove that storage is the cause in every case, but given the stated measurements, it is the most direct hypothesis.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: Networking
+TYPE: debug
+QUESTION: A server has two network interfaces. For a connection coming from a remote client, the server's response leaves through a different interface than the one on which the request arrived. Which Linux mechanism should you investigate first?
+A) The routing table and route selection.
+B) Filesystem mount options.
+C) Process nice values.
+D) journald retention settings.
+ANSWER: A
+EXPLANATION: The kernel's routing decision determines the path used for outgoing packets. With multiple interfaces, you should therefore inspect the routing table, the route selected for the destination, and, when applicable, policy routing rules and their associated routing tables. The issue is not caused by process priority or logging.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: systemd & services
+TYPE: production
+QUESTION: A systemd service opens too many files and occasionally terminates with a `Too many open files` error. Which setting directly increases the service's file descriptor limit?
+A) `LimitCPU=`
+B) `LimitNOFILE=`
+C) `MemoryMax=`
+D) `TasksMax=`
+ANSWER: B
+EXPLANATION: `LimitNOFILE=` controls the number of file descriptors available to the service. `LimitCPU` applies to CPU time, `MemoryMax` to memory usage, and `TasksMax` limits the number of processes and tasks. After changing the setting, the unit may need to be reloaded and the service restarted as appropriate.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Disks & storage
+TYPE: scenario
+QUESTION: You successfully increased the size of an LVM logical volume, but `df -h` still shows the previous filesystem size. What is the most likely reason?
+A) LVM always automatically reduces the filesystem size.
+B) `df` displays only inodes.
+C) The block device was enlarged, but the filesystem must also be resized separately when required by that filesystem.
+D) `df` can only display the new size after a reboot.
+ANSWER: C
+EXPLANATION: The LVM logical volume and the filesystem on top of it are separate layers. Increasing the logical volume does not necessarily increase the space available to the filesystem. Depending on the filesystem, a separate resize operation may be required, such as `resize2fs` for ext4 or typically `xfs_growfs` for XFS.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: SSH
+TYPE: scenario
+QUESTION: An administrator needs to access an internal server through a jump host. Which SSH feature allows the target host to be accessed directly from the client configuration while routing the connection through the jump host?
+A) `ProxyJump`
+B) `StrictHostKeyChecking=no`
+C) `ForwardAgent=no`
+D) `ServerAliveCountMax`
+ANSWER: A
+EXPLANATION: `ProxyJump` (`-J`) establishes the connection to the target host through an intermediate SSH host. This is cleaner and generally safer than manually creating nested SSH sessions. The other settings control different SSH behaviors and do not configure a jump-host path.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: Boot & kernel
+TYPE: behavior
+QUESTION: Why can modifying kernel parameters under `/proc/sys` be useful when tuning the performance of a production system?
+A) Because every `/proc/sys` value only modifies the bootloader configuration.
+B) Because these include runtime kernel parameters that control certain kernel behaviors while the system is running.
+C) Because the `/proc/sys` files are kernel modules stored on the physical disk.
+D) Because these files directly modify application binary code.
+ANSWER: B
+EXPLANATION: The virtual `/proc/sys` interface provided by procfs exposes many kernel parameters that can be modified at runtime, including parameters affecting networking and memory management. Some of these can be managed using `sysctl`, and persistent configuration requires appropriate system configuration. Not every parameter can be safely changed in production, so changes should be based on measurements and accompanied by a rollback plan.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: Users & groups
+TYPE: edgecase
+QUESTION: An application needs access to a file, but you do not want to change the file's owner or group. Different users also need different permissions. Which Linux mechanism is suitable for this?
+A) Only the sticky bit.
+B) Only the setgid bit.
+C) ACLs, using tools such as `setfacl` and `getfacl`.
+D) Renaming the file.
+ANSWER: C
+EXPLANATION: Access Control Lists allow additional access rules for specific users or groups beyond the traditional owner/group/other permission model. For example, `setfacl -m u:alice:r file` can grant a specific user read access. The sticky and setgid bits serve different purposes.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: Text processing (grep, sed, awk)
+TYPE: algorithm
+QUESTION: You want to find every line containing an HTTP 5xx status code in a multi-gigabyte log file. Which approach is the most direct and streamable?
+A) `grep -E ' 5[0-9][0-9] ' application.log`
+B) `cat application.log > /tmp/all.log && nano /tmp/all.log`
+C) `sort application.log | uniq`
+D) `sed 's/.*//' application.log`
+ANSWER: A
+EXPLANATION: `grep` can process the file line by line in a streaming fashion using a regular expression, so there is no need to copy the entire file into memory or introduce an unnecessary intermediate processing step. The pattern, including the surrounding spaces, targets a status code in typical log formats, although it may need to be adjusted for a specific log format.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: Logs & journald
+TYPE: production
+QUESTION: A systemd service writes thousands of identical errors to journald within a short period. What problem can this cause, and which mechanism is directly relevant to handling the situation?
+A) journald automatically shuts down the entire system; only cron configuration can address it.
+B) journald keeps every repeated line forever; only `grep` can be used to address it.
+C) systemd automatically deletes the affected service; only SSH configuration can be changed.
+D) Excessive logging can consume resources and storage; journald rate-limiting settings can restrict excessively rapid log generation.
+ANSWER: D
+EXPLANATION: A large volume of repeated logs can increase CPU, I/O, and storage consumption. journald rate limiting can restrict the number of messages accepted when they arrive too rapidly, while the lasting solution is to fix the underlying application problem. Rate limiting does not replace investigating the application's error.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: Processes & signals
+TYPE: behavior
+QUESTION: What does it generally mean when a process has the `D` state in Linux?
+A) The process is in a zombie state.
+B) The process is generally in uninterruptible sleep, typically waiting for I/O or another resource operation in the kernel.
+C) The process is running in debug mode.
+D) The process was automatically stopped with SIGSTOP.
+ANSWER: B
+EXPLANATION: The `D` state typically means uninterruptible sleep, often associated with blocking I/O. Such a process may not respond immediately to conventional signals while it is waiting for a kernel operation to complete. This is particularly important when investigating storage or network filesystem problems.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: Bash scripting
+TYPE: debug
+QUESTION: In a Bash script, you want to safely process the lines of a command's output without unexpected splitting of whitespace or interpretation of backslashes. Which pattern is most appropriate?
+A) `for x in $(command); do ...; done`
+B) `while read line; do ...; done < <(command)`
+C) `while IFS= read -r line; do ...; done < <(command)`
+D) `for x in "$(command)"; do ...; done`
+ANSWER: C
+EXPLANATION: `IFS= read -r` prevents unwanted handling of leading and trailing whitespace as well as backslash escaping. Process substitution connects the command's output to the input of the while loop. A command-substitution-based `for` loop can easily behave incorrectly because of word splitting and globbing.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: Networking
+TYPE: performance
+QUESTION: A TCP connection is successfully established on a Linux server, but throughput drops significantly during large data transfers. There is no significant packet loss on the network interface, but the MTU differs between network segments. Which problem should you investigate?
+A) Path MTU and possible PMTUD/fragmentation problems.
+B) The inode number of `/etc/passwd`.
+C) The systemd unit's `Restart=` setting.
+D) The cron daemon's schedule.
+ANSWER: A
+EXPLANATION: When MTUs differ and Path MTU Discovery is broken or blocked, oversized packets can cause problems and significant performance degradation. The investigation should include the path MTU, ICMP errors, TCP retransmissions, and the network path. A successfully established connection does not rule out an MTU-related problem.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: Security hardening
+TYPE: scenario
+QUESTION: An application does not need network administration, raw sockets, or the ability to load kernel modules. Why can selectively restricting Linux capabilities be beneficial?
+A) Because disabling capabilities always makes the application faster.
+B) Because this automatically encrypts the application.
+C) Because capabilities only control file ownership.
+D) Because parts of the full root privilege set can be separated into individual capabilities, allowing the scope of required privileged operations to be reduced.
+ANSWER: D
+EXPLANATION: Linux capabilities divide parts of the traditional root privilege set into separate permission units. A service can therefore be granted only the privileged operations it actually needs while other capabilities are removed. This is an important mechanism for minimizing privileges.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: systemd & services
+TYPE: behavior
+QUESTION: A systemd unit contains `After=network-online.target`. What does this mean by itself?
+A) The service always creates and configures the network interfaces.
+B) The service can start only when every network connection is physically operational.
+C) systemd orders the unit after the specified target, but this alone does not create a dependency on that target.
+D) The service automatically restarts if the network connection is lost.
+ANSWER: C
+EXPLANATION: `After=` specifies startup ordering but does not by itself pull in the dependency. If the unit actually requires the target, `Wants=` or `Requires=` may also be needed depending on the situation. `After=` is therefore not equivalent to declaring a dependency.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: Disks & storage
+TYPE: edgecase
+QUESTION: A filesystem still has several gigabytes of free space according to `df -h`, but creating a new file fails with `No space left on device`. What is a typical possible cause?
+A) The filesystem has run out of inodes, which can be checked with `df -i`.
+B) The CPU clock speed is too low.
+C) The process does not have permission to send SIGCONT.
+D) The DNS cache is full.
+ANSWER: A
+EXPLANATION: A filesystem can run out of two distinct resources: data blocks or inodes. If the inodes are exhausted, new files cannot be created even when a significant amount of block-level free space remains. `df -i` can be used to check inode utilization.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: Performance troubleshooting
+TYPE: production
+QUESTION: A CPU-intensive application is becoming progressively slower while many other processes are active on the machine. `perf` profiling shows that a significant portion of the application's runtime is concentrated in a single function. What is the most important next step?
+A) Immediately restart the entire server.
+B) Delete all kernel logs.
+C) Investigate the function's hot path and examine algorithmic or implementation-level optimization opportunities.
+D) Delete all cron jobs.
+ANSWER: C
+EXPLANATION: Profiling is intended to identify, based on measurements, the hot paths consuming significant CPU time. If a single function dominates runtime, its algorithm, loops, memory access patterns, and call patterns should be investigated further. Restarting the entire system does not address a deterministic CPU bottleneck in the application.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Boot & kernel
+TYPE: scenario
+QUESTION: After upgrading to a new kernel, the machine no longer boots, but the previous kernel is still available in the boot menu. Why can booting with the previous kernel be useful as a first step?
+A) Because the previous kernel always automatically restores all files.
+B) Because the previously working kernel allows you to investigate the problem, boot configuration, initramfs, and drivers associated with the new kernel.
+C) Because the bootloader cannot load a new kernel.
+D) Because using the old kernel automatically deletes the new kernel.
+ANSWER: B
+EXPLANATION: A previously working kernel provides a fast recovery path while allowing you to inspect the initramfs, modules, configuration, and bootloader settings associated with the new kernel. This is a common production recovery strategy. Booting the old kernel does not by itself delete or repair the new kernel installation.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: Cron & scheduling
+TYPE: scenario
+QUESTION: A recurring background task must start at a specific time, and you also need resource limits, logging, and dependency management. Why might a systemd timer be more suitable than a classic cron job?
+A) Because systemd timers can only be used for network-related tasks.
+B) Because cron cannot execute commands.
+C) Because a systemd timer automatically runs every script as root.
+D) Because the timer integrates closely with systemd services, which can have resource limits, dependencies, and logging configured.
+ANSWER: D
+EXPLANATION: A systemd timer typically does not execute the command directly; instead, it activates a service unit. This allows the execution to take advantage of systemd dependency management, resource limits, and journald integration. Cron can still be appropriate for simple scheduled tasks.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: SSH
+TYPE: security
+QUESTION: An administrator uses SSH agent forwarding when working through a jump host. What is the most important security risk?
+A) The target machine automatically receives the private key file.
+B) The SSH protocol always switches to password authentication in this case.
+C) A compromised intermediate host can use the forwarded agent socket to perform authentication operations using keys available through the agent.
+D) Agent forwarding disables host key verification.
+ANSWER: C
+EXPLANATION: With agent forwarding, the private key itself is not transferred to the intermediate host, but access to the agent creates a security risk. A compromised host may attempt to perform authentication operations through the forwarding channel. Therefore, agent forwarding should be used only on trusted intermediate hosts and when necessary.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: Environment variables
+TYPE: edgecase
+QUESTION: A systemd service cannot see an `export APP_ENV=production` variable set in a shell, while child processes launched from the same terminal can see it. What is the correct explanation?
+A) A systemd service does not inherit the terminal's shell environment as a child process; its environment is determined by the systemd unit and manager configuration.
+B) `export` only works on Windows.
+C) systemd automatically deletes all environment variables from the machine.
+D) The variable could only be inherited if it were `readonly`.
+ANSWER: A
+EXPLANATION: Environment variables propagate through process inheritance; they are not global system state. A systemd service normally receives an environment assembled by the systemd manager rather than the current environment of an arbitrary interactive shell. Service-specific variables can be configured using settings such as `Environment=` or `EnvironmentFile=`.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: Processes & signals
+TYPE: edgecase
+QUESTION: A process is running as a process group leader and has started multiple child processes. What does `kill -- -1234` do if 1234 is a process group ID?
+CODE:
+kill -- -1234
+ENDCODE
+A) Sends SIGTERM to PID 1234.
+B) Sends SIGTERM to every member of process group 1234.
+C) Sends SIGKILL to the entire process tree.
+D) Stops all descendants started by the process group leader 1234, regardless of their process groups.
+ANSWER: B
+EXPLANATION: `kill` with a negative PID sends the signal to a process group. Therefore, `kill -- -1234` sends SIGTERM to every member of process group 1234. This differs from specifying a single positive PID. A process group and an entire process tree are not necessarily the same set of processes.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: Security hardening
+TYPE: scenario
+QUESTION: You are running an application as a systemd service and want to ensure that it can access as few system resources as possible if it is compromised. Which approach best fits this goal?
+A) Run the service under a dedicated user and apply systemd sandboxing, namespace restrictions, and capability restrictions.
+B) Run the service as root so that systemd can manage it more easily.
+C) Make the entire filesystem writable by the service.
+D) Automatically enable all capabilities.
+ANSWER: A
+EXPLANATION: A dedicated user, capabilities limited to those actually required, and systemd sandboxing can together reduce the scope of a compromised service. This can include restrictions on filesystem, network, and device access. The goal is not to use a single isolation mechanism, but to minimize the privileges and resources the service needs.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: Filesystem hierarchy
+TYPE: behavior
+QUESTION: What typically happens on a Linux system if a process opens a file and then another process deletes the file while the first process still has it open?
+A) The kernel immediately releases the file's data blocks.
+B) The file is automatically moved to the `/lost+found` directory.
+C) The file name is removed from the directory, but the inode and associated data can remain until the open reference is gone.
+D) The deletion always fails while any process is using the file.
+ANSWER: C
+EXPLANATION: `unlink` removes the directory entry, but an already-open file can remain accessible through the file descriptor. The kernel can release the file's resources only after there is no directory link and no active open reference. This is why a deleted but still-open log file can continue to consume disk space.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Bash scripting
+TYPE: trap
+QUESTION: In a Bash script, you use:
+CODE:
+set -E
+trap 'printf "error at line %s\n" "$LINENO"' ERR
+
+foo() {
+    false
+}
+
+foo
+printf '%s\n' "done"
+ENDCODE
+Why can `set -E` be important in this example?
+A) It enables Bash POSIX mode.
+B) It automatically enables `set -e` mode.
+C) It automatically terminates every error with SIGKILL.
+D) It allows the ERR trap to be inherited by shell functions.
+ANSWER: D
+EXPLANATION: `set -E`, also known as `set -o errtrace`, causes the ERR trap to be inherited by shell functions, command substitutions, and certain other subshell contexts. This is particularly useful for more complex error handling. The ERR trap is not the same as `errexit`, and it does not guarantee that every possible error will be trapped.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: Pipes & redirection
+TYPE: edgecase
+QUESTION: What does the following construct allow you to do?
+CODE:
+while IFS= read -r line; do
+    printf '%s\n' "$line"
+done < <(generate_data)
+ENDCODE
+A) It connects the output of `generate_data` to the standard input of the `while` loop using process substitution.
+B) It always saves the output of `generate_data` to a persistent temporary file.
+C) The `while` loop completely ignores the output of `generate_data`.
+D) `generate_data` always runs in the same shell process as the `while` loop.
+ANSWER: A
+EXPLANATION: `< <(generate_data)` uses process substitution to provide a file-like input from which the `while` loop reads. `generate_data` can run in a separate execution context while the loop remains in its own shell context. This is also useful because it avoids a common subshell issue with traditional pipelines, where variables modified inside the loop may not remain changed in the parent shell.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: Performance troubleshooting
+TYPE: performance
+QUESTION: A server shows a high load average, but CPU idle time is also significant. The process list contains several processes in the `D` state. What best explains this situation?
+A) Load average measures only CPU usage, so the result is contradictory.
+B) Tasks in `D` state, which are in uninterruptible sleep, can also contribute to the load average.
+C) The `D` state always means that the process is already a zombie.
+D) A high load average in this situation always indicates a DNS problem.
+ANSWER: B
+EXPLANATION: On Linux, load average does not simply represent CPU utilization. In addition to runnable tasks, certain tasks in uninterruptible sleep, such as those waiting for blocking I/O, can also contribute. Therefore, the load average can be high even while a significant amount of CPU time is idle.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Networking
+TYPE: debug
+QUESTION: A server has multiple IP addresses, and a service should be reachable only on one specific address. Which configuration expresses this most precisely?
+A) Have the service bind to all interfaces using `0.0.0.0`.
+B) Have the service bind to a nonexistent IP address.
+C) Have the service bind to the desired specific local IP address.
+D) Change only the client's DNS entry.
+ANSWER: C
+EXPLANATION: Binding to a specific local IP address allows the service to accept connections only on that address. For IPv4, `0.0.0.0` generally means binding to all local IPv4 interfaces. Changing the bind address does not replace checking all required network or firewall rules.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: systemd & services
+TYPE: production
+QUESTION: A systemd service must start after another service has successfully started, and the second service would have no purpose if the first service were unavailable. Which combination expresses this most appropriately?
+A) `After=` and `Requires=`
+B) Only `Description=`
+C) `Restart=` and `Nice=`
+D) `LimitNOFILE=` and `MemoryMax=`
+ANSWER: A
+EXPLANATION: `Requires=` establishes a dependency relationship, while `After=` defines startup ordering. Together, they express that one unit depends on another and that their startup order matters. `After=` alone specifies only ordering, so it is not sufficient to express the dependency.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: Disks & storage
+TYPE: scenario
+QUESTION: You want to increase the size of a logical volume containing an ext4 filesystem. What is the correct general approach if you increase the LV size first?
+A) Reduce the LV and then reformat the entire disk.
+B) Increase the LV and then increase the ext4 filesystem as well.
+C) Only change the name of the mount point directory.
+D) Delete the filesystem first and then reboot.
+ANSWER: B
+EXPLANATION: The LVM layer and the filesystem size are managed separately. After increasing the LV, the ext4 filesystem must also be extended, for example with `resize2fs`, or, where appropriate, `lvextend -r` can automatically perform the corresponding filesystem resize. The exact commands should always be selected based on the filesystem and available tools.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: SSH
+TYPE: scenario
+QUESTION: An administrator wants to use an SSH connection for TCP forwarding to access an internal service, without needing a remote shell. Which SSH feature is appropriate for this?
+A) `ssh-keygen -R`
+B) `ssh-copy-id`
+C) `ssh -N -L`
+D) `ssh -v`
+ANSWER: C
+EXPLANATION: `-L` creates local port forwarding, while `-N` specifies that no remote command or shell should be started. For example, a local port can be forwarded through an SSH server to an internal destination. This can be useful in administrative and secure network access scenarios.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: Boot & kernel
+TYPE: scenario
+QUESTION: A Linux machine reaches the initramfs environment during boot but cannot mount the root filesystem. Which cause should you investigate first?
+A) The user's `.bashrc` file.
+B) The required storage driver, the root filesystem module, and the contents of the initramfs.
+C) The user's current `PATH` variable.
+D) The cron daemon's schedule.
+ANSWER: B
+EXPLANATION: If the boot process reaches initramfs but cannot mount the root filesystem, common causes include a missing storage or filesystem driver, an incorrect initramfs, or an incorrect root device parameter. One of the responsibilities of initramfs is to provide the early-boot environment required to access the root filesystem. Shell or cron configuration is generally not relevant at this stage.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: Logs & journald
+TYPE: behavior
+QUESTION: You want to inspect the logs of a systemd service only from the current boot session. Which `journalctl` usage is most precise?
+A) `journalctl -b`
+B) `journalctl --vacuum-time=1s`
+C) `journalctl --disk-usage`
+D) `journalctl --rotate`
+ANSWER: A
+EXPLANATION: `journalctl -b` filters journal entries to the current boot. If you need the logs of a specific service, you can narrow it further, for example with `journalctl -b -u myservice`. The other commands are used for journal maintenance or inspecting storage usage.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: Cron & scheduling
+TYPE: edgecase
+QUESTION: A cron job runs for a long time, and it is possible that the previous instance is still running when the next scheduled execution starts. What problem should you address?
+A) Cron always waits for the previous instance to finish.
+B) Cron always terminates the previous instance with SIGKILL.
+C) Overlapping executions can cause race conditions, duplicate processing, or resource exhaustion.
+D) Overlap is possible only if systemd is not running on the machine.
+ANSWER: C
+EXPLANATION: Classic cron does not provide a general single-instance guarantee for a job by itself. For long-running tasks, a lockfile, `flock`, a database-based lock, or another coordination mechanism can be used to control overlapping executions. The appropriate solution depends on whether the application is idempotent and what level of concurrency is allowed.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: Environment variables
+TYPE: behavior
+QUESTION: In a Bash script, you use the following command:
+CODE:
+APP_ENV=production ./start.sh
+ENDCODE
+What is true about the `APP_ENV` variable?
+A) The variable becomes globally available in every subsequently started shell.
+B) The variable is present in the environment of `start.sh`, and child processes launched by it can inherit it.
+C) The variable is automatically added to `/etc/environment`.
+D) The variable's value is permanently changed for every user.
+ANSWER: B
+EXPLANATION: A `NAME=value` assignment placed before a command sets the variable in that command's environment. The `start.sh` process receives this environment, and child processes launched from it can inherit the variable. The assignment does not automatically modify the environment of the interactive shell or a system configuration file.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: Performance troubleshooting
+TYPE: debug
+QUESTION: An application's CPU usage is high, but overall CPU load does not explain why the application has slowed down. According to `perf`, it spends a significant amount of time in kernel space, and the system has a large number of context switches. Which direction could be relevant for further investigation?
+A) Only the DNS TTL needs to be changed.
+B) The filesystem mount point needs to be renamed.
+C) Commenting out cron jobs will definitely solve the problem.
+D) The causes of system calls, locks, I/O, and context switches should be profiled, for example using `perf` events and traces.
+ANSWER: D
+EXPLANATION: High kernel time and many context switches may indicate that the application spends significant time in system calls, scheduling, locking, or I/O. Further profiling can help determine which events dominate. Aggregate CPU percentage alone does not identify the actual hot path or kernel-level bottleneck.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Security hardening
+TYPE: behavior
+QUESTION: What is the main difference between a Linux SELinux- or AppArmor-style mandatory access control approach and traditional Unix owner/group/mode permissions?
+A) Mandatory access control only modifies file ownership.
+B) Mandatory access control automatically runs every process as root.
+C) Mandatory access control can apply additional centrally or policy-enforced access rules alongside traditional DAC permissions.
+D) Mandatory access control is used only to encrypt network packets.
+ANSWER: C
+EXPLANATION: Traditional Unix permissions belong to the discretionary access control model, where access is checked according to owner and other permission rules. SELinux and AppArmor can apply additional policy-based restrictions that can limit the scope of a compromised process. The exact behavior and policy model differ between systems.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: Filesystem hierarchy
+TYPE: edgecase
+QUESTION: Why can it be dangerous to replace or obscure a directory containing system files using a separate mount, causing the original directory contents to become hidden beneath the mount?
+A) Because the original contents below the mount point are automatically deleted.
+B) Because the original contents behind the mount point become temporarily inaccessible, so applications or system components may no longer find the files they expect.
+C) Because Linux does not support multiple mount points on one system.
+D) Because every mount automatically becomes read-only.
+ANSWER: B
+EXPLANATION: The existing directory contents below a mount point are not deleted, but the mounted filesystem hides them from normal path resolution. This can be particularly dangerous if a system component expects a configuration or runtime file at that location on the original filesystem. Once the mount is removed, the original contents become visible again.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: Bash scripting
+TYPE: algorithm
+QUESTION: In a Bash script, you want to run multiple commands so that the script proceeds only if the previous command succeeds. Which solution expresses this directly in a single command line?
+A) `command1 && command2`
+B) `command1 || command2`
+C) `command1 ; command2`
+D) `command1 & command2`
+ANSWER: A
+EXPLANATION: The `&&` operator runs the second command only if the first succeeds, meaning it returns a zero exit status. `||` runs the second command when the first command fails, the semicolon does not make the second command dependent on the success of the first, and `&` runs the first command in the background.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: Pipes & redirection
+TYPE: behavior
+QUESTION: What does the following command produce in Bash?
+CODE:
+printf '%s\n' "hello" 2>/tmp/error.log | wc -l
+ENDCODE
+A) Both the `printf` and `wc` output go to `/tmp/error.log`.
+B) The `printf` standard error goes to `/tmp/error.log`, while its standard output is passed through the pipe to `wc`.
+C) The `wc` standard output goes to `/tmp/error.log`.
+D) The pipe does not work because redirection cannot be used in the same command.
+ANSWER: B
+EXPLANATION: `2>/tmp/error.log` redirects only the `printf` standard error stream. Standard output remains the input to the pipeline, so `wc -l` counts the line produced by `printf`. Redirection and pipelines can be used together.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: Networking
+TYPE: scenario
+QUESTION: A TCP port is in the LISTEN state on a server, but remote clients cannot connect, while the connection works from localhost on the same machine. Which investigation sequence is most reasonable?
+A) Immediately delete the entire contents of `/var/log`.
+B) Change the process nice value.
+C) First check the bind address, then host and network firewall rules, and finally routing and the network path.
+D) Reboot the machine without checking the configuration.
+ANSWER: C
+EXPLANATION: When a service works from localhost but is inaccessible remotely, it is important to check whether it is bound only to a loopback address and whether a host or network firewall is blocking the connection. After that, routing and the complete network path should be checked. A `LISTEN` state by itself does not guarantee remote accessibility.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: systemd & services
+TYPE: production
+QUESTION: A service consumes too much CPU time, and you want to limit its CPU usage at the systemd level without modifying the application code. Which mechanism can be used for this?
+A) `CPUQuota=`
+B) `StandardOutput=`
+C) `Description=`
+D) `WorkingDirectory=`
+ANSWER: A
+EXPLANATION: `CPUQuota=` allows systemd to impose a resource limit on a service, typically using cgroups. This can restrict the service's CPU usage without requiring the application to implement the limitation itself. The exact effect depends on the configured value and the system's available CPU resources.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Disks & storage
+TYPE: performance
+QUESTION: A database performs a large amount of random I/O. According to `iostat`, I/O latency is high while the storage queue depth remains consistently high. Which conclusion is best supported?
+A) The system is definitely CPU-bound.
+B) Load on the storage subsystem and I/O waiting are likely creating a bottleneck.
+C) The DNS resolver is definitely too slow.
+D) The processes are definitely zombies.
+ANSWER: B
+EXPLANATION: High I/O latency combined with a persistently high queue depth can indicate that more I/O is reaching the storage subsystem than it can efficiently process at that time. The situation should be evaluated together with additional metrics such as throughput, IOPS, await, and the application's I/O pattern. A single metric by itself does not prove every cause of a performance problem.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: SSH
+TYPE: edgecase
+QUESTION: An SSH connection is disconnected by a network device after a long period of inactivity. The application does not generate continuous traffic. Which SSH setting can help keep the idle connection alive?
+A) `IdentityAgent`
+B) `UserKnownHostsFile`
+C) `ServerAliveInterval`
+D) `PreferredAuthentications`
+ANSWER: C
+EXPLANATION: `ServerAliveInterval` specifies how often the client sends an SSH-level keepalive message to the server when there is no other traffic. This can help with idle timeouts imposed by certain network devices. `ClientAliveInterval`, in contrast, is a server-side setting.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: Boot & kernel
+TYPE: debug
+QUESTION: A Linux system immediately reboots after booting, and a kernel panic message briefly appears on the console. Which approach is most useful for isolating the problem?
+A) Only delete the user's shell history.
+B) Change all cron job schedules.
+C) Change the DNS server address.
+D) Boot a previously working kernel and inspect kernel and boot parameters, initramfs, drivers, and relevant early-boot logs.
+ANSWER: D
+EXPLANATION: A kernel panic can indicate an early boot problem, so using a previously working kernel can quickly determine whether the issue is associated with the new kernel. You can then inspect the initramfs contents, kernel parameters, drivers, and available boot logs. The exact diagnosis depends on the panic message and the boot process.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: Performance troubleshooting
+TYPE: scenario
+QUESTION: A production service periodically becomes slow. Average CPU, memory, and storage utilization appear normal, but the slowdown occurs during short, difficult-to-reproduce time windows. What is the best diagnostic strategy?
+A) Immediately restart the system every time the slowdown occurs.
+B) Check only the `top` output from the current moment.
+C) Change all kernel parameters at once.
+D) Collect timestamped metrics and targeted tracing/profiling data, then correlate the slowdown windows with system- and application-level events.
+ANSWER: D
+EXPLANATION: For short-lived performance problems, a single snapshot can easily miss the triggering event. Timestamped metrics, traces, application-level latency data, and targeted profiling allow you to correlate exactly what happened during the problematic windows. Targeted observability and incremental hypothesis testing are more reliable than changing multiple configurations simultaneously.
+###END

@@ -1,0 +1,2748 @@
+### Q1
+LEVEL: junior
+TOPIC: Injection
+TYPE: theory
+QUESTION: In a Java application, the user-provided `username` value is concatenated directly into an SQL query. Which solution directly reduces the risk of SQL injection?
+CODE:
+ENDCODE
+A) HTML-escaping the input
+B) Using a parameterized SQL query
+C) Switching the database connection to HTTPS
+D) Increasing the password field length
+ANSWER: B
+EXPLANATION: With a parameterized query, the SQL structure and user data are handled as separate parameters, so the input cannot simply become part of the SQL code. HTML escaping can be useful in contexts such as HTML/XSS, but it does not protect against SQL injection. Encrypting the database connection and increasing password length do not prevent SQL query manipulation. HTML escaping is tempting because it can look like a general-purpose "escape input" solution, but each input/output context requires an appropriate security mechanism.
+###END
+
+### Q2
+LEVEL: junior
+TOPIC: XSS
+TYPE: output
+QUESTION: A web page uses the following code. If the `name` value is `<img src=x onerror=alert(1)>`, what happens?
+CODE:
+const name = new URLSearchParams(location.search).get("name");
+document.getElementById("welcome").innerHTML = "Hello " + name;
+ENDCODE
+A) The browser automatically converts the `<img>` tag into plain text
+B) The CSP will always prevent the event handler from executing
+C) The browser can interpret the `<img>` tag as a DOM element, and the `onerror` event can execute JavaScript
+D) The code is only dangerous if the `name` value is also stored in the database
+ANSWER: C
+EXPLANATION: `innerHTML` parses the inserted string as HTML. The `<img src=x>` element can be created, and the failed image load can trigger the `onerror` event, which executes JavaScript. DOM-based XSS does not require a database. A properly configured CSP can reduce the impact of certain XSS payloads, but it is incorrect to assume that every CSP configuration blocks every inline event handler. It is tempting to assume that the browser automatically treats the input as plain text because it originally came from a URL parameter, but `innerHTML` changes the parsing context.
+###END
+
+### Q3
+LEVEL: junior
+TOPIC: Authentication & password storage
+TYPE: theory
+QUESTION: How should user passwords be stored in a web application?
+A) With a strong, modern password-hashing algorithm such as Argon2id, using a unique salt
+B) With SHA-256 without a salt
+C) With AES-256 using a single key embedded in the application
+D) With Base64 encoding
+ANSWER: A
+EXPLANATION: Passwords should be stored using a dedicated password-hashing algorithm such as Argon2id, with appropriate parameters and a unique salt for each password. The salt prevents identical passwords from producing identical hashes, while the computational cost of the hashing algorithm slows down large-scale offline guessing attempts. SHA-256 is too fast for this purpose, AES is reversible encryption, and Base64 is not a security mechanism at all. SHA-256 is tempting because it is known as a cryptographically strong hash, but password hashing also requires an intentionally high computational cost.
+###END
+
+### Q4
+LEVEL: junior
+TOPIC: CSRF
+TYPE: scenario
+QUESTION: A traditional session-cookie-based web application automatically sends the cookie with a POST request that performs a bank transfer. Why can this create a CSRF risk?
+A) Because cookies are always transmitted without encryption
+B) Because POST requests cannot contain session cookies
+C) Because CSRF only works against GET requests
+D) Because another site can cause the browser to send a request to which the browser automatically adds the session cookie
+ANSWER: D
+EXPLANATION: CSRF occurs when an attacker-controlled site attempts to cause the victim's browser to send a state-changing request to another origin while the browser may automatically attach the relevant cookies. Possible defenses include CSRF tokens, appropriate `SameSite` cookie settings, and origin checking. Using POST does not by itself provide CSRF protection. It is tempting to consider POST inherently safe because the data is not visible in the URL, but CSRF is not about URL visibility.
+###END
+
+### Q5
+LEVEL: junior
+TOPIC: Sessions & JWT
+TYPE: trap
+QUESTION: A server issues a JWT access token to a client. Which statement about JWTs is correct?
+A) The JWT payload is encrypted by default
+B) The JWT signature ensures that the token contents cannot be modified without a valid signature, but it does not by itself hide the payload
+C) A JWT can automatically be revoked from every client-side browser
+D) Using JWTs eliminates the need for HTTPS
+ANSWER: B
+EXPLANATION: A typical JWT used as a JWS has a header and payload that are Base64URL-encoded and readable by anyone who possesses the token. The digital signature or MAC provides integrity and authenticity, but not confidentiality. JWT usage does not automatically provide immediate revocation, and TLS is still required to protect the token in transit. It is tempting to think of a JWT as an encrypted token because the token string looks encoded and unreadable, but Base64URL encoding is not encryption.
+###END
+
+### Q6
+LEVEL: junior
+TOPIC: Security headers & CSP
+TYPE: theory
+QUESTION: What is one of the primary purposes of Content-Security-Policy?
+A) Encrypting database passwords
+B) Automatically renewing TLS certificates
+C) Restricting which resources and script sources the browser may load or execute
+D) Automatically fixing server-side SQL injection
+ANSWER: C
+EXPLANATION: CSP is a browser-side policy that can specify which script, image, style, and other resource sources are allowed. A well-designed CSP can significantly reduce the impact of certain XSS and code-injection attacks, but it does not fix SQL injection and does not replace TLS or secrets management. It is tempting to view CSP as a universal web security mechanism because it can mitigate several client-side attack types, but it does not fix server-side vulnerabilities by itself.
+###END
+
+### Q7
+LEVEL: junior
+TOPIC: CORS
+TYPE: behavior
+QUESTION: An API returns the following HTTP response to a request:
+CODE:
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: https://example.com
+Content-Type: application/json
+ENDCODE
+JavaScript running on `https://evil.example` attempts to read the response using `fetch()`. What happens in a normal browser environment?
+A) The browser blocks the cross-origin JavaScript access to the response body because the origin does not match
+B) The server automatically redirects the request to the allowed origin
+C) The browser ignores the `Access-Control-Allow-Origin` header
+D) The request and response will always be fully accessible to the JavaScript
+ANSWER: A
+EXPLANATION: Based on the CORS policy, the browser only makes the cross-origin response available to JavaScript running from an allowed origin. The server may still process the HTTP request, but the browser can make the response inaccessible to the attacker's script. CORS is not a traditional server-side authorization mechanism. It is tempting to assume that the server itself must reject the request because CORS headers appear in the HTTP response, but browser-side enforcement is a key part of CORS.
+###END
+
+### Q8
+LEVEL: junior
+TOPIC: Input validation & deserialization
+TYPE: debug
+QUESTION: An endpoint expects a positive integer `age` value. Which approach is most appropriate for server-side validation?
+A) Ask the frontend developer to use the HTML `min="1"` attribute
+B) Assume that the client can only send a number
+C) Validate the value in JavaScript and then forward it to the server without validation
+D) Validate on the server that the value is an integer and falls within the allowed range, and reject invalid input
+ANSWER: D
+EXPLANATION: Client-side validation is useful for UX, but it is not a security boundary because a client-generated HTTP request can be modified directly. The server must validate the type, range, and other relevant business constraints itself. Assuming that client input is trustworthy is a common security mistake. It is tempting to rely only on frontend validation because it does prevent invalid input through the normal UI, but an attacker is not required to use that UI.
+###END
+
+### Q9
+LEVEL: junior
+TOPIC: Cryptography & TLS
+TYPE: trap
+QUESTION: A developer says: "The API runs over HTTPS, so user data arriving at the server is guaranteed to be trustworthy and tamper-free." Why is this conclusion incorrect?
+A) Because HTTPS can only encrypt images
+B) Because TLS only protects the server's CPU
+C) Because TLS protects the network channel, but does not guarantee that the data is valid from an application or business perspective
+D) Because HTTPS does not perform any authentication
+ANSWER: C
+EXPLANATION: TLS protects data while it is transmitted over the communication channel against eavesdropping and modification, assuming the connection and certificate validation are properly configured. However, a legitimate client can still send malicious or invalid data, which the application must validate. TLS does not provide business-logic validation. It is tempting to equate HTTPS with complete data security because it provides strong protection against network-level attacks, but it does not protect the application from malicious input sent by legitimate clients.
+###END
+
+### Q10
+LEVEL: junior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: A developer finds the following in a Git repository:
+CODE:
+const dbPassword = "ProdDbPassword123!";
+ENDCODE
+What is the most important first step if this was a real production credential?
+A) Rename the variable
+B) Delete the line from the current file and continue working
+C) Encode the password with Base64
+D) Revoke/rotate the credential, investigate the exposure, and remove the secret from the source code
+ANSWER: D
+EXPLANATION: If a production secret has been committed to a repository, it should be considered compromised even if it is later deleted from the current file. Revoking and rotating the credential first reduces its ability to be abused, after which the repository history and relevant access or audit logs should be investigated. Because of Git history, simply deleting the line does not necessarily remove every copy of the secret. It is tempting to only delete the line because the secret is no longer visible in the current file, but previous commits may still contain it.
+###END
+
+### Q11
+LEVEL: junior
+TOPIC: OWASP Top 10
+TYPE: theory
+QUESTION: A developer is working on a new feature in which server-side operations are performed based on objects supplied by the client. Which approach best matches the OWASP Top 10 mindset?
+A) Checking only the frontend appearance
+B) Considering input handling, authentication, authorization, configuration, dependencies, and other application security controls together
+C) Testing only for SQL injection
+D) Checking only network firewall rules
+ANSWER: B
+EXPLANATION: The OWASP Top 10 is not focused on a single vulnerability type; it covers a broad range of application security risks, including authorization, injection, security misconfiguration, and vulnerable components. Security therefore needs to be treated as a combination of multiple controls. It is tempting to focus only on SQL injection because it is a classic and easily demonstrated web vulnerability, but many serious issues occur in completely different areas.
+###END
+
+### Q12
+LEVEL: junior
+TOPIC: Authorization & access control
+TYPE: scenario
+QUESTION: An API endpoint works as follows: the user receives their own user ID and can then call `/api/users/{id}/profile`. What is the most important server-side check?
+A) Verify that the authenticated user is authorized to access the resource identified by the supplied `id`
+B) Verify that the `id` is a positive number
+C) Verify that the client is using an Angular application
+D) Verify that the URL starts with HTTPS
+ANSWER: A
+EXPLANATION: Validating the format of an object identifier does not prove that the user is authorized to access the corresponding object. The server must perform an authorization check for every sensitive resource. This is a fundamental defense against IDOR/BOLA-style vulnerabilities. It is tempting to consider validating the ID format sufficient because the ID identifies the object, but it does not determine who is allowed to access it.
+###END
+
+### Q13
+LEVEL: junior
+TOPIC: SSRF
+TYPE: scenario
+QUESTION: A backend service accepts a URL from the client and then performs an HTTP GET request to that URL from the server. What is the primary SSRF risk?
+A) The client's browser can always access the backend's internal network
+B) The server automatically turns the URL into XSS
+C) An attacker may cause the server to access an internal or sensitive address that the client could not access directly
+D) HTTPS automatically stops working
+ANSWER: C
+EXPLANATION: In SSRF, an attacker abuses a server-initiated network request to reach internal services, localhost, cloud metadata endpoints, or other restricted network targets. The server's network privileges are therefore an important part of the security boundary. It is tempting to assume that only the client could connect to such addresses because the URL originated from the user, but the actual network request is made by the server.
+###END
+
+### Q14
+LEVEL: junior
+TOPIC: Supply chain security
+TYPE: production
+QUESTION: An application uses 80 external npm packages. Why does this create an application security risk?
+A) Because npm packages are always slower than custom code
+B) Because every dependency automatically has access to the database
+C) Because packages cannot be used in production
+D) Because a vulnerable or compromised dependency can affect the security of the application
+ANSWER: D
+EXPLANATION: Dependencies are part of the software supply chain. A vulnerable or compromised package can introduce vulnerable or malicious code that runs as part of the application, potentially creating a security issue or direct attack path. This is why dependency inventories, updates, vulnerability scanning, lockfile management, and appropriate review are important. It is tempting to think of dependencies purely in terms of functionality and build performance, while they can also represent an important security boundary.
+###END
+
+### Q15
+LEVEL: junior
+TOPIC: Logging & incident response
+TYPE: scenario
+QUESTION: For a login endpoint, which information is most useful for investigating security events while avoiding unnecessary logging of sensitive data?
+A) The user's complete password
+B) Whether authentication succeeded or failed, the timestamp, a relevant identifier, and appropriately handled client information
+C) The complete session cookie value
+D) The user's complete credit card number
+ANSWER: B
+EXPLANATION: Security logs should provide enough context for investigating events, such as the timestamp, event type, relevant user ID, or request correlation ID, while avoiding passwords, session tokens, or complete payment data. The goal is to support auditability and incident response without turning the logging system itself into a sensitive data store. It is tempting to log the entire request or credential because that would provide more information during an incident, but doing so can make the logging infrastructure itself a high-value target.
+###END
+
+### Q16
+LEVEL: junior
+TOPIC: Threat modeling
+TYPE: scenario
+QUESTION: During the design of a new web application, the team maps the data flows between the frontend, backend, database, and external payment provider. Why is this useful during threat modeling?
+A) It helps identify trust boundaries, data flows, and potential attack surfaces
+B) It automatically fixes vulnerabilities
+C) It only measures UI performance
+D) It replaces penetration testing
+ANSWER: A
+EXPLANATION: Mapping data flows and trust boundaries helps the team understand where data moves between components, where the trust level changes, and where attack surfaces may exist. Threat modeling is not an automatic remediation mechanism and does not replace all security testing. It is tempting to think that a threat model eliminates the need for penetration testing because it can uncover many issues during design, but different security controls identify different classes of problems.
+###END
+
+### Q17
+LEVEL: junior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: theory
+QUESTION: Which statement correctly describes the fundamental difference between SAST and DAST?
+A) SAST only tests production systems
+B) DAST only checks dependency versions
+C) SAST statically analyzes source code or build artefacts, while DAST tests a running application
+D) SAST and DAST perform exactly the same testing
+ANSWER: C
+EXPLANATION: SAST uses static analysis of source code or related artefacts to identify potential security issues, while DAST interacts with a running application to test issues such as input handling and configuration behavior. The two approaches complement each other, and neither detects every type of vulnerability. It is tempting to treat them as equivalent because both may appear as automated security testing in a CI/CD pipeline, but they operate from different observation points.
+###END
+
+### Q18
+LEVEL: junior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: theory
+QUESTION: A web application wants users to authenticate with an external Identity Provider and wants to reliably receive information about the user's identity. Which technology directly addresses this requirement?
+A) CSRF
+B) OpenID Connect
+C) CORS
+D) SFTP
+ANSWER: B
+EXPLANATION: OpenID Connect is an identity protocol built on top of OAuth 2.0 that standardizes how information about an authenticated user's identity is provided, including through an ID token. OAuth 2.0 itself is primarily an authorization framework, not a complete authentication protocol. It is tempting to call OAuth 2.0 an authentication protocol because it frequently appears in login flows together with OpenID Connect.
+###END
+
+### Q19
+LEVEL: junior
+TOPIC: Authentication & password storage
+TYPE: output
+QUESTION: An application uses Argon2id for password verification. A user chooses the same password twice, but the two stored hashes are different. Why can this be completely correct?
+A) One of the passwords must be incorrect
+B) Argon2id is non-deterministic and cannot be used for passwords
+C) The server randomly modifies the password
+D) Different unique salts can cause the same password to produce different hash values
+ANSWER: D
+EXPLANATION: Password hashing should use a unique random salt for each password. As a result, the same password produces different hash values when different salts are used. During verification, the algorithm uses the stored salt and parameters to determine whether the supplied password matches. It is tempting to assume that different hashes mean different passwords because traditional deterministic hashing leads to that intuition, but salted password hashing is intentionally different.
+###END
+
+### Q20
+LEVEL: junior
+TOPIC: Sessions & JWT
+TYPE: edgecase
+QUESTION: A session cookie is set with the following attributes:
+CODE:
+Set-Cookie: session=abc123; Secure; HttpOnly; SameSite=Lax
+ENDCODE
+Which statement is correct?
+A) `Secure` means the cookie can only be sent over HTTPS, while `HttpOnly` prevents direct access to it from JavaScript
+B) `HttpOnly` means the cookie can only be used on localhost
+C) `SameSite=Lax` automatically blocks every cross-site navigation and every CSRF scenario
+D) The cookie value is encrypted, so it remains secure even if it is stolen
+ANSWER: A
+EXPLANATION: The `Secure` attribute requires the cookie to be sent over HTTPS, while `HttpOnly` prevents normal client-side JavaScript from reading the cookie through APIs such as `document.cookie`. `SameSite=Lax` is a useful CSRF mitigation, but it is not universal protection against every cross-site situation. The cookie value is not automatically encrypted by these attributes. It is tempting to treat a cookie as encrypted data because it is transmitted over HTTPS, but cookie attributes and transport encryption are separate security properties.
+###END
+
+### Q21
+LEVEL: junior
+TOPIC: XSS
+TYPE: debug
+QUESTION: A developer makes the following change:
+CODE:
+const message = userInput;
+document.getElementById("message").textContent = message;
+ENDCODE
+Why is this safer than the previous `innerHTML` approach when the goal is to display plain text?
+A) Because `textContent` automatically encrypts the input
+B) Because `textContent` treats the string as text rather than interpreting it as HTML markup
+C) Because `textContent` blocks all SQL injection
+D) Because `textContent` automatically checks user authorization
+ANSWER: B
+EXPLANATION: `textContent` inserts the supplied value as text content in the DOM, so a string such as `<script>` or `<img>` does not automatically become an HTML element. This is an appropriate approach when the application genuinely needs to display plain text. It does not protect against SQL injection, authorization issues, or other server-side problems. It is tempting to expect it to generally "sanitize" input because it is very useful against XSS in this context, but it only addresses the specific DOM sink and parsing context.
+###END
+
+### Q22
+LEVEL: junior
+TOPIC: Injection
+TYPE: output
+QUESTION: A Python application executes the following code:
+CODE:
+username = request.args["username"]
+query = "SELECT id FROM users WHERE username = '" + username + "'"
+ENDCODE
+If the `username` value is `admin' --`, why is this code dangerous?
+A) Because Python automatically deletes the database
+B) Because HTTP GET requests cannot be used with database queries
+C) Because the user input can modify the SQL structure, for example by causing the remainder of the query to be treated as a comment
+D) Because SQL automatically converts every apostrophe into a filename
+ANSWER: C
+EXPLANATION: Because of string concatenation, the user-controlled value becomes part of the SQL syntax. `admin' --` can terminate the string literal, and `--` can comment out the remainder of the query depending on the SQL dialect and its whitespace rules. The correct solution is to use a parameterized query. It is tempting to blame HTTP GET because the input comes from a URL parameter, but the root cause is SQL string concatenation, not the HTTP method.
+###END
+
+### Q23
+LEVEL: junior
+TOPIC: CORS
+TYPE: trap
+QUESTION: Which statement about CORS is correct?
+A) CORS automatically prevents all server-side authorization failures
+B) CORS only works when the server and client run on the same machine
+C) CORS is an alternative to TLS
+D) CORS primarily controls whether a script running in a browser can read a cross-origin response
+ANSWER: D
+EXPLANATION: CORS is a mechanism enforced by browsers that determines whether a script running from one origin can access an HTTP response from another origin. It does not replace server-side authorization, TLS, or authentication. Non-browser clients commonly do not enforce CORS, so server-side access control must not depend on it. It is tempting to treat CORS as an authorization mechanism because it talks about allowed and blocked origins, but it is fundamentally a browser-enforcement mechanism.
+###END
+
+### Q24
+LEVEL: junior
+TOPIC: Input validation & deserialization
+TYPE: behavior
+QUESTION: A Java API accepts a JSON object and directly deserializes it into a domain object. The client sends:
+CODE:
+{
+  "username": "alice",
+  "isAdmin": true
+}
+ENDCODE
+In the domain object, the `isAdmin` field should normally only be modifiable by an administrator. What is the security issue?
+A) JSON does not support boolean values by itself
+B) A client-controlled field can lead to privilege escalation if the server blindly binds the input to the domain object
+C) A boolean value always causes SQL injection
+D) A JSON body prevents HTTPS from being used
+ANSWER: B
+EXPLANATION: If the client can directly set domain fields that it is not authorized to modify, a mass-assignment or over-posting authorization issue can occur. A separate request DTO containing only client-modifiable fields is often appropriate, along with server-side authorization checks. It is tempting to bind every JSON field directly to a domain object because this is convenient and reduces boilerplate, but it can also cross an important security boundary.
+###END
+
+### Q25
+LEVEL: junior
+TOPIC: Cryptography & TLS
+TYPE: production
+QUESTION: A production API uses TLS, but the server also allows old, insecure TLS versions and weak cipher suites. What is the correct conclusion?
+A) The word HTTPS alone guarantees modern cryptographic security
+B) TLS configuration never affects the security of the connection
+C) TLS versions, cipher suites, and certificate management must be configured appropriately; using TLS alone is not sufficient
+D) TLS is purely a performance optimization concern
+ANSWER: C
+EXPLANATION: TLS security does not follow merely from the fact that a connection is called HTTPS. The server should use supported and appropriately configured TLS versions, strong cryptographic algorithms, a valid certificate chain, and secure key management. Outdated protocols or weak cipher suites can increase the attack surface. It is tempting to treat HTTPS as a complete security guarantee because the browser's lock icon creates that impression, but actual security also depends on the TLS configuration.
+###END
+
+### Q26
+LEVEL: junior
+TOPIC: Injection
+TYPE: debug
+QUESTION: In a Java application, the developer switches to using a PreparedStatement:
+CODE:
+String sql = "SELECT id FROM users WHERE username = ?";
+PreparedStatement ps = connection.prepareStatement(sql);
+ps.setString(1, username);
+ResultSet rs = ps.executeQuery();
+ENDCODE
+Why does this reduce the risk of SQL injection?
+A) Because `setString` automatically removes all special characters
+B) Because the database treats the parameter value as data separate from the query structure
+C) Because PreparedStatement encrypts the SQL query
+D) Because only administrators can use it
+ANSWER: B
+EXPLANATION: With a parameterized query, the SQL structure is defined in advance, while the user-provided value is passed separately as a parameter. This prevents the input from simply becoming SQL syntax. `setString` is not a general-purpose character-removal mechanism, and PreparedStatement does not provide protection by encrypting the SQL. It is tempting to think that `setString` removes special characters because it processes the input and makes the query safer, but the key security property is the separation of code and data.
+###END
+
+### Q27
+LEVEL: junior
+TOPIC: XSS
+TYPE: trap
+QUESTION: A developer uses the following approach to protect against XSS:
+CODE:
+const safe = userInput.replace("<", "").replace(">", "");
+element.innerHTML = safe;
+ENDCODE
+Why should this not be considered a reliable general-purpose XSS defense?
+A) Because string `replace` does not safely handle all HTML/DOM contexts
+B) Because `innerHTML` is always safe
+C) Because `<` and `>` can never be removed
+D) Because XSS only exists in server-side applications
+ANSWER: A
+EXPLANATION: XSS protection is context-dependent, and ad hoc character replacement does not reliably handle all possibilities in HTML, attribute, URL, or JavaScript contexts. If plain text needs to be displayed, `textContent` is a more appropriate sink. If actual HTML needs to be allowed, targeted and secure HTML sanitization is required. It is tempting to remove a few characters considered dangerous because that can stop simple payloads, but XSS is not reducible to a single pair of characters.
+###END
+
+### Q28
+LEVEL: junior
+TOPIC: CSRF
+TYPE: scenario
+QUESTION: An application's session cookie uses the `SameSite=Strict` setting. What does this mean from a CSRF perspective?
+A) The cookie is omitted from every cross-origin and same-origin request
+B) The cookie can only be sent over HTTP
+C) The browser strictly restricts sending the cookie in cross-site contexts
+D) The server no longer needs authorization checks
+ANSWER: C
+EXPLANATION: `SameSite=Strict` strongly restricts when the browser sends the cookie in cross-site contexts, reducing the risk of classic cookie-based CSRF attacks. However, it does not replace authorization and does not eliminate the application's other attack surfaces. It is tempting to interpret it as blocking every cross-origin request because the Strict setting sounds extremely restrictive, but SameSite must be understood in terms of the browser's cookie-sending rules.
+###END
+
+### Q29
+LEVEL: junior
+TOPIC: Authentication & password storage
+TYPE: edgecase
+QUESTION: A user has forgotten their password, so the system sends a "reset link" by email. Which approach is the most secure?
+A) Sending the old password by email
+B) Sending a long, random, single-use, time-limited reset token
+C) Using a short, six-digit, permanent admin PIN
+D) Base64-encoding the user's password in the URL
+ANSWER: B
+EXPLANATION: Password reset flows should use a high-entropy, random, single-use, short-lived token. Possession of the token temporarily authorizes continuation of the reset process, so its exposure should be minimized. Sending the old password would imply that it is stored in a reversible form, while a permanent PIN can be susceptible to guessing attacks. A short PIN is tempting because it is convenient for users, but it may have insufficient entropy for a web-based reset flow.
+###END
+
+### Q30
+LEVEL: junior
+TOPIC: Sessions & JWT
+TYPE: behavior
+QUESTION: In a server-side session-based application, a user successfully logs in. Why is it advisable to regenerate the session identifier after login?
+A) Because regenerating the session ID makes the database faster
+B) Because the cookie automatically becomes encrypted
+C) Because the user's password becomes stronger
+D) Because it reduces the risk of session fixation
+ANSWER: D
+EXPLANATION: In a session fixation attack, an attacker attempts to get the victim to use a session identifier known to the attacker and then reuse that same session after the victim logs in. If the server generates a new session identifier during authentication, the previously known identifier cannot be used for the authenticated session. It is tempting to expect the session cookie to become encrypted as a result because the session ID is sensitive data, but the key protection here is replacing the identifier.
+###END
+
+### Q31
+LEVEL: junior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: scenario
+QUESTION: An SPA uses the OAuth 2.0 authorization code flow with PKCE. What is one of the primary purposes of PKCE?
+A) Replacing TLS between the browser and the API
+B) Reducing the risk that a stolen authorization code can be used by itself to obtain a token
+C) Storing the user's password in the access token
+D) Automatically disabling the CORS policy
+ANSWER: B
+EXPLANATION: With PKCE, the client creates a `code_verifier`, derives a `code_challenge` from it, and then proves possession of the verifier during the token request. This means an intercepted authorization code alone is not sufficient to obtain the token. PKCE does not replace TLS and is not a password-storage mechanism. It is tempting to think of PKCE as an "encrypted authorization code" because an additional secret value is associated with the flow, but the mechanism actually strengthens the binding between the authorization code and the client that initiated the flow.
+###END
+
+### Q32
+LEVEL: junior
+TOPIC: Authorization & access control
+TYPE: production
+QUESTION: An `/api/orders/{id}` endpoint is accessible to authenticated users. The backend only checks that the request contains a valid access token and then loads the specified order. What is the most important missing control?
+A) The server must verify that the authenticated user is authorized to access the specified order
+B) The server must verify that the order ID is an even number
+C) The server must verify that the access token is a JWT
+D) The server must verify that the client is a mobile application
+ANSWER: A
+EXPLANATION: Authentication only establishes who the user or principal is; it does not prove that the user is authorized to access the specified order. Object-level authorization must be enforced on the server. This is especially important for endpoints where the client supplies an object identifier. It is tempting to consider a valid access token sufficient because it is a strong authentication credential, but authentication and authorization are separate concepts.
+###END
+
+### Q33
+LEVEL: junior
+TOPIC: Cryptography & TLS
+TYPE: theory
+QUESTION: Why should you generally avoid creating a custom cryptographic algorithm or protocol for a web application?
+A) Because cryptographic primitives are always too slow
+B) Because TLS prevents all application-level encryption
+C) Because designing and proving the security of custom algorithms is difficult, so established standards and libraries should be used
+D) Because encryption can only be used for passwords
+ANSWER: C
+EXPLANATION: Modern cryptography is not just about choosing an algorithm; it also involves key management, nonces, secure randomness, authenticated encryption, protocol design, and error handling. Using established primitives and audited libraries significantly reduces the risk of implementation and design mistakes. It is tempting to create a custom algorithm because it may seem simpler to tailor it to a specific business problem, but cryptographic security is difficult to evaluate intuitively.
+###END
+
+### Q34
+LEVEL: junior
+TOPIC: Security headers & CSP
+TYPE: behavior
+QUESTION: A web application sends the following header:
+CODE:
+Content-Security-Policy: default-src 'self'; script-src 'self'
+ENDCODE
+What does the `script-src` directive mean?
+A) All inline JavaScript and all external scripts are allowed
+B) Scripts from the `self` source are allowed, while inline scripts are not allowed by default
+C) Only inline JavaScript is allowed
+D) Server-side JavaScript execution is completely disabled
+ANSWER: B
+EXPLANATION: `script-src 'self'` means that script resources from the document's own origin are allowed. Inline scripts and inline event handlers are not allowed by default unless another CSP mechanism, such as a nonce or hash, permits them. CSP applies to resources executed by the browser, not to server-side JavaScript execution. It is tempting to consider every script associated with the site's own origin allowed because the origin itself appears trusted, but inline code is governed separately.
+###END
+
+### Q35
+LEVEL: junior
+TOPIC: CORS
+TYPE: debug
+QUESTION: An API returns the following response:
+CODE:
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+ENDCODE
+What is the problem with this combination for credentialed CORS requests initiated from a browser?
+A) `*` always means the same thing as the requesting client's exact origin
+B) Credentials automatically disable HTTPS
+C) The wildcard is only invalid for POST requests
+D) For credentialed CORS requests, the `*` wildcard cannot be used as the allowed origin
+ANSWER: D
+EXPLANATION: For credentialed CORS requests, the server cannot use the `*` wildcard as the value of `Access-Control-Allow-Origin`. A specific origin must be used, together with an appropriate `Access-Control-Allow-Credentials` setting. Because of this invalid combination, the browser will not make the response available to the JavaScript code. It is tempting to use a wildcard because it appears to be a simple "allow every origin" configuration, but browsers apply stricter rules when credentials are involved.
+###END
+
+### Q36
+LEVEL: junior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: The following appears during a Docker image build:
+CODE:
+ARG API_KEY
+ENV API_KEY=$API_KEY
+ENDCODE
+Why can this be problematic for managing a production secret?
+A) Because the secret may appear in image or build metadata layers or in runtime locations where it should not be exposed
+B) Because `ENV` variables are never available inside the container
+C) Because Docker does not support string variables
+D) Because API keys can only be stored in a database
+ANSWER: A
+EXPLANATION: Using Docker build arguments and image layers for sensitive values is not appropriate for secrets because the secret may persist in build artefacts or metadata, while an `ENV` variable is also accessible in the runtime environment. In production, a dedicated secrets-management solution or appropriate runtime secret injection should be preferred. It is tempting to use Docker `ARG` and `ENV` because they are simple and easy to automate as configuration mechanisms, but not every configuration value is a secret.
+###END
+
+### Q37
+LEVEL: junior
+TOPIC: Input validation & deserialization
+TYPE: edgecase
+QUESTION: An API expects the `Content-Type: application/json` header, but the server decides how to process the body solely based on the header supplied by the client. Why is this insufficient from a security perspective?
+A) Because TLS automatically removes the Content-Type header
+B) Because client-supplied HTTP headers cannot be treated as inherently trustworthy security evidence
+C) Because JSON bodies can only be sent with GET requests
+D) Because Content-Type can only be used for images
+ANSWER: B
+EXPLANATION: An HTTP client can modify the headers it sends, so the server should not treat them alone as a trusted security signal. The server must also properly handle the actual body parsing, size, structure, and allowed content types. TLS protects the network connection but does not guarantee that data sent by an authenticated client is valid from a business or structural perspective. It is tempting to treat the Content-Type header as trustworthy because frameworks often use it to select a deserialization mechanism, but the header itself is client-controlled input.
+###END
+
+### Q38
+LEVEL: junior
+TOPIC: SSRF
+TYPE: scenario
+QUESTION: A URL-fetching service is supposed to retrieve data only from the `https://example.com/...` domain. The developer performs this check:
+CODE:
+if (url.startsWith("https://example.com")) {
+    fetch(url);
+}
+ENDCODE
+Why is this check insufficient?
+A) Because `startsWith` is too slow
+B) Because HTTPS URLs cannot be fetched programmatically
+C) Because a URL such as `https://example.com.attacker.com/...` can also pass the check
+D) Because URLs always consist of IP addresses
+ANSWER: C
+EXPLANATION: A string-prefix check does not validate the actual host component of the URL. For example, `https://example.com.attacker.com` starts with the allowed prefix as a string, but its actual host is `example.com.attacker.com`. SSRF protection should use structured URL parsing, exact host and scheme validation, and, where appropriate, network egress restrictions. It is tempting to use a prefix check because it is simple and readable, but URL semantics cannot safely be replaced with a basic string operation.
+###END
+
+### Q39
+LEVEL: junior
+TOPIC: Supply chain security
+TYPE: production
+QUESTION: A dependency scanner reports a critical vulnerability in a library used directly by the application. The developer says, "There is no exploit because we don't use the code." What is the best next step?
+A) Automatically ignore the finding
+B) Delete the entire application
+C) Analyze the affected version, component, and actual usage context, then apply an appropriate upgrade or mitigation
+D) Remove all dependencies
+ANSWER: C
+EXPLANATION: To assess the actual risk of a vulnerability, you need to understand which component and version are affected, how the vulnerable functionality is reachable, and whether the application actually exercises it. The finding should not be dismissed automatically; an upgrade or documented mitigation may still be necessary. It is tempting to immediately classify the finding as a false positive because a particular function is not directly visible in the application's own code, but transitive usage or runtime behavior can also matter.
+###END
+
+### Q40
+LEVEL: junior
+TOPIC: Logging & incident response
+TYPE: scenario
+QUESTION: A production application receives many failed login attempts from the same IP address within a short period. Which logging approach best supports subsequent incident response?
+A) Store only the string "login failed" for every attempt
+B) Log all user passwords as well
+C) Create only one aggregated log entry when the application restarts
+D) Record a structured event with a timestamp, event type, relevant user/account identifier, request/correlation ID, and appropriate network context
+ANSWER: D
+EXPLANATION: Structured logs with sufficient context make it possible to correlate attack patterns and reconstruct events over time. Sensitive data such as passwords or session tokens should be avoided. Logs should also be protected with appropriate access controls and retention policies. It is tempting to log only a simple error message because that minimizes stored data, but the lack of context can severely limit investigation during an incident.
+###END
+
+### Q41
+LEVEL: junior
+TOPIC: Threat modeling
+TYPE: scenario
+QUESTION: An application has a public API gateway that forwards requests to an internal admin service. During threat modeling, which question is most important?
+A) What color is the admin service logo?
+B) What trust boundary exists between the gateway and the admin service, and what authorization checks are performed across that boundary?
+C) Which frontend framework version is used by the admin service UI?
+D) Which font is used in the gateway documentation?
+ANSWER: B
+EXPLANATION: The trust boundary between a public and internal component is a critical point because the internal service should not necessarily consider requests from the gateway automatically trustworthy. The caller's identity and authorization should be appropriately validated across that boundary. It is tempting to treat the gateway as the only security control because it is the only public component, but internal services may also need their own defensive controls.
+###END
+
+### Q42
+LEVEL: junior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: output
+QUESTION: A SAST tool identifies the following code:
+CODE:
+String query = "SELECT * FROM users WHERE id = " + request.getParameter("id");
+ENDCODE
+What finding is most likely?
+A) Potential SQL injection
+B) Definite memory leak
+C) Definite CSRF
+D) TLS certificate expiration
+ANSWER: A
+EXPLANATION: User-controlled input is directly concatenated into an SQL string, so a static analysis tool can typically identify this as an injection sink. Actual exploitability can depend on the surrounding code and query execution, but the pattern itself is a strong indicator. The appropriate fix is to use a parameterized query. It is tempting to think about CSRF or TLS issues because those are also common web security topics, but the code directly shows an SQL injection pattern.
+###END
+
+### Q43
+LEVEL: junior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: edgecase
+QUESTION: An OpenID Connect client receives an ID token. Why must it validate, among other things, the `iss` and `aud` claim values?
+A) Because they can be used to recover the user's password
+B) Because `iss` and `aud` are only used for UI display
+C) Because they help verify that the token was issued by the expected issuer and is intended for the correct client
+D) Because they automatically revoke the token
+ANSWER: C
+EXPLANATION: `iss` identifies the issuer of the identity token, while `aud` identifies its intended audience. The client must verify that the token comes from a trusted issuer and is intended for that client, together with the other protocol-required validations. These claims are not password-recovery or token-revocation mechanisms. It is tempting to verify only the signature because it proves the token's cryptographic authenticity, but a correctly signed token issued for a different purpose or client is not necessarily valid for the current client.
+###END
+
+### Q44
+LEVEL: junior
+TOPIC: Authorization & access control
+TYPE: trap
+QUESTION: In an application, the frontend hides the "Admin" button from non-admin users. However, the backend endpoint does not check whether the caller has admin privileges. What is the problem?
+A) The frontend must always execute server-side Java code
+B) The frontend is not a security boundary; the backend must also enforce authorization
+C) Hiding the admin button automatically provides authorization
+D) The browser automatically restores every hidden button
+ANSWER: B
+EXPLANATION: Frontend code can be controlled or bypassed by the user, so hiding a UI element does not provide real access control. The backend must enforce authorization for every protected operation. It is tempting to consider the frontend control sufficient because the button genuinely disappears in the normal UI, but the endpoint can still be called directly.
+###END
+
+### Q45
+LEVEL: junior
+TOPIC: Security headers & CSP
+TYPE: theory
+QUESTION: What is the primary purpose of the `Strict-Transport-Security` HTTP response header?
+A) To tell the browser to access the website only over HTTPS from that point onward
+B) To automatically block all JavaScript code
+C) To make cookies HttpOnly
+D) To automatically eliminate SQL injection
+ANSWER: A
+EXPLANATION: HSTS instructs the browser to access the specified host over HTTPS for the duration of the policy, reducing the risk of certain downgrade and HTTP interception scenarios. It does not automatically modify cookie attributes and does not directly protect against SQL injection or XSS. It is tempting to view HSTS as a general HTTPS security mechanism because it is associated with enforcing HTTPS, but the header controls a specific browser policy.
+###END
+
+### Q46
+LEVEL: junior
+TOPIC: Input validation & deserialization
+TYPE: debug
+QUESTION: A Java application deserializes a JSON request directly into a `User` domain object that contains several internal state fields. Which solution most effectively reduces the risk of over-posting?
+A) Increasing the number of JSON fields
+B) Accepting the complete JSON object and automatically binding every field
+C) Using a separate request DTO containing only client-modifiable fields, followed by controlled mapping to the domain object
+D) Base64-encoding the JSON
+ANSWER: C
+EXPLANATION: A separate request DTO explicitly defines which fields the client is allowed to modify, preventing automatic access to internal domain state. This reduces the risk of mass-assignment and over-posting issues. Base64 encoding does not provide an authorization control. It is tempting to use direct binding because it requires less boilerplate, but coupling the domain model directly to client-controlled input can cross an important security boundary.
+###END
+
+### Q47
+LEVEL: junior
+TOPIC: SSRF
+TYPE: edgecase
+QUESTION: An SSRF defense blocks the `127.0.0.1` address, but the application also accepts DNS names. Why may this be insufficient on its own?
+A) Because DNS can only be used for email
+B) Because every domain automatically points to the public internet
+C) Because loopback addresses can never be resolved through DNS
+D) Because resolving a domain can result in a connection to an IP address in a blocked internal or loopback range
+ANSWER: D
+EXPLANATION: If the application validates only the input string and not the actual network destination, an attacker may use DNS resolution or DNS changes to direct the request to an internal address. SSRF defenses therefore need to consider hostname validation, DNS resolution, and potentially the actual connection destination. Network-level egress controls can provide an additional layer of defense. It is tempting to block only the `127.0.0.1` string because it is the best-known loopback address, but a server can reach the same internal network ranges through other address forms and resolution mechanisms.
+###END
+
+### Q48
+LEVEL: junior
+TOPIC: Supply chain security
+TYPE: production
+QUESTION: In an npm project, why is the lockfile primarily important from a security perspective?
+A) Because it automatically removes all vulnerabilities
+B) Because it helps reproducibly pin the concrete versions and resolved packages in the dependency tree
+C) Because it encrypts package source code
+D) Because it automatically replaces every dependency with custom code
+ANSWER: B
+EXPLANATION: A lockfile records the concrete dependency tree resolution, reducing the chance that builds and deployments will resolve different package versions over time within the same version ranges. This supports reproducibility and supply chain control, but it does not fix vulnerabilities by itself. It is tempting to treat a lockfile as an automatic security patch because it pins specific versions, but a pinned version can itself be vulnerable.
+###END
+
+### Q49
+LEVEL: junior
+TOPIC: Logging & incident response
+TYPE: scenario
+QUESTION: An attacker attempts to log in unsuccessfully using multiple user accounts. The security team wants to detect a password-spraying pattern. Which logging data is most useful for this?
+A) The timestamp, account identifier, and relevant client network information for each attempt, with appropriate correlation
+B) Only the application version
+C) Only the number of successful logins per month
+D) The users' plaintext passwords
+ANSWER: A
+EXPLANATION: Detecting password spraying requires correlating multiple failed attempts by time, account, source, and other relevant context. This requires structured logs and appropriate correlation. Plaintext passwords should never be logged for this purpose. It is tempting to look only at the total number of failed logins because it provides a simple metric, but that does not reveal how the attempts are distributed across accounts and sources.
+###END
+
+### Q50
+LEVEL: junior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: production
+QUESTION: A team runs SAST on every pull request and also uses DAST before production releases. A security engineer says that penetration testing is therefore no longer necessary. Why is this statement incorrect?
+A) Because SAST and DAST cannot detect any security problems
+B) Because penetration testing can only be used for compliance purposes
+C) Because penetration testing performs exactly the same tests, only more slowly
+D) Because pentesting can use manual, context-aware testing to uncover complex attack chains and business-logic flaws that automated tools may not identify
+ANSWER: D
+EXPLANATION: SAST and DAST are valuable automated controls, but they observe different classes of problems and have limited ability to understand application business logic. A well-executed penetration test can use manual exploration, multi-step attack chains, and analysis of business processes to identify issues that automated tools may miss. It is tempting to consider pentesting unnecessary because two security-scanning layers already exist in the pipeline, but different testing methods have different blind spots.
+###END
+
+### Q51
+LEVEL: junior
+TOPIC: Injection
+TYPE: output
+QUESTION: An application constructs the search condition as follows. What can result from appropriately manipulating the value of `keyword`?
+CODE:
+String sql = "SELECT * FROM products WHERE name LIKE '%" + keyword + "%'";
+ENDCODE
+A) User input can modify the structure of the SQL query
+B) The `LIKE` operator automatically parameterizes the query
+C) String concatenation can only cause performance problems
+D) The query would only be vulnerable if the input came from a POST request
+ANSWER: A
+EXPLANATION: User input is inserted directly into the SQL string, so appropriately crafted input can influence the SQL syntax. `LIKE` does not automatically provide parameterization, and the injection risk does not depend on whether the data comes from a GET or POST request. The correct solution is to use a parameterized query. It is tempting to consider `LIKE` safe because it is used for searching, but the way the query itself is constructed still determines the injection risk.
+###END
+
+### Q52
+LEVEL: junior
+TOPIC: XSS
+TYPE: behavior
+QUESTION: An application renders a user comment as follows:
+CODE:
+element.innerHTML = `<p>${comment}</p>`;
+ENDCODE
+What is the most appropriate approach if the comment should contain only plain text?
+A) Base64-encode the entire HTML document
+B) Insert the comment into an appropriate element using `textContent`
+C) URL-encode every character in the comment and then use `innerHTML`
+D) Check the user's IP address before rendering
+ANSWER: B
+EXPLANATION: If the comment only needs to display text, `textContent` prevents the input from being interpreted as HTML markup. URL encoding is not a general HTML/XSS defense, and Base64 is not a secure HTML rendering mechanism. The user's IP address is irrelevant to output encoding. It is tempting to use encoding as a general solution because it transforms certain special characters, but the appropriate defense always depends on the output context.
+###END
+
+### Q53
+LEVEL: junior
+TOPIC: CSRF
+TYPE: edgecase
+QUESTION: An application uses cookie-based authentication and requires a CSRF token for every state-changing POST request. Why must the CSRF token be difficult for an attacker to obtain?
+A) Because the token size directly determines HTTP performance
+B) Because the CSRF token must be identical for every user
+C) Because if an attacker obtains the victim's valid token, the cookie-based CSRF protection may be bypassed
+D) Because the token encrypts the session cookie
+ANSWER: C
+EXPLANATION: One purpose of a CSRF token is to require a value that an attacker-controlled site cannot know and that the server validates for state-changing requests. If an attacker can obtain the victim's valid token, that protection may lose its effectiveness. The token is not used to encrypt the session cookie. It is tempting to treat a CSRF token as just another form field because technically it is only a string, but its security value comes from its unpredictability and appropriate binding.
+###END
+
+### Q54
+LEVEL: junior
+TOPIC: Authentication & password storage
+TYPE: production
+QUESTION: A login endpoint immediately responds to every failed login with either "The user does not exist" or "Incorrect password." What security problem can this create?
+A) The database will always become slower
+B) An attacker can discover which user accounts exist
+C) The TLS connection will terminate
+D) The password hash will automatically become reversible
+ANSWER: B
+EXPLANATION: Different error messages can enable username or email enumeration, allowing an attacker to first identify valid accounts. It is generally preferable to return similar externally visible authentication errors, while detailed information can be recorded in appropriately protected internal logs. This does not mean that every authentication failure must be handled identically internally. It is tempting to provide detailed errors because they seem more helpful to users, but they can reveal sensitive information to attackers.
+###END
+
+### Q55
+LEVEL: junior
+TOPIC: Sessions & JWT
+TYPE: output
+QUESTION: A JWT payload contains:
+CODE:
+{
+  "sub": "123",
+  "role": "user"
+}
+ENDCODE
+A developer changes the `role` value to `admin` in the browser and sends the modified token back. What determines whether the server accepts it?
+A) The browser URL
+B) The length of the JWT
+C) Whether the token payload is readable
+D) Proper validation of the token's integrity, such as a valid digital signature or MAC
+ANSWER: D
+EXPLANATION: A JWT payload can be modified because it is typically only Base64URL-encoded. The server must validate the token's cryptographic integrity as well as the algorithm, key, and other relevant token properties. A modified payload without a valid signature cannot be trusted. It is tempting to treat the payload as a trusted data source because it looks like structured JSON, but trust comes from successful cryptographic validation.
+###END
+
+### Q56
+LEVEL: junior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: theory
+QUESTION: What is the typical difference between the role of an OAuth 2.0 access token and an OpenID Connect ID token?
+A) An access token is typically an authorization credential used to access resources, while an ID token carries information related to user authentication
+B) An ID token is used exclusively to encrypt database connections
+C) An access token always contains the user's password
+D) An OAuth 2.0 access token and an OIDC ID token always have exactly the same purpose
+ANSWER: A
+EXPLANATION: An OAuth 2.0 access token is typically an authorization credential used with a resource server. An OpenID Connect ID token carries information about the result of authentication and the user's identity for the client. Their roles and validation contexts therefore should not automatically be treated as interchangeable. It is tempting to consider them equivalent because they can appear together in the same login flow, but they serve different protocol purposes.
+###END
+
+### Q57
+LEVEL: junior
+TOPIC: Authorization & access control
+TYPE: debug
+QUESTION: A backend endpoint performs the following check:
+CODE:
+if (user.getRole().equals("admin")) {
+    deleteUser(targetUserId);
+}
+ENDCODE
+What is the most important security concern if the application has different authorization rules for different resources and operations?
+A) String comparison always causes SQL injection
+B) Checking the admin role means authentication is no longer necessary
+C) The authorization decision may be too simplistic and fail to consider the policy associated with the specific resource or operation
+D) The `deleteUser` method can only be called from a GET request
+ANSWER: C
+EXPLANATION: A single global role check does not necessarily model complex authorization rules correctly. The server may need to consider the specific operation, resource, user context, and applicable policy. For example, an administrator might only be allowed to access resources belonging to a particular tenant. It is tempting to solve everything with a single `admin` flag because it is simple and easy to implement, but it can grant overly broad privileges in complex systems.
+###END
+
+### Q58
+LEVEL: junior
+TOPIC: Cryptography & TLS
+TYPE: edgecase
+QUESTION: An application wants to encrypt data with AES but only cares about "encryption" and does not want integrity protection. Why is this problematic?
+A) Because AES can only be used for passwords
+B) Because an attacker may be able to modify the ciphertext without the modification necessarily being detected when appropriate integrity protection is absent
+C) Because using AES always produces plaintext
+D) Because all application-level encryption is automatically wrong when TLS is used
+ANSWER: B
+EXPLANATION: Confidentiality alone does not provide integrity or authenticity. Modern authenticated-encryption schemes such as AES-GCM, when used with correct nonce and key management, are generally preferable to encryption modes that do not provide integrity protection. The exact security properties also depend on correct key and nonce handling. It is tempting to focus only on making plaintext unreadable because that is the most visible security result, but protection against tampering is a separate requirement.
+###END
+
+### Q59
+LEVEL: junior
+TOPIC: Security headers & CSP
+TYPE: scenario
+QUESTION: A web application uses a cookie-based session. Which cookie attribute reduces the risk of client-side JavaScript directly reading the session cookie?
+A) `HttpOnly`
+B) `SameSite=None`
+C) `Domain=*`
+D) `Path=/public`
+ANSWER: A
+EXPLANATION: `HttpOnly` prevents normal client-side JavaScript from reading the session cookie through APIs such as `document.cookie`. This can reduce the ability to directly steal the session token in some XSS scenarios, but it does not prevent XSS itself. It is tempting to choose a `SameSite` setting because that is also an important cookie security attribute, but SameSite primarily controls cross-site cookie sending.
+###END
+
+### Q60
+LEVEL: junior
+TOPIC: CORS
+TYPE: behavior
+QUESTION: A frontend running from the `https://app.example.com` origin calls an API at `https://api.example.com`. The browser considers this a cross-origin request. Why?
+A) Because the two URLs use different HTTPS protocols
+B) Because the path always determines the origin
+C) Because the origin is the combination of scheme, host, and port, and the two hosts differ
+D) Because every HTTPS URL is automatically cross-origin when CORS is involved
+ANSWER: C
+EXPLANATION: A browser origin is fundamentally the combination of scheme, host, and port. Although both URLs use HTTPS and may belong to the same organization or parent domain, `app.example.com` and `api.example.com` are different hosts and therefore different origins. It is tempting to consider them same-origin because they share the `example.com` base domain, but origin comparison is more precise than that.
+###END
+
+### Q61
+LEVEL: junior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: An application runs in Kubernetes, and an API key is stored in a ConfigMap. What is the most important security consideration?
+A) ConfigMaps automatically provide strong end-to-end encryption
+B) Sensitive credentials should not be treated as ordinary configuration; an appropriate secrets-management mechanism is required
+C) ConfigMaps can only store frontend configuration
+D) Kubernetes automatically rotates every ConfigMap value
+ANSWER: B
+EXPLANATION: An API key is a credential and should not normally be treated as ordinary configuration data. In Kubernetes, an appropriate Secret mechanism or external secrets manager can be used, together with suitable access controls, encryption-at-rest configuration, and rotation. A Kubernetes Secret by itself does not necessarily provide complete encryption guarantees in every environment. It is tempting to use a ConfigMap because it is easy to make available to the application, but configuration data and secrets have different security requirements.
+###END
+
+### Q62
+LEVEL: junior
+TOPIC: Input validation & deserialization
+TYPE: trap
+QUESTION: An endpoint documents an `id` parameter as an integer. The developer therefore performs no additional validation because "the framework parses it as an integer." Why can this be insufficient?
+A) Because every integer is automatically an XSS payload
+B) Because frameworks always ignore types
+C) Because integer parsing alone does not validate authorization, range constraints, or business rules
+D) Because integer parameters can only be used in PUT requests
+ANSWER: C
+EXPLANATION: Type conversion can be a useful first validation step, but it does not determine whether the value is within an allowed range or whether the current user is authorized to access the associated resource. Business rules and authorization must be checked separately. It is tempting to treat framework parsing as complete validation because the input type already appears controlled, but security validation involves much more than type checking.
+###END
+
+### Q63
+LEVEL: junior
+TOPIC: SSRF
+TYPE: debug
+QUESTION: A service only wants to allow HTTP and HTTPS URLs. The developer uses:
+CODE:
+if (url.startsWith("http://") || url.startsWith("https://")) {
+    fetch(url);
+}
+ENDCODE
+What is the most important problem with this approach?
+A) Checking the scheme alone does not prevent requests from being sent to internal destinations over an otherwise allowed protocol
+B) `https://` URLs always cause SQL injection
+C) `http://` and `https://` strings cannot be URLs
+D) `startsWith` automatically performs a DNS lookup
+ANSWER: A
+EXPLANATION: Checking the URL scheme only tells you which protocol is used for the connection. A `http://127.0.0.1`, internal IP address, or cloud metadata endpoint can still be a valid HTTP URL. SSRF defenses must also control the destination host, IP ranges, DNS resolution, and actual network access. It is tempting to whitelist only the protocol because it is the most obvious part of the URL to validate, but the destination is what primarily determines the risk.
+###END
+
+### Q64
+LEVEL: junior
+TOPIC: Supply chain security
+TYPE: theory
+QUESTION: What does a dependency-confusion-style supply chain attack involve?
+A) Dependencies are randomly compiled for a different architecture during the build
+B) The package manager cannot distinguish between production and development dependencies
+C) The attacker always directly compromises the package registry
+D) A public package with the same or a similar name as an internal package is incorrectly resolved during the build, potentially causing malicious external code to be installed
+ANSWER: D
+EXPLANATION: In dependency confusion, the package resolution mechanism may resolve a package intended to be internal from a public registry when the configuration permits this. This can be particularly dangerous in enterprise build environments. Defenses can include registry policies, appropriate namespaces, restricting package sources, and controlling dependency resolution. It is tempting to think of the issue as requiring a compromised registry because an external package enters the build, but the attack often exploits the package resolution mechanism itself.
+###END
+
+### Q65
+LEVEL: junior
+TOPIC: Logging & incident response
+TYPE: production
+QUESTION: In a production application, every exception stack trace is returned directly to the client. Why is this a security risk?
+A) Because a stack trace always executes SQL injection
+B) Because it can reveal internal class names, file paths, configuration details, or other sensitive information
+C) Because a stack trace disables TLS
+D) Because the browser automatically grants the user admin privileges
+ANSWER: B
+EXPLANATION: A detailed stack trace can provide an attacker with information about the application's internal structure, libraries, filesystem, and configuration. In production, it is preferable to return a generic error message while recording the detailed exception in appropriately protected server-side logs. It is tempting to return the full stack trace because it is extremely useful during development and debugging, but in production it can cause information disclosure.
+###END
+
+### Q66
+LEVEL: junior
+TOPIC: Threat modeling
+TYPE: algorithm
+QUESTION: A team is performing threat modeling for a new feature. Which sequence is the most sensible starting point?
+A) Identify the assets and data, map the processes and trust boundaries, then identify threats and controls
+B) Immediately run a penetration test without understanding the system
+C) Review only the frontend HTML
+D) First code every possible attack, then draw the architecture
+ANSWER: A
+EXPLANATION: Effective threat modeling starts by understanding what needs to be protected, how data flows, and where trust boundaries exist, then uses that understanding to identify relevant threats and required controls. This allows security decisions to be incorporated during design. It is tempting to start with a penetration test because it is a tangible security activity, but testing is also more effective when the system's attack surface is understood beforehand.
+###END
+
+### Q67
+LEVEL: junior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: debug
+QUESTION: A DAST tool cannot access an endpoint in a running application because authentication is required. What is the best approach if the team wants to test the endpoint as well?
+A) Delete the endpoint
+B) Disable DAST entirely
+C) Configure authenticated scanning in the test environment using, for example, a dedicated test account and secure session/token handling
+D) Disable authentication in production
+ANSWER: C
+EXPLANATION: DAST can only test what it can access and crawl. Authenticated scanning allows a controlled test identity to be used to assess protected endpoints. Disabling authentication in production would be unacceptable from a security perspective. It is tempting to simply exclude the protected endpoint because that avoids configuration work, but doing so would create a significant blind spot in security testing.
+###END
+
+### Q68
+LEVEL: junior
+TOPIC: OWASP Top 10
+TYPE: theory
+QUESTION: A developer claims: "If the application has no SQL injection, then it is secure from an OWASP Top 10 perspective." Why is this statement incorrect?
+A) Because SQL injection does not exist in web applications
+B) Because the OWASP Top 10 is exclusively about infrastructure security
+C) Because the OWASP Top 10 contains only authentication issues
+D) Because many other application security risks exist, such as broken authorization, security misconfiguration, or vulnerable components
+ANSWER: D
+EXPLANATION: The OWASP Top 10 covers significant web application security risks across multiple categories. An application can be free of SQL injection while still carrying serious risks due to issues such as broken object-level authorization, security misconfiguration, or vulnerable dependencies. It is tempting to equate one well-known vulnerability type with application security as a whole because SQL injection is a classic and easily demonstrated example.
+###END
+
+### Q69
+LEVEL: junior
+TOPIC: Authentication & password storage
+TYPE: performance
+QUESTION: A team uses Argon2id for password hashing, but login response times have increased significantly on production servers. What is the appropriate security engineering approach?
+A) Immediately remove Argon2id and use SHA-1
+B) Disable password hashing entirely
+C) Measure and safely recalibrate the parameters for the available resources while maintaining an appropriate attack cost
+D) Store passwords in plaintext for faster logins
+ANSWER: C
+EXPLANATION: Password hashing is intentionally computationally expensive, but its parameters should be chosen so that the system provides acceptable user-facing latency while keeping offline attacks sufficiently expensive. This should be determined through measurement and controlled benchmarking, not by abandoning the algorithm entirely. It is tempting to minimize hashing cost because that immediately improves login latency, but it also makes offline password cracking cheaper.
+###END
+
+### Q70
+LEVEL: junior
+TOPIC: Sessions & JWT
+TYPE: scenario
+QUESTION: A web application uses a long-lived JWT access token and has no refresh token or other token lifecycle mechanism. What is one major risk?
+A) If the token is compromised, an attacker can use it for a long time until it expires or is otherwise invalidated
+B) The JWT automatically sends every request twice
+C) The token becomes short-lived automatically
+D) The TLS certificate expires
+ANSWER: A
+EXPLANATION: If a long-lived access token is compromised, an attacker can use it for the remainder of its validity period. The risk can be reduced through appropriate short access-token lifetimes, secure token handling, a refresh-token mechanism where appropriate, and a suitable revocation/lifecycle strategy. It is tempting to use a long expiration because it is convenient and reduces the need for reauthentication, but it also extends the exposure period of a compromised credential.
+###END
+
+### Q71
+LEVEL: junior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: trap
+QUESTION: A frontend application requests an access token directly in the browser instead of using the OAuth 2.0 authorization code flow because "there are fewer steps." Why is this problematic in modern web environments?
+A) Because access tokens can only be used by Java backends
+B) Because browsers can never establish HTTPS connections
+C) Because the token can be exposed more directly in the browser, while modern flows such as authorization code + PKCE provide stronger security properties
+D) Because OAuth 2.0 was designed exclusively for mobile applications
+ANSWER: C
+EXPLANATION: For modern public-client applications, the authorization code flow with PKCE is a standard approach that reduces certain authorization-code interception risks and provides stronger client-binding properties. Directly handling access tokens in the browser can introduce additional exposure risks. It is tempting to use a direct token flow because it appears simpler and shorter, but fewer steps do not necessarily mean a better security posture.
+###END
+
+### Q72
+LEVEL: junior
+TOPIC: Authorization & access control
+TYPE: production
+QUESTION: In a multi-tenant SaaS application, the backend checks that the user is authenticated for every request, but the database query searches only by `order_id`. What is the most important risk?
+A) The SQL query will definitely be slow
+B) A user from one tenant may access another tenant's resource if they know its identifier
+C) HTTPS will stop working
+D) The session cookie will be deleted automatically
+ANSWER: B
+EXPLANATION: In a multi-tenant environment, authentication alone does not isolate data belonging to different tenants. The query and authorization logic must ensure that users can access only resources belonging to their own tenant. Otherwise, the application may have a cross-tenant data-access or BOLA-style vulnerability. It is tempting to use only the object identifier because it uniquely identifies the record, but it does not express which tenant owns that record.
+###END
+
+### Q73
+LEVEL: junior
+TOPIC: Cryptography & TLS
+TYPE: output
+QUESTION: During a TLS connection, the client receives a warning that the server certificate is not trusted. The developer suggests simply disabling certificate validation in production. Why is this dangerous?
+A) Because all HTTP requests will become POST requests
+B) Because TLS encryption will automatically stop working
+C) Because the connection will become slower
+D) Because the client may communicate with an attacker-controlled server while believing it is communicating with the intended server
+ANSWER: D
+EXPLANATION: In addition to encryption, TLS provides server authentication when certificate and hostname validation are performed correctly. Disabling validation can allow an attacker-controlled endpoint to be accepted, creating a classic man-in-the-middle scenario. It is tempting to disable validation because this quickly removes certificate errors in development environments, but in production it removes one of TLS's fundamental security properties.
+###END
+
+### Q74
+LEVEL: junior
+TOPIC: Security headers & CSP
+TYPE: production
+QUESTION: An application introduces CSP, but the policy uses `script-src 'unsafe-inline'` everywhere. Why does this weaken CSP's protection against XSS?
+A) Because `unsafe-inline` allows inline scripts and certain inline script-like execution mechanisms
+B) Because `unsafe-inline` blocks all external scripts
+C) Because `unsafe-inline` enables CORS
+D) Because `unsafe-inline` automatically disables TLS
+ANSWER: A
+EXPLANATION: `unsafe-inline` allows inline JavaScript, which significantly reduces the ability of a strict CSP to prevent injected inline scripts from executing. Modern CSP policies can often use nonce- or hash-based script authorization for stronger control. It is tempting to enable `unsafe-inline` because it makes CSP easier to introduce into existing applications, but doing so gives up a significant part of the security protection.
+###END
+
+### Q75
+LEVEL: junior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: scenario
+QUESTION: A SAST tool flags user-controlled input written to a database through a simple helper method as SQL injection. The developer says it is definitely a false positive. What is the best security engineering approach?
+A) Automatically accept every SAST finding
+B) Immediately delete the finding from the scanner
+C) Trace the data flow from source to sink, verify the actual query-building and parameterization mechanisms, and then determine the finding's status based on the evidence
+D) Replace the entire database
+ANSWER: C
+EXPLANATION: A static-analysis finding should not be automatically treated as either a confirmed vulnerability or a false positive. The source-to-sink data flow should be examined to determine whether user-controlled data actually reaches a dangerous SQL sink and whether proper parameterization is applied. Based on that evidence, the finding can be remediated or documented as a false positive. It is tempting to dismiss the finding immediately because the helper layer hides the actual data flow, but that is precisely what needs to be verified first.
+###END
+
+### Q76
+LEVEL: medior
+TOPIC: Injection
+TYPE: debug
+QUESTION: A Java application uses the following code for searching. What is the most important fix?
+CODE:
+String sql = "SELECT id, name FROM users WHERE name = '" + name + "'";
+Statement statement = connection.createStatement();
+ResultSet rs = statement.executeQuery(sql);
+ENDCODE
+A) URL-encode the `name` value before executing the SQL.
+B) Encode the `name` value using Base64.
+C) Use a PreparedStatement and bind `name` as a parameter.
+D) Remove all apostrophes from the input value.
+ANSWER: C
+EXPLANATION: A PreparedStatement keeps the SQL structure separate from the parameter value, so the input cannot modify the query structure in the same way. URL encoding or Base64 encoding is not an SQL security mechanism, while manually removing apostrophes is error-prone and can be bypassed.
+###END
+
+### Q77
+LEVEL: medior
+TOPIC: XSS
+TYPE: behavior
+QUESTION: An SPA displays a value originating from a URL query parameter. The developer uses `textContent` instead of `innerHTML`. What happens with an input such as `<img src=x onerror=alert(1)>`?
+A) The browser interprets it as HTML but disables the event handler.
+B) The content is displayed as text, so no HTML element is created through this sink.
+C) The browser automatically removes the `onerror` attribute.
+D) The JavaScript code still executes because the query parameter is untrusted.
+ANSWER: B
+EXPLANATION: `textContent` treats the input as text, so the `<img ...>` characters are not parsed as HTML markup. Using `innerHTML` in this situation would be dangerous because it triggers HTML parsing.
+###END
+
+### Q78
+LEVEL: medior
+TOPIC: CSRF
+TYPE: edgecase
+QUESTION: An application's session cookie uses `SameSite=Lax`, and an attacker attempts to send a POST request to the application from another site. Which statement correctly describes the situation?
+A) `SameSite=Lax` automatically allows all cross-site requests.
+B) `SameSite=Lax` provides complete CSRF protection in every application environment.
+C) The cookie is always sent as long as the request uses HTTPS.
+D) `SameSite=Lax` restricts cross-site cookie sending, but the application should still implement appropriate CSRF protection and validation of state-changing operations.
+ANSWER: D
+EXPLANATION: `SameSite=Lax` significantly reduces the possibility of certain cross-site, cookie-based attacks, but it should not be considered sufficient on its own in every environment. The request types supported by the application and its authentication mechanisms must also be taken into account.
+###END
+
+### Q79
+LEVEL: medior
+TOPIC: Authentication & password storage
+TYPE: scenario
+QUESTION: A password-reset endpoint immediately responds to every request with “No account exists for the provided email address.” What security problem can this cause?
+A) It allows attackers to determine whether user accounts exist.
+B) It automatically allows the password to be changed.
+C) It prevents rate limiting from being applied.
+D) It breaks session cookie encryption.
+ANSWER: A
+EXPLANATION: Different responses allow an attacker to distinguish existing accounts from non-existent ones, leading to account enumeration. A uniform response message and appropriate rate limiting reduce this problem.
+###END
+
+### Q80
+LEVEL: medior
+TOPIC: Sessions & JWT
+TYPE: trap
+QUESTION: A backend accepts JWT access tokens and checks only the decoded payload, for example the `exp` field, without verifying the token signature. What is the most serious problem?
+A) The token may be too long.
+B) The JWT will no longer be Base64-compatible.
+C) The client will not be able to refresh the token.
+D) An attacker can modify the claims in the token, causing the application to accept a forged identity or authorization.
+ANSWER: D
+EXPLANATION: A JWT payload is Base64URL-encoded data and is not inherently a trustworthy assertion. Without verifying the signature or an appropriate MAC, client-modified claims can appear legitimate. Decoding the payload and validating its signature are two separate operations.
+###END
+
+### Q81
+LEVEL: medior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: scenario
+QUESTION: A web application uses the authorization code flow but does not validate the `state` value in the OAuth callback. Why is this a problem?
+A) The refresh token will always expire automatically.
+B) The authorization code will become shorter.
+C) The application cannot determine whether the callback belongs to the same browser flow it initiated, which can enable login CSRF-style attacks.
+D) The ID token cannot contain a `sub` claim.
+ANSWER: C
+EXPLANATION: `state` binds the authorization request to the callback, allowing the client to verify that the response belongs to a flow it initiated. Without this check, an attacker may try to inject a manipulated authorization response into another user's browser session.
+###END
+
+### Q82
+LEVEL: medior
+TOPIC: Authorization & access control
+TYPE: production
+QUESTION: In a multi-tenant application, the `/api/orders/{id}` endpoint only checks whether the user is authenticated. The order is fetched solely by its `id`. What is the correct fix?
+A) Hide the order IDs in the frontend.
+B) The backend must verify the tenant and user authorization context both when retrieving the order and when performing the operation.
+C) Replace the order IDs with larger integers.
+D) The client must create a new session for every request.
+ANSWER: B
+EXPLANATION: An object identifier by itself does not prove that the user is authorized to access the object. The server-side authorization check must also consider the tenant and the permissions required for the specific operation. Hiding or changing the ID does not provide access control.
+###END
+
+### Q83
+LEVEL: medior
+TOPIC: Cryptography & TLS
+TYPE: theory
+QUESTION: Why is it not sufficient by itself for an application to communicate over HTTPS?
+A) Because HTTPS only encrypts DNS.
+B) Because TLS does not provide server authentication.
+C) Because HTTPS protects only POST requests.
+D) Because TLS protects the communication channel, while the application still has to correctly handle authorization, input, sessions, and business logic.
+ANSWER: D
+EXPLANATION: TLS provides confidentiality and integrity for network communication and, with appropriate configuration, helps authenticate the server. It does not prevent, for example, incorrect authorization checks or application-level injection attacks.
+###END
+
+### Q84
+LEVEL: medior
+TOPIC: Security headers & CSP
+TYPE: debug
+QUESTION: An application's CSP is:
+CODE:
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'
+ENDCODE
+The developer claims that this completely prevents inline XSS. Why is this claim incorrect?
+A) `unsafe-inline` explicitly allows certain forms of inline scripts, weakening CSP's script protection.
+B) `default-src 'self'` automatically blocks all JavaScript.
+C) CSP applies only to images.
+D) `unsafe-inline` applies only to CSS.
+ANSWER: A
+EXPLANATION: `unsafe-inline` permits certain forms of inline JavaScript execution, significantly weakening the purpose of this CSP. A stronger approach is to use nonce- or hash-based script authorization where appropriate for the application.
+###END
+
+### Q85
+LEVEL: medior
+TOPIC: CORS
+TYPE: behavior
+QUESTION: An API sends:
+CODE:
+Access-Control-Allow-Origin: https://app.example.com
+ENDCODE
+The request originates from `https://admin.example.com`. The user has a valid session cookie. What happens with a cross-origin fetch initiated from a browser?
+A) The browser automatically ignores the CORS policy because the cookie is valid.
+B) The server will always respond with 401.
+C) Because of CORS, the browser does not allow JavaScript to access the response if the response does not authorize that origin.
+D) CORS automatically changes the Origin header.
+ANSWER: C
+EXPLANATION: CORS is a browser-enforced policy for cross-origin access. The server may still process the request, but the browser does not expose the response to JavaScript if the origin is not properly authorized. Having a session cookie does not replace correct CORS configuration.
+###END
+
+### Q86
+LEVEL: medior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: A production API key was accidentally committed to a Git repository and then removed from the current state of the branch. What should be the primary security action?
+A) Only update the repository README.
+B) Treat the key as compromised, revoke or rotate it, and investigate the repository history and possible usage.
+C) Make the repository private and leave the old key unchanged.
+D) Encode the key using Base64.
+ANSWER: B
+EXPLANATION: Removing a secret from the current file does not make a previously exposed secret safe. Rotating or revoking the key prevents the old credential from being used, while investigating the incident can reveal potential unauthorized usage.
+###END
+
+### Q87
+LEVEL: medior
+TOPIC: Input validation & deserialization
+TYPE: edgecase
+QUESTION: A Java API uses polymorphic JSON deserialization and instantiates different Java classes based on type information supplied by the client. What is the safer approach?
+A) Allow every class because JSON cannot contain Java code.
+B) Simply convert the client-supplied type name to lowercase.
+C) Deserialize only after Base64-decoding the input.
+D) Use an explicit, restricted type allowlist and safe DTOs, and avoid binding untrusted input to arbitrary classes.
+ANSWER: D
+EXPLANATION: Untrusted type information can be dangerous if the application allows arbitrary classes to be instantiated. An explicit allowlist and domain-specific DTOs reduce the risk of unexpected objects and dangerous gadget chains.
+###END
+
+### Q88
+LEVEL: medior
+TOPIC: SSRF
+TYPE: edgecase
+QUESTION: A server validates a URL only by checking that its hostname is not exactly `127.0.0.1`. It then fetches the URL using an HTTP client. Why is this protection insufficient?
+A) Because an HTTP client can never connect to localhost.
+B) Because SSRF exists only with HTTPS.
+C) Because the check does not necessarily protect against DNS resolution, redirects, and other addressing tricks that can cause the request to reach an internal address.
+D) Because 127.0.0.1 is always a public IP address.
+ANSWER: C
+EXPLANATION: SSRF protection cannot rely on a single hostname string comparison. The final network destination, IP address types, redirects, and the client's network path must also be controlled. A simple string-based blacklist can often be bypassed.
+###END
+
+### Q89
+LEVEL: medior
+TOPIC: Supply chain security
+TYPE: production
+QUESTION: A CI pipeline automatically updates all dependencies to the latest available version before every build. What is the main security and operational problem?
+A) Build determinism and knowledge of the exact dependency state can be lost, and a compromised or faulty new version may be introduced automatically.
+B) Dependencies cannot use version numbers.
+C) A CI pipeline can run only on a local machine.
+D) A package manager cannot handle transitive dependencies.
+ANSWER: A
+EXPLANATION: Uncontrolled automatic updates increase supply chain risk and make it harder to determine exactly which dependency versions were running in production. Controlled version updates, lockfiles, review, and appropriate automated checks make builds more reproducible and auditable.
+###END
+
+### Q90
+LEVEL: medior
+TOPIC: Logging & incident response
+TYPE: scenario
+QUESTION: A web application logs only the user-provided email address for every failed login, but does not include a timestamp, source context, or request/correlation ID. Why is investigating a credential stuffing attack difficult in this situation?
+A) Because an email address is always secret data.
+B) Because logs cannot contain text.
+C) Because a failed login by itself makes investigation impossible.
+D) Because without sufficient temporal, client, and request context, it is difficult to correlate events, identify patterns, and determine which systems are involved.
+ANSWER: D
+EXPLANATION: Incident investigation benefits from the timestamp, relevant client context, target account, and, where appropriate, a correlation identifier. These allow events to be correlated without logging sensitive authentication secrets.
+###END
+
+### Q91
+LEVEL: medior
+TOPIC: Threat modeling
+TYPE: algorithm
+QUESTION: You are starting threat modeling for a new system. Which sequence is the most appropriate?
+A) First choose the cryptographic algorithms, then draw the architecture.
+B) Identify assets and data, map data flows and trust boundaries, then identify relevant threats and controls.
+C) First list every possible attacker without understanding the system.
+D) Run a penetration test in production first.
+ANSWER: B
+EXPLANATION: Threat modeling starts with understanding the system and its trust boundaries, after which threats and controls can be identified based on that model. Selecting controls without understanding the architecture and threat model can easily result in irrelevant or incomplete protections.
+###END
+
+### Q92
+LEVEL: medior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: scenario
+QUESTION: A SAST tool reports a potential SQL injection in a repository. However, the code passes the data through an internal utility to a parameterized query builder. What is the best next step?
+A) Immediately delete the finding because SAST can be wrong.
+B) Rewrite the entire repository.
+C) Trace the complete source-to-sink data flow and verify that the input actually reaches the database layer in a parameterized form.
+D) Disable the SQL injection rule across all projects.
+ANSWER: C
+EXPLANATION: A SAST finding does not by itself prove that a vulnerability exists. Tracing the data flow from source to sink shows whether the input can actually reach the database as unsafe SQL syntax. Rejecting a false positive requires technical evidence rather than simply trusting or distrusting the tool.
+###END
+
+### Q93
+LEVEL: medior
+TOPIC: Injection
+TYPE: trap
+QUESTION: A developer uses the following approach to prevent SQL injection:
+CODE:
+String safe = input.replace("'", "''");
+String sql = "SELECT * FROM users WHERE name = '" + safe + "'";
+ENDCODE
+Why is this not the preferred general defense?
+A) Because string replacement is always faster than PreparedStatement.
+B) Because SQL cannot use string literals.
+C) Because doubling apostrophes works the same way in every SQL dialect.
+D) Because escaping is dialect- and context-dependent and can easily be implemented incorrectly, while parameterized queries structurally separate code from data.
+ANSWER: D
+EXPLANATION: Manual escaping can easily be incorrect across different databases, SQL contexts, or later code changes. Parameterized queries specifically ensure that input is treated as a value rather than as SQL syntax.
+###END
+
+### Q94
+LEVEL: medior
+TOPIC: XSS
+TYPE: production
+QUESTION: An application needs to render user-provided rich text content as HTML. What is the appropriate approach?
+A) Always render the HTML unchanged because it is the user's own content.
+B) Remove only `<script>` tags.
+C) Use a trusted HTML sanitizer with an appropriate allowlist, handling dangerous attributes, URL schemes, and structures as well.
+D) Encode the entire HTML as Base64 and decode it again in the browser.
+ANSWER: C
+EXPLANATION: With rich text, output escaping would change the intended HTML semantics, so controlled sanitization is required. Sanitization must handle more than just `<script>` elements, including dangerous event handlers and URLs.
+###END
+
+### Q95
+LEVEL: medior
+TOPIC: Authentication & password storage
+TYPE: performance
+QUESTION: An application has switched to Argon2id, but password hashing in production is so slow that it significantly increases login latency and CPU usage. What is the correct approach?
+A) Switch back to a fast hash such as SHA-256.
+B) Use the same salt for every user to improve performance.
+C) Disable password hashing and rely only on TLS.
+D) Benchmark and tune the Argon2id parameters for the production resources so that the password hashing cost remains appropriate for attacks while keeping normal login load acceptable.
+ANSWER: D
+EXPLANATION: The goal of password hashing is not maximum latency, but increasing the cost of attacks while keeping legitimate operations at an acceptable performance level. Parameters should be measured in the real environment and recalibrated over time, while each password continues to use a unique salt.
+###END
+
+### Q96
+LEVEL: medior
+TOPIC: Sessions & JWT
+TYPE: edgecase
+QUESTION: A JWT access token contains `exp`, `iss`, and `aud`, but the resource server verifies only the signature. Why is this insufficient?
+A) Because after signature verification, every claim can automatically be considered valid.
+B) Because validating `iss` and `aud` helps ensure that the token comes from the expected issuer and is intended for the correct resource, while `exp` limits its validity period.
+C) Because JWTs cannot use an `aud` claim.
+D) Because `exp` can only be interpreted by the frontend.
+ANSWER: B
+EXPLANATION: A valid signature proves that the token was created with a trusted key, but by itself does not guarantee that the token targets this resource server, comes from the expected issuer, or is still valid. Validating `iss`, `aud`, and time-based claims is therefore part of the application's security decision.
+###END
+
+### Q97
+LEVEL: medior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: production
+QUESTION: A mobile/public client uses the authorization code flow without PKCE. Why is this a problem?
+A) Without PKCE, an access token can never be short-lived.
+B) PKCE can only be used with confidential backend clients.
+C) If the authorization code is intercepted, there is no proof tied to a code verifier that prevents its unauthorized redemption.
+D) PKCE encrypts the ID token.
+ANSWER: C
+EXPLANATION: PKCE binds the code flow to a dynamically generated verifier held by the client. If the authorization code is obtained by an unauthorized party, the absence of the verifier can prevent it from being exchanged for tokens. PKCE is not used to encrypt the ID token.
+###END
+
+### Q98
+LEVEL: medior
+TOPIC: Authorization & access control
+TYPE: scenario
+QUESTION: In an application, a user is assigned the `manager` role. A manager may modify records belonging to their own team, but not all records. Which authorization model expresses this better than a simple global role check?
+A) A policy that considers both the user's role and their ownership or organizational relationship to the specific resource.
+B) A frontend-stored `isManager` boolean.
+C) A single global `isAdmin()` check.
+D) Hiding all record IDs from the client.
+ANSWER: A
+EXPLANATION: In this situation, authorization depends not only on the role but also on the user's specific relationship to the resource. A resource- or attribute-based policy can express, for example, that a manager may modify only records belonging to their own organizational unit.
+###END
+
+### Q99
+LEVEL: medior
+TOPIC: SSRF
+TYPE: scenario
+QUESTION: A URL-fetching service allows an external URL and then follows HTTP redirects. The initial URL points to a public domain, but the redirect ultimately leads to an internal network address. Why is this dangerous?
+A) Because redirects work only in browsers.
+B) Because the final destination can differ from the destination that was validated when the initial URL was checked.
+C) Because TLS always stops working when an HTTPS redirect occurs.
+D) Because a public domain can never use redirects.
+ANSWER: B
+EXPLANATION: With SSRF protection, checking only the initial URL is insufficient if the HTTP client automatically follows redirects. Every final network destination must be properly validated, or redirects must be restricted so that internal networks cannot be reached through the fetcher.
+###END
+
+### Q100
+LEVEL: medior
+TOPIC: Supply chain security
+TYPE: scenario
+QUESTION: A dependency scanner reports a critical vulnerability in a library. The project does not use this library directly; it is brought in by a transitive dependency. What is the correct first step?
+A) Immediately ignore it because the dependency is not direct.
+B) Immediately remove every dependency.
+C) Only rename the package.
+D) Examine the exact dependency tree, affected version, actual use of the vulnerable component, and available fixes or mitigations.
+ANSWER: D
+EXPLANATION: A transitive dependency can still be part of the code running in production, so being indirect does not by itself make the finding irrelevant. The actual dependency tree, version, and usage path should be examined to determine the risk and appropriate remediation. Rejecting the finding based only on the package's directness can be misleading.
+###END
+
+### Q101
+LEVEL: medior
+TOPIC: Injection
+TYPE: output
+QUESTION: What will the query be in the following Python code if `username` is `admin' OR '1'='1`?
+CODE:
+username = "admin' OR '1'='1"
+query = "SELECT id FROM users WHERE username = '" + username + "'"
+print(query)
+ENDCODE
+A) `SELECT id FROM users WHERE username = 'admin' OR '1'='1'`
+B) `SELECT id FROM users WHERE username = 'admin' OR 1=1'`
+C) `SELECT id FROM users WHERE username = 'admin'' OR ''1''=''1'`
+D) Python automatically converts the input into an SQL parameter.
+ANSWER: A
+EXPLANATION: String concatenation inserts the input into the SQL unchanged, so the `OR '1'='1'` condition appears alongside the original condition. This is a classic SQL injection pattern; the primary defense is to use a parameterized query.
+###END
+
+### Q102
+LEVEL: medior
+TOPIC: XSS
+TYPE: edgecase
+QUESTION: An application inserts a user-controlled value into an HTML attribute. The developer uses HTML body escaping but does not properly escape the attribute context. Why can this be dangerous?
+A) Because user input can never be used in attributes.
+B) Because escaping must match the output context; HTML body content and attribute contexts can require different escaping rules.
+C) Because all HTML escaping automatically generates JavaScript code.
+D) Because the browser interprets every attribute on the server side.
+ANSWER: B
+EXPLANATION: Output encoding is context-dependent. HTML text, attribute values, JavaScript, CSS, and URL contexts have different parsing rules, so a generic escaping routine is not necessarily safe in every context.
+###END
+
+### Q103
+LEVEL: medior
+TOPIC: CSRF
+TYPE: scenario
+QUESTION: An application uses cookie-based authentication. A state-changing POST endpoint does not require a CSRF token, and the session cookie is `SameSite=None; Secure`. Why is explicit CSRF protection especially important here?
+A) Because the `Secure` attribute disables HTTPS.
+B) Because `SameSite=None` prevents cross-site requests.
+C) Because the cookie works only on localhost.
+D) Because `SameSite=None` allows the cookie to be sent in cross-site contexts, so an attacker from another origin can initiate a request to which the browser automatically attaches the session cookie.
+ANSWER: D
+EXPLANATION: Cookies with `SameSite=None` can be sent in cross-site contexts, so they do not by themselves provide CSRF protection for cookie-based sessions. State-changing operations therefore require an appropriate CSRF token or another strong defense.
+###END
+
+### Q104
+LEVEL: medior
+TOPIC: Authentication & password storage
+TYPE: production
+QUESTION: A password reset token is stored in plaintext in the database. What is the problem if the database is leaked while the tokens have not yet expired?
+A) An attacker can directly use the valid tokens to reset passwords.
+B) The tokens are automatically rehashed after the leak.
+C) Session cookies become invalid.
+D) The TLS connection is terminated.
+ANSWER: A
+EXPLANATION: If a reset token acts as a bearer credential, possession of the token may be sufficient to change the password. Tokens should be protected appropriately, for example by storing only a hash, and should have a short lifetime, single-use semantics, and a revocation mechanism.
+###END
+
+### Q105
+LEVEL: medior
+TOPIC: Sessions & JWT
+TYPE: production
+QUESTION: An application uses a JWT as an access token with a lifetime of 24 hours. The security team wants to reduce the access window quickly if a token is stolen. Which approach directly helps with this?
+A) Change the Base64URL encoding of the JWT payload.
+B) Significantly reduce the access token lifetime and, when needed, renew short-lived tokens using an appropriate refresh-token mechanism.
+C) Remove the `aud` claim.
+D) Store JWTs as XML instead of JSON.
+ANSWER: B
+EXPLANATION: A short-lived access token limits how long a stolen token can remain usable. A refresh token can be managed separately, and appropriate rotation, revocation, and storage can provide a safer token lifecycle.
+###END
+
+### Q106
+LEVEL: medior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: edgecase
+QUESTION: An OIDC client receives an ID token whose `aud` claim does not contain the client's own client ID, but the signature is valid. Why should the token be rejected?
+A) Because ID tokens cannot be signed.
+B) Because `aud` can only be used in access tokens.
+C) Because a valid signature alone does not prove that the ID token was issued for the current client.
+D) Because OIDC does not use a `client_id` value.
+ANSWER: C
+EXPLANATION: The ID token must be intended for the specific OIDC client. Validating `aud` ensures that the token's intended audience matches the client; a validly signed token issued to another client cannot automatically be used in this context.
+###END
+
+### Q107
+LEVEL: medior
+TOPIC: Authorization & access control
+TYPE: debug
+QUESTION: In a REST API, the developer uses the following check when modifying a document:
+CODE:
+if (currentUser.hasRole("EDITOR")) {
+    documentService.update(documentId, request);
+}
+ENDCODE
+In the application, editors may modify only documents belonging to their own project. What is missing from the check?
+A) Requiring the user's password again before every update.
+B) Encrypting the `documentId` on the client side.
+C) Checking that the document belongs to a project or resource scope that the user is authorized to modify.
+D) Changing the HTTP method to GET.
+ANSWER: C
+EXPLANATION: A role by itself is only general authorization information. Resource-level authorization must also verify that the specific document belongs to a project or resource scope the user is allowed to manage. Hiding the identifier or relying on the frontend does not replace this server-side check.
+###END
+
+### Q108
+LEVEL: medior
+TOPIC: Cryptography & TLS
+TYPE: scenario
+QUESTION: A mobile application developer implements custom certificate validation that checks only whether the certificate's Common Name matches the hostname. Why is this insufficient?
+A) Because the Common Name is always encrypted.
+B) Because TLS does not perform hostname validation.
+C) Because certificates do not need to be validated in mobile applications.
+D) Because TLS certificate validation involves multiple factors, including the trust chain, validity, proper hostname verification, and other applicable policies.
+ANSWER: D
+EXPLANATION: Simply comparing the certificate's Common Name does not validate the complete certificate chain or its validity. The platform's standard TLS certificate and hostname validation mechanisms should be used instead of implementing incomplete custom validation.
+###END
+
+### Q109
+LEVEL: medior
+TOPIC: Security headers & CSP
+TYPE: production
+QUESTION: A web application dynamically generates inline script elements and wants to use a strong CSP without `unsafe-inline`. Which approach is suitable?
+A) Execute every script using `eval()`.
+B) Allow every script from `http://*`.
+C) Use an appropriately generated nonce in the CSP and on the allowed inline script elements.
+D) Remove the CSP entirely in production.
+ANSWER: C
+EXPLANATION: A unique, properly generated nonce allows specific authorized inline scripts to execute without generally allowing all inline scripts. The nonce must be generated and handled appropriately for each response.
+###END
+
+### Q110
+LEVEL: medior
+TOPIC: CORS
+TYPE: trap
+QUESTION: A developer configures the following:
+CODE:
+Access-Control-Allow-Origin: *
+ENDCODE
+because they want the API to be “safely usable by any client.” What is the most important problem with this reasoning?
+A) `*` applies only to POST requests.
+B) `*` by itself provides neither authentication nor authorization and does not make the API secure.
+C) `*` automatically enables cookies to be sent.
+D) `*` always disables preflight requests.
+ANSWER: B
+EXPLANATION: CORS controls whether a browser-based script can access cross-origin responses; it does not replace authentication or authorization. A wildcard therefore does not mean that access from any client is inherently trustworthy or secure.
+###END
+
+### Q111
+LEVEL: medior
+TOPIC: Secrets management
+TYPE: scenario
+QUESTION: A Kubernetes application uses a Secret to store a database password. The developer claims that using a Kubernetes Secret by itself guarantees that the database password is encrypted everywhere. Why is this inaccurate?
+A) Because a Kubernetes Secret can never contain a password.
+B) Because a Secret can only be used with Java applications.
+C) Because a Secret is always transmitted over the network as plaintext.
+D) Because handling and storing a Secret object alone does not guarantee comprehensive protection; for example, protection also depends on cluster configuration and etcd encryption-at-rest settings.
+ANSWER: D
+EXPLANATION: A Kubernetes Secret is a secret-management primitive, but comprehensive protection also requires appropriate cluster configuration and access control. In particular, etcd protection, proper RBAC, auditing, and, where appropriate, an external secrets manager are important.
+###END
+
+### Q112
+LEVEL: medior
+TOPIC: Input validation & deserialization
+TYPE: debug
+QUESTION: A REST endpoint deserializes an `amount` field into a Java `BigDecimal`, then directly subtracts this amount from the user's balance. What is missing from secure processing?
+A) Base64-encoding the input JSON.
+B) Querying the client's IP address from SQL.
+C) Renaming the JSON field.
+D) In addition to type validation, validating range, precision, sign, and business rules.
+ANSWER: D
+EXPLANATION: `BigDecimal` only ensures that the value can be processed as a numeric type. It does not prevent, for example, negative amounts, excessively large values, or unsupported decimal precision. Server-side validation must also enforce the relevant business rules.
+###END
+
+### Q113
+LEVEL: medior
+TOPIC: SSRF
+TYPE: scenario
+QUESTION: A server allows the client to specify a URL to download and returns the response content to the client. The developer allows only the `http` and `https` schemes. Why is this insufficient against SSRF?
+A) Because SSRF is possible only with the FTP scheme.
+B) Because an HTTP/HTTPS URL can still point to an internal or sensitive network destination.
+C) Because checking the scheme always disables DNS.
+D) Because HTTPS URLs cannot contain a hostname.
+ANSWER: B
+EXPLANATION: Allowing a particular URL scheme does not indicate that the destination is safe. HTTP or HTTPS can still be used to access internal IPs, localhost, cloud metadata endpoints, or other sensitive destinations, so the network destination must also be appropriately restricted.
+###END
+
+### Q114
+LEVEL: medior
+TOPIC: Supply chain security
+TYPE: theory
+QUESTION: Why is using a dependency lockfile important for building a production application?
+A) Because it can pin the concrete dependency resolution and versions, making the build more reproducible and auditable.
+B) Because a lockfile automatically removes all vulnerabilities.
+C) Because a lockfile replaces dependency scanning.
+D) Because dependencies do not need to be updated when a lockfile is used.
+ANSWER: A
+EXPLANATION: A lockfile helps make the exact dependency resolution reproducible, including transitive dependencies. It does not replace vulnerability scanning or controlled updates, but it provides an important foundation for build integrity and traceability.
+###END
+
+### Q115
+LEVEL: medior
+TOPIC: Logging & incident response
+TYPE: edgecase
+QUESTION: An application logs the `Authorization` header sent by the user on every login for debugging purposes. What is the main problem?
+A) The Authorization header is always too short.
+B) HTTP header fields cannot be logged.
+C) The header may contain a bearer token or other credential that can be compromised if it is written to logs.
+D) Logging automatically removes tokens.
+ANSWER: C
+EXPLANATION: The `Authorization` header often contains a credential that can be used directly for authentication. If it is logged, anyone with access to the logs or a compromised logging system may obtain the token. Sensitive credentials should not be logged unnecessarily, and logging rules should include appropriate redaction.
+###END
+
+### Q116
+LEVEL: medior
+TOPIC: Threat modeling
+TYPE: scenario
+QUESTION: In a system, a public API gateway forwards requests to internal admin services. Which element is especially important during threat modeling?
+A) The trust boundary between the gateway and the admin service, and the authorization checks performed across it.
+B) Documenting only the frontend colors.
+C) Sorting all SQL queries alphabetically.
+D) Deleting production logs after every deployment.
+ANSWER: A
+EXPLANATION: A trust boundary identifies where different trust levels or security contexts meet. Between a public gateway and an internal admin service, it is therefore especially important to determine which identity and authorization information must be revalidated.
+###END
+
+### Q117
+LEVEL: medior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: performance
+QUESTION: A DAST test examines only anonymous pages, while the application's most important business functions are behind authentication. What is the main problem?
+A) DAST can only detect SQL injection.
+B) The test does not cover a significant portion of the attack surface behind authentication.
+C) DAST cannot use HTTP requests.
+D) Authentication automatically prevents all vulnerabilities.
+ANSWER: B
+EXPLANATION: Without authenticated functionality, DAST cannot meaningfully test protected endpoints and workflows. In a test environment, the authenticated attack surface can also be included by using an appropriate test account and a securely managed authentication process.
+###END
+
+### Q118
+LEVEL: medior
+TOPIC: OWASP Top 10
+TYPE: scenario
+QUESTION: A developer considers an application “secure” because they found no SQL injection. Why is this conclusion incorrect?
+A) Because SQL injection occurs only in frontend applications.
+B) Because SQL injection is always higher risk than every other vulnerability.
+C) Because the absence of one vulnerability type does not rule out issues such as authorization, authentication, SSRF, XSS, or supply chain problems.
+D) Because the OWASP Top 10 deals exclusively with SQL injection.
+ANSWER: C
+EXPLANATION: Application security consists of multiple independent risk areas. The absence of one particular vulnerability class provides information only about that specific risk; it does not demonstrate that the entire system is secure.
+###END
+
+### Q119
+LEVEL: medior
+TOPIC: Injection
+TYPE: production
+QUESTION: An application allows the client to specify a dynamic SQL `ORDER BY` column. The developer tries to substitute the column name using a PreparedStatement parameter. Why does this approach not work properly?
+A) Because PreparedStatement can only be used for DELETE queries.
+B) Because ORDER BY is always a forbidden SQL construct.
+C) Because JDBC does not support strings.
+D) Because parameters typically substitute values, not SQL identifiers; the column name must be selected from an explicit allowlist.
+ANSWER: D
+EXPLANATION: Bind parameters are intended for SQL value positions, not for arbitrary SQL syntax or identifiers. For a dynamic column name, the secure approach is to use a predefined allowlist that maps a client-requested logical field to a concrete SQL identifier.
+###END
+
+### Q120
+LEVEL: medior
+TOPIC: XSS
+TYPE: debug
+QUESTION: In a frontend, the developer uses:
+CODE:
+element.innerHTML = userInput;
+ENDCODE
+The input is first checked with a JavaScript regex that removes the string `<script>`. Why is this protection unreliable?
+A) Because `innerHTML` interprets only CSS.
+B) Because the regex automatically causes SQL injection.
+C) Because XSS does not depend on HTML parsing.
+D) Because removing `<script>` tags does not handle all dangerous HTML structures, attributes, and URL schemes; protection must be appropriate for the sink and output context.
+ANSWER: D
+EXPLANATION: XSS does not originate only from `<script>` elements. Event-handler attributes, dangerous URLs, and other HTML constructs can also be problematic, so a simple regex-based blacklist is not a general XSS defense.
+###END
+
+### Q121
+LEVEL: medior
+TOPIC: Authentication & password storage
+TYPE: scenario
+QUESTION: A login endpoint applies an increasingly longer delay after each failed attempt for the same user account. Why can this be a better approach than permanent account lockout?
+A) Because it slows automated attempts without allowing an attacker to permanently lock a user out simply by intentionally triggering the lockout.
+B) Because it eliminates the need for passwords.
+C) Because it automatically encrypts the attacker's IP address.
+D) Because it guarantees that every password is strong.
+ANSWER: A
+EXPLANATION: Adaptive delays and rate limiting increase the cost of online brute-force and credential-stuffing attacks while avoiding one problem with rigid lockouts: an attacker can intentionally lock other users' accounts. The approach should be combined with appropriate monitoring and multi-dimensional rate limiting.
+###END
+
+### Q122
+LEVEL: medior
+TOPIC: Sessions & JWT
+TYPE: debug
+QUESTION: A web application stores its JWT access token in `localStorage`, while several JavaScript dependencies that are not fully trusted run on the same page. What is the main risk?
+A) The JWT automatically expires when stored in localStorage.
+B) The browser encrypts every localStorage value with the server's key.
+C) An XSS vulnerability or compromised script can access and steal the token.
+D) localStorage can only be used by server-side applications.
+ANSWER: C
+EXPLANATION: `localStorage` is accessible from JavaScript, so a successful XSS attack or compromised third-party script can obtain a token stored there. The token storage strategy should be aligned with the application's threat model, and where appropriate, an HttpOnly cookie-based session can be used.
+###END
+
+### Q123
+LEVEL: medior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: scenario
+QUESTION: A client allows a wildcard redirect URI during the OAuth authorization code flow, for example `https://*.example.com/callback`. Why does this create a security risk?
+A) Because OAuth allows redirect URIs only on localhost.
+B) Because the authorization response could be sent to a compromised or insufficiently controlled subdomain, increasing the risk of code or token leakage.
+C) Because a wildcard automatically disables TLS.
+D) Because a redirect URI can only be an IP address.
+ANSWER: B
+EXPLANATION: The redirect URI is a critical security target for the authorization response. An overly broad pattern may allow an attacker-controlled or compromised subdomain to receive the callback, so redirect URIs should be registered as narrowly and precisely as possible.
+###END
+
+### Q124
+LEVEL: medior
+TOPIC: Authorization & access control
+TYPE: edgecase
+QUESTION: In an application, a user may modify only their own profile. However, the endpoint accepts a `userId` path parameter and checks only that the request contains a valid access token. What is the problem?
+A) JWTs cannot contain a `userId` value.
+B) The path parameter must always be encrypted.
+C) GET endpoints automatically require authorization.
+D) Authentication does not prove that the token owner is authorized to modify the specified `userId` resource; an object-level authorization check is required.
+ANSWER: D
+EXPLANATION: Authentication establishes who initiated the request, while authorization determines what operations that identity may perform on a given resource. For a profile addressed by `userId`, the backend must compare the requested resource with the authenticated identity and the applicable policy.
+###END
+
+### Q125
+LEVEL: medior
+TOPIC: Cryptography & TLS
+TYPE: production
+QUESTION: A backend allows only TLS 1.2 and TLS 1.3, but the developer builds a custom encryption protocol for application data because “TLS alone is not secure enough.” What is the most important problem with this approach?
+A) TLS and application-level encryption cannot be used together.
+B) Application data can never be encrypted.
+C) TLS is always weaker than any custom algorithm.
+D) A custom cryptographic protocol increases the risk of design and implementation errors; even when additional application-level protection is required, it should rely on standardized, audited primitives and well-defined protocols.
+ANSWER: D
+EXPLANATION: Custom cryptographic protocols often introduce errors that are difficult to detect or test. If the application requires protection beyond TLS, such as end-to-end or data-at-rest protection, it should be built on established cryptographic primitives and properly analyzed protocols.
+###END
+
+### Q126
+LEVEL: medior
+TOPIC: Injection
+TYPE: scenario
+QUESTION: An application builds a dynamic SQL WHERE clause based on filters provided by the client. The developer treats every filter value as a PreparedStatement parameter, but directly inserts the operator provided by the client (`=`, `>`, `<`, `LIKE`) into the SQL. What is the secure approach?
+A) Select operators from an explicit allowlist while continuing to bind values as parameters.
+B) Encode the operators using Base64.
+C) URL-encode the operators.
+D) Pass the entire WHERE clause as a single string parameter.
+ANSWER: A
+EXPLANATION: Bind parameters can be used for values, but they cannot substitute SQL syntax or operators. Dynamic SQL elements should be selected from a narrow allowlist, while data values should continue to be parameterized. Encoding by itself does not make SQL syntax safe.
+###END
+
+### Q127
+LEVEL: medior
+TOPIC: XSS
+TYPE: output
+QUESTION: A page executes the following JavaScript. What happens if `name` is `<b>Admin</b>`?
+CODE:
+const name = "<b>Admin</b>";
+document.getElementById("result").textContent = name;
+ENDCODE
+A) The browser displays `Admin` as bold HTML.
+B) The browser only removes the `<b>` tag.
+C) The browser displays the complete `<b>Admin</b>` value as text.
+D) The browser attempts to execute the content as JavaScript.
+ANSWER: C
+EXPLANATION: `textContent` treats the value as text rather than HTML, so the HTML tags appear as visible characters. This differs from `innerHTML`, which would parse the value as HTML.
+###END
+
+### Q128
+LEVEL: medior
+TOPIC: CSRF
+TYPE: debug
+QUESTION: An application uses a CSRF token that the client receives in a hidden HTML field. The developer generates the token when the page loads, but uses the same value for every user. What is the main problem?
+A) The CSRF token must always be included in the URL.
+B) The token must be sent as plaintext in every HTTP request.
+C) Using a token is completely unnecessary because every POST request is secure.
+D) A token shared by all users is not properly bound to a user's or session's security context, so if it is compromised, it can potentially be used broadly.
+ANSWER: D
+EXPLANATION: A CSRF token should be unpredictable and bound to an appropriate security context. A globally shared token means that a stolen value could potentially be used against other users' sessions as well.
+###END
+
+### Q129
+LEVEL: medior
+TOPIC: Authentication & password storage
+TYPE: scenario
+QUESTION: An application allows a password change by requiring only the new password; it does not require the old password or another form of strong reauthentication. However, the session cookie has already been valid for several days. What is the main security problem?
+A) The session cookie is too large.
+B) If the session is stolen or hijacked, an attacker can directly change the password, so sensitive operations may require step-up authentication or reauthentication.
+C) A password can only be changed using a GET request.
+D) Requiring the old password automatically disables the session.
+ANSWER: B
+EXPLANATION: A long-lived session that has already been compromised is not necessarily sufficient assurance for a high-impact operation. Reauthentication or step-up authentication for password changes and other sensitive operations can reduce the risk arising from session theft.
+###END
+
+### Q130
+LEVEL: medior
+TOPIC: Sessions & JWT
+TYPE: trap
+QUESTION: A JWT contains a `role=admin` claim, and the application only checks that the token signature is valid. Why may this still be insufficient for authorization?
+A) Because JWTs cannot contain role claims.
+B) Because every admin role must be encrypted.
+C) Because signature validity does not guarantee that the particular role claim is valid under the current authorization policy or is still current.
+D) Because the role claim can only be interpreted by the frontend.
+ANSWER: C
+EXPLANATION: A validly signed claim shows that the token issuer made that assertion, but the application must still validate the token's context, validity, and its own authorization policy. With revoked or recently changed permissions, a long-lived static claim can become problematic.
+###END
+
+### Q131
+LEVEL: medior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: scenario
+QUESTION: After an OIDC login, a web application identifies the user solely based on the `email` claim in the ID token. Users may come from two different identity providers. Why is this dangerous?
+A) Because the email claim is always encrypted.
+B) Because an email address is not necessarily globally unique across identity providers; the issuer and subject together provide a more reliable identity identifier.
+C) Because OIDC does not use an email claim.
+D) Because an ID token cannot contain string values.
+ANSWER: B
+EXPLANATION: With multiple issuers, the same email address can belong to different identities. A stable OIDC identity identifier is the combination of issuer and subject, so the application should validate and store these appropriately.
+###END
+
+### Q132
+LEVEL: medior
+TOPIC: Authorization & access control
+TYPE: production
+QUESTION: An admin endpoint is protected exclusively by a frontend route guard for the `/admin` page. The backend endpoint can also be accessed directly with an appropriate HTTP request. What is the correct fix?
+A) Apply server-side authorization to the backend endpoint for every protected operation as well.
+B) Replace the `/admin` URL with a random string.
+C) Invoke the route guard twice.
+D) Allow the endpoint to be called only from JavaScript.
+ANSWER: A
+EXPLANATION: A frontend route guard can control user navigation or UI behavior, but it is not a security boundary. Actual authorization must be enforced by the server for every protected backend operation.
+###END
+
+### Q133
+LEVEL: medior
+TOPIC: Cryptography & TLS
+TYPE: edgecase
+QUESTION: A backend uses AES-GCM, but encrypts multiple different messages with the same key and the same nonce value. Why is this a serious problem?
+A) Because GCM can only be used for passwords.
+B) Because a nonce can only be used with plaintext.
+C) Because reusing a nonce with the same key can compromise GCM's confidentiality and integrity guarantees.
+D) Because AES-GCM always produces plaintext.
+ANSWER: C
+EXPLANATION: Proper nonce management is a critical security requirement for AES-GCM. Reusing a nonce with the same key can lead to a serious cryptographic failure, so nonce handling must be designed according to the requirements of the chosen construction.
+###END
+
+### Q134
+LEVEL: medior
+TOPIC: Security headers & CSP
+TYPE: scenario
+QUESTION: An application's CSP uses the `script-src 'self'` directive. A script loaded from a third-party JavaScript CDN does not execute. What is the most direct explanation?
+A) CSP works only over HTTPS.
+B) `script-src 'self'` allows script sources only from the document's own origin, so the external CDN is not authorized.
+C) Browsers automatically block every external script regardless of CSP.
+D) `script-src` applies only to inline scripts.
+ANSWER: B
+EXPLANATION: `self` refers to the application's own origin. If a script must be loaded from an external CDN, that origin must be explicitly allowed in the CSP while maintaining the necessary security restrictions.
+###END
+
+### Q135
+LEVEL: medior
+TOPIC: CORS
+TYPE: edgecase
+QUESTION: An API supports credentialed CORS requests. The server sends:
+CODE:
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+ENDCODE
+What is the problem?
+A) A wildcard origin cannot be combined with credentialed CORS in this form; a specific origin is required.
+B) The `true` value can only be used with GET.
+C) A wildcard is always safer than a specific origin.
+D) The browser always automatically replaces `*` with the client's origin.
+ANSWER: A
+EXPLANATION: For credentialed CORS requests, `Access-Control-Allow-Origin` cannot use `*`. The server must authorize an appropriate specific origin, and credentialed requests should be restricted to trusted origins.
+###END
+
+### Q136
+LEVEL: medior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: A CI/CD pipeline uses a cloud access token as a secret. For debugging purposes, the pipeline prints all environment variables in every build log. What is the main risk?
+A) Environment variables cannot be used in CI/CD.
+B) The cloud token automatically expires after every build.
+C) Build logs exist only locally.
+D) The secret may be written to the build logs, where unauthorized people or systems could obtain and use it.
+ANSWER: D
+EXPLANATION: Secret management does not protect a credential if the pipeline deliberately logs it in plaintext. Credentials should be masked, full environment dumps should be avoided, and short-lived, least-privilege tokens should be preferred.
+###END
+
+### Q137
+LEVEL: medior
+TOPIC: Input validation & deserialization
+TYPE: scenario
+QUESTION: An API accepts a `status` field as a string, and the backend directly converts it to an enum. The client sends a value that is technically a valid enum value but is not allowed for the particular operation from a business perspective. What is the correct approach?
+A) Using an enum is sufficient by itself.
+B) Silently convert the invalid value to another status.
+C) Encode the value using Base64.
+D) In addition to type validation, validate the business state transition and the values permitted for the specific operation.
+ANSWER: D
+EXPLANATION: Deserialization can ensure only that the value matches a technical type. Business invariants and permitted state transitions must be validated separately, especially for operations that modify state.
+###END
+
+### Q138
+LEVEL: medior
+TOPIC: SSRF
+TYPE: debug
+QUESTION: An SSRF defense checks the IP address after resolving the hostname, but the HTTP client resolves the hostname again in a separate request. Why can this be a problem?
+A) Because DNS resolution can always happen only once.
+B) Because an HTTP client cannot use DNS.
+C) Because the second resolution can return a different IP address, causing the validated destination to differ from the destination actually reached.
+D) Because a network connection can never be established using an IP address.
+ANSWER: C
+EXPLANATION: If a new DNS resolution occurs between validation and the actual connection, an attacker may exploit the fact that the hostname resolves to a different address. Validation and the actual connection should consistently refer to the same safely validated destination, and restricting network egress provides additional protection.
+###END
+
+### Q139
+LEVEL: medior
+TOPIC: Supply chain security
+TYPE: scenario
+QUESTION: A developer installs a new version of an open-source dependency directly into production because the release includes only a signed checksum provided by an unknown mirror. Why is the checksum alone insufficient?
+A) Because checksums can never be used for dependencies.
+B) Because a checksum does not provide information about the file's origin or whether the checksum itself came from a trusted source.
+C) Because a signature automatically disables the checksum.
+D) Because open-source dependencies cannot be used in production.
+ANSWER: B
+EXPLANATION: A checksum can verify the integrity of a particular byte sequence, but it provides a strong guarantee only when the checksum itself comes from a trusted source. Provenance, signatures, trusted release channels, and other supply chain controls provide a stronger basis for trust when used together.
+###END
+
+### Q140
+LEVEL: medior
+TOPIC: Logging & incident response
+TYPE: scenario
+QUESTION: In a production system, an admin user generates hundreds of failed authorization checks within a short period. The system logs every event, but there is no alerting or correlation mechanism. What would be the most useful next improvement?
+A) Delete all authorization logs.
+B) Disable logging of failed events.
+C) Add the complete access token to every event.
+D) Introduce detection rules and correlation that highlight unusual patterns based on time windows and relevant context.
+ANSWER: D
+EXPLANATION: Logs alone do not guarantee that an incident will be detected in time. Correlation and detection rules can turn repeated or unusual authorization failures into an alert or investigation signal without requiring sensitive tokens to be logged.
+###END
+
+### Q141
+LEVEL: senior
+TOPIC: Threat modeling
+TYPE: algorithm
+QUESTION: You are threat modeling a large microservice-based system. Multiple services communicate across different trust boundaries, and some services call downstream systems on behalf of other services. Which approach provides the best foundation for the model?
+A) Treat every service as having the same trust level because they run in the same cluster.
+B) Model only requests originating from the internet.
+C) Draw security boundaries only around databases.
+D) Model data flows, identity delegation, trust boundaries, sensitive assets, and service-to-service permissions, then map threats and controls to them.
+ANSWER: D
+EXPLANATION: In a microservice environment, network location alone does not imply the same trust level. The model must capture which identity moves between services with which permissions and delegation, where trust boundaries are crossed, and which sensitive data is involved.
+###END
+
+### Q142
+LEVEL: senior
+TOPIC: Authorization & access control
+TYPE: scenario
+QUESTION: In a multi-tenant system, a user can belong to multiple tenants with different roles in each. The backend allows all admin operations based on a global `role=ADMIN` claim in a JWT. What is the most important deficiency?
+A) JWTs cannot contain role claims.
+B) The authorization decision must consider which tenant the user belongs to, which role they have there, and which specific resource and operation they are authorized to access.
+C) Tenants should be handled only in the frontend.
+D) Admin operations must be restricted to GET endpoints.
+ANSWER: B
+EXPLANATION: A global role does not express tenant-specific permissions. The policy must evaluate the relationship between the user, tenant, resource, and operation rather than relying solely on a global claim when the authorization model is more granular.
+###END
+
+### Q143
+LEVEL: senior
+TOPIC: Cryptography & TLS
+TYPE: edgecase
+QUESTION: A service communicates with an internal service over TLS. The developer says that because the network is “internal,” service certificate validation is unnecessary. What is the most important security consequence?
+A) If a network component is compromised or DNS/routing is manipulated, the client cannot reliably verify that it is actually connected to the intended service.
+B) TLS is automatically disabled when certificate validation is not performed.
+C) Internal networks do not have IP addresses.
+D) Certificate validation can only be used in browsers.
+ANSWER: A
+EXPLANATION: Bypassing TLS server authentication removes one of its fundamental security purposes: allowing the client to reliably identify the peer. An “internal network” is not automatically a trusted or attack-free environment.
+###END
+
+### Q144
+LEVEL: senior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: scenario
+QUESTION: In an OIDC system, a backend uses an ID token as a JWT access token because the ID token contains the user's name and role. What is the main problem?
+A) ID tokens cannot be signed.
+B) ID tokens can only be plaintext.
+C) The ID token is intended to describe the authentication event and the client's identity; it should be used as an API authorization credential only when the protocol and the particular service are explicitly designed for that purpose.
+D) Access tokens cannot contain claims.
+ANSWER: C
+EXPLANATION: An ID token carries identity-related information for the OIDC client, while an access token is an authorization credential for accessing resources. A valid signature on an ID token does not by itself make it an appropriate authorization token for an arbitrary API.
+###END
+
+### Q145
+LEVEL: senior
+TOPIC: Authorization & access control
+TYPE: production
+QUESTION: A backend authorization policy implements the same tenant and role rules separately in multiple microservices. Over time, one service begins applying a different rule. Which architectural approach can best reduce the risk of such inconsistencies?
+A) Move authorization entirely to the frontend.
+B) Use shared, well-defined authorization policies or a centralized policy-decision mechanism while each service continues to enforce the decision server-side.
+C) Make all endpoints public.
+D) Use different role names in every service.
+ANSWER: B
+EXPLANATION: Shared policies and consistent enforcement reduce the risk that different services interpret the same authorization rule differently. The frontend must still not be treated as a security boundary, and services must enforce authorization server-side for their own protected operations.
+###END
+
+### Q146
+LEVEL: senior
+TOPIC: Input validation & deserialization
+TYPE: scenario
+QUESTION: A Java service accepts several different DTOs through the same endpoint and dynamically selects the class to which the complete object is deserialized based on a client-supplied `type` field. One new DTO also contains a field defining a callback URL. What is the most important security consideration?
+A) It is sufficient to convert the `type` field to lowercase.
+B) DTO names should be encoded using Base64.
+C) Every field of every DTO should be automatically allowed.
+D) Supported types and fields should be explicitly restricted, and the callback URL must be validated separately with the associated network operations also controlled against SSRF.
+ANSWER: D
+EXPLANATION: Dynamic type selection and automatic field binding can combine multiple security risks. A type allowlist, DTO-level input validation, and separate security handling of the callback URL are necessary because a client-controlled URL can trigger a downstream network request.
+###END
+
+### Q147
+LEVEL: senior
+TOPIC: SSRF
+TYPE: scenario
+QUESTION: A cloud-hosted application provides URL fetching, and the developers defend against SSRF by blocking only public IP ranges. However, the service also needs to access some internal APIs. What is the safest general architectural direction?
+A) Block all private IP addresses even if the application requires access to them.
+B) Check only the hostname string.
+C) Allowlist the fetcher's network egress and reachable destinations, validate the destination and protocol, and explicitly allow the required internal services.
+D) Make the entire internal network accessible because the request is initiated by an authenticated user.
+ANSWER: C
+EXPLANATION: For SSRF protection, positive destination-based controls are generally more robust than a blacklist that must continually be expanded. Combining network egress restrictions, destination validation, and explicitly allowed internal services reduces the chance that the fetcher can reach sensitive network resources.
+###END
+
+### Q148
+LEVEL: senior
+TOPIC: Supply chain security
+TYPE: scenario
+QUESTION: A build pipeline installs a dependency package that contains a lifecycle script executed after installation. The pipeline has production credentials available during dependency installation. What is the most important security risk?
+A) If the installation script is compromised, it can access credentials or other sensitive resources available in the build environment while the dependency is being installed.
+B) The lifecycle script automatically runs only on Windows systems.
+C) Package installation scripts never run in CI environments.
+D) Dependencies cannot contain executable files.
+ANSWER: A
+EXPLANATION: A lifecycle script executed by the package manager can run code as part of the build process. If the build environment provides overly privileged credentials or access to sensitive resources, a compromised dependency can gain a significant supply chain attack surface.
+###END
+
+### Q149
+LEVEL: senior
+TOPIC: Logging & incident response
+TYPE: scenario
+QUESTION: During an incident, it is discovered that the attacker moved through multiple services, but the individual services use different request ID formats and there is no shared trace context. Why is this a serious problem?
+A) Because request IDs must always use UUID format.
+B) Because logs cannot contain service names.
+C) Because an attacker can reach multiple services only if they use the same request ID.
+D) Because it becomes harder to reliably correlate events across multiple services, making reconstruction of the incident timeline and attack chain significantly more difficult.
+ANSWER: D
+EXPLANATION: In distributed systems, a shared correlation or trace context allows events to be linked across service boundaries. Without it, investigators must infer relationships from separate log streams, increasing the risk of an incomplete or incorrect reconstruction.
+###END
+
+### Q150
+LEVEL: senior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: production
+QUESTION: In an enterprise application, SAST, DAST, and regular penetration testing are all performed, yet multiple business-logic vulnerabilities still reach production. Which approach can improve coverage the most?
+A) Set the sensitivity of all SAST rules to the maximum.
+B) Schedule DAST to run only at night.
+C) Integrate security testing with threat modeling and abuse cases, and apply targeted business-logic tests and manual security reviews to critical workflows.
+D) Eliminate penetration testing entirely because automated tests are more accurate.
+ANSWER: C
+EXPLANATION: SAST and DAST are important controls, but business-logic flaws often arise from combinations of components and workflows that appear individually correct. Abuse cases derived from threat modeling and targeted manual testing can help uncover issues that general automated rules are less likely to identify.
+###END
+
+### Q151
+LEVEL: medior
+TOPIC: Injection
+TYPE: production
+QUESTION: A production API builds a dynamic SQL query where the column used for sorting is selected from a fixed allowlist, but the sort direction is inserted directly into the query. What is the safest approach?
+A) Validate the sort direction against an explicit allowlist such as ASC/DESC before inserting it
+B) Escape the sort direction with the same function used for string literals
+C) Use PreparedStatement for the entire ORDER BY clause, including the sort direction
+D) Remove sorting from the API because dynamic SQL is always unsafe
+ANSWER: A
+EXPLANATION: SQL parameterization generally applies to values, not SQL syntax elements such as ASC or DESC, so the sort direction should be validated against a small explicit allowlist before being inserted into the query. The tempting alternative is to assume that escaping works for every SQL fragment, but identifier and syntax handling require a different approach.
+###END
+
+### Q152
+LEVEL: medior
+TOPIC: XSS
+TYPE: production
+QUESTION: A web application converts Markdown entered by users into HTML. The application also supports raw HTML and later inserts the generated result using innerHTML. What is the safest approach?
+A) Trust the Markdown parser because Markdown is not JavaScript
+B) Encode the entire generated HTML as plain text
+C) Sanitize the generated HTML using a trusted allowlist-based HTML sanitizer before using the dangerous sink
+D) Remove only script tags from the generated HTML
+ANSWER: A
+EXPLANATION: Because raw HTML is allowed and the result reaches innerHTML, the generated content must be treated as untrusted and sanitized with a well-maintained allowlist-based HTML sanitizer. The tempting alternative is to rely on the Markdown format itself, but raw HTML and parser features can create executable content.
+###END
+
+### Q153
+LEVEL: medior
+TOPIC: CSRF
+TYPE: scenario
+QUESTION: An application uses cookie-based authentication for its browser UI but also exposes the same backend to a native mobile application. A developer suggests disabling CSRF protection globally because the mobile application does not need CSRF tokens. What is the correct approach?
+A) Disable CSRF globally because native mobile applications cannot be affected by CSRF
+B) Require CSRF tokens on every endpoint, including endpoints used exclusively by the mobile application
+C) Keep CSRF protection for browser endpoints that rely on automatically attached cookies, while using an appropriate authentication mechanism for the mobile client
+D) Replace cookies with localStorage for both clients
+ANSWER: C
+EXPLANATION: CSRF is primarily a concern when a browser automatically attaches authentication credentials, such as cookies, to cross-site requests. Browser-facing state-changing endpoints should therefore retain appropriate CSRF defenses, while a native client can use an authentication design that does not rely on ambient browser credentials. The tempting alternative is to disable CSRF globally because one client does not need it, but that would weaken the browser security boundary.
+###END
+
+### Q154
+LEVEL: medior
+TOPIC: Authentication & password storage
+TYPE: production
+QUESTION: A company is migrating from legacy SHA-256 password hashes to Argon2id. Which migration strategy is most appropriate?
+A) Convert every SHA-256 hash to Argon2id immediately without asking for the user's password
+B) On successful login, verify the password against the legacy hash and then rehash the supplied password with Argon2id
+C) Store both the SHA-256 and Argon2id hashes permanently for every user
+D) Reset every user's password to a randomly generated value and email it to them
+ANSWER: B
+EXPLANATION: A password cannot be converted from a legacy hash into a secure password hash without knowing the original password. A successful login provides the plaintext password transiently, allowing the system to verify the legacy hash and then replace it with an Argon2id hash using an appropriate salt and parameters. The tempting alternative is to keep both hashes permanently, but that preserves the weaker legacy representation unnecessarily.
+###END
+
+### Q155
+LEVEL: senior
+TOPIC: Sessions & JWT
+TYPE: edgecase
+QUESTION: A system uses refresh-token rotation. Every time a refresh token is used, a new refresh token is issued and the previous one becomes invalid. What should the server generally do if an already-used refresh token is presented again?
+A) Treat the reuse as a potential compromise and consider revoking the affected refresh-token family
+B) Accept the token again because refresh tokens are designed to be reusable
+C) Issue a new access token but never rotate the refresh token
+D) Ignore the event because access tokens are stateless
+ANSWER: A
+EXPLANATION: With refresh-token rotation, reuse of an already-invalidated token can indicate token theft or replay. A common response is to invalidate the related refresh-token family, although the exact response depends on the system's security policy and token model. The tempting alternative is to accept the token again, but that defeats the replay-detection purpose of rotation.
+###END
+
+### Q156
+LEVEL: senior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: production
+QUESTION: An enterprise application uses OpenID Connect discovery to configure its identity provider. Which information is most important when establishing trust in the discovered provider?
+A) The configured issuer and its associated signing keys must correspond to the trusted identity provider
+B) The provider's logo and display name must match the application's configuration
+C) The provider must use the same TLS certificate for every endpoint
+D) The provider's discovery document can be trusted solely because it was returned over HTTP
+ANSWER: A
+EXPLANATION: OIDC trust depends on validating the issuer and using the appropriate signing keys and metadata for that trusted issuer. Discovery can automate configuration, but the application must not blindly trust arbitrary provider metadata. The tempting alternative is to rely on branding information such as a logo or display name, but those are not security trust anchors.
+###END
+
+### Q157
+LEVEL: senior
+TOPIC: Authorization & access control
+TYPE: scenario
+QUESTION: A document-management system has both role-based permissions and per-document ACLs. A user has an editor role but is explicitly denied access to a particular document by its ACL. What should the authorization logic do?
+A) Always allow access because the user's role has higher priority
+B) Apply the system's explicit policy semantics for resolving role permissions and document-level denies
+C) Always deny access whenever an ACL exists
+D) Ignore the ACL because RBAC is easier to audit
+ANSWER: B
+EXPLANATION: When multiple authorization mechanisms coexist, the application must define explicit policy semantics for how their decisions interact, such as deny-overrides or another documented rule. The tempting alternative is to assume that the broad role should always win, but that can undermine intentionally restricted resources.
+###END
+
+### Q158
+LEVEL: senior
+TOPIC: Cryptography & TLS
+TYPE: production
+QUESTION: TLS terminates at an API gateway, after which the gateway communicates with backend services over plaintext HTTP inside the data center. Which statement is most accurate?
+A) This is always secure because internal networks are trusted
+B) TLS at the gateway guarantees confidentiality for all internal traffic
+C) Plaintext is safe as long as the gateway authenticates the user
+D) If the internal network is not fully trusted, service-to-service TLS and appropriate peer authentication may also be required
+ANSWER: D
+EXPLANATION: TLS termination at the gateway protects the client-to-gateway connection but does not protect subsequent internal traffic. If internal networks, hosts, or services cannot be fully trusted, encryption and peer authentication may also be needed between services. The tempting alternative is to treat the data center as an automatically trusted security boundary, but internal compromise and lateral movement are realistic threats.
+###END
+
+### Q159
+LEVEL: senior
+TOPIC: Security headers & CSP
+TYPE: edgecase
+QUESTION: A web application uses a CSP nonce to authorize inline scripts, but the same nonce value is reused across multiple HTTP responses. What is the main security concern?
+A) The browser will reject all CSP headers containing a nonce
+B) Nonces cannot be used with inline scripts
+C) A reused nonce weakens the intended per-response protection and should generally be newly generated for each response
+D) The nonce must be stored in localStorage to work correctly
+ANSWER: C
+EXPLANATION: A CSP nonce is intended to be unpredictable and unique for each response, so reusing the same value reduces its security properties and can make unintended reuse easier. The tempting alternative is to assume that any sufficiently random nonce remains safe forever, but nonce uniqueness is part of the intended design.
+###END
+
+### Q160
+LEVEL: senior
+TOPIC: CORS
+TYPE: scenario
+QUESTION: An API dynamically sets Access-Control-Allow-Origin to the request's Origin and allows credentials. However, the response does not include Vary: Origin. The response is cached by a shared intermediary. What is the main risk?
+CODE:
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Credentials: true
+ENDCODE
+A) The browser will automatically convert the wildcard into the requesting origin
+B) A shared cache may serve a response containing an ACAO value intended for one origin to a different origin
+C) Vary: Origin is only required for POST requests
+D) Credentialed CORS disables HTTP caching automatically
+ANSWER: B
+EXPLANATION: When the response varies according to the Origin request header, shared caches need to know that Origin affects the representation. Without Vary: Origin, a cached response for one origin can potentially be reused for another origin with the wrong CORS header. The tempting alternative is to assume that the browser will repair the header automatically, but cache behavior occurs before the browser evaluates the CORS response.
+###END
+
+### Q161
+LEVEL: senior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: Several backend services use the same long-lived cloud access key with broad account-wide permissions. What is the safer architecture?
+A) Replace the shared key with short-lived workload identities and least-privilege permissions
+B) Store the key in a frontend environment variable
+C) Rotate the key only once every five years
+D) Encrypt the key with a static key committed to the repository
+ANSWER: A
+EXPLANATION: Workload identities and short-lived credentials reduce the impact of credential theft, while least-privilege permissions limit what a compromised service can access. The tempting alternative is to focus only on hiding the shared key, but a long-lived broadly privileged credential remains a major blast-radius risk even when stored securely.
+###END
+
+### Q162
+LEVEL: senior
+TOPIC: Input validation & deserialization
+TYPE: production
+QUESTION: An API binds incoming JSON directly to a domain entity containing fields such as isAdmin, accountBalance, and internalStatus. What is the safest design?
+A) Use explicit request DTOs containing only fields the client is allowed to set
+B) Mark all domain fields as public
+C) Trust the client because authorization happens after deserialization
+D) Accept all fields and remove dangerous ones using a blacklist
+ANSWER: A
+EXPLANATION: Explicit request DTOs create a clear boundary between externally controlled data and internal domain state, preventing mass-assignment or overposting of sensitive fields. The tempting alternative is to deserialize everything and remove known-dangerous fields, but blacklists are fragile and can miss newly introduced sensitive properties.
+###END
+
+### Q163
+LEVEL: senior
+TOPIC: SSRF
+TYPE: edgecase
+QUESTION: An SSRF defense blocks private IPv4 ranges but does not validate IPv6 destinations. What security issue can remain?
+A) IPv6 cannot be used for HTTP requests
+B) IPv6 loopback and internal address ranges may still provide access to protected services
+C) DNS cannot resolve IPv6 addresses
+D) TLS prevents all SSRF attacks against IPv6
+ANSWER: B
+EXPLANATION: SSRF defenses must account for both IPv4 and IPv6 address spaces. IPv6 loopback and other internal ranges can expose services that an IPv4-only blocklist would miss. The tempting alternative is to assume that blocking the familiar IPv4 private ranges covers all internal destinations, but IPv6 has separate address spaces and semantics.
+###END
+
+### Q164
+LEVEL: senior
+TOPIC: Supply chain security
+TYPE: production
+QUESTION: A build system verifies the checksum of a downloaded dependency but does not have provenance information about how or where the artifact was built. What security property is still missing?
+A) Information about the artifact's origin and build process
+B) The ability to detect whether the file changed after download
+C) The ability to calculate the artifact's file size
+D) The ability to decompress the artifact
+ANSWER: A
+EXPLANATION: A checksum can establish that the downloaded bytes match an expected digest, but provenance provides information or attestations about the artifact's origin, source, build process, and environment. The tempting alternative is to treat checksum verification as proof of trustworthy origin, but integrity and provenance are different security properties.
+###END
+
+### Q165
+LEVEL: senior
+TOPIC: Logging & incident response
+TYPE: production
+QUESTION: An application and its security logs are both writable by the same administrative account. If that account is compromised, what is the main forensic risk?
+A) The application will stop producing logs
+B) Log files will become larger than expected
+C) An attacker may alter or delete evidence of malicious activity
+D) TLS certificates will automatically expire
+ANSWER: C
+EXPLANATION: If the same compromised privilege can modify both application data and security logs, an attacker may tamper with the evidence needed for incident investigation. Separating log access and applying integrity controls can reduce this risk. The tempting alternative is to focus only on whether logs are generated, but trustworthy incident response also depends on protecting their integrity.
+###END
+
+### Q166
+LEVEL: senior
+TOPIC: Threat modeling
+TYPE: algorithm
+QUESTION: During a threat-modeling workshop, the team lists technical vulnerabilities but does not identify attacker goals or business abuse cases. What important aspect is missing?
+A) Modeling attacker goals and abuse cases in addition to technical weaknesses
+B) Increasing the number of developers in the workshop
+C) Removing all trust boundaries from the data-flow diagram
+D) Replacing the threat model with a penetration test
+ANSWER: A
+EXPLANATION: Effective threat modeling considers what attackers are trying to achieve, which assets they target, and how abuse cases can flow through the system, not only known technical vulnerabilities. The tempting alternative is to treat threat modeling as a vulnerability checklist, but that can miss business-logic attacks and attack paths that do not map neatly to a known vulnerability.
+###END
+
+### Q167
+LEVEL: senior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: performance
+QUESTION: A team runs SAST on every merge request but reviews critical findings only immediately before release. What is the main process problem?
+A) SAST cannot detect security issues before release
+B) Security findings are discovered early but remediation is unnecessarily delayed, increasing late-release risk
+C) SAST should be disabled during development
+D) All SAST findings must be fixed before every commit
+ANSWER: B
+EXPLANATION: Early SAST results are most useful when critical findings are triaged and addressed during development rather than accumulated until release. Risk-based CI gates and timely review reduce the chance of late security surprises. The tempting alternative is to require every finding to block every commit, but that can create excessive noise and reduce developer adoption.
+###END
+
+### Q168
+LEVEL: senior
+TOPIC: OWASP Top 10
+TYPE: scenario
+QUESTION: A security team applies the same security checklist to a public API, an internal batch-processing service, and an administrative platform. What is the main problem with this approach?
+A) OWASP guidance applies only to public APIs
+B) Internal systems never require security controls
+C) Security controls should be adapted to the system's threats, assets, exposure, and trust boundaries
+D) Administrative platforms should use only network-level security
+ANSWER: C
+EXPLANATION: Security controls should reflect the actual risk profile of each system, including its assets, exposure, trust boundaries, and attack paths. A generic checklist can be useful as a baseline but should not replace system-specific risk analysis. The tempting alternative is to assume that one standardized checklist is sufficient everywhere, but different architectures create different security risks.
+###END
+
+### Q169
+LEVEL: senior
+TOPIC: Injection
+TYPE: debug
+QUESTION: A database helper trims whitespace from a user-provided value and then concatenates it directly into a SQL query. Is the query protected against SQL injection?
+A) No, because trimming whitespace does not make string concatenation safe
+B) Yes, because SQL injection requires leading or trailing whitespace
+C) Yes, because databases automatically escape apostrophes
+D) No, but only if the input contains Unicode characters
+ANSWER: A
+EXPLANATION: Removing surrounding whitespace does not change the fact that attacker-controlled data is being inserted directly into SQL syntax. Parameterized queries should be used instead of relying on input manipulation. The tempting alternative is to assume that simple preprocessing makes the input safe, but injection depends on the boundary between data and executable SQL syntax.
+###END
+
+### Q170
+LEVEL: senior
+TOPIC: XSS
+TYPE: scenario
+QUESTION: A web application receives HTML from a third-party WYSIWYG editor and renders it directly in the browser without sanitization. What is the safest assumption?
+A) Third-party editor output is trusted because it was generated by a UI component
+B) The browser will automatically remove malicious event handlers
+C) The HTML should be treated as untrusted and safely rendered or sanitized before reaching a dangerous HTML sink
+D) XSS is impossible when the content originated from a WYSIWYG editor
+ANSWER: A
+EXPLANATION: HTML produced by a third-party editor can contain dangerous markup or be influenced by attacker-controlled content, so it should be treated as untrusted until safely processed. The tempting alternative is to trust the editor because it provides a structured UI, but the generated HTML still crosses a security boundary before reaching the browser.
+###END
+
+### Q171
+LEVEL: senior
+TOPIC: CSRF
+TYPE: scenario
+QUESTION: An application uses a cookie-based session. Most state-changing POST endpoints require a CSRF token, but a JSON /api/import endpoint omits the token because the developer argues that a normal HTML form cannot submit JSON. Which statement is most accurate?
+A) JSON is not a security boundary by itself; the endpoint should be evaluated based on how browsers can cause authenticated requests and should retain appropriate CSRF protection when applicable
+B) Any endpoint accepting JSON is automatically immune to CSRF
+C) CSRF is impossible whenever the Content-Type is application/json
+D) Cookies are never attached to cross-origin requests
+ANSWER: A
+EXPLANATION: The fact that a normal HTML form cannot freely construct an arbitrary JSON request does not by itself establish a complete CSRF security boundary. Browser request behavior, content types, CORS configuration, simple-request semantics, and the application's authentication mechanism must be considered together. The tempting alternative is to equate application/json with CSRF protection, but the security decision depends on the complete request and browser model.
+###END
+
+### Q172
+LEVEL: senior
+TOPIC: Authentication & password storage
+TYPE: performance
+QUESTION: An application configures Argon2id so that one password verification consumes approximately two seconds of CPU time. Under a large burst of parallel login attempts, what is the main operational concern?
+A) Password hashing becomes faster under load
+B) An attacker may consume substantial CPU resources and cause a denial-of-service condition
+C) Argon2id automatically blocks all brute-force attempts
+D) Login attempts no longer require rate limiting
+ANSWER: B
+EXPLANATION: Strong password hashing intentionally consumes computational resources, so a high-cost configuration can become expensive under large amounts of parallel authentication traffic. Rate limiting, abuse detection, concurrency controls, and appropriate infrastructure capacity should complement the password-hashing configuration. The tempting alternative is to assume that an expensive password hash automatically prevents abuse, but an attacker can exploit the same cost to exhaust server resources.
+###END
+
+### Q173
+LEVEL: senior
+TOPIC: Sessions & JWT
+TYPE: production
+QUESTION: A service uses long-lived JWT access tokens and performs only local signature validation. The security team needs to revoke a compromised token immediately across all services. What architectural limitation must they consider?
+A) JWTs cannot contain expiration times
+B) Signed JWTs cannot be transmitted over HTTPS
+C) Purely stateless local validation cannot provide immediate global revocation without an additional revocation or validation mechanism
+D) JWTs are always stored in browser cookies
+ANSWER: C
+EXPLANATION: If every service only validates the JWT signature and claims locally, a previously issued valid token normally remains accepted until it expires. Immediate revocation requires an additional mechanism such as centralized introspection, a denylist, key changes with broader consequences, or a different token/session architecture. The tempting alternative is to assume that signing makes revocation automatic, but signature validity and revocation state are separate concerns.
+###END
+
+### Q174
+LEVEL: senior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: edgecase
+QUESTION: An API accepts an access token because its signature and issuer are valid, but the token was actually issued for a different API. What validation is missing?
+A) Validation of the user's profile picture
+B) Validation of the token's HTTP User-Agent
+C) Validation of the client's browser version
+D) Validation of the intended audience and the permissions required by the API
+ANSWER: D
+EXPLANATION: A valid signature and trusted issuer do not prove that a token was intended for the receiving API or that it grants the required permissions. The API should validate the audience and relevant scopes or other authorization claims. The tempting alternative is to treat issuer and signature validation as sufficient, but those checks establish token authenticity rather than its intended resource or permissions.
+###END
+
+### Q175
+LEVEL: senior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: production
+QUESTION: A company blocks every release whenever a penetration test reports any finding, regardless of severity, exploitability, or asset criticality. What is a more appropriate release strategy?
+A) Ignore all penetration-test findings until the next major release
+B) Block every release permanently after the first finding
+C) Run penetration tests only after production deployment
+D) Use a risk-based release gate that considers severity, exploitability, asset criticality, and an explicit exception process
+ANSWER: D
+EXPLANATION: Penetration-test findings should be triaged according to their actual risk and the context of the affected assets. A risk-based release gate can combine severity, exploitability, business impact, compensating controls, and documented exceptions. The tempting alternative is to treat every finding identically, but that can make the release process unable to distinguish low-risk issues from critical vulnerabilities.
+###END
+
+### Q176
+LEVEL: senior
+TOPIC: Injection
+TYPE: production
+QUESTION: An application needs to dynamically determine the operator of a SQL WHERE condition, such as `=` or `LIKE`. The user can provide the operator directly. What is the safest approach?
+A) Validate the operator against an explicit allowlist and accept only the permitted SQL operators
+B) Pass the operator as a PreparedStatement parameter
+C) HTML-escape the operator before inserting it into SQL
+D) Base64-encode the operator and then decode it in the query
+ANSWER: A
+EXPLANATION: A SQL operator is part of the query syntax, so it cannot be handled in the same way as a data value parameter. An explicit, small allowlist ensures that only supported operators can be inserted into the query. The tempting alternative is to assume that PreparedStatement can be used for every dynamic element, but parameters are generally intended for values, not arbitrary SQL syntax elements.
+###END
+
+### Q177
+LEVEL: senior
+TOPIC: XSS
+TYPE: edgecase
+QUESTION: An SPA considers a URL from an API response to be safe and places it into an `href` attribute. However, the API may return attacker-controlled data. What is the most important additional check?
+A) Limit the URL to a maximum length of 100 characters
+B) Validate the URL scheme and destination, for example by rejecting the dangerous `javascript:` scheme
+C) Base64-encode the URL
+D) Convert the URL to HTML entities in every case
+ANSWER: B
+EXPLANATION: Proper protection of a URL attribute is not merely a matter of HTML escaping: dangerous schemes such as `javascript:` can introduce a separate security risk. The URL should be validated according to its context and safely inserted. The tempting alternative is to rely solely on HTML escaping, because it can prevent certain markup injections, but it does not by itself make dangerous URL schemes safe.
+###END
+
+### Q178
+LEVEL: senior
+TOPIC: CSRF
+TYPE: production
+QUESTION: A web application uses a SameSite=Lax cookie, but a sensitive POST endpoint has no CSRF protection at all. The developer claims that the SameSite setting is sufficient by itself. What is the most appropriate approach?
+A) SameSite=Lax guarantees protection against every CSRF attack
+B) The POST endpoint should be changed to GET
+C) Appropriate CSRF protection should still be applied to critical state-changing operations rather than relying exclusively on SameSite behavior
+D) The cookie should be stored in localStorage
+ANSWER: C
+EXPLANATION: The SameSite cookie attribute is an important defense layer, but in every application context and browser scenario it does not necessarily replace explicit CSRF protection. Sensitive state-changing operations can benefit from an additional CSRF token or other appropriate defense. The tempting alternative is to rely entirely on SameSite, but that can be an overly strong security assumption given the complexity of browser and application behavior.
+###END
+
+### Q179
+LEVEL: senior
+TOPIC: Authentication & password storage
+TYPE: scenario
+QUESTION: A system introduces passwordless authentication using passkeys with WebAuthn. How should the backend handle the user's authentication data?
+A) It must also store the user's private key in the database
+B) It must generate a plaintext password after successful authentication
+C) It must use the same server-side secret for every user
+D) It should store the public key received during registration and the required credential metadata, but not the private key
+ANSWER: D
+EXPLANATION: With WebAuthn, the authenticator retains the private key, while the server stores the corresponding public key and the data required to identify the credential. The server can then verify authentication by validating signatures without having access to the private key. The tempting alternative is to store the private key on the server because that may resemble a centralized secret store in traditional password-based systems, but it contradicts the WebAuthn key model.
+###END
+
+### Q180
+LEVEL: senior
+TOPIC: Sessions & JWT
+TYPE: debug
+QUESTION: As protection against session fixation, a web application keeps the same session ID after successful login and only changes the authenticated flag to true. What is missing from this implementation?
+A) The session ID should be regenerated after successful authentication
+B) The session ID should also be exposed as a URL parameter
+C) The session ID should be duplicated in localStorage
+D) The session ID should be changed after every request
+ANSWER: A
+EXPLANATION: If the session ID known before login remains valid after authentication, an attacker-controlled session identifier can become an authenticated session. Therefore, a new session ID should be created after successful authentication while safely carrying over the necessary session data. The tempting alternative is to change the identifier after every request, but that is unnecessarily aggressive and introduces avoidable session-management complexity.
+###END
+
+### Q181
+LEVEL: senior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: edgecase
+QUESTION: An OIDC client validates the ID token signature, issuer, and expiration, but does not validate the nonce value. What could be the consequence?
+A) The access token automatically expires
+B) The client cannot validate its own client identifier
+C) An important check against certain authorization-response replay or token-injection scenarios is missing
+D) The TLS connection automatically terminates
+ANSWER: C
+EXPLANATION: The nonce links the authentication flow initiated by the client to the returned ID token, helping prevent replay and acceptance of a token that does not belong to the initiated flow. The tempting alternative is to consider complete signature validation sufficient, but signature validity alone does not prove that the token belongs to the client's current authentication flow.
+###END
+
+### Q182
+LEVEL: senior
+TOPIC: Authorization & access control
+TYPE: scenario
+QUESTION: In a multi-tenant SaaS application, a user has the `admin` role, but that role applies only to their own tenant. An API checks only the `admin` role claim and does not validate the tenant identifier. What is the main problem?
+A) An admin role always represents global privileges
+B) The role claim type is too long
+C) JWTs cannot be used in multi-tenant systems
+D) Authorization is not being checked within the tenant context, which can lead to cross-tenant access
+ANSWER: D
+EXPLANATION: In multi-tenant systems, a role by itself often does not describe the full scope of a user's authorization. The resource and the user's authorization must be bound to the same tenant context. The tempting alternative is to assume that an admin role is automatically global, but that can lead to serious privilege escalation when roles are tenant-specific.
+###END
+
+### Q183
+LEVEL: senior
+TOPIC: Cryptography & TLS
+TYPE: production
+QUESTION: A service generates its own TLS certificate, and the client disables certificate validation to prevent the connection from failing. What is the most important problem?
+A) TLS works only with HTTP/1.1
+B) The client loses the ability to reliably verify whom it is communicating with, enabling a potential MITM attack
+C) Certificates can only be validated in browsers
+D) The encrypted data stream automatically becomes plaintext
+ANSWER: B
+EXPLANATION: TLS certificate validation is necessary to authenticate the server's identity. If the client accepts every certificate, the connection may still be encrypted, but the client can no longer properly verify the peer's identity. The tempting alternative is to assume that encryption alone is sufficient, but encryption without authentication does not provide adequate protection against MITM attacks.
+###END
+
+### Q184
+LEVEL: senior
+TOPIC: Security headers & CSP
+TYPE: production
+QUESTION: A CSP uses a `script-src 'nonce-...'` directive. A developer stores the same static nonce in a configuration file and sends it with every response. What is the correct fix?
+A) Generate a new nonce for every response using a cryptographically secure random value
+B) Store the nonce in the frontend's localStorage
+C) Put the nonce in the URL query string
+D) Use the same nonce value for every user
+ANSWER: A
+EXPLANATION: The purpose of a CSP nonce is to provide an unpredictable authorization value associated with a particular response. If the same value is used in every response, the nonce loses an important security property. The tempting alternative is to treat the nonce as a long-lived static secret, but a nonce is not intended to be a long-term shared secret.
+###END
+
+### Q185
+LEVEL: senior
+TOPIC: CORS
+TYPE: edgecase
+QUESTION: An API wants to allow credentialed CORS requests only from the `https://app.example.com` origin. The developer uses: `Access-Control-Allow-Origin: https://*.example.com`. What is the problem?
+A) CORS can only allow IP addresses
+B) Wildcards are supported for credentialed CORS in every browser
+C) An origin pattern using a wildcard does not provide automatic, secure subdomain allowlisting; allowed origins must be handled explicitly
+D) CORS cannot handle HTTPS origins
+ANSWER: C
+EXPLANATION: `Access-Control-Allow-Origin` is not a general wildcard-pattern matching mechanism. With credentialed CORS in particular, the application should allow only explicitly defined trusted origins. The tempting alternative is to interpret `*.example.com` as an intuitive wildcard, but that is not the standard way to use ACAO.
+###END
+
+### Q186
+LEVEL: senior
+TOPIC: Secrets management
+TYPE: production
+QUESTION: In a Kubernetes-based system, Secret objects are stored in etcd in their default form. The developers claim that this means they are encrypted in the database, so no further action is necessary. Which statement is correct?
+A) Kubernetes Secrets are always stored in a hardware HSM
+B) Secrets stored in etcd also require appropriate encryption-at-rest, RBAC, and access protection
+C) Secret objects cannot be protected with RBAC
+D) Kubernetes automatically rotates every Secret every hour
+ANSWER: B
+EXPLANATION: A Kubernetes Secret object does not by itself mean that appropriate encryption-at-rest protection is configured in every environment. etcd protection, Kubernetes encryption-at-rest configuration, RBAC, access permissions, and secret rotation together form the appropriate protection model. The tempting alternative is to infer automatic encryption from the object being called a Secret, but storage and access protection are separate configuration concerns.
+###END
+
+### Q187
+LEVEL: senior
+TOPIC: Input validation & deserialization
+TYPE: trap
+QUESTION: A REST API deserializes a `status` field into a Java enum whose values are `ACTIVE`, `SUSPENDED`, and `DELETED`. The developer claims that using an enum by itself guarantees compliance with business rules. Why is this not necessarily true?
+A) Enums can never be used in REST APIs
+B) An enum automatically validates every business rule
+C) An enum only restricts the allowed syntactic values; valid state transitions must be checked separately
+D) JSON cannot represent enums
+ANSWER: C
+EXPLANATION: An enum helps restrict which values can appear in the field, but it does not necessarily describe the business rules governing state transitions. For example, a record in the `DELETED` state may not be allowed to transition back to `ACTIVE`. The tempting alternative is to treat enum validation as complete business validation, but type validation and business invariants are separate concerns.
+###END
+
+### Q188
+LEVEL: senior
+TOPIC: SSRF
+TYPE: production
+QUESTION: An SSRF protection layer first resolves a hostname to an IP address, verifies that the IP is not in a private range, and then an HTTP client resolves the same hostname again later. What is the main risk?
+A) A hostname always resolves to the same IP address
+B) HTTP supports only numeric IP addresses
+C) The second DNS resolution cannot return an IPv6 address
+D) DNS rebinding or a different DNS response can cause the validated IP address to differ from the IP address actually reached
+ANSWER: D
+EXPLANATION: If the application validates a DNS resolution in a separate step and then resolves the hostname again when establishing the actual connection, the two resolution results can differ. A destination that initially appears public can therefore lead to a connection to an internal address. The tempting alternative is to consider a one-time IP check sufficient, but the potential TOCTOU-style discrepancy means validation and connection establishment must be handled consistently.
+###END
+
+### Q189
+LEVEL: senior
+TOPIC: Supply chain security
+TYPE: scenario
+QUESTION: A build pipeline automatically downloads the latest version of an external dependency during every build and only logs the version returned by the package manager. What is the most important supply-chain risk?
+A) Builds are not reliably reproducible, and a later compromised or modified dependency can introduce new code into the system
+B) The package manager always downloads corrupted files
+C) Dependencies are dangerous only in production environments
+D) Updating a dependency version automatically causes SQL injection
+ANSWER: A
+EXPLANATION: Unpinned dependency versions and the lack of verified artifacts reduce build reproducibility and increase the risk that a later build will use unexpected or compromised code. Lockfiles, version pinning, integrity verification, and controlled update processes reduce this risk. The tempting alternative is to assume that every automatic dependency update is inherently bad, but the core issue is uncontrolled and non-reproducible updating.
+###END
+
+### Q190
+LEVEL: senior
+TOPIC: Logging & incident response
+TYPE: production
+QUESTION: An attacker successfully logs in with an admin account and then performs sensitive operations across multiple services. Each service generates different request IDs. Which solution is most useful for reconstructing the incident?
+A) Remove timestamps from all logs
+B) Propagate a consistent trace/correlation context between services
+C) Keep only the gateway logs
+D) Have every service generate its own random user identifier
+ANSWER: B
+EXPLANATION: A shared correlation or trace context makes it possible to connect events belonging to the same request as it passes through multiple services. This is especially important when investigating incidents in distributed systems. The tempting alternative is to rely only on gateway logs, but they may not contain the downstream services' security events and detailed operations.
+###END
+
+### Q191
+LEVEL: senior
+TOPIC: Threat modeling
+TYPE: algorithm
+QUESTION: During threat modeling, a team identifies assets and trust boundaries but does not analyze what additional systems could be reached from a compromised component. Which analysis is most clearly missing?
+A) Rewriting the source code of the components
+B) Increasing the number of deployments
+C) Analyzing attack paths and the potential lateral impact of compromised components
+D) Removing all network connections
+ANSWER: C
+EXPLANATION: An important goal of threat modeling is understanding what additional resources, services, or trust boundaries could become accessible from a compromised component. Analyzing lateral attack paths helps reduce the blast radius of a compromise. The tempting alternative is to treat identifying assets and trust boundaries as a complete threat model, but without analyzing attack paths between components, the potential consequences of an attack remain incomplete.
+###END
+
+### Q192
+LEVEL: senior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: scenario
+QUESTION: A SAST tool reports hundreds of potential SQL injection findings, but developers believe that most are false positives. What is the best next step?
+A) Disable all SAST rules
+B) Automatically classify every finding as critical
+C) Run SAST again only in production
+D) Trace the data flow from source to sink for several representative findings, then refine the rule and sanitizer/parameterization handling based on the results
+ANSWER: D
+EXPLANATION: To assess SAST findings, it is useful to trace tainted data from its source to the dangerous sink and determine whether injection is actually reachable. The resulting observations can then be used to improve rules and false-positive handling. The tempting alternative is to automatically classify every finding as critical, but this can quickly lead to alert fatigue and cause genuine issues to be overlooked.
+###END
+
+### Q193
+LEVEL: senior
+TOPIC: OWASP Top 10
+TYPE: production
+QUESTION: A team uses the OWASP Top 10 as the complete security requirements specification for a new system and states that anything not covered by it does not need to be addressed. What is the main problem?
+A) The OWASP Top 10 applies only to frontend applications
+B) The OWASP Top 10 does not replace system-specific threat modeling, security requirements, and other controls
+C) The OWASP Top 10 can only be used for Java applications
+D) The OWASP Top 10 can only be used for penetration testing
+ANSWER: B
+EXPLANATION: The OWASP Top 10 is a useful awareness and risk starting point, but it is not a complete security specification. A specific system may require additional controls based on its architecture, business processes, data protection requirements, infrastructure, and threat model. The tempting alternative is to treat the OWASP Top 10 as a complete security control set, but although it is broad, it does not cover every requirement of every system.
+###END
+
+### Q194
+LEVEL: senior
+TOPIC: Injection
+TYPE: production
+QUESTION: An application must support a custom, user-defined search filter language that is translated into an SQL WHERE condition. A developer directly translates the entire filter expression into SQL. What is the safer architectural approach?
+A) Parse the custom DSL into an AST, handle supported operators and fields using an allowlist, and parameterize the values
+B) Base64-encode the entire DSL before inserting it into SQL
+C) Escape every quote using backslashes
+D) Append the entire user-provided expression as an SQL comment
+ANSWER: A
+EXPLANATION: With a custom filter DSL, the input should first be parsed into a structured representation such as an AST. Only allowed fields and operators should then be translated into SQL syntax, while data values should be parameterized. This separates the user-defined language from SQL syntax. The tempting alternative is manual escaping, because it may appear straightforward, but complete and correct protection is difficult to achieve for complex SQL syntax.
+###END
+
+### Q195
+LEVEL: senior
+TOPIC: XSS
+TYPE: scenario
+QUESTION: An application considers server-rendered HTML trusted and therefore inserts every HTML fragment directly using `innerHTML`. Later, a new backend endpoint allows user-generated content to be stored. What is the most important security conclusion?
+A) innerHTML is always safe when the data comes from a database
+B) The database automatically removes XSS payloads
+C) Data read from the database must also be treated as untrusted input, and safe rendering appropriate to the output context must be used
+D) Server-side rendering automatically disables client-side XSS
+ANSWER: C
+EXPLANATION: A database is not a security boundary: if attacker-controlled data is stored in it, rendering that data later can still create an XSS risk. Security comes from context-appropriate output encoding or safe DOM APIs and, where necessary, appropriate HTML sanitization. The tempting alternative is to consider database data automatically trusted, but storing data does not change its origin or trust level.
+###END
+
+### Q196
+LEVEL: senior
+TOPIC: Authentication & password storage
+TYPE: performance
+QUESTION: An Argon2id operation runs for every failed password attempt on a login endpoint, while there is no IP-, account-, or device-level abuse detection. An attacker sends a large number of parallel requests. Which combination of defenses is most appropriate?
+A) Reduce the Argon2id cost to zero
+B) Replace the passwords with MD5
+C) Use only a client-side CAPTCHA
+D) Use rate limiting, abuse detection, and resource controls alongside appropriate password hashing
+ANSWER: D
+EXPLANATION: Slow password hashing protects stored passwords, but for an online attacker the computational cost of the authentication endpoint can also become a resource-exhaustion opportunity. Rate limiting, account- and IP-based controls, abuse detection, and appropriate infrastructure together reduce this risk. The tempting alternative is to reduce the Argon2id cost, because that can mitigate the DoS impact, but it also weakens protection against offline password cracking.
+###END
+
+### Q197
+LEVEL: senior
+TOPIC: Sessions & JWT
+TYPE: production
+QUESTION: A browser-based application stores a long-lived access JWT in localStorage. A third-party script is compromised and can execute arbitrary JavaScript on the page. What is the most important risk?
+A) The attacker can read the token from localStorage and use it for API requests
+B) The JWT will automatically be signed with a new key
+C) localStorage prevents XSS
+D) The browser automatically revokes the token
+ANSWER: A
+EXPLANATION: A token stored in localStorage is accessible to JavaScript, so XSS or a compromised third-party script may be able to read and exfiltrate it. Shorter token lifetimes, appropriate CSP, dependency controls, and other architectural measures can reduce the risk. The tempting alternative is to rely on client-side isolation of localStorage, but JavaScript running under the same origin can access the stored value.
+###END
+
+### Q198
+LEVEL: senior
+TOPIC: OAuth 2.0 & OpenID Connect
+TYPE: scenario
+QUESTION: An OAuth 2.0 client uses the authorization code flow. It validates redirect URIs using partial domain matching, so for example `https://evil.example.com` is accepted under a rule intended for `https://example.com/callback`. What is the most important fix?
+A) Restrict the redirect URI to HTTP only
+B) Store the redirect URI in Base64-encoded form
+C) Bind redirect URIs to exact, pre-registered values and avoid loose wildcard or substring matching
+D) Set the redirect URI to a value provided by the user
+ANSWER: C
+EXPLANATION: Overly permissive redirect URI validation can allow an authorization code or other sensitive authorization response to be sent to an untrusted endpoint. The redirect URI should therefore be strictly bound to exact values registered for the client. The tempting alternative is substring-based domain validation because it seems intuitive, but it can easily allow unintended hostnames or paths.
+###END
+
+### Q199
+LEVEL: senior
+TOPIC: Authorization & access control
+TYPE: algorithm
+QUESTION: In a document API, the backend first checks whether the user is authenticated and then directly returns the document in the `GET /documents/{id}` response. The documents also have tenant- and owner-based access rules. What is missing?
+A) Base64-decoding the JWT payload
+B) Object-level authorization for the specific document, tenant, and user's actual permissions
+C) Changing the HTTP method to POST
+D) Hashing the document ID
+ANSWER: B
+EXPLANATION: Authentication only establishes who the user is; it does not determine whether the user can access a specific document. The application must check the tenant relationship, ownership, and permissions required for the specific operation at the object level. The tempting alternative is to hide or hash the object identifier, because that can make guessing harder, but it does not replace authorization.
+###END
+
+### Q200
+LEVEL: senior
+TOPIC: Security testing (SAST, DAST, pentest)
+TYPE: production
+QUESTION: An application's security pipeline runs SAST and DAST, but penetration testing repeatedly uncovers business-logic abuses that involve combining multiple legitimate functions. What is the most important conclusion?
+A) SAST and DAST should be disabled completely
+B) Security testing should be replaced entirely with dependency scanning
+C) Static and dynamic automated tests do not fully cover business logic on their own, so targeted abuse-case testing and manual security assessment are also needed
+D) The compiler should detect every business-logic flaw
+ANSWER: C
+EXPLANATION: SAST and DAST are valuable automated controls, but they have limited ability to identify attack chains that arise from combining multiple individually legitimate operations. Abuse-case testing, manual business-logic review, and targeted penetration testing are therefore important complements. The tempting alternative is to abandon automated testing entirely, but these tools remain valuable for early detection of vulnerabilities they are well suited to identify.
+###END

@@ -1,0 +1,3270 @@
+[
+ {
+  "id": 1,
+  "level": "junior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "theory",
+  "question": "Egy Linux rendszeren egy rendszerszintű konfigurációs fájlt szeretnél elhelyezni, amelyet több alkalmazás és adminisztrációs eszköz is használhat. Melyik könyvtár a leginkább megfelelő hely általános rendszerkonfigurációhoz?",
+  "options": [
+   "/etc",
+   "/opt",
+   "/var",
+   "/srv"
+  ],
+  "answer": 0,
+  "explanation": "Az `/etc` könyvtár a rendszerszintű konfigurációs fájlok hagyományos helye. Az `/opt` opcionálisan telepített szoftverekhez, a `/var` változó adatokhoz, a `/srv` pedig szolgáltatások által publikált adatokhoz használható. Az `/opt` azért lehet csábító, mert gyakran találhatók benne alkalmazásokhoz kapcsolódó fájlok, de általános konfigurációhoz nem ez a szabványos hely."
+ },
+ {
+  "id": 2,
+  "level": "junior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "output",
+  "question": "Mi lesz az alábbi parancs eredménye egy tipikus Linux rendszeren?",
+  "code": "touch report.txt\nchmod 640 report.txt\nls -l report.txt",
+  "options": [
+   "-rw-r----- 1 ... report.txt",
+   "-rwxr----- 1 ... report.txt",
+   "-rw-r--r-- 1 ... report.txt",
+   "-rw------- 1 ... report.txt"
+  ],
+  "answer": 0,
+  "explanation": "A `640` jogosultság tulajdonosnak `rw-`, csoportnak `r--`, másoknak pedig `---` jogosultságot jelent. Ezért a mód bitjei `-rw-r-----` lesznek. A `640` gyakori interjúcsapda, mert a csoport olvasási jogát könnyű figyelmen kívül hagyni."
+ },
+ {
+  "id": 3,
+  "level": "junior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "behavior",
+  "question": "Egy felhasználó létrehozása után azt szeretnéd, hogy az új felhasználónak saját elsődleges csoportja legyen ugyanazzal a névvel. Melyik parancs biztosítja ezt tipikus Linux rendszeren?",
+  "options": [
+   "useradd -G alice alice",
+   "useradd -g users alice",
+   "useradd -m alice",
+   "useradd -U alice"
+  ],
+  "answer": 3,
+  "explanation": "A `useradd -U alice` létrehozza az elsődleges csoportot az új felhasználó számára, és azt elsődleges csoportként rendeli hozzá. A `-G` további csoportokat kezel, a `-g users` egy már létező csoportot állítana be elsődlegesként, a `-m` pedig a home könyvtár létrehozására vonatkozik. A `-m` azért csábító, mert a felhasználó létrehozásakor gyakran szükség van home könyvtárra is, de ez nem a csoport létrehozását szabályozza."
+ },
+ {
+  "id": 4,
+  "level": "junior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "behavior",
+  "question": "Egy futó folyamat PID-je 1234. Melyik parancs küld neki alapértelmezés szerint szabályos, kérhető leállítást lehetővé tevő jelet?",
+  "options": [
+   "kill -9 1234",
+   "kill 1234",
+   "kill -STOP 1234",
+   "kill -KILL 1234"
+  ],
+  "answer": 1,
+  "explanation": "A `kill 1234` alapértelmezett jele a `SIGTERM`, amely lehetőséget ad a folyamatnak a szabályos leállásra és a takarításra. A `SIGKILL` azonnali, nem kezelhető leállítást okoz, a `SIGSTOP` pedig felfüggeszti a folyamatot. A `kill -9` azért csábító, mert biztosnak tűnik a beragadt folyamat megszüntetésére, de production környezetben általában először a `SIGTERM` a megfelelő választás."
+ },
+ {
+  "id": 5,
+  "level": "junior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "output",
+  "question": "Mit ír ki az alábbi Bash script?",
+  "code": "#!/usr/bin/env bash\nname=\"Linux\"\necho \"Hello $name\"",
+  "options": [
+   "Hello $name",
+   "Hello Linux",
+   "Hello \"Linux\"",
+   "name=Linux"
+  ],
+  "answer": 1,
+  "explanation": "A dupla idézőjelek között a Bash végrehajtja a változófeloldást, ezért `$name` értéke `Linux` lesz. Az eredmény `Hello Linux`. Az egyszerű idézőjel hasonló helyzetben nem oldaná fel a változót, ezért ez gyakori shell-szintaktikai csapda."
+ },
+ {
+  "id": 6,
+  "level": "junior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "output",
+  "question": "Mit eredményez az alábbi parancs?",
+  "code": "grep \"ERROR\" application.log > errors.log",
+  "options": [
+   "Az `ERROR` sorokat hozzáfűzi az `errors.log` végéhez.",
+   "Az `ERROR` sorokat törli az `application.log` fájlból.",
+   "Az `ERROR` sorokat az `errors.log` fájlba írja, felülírva annak korábbi tartalmát.",
+   "Az `application.log` teljes tartalmát az `errors.log` fájlba másolja."
+  ],
+  "answer": 2,
+  "explanation": "A `>` standard output redirectiont végez, és ha a célfájl létezik, felülírja annak tartalmát. A `grep` csak az `ERROR` mintát tartalmazó sorokat írja standard outputra. A `>>` lenne a hozzáfűzés, ezért az könnyen összekeverhető a `>` operátorral."
+ },
+ {
+  "id": 7,
+  "level": "junior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "output",
+  "question": "Mit ír ki az alábbi parancs?",
+  "code": "printf 'alice\\nbob\\ncarol\\n' | grep '^a'",
+  "options": [
+   "alice",
+   "bob",
+   "alice\ncarol",
+   "A teljes bemenetet"
+  ],
+  "answer": 0,
+  "explanation": "A `^` reguláris kifejezésben a sor elejét jelöli, ezért csak az `a` betűvel kezdődő sor illeszkedik. A három sor közül ez az `alice`. Az a feltételezés, hogy a `grep '^a'` minden `a` betűt tartalmazó sort megtalál, azért csábító, mert a `^` jelentése könnyen kimarad a fejben végzett elemzésből."
+ },
+ {
+  "id": 8,
+  "level": "junior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "theory",
+  "question": "Ubuntu vagy Debian rendszeren melyik eszköz használható egy csomag telepítésére és a szükséges függőségek kezelésére a konfigurált APT repositorykból?",
+  "options": [
+   "rpm",
+   "tar",
+   "apt",
+   "systemctl"
+  ],
+  "answer": 2,
+  "explanation": "Az `apt` Debian-alapú rendszereken a csomagok telepítését, frissítését és függőségeinek kezelését végzi a konfigurált repositoryk alapján. Az `rpm` alacsonyabb szintű RPM csomagkezelő, a `tar` archívumokat kezel, a `systemctl` pedig systemd unitokat vezérel. Az `rpm` azért csábító, mert szintén Linuxos csomagokkal foglalkozik, de nem ez az Ubuntu/Debian elsődleges magas szintű csomagkezelője."
+ },
+ {
+  "id": 9,
+  "level": "junior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "behavior",
+  "question": "Egy systemd által kezelt `nginx.service` szolgáltatást szeretnél úgy elindítani, hogy a következő boot során is automatikusan elinduljon. Melyik parancspár megfelelő?",
+  "options": [
+   "systemctl start nginx && systemctl enable nginx",
+   "systemctl enable nginx && systemctl reload nginx",
+   "systemctl start nginx && systemctl reload nginx",
+   "systemctl enable nginx && systemctl restart nginx"
+  ],
+  "answer": 0,
+  "explanation": "A `systemctl start` az aktuális futó rendszeren indítja el a szolgáltatást, míg a `systemctl enable` a boot során történő automatikus indítást konfigurálja. Az `enable` önmagában nem feltétlenül indítja el azonnal a szolgáltatást. A `restart` azért lehet csábító, mert futó szolgáltatás esetén gyakran használják, de itt nem biztosítja a boot-time engedélyezést."
+ },
+ {
+  "id": 10,
+  "level": "junior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "output",
+  "question": "Egy Linux gépen az alábbi parancsot futtatod. Mit mutat elsősorban?",
+  "code": "ip addr show",
+  "options": [
+   "A rendszer DNS cache-ének tartalmát",
+   "A hálózati interfészeket és a hozzájuk tartozó IP-címeket",
+   "A TCP kapcsolatok aktuális állapotát",
+   "A routing tábla teljes tartalmát"
+  ],
+  "answer": 1,
+  "explanation": "Az `ip addr show` a hálózati interfészeket, azok állapotát és a hozzárendelt IPv4/IPv6 címeket jeleníti meg. TCP kapcsolatokhoz például `ss`, routinghoz pedig `ip route` használható. Az `ip` parancs általános hálózati eszköz, ezért könnyű azt gondolni, hogy minden hálózati információt ugyanaz a subcommand jelenít meg."
+ },
+ {
+  "id": 11,
+  "level": "junior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "scenario",
+  "question": "Egy szerverhez SSH-val szeretnél csatlakozni a `deploy` felhasználóval a `server.example.com` hoston, és az SSH szerver a 2222-es porton figyel. Melyik parancs helyes?",
+  "options": [
+   "ssh deploy@server.example.com:2222",
+   "ssh -p 2222 deploy@server.example.com",
+   "ssh deploy@server.example.com 2222",
+   "ssh --port=22 deploy@server.example.com"
+  ],
+  "answer": 1,
+  "explanation": "Az SSH kliensnél a `-p` kapcsoló adja meg a célportot, ezért a helyes forma `ssh -p 2222 deploy@server.example.com`. A `host:port` szintaxis sok más hálózati eszköznél ismert, de az OpenSSH kliens nem így várja a portot. Ez az egyik gyakori SSH parancssori interjúcsapda."
+ },
+ {
+  "id": 12,
+  "level": "junior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "output",
+  "question": "Mit szeretnél elsősorban megvizsgálni az alábbi paranccsal?",
+  "code": "df -h",
+  "options": [
+   "Egy könyvtárban található fájlok számát",
+   "A memória és swap aktuális használatát",
+   "A fájlrendszerek szabad és foglalt tárhelyét ember által olvasható formában",
+   "A futó folyamatok által nyitott fájlokat"
+  ],
+  "answer": 2,
+  "explanation": "A `df -h` a csatolt fájlrendszerek tárhelyhasználatát mutatja, például teljes, használt és szabad kapacitást ember által olvasható egységekben. A `du` inkább könyvtárak és fájlok által elfoglalt helyének vizsgálatára való. A `du` azért lehet csábító, mert lemezterület-problémáknál gyakran együtt használjuk a `df`-fel, de más kérdésre válaszol."
+ },
+ {
+  "id": 13,
+  "level": "junior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "output",
+  "question": "Melyik parancs segítségével kérdezheted le egy systemd szolgáltatás, például az `nginx.service` journal bejegyzéseit?",
+  "options": [
+   "journalctl -u nginx.service",
+   "systemctl -l nginx.service",
+   "logctl --service nginx.service",
+   "systemd-log nginx.service"
+  ],
+  "answer": 0,
+  "explanation": "A `journalctl -u nginx.service` az adott systemd unit journal bejegyzéseit szűri ki. Ez különösen hasznos szolgáltatásindítási és runtime hibák vizsgálatánál. A `systemctl` a szolgáltatás állapotának és vezérlésének eszköze, ezért csábító lehet azt használni minden systemd-vel kapcsolatos diagnosztikára, de a naplók lekérdezésére a `journalctl` szolgál."
+ },
+ {
+  "id": 14,
+  "level": "junior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "behavior",
+  "question": "Egy feladatot minden nap 02:30-kor szeretnél futtatni cronból. Melyik bejegyzés felel meg ennek?",
+  "options": [
+   "30 2 * * * /usr/local/bin/backup.sh",
+   "2 30 * * * /usr/local/bin/backup.sh",
+   "* 30 2 * * /usr/local/bin/backup.sh",
+   "30 * 2 * * /usr/local/bin/backup.sh"
+  ],
+  "answer": 0,
+  "explanation": "A cron öt mezője ebben a sorrendben: perc, óra, hónap napja, hónap, hét napja. A `30 2 * * *` ezért minden nap 02:30-kor fut. A `2 30 * * *` 30:02-ként értelmezhetetlen lenne, ami azért csábító, mert természetes nyelvben az óra-perc sorrendet használjuk."
+ },
+ {
+  "id": 15,
+  "level": "junior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "output",
+  "question": "Mi lesz az alábbi Bash parancssorok eredménye?",
+  "code": "export APP_ENV=production\nbash -c 'echo \"$APP_ENV\"'",
+  "options": [
+   "production",
+   "APP_ENV",
+   "Üres sor",
+   "bash: APP_ENV: command not found"
+  ],
+  "answer": 0,
+  "explanation": "Az `export` az `APP_ENV` változót exportált környezeti változóvá teszi, így az aktuális shellből indított gyermekprocessz, jelen esetben az új Bash is megkapja. Ezért a gyermek shell `production` értéket ír ki. Az a tévhit, hogy a shellváltozók soha nem öröklődnek, azért csábító, mert az export nélküli változók valóban nem kerülnek automatikusan a gyermek környezetébe."
+ },
+ {
+  "id": 16,
+  "level": "junior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "output",
+  "question": "Egy szerveren hirtelen magas CPU-használatot tapasztalsz. Melyik parancs ad gyors, interaktív áttekintést a futó folyamatok CPU- és memóriahasználatáról?",
+  "options": [
+   "df -h",
+   "top",
+   "ip addr",
+   "free -d"
+  ],
+  "answer": 1,
+  "explanation": "A `top` folyamatosan frissülő képet ad a folyamatokról, és többek között CPU- és memóriahasználatot is megjelenít. A `df` fájlrendszerkapacitást, az `ip addr` hálózati címeket, a `free` pedig memóriát mutat. A `free` azért csábító, mert performance hibáknál fontos eszköz, de önmagában nem mutatja meg, melyik folyamat használja a CPU-t."
+ },
+ {
+  "id": 17,
+  "level": "junior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "theory",
+  "question": "Melyik parancs használható a futó Linux kernel verziójának gyors megtekintésére?",
+  "options": [
+   "uname -r",
+   "kernelctl --version",
+   "systemctl kernel-version",
+   "lsmod -r"
+  ],
+  "answer": 0,
+  "explanation": "A `uname -r` a futó kernel release verzióját jeleníti meg. Az `lsmod` betöltött kernelmodulokat listázza, a `systemctl` pedig systemd unitokkal dolgozik. Az `uname -a` is hasznos lehet, de a konkrét kernel release lekérdezésére az `uname -r` a célzottabb parancs."
+ },
+ {
+  "id": 18,
+  "level": "junior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "trap",
+  "question": "Egy SSH szerveren azt szeretnéd elérni, hogy a root felhasználó közvetlenül ne tudjon SSH-val bejelentkezni. Melyik `sshd_config` beállítás szolgál erre?",
+  "options": [
+   "RootLogin disabled",
+   "PermitRootLogin no",
+   "DisableRootSSH yes",
+   "AllowRootLogin false"
+  ],
+  "answer": 1,
+  "explanation": "Az OpenSSH konfigurációban a `PermitRootLogin no` tiltja a root közvetlen SSH-bejelentkezését. A beállítás módosítása után a konfigurációt megfelelően ellenőrizni és az SSH szolgáltatást újra kell tölteni vagy indítani. A `RootLogin disabled` azért csábító, mert természetes angol megfogalmazásnak tűnik, de nem érvényes OpenSSH konfigurációs direktíva."
+ },
+ {
+  "id": 19,
+  "level": "junior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "scenario",
+  "question": "Egy alkalmazás futás közben folyamatosan generál logokat és ideiglenes állapotadatokat, amelyek mérete változhat. Melyik könyvtár a leginkább megfelelő a változó rendszeradatok számára?",
+  "options": [
+   "/bin",
+   "/usr",
+   "/var",
+   "/boot"
+  ],
+  "answer": 2,
+  "explanation": "A `/var` olyan változó adatokat tartalmaz, mint a logok, spoolok, cache-ek és egyéb runtime adatok. A `/usr` főként telepített felhasználói és rendszerprogramok statikusabb komponenseit tartalmazza, a `/boot` a bootoláshoz szükséges fájlokat, a `/bin` pedig alapvető végrehajtható programokat. A `/tmp` azért lehet csábító, mert ideiglenes fájlok kerülhetnek oda, de általános változó rendszeradatokhoz a `/var` megfelelőbb."
+ },
+ {
+  "id": 20,
+  "level": "junior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "output",
+  "question": "Egy fájl jogosultsága `-rwxr-x---`. Melyik állítás helyes?",
+  "options": [
+   "A tulajdonos írhatja és olvashatja, de nem futtathatja.",
+   "A tulajdonos minden jogosultsággal rendelkezik, a csoport olvashatja és futtathatja, másoknak nincs jogosultságuk.",
+   "A tulajdonos és mindenki más olvashatja és futtathatja.",
+   "A csoport írhatja is a fájlt, de nem futtathatja."
+  ],
+  "answer": 1,
+  "explanation": "Az `rwx` a tulajdonos számára olvasást, írást és végrehajtást jelent; az `r-x` a csoport számára olvasást és végrehajtást; a `---` pedig mások számára semmilyen jogosultságot. Azért csábító azt gondolni, hogy a csoport írhatja is a fájlt, mert az `x` és `w` jelölések könnyen összekeverhetők gyors olvasáskor."
+ },
+ {
+  "id": 21,
+  "level": "junior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "edgecase",
+  "question": "Mit ír ki az alábbi script?",
+  "code": "#!/usr/bin/env bash\nvalue=\"\"\nif [ -n \"$value\" ]; then\n    echo \"set\"\nelse\n    echo \"empty\"\nfi",
+  "options": [
+   "set",
+   "empty",
+   "0",
+   "A script szintaktikai hibával leáll"
+  ],
+  "answer": 1,
+  "explanation": "A `-n` teszt akkor igaz, ha a string hossza nem nulla. Mivel a `value` üres string, a feltétel hamis, így az `empty` jelenik meg. Az `-z` az üres string tesztelésére szolgálna. Gyakori csapda azt feltételezni, hogy egy definiált változó automatikusan nem üres, holott a változó létezhet üres értékkel is."
+ },
+ {
+  "id": 22,
+  "level": "junior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "output",
+  "question": "Mit ír ki az alábbi parancs?",
+  "code": "printf 'one\\ntwo\\nthree\\n' | wc -l",
+  "options": [
+   "0",
+   "2",
+   "3",
+   "4"
+  ],
+  "answer": 2,
+  "explanation": "A `printf` három sort generál, mindegyik végén újsor karakterrel. A `wc -l` az újsor karakterek számát számolja, ezért az eredmény 3. Azért lehet csábító a 4, mert három tartalmi sor és egy lezáró üres sor elképzelése hibásan jelenhet meg fejben, de itt nincs negyedik newline."
+ },
+ {
+  "id": 23,
+  "level": "junior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "debug",
+  "question": "Egy szerveren az alkalmazás elérhető localhostról, de egy másik gépről nem. Az alábbiak közül melyik vizsgálat segít közvetlenül megállapítani, hogy mely TCP portokon figyelnek helyi socketek?",
+  "options": [
+   "ss -lnt",
+   "df -h",
+   "ip neigh flush all",
+   "uname -a"
+  ],
+  "answer": 0,
+  "explanation": "Az `ss -lnt` a TCP listening socketeket mutatja numerikus formában, így megállapítható például, hogy egy alkalmazás melyik porton figyel. Ha csak `127.0.0.1` címre bindol, távoli gépről nem lesz közvetlenül elérhető. Az `ip addr` is hálózati diagnosztikai eszköz, de nem azt mutatja meg, hogy mely TCP portokon vannak listening socketek."
+ },
+ {
+  "id": 24,
+  "level": "junior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "scenario",
+  "question": "Egy systemd szolgáltatás indulás után azonnal leáll. Melyik megközelítés a legcélszerűbb első lépés a szolgáltatás állapotának és friss naplóinak vizsgálatához?",
+  "options": [
+   "rm -rf /var/log/*",
+   "systemctl status service-name, majd journalctl -u service-name",
+   "reboot, majd ismételt indítás",
+   "chmod 777 /etc/systemd/system/service-name.service"
+  ],
+  "answer": 1,
+  "explanation": "A `systemctl status` megmutatja az unit aktuális állapotát és gyakran az utolsó naplóüzeneteket is, míg a `journalctl -u` részletesebb journal bejegyzéseket ad. A többi megoldás adatvesztést vagy indokolatlan rendszer-módosítást okozhat, és nem diagnosztizálja érdemben a problémát. A reboot azért csábító, mert néha átmeneti hibákat valóban megszüntet, de production hibakeresésnél először a bizonyítékok összegyűjtése fontos."
+ },
+ {
+  "id": 25,
+  "level": "junior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "output",
+  "question": "Egy Bash shellben lefuttatod az alábbi parancsokat. Mi történik?",
+  "code": "sleep 100 &\necho $!",
+  "options": [
+   "Az `echo` mindig a `sleep` visszatérési kódját írja ki.",
+   "Az `echo` a shell aktuális PID-jét írja ki.",
+   "Az `echo` a háttérben indított legutóbbi folyamat PID-jét írja ki.",
+   "Az `echo` a `sleep` hátralévő másodperceinek számát írja ki."
+  ],
+  "answer": 2,
+  "explanation": "A `&` háttérben indítja a `sleep` folyamatot, a `$!` pedig a shellben a legutóbb háttérben elindított pipeline vagy process PID-jét tartalmazza. Ez az érték például később használható `kill $!` formában a háttérfolyamat leállítására. A `$?` jelentené az előző parancs visszatérési kódját, ezért annak összekeverése a `$!` változóval gyakori shell-interjúcsapda."
+ },
+ {
+  "id": 26,
+  "level": "junior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "theory",
+  "question": "Egy Linux rendszeren egy harmadik féltől származó, saját könyvtárstruktúrát használó alkalmazást szeretnél telepíteni úgy, hogy ne keverd össze az operációs rendszer csomagjaival. Melyik könyvtár a leginkább erre való?",
+  "options": [
+   "/opt",
+   "/etc",
+   "/run",
+   "/proc"
+  ],
+  "answer": 0,
+  "explanation": "Az `/opt` könyvtárat opcionális, jellemzően harmadik féltől származó alkalmazásszoftverek telepítésére használják. Az `/etc` konfigurációra, a `/run` runtime állapotra, a `/proc` pedig kernel- és processzinformációk virtuális megjelenítésére szolgál. Az `/usr` is tartalmazhat alkalmazásokat, de saját, csomagfüggetlen alkalmazás telepítésére az `/opt` tipikusabb választás."
+ },
+ {
+  "id": 27,
+  "level": "junior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "output",
+  "question": "Egy könyvtár jogosultságai a következők:\nMit jelentenek ezek a jogosultságok a csoport tagjai számára?",
+  "code": "drwxr-x---",
+  "options": [
+   "A könyvtárban lévő fájlokat olvashatják és törölhetik.",
+   "Beléphetnek a könyvtárba és listázhatják annak tartalmát, valamint hozzáférhetnek azokhoz az objektumokhoz, amelyekhez egyébként is van jogosultságuk.",
+   "Teljes hozzáférésük van a könyvtárhoz.",
+   "Semmilyen módon nem férhetnek hozzá a könyvtárhoz."
+  ],
+  "answer": 1,
+  "explanation": "Könyvtáraknál az `r` jogosultság lehetővé teszi a könyvtár bejegyzéseinek listázását, az `x` pedig a könyvtár bejárását (traversal), vagyis az objektumokhoz való hozzáférést a hozzájuk tartozó további jogosultságok alapján. Az `r-x` ezért a csoport számára listázást és bejárást biztosít, de önmagában nem ad írási vagy törlési jogosultságot. Fontos interjúcsapda, hogy könyvtáraknál az `x` nem egyszerűen „végrehajtást” jelent, hanem a könyvtár bejárásához szükséges jogosultságot."
+ },
+ {
+  "id": 28,
+  "level": "junior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "scenario",
+  "question": "Egy meglévő `alice` felhasználót szeretnél hozzáadni az `developers` csoporthoz úgy, hogy a jelenlegi supplementary group tagságai megmaradjanak. Melyik parancs a megfelelő?",
+  "options": [
+   "usermod -G developers alice",
+   "groupadd developers alice",
+   "usermod -aG developers alice",
+   "useradd -G developers alice"
+  ],
+  "answer": 2,
+  "explanation": "Az `usermod -aG developers alice` az `developers` csoportot hozzáadja a felhasználó supplementary groupjaihoz. Az `-a` append módban működik; nélküle a `-G` felülírhatja a meglévő supplementary group listát. Ezért az `usermod -G developers alice` különösen veszélyes production környezetben, mert véletlenül elveszítheti a korábbi csoporttagságokat."
+ },
+ {
+  "id": 29,
+  "level": "junior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "output",
+  "question": "Mit jelenít meg az alábbi parancs?",
+  "code": "ps -ef",
+  "options": [
+   "Az összes fájlrendszer szabad területét.",
+   "Az aktuális shell által indított folyamatokat részletesen.",
+   "Csak a kernel threadeket.",
+   "A rendszeren futó folyamatok részletes listáját, többek között a felhasználóval és a PID-del."
+  ],
+  "answer": 3,
+  "explanation": "A `ps -ef` széles formátumban jeleníti meg a rendszeren futó folyamatokat, többek között a felhasználót, PID-et, PPID-et és a teljes parancssort. Az `ps` alapértelmezett formája más folyamatkört jeleníthet meg, ezért a kapcsolók jelentése fontos. A `ps -ef` könnyen összekeverhető a csak aktuális shellhez kapcsolódó `ps` használatával."
+ },
+ {
+  "id": 30,
+  "level": "junior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "edgecase",
+  "question": "Mi lesz az alábbi script kimenete?",
+  "code": "#!/usr/bin/env bash\nfiles=\"one two three\"\nfor file in $files; do\n    echo \"[$file]\"\ndone",
+  "options": [
+   "[one]\n[two]\n[three]",
+   "[one two three]",
+   "[files]",
+   "A script hibával leáll"
+  ],
+  "answer": 0,
+  "explanation": "A `for file in $files` esetén a nem idézőjelezett változófeloldás után a shell word splittinget végez, így három külön szót kapunk: `one`, `two` és `three`. Ezért három külön sor jelenik meg. A változó idézőjelezése itt más eredményt adna, ezért shell scriptingben a quoting hiánya gyakori és fontos interjúcsapda."
+ },
+ {
+  "id": 31,
+  "level": "junior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "behavior",
+  "question": "Mit csinál az alábbi parancs?",
+  "code": "command 2>/dev/null",
+  "options": [
+   "A standard outputot eldobja.",
+   "A standard inputot átirányítja a `/dev/null` fájlba.",
+   "A standard error kimenetet a `/dev/null` eszközre irányítja.",
+   "A parancs összes kimenetét a `/dev/null` eszközre irányítja."
+  ],
+  "answer": 2,
+  "explanation": "A `2` a standard error file descriptora, ezért a `2>/dev/null` kizárólag a standard error streamet irányítja a `/dev/null` eszközre. A standard output változatlan marad. Azért csábító a teljes kimenet eldobására gondolni, mert a `/dev/null` gyakran valóban kimenetek elnyelésére használatos, de a file descriptor számától függ, melyik stream érintett."
+ },
+ {
+  "id": 32,
+  "level": "junior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "output",
+  "question": "Mi lesz az alábbi parancs kimenete?",
+  "code": "printf 'alice:1000\\nbob:1001\\n' | awk -F: '{print $2}'",
+  "options": [
+   "alice\nbob",
+   "1000\n1001",
+   "alice:1000\nbob:1001",
+   "2"
+  ],
+  "answer": 1,
+  "explanation": "Az `-F:` a kettőspontot állítja be mezőelválasztóként. Így az első sor `$1` értéke `alice`, `$2` értéke `1000`, a második sorban pedig `$2` értéke `1001`. Az egész sorokat visszaadó `$0` és a mezőket jelentő `$1`, `$2` megkülönböztetése gyakori `awk` interjúcsapda."
+ },
+ {
+  "id": 33,
+  "level": "junior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "scenario",
+  "question": "Egy Ubuntu szerveren szeretnéd frissíteni a csomaglistát a konfigurált repositorykból, de még nem szeretnél csomagokat telepíteni vagy frissíteni. Melyik parancs erre a megfelelő?",
+  "options": [
+   "apt update",
+   "apt upgrade",
+   "apt install",
+   "apt refresh-packages"
+  ],
+  "answer": 0,
+  "explanation": "Az `apt update` letölti és frissíti a konfigurált repositoryk csomagindexeit. Az `apt upgrade` már telepített csomagok frissítését végzi. Az `apt install` konkrét csomag telepítésére szolgál, míg az `apt refresh-packages` nem szabványos APT parancs. Az `apt upgrade` azért csábító, mert a hétköznapi nyelvben a \"frissítés\" mindkét műveletet jelentheti."
+ },
+ {
+  "id": 34,
+  "level": "junior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "debug",
+  "question": "Egy systemd szolgáltatás konfigurációját módosítottad egy unit fájlban, majd ezt futtatod:\nA szolgáltatás újraindul, de úgy tűnik, hogy a systemd még mindig a régi unit konfigurációt használja. Mi a legvalószínűbb következő lépés?",
+  "code": "sudo systemctl restart myapp",
+  "options": [
+   "systemctl enable myapp",
+   "systemctl daemon-reload",
+   "systemctl mask myapp",
+   "systemctl reset-failed myapp"
+  ],
+  "answer": 1,
+  "explanation": "Ha magát a unit fájlt módosítottad, a systemd manager konfigurációját újra kell tölteni a `systemctl daemon-reload` paranccsal, mielőtt az új konfigurációt használó restart történik. A `restart` önmagában nem feltétlenül olvassa újra a módosított unit definíciót. Az `enable` azért csábító, mert szintén unit konfigurációval kapcsolatos művelet, de a boot-time indítást kezeli."
+ },
+ {
+  "id": 35,
+  "level": "junior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "debug",
+  "question": "Egy szerverre DNS névvel nem tudsz csatlakozni, de az IP-cím közvetlen használatával igen. Melyik parancs a legközvetlenebb választás annak ellenőrzésére, hogy a név feloldható-e DNS-en keresztül?",
+  "options": [
+   "ss -tuln",
+   "ip route",
+   "ping -c 1 127.0.0.1",
+   "dig server.example.com"
+  ],
+  "answer": 3,
+  "explanation": "A `dig` közvetlenül DNS-lekérdezést végez, és részletes információt ad a névfeloldás eredményéről és a használt DNS szerverről. Az `ss` socketeket, az `ip route` routingot, a loopback ping pedig csak a helyi TCP/IP stack alapvető elérhetőségét vizsgálja. A `ping` azért csábító, mert névfeloldást is végezhet, de az ICMP válasz hiánya és a DNS probléma két külön kérdés."
+ },
+ {
+  "id": 36,
+  "level": "junior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "scenario",
+  "question": "Egy szerverhez gyakran csatlakozol SSH-val, és szeretnéd, hogy a kliens automatikusan a `deploy` felhasználót, a `2222`-es portot és egy adott privát kulcsot használjon. Hol érdemes ezt kliensoldalon konfigurálni?",
+  "options": [
+   "/etc/hosts",
+   "~/.ssh/config",
+   "~/.ssh/authorized_keys",
+   "/etc/ssh/sshd_config"
+  ],
+  "answer": 1,
+  "explanation": "A `~/.ssh/config` az SSH kliensoldali konfigurációs fájlja, ahol hostonként megadható például a `User`, `Port` és `IdentityFile`. Az `authorized_keys` a szerveroldalon a felhasználó elfogadott publikus kulcsait tartalmazza, az `sshd_config` pedig a szerver konfigurációja. Az `/etc/hosts` azért lehet csábító, mert szintén hostnevekkel kapcsolatos, de nem SSH-specifikus kapcsolatbeállításokat tárol."
+ },
+ {
+  "id": 37,
+  "level": "junior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "output",
+  "question": "Egy könyvtár méretét szeretnéd megvizsgálni, beleértve az alatta található fájlokat és alkönyvtárakat is. Melyik parancs a legközvetlenebb választás?",
+  "code": "du -sh /var/log",
+  "options": [
+   "A `/var/log` által elfoglalt összes helyet összesítve, ember által olvasható formában.",
+   "A teljes `/var` fájlrendszer szabad helyét.",
+   "A `/var/log` fájlrendszer mount opcióit.",
+   "A `/var/log` könyvtárban található fájlok számát."
+  ],
+  "answer": 0,
+  "explanation": "A `du` a fájlok és könyvtárak által elfoglalt lemezterületet összegzi, a `-s` csak az összesítést, a `-h` pedig ember által olvasható formátumot kér. A `df` ezzel szemben a teljes fájlrendszer kapacitását mutatja. A `df` azért csábító, mert ugyanúgy lemezterülettel foglalkozik, de nem egy adott könyvtár tartalmának méretét méri."
+ },
+ {
+  "id": 38,
+  "level": "junior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "output",
+  "question": "Egy systemd szolgáltatás legfrissebb naplóbejegyzéseit szeretnéd élőben követni, hasonlóan a `tail -f` működéséhez. Melyik parancs megfelelő?",
+  "options": [
+   "journalctl -u nginx.service --boot",
+   "journalctl -u nginx.service --vacuum-time=1h",
+   "journalctl -u nginx.service -f",
+   "journalctl -u nginx.service --clear"
+  ],
+  "answer": 2,
+  "explanation": "A `-f` a journalctl esetén folyamatos követést jelent, így az újonnan érkező naplóbejegyzések megjelennek. A `--boot` boothoz kötött szűrést, a `--vacuum-time` régi journal adatok törlését szolgálja, a `--clear` pedig nem a kívánt log-follow művelet. A `tail -f` ismerete miatt könnyű olyan journalctl kapcsolót keresni, amely szó szerint `tail`-t tartalmazna."
+ },
+ {
+  "id": 39,
+  "level": "junior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "trap",
+  "question": "Egy cron jobnak egy scriptet kell futtatnia, amely a `/opt/app` könyvtárban található. A script relatív útvonalakat és egy adott munkakönyvtárat feltételez. Mi a legbiztonságosabb megközelítés?",
+  "options": [
+   "Feltételezni, hogy a cron ugyanabban a munkakönyvtárban indul, mint az adminisztrátor shellje.",
+   "Minden relatív útvonalat változtatás nélkül hagyni, mert a cron automatikusan a script könyvtárába lép.",
+   "A scriptet mindig `/tmp` alól futtatni.",
+   "A scriptben vagy a cron parancsban explicit módon meghatározni a szükséges abszolút útvonalakat és munkakönyvtárat."
+  ],
+  "answer": 3,
+  "explanation": "A cron környezete nem azonos egy interaktív felhasználói shell környezetével, ezért a relatív útvonalakra és implicit munkakönyvtárra építeni megbízhatatlan. Az abszolút útvonalak és szükség esetén explicit `cd` használata determinisztikusabbá teszi a futást. Az a feltételezés, hogy cron automatikusan a script könyvtárában indul, gyakori, de nem biztonságos feltételezés."
+ },
+ {
+  "id": 40,
+  "level": "junior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "behavior",
+  "question": "Mi történik az alábbi parancsok esetén?",
+  "code": "APP_ENV=production\nbash -c 'echo \"$APP_ENV\"'",
+  "options": [
+   "A második parancs `production` értéket ír ki.",
+   "A második parancs üres sort ír ki.",
+   "A második parancs mindig hibával leáll.",
+   "A `bash` nem indul el, mert az `APP_ENV` nincs exportálva."
+  ],
+  "answer": 1,
+  "explanation": "Az `APP_ENV=production` létrehoz egy shellváltozót az aktuális shellben, de nem exportálja azt a környezetbe. A gyermek Bash ezért nem kapja meg ezt a változót, így a kifejezés üres stringre bővül. Az `export APP_ENV=production` esetén a gyermek shell már megkapná az értéket. Azért csábító a `production` választása, mert a változó az aktuális shellben valóban létezik."
+ },
+ {
+  "id": 41,
+  "level": "junior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "scenario",
+  "question": "Egy szerveren az alkalmazás időnként nagyon lassú, és azt gyanítod, hogy memóriahiány vagy swap használat áll a háttérben. Melyik parancs ad gyors áttekintést a RAM és swap állapotáról?",
+  "options": [
+   "free -h",
+   "lsof -i",
+   "lsblk -f",
+   "uptime -p"
+  ],
+  "answer": 0,
+  "explanation": "A `free -h` a teljes, használt és elérhető memóriát, valamint a swap állapotát mutatja ember által olvasható formában. Az `lsof -i` hálózati fájlokat és socketeket, az `lsblk` blokkeszközöket, az `uptime` pedig uptime-ot és load információt jelenít meg. Az `uptime` azért lehet csábító, mert a load average gyakran összefügg teljesítményproblémákkal, de nem ad közvetlen memóriaképet."
+ },
+ {
+  "id": 42,
+  "level": "junior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "output",
+  "question": "Mit ad meg az alábbi parancs?",
+  "code": "lsmod",
+  "options": [
+   "A jelenleg betöltött kernelmodulok listáját.",
+   "A rendszerben található összes fájlrendszer mount pontját.",
+   "A boot során használt kernel paramétereket.",
+   "A futó processzek által használt shared library-kat."
+  ],
+  "answer": 0,
+  "explanation": "Az `lsmod` a jelenleg betöltött Linux kernelmodulokat listázza, többek között a modul nevét és méretét, valamint függőségi információt. A mountokhoz `findmnt` vagy hasonló eszköz használható, a kernel paraméterek más forrásokból vizsgálhatók. A shared library-k vizsgálatához például `ldd` vagy `/proc/<pid>/maps` lehet releváns."
+ },
+ {
+  "id": 43,
+  "level": "junior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "scenario",
+  "question": "Egy Linux szerveren egy normál felhasználó számára csak egyetlen konkrét adminisztrációs parancs használatát szeretnéd engedélyezni root jogosultsággal. Mi a megfelelő általános megoldás?",
+  "options": [
+   "A felhasználónak 777 jogosultságot adni a parancsra.",
+   "A felhasználót root csoportba tenni.",
+   "Egy célzott `sudoers` szabályt létrehozni a szükséges parancsra.",
+   "A root jelszót megadni a felhasználónak."
+  ],
+  "answer": 2,
+  "explanation": "A célzott `sudoers` szabály lehetővé teszi a szükséges parancs rootként történő futtatását anélkül, hogy a felhasználó teljes root hozzáférést kapna. A fájl jogosultságainak lazítása vagy a root csoporthoz adás ennél szélesebb jogosultságot biztosíthat. A root jelszó megosztása auditálhatósági és biztonsági szempontból is rossz gyakorlat, ezért a least privilege elvét érdemes követni."
+ },
+ {
+  "id": 44,
+  "level": "junior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "behavior",
+  "question": "Egy fájl tulajdonosa `alice`, csoportja `developers`, jogosultsága pedig `640`. `bob` tagja a `developers` csoportnak. Mit tehet `bob` a fájllal?",
+  "options": [
+   "Olvashatja, de nem írhatja és nem futtathatja.",
+   "Olvashatja és írhatja, de nem futtathatja.",
+   "Teljes hozzáférése van.",
+   "Semmilyen hozzáférése nincs."
+  ],
+  "answer": 0,
+  "explanation": "A `640` azt jelenti, hogy a tulajdonos `rw-`, a csoport `r--`, mások pedig `---` jogosultságot kapnak. Mivel `bob` a fájl csoportjának tagja, rá a csoport jogosultságai vonatkoznak, tehát olvashatja a fájlt, de nem írhatja vagy futtathatja. Gyakori csapda, hogy valaki a fájl tulajdonosának jogosultságait alkalmazza a csoporttagra is."
+ },
+ {
+  "id": 45,
+  "level": "junior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "debug",
+  "question": "Mi a probléma az alábbi Bash kóddal, ha a cél az volt, hogy a script az első argumentumot ellenőrizze?",
+  "code": "#!/usr/bin/env bash\nif [ $1 = \"start\" ]; then\n    echo \"starting\"\nfi",
+  "options": [
+   "A `[` parancs nem használható stringek összehasonlítására.",
+   "Az idézőjelek hiánya miatt a script hibázhat, ha `$1` üres vagy szóközt tartalmaz; célszerű `\"$1\"` formában használni.",
+   "A `$1` mindig az első környezeti változó.",
+   "A `if` csak numerikus összehasonlításokat támogat."
+  ],
+  "answer": 1,
+  "explanation": "Ha nincs első argumentum, a kifejezés például `[ = \"start\" ]` formára eshet szét, ami szintaktikai hibát okozhat. Az idézőjelezett `\"$1\"` megőrzi az argumentumot egyetlen shell wordként, ezért biztonságosabb. A `[ ]` string összehasonlításra is használható, így a valódi probléma a nem megfelelő quoting."
+ },
+ {
+  "id": 46,
+  "level": "junior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "algorithm",
+  "question": "Egy fájlban csak azokat a sorokat szeretnéd kiírni, amelyek pontosan `ERROR` szöveget tartalmaznak, tehát sem előtte, sem utána nem lehet más karakter. Melyik parancs felel meg ennek?",
+  "options": [
+   "grep \"ERROR\" application.log",
+   "grep \"^ERROR\" application.log",
+   "grep \"ERROR$\" application.log",
+   "grep \"^ERROR$\" application.log"
+  ],
+  "answer": 3,
+  "explanation": "A `^` a sor elejét, a `$` pedig a sor végét jelöli, ezért a `^ERROR$` csak azokat a sorokat illeszti, amelyek teljes tartalma pontosan `ERROR`. A csak `ERROR` mintát használó keresés hosszabb szövegeket is megtalálna. A sor elejének vagy végének külön-külön történő rögzítése könnyen összekeverhető a teljes sorra történő illesztéssel."
+ },
+ {
+  "id": 47,
+  "level": "junior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "debug",
+  "question": "Egy SSH szerverhez kulcsalapú hitelesítést használsz. A kliens megtalálja a privát kulcsot, de a szerver elutasítja a hitelesítést. Melyik szerveroldali fájl tartalmazza tipikusan az adott felhasználó engedélyezett publikus kulcsait?",
+  "options": [
+   "~/.ssh/known_hosts",
+   "/etc/ssh/ssh_config",
+   "~/.ssh/authorized_keys",
+   "~/.ssh/id_rsa.pub"
+  ],
+  "answer": 2,
+  "explanation": "A `~/.ssh/authorized_keys` tartalmazza az adott felhasználó számára engedélyezett publikus SSH kulcsokat a szerveren. A `known_hosts` a kliens által ismert szerverek host key-jeit tárolja, az `id_rsa.pub` pedig tipikusan a kliens saját publikus kulcsa. A `known_hosts` azért csábító, mert szintén SSH-kulcsokat tartalmaz, de más célra szolgál."
+ },
+ {
+  "id": 48,
+  "level": "junior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "scenario",
+  "question": "Egy új blokkos eszközt csatlakoztattál a Linux szerverhez, és szeretnéd megállapítani, hogy milyen lemezek, partíciók és azok mount pontjai láthatók a rendszerben. Melyik parancs a leginkább megfelelő kiindulópont?",
+  "options": [
+   "lsblk",
+   "chmod",
+   "ps aux",
+   "journalctl -k"
+  ],
+  "answer": 0,
+  "explanation": "Az `lsblk` blokkos eszközöket és azok hierarchiáját, partícióit, valamint megfelelő opciókkal a fájlrendszer- és mountinformációkat is meg tudja jeleníteni. A `journalctl -k` kernelnaplókat mutat, amelyek szintén hasznosak lehetnek új hardver csatlakoztatásakor, de nem ez a legközvetlenebb eszköz az eszközstruktúra áttekintésére. A `ps aux` folyamatokat listáz, a `chmod` pedig jogosultságokat módosít."
+ },
+ {
+  "id": 49,
+  "level": "junior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "scenario",
+  "question": "Egy szerveren azt szeretnéd kideríteni, hogy melyik kernelüzenetek jelentek meg az aktuális boot során. Melyik parancs a legmegfelelőbb?",
+  "options": [
+   "journalctl --user",
+   "journalctl -k -b",
+   "journalctl --disk-usage",
+   "journalctl --list-boots"
+  ],
+  "answer": 1,
+  "explanation": "A `journalctl -k -b` a kernelhez kapcsolódó journal bejegyzéseket szűri az aktuális bootra. A `--list-boots` a rendelkezésre álló bootokat listázza, a `--disk-usage` a journal által használt lemezterületet mutatja, a `--user` pedig user-level unitokra fókuszál. A `dmesg` is kernelüzenetekhez kapcsolódik, de a journal integráció miatt systemd-alapú rendszeren ez a lekérdezés célzottabb."
+ },
+ {
+  "id": 50,
+  "level": "junior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "output",
+  "question": "Egy szerveren az alábbi `uptime` kimenetet látod:\nA gépen 8 logikai CPU van. Melyik értelmezés a legpontosabb?",
+  "code": "15:42:10 up 12 days,  3:17,  2 users,  load average: 8.20, 7.90, 7.50",
+  "options": [
+   "A rendszer biztosan 8.20-szor gyorsabb, mint normál állapotban.",
+   "A 8.20 azt jelenti, hogy pontosan 8 folyamat használja a CPU-t.",
+   "A load average mindig megegyezik a CPU kihasználtság százalékával.",
+   "A rövid távú load average 8.20, ami egy 8 logikai CPU-s gépen jelentős terhelést jelezhet, de önmagában nem bizonyít CPU-szaturációt."
+  ],
+  "answer": 3,
+  "explanation": "A load average a futásra kész, illetve Linuxon bizonyos nem megszakítható állapotban lévő feladatok terhelését tükrözi, és az értékeket 1, 5 és 15 perces időablakokra adja meg. Egy 8 logikai CPU-s gépen a 8 körüli load nagyjából a CPU-k teljes kapacitásának kihasználtsági szintjével lehet összevethető, de a load nem azonos a CPU százalékos kihasználtságával. Az a feltételezés, hogy a 8.20 egyszerűen 820%-os CPU-használatot jelent, gyakori interjúcsapda."
+ },
+ {
+  "id": 51,
+  "level": "junior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "scenario",
+  "question": "Egy alkalmazásnak egy újraindítás után is megmaradó, de gyakran változó adatokat kell tárolnia, például feldolgozási állapotot vagy lokális cache-t. Az alábbi könyvtárak közül melyik illeszkedik leginkább a Linux filesystem hierarchy szempontjából?",
+  "options": [
+   "/run",
+   "/proc",
+   "/var",
+   "/dev"
+  ],
+  "answer": 2,
+  "explanation": "A `/var` olyan változó adatokat tartalmaz, amelyek a rendszer működése során változnak, és bizonyos részei újraindítás után is megmaradhatnak. A `/run` tipikusan bootonként létrejövő runtime állapotot tartalmaz, a `/proc` virtuális kernel- és processzinformációkat, a `/dev` pedig eszközfájlokat. A `/run` azért csábító, mert szintén runtime adatokhoz kapcsolódik, de tartalma jellemzően nem perzisztens."
+ },
+ {
+  "id": 52,
+  "level": "junior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "output",
+  "question": "Mit eredményez az alábbi parancssor egy fájlon, ha a `touch` által létrehozott fájlt egy tipikus `022` umask mellett használjuk?",
+  "code": "touch script.sh\nchmod u+x,g+r,o-rwx script.sh\nls -l script.sh",
+  "options": [
+   "-rwxr----- 1 ... script.sh",
+   "-rwxr--r-- 1 ... script.sh",
+   "-rw-r----- 1 ... script.sh",
+   "-rwxrw---- 1 ... script.sh"
+  ],
+  "answer": 0,
+  "explanation": "A `touch` által létrehozott reguláris fájl alapértelmezett módja tipikusan `666`, amelyre a `022` umask alkalmazásával `644` lesz az eredmény, vagyis `rw-r--r--`. Ezután a `chmod u+x,g+r,o-rwx` három műveletet végez: a tulajdonos kap végrehajtási jogot, a csoport megtartja/megkapja az olvasási jogot, másoktól pedig eltávolítja az olvasási, írási és végrehajtási jogot. Így a végső jogosultság `rwxr-----`, tehát a teljes mód `740`. A pontos eredményhez szükség van a kiinduló jogosultságokra és az umaskra; a megadott tipikus `022` umask mellett az eredmény `-rwxr-----`. Azért csábító a `-rwxr--r--` eredmény, mert könnyű csak az `u+x` módosítást figyelembe venni, és figyelmen kívül hagyni az `o-rwx` műveletet."
+ },
+ {
+  "id": 53,
+  "level": "junior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "scenario",
+  "question": "Egy felhasználó elsődleges csoportját szeretnéd `developers`-re állítani, miközben a felhasználó többi supplementary group tagságát nem akarod módosítani. Melyik parancs megfelelő?",
+  "options": [
+   "usermod -g developers alice",
+   "usermod -G developers alice",
+   "groupmod -g developers alice",
+   "useradd -g developers alice"
+  ],
+  "answer": 0,
+  "explanation": "Az `usermod -g developers alice` a felhasználó elsődleges csoportját állítja át a megadott csoportra. Az elsődleges csoport külön fogalom a supplementary groupoktól, ezért a meglévő supplementary tagságokat ez a művelet önmagában nem írja át. A `-G` supplementary groupokat kezel, ezért könnyű összekeverni a két kapcsolót."
+ },
+ {
+  "id": 54,
+  "level": "junior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "behavior",
+  "question": "Egy folyamatot ideiglenesen fel szeretnél függeszteni úgy, hogy később folytathasd a futását. Melyik jel használható erre?",
+  "options": [
+   "SIGTERM",
+   "SIGSTOP",
+   "SIGINT",
+   "SIGHUP"
+  ],
+  "answer": 1,
+  "explanation": "A `SIGSTOP` felfüggeszti a folyamat végrehajtását, és a folyamat nem tudja kezelni vagy figyelmen kívül hagyni ezt a jelet. A későbbi folytatáshoz `SIGCONT` használható. A `SIGTERM` szabályos leállítást kér, a `SIGINT` tipikusan megszakítást jelez, a `SIGHUP` pedig más jelentéssel bír. A `SIGTERM` azért csábító, mert szintén folyamatvezérlésre használatos, de nem felfüggeszti, hanem terminálást kér."
+ },
+ {
+  "id": 55,
+  "level": "junior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "output",
+  "question": "Mi lesz az alábbi script kimenete?",
+  "code": "#!/usr/bin/env bash\ncount=5\nif (( count > 3 )); then\n    echo \"high\"\nelse\n    echo \"low\"\nfi",
+  "options": [
+   "low",
+   "5",
+   "high",
+   "A script szintaktikai hibával leáll"
+  ],
+  "answer": 2,
+  "explanation": "A Bash aritmetikai feltételvizsgálatában a `(( ... ))` használható numerikus összehasonlításra. Mivel `count` értéke 5, a `count > 3` feltétel igaz, ezért `high` jelenik meg. A string összehasonlítási szintaxis és az aritmetikai összehasonlítás összekeverése gyakori hiba Bashben."
+ },
+ {
+  "id": 56,
+  "level": "junior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "behavior",
+  "question": "Mi történik az alábbi parancs esetén?",
+  "code": "cat missing.txt > output.txt",
+  "options": [
+   "Az `output.txt` nem jön létre, mert a `cat` hibát jelez.",
+   "Az `output.txt` létrejöhet vagy kiürül, miközben a `cat` hibája a standard error streamre kerül.",
+   "A `missing.txt` automatikusan létrejön.",
+   "Az `output.txt` tartalmazni fogja a hibaüzenetet."
+  ],
+  "answer": 1,
+  "explanation": "A shell a redirectiont a parancs végrehajtása előtt állítja be, ezért az `output.txt` létrejöhet vagy meglévő fájl esetén kiürülhet. A `cat` ezután megpróbálja megnyitni a nem létező `missing.txt` fájlt, és a hibaüzenetet standard errorra írja, amelyet a `>` nem irányít át. Azért csábító az output fájlba kerülő hiba gondolata, mert a parancs teljes „kimenetét” sokan egyetlen streamként kezelik fejben."
+ },
+ {
+  "id": 57,
+  "level": "junior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "output",
+  "question": "Mit ír ki az alábbi parancs?",
+  "code": "printf 'error\\nERROR\\nwarning\\n' | grep -i '^error$'",
+  "options": [
+   "error",
+   "ERROR",
+   "error\nERROR",
+   "error\nERROR\nwarning"
+  ],
+  "answer": 2,
+  "explanation": "A `-i` miatt a `grep` nem különbözteti meg a kis- és nagybetűket. A `^error$` a teljes sorra illeszt, ezért az `error` és az `ERROR` is megfelel, míg a `warning` nem. Azért csábító csak az egyik sort választani, mert a reguláris kifejezésben szereplő kisbetűs `error` könnyen összetéveszthető case-sensitive kereséssel."
+ },
+ {
+  "id": 58,
+  "level": "junior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "debug",
+  "question": "Egy Debian-alapú szerveren egy telepített csomaghoz tartozó fájlok közül szeretnéd megállapítani, melyeket telepítette a csomag. Melyik parancs erre alkalmas?",
+  "options": [
+   "dpkg -L package-name",
+   "apt list-files package-name",
+   "rpm -ql package-name",
+   "apt show-files package-name"
+  ],
+  "answer": 0,
+  "explanation": "Debian-alapú rendszereken a `dpkg -L package-name` felsorolja a megadott csomag által telepített fájlokat. Az `rpm -ql` RPM-alapú rendszerekhez tartozik, a többi megadott parancs pedig nem szabványos erre a célra. Az `apt` használata azért csábító, mert magasabb szintű csomagkezelőként a telepítést kezeli, de a konkrét telepített fájllista lekérdezésére a `dpkg` a megfelelő eszköz."
+ },
+ {
+  "id": 59,
+  "level": "junior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "output",
+  "question": "Mit vizsgál elsősorban az alábbi parancs?",
+  "code": "systemctl is-active nginx",
+  "options": [
+   "Azt, hogy az `nginx` engedélyezve van-e a boot során.",
+   "Azt, hogy az `nginx` konfigurációs fájlja szintaktikailag helyes-e.",
+   "Azt, hogy az `nginx` unit aktuálisan aktív állapotban van-e.",
+   "Azt, hogy az `nginx` milyen portokat hallgat."
+  ],
+  "answer": 2,
+  "explanation": "A `systemctl is-active nginx` az adott unit aktuális aktív állapotát vizsgálja, és megfelelő állapotkódot is ad vissza. A boot során történő automatikus indítás vizsgálatához az `is-enabled` használható. Azért csábító az `is-enabled`, mert egy futó szolgáltatásnál gyakran az is fontos kérdés, hogy újraindítás után automatikusan elindul-e."
+ },
+ {
+  "id": 60,
+  "level": "junior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "scenario",
+  "question": "Egy Linux szerveren az alkalmazás csak localhostról érhető el, és a konfigurációban a következő bind cím szerepel:\nEgy másik gépről szeretnél csatlakozni hozzá. Mi a legvalószínűbb probléma?",
+  "code": "127.0.0.1:8080",
+  "options": [
+   "A szerver DNS-e biztosan hibás.",
+   "A 8080-as port csak UDP-t támogat.",
+   "Az alkalmazás nem tud IPv4-en kommunikálni.",
+   "Az alkalmazás csak a loopback interfészen figyel, ezért távoli interfészen nem érhető el."
+  ],
+  "answer": 3,
+  "explanation": "A `127.0.0.1` a loopback interfészt jelenti, így az alkalmazás csak a helyi gépről érkező kapcsolatok számára lesz elérhető ezen a socketen. Távoli kliensekhez az alkalmazásnak egy megfelelő helyi hálózati címre vagy például `0.0.0.0` címre kell bindolnia, megfelelő tűzfal- és hálózati konfiguráció mellett. A DNS hibája azért csábító, mert távoli elérésnél gyakran felmerül, de IP-címmel történő közvetlen teszteléssel ez különválasztható."
+ },
+ {
+  "id": 61,
+  "level": "medior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "debug",
+  "question": "Egy SSH kapcsolatot hibakeresel, és részletes kliensoldali információt szeretnél látni arról, hogy milyen hitelesítési módokat próbál az SSH kliens. Melyik parancs a legközvetlenebb?",
+  "options": [
+   "ssh -q user@host",
+   "ssh -v user@host",
+   "ssh -n user@host",
+   "ssh -f user@host"
+  ],
+  "answer": 1,
+  "explanation": "Az `ssh -v` verbose kliensoldali diagnosztikai információt kapcsol be, ami hasznos a kapcsolatfelépítés és a hitelesítés hibakereséséhez. Több `-v` használatával még részletesebb, például `-vvv` szintű debug kimenet kérhető. A `-q` éppen csökkenti a diagnosztikai kimenetet, ezért az ellenkező irányú választás gyakori interjúcsapda."
+ },
+ {
+  "id": 62,
+  "level": "medior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "scenario",
+  "question": "Egy szerveren a `df -h` szerint egy fájlrendszeren több tíz gigabájt szabad hely van, mégsem tudsz új fájlt létrehozni. Melyik további ellenőrzés lehet különösen fontos?",
+  "options": [
+   "Ellenőrizni az inode-ok szabad számát például `df -i` segítségével.",
+   "Ellenőrizni a CPU hőmérsékletét a `top` paranccsal.",
+   "Ellenőrizni a DNS rekordokat `dig` segítségével.",
+   "Ellenőrizni a kernel verzióját `uname -r` segítségével."
+  ],
+  "answer": 0,
+  "explanation": "Egy fájlrendszeren elfogyhatnak az inode-ok akkor is, ha byte-szinten még jelentős szabad hely maradt. Ilyenkor új fájlok létrehozása meghiúsulhat, különösen sok kis fájlt tartalmazó fájlrendszereknél. A `df -i` megmutatja az inode-kapacitás és -használat állapotát. A `df -h` kizárólag a tárhelykapacitás alapján nem zárja ki az inode-kimerülést."
+ },
+ {
+  "id": 63,
+  "level": "medior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "behavior",
+  "question": "Egy parent process elindít egy child processzt, majd a child kilép. A parent nem hívja meg a megfelelő wait műveletet. Mi történhet a childdal?",
+  "options": [
+   "A child automatikusan daemon processszé válik.",
+   "A child minden esetben újraindul.",
+   "A child zombie állapotba kerülhet, amíg a kilépési státuszát egy parent vagy megfelelő reaper folyamat át nem veszi.",
+   "A child azonnal elveszíti a PID-jét, és semmilyen nyoma nem marad."
+  ],
+  "answer": 2,
+  "explanation": "A már kilépett, de még nem reapelt child folyamat zombie állapotban maradhat, hogy a parent később kiolvashassa a termination státuszát. A `wait()` vagy valamelyik változata végzi ezt a reap műveletet. A zombie nem futó folyamat, ezért nem CPU-t fogyaszt úgy, mint egy normál aktív process. Az a tévhit, hogy a kilépett process mindig azonnal teljesen eltűnik, azért csábító, mert a folyamat ténylegesen már nem hajt végre kódot."
+ },
+ {
+  "id": 64,
+  "level": "medior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "output",
+  "question": "Mit ír ki az alábbi Bash script?",
+  "code": "#!/usr/bin/env bash\nset -e\nfalse\necho \"after\"",
+  "options": [
+   "after",
+   "false",
+   "Semmit, mert a shell kilép a `false` után.",
+   "`false after`"
+  ],
+  "answer": 2,
+  "explanation": "A `set -e` bizonyos nem kezelt hibás parancsvisszatérés esetén kilépteti a shellt. A `false` 1-es exit státusszal tér vissza, és ebben az egyszerű helyzetben a shell ezért nem hajtja végre az `echo \"after\"` sort. A `set -e` pontos viselkedése több kontextusban összetett, ezért nem szabad úgy tekinteni rá, mint egy univerzális „minden non-zero értéknél azonnal exit” kapcsolóra."
+ },
+ {
+  "id": 65,
+  "level": "medior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "trap",
+  "question": "Mit ad vissza az alábbi pipeline sikeressége szempontjából egy alapértelmezett Bash shellben?",
+  "code": "false | true\necho $?",
+  "options": [
+   "0",
+   "1",
+   "2",
+   "A pipeline mindig szintaktikai hibát okoz."
+  ],
+  "answer": 0,
+  "explanation": "Alapértelmezett Bash viselkedésben a pipeline exit státusza az utolsó parancs, itt a `true`, exit státusza. Mivel a `true` 0-val tér vissza, az `echo $?` eredménye 0 lesz, még akkor is, ha a pipeline első eleme, a `false`, hibás státusszal tért vissza. A `set -o pipefail` módosítja ezt a viselkedést, ezért a pipeline hibakeresésénél fontos ismerni ezt a különbséget."
+ },
+ {
+  "id": 66,
+  "level": "medior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "algorithm",
+  "question": "Egy logfájlban a harmadik whitespace-delimitált mező átlagos értékét szeretnéd kiszámítani `awk` segítségével. Melyik megoldás a megfelelő?",
+  "options": [
+   "awk '{sum += $3} END {print sum}' application.log",
+   "awk '{sum += $3} END {print sum/NR}' application.log",
+   "awk '{sum = $3} END {print sum/NR}' application.log",
+   "awk '{sum += $3/NR} END {print sum}' application.log"
+  ],
+  "answer": 1,
+  "explanation": "A `sum += $3` minden rekord harmadik mezőjét hozzáadja az összeghez, majd az `END` blokkban a teljes összeget elosztjuk a rekordok számával (`NR`). Így kapjuk az átlagot. Az egyszerű összegzés nem átlagot ad, míg a `sum = $3` minden sorban felülírná az előző értéket."
+ },
+ {
+  "id": 67,
+  "level": "medior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "scenario",
+  "question": "Egy Debian-alapú production szerveren egy adott csomag frissítését szeretnéd úgy megakadályozni, hogy az `apt upgrade` ne frissítse automatikusan. Melyik megoldás szolgál erre?",
+  "options": [
+   "apt lock package-name",
+   "dpkg --disable package-name",
+   "apt-mark hold package-name",
+   "apt freeze package-name"
+  ],
+  "answer": 2,
+  "explanation": "Az `apt-mark hold package-name` a csomagot hold állapotba helyezi, így a normál APT frissítési műveletek nem fogják automatikusan frissíteni. A hold később például `apt-mark unhold` segítségével feloldható. A csomagkezelőben a „lock” hétköznapi kifejezésnek tűnhet, de Debian-alapú rendszeren a megfelelő művelet az APT hold mechanizmusa."
+ },
+ {
+  "id": 68,
+  "level": "medior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "production",
+  "question": "Egy production szolgáltatás konfigurációját módosítottad, és a módosítás csak a szolgáltatás újraindításakor lép életbe. A szolgáltatás teljes leállítása rövid kiesést okozna, ezért először meg szeretnéd vizsgálni, hogy támogat-e konfiguráció-újratöltést. Melyik systemd művelet erre a leginkább megfelelő?",
+  "options": [
+   "systemctl reload myapp",
+   "systemctl disable myapp",
+   "systemctl isolate myapp",
+   "systemctl kill myapp"
+  ],
+  "answer": 0,
+  "explanation": "A `systemctl reload` a szolgáltatás konfigurációjának újratöltését kéri anélkül, hogy a szolgáltatást teljesen leállítaná és újraindítaná, feltéve, hogy az adott service támogatja a reload műveletet. Nem minden szolgáltatás támogatja ezt, ezért a unit dokumentációját és konfigurációját is ellenőrizni kell. A `restart` gyakran működik konfigurációfrissítésre, de teljes szolgáltatás-újraindítással jár."
+ },
+ {
+  "id": 69,
+  "level": "medior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "output",
+  "question": "Egy szerveren az alábbi parancs kimenetét látod:\nMelyik állítás helyes egy `8.8.8.8` címre küldött csomaggal kapcsolatban?",
+  "code": "ip route\ndefault via 192.168.1.1 dev eth0\n192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.20",
+  "options": [
+   "Közvetlenül a `192.168.1.20` hostnak kerül kézbesítésre.",
+   "Az `eth0` interfészen keresztül a `192.168.1.1` default gateway felé kerül továbbításra.",
+   "A rendszer automatikusan a loopback interfészt használja.",
+   "A csomagot a kernel DNS-en keresztül továbbítja."
+  ],
+  "answer": 1,
+  "explanation": "A `8.8.8.8` nem tartozik a `192.168.1.0/24` közvetlenül elérhető hálózathoz, ezért a routing tábla default route-ja illeszkedik. A csomag az `eth0` interfészen keresztül a `192.168.1.1` gatewayhez kerül. A routing döntés IP-címek és prefixek alapján történik, nem DNS alapján."
+ },
+ {
+  "id": 70,
+  "level": "medior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "production",
+  "question": "Egy SSH kapcsolat rendszeresen megszakad, amikor néhány percig nincs forgalom, miközben a hálózati kapcsolat egyébként működőképes. Kliensoldalon szeretnél keepalive üzeneteket használni. Melyik konfigurációs beállítás erre szolgál?",
+  "options": [
+   "ServerAliveInterval",
+   "StrictHostKeyChecking",
+   "ForwardAgent",
+   "Compression"
+  ],
+  "answer": 0,
+  "explanation": "A `ServerAliveInterval` meghatározza, hogy az SSH kliens milyen időközönként küld protokollszintű keepalive üzenetet a szervernek, ha nincs adatforgalom. Ez segíthet olyan hálózati eszközök vagy tűzfalak esetén, amelyek az idle kapcsolatokat lezárják. A `TCPKeepAlive` más mechanizmus, ezért az SSH-specifikus keepalive és a TCP keepalive megkülönböztetése fontos."
+ },
+ {
+  "id": 71,
+  "level": "medior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "edgecase",
+  "question": "Egy fájlt töröltél egy Linux szerveren, de a `df -h` szerint a fájlrendszeren nem szabadult fel a várt több gigabájt hely. A fájl már nem látható a könyvtárban. Mi lehet ennek egy gyakori oka?",
+  "options": [
+   "A `df` mindig pontosan egy órával késik.",
+   "A fájl automatikusan a `/tmp` könyvtárba került.",
+   "Egy futó folyamat még nyitva tartja a törölt fájlt.",
+   "A Linux nem szabadít fel helyet törölt fájlok után."
+  ],
+  "answer": 2,
+  "explanation": "Linuxon egy fájl akkor szabadul fel ténylegesen, amikor nincs több directory entry rá, és nincs több nyitott file descriptor sem. Ha egy futó processz még nyitva tartja a törölt fájlt, a hely továbbra is foglalt maradhat. Az `lsof +L1` vagy hasonló lekérdezés segíthet az ilyen deleted-but-open fájlok azonosításában. Az a feltételezés, hogy a Linux soha nem szabadítja fel a törölt fájlok helyét, azért csábító, mert a probléma valóban addig fennállhat, amíg egy folyamat nyitva tartja a fájlt."
+ },
+ {
+  "id": 72,
+  "level": "medior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "performance",
+  "question": "Egy szerveren gyorsan növekszik a systemd journal által használt lemezterület. Melyik parancs segít közvetlenül megállapítani, hogy mekkora helyet foglal jelenleg a journal?",
+  "options": [
+   "journalctl --vacuum-size=1G",
+   "journalctl --disk-usage",
+   "journalctl --rotate-now",
+   "journalctl --verify-size"
+  ],
+  "answer": 1,
+  "explanation": "A `journalctl --disk-usage` megmutatja, mekkora lemezterületet foglalnak a journal fájlok. A `--vacuum-size` már takarítási műveletet végez, ezért nem pusztán mérési célú parancs. Production környezetben a törlési műveletek előtt érdemes először felmérni a tényleges használatot."
+ },
+ {
+  "id": 73,
+  "level": "medior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "scenario",
+  "question": "Egy cron jobnak minden hétfőn 03:15-kor kell futnia. Melyik bejegyzés felel meg ennek a hagyományos 5 mezős cron szintaxisban?",
+  "options": [
+   "15 3 * * 1 /usr/local/bin/job.sh",
+   "3 15 * * 1 /usr/local/bin/job.sh",
+   "15 3 1 * * /usr/local/bin/job.sh",
+   "15 3 * 1 * /usr/local/bin/job.sh"
+  ],
+  "answer": 0,
+  "explanation": "Az öt mező sorrendje perc, óra, hónap napja, hónap, hét napja. A `15 3 * * 1` ezért hétfőnként 03:15-kor fut. A `1` az ötödik mezőben a hét napját jelöli, míg a harmadik mezőben a hónap napját. Ez gyakori cron-csapda, mert ugyanaz a szám több különböző mezőben is érvényes jelentéssel bírhat."
+ },
+ {
+  "id": 74,
+  "level": "medior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "debug",
+  "question": "Egy script egy interaktív shellből működik, cronból azonban egy `java: command not found` hibával leáll. A `java` parancs kézzel futtatva működik. Mi az egyik legvalószínűbb ok?",
+  "options": [
+   "A cron automatikusan letiltja a Java futtatását.",
+   "A Java csak rootként futtatható.",
+   "A cron nem támogatja a PATH környezeti változót.",
+   "A cron környezete eltérhet az interaktív shellétől, ezért a szükséges `PATH` vagy más környezeti beállítás nincs jelen."
+  ],
+  "answer": 3,
+  "explanation": "A cron által futtatott folyamat környezete eltérhet az interaktív login shell környezetétől, ezért más `PATH` és más környezeti változók lehetnek érvényben. Célszerű a scriptben abszolút elérési utat használni, vagy explicit módon beállítani a szükséges környezetet. Az a feltételezés, hogy a cron pontosan ugyanazt a shellkörnyezetet örökli, mint az adminisztrátor terminálja, gyakori hibaforrás."
+ },
+ {
+  "id": 75,
+  "level": "medior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "scenario",
+  "question": "Egy Linux szerveren az alkalmazás válaszideje jelentősen megnőtt. A CPU kihasználtság csak 20%, viszont az I/O wait érték magas, és a háttértár késleltetése is megnőtt. Melyik következtetés a leginkább indokolt?",
+  "options": [
+   "A CPU biztosan 100%-on fut, csak a `top` hibás.",
+   "A rendszer teljesítményét valószínűleg storage/I/O alrendszeri várakozás korlátozza.",
+   "A DNS biztosan a probléma oka.",
+   "Az alacsony CPU-használat bizonyítja, hogy nincs performance probléma."
+  ],
+  "answer": 1,
+  "explanation": "Magas I/O wait és megnövekedett storage latency esetén a processzek jelentős időt tölthetnek blokkolva az I/O műveletekre várva, miközben a CPU összesített kihasználtsága alacsony marad. Ez tipikus példa arra, hogy az alacsony CPU-használat önmagában nem jelenti azt, hogy nincs teljesítményprobléma. A CPU 100%-os kihasználtságának feltételezése azért csábító, mert sok performance problémát CPU-bound hibaként közelítenek meg először."
+ },
+ {
+  "id": 76,
+  "level": "medior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "theory",
+  "question": "Melyik állítás írja le legpontosabban a `/run` könyvtár szerepét egy modern Linux rendszeren?\nCODE:\nENDCODE",
+  "options": [
+   "Főként az aktuális boot során létrejövő, futásidejű állapotinformációkat és PID fájlokat tartalmazza.",
+   "Kizárólag a kernel által betöltött modulok bináris fájljait tartalmazza.",
+   "A felhasználók személyes konfigurációs fájljainak központi tárolóhelye.",
+   "A rendszer minden tartós alkalmazásadatát itt kell tárolni."
+  ],
+  "answer": 0,
+  "explanation": "A `/run` tipikusan tmpfs alapú, és a rendszer futása közben szükséges állapotadatokat, például PID- és socket fájlokat tartalmaz. Tartalma bootok között általában nem marad meg. Azért csábító a felhasználói konfigurációs könyvtárakkal összekeverni, mert több szolgáltatás itt is létrehoz fájlokat, de ezek futásidejű adatok."
+ },
+ {
+  "id": 77,
+  "level": "medior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "output",
+  "question": "Mi lesz a `chmod 2755 shared` parancs hatása, ha a `shared` egy könyvtár?\nCODE:\nENDCODE",
+  "options": [
+   "A könyvtár minden fájljára automatikusan beállítja a setuid bitet.",
+   "Beállítja a setgid bitet, ezért az újonnan létrehozott fájlok öröklik a könyvtár csoportját.",
+   "Beállítja a sticky bitet, ezért csak a tulajdonos törölhet fájlokat.",
+   "Csak olvasási jogot ad a csoportnak, és nem változtatja meg a speciális biteket."
+  ],
+  "answer": 1,
+  "explanation": "A `2` a setgid speciális bitet jelenti. Könyvtáron ez azt eredményezi, hogy az újonnan létrehozott fájlok és alkönyvtárak a szülőkönyvtár csoportját öröklik. A sticky bit értéke `1`, ezért könnyű összekeverni a két speciális bitet."
+ },
+ {
+  "id": 78,
+  "level": "medior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "scenario",
+  "question": "Egy felhasználónak több csoporttagsága van, és egy fájl csoportja `developers`. Hogyan ellenőrzöd megbízhatóan, hogy a felhasználó effektív csoportjai között szerepel-e a `developers`?",
+  "code": "id alice",
+  "options": [
+   "`groups alice`",
+   "`whoami developers`",
+   "`id alice`",
+   "`passwd -S alice`"
+  ],
+  "answer": 2,
+  "explanation": "Az `id alice` megjeleníti a felhasználó UID-jét, elsődleges csoportját és további csoporttagságait. A `groups` is használható csoporttagságok megtekintésére, ezért csábító alternatíva, de az `id` részletesebb és egyértelműbb ellenőrzést ad."
+ },
+ {
+  "id": 79,
+  "level": "medior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "behavior",
+  "question": "Mi történik egy folyamat által megnyitott fájllel, ha a folyamat futása közben egy másik shellből törlöd a fájl könyvtárbejegyzését?\nCODE:\nENDCODE",
+  "options": [
+   "A folyamat azonnal `SIGTERM` jelet kap.",
+   "A fájl tartalma azonnal nullázódik.",
+   "A fájl automatikusan átkerül `/tmp` alá.",
+   "A fájl inode-ja és adatai addig megmaradhatnak, amíg van rá nyitott hivatkozás."
+  ],
+  "answer": 3,
+  "explanation": "Az `rm` a könyvtárbejegyzést távolítja el, nem közvetlenül a folyamat által használt open file descriptort. Ha nincs több névhez kötött hard link, a hely felszabadítása akkor történik meg, amikor az utolsó nyitott hivatkozás is megszűnik. Azért csábító az azonnali törlés feltételezése, mert a fájl neve rögtön eltűnik a könyvtárból."
+ },
+ {
+  "id": 80,
+  "level": "medior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "output",
+  "question": "Mi lesz a szkript kimenete?",
+  "code": "x=5\n\nif (( x >= 5 )); then\n    echo \"yes\"\nelse\n    echo \"no\"\nfi",
+  "options": [
+   "`no`",
+   "`5`",
+   "`yes`",
+   "Nem ír ki semmit."
+  ],
+  "answer": 2,
+  "explanation": "A `(( ... ))` Bash aritmetikai feltételként használható. Az `x >= 5` kifejezés igaz, ezért az `if` első ága fut le. Azért csábító a változó értékét várni kimenetként, mert az `x` értéke 5, de a script csak a feltétel ágának szövegét írja ki."
+ },
+ {
+  "id": 81,
+  "level": "medior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "debug",
+  "question": "Egy szkriptben ezt találod: `command > output.log 2>&1`. Mi a redirekciók helyes értelmezése?\nCODE:\nENDCODE",
+  "options": [
+   "A standard output és a standard error is az `output.log` fájlba kerül.",
+   "Csak a standard error kerül a fájlba, a standard output a terminálon marad.",
+   "A standard output a fájlba kerül, a standard error pedig eldobódik.",
+   "A parancs csak akkor fut le, ha az `output.log` már létezik."
+  ],
+  "answer": 0,
+  "explanation": "Először a standard output kerül az `output.log` fájlba, majd a `2>&1` a standard error aktuális standard outputjára irányítja. Így mindkettő ugyanabba a fájlba kerül. A redirekció sorrendje fontos, ezért nem általánosan felcserélhető a két művelet."
+ },
+ {
+  "id": 82,
+  "level": "medior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "algorithm",
+  "question": "Melyik `awk` parancs számolja ki helyesen egy whitespace-szel tagolt fájl első oszlopának összegét?",
+  "code": "awk '{ sum += $1 } END { print sum }' data.txt",
+  "options": [
+   "Csak a fájl első sorát adja össze.",
+   "Minden rekord első mezőjét hozzáadja a `sum` változóhoz, majd a feldolgozás végén kiírja az összeget.",
+   "Az első oszlop helyett az összes karakter számát adja össze.",
+   "Csak akkor működik, ha a fájl vesszővel van tagolva."
+  ],
+  "answer": 1,
+  "explanation": "Az `awk` alapértelmezett mezőelválasztója whitespace, ezért `$1` az első mezőt jelenti. A `sum += $1` minden feldolgozott sorban növeli az összeget, az `END` blokk pedig egyszer fut le a teljes bemenet után. Azért csábító csak egy sort feltételezni, mert az `awk` kód rövid, de alapértelmezés szerint minden rekordra végrehajtódik."
+ },
+ {
+  "id": 83,
+  "level": "medior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "behavior",
+  "question": "Debian-alapú rendszeren mi a lényegi különbség az `apt remove package` és az `apt purge package` között?\nCODE:\nENDCODE",
+  "options": [
+   "A `remove` eltávolítja a csomagot, a `purge` pedig a csomaghoz tartozó rendszerkonfigurációt is eltávolítja.",
+   "A `remove` csak a bináris fájlokat törli, a `purge` pedig a kernelből is eltávolítja a csomagot.",
+   "A `remove` frissítést végez, a `purge` pedig csak a repository-indexet törli.",
+   "A két parancs mindig teljesen azonos műveletet hajt végre."
+  ],
+  "answer": 0,
+  "explanation": "Az `apt remove` eltávolítja a csomag telepített fájljait, míg a `purge` a csomaghoz tartozó rendszerkonfigurációs fájlokat is eltávolíthatja. A felhasználó által létrehozott vagy külön kezelt adatok eltávolítása ettől még nem garantált. Azért csábító azonosnak tekinteni őket, mert mindkettő eltávolítja a csomagot."
+ },
+ {
+  "id": 84,
+  "level": "medior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "scenario",
+  "question": "Egy systemd szolgáltatás hibával leáll, majd rövid idő múlva újraindul. Melyik beállítást érdemes elsőként ellenőrizni a unit fájlban?\nCODE:\nENDCODE",
+  "options": [
+   "`Description=`",
+   "`Documentation=`",
+   "`Restart=`",
+   "`After=`"
+  ],
+  "answer": 2,
+  "explanation": "A `Restart=` határozza meg, hogy systemd milyen esetekben indítsa újra a szolgáltatást, például `on-failure` esetén. Az `After=` csak indítási sorrendet szabályoz, ezért önmagában nem magyarázza a sikertelen leállás utáni újraindítást."
+ },
+ {
+  "id": 85,
+  "level": "medior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "output",
+  "question": "Egy gépen az alábbi eredményt kapod. Mit jelez a `state UNREACHABLE` egy routing bejegyzésnél?",
+  "code": "ip route\n10.10.0.0/16 dev eth0 proto kernel scope link src 10.10.1.20\n10.20.0.0/16 via 10.10.1.1 dev eth0\nunreachable 10.30.0.0/16",
+  "options": [
+   "A `10.30.0.0/16` hálózat minden csomagját a `10.10.1.1` gatewayre kell küldeni.",
+   "A kernel számára ez a célhálózat elérhetetlen, és a hozzá tartozó forgalmat elutasítja.",
+   "A hálózat csak DNS feloldás után válik elérhetővé.",
+   "Az interfész fizikailag le van kapcsolva."
+  ],
+  "answer": 1,
+  "explanation": "Az `unreachable` route explicit módon jelzi a kernelnek, hogy az adott célhálózat felé a forgalom nem érhető el. Ez nem ugyanaz, mint egy általános hálózati kapcsolat vagy interfészhibája. Azért csábító a gateway használatára gondolni, mert más route-oknál a `via` mező határozza meg a következő ugrást."
+ },
+ {
+  "id": 86,
+  "level": "medior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "production",
+  "question": "Egy SSH kapcsolatot egy hosszabb ideig tétlenül hagysz, és a hálózati infrastruktúra időnként megszakítja. Melyik kliensoldali beállítás segíthet SSH keepalive üzenetek küldésével?\nCODE:\nENDCODE",
+  "options": [
+   "`Compression yes`",
+   "`ForwardAgent yes`",
+   "`ServerAliveInterval 60`",
+   "`StrictHostKeyChecking no`"
+  ],
+  "answer": 2,
+  "explanation": "A `ServerAliveInterval 60` azt kéri az SSH klienstől, hogy a megadott időközönként protokollszintű keepalive üzenetet küldjön, ha a kapcsolat egyébként tétlen. Ez segíthet bizonyos idle timeoutok kezelésében. Azért csábító a `Compression` beállítás, mert szintén kapcsolatparaméter, de nem keepalive mechanizmus."
+ },
+ {
+  "id": 87,
+  "level": "medior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "performance",
+  "question": "Egy ext4 fájlrendszeren bőséges szabad tárhelyet látsz, mégis új fájlok létrehozása sikertelen. Melyik ellenőrzés lehet különösen releváns?",
+  "code": "df -h\ndf -i",
+  "options": [
+   "`hostnamectl`",
+   "`df -i`",
+   "`uname -a`",
+   "`uptime`"
+  ],
+  "answer": 1,
+  "explanation": "A fájlrendszer elfogyhat inode-okból akkor is, ha bájtban még jelentős szabad terület van. A `df -i` az inode-kihasználtságot mutatja. Sok apró fájl esetén ez valódi korlát lehet, ezért a `df -h` önmagában nem elegendő."
+ },
+ {
+  "id": 88,
+  "level": "medior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "output",
+  "question": "Mit ad hozzá a `journalctl --since \"1 hour ago\" -p warning` lekérdezéshez a `-p warning` opció?\nCODE:\nENDCODE",
+  "options": [
+   "Csak a kernel logjait jeleníti meg.",
+   "A logokat kizárólag az utolsó bootból választja ki.",
+   "A logbejegyzéseket a warning prioritás köré szűri, beleértve a súlyosabb prioritásokat is.",
+   "Csak azokat a bejegyzéseket mutatja, amelyek szövegében szerepel a `warning` szó."
+  ],
+  "answer": 2,
+  "explanation": "A journald prioritási szűrése nem egyszerű szöveges keresés. A `warning` prioritás és a nála súlyosabb szintek tartoznak a lekérdezéshez. A `--since` ettől függetlenül az időablakot korlátozza az utolsó egy órára."
+ },
+ {
+  "id": 89,
+  "level": "medior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "debug",
+  "question": "Egy cronból futó szkriptben működik az `ls`, de egy abszolút elérési útra hivatkozó saját program meghívása sikertelen. Mi a legjobb első lépés?\nCODE:\nENDCODE",
+  "options": [
+   "Ellenőrizni a cron környezetének `PATH` értékét és szükség esetén abszolút elérési utat használni.",
+   "Újraindítani a teljes szervert.",
+   "Megváltoztatni a fájl tulajdonosát rootra.",
+   "A cron bejegyzést percenkéntire állítani tesztelés nélkül."
+  ],
+  "answer": 0,
+  "explanation": "A cron környezete eltérhet egy interaktív shell környezetétől, különösen a `PATH` tekintetében. Az abszolút programútvonal vagy a szükséges környezeti változók explicit beállítása megbízhatóbbá teszi a jobot. Azért csábító a jogosultságokat gyanúsítani, mert egy program indítása valóban lehet permission probléma is, de a különböző környezet az első ellenőrizendő okok egyike."
+ },
+ {
+  "id": 90,
+  "level": "medior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "edgecase",
+  "question": "Mi lesz a következő parancssorok eredménye egy Bash shellben?",
+  "code": "VAR=hello\nbash -c 'echo \"$VAR\"'",
+  "options": [
+   "`hello`",
+   "`VAR`",
+   "Üres sor",
+   "`hello` csak akkor, ha a `VAR` exportált."
+  ],
+  "answer": 3,
+  "explanation": "A sima shellváltozó nem öröklődik automatikusan a létrehozott child process környezetébe. Az `export VAR=hello` vagy az `export VAR` után a `bash -c` már környezeti változóként megkapja. Azért csábító a `hello` eredmény, mert a szülő shellben a változó valóban létezik."
+ },
+ {
+  "id": 91,
+  "level": "medior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "scenario",
+  "question": "Egy webalkalmazás válaszideje jelentősen megnőtt. A CPU kihasználtság alacsony, miközben a lemez késleltetése és az I/O wait magas. Melyik hipotézis illeszkedik leginkább a megfigyelésekhez?\nCODE:\nENDCODE",
+  "options": [
+   "Biztosan CPU cache-hiba történt.",
+   "Valószínűleg I/O alrendszeri szűk keresztmetszet késlelteti a folyamatokat.",
+   "A DNS biztosan leállt.",
+   "A kernel biztosan elfogyasztotta az összes PID-et."
+  ],
+  "answer": 1,
+  "explanation": "Magas I/O wait és lemezkésleltetés alacsony CPU-kihasználtság mellett arra utalhat, hogy a folyamatok I/O műveletekre várakoznak. Ez erős hipotézis, amelyet további I/O metrikákkal kell ellenőrizni. Azért csábító a CPU-problémára gyanakodni, mert lassú alkalmazásnál gyakori első feltételezés, de az alacsony CPU-terhelés ezt nem támasztja alá."
+ },
+ {
+  "id": 92,
+  "level": "medior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "theory",
+  "question": "Mi a fő szerepe az initramfs-nek egy Linux rendszer bootfolyamatában?\nCODE:\nENDCODE",
+  "options": [
+   "A kernel végleges konfigurációs fájljait helyettesíti.",
+   "A felhasználók shellbeállításait tölti be.",
+   "A kernel számára szükséges korai userspace környezetet biztosíthat, például root fájlrendszer eléréséhez szükséges driverekkel és eszközökkel.",
+   "A rendszer teljes csomagkezelő adatbázisát tartalmazza."
+  ],
+  "answer": 2,
+  "explanation": "Az initramfs egy korai userspace környezet, amelyet a kernel a boot során használhat például szükséges modulok betöltésére, eszközök felismerésére és a valódi root fájlrendszer előkészítésére. Azért csábító a kernel konfigurációjával azonosítani, mert szorosan kapcsolódik a kernel bootfolyamatához, de más szerepet tölt be."
+ },
+ {
+  "id": 93,
+  "level": "medior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "production",
+  "question": "Egy Linux szerveren egy szolgáltatásnak csak egyetlen TCP portra van szüksége, és a szolgáltatásnak nem kell root jogosultság. Melyik megközelítés illeszkedik legjobban a least privilege elvéhez?\nCODE:\nENDCODE",
+  "options": [
+   "A szolgáltatást rootként futtatni, hogy biztosan hozzáférjen minden erőforráshoz.",
+   "Minden bejövő portot engedélyezni, hogy ne legyen hálózati kompatibilitási probléma.",
+   "A szolgáltatásnak teljes sudo hozzáférést adni.",
+   "Dedikált, minimális jogosultságú felhasználó alatt futtatni, és csak a szükséges hálózati hozzáférést engedélyezni."
+  ],
+  "answer": 3,
+  "explanation": "A least privilege célja, hogy a folyamat csak a működéséhez szükséges jogosultságokat és erőforrásokat kapja meg. Egy dedikált felhasználó és szűk hálózati szabályok csökkentik egy esetleges kompromittálás hatását. Azért csábító rootként futtatni, mert az egyszerűbb jogosultságkezelést eredményezhet, de nagyobb kockázati felületet ad."
+ },
+ {
+  "id": 94,
+  "level": "medior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "trap",
+  "question": "Mi a kimenet?",
+  "code": "name=\"Alice Bob\"\nprintf '<%s>\\n' $name",
+  "options": [
+   "`<Alice Bob>`",
+   "`<Alice>`\n`<Bob>`",
+   "`<name>`",
+   "Hibával leáll, mert a változó szóközt tartalmaz."
+  ],
+  "answer": 1,
+  "explanation": "A változó idézőjelek nélküli használatakor a Bash word splittinget végez, ezért a `name` két külön argumentumra bomlik. A `printf` formátuma mindkét argumentumra alkalmazódik, így két sor keletkezik. Azért csábító az egyetlen soros eredmény, mert a változó eredeti értéke egyetlen szövegként lett beállítva."
+ },
+ {
+  "id": 95,
+  "level": "medior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "behavior",
+  "question": "Mi történik az alábbi parancsban?",
+  "code": "grep \"ERROR\" app.log | tee errors.log",
+  "options": [
+   "A `grep` kimenete csak az `errors.log` fájlba kerül, a terminálra nem.",
+   "A `tee` törli az `app.log` fájlt.",
+   "A `grep` kimenete megjelenik a terminálon, és ugyanakkor az `errors.log` fájlba is kiíródik.",
+   "A `tee` csak a standard error adatfolyamot másolja."
+  ],
+  "answer": 2,
+  "explanation": "A `tee` a bemenetét egyszerre továbbítja a standard outputra és egy vagy több fájlba. Így a pipeline-ban a `grep` által előállított sorok megjelennek a terminálon és bekerülnek az `errors.log` fájlba. Azért csábító csak fájlba irányításként értelmezni, mert a `tee` egyik gyakori használata logok mentése."
+ },
+ {
+  "id": 96,
+  "level": "medior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "debug",
+  "question": "Egy konfigurációs fájlban az üres sorokat és a `#` karakterrel kezdődő kommenteket szeretnéd eltávolítani. Melyik parancs felel meg legjobban ennek az egyszerű követelménynek?",
+  "code": "grep -Ev '^[[:space:]]*(#|$)' config.conf",
+  "options": [
+   "Csak a kommentek első karakterét törli.",
+   "Kizárólag az üres sorokat távolítja el.",
+   "A fájl minden sorát megfordítja.",
+   "Kiszűri az üres, illetve whitespace után `#`-tel kezdődő sorokat, így a többi sort megtartja."
+  ],
+  "answer": 3,
+  "explanation": "Az `-E` kiterjesztett reguláris kifejezést használ, az `-v` pedig megfordítja a találatok kiválasztását. A minta az üres sorokat és a tetszőleges whitespace után `#`-tel kezdődő sorokat azonosítja, ezért ezek kiesnek a kimenetből. Azért csábító csak az üres sorokra gondolni, mert a `$` jel valóban az üres sor mintájának része, de a `#` alternatíva külön kommentkezelést is biztosít."
+ },
+ {
+  "id": 97,
+  "level": "medior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "output",
+  "question": "Mit jelent a `systemctl is-enabled nginx` parancs `enabled` kimenete?\nCODE:\nENDCODE",
+  "options": [
+   "Az nginx folyamat jelenleg biztosan fut.",
+   "Az nginx konfigurációja biztosan szintaktikailag hibátlan.",
+   "Az nginx szolgáltatás automatikus indítása engedélyezve van a megfelelő systemd targethez kapcsolódóan.",
+   "Az nginx minden újraindításkor automatikusan újra is töltődik."
+  ],
+  "answer": 2,
+  "explanation": "Az `is-enabled` azt vizsgálja, hogy a unit engedélyezve van-e a bootfolyamatban. Ez nem ugyanaz, mint az aktuális futási állapot, amelyet például az `is-active` ellenőriz. Azért csábító a futó állapottal azonosítani, mert az engedélyezett szolgáltatás tipikusan bootkor indul, de pillanatnyilag le is állhat."
+ },
+ {
+  "id": 98,
+  "level": "medior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "edgecase",
+  "question": "Egy szerveren egy alkalmazás a `127.0.0.1:8080` címen figyel. Egy másik gépről nem érhető el, miközben ugyanazon a szerveren a `curl http://127.0.0.1:8080` működik. Mi a legvalószínűbb magyarázat?\nCODE:\nENDCODE",
+  "options": [
+   "A szolgáltatás csak a loopback interfészen fogad kapcsolatokat, ezért külső gépről nem érhető el.",
+   "A DNS minden esetben letiltja a 8080-as portot.",
+   "A TCP protokoll nem támogat helyi interfészeket.",
+   "A `curl` automatikusan megkerüli a hálózati stack minden biztonsági szabályát."
+  ],
+  "answer": 0,
+  "explanation": "A `127.0.0.1` a loopback interfészt jelöli, ezért a szolgáltatás csak a helyi gépről érkező kapcsolatok számára figyel ezen a címen. Külső eléréshez megfelelő, elérhető interfészhez tartozó címen kell figyelnie, például `0.0.0.0` vagy egy konkrét szervercím használatával, ha ezt a szolgáltatás támogatja. Azért csábító a tűzfalat hibáztatni, mert külső kapcsolatnál gyakori ok, de a bind cím önmagában is megmagyarázza a viselkedést."
+ },
+ {
+  "id": 99,
+  "level": "medior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "scenario",
+  "question": "Egy szolgáltatás újraindult, és meg szeretnéd tudni, hogy a systemd milyen okból állította le vagy indította újra. Melyik megközelítés a legcélszerűbb?",
+  "code": "journalctl -u myservice --since \"30 minutes ago\"",
+  "options": [
+   "Csak a `/etc/passwd` fájlt kell ellenőrizni.",
+   "A szolgáltatás unitjához tartozó journald-bejegyzéseket kell időablakkal szűrni.",
+   "Csak a `df -h` kimenetét kell vizsgálni.",
+   "A shell history alapján biztosan megállapítható az újraindítás oka."
+  ],
+  "answer": 1,
+  "explanation": "A `journalctl -u myservice` a megadott systemd unit logbejegyzéseit szűri, a `--since` pedig az érdekes időszakra korlátozza a lekérdezést. Ez jó kiindulópont a leállás és újraindulás körüli események vizsgálatához. Azért csábító a shell history, mert abból látszhatnak manuális parancsok, de a szolgáltatás automatikus eseményeit nem feltétlenül tartalmazza."
+ },
+ {
+  "id": 100,
+  "level": "medior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "production",
+  "question": "Egy szolgáltatás szabályos leállítást támogat SIGTERM hatására, és időt igényel a kapcsolatainak lezárására. Melyik megközelítés a legmegfelelőbb egy kontrollált leállításhoz?",
+  "code": "kill -TERM 12345",
+  "options": [
+   "`kill -KILL 12345`",
+   "`kill -STOP 12345`",
+   "`kill -HUP 12345`",
+   "`kill -TERM 12345`, majd szükség esetén a folyamat állapotának ellenőrzése és csak indokolt esetben erősebb jel használata."
+  ],
+  "answer": 3,
+  "explanation": "A SIGTERM lehetőséget ad a folyamatnak arra, hogy saját leállítási logikáját végrehajtsa, például lezárja a kapcsolatokat és elmentse az állapotot. A SIGKILL nem kezelhető a folyamat által, ezért kontrollált leállításnál nem ez az első választás. Azért csábító a SIGKILL, mert garantálja a folyamat megszüntetését, de közben a szabályos cleanup elmaradhat."
+ },
+ {
+  "id": 101,
+  "level": "medior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "theory",
+  "question": "Melyik állítás írja le legpontosabban a `/dev` könyvtár szerepét egy modern Linux rendszeren?\nCODE:\nENDCODE",
+  "options": [
+   "Eszközfájlokat és az eszközökhöz kapcsolódó speciális fájlokat tartalmazza, amelyeken keresztül a kernel által kezelt eszközök elérhetők.",
+   "Kizárólag a rendszerindításhoz szükséges kernelmodulokat tárolja.",
+   "A felhasználók személyes dokumentumainak szabványos helye.",
+   "A rendszer összes tartós naplófájlját tartalmazza."
+  ],
+  "answer": 0,
+  "explanation": "A `/dev` alatt olyan eszközfájlok találhatók, mint például a lemezek, terminálok és pseudo-eszközök reprezentációi. Modern rendszereken ezt jellemzően dinamikusan kezeli a kernel és a userspace, például `udev` segítségével. Azért csábító a kernelmodulokkal azonosítani, mert az eszközök működéséhez modulokra is szükség lehet, de a két fogalom különböző."
+ },
+ {
+  "id": 102,
+  "level": "medior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "output",
+  "question": "Mi lesz a kimenete az alábbi parancsoknak, ha a `report.txt` fájl tulajdonosa `alice`, a csoportja `developers`, és a jogosultsága `640`?",
+  "code": "ls -l report.txt\nid bob",
+  "options": [
+   "Bob biztosan írhatja a fájlt, ha tagja a `developers` csoportnak.",
+   "Bob olvashatja a fájlt, ha tagja a `developers` csoportnak, de nem írhatja.",
+   "Bob csak akkor olvashatja, ha ő a fájl tulajdonosa.",
+   "Bob semmilyen körülmények között nem férhet hozzá a fájlhoz."
+  ],
+  "answer": 1,
+  "explanation": "A `640` mód a tulajdonosnak `rw-`, a csoportnak `r--`, másoknak pedig `---` jogosultságot ad. Ha Bob tagja a `developers` csoportnak, a csoportjogosultság alapján olvashatja a fájlt, de nem írhatja. Azért csábító az írási jog feltételezése, mert a fájl tulajdonosa írhatja, de a csoport számára csak olvasási jog van megadva."
+ },
+ {
+  "id": 103,
+  "level": "medior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "scenario",
+  "question": "Egy felhasználó elsődleges csoportját szeretnéd megváltoztatni úgy, hogy a meglévő további csoporttagságai megmaradjanak. Melyik parancs erre a megfelelő?\nCODE:\nENDCODE",
+  "options": [
+   "`usermod -G developers alice`",
+   "`groupmod -g developers alice`",
+   "`usermod -g developers alice`",
+   "`passwd -g developers alice`"
+  ],
+  "answer": 2,
+  "explanation": "A `usermod -g` a felhasználó elsődleges csoportját módosítja, miközben önmagában nem törli a supplementary group tagságokat. A `-G` másodlagos csoportlistát állít be, és annak használata körültekintést igényel, mert felülírhatja a korábbi listát, ha nem megfelelően használják. Azért csábító a `-G` opció, mert csoporttagságokkal kapcsolatos, de nem az elsődleges csoport beállítására szolgál."
+ },
+ {
+  "id": 104,
+  "level": "medior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "edgecase",
+  "question": "Mi a különbség a `SIGTERM` és a `SIGKILL` között egy folyamat leállításakor?\nCODE:\nENDCODE",
+  "options": [
+   "A SIGTERM csak kernelfolyamatokra használható, a SIGKILL csak userspace folyamatokra.",
+   "A SIGTERM és a SIGKILL minden szempontból azonos.",
+   "A SIGTERM mindig azonnal megszünteti a folyamatot, a SIGKILL pedig csak jelzi a folyamatnak a leállítási szándékot.",
+   "A SIGTERM kezelhető vagy figyelmen kívül hagyható, míg a SIGKILL nem kezelhető és nem ignorálható."
+  ],
+  "answer": 3,
+  "explanation": "A SIGTERM egy szabályos leállításra szolgáló jel, amelyet a folyamat kezelhet saját cleanup logikával. A SIGKILLt a kernel kényszerített leállításra használja, és a folyamat nem tudja elkapni, blokkolni vagy figyelmen kívül hagyni. Azért csábító a két jel azonosítása, mert mindkettő folyamatleállításhoz használható, de a kezelésük alapvetően eltér."
+ },
+ {
+  "id": 105,
+  "level": "medior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "output",
+  "question": "Mi lesz a kimenet?",
+  "code": "for file in *.log; do\n    echo \"$file\"\ndone",
+  "options": [
+   "A könyvtár összes fájljának tartalmát kiírja.",
+   "Csak az első `.log` fájl nevét írja ki.",
+   "A shell a `*.log` mintát a megfelelő fájlnevekre bővíti, és a ciklus minden találat nevét kiírja.",
+   "A ciklus minden esetben szintaktikai hibával leáll."
+  ],
+  "answer": 2,
+  "explanation": "A Bash pathname expansion során a `*.log` minta a jelenlegi könyvtárban illeszkedő fájlnevekre bővül, majd a `for` minden kapott szót feldolgoz. Az `echo \"$file\"` idézőjelezése megőrzi az egyes fájlnevekben lévő whitespace karaktereket. Azért csábító a fájlok tartalmát várni, mert a ciklus fájlokkal dolgozik, de a glob csak neveket ad át."
+ },
+ {
+  "id": 106,
+  "level": "medior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "debug",
+  "question": "Miért különbözik az alábbi két parancs viselkedése?",
+  "code": "command 2>&1 | tee output.log\ncommand | tee output.log 2>&1",
+  "options": [
+   "A két parancs minden körülmények között teljesen azonos.",
+   "Az első a standard errort is a pipeline-ba küldi, míg a másodiknál a `tee` saját standard errora kerül a fájlba és a terminálra.",
+   "A második parancs nem használ pipeline-t.",
+   "Az első parancs eldobja a standard outputot."
+  ],
+  "answer": 1,
+  "explanation": "Az első parancsban a `command` standard errora a saját standard outputjára kerül még a pipeline létrehozása előtt, ezért mindkét stream a `tee` bemenetére jut. A másodikban a `2>&1` már a `tee` folyamatára vonatkozik, nem az előtte lévő `command` standard errorára. Azért csábító azonosnak tekinteni őket, mert ugyanazokat a redirekciós elemeket tartalmazzák, de a redirekciók az adott parancshoz kötődnek."
+ },
+ {
+  "id": 107,
+  "level": "medior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "output",
+  "question": "Mit csinál az alábbi `sed` parancs?",
+  "code": "sed 's/[[:space:]]\\+$//' file.txt",
+  "options": [
+   "Minden sor elejéről eltávolítja a whitespace karaktereket.",
+   "Minden whitespace karaktert kötőjelre cserél.",
+   "Csak az üres sorokat törli.",
+   "Minden sor végéről eltávolítja a sorvégi whitespace karaktereket."
+  ],
+  "answer": 3,
+  "explanation": "A reguláris kifejezés `[[:space:]]\\+$` a sor végén található egy vagy több whitespace karaktert azonosítja, a helyettesítés pedig üres stringre történik. A parancs alapértelmezés szerint a módosított sorokat a standard outputra írja, az eredeti fájlt nem módosítja. Azért csábító a sor elejére gondolni, mert whitespace-trimmelésnél mindkét irány gyakori, de a `$` a sor végét jelöli."
+ },
+ {
+  "id": 108,
+  "level": "medior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "scenario",
+  "question": "Egy Debian-alapú rendszeren egy csomag telepítésekor azt szeretnéd megtudni, mely csomagok okozzák a függőségi problémát. Melyik eszköz állapotinformációja a legfontosabb a telepített csomagok és függőségek vizsgálatához?\nCODE:\nENDCODE",
+  "options": [
+   "`dpkg -l`",
+   "`hostname`",
+   "`uname -m`",
+   "`lsmod`"
+  ],
+  "answer": 0,
+  "explanation": "A `dpkg -l` a Debian csomagadatbázisából ad listát a telepített csomagok állapotáról. Függőségi probléma diagnosztizálásakor ez hasznos kiindulópont, bár a függőségek tényleges feloldásához az `apt` magasabb szintű eszközei is fontosak lehetnek. Azért csábító az `apt` helyett kizárólag más rendszerinformációt nézni, mert a hiba telepítés közben jelentkezik, de a csomagadatbázis állapota közvetlenül releváns."
+ },
+ {
+  "id": 109,
+  "level": "medior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "behavior",
+  "question": "Mi történik egy systemd unit esetén, ha a `Requires=database.service` és az alkalmazás unitja elindul?\nCODE:\nENDCODE",
+  "options": [
+   "A systemd figyelembe veszi a `database.service` függőséget, és annak sikertelen indítása az alkalmazás indítását is befolyásolhatja.",
+   "A `database.service` mindig leáll, amikor az alkalmazás elindul.",
+   "A `Requires=` kizárólag a hálózati DNS-konfigurációt ellenőrzi.",
+   "A `Requires=` csak dokumentációs célokat szolgál."
+  ],
+  "answer": 0,
+  "explanation": "A `Requires=` erős runtime függőséget deklarál: a megadott unitot is aktiválni kell, és annak bizonyos hibái hatással lehetnek a függő unitra. Az indítás sorrendjét önmagában nem a `Requires=` határozza meg; ehhez adott esetben `After=` is szükséges. Azért csábító a `Requires=` és `After=` összekeverése, mert gyakran együtt használják őket."
+ },
+ {
+  "id": 110,
+  "level": "medior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "output",
+  "question": "Mit jelez az alábbi kimenetben a `LISTEN` állapot?",
+  "code": "ss -lnt\nState   Recv-Q  Send-Q  Local Address:Port  Peer Address:Port\nLISTEN  0       128     0.0.0.0:443        0.0.0.0:*",
+  "options": [
+   "A gép aktívan kapcsolatot kezdeményez egy távoli HTTPS szerver felé.",
+   "Egy UDP socket várakozik bejövő csomagokra.",
+   "Egy TCP socket bejövő kapcsolatok elfogadására vár a 443-as porton.",
+   "A 443-as port biztosan blokkolva van a tűzfalon."
+  ],
+  "answer": 2,
+  "explanation": "Az `ss -lnt` TCP listening socketeket jelenít meg, a `LISTEN` pedig azt jelzi, hogy a socket bejövő TCP kapcsolatok fogadására vár. A `0.0.0.0:443` azt jelenti, hogy az IPv4 interfészeken a 443-as porton figyel. Azért csábító UDP socketre gondolni, mert az `ss` többféle socketet tud kezelni, de a `-t` TCP-t választ."
+ },
+ {
+  "id": 111,
+  "level": "medior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "production",
+  "question": "Egy automatizált folyamatnak SSH-n keresztül kell csatlakoznia egy szerverhez jelszó nélküli autentikációval. Melyik megközelítés a legmegfelelőbb?\nCODE:\nENDCODE",
+  "options": [
+   "A jelszót közvetlenül a shell scriptben tárolni.",
+   "SSH kulcspárt használni, és a nyilvános kulcsot a szerver megfelelő `authorized_keys` fájljában elhelyezni.",
+   "A `StrictHostKeyChecking` kikapcsolásával megoldani az autentikációt.",
+   "A root jelszót környezeti változóként exportálni."
+  ],
+  "answer": 1,
+  "explanation": "Az SSH kulcsalapú autentikáció lehetővé teszi a jelszó nélküli bejelentkezést anélkül, hogy egy megosztott jelszót kellene a scriptben tárolni. A szerver a felhasználóhoz tartozó nyilvános kulcsot az `authorized_keys` alapján ellenőrzi. Azért csábító a `StrictHostKeyChecking` kikapcsolása, mert automatizálási problémáknál gyakran felmerül, de az csak a hostkulcs-ellenőrzést érinti, nem az autentikációt."
+ },
+ {
+  "id": 112,
+  "level": "medior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "scenario",
+  "question": "Egy LVM-köteten elfogyott a szabad hely, miközben a volume groupban még van szabad extent. Mi lehet a megfelelő következő lépés?\nCODE:\nENDCODE",
+  "options": [
+   "A hálózati interfészt kell újraindítani.",
+   "A kernel verzióját kell visszaállítani.",
+   "A volume group szabad területéből növelni lehet a logical volume méretét.",
+   "A fájltulajdonosokat kell megváltoztatni."
+  ],
+  "answer": 2,
+  "explanation": "Ha a volume groupban van szabad hely, a logical volume növelhető például `lvextend` segítségével. Ezt követően a fájlrendszert is megfelelően bővíteni kell, ha szükséges. Azért csábító a jogosultságokkal foglalkozni, mert a \"nincs hely\" problémák többféle hibát okozhatnak, de az LVM szabad extentjei közvetlenül használható kapacitást jelentenek."
+ },
+ {
+  "id": 113,
+  "level": "medior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "debug",
+  "question": "Egy szerver újraindítása után a korábbi boot naplói már nem érhetők el a `journalctl` segítségével. Mi lehet ennek egyik gyakori oka?\nCODE:\nENDCODE",
+  "options": [
+   "A journald csak kernelhibákat képes tárolni.",
+   "A rendszerben soha nem létezhet több boothoz tartozó napló.",
+   "A `journalctl` alapértelmezés szerint mindig törli a teljes journal adatbázist rebootkor.",
+   "A journal csak perzisztens tárolás esetén őrzi meg a naplókat a bootok között; megfelelő beállítás hiányában a napló lehet csak ideiglenes."
+  ],
+  "answer": 3,
+  "explanation": "A journald tárolása lehet csak runtime, például `/run/log/journal` alatt, vagy perzisztens, például `/var/log/journal` alatt. Ha nincs perzisztens journal konfigurálva, a korábbi boot naplói elveszhetnek újraindításkor. Azért csábító a journal adatbázis automatikus törlésére gondolni, mert reboot után valóban hiányozhatnak a régi bejegyzések, de ennek oka a tárolási mód lehet."
+ },
+ {
+  "id": 114,
+  "level": "medior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "output",
+  "question": "Mit jelent a következő cron kifejezés?",
+  "code": "0 0 1 * *",
+  "options": [
+   "Minden hónap első napján éjfélkor fut.",
+   "Minden nap éjfélkor fut.",
+   "Minden hétfőn éjfélkor fut.",
+   "Minden hónap utolsó napján éjfélkor fut."
+  ],
+  "answer": 0,
+  "explanation": "A klasszikus ötmezős cron formátumban a mezők sorrendje perc, óra, hónap napja, hónap és hét napja. A `0 0 1 * *` ezért minden hónap első napján 00:00-kor fut. Azért csábító a napi futás, mert az első két mező valóban minden napra és minden órára korlátozás nélküli értéknek tűnhet, de a harmadik mező az adott hónap napját rögzíti."
+ },
+ {
+  "id": 115,
+  "level": "medior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "debug",
+  "question": "Miért nem működik a következő parancs úgy, ahogy sokan elsőre várnák?",
+  "code": "PATH=/opt/tools:$PATH\n./run.sh",
+  "options": [
+   "A `PATH` változó csak root számára módosítható.",
+   "A `PATH` módosítása mindig azonnal törli az összes korábbi könyvtárat.",
+   "A `./run.sh` nem használhat környezeti változókat.",
+   "A `PATH` módosítása ugyanebben a shellben érvényes, de a `run.sh` belsejében futtatott programok csak akkor öröklik, ha a `PATH` exportált környezeti változó."
+  ],
+  "answer": 3,
+  "explanation": "A `PATH=/opt/tools:$PATH` shellváltozót állít be, de önmagában nem exportálja azt a child processzek környezetébe. Ha a scriptnek vagy az általa indított programoknak is ezt az új PATH-ot kell látniuk, használható például `export PATH=/opt/tools:$PATH`. Azért csábító azt feltételezni, hogy minden child process automatikusan megkapja, mert a szülő shellben a változó értéke valóban megváltozik."
+ },
+ {
+  "id": 116,
+  "level": "medior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "performance",
+  "question": "Egy szerveren magas a load average, de a CPU kihasználtság nem különösen magas. Melyik további vizsgálat lehet különösen fontos?\nCODE:\nENDCODE",
+  "options": [
+   "Csak a `/etc/hostname` fájl tartalmát kell ellenőrizni.",
+   "Az I/O wait és a blokkolt, nem futó állapotban várakozó folyamatok vizsgálata.",
+   "A shell prompt színének ellenőrzése.",
+   "Az összes felhasználói jelszó megváltoztatása."
+  ],
+  "answer": 1,
+  "explanation": "A Linux load average nem kizárólag a CPU-fogyasztást tükrözi; a futásra kész és bizonyos uninterruptible állapotban várakozó feladatok is hozzájárulhatnak. Ezért magas load alacsony CPU-kihasználtság mellett I/O vagy más blokkolási problémára is utalhat. Azért csábító kizárólag CPU-problémát keresni, mert a load average gyakran CPU-terhelési mérőszámként jelenik meg, de ennél szélesebb jelentése van."
+ },
+ {
+  "id": 117,
+  "level": "medior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "output",
+  "question": "Mit lehet megtudni az alábbi paranccsal?",
+  "code": "cat /proc/cmdline",
+  "options": [
+   "A jelenleg futó kernel bootparamétereit.",
+   "Az összes telepített kernel verzióját.",
+   "A systemd összes unitjának állapotát.",
+   "A CPU összes támogatott utasításkészletét."
+  ],
+  "answer": 0,
+  "explanation": "A `/proc/cmdline` a jelenleg futó kernelnek átadott kernel command line paramétereket tartalmazza. Ezek között lehetnek például root fájlrendszerre vagy kernel működésére vonatkozó bootparaméterek. Azért csábító az összes telepített kernelre gondolni, mert a bootfolyamat során választott kernelről ad információt, de csak az aktuális kernel command line-ját mutatja."
+ },
+ {
+  "id": 118,
+  "level": "medior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "scenario",
+  "question": "Egy Linux szerveren egy szolgáltatásnak nincs szüksége közvetlen shell-hozzáférésre. Melyik megoldás csökkentheti feleslegesen használható belépési lehetőségeit?\nCODE:\nENDCODE",
+  "options": [
+   "A szolgáltatás felhasználójának root jogosultságot adni.",
+   "Minden szolgáltatásnak ugyanazt a felhasználót használni.",
+   "A szolgáltatás számára megfelelően korlátozott vagy tiltott login shellt beállítani.",
+   "Az SSH hostkulcs-ellenőrzését kikapcsolni."
+  ],
+  "answer": 2,
+  "explanation": "Egy dedikált service account számára a shell-hozzáférés letiltása vagy korlátozása csökkentheti az interaktív bejelentkezési felületet, ha arra nincs szükség. A pontos megoldást a szolgáltatás működési módjához kell igazítani. Azért csábító minden felhasználónak interaktív shellt hagyni, mert az egyszerűbb lehet adminisztráció során, de felesleges jogosultsági felületet hoz létre."
+ },
+ {
+  "id": 119,
+  "level": "medior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "edgecase",
+  "question": "Egy program által használt ideiglenes fájlokat szeretnél tárolni, amelyek újraindítás után nem szükségesek. Melyik könyvtár illeszkedik leginkább ehhez a célhoz egy hagyományos Linux rendszeren?\nCODE:\nENDCODE",
+  "options": [
+   "`/boot`",
+   "`/tmp`",
+   "`/etc`",
+   "`/usr`"
+  ],
+  "answer": 1,
+  "explanation": "A `/tmp` ideiglenes fájlok tárolására szolgál, és a benne lévő adatok élettartama rendszerenként és konfigurációnként eltérhet, de nem szabad tartós tárolásra építeni. A `/etc` konfigurációra, a `/boot` bootfájlokra, az `/usr` pedig főként telepített programokra és kapcsolódó statikus adatokra szolgál. Azért csábító a `/var` választása, mert ott is sok változó adat található, de kifejezetten ideiglenes adatokhoz a `/tmp` a megfelelőbb hely."
+ },
+ {
+  "id": 120,
+  "level": "medior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "trap",
+  "question": "Egy könyvtár jogosultsága `drwx--x--x`. Melyik állítás helyes?\nCODE:\nENDCODE",
+  "options": [
+   "Bárki olvashatja a könyvtár tartalmának listáját.",
+   "Csak a tulajdonos léphet be a könyvtárba.",
+   "A csoport és mások nem férhetnek hozzá a könyvtárhoz.",
+   "A csoport és mások bejárhatják a könyvtárat, de önmagában a jogosultságuk nem teszi lehetővé a könyvtár tartalmának listázását."
+  ],
+  "answer": 3,
+  "explanation": "Könyvtáron az `x` a bejárást és az objektumok eléréséhez szükséges traversalt jelenti, míg az `r` a könyvtárbejegyzések listázását teszi lehetővé. Ezért `--x` mellett a névlista önmagában nem kérdezhető le, de ismert fájlnevek esetén megfelelő további jogosultságok mellett hozzáférés lehetséges. Azért csábító az olvasási joggal azonosítani az `x`-et, mert reguláris fájlokon az `x` jelentése végrehajtás, könyvtárakon viszont eltérő szerepe van."
+ },
+ {
+  "id": 121,
+  "level": "medior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "behavior",
+  "question": "Mi történik, ha egy Linux felhasználót eltávolítasz egy supplementary groupból, de a felhasználó már be van jelentkezve?\nCODE:\nENDCODE",
+  "options": [
+   "A futó shell minden esetben azonnal elveszíti az összes csoporttagságot.",
+   "A már futó folyamatok csoportkörnyezete általában nem változik automatikusan; új login session szükséges lehet az új tagság érvényesítéséhez.",
+   "A felhasználó automatikusan törlődik.",
+   "A fájlok tulajdonosa automatikusan megváltozik."
+  ],
+  "answer": 1,
+  "explanation": "A folyamatokhoz tartozó credentialek és csoporttagságok a folyamat létrehozásakor/session létrehozásakor kerülnek meghatározásra, ezért egy későbbi csoportmódosítás nem feltétlenül frissíti a már futó folyamatokat. Gyakran új login session szükséges, hogy a módosított csoportlista érvénybe lépjen. Azért csábító az azonnali változást feltételezni, mert a rendszer adatbázisában a módosítás rögtön megjelenhet."
+ },
+ {
+  "id": 122,
+  "level": "medior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "output",
+  "question": "Mit jelent az alábbi `ps` kimenetben a `Z` állapot?",
+  "code": "ps -eo pid,ppid,state,comm",
+  "options": [
+   "A folyamat zombie állapotban van.",
+   "A folyamat éppen kernelmodult tölt be.",
+   "A folyamat biztosan CPU-t használ.",
+   "A folyamat hálózati kapcsolatot vár."
+  ],
+  "answer": 0,
+  "explanation": "A `Z` a zombie állapotot jelöli: a folyamat már befejezte a végrehajtását, de a szülője még nem olvasta ki a kilépési státuszát, ezért a kernel még fenntart bizonyos processz-információkat. Azért csábító futó folyamatként értelmezni, mert a `ps` listájában továbbra is megjelenik, de már nem hajt végre kódot."
+ },
+ {
+  "id": 123,
+  "level": "medior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "algorithm",
+  "question": "Melyik megoldás olvassa be biztonságosan egy fájl sorait úgy, hogy a whitespace és a backslash karakterek ne okozzanak szükségtelen word splittinget vagy escape-feldolgozást?",
+  "code": "ENDCODE\nwhile IFS= read -r line; do\n    printf '%s\\n' \"$line\"\ndone < input.txt",
+  "options": [
+   "`for line in $(cat input.txt); do echo \"$line\"; done`",
+   "`while read line; do echo $line; done < input.txt`",
+   "`while IFS= read -r line; do printf '%s\\n' \"$line\"; done < input.txt`",
+   "`cat input.txt | for line in $line; do echo \"$line\"; done`"
+  ],
+  "answer": 2,
+  "explanation": "Az `IFS=` megakadályozza a `read` nem kívánt whitespace-feldolgozását, a `-r` pedig megakadályozza a backslash escape-karakterként való értelmezését. A `printf` idézőjelezett változóval megőrzi a sor tartalmát. Azért csábító a parancshelyettesítéses `for` ciklus, mert rövidebbnek tűnik, de a word splitting és a globbing miatt nem megbízható általános sorolvasásra."
+ },
+ {
+  "id": 124,
+  "level": "medior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "edgecase",
+  "question": "Mi történik az alábbi parancsban?",
+  "code": "cmd 2>&1 >/tmp/output.log",
+  "options": [
+   "A standard output és standard error is `/tmp/output.log` fájlba kerül.",
+   "Csak a standard output kerül a fájlba, a standard error pedig eldobódik.",
+   "A shell szintaktikai hibával leáll, mert a két redirekció nem kombinálható.",
+   "A standard error az eredeti standard outputra, a standard output pedig `/tmp/output.log` fájlra kerül."
+  ],
+  "answer": 3,
+  "explanation": "A redirekciók balról jobbra kerülnek feldolgozásra. A `2>&1` először a standard errort az aktuális standard outputra irányítja, amely ekkor még jellemzően a terminál. Ezután a `>/tmp/output.log` csak a standard outputot irányítja át a fájlba, a korábban beállított standard error hivatkozása nem követi automatikusan ezt a változást. Azért csábító mindkét streamet a fájlba várni, mert ugyanazok a redirekciós elemek szerepelnek a másik, gyakori `>file 2>&1` formában is."
+ },
+ {
+  "id": 125,
+  "level": "medior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "scenario",
+  "question": "Egy nagy logfájlból csak azokat a sorokat szeretnéd kiírni, amelyek `ERROR`-ral kezdődnek, majd a sor teljes tartalmát változtatás nélkül továbbadni egy következő parancsnak. Melyik megoldás felel meg ennek?",
+  "code": "grep '^ERROR' application.log | next_command",
+  "options": [
+   "`grep 'ERROR$' application.log | next_command`",
+   "`grep '^ERROR' application.log | next_command`",
+   "`grep '$ERROR' application.log | next_command`",
+   "`grep '[ERROR]' application.log | next_command`"
+  ],
+  "answer": 1,
+  "explanation": "A `^` a sor elejét jelöli, ezért a `^ERROR` minden olyan sort kiválaszt, amely `ERROR` szöveggel kezdődik. A `grep` a teljes illeszkedő sort továbbítja, nem csak a megtalált szövegrészletet. Azért csábító az `ERROR$` használata, mert az is pontos pozíciót jelölő reguláris kifejezés, de az a sor végét követeli meg, nem a kezdetét."
+ },
+ {
+  "id": 126,
+  "level": "medior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "theory",
+  "question": "Mi a fő különbség az `/usr/bin` és az `/usr/sbin` könyvtárak hagyományos szerepe között?\nCODE:\nENDCODE",
+  "options": [
+   "Az `/usr/bin` csak kernelmodulokat, az `/usr/sbin` pedig csak konfigurációs fájlokat tartalmaz.",
+   "Az `/usr/bin` tipikusan általános felhasználói parancsokat, az `/usr/sbin` pedig főként rendszeradminisztrációs programokat tartalmaz.",
+   "Az `/usr/sbin` kizárólag ideiglenes fájlok számára van fenntartva.",
+   "A két könyvtárnak nincs semmilyen funkcionális különbsége."
+  ],
+  "answer": 1,
+  "explanation": "Az `/usr/bin` hagyományosan általános parancssori programokat tartalmaz, míg az `/usr/sbin` főként rendszeradminisztrációhoz kapcsolódó eszközöket. Modern disztribúciókban a pontos felosztás és a binárisok elhelyezése változhat, különösen merged-usr rendszereken. Azért csábító teljesen azonosnak tekinteni őket, mert mindkettő futtatható programokat tartalmaz."
+ },
+ {
+  "id": 127,
+  "level": "medior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "behavior",
+  "question": "Egy fájl jogosultsága `-rw-r-----`, tulajdonosa `alice`, csoportja `developers`. Bob tagja a `developers` csoportnak. Mi történik, ha Bob megpróbálja módosítani a fájlt?\nCODE:\nENDCODE",
+  "options": [
+   "Sikeresen írhatja, mert a csoport tagja.",
+   "Sikeresen írhatja, mert minden csoporttag automatikusan tulajdonosnak számít.",
+   "A művelet jogosultsági hibával meghiúsul, mert a csoportnak nincs írási joga.",
+   "A kernel automatikusan átadja neki a tulajdonosi jogosultságokat."
+  ],
+  "answer": 2,
+  "explanation": "A `rw-r-----` módnál a tulajdonos olvashat és írhat, a csoport csak olvashat, mások pedig nem férnek hozzá. Bob csoporttagsága miatt a csoportjogosultságot használja, amely nem tartalmaz írási jogot. Azért csábító az írás engedélyezésére gondolni, mert Bob valóban tagja a fájl csoportjának, de a tagság önmagában nem ad további jogosultságot."
+ },
+ {
+  "id": 128,
+  "level": "medior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "output",
+  "question": "Mit jelent a következő parancs kimenetében a `nologin` shell egy szolgáltatásfelhasználónál?",
+  "code": "getent passwd appuser",
+  "options": [
+   "A felhasználó jelszava biztosan lejárt.",
+   "A felhasználó automatikusan root jogosultságot kap.",
+   "A felhasználó nem létezik a rendszerben.",
+   "Az account interaktív shell-hozzáférése szándékosan korlátozható, például szolgáltatásfióknál."
+  ],
+  "answer": 3,
+  "explanation": "A `/usr/sbin/nologin` vagy hasonló login shell használata megakadályozhatja az interaktív shellbe történő bejelentkezést, miközben az accountot szolgáltatás futtatására továbbra is használhatják. Ez önmagában nem jelenti azt, hogy az account le van tiltva vagy nem létezik. Azért csábító jelszóproblémára gondolni, mert a felhasználó nem tud interaktívan belépni, de ezt itt a login shell konfigurációja okozza."
+ },
+ {
+  "id": 129,
+  "level": "medior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "debug",
+  "question": "Egy folyamatot `kill -STOP` paranccsal leállítottál, de a `kill -TERM` elküldése után sem folytatja a végrehajtást. Mi magyarázza ezt?\nCODE:\nENDCODE",
+  "options": [
+   "A SIGTERM automatikusan SIGCONT-tá alakul.",
+   "A SIGSTOP állapotból a folyamat nem tudja saját magát folytatni; előbb SIGCONT szükséges.",
+   "A SIGTERM mindig erősebb a SIGSTOP-nál, ezért a folyamatnak azonnal futnia kellene.",
+   "A SIGSTOP csak hálózati folyamatokra érvényes."
+  ],
+  "answer": 1,
+  "explanation": "A SIGSTOP felfüggeszti a folyamatot, és nem kezelhető a folyamat saját kódjával. A SIGTERM a folyamat leállítását kéri, de egy STOP állapotban lévő folyamat végrehajtása nem folytatódik attól, hogy SIGTERM érkezik. A futtatás folytatásához SIGCONT szükséges, ezért a helyzetet például `kill -CONT PID` oldhatja fel."
+ },
+ {
+  "id": 130,
+  "level": "medior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "output",
+  "question": "Mi lesz a kimenet?",
+  "code": "count=0\n\nwhile (( count < 3 )); do\n    ((count++))\ndone\n\necho \"$count\"",
+  "options": [
+   "`0`",
+   "`2`",
+   "`3`",
+   "A ciklus végtelen lesz."
+  ],
+  "answer": 2,
+  "explanation": "A ciklus addig fut, amíg `count` kisebb mint 3. A három iteráció során az érték 0-ról 1-re, majd 2-re, végül 3-ra változik, ezután a feltétel hamis lesz. Azért csábító a `2`, mert az utolsó sikeres összehasonlításnál valóban 2 az érték, de a ciklus törzse ezután még növeli 3-ra."
+ },
+ {
+  "id": 131,
+  "level": "medior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "scenario",
+  "question": "Egy parancs kimenetét szeretnéd egy fájlba írni, miközben a terminálon is látni akarod, és a korábbi fájltartalmat nem szeretnéd elveszíteni. Melyik megoldás megfelelő?\nCODE:\nENDCODE",
+  "options": [
+   "`command | tee -a output.log`",
+   "`command > output.log`",
+   "`command | cat > output.log`",
+   "`command 2> output.log`"
+  ],
+  "answer": 0,
+  "explanation": "A `tee -a` a standard outputot megjeleníti a terminálon, és hozzáfűzi a megadott fájlhoz. Az `-a` biztosítja, hogy a meglévő tartalom ne legyen felülírva. Azért csábító a sima `tee` használata, mert az is egyszerre ír fájlba és a terminálra, de alapértelmezés szerint felülírja a célfájlt."
+ },
+ {
+  "id": 132,
+  "level": "medior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "algorithm",
+  "question": "Egy whitespace-szel tagolt fájlból azokat a sorokat szeretnéd kiválasztani, amelyek második mezője pontosan `ERROR`. Melyik megoldás a legközvetlenebb?",
+  "code": "awk '$2 == \"ERROR\" { print }' application.log",
+  "options": [
+   "A teljes fájl minden sorát kiírja.",
+   "Csak az első mezőt vizsgálja.",
+   "Csak azokat a sorokat írja ki, amelyek második mezője pontosan `ERROR`.",
+   "Csak azokat a sorokat írja ki, amelyekben bárhol szerepel az `ERROR` szöveg."
+  ],
+  "answer": 2,
+  "explanation": "Az `awk`-ban a `$2` a második mezőt jelenti, az `==` pedig pontos egyenlőséget vizsgál. Így csak az olyan rekordok kerülnek kiírásra, amelyek második mezője pontosan `ERROR`. Azért csábító a szöveges keresésre gondolni, mert az `ERROR` szöveget keressük, de itt mezőalapú feltételről van szó."
+ },
+ {
+  "id": 133,
+  "level": "medior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "behavior",
+  "question": "Mit jelent Debian-alapú rendszeren az, ha egy csomag állapota `rc` a `dpkg -l` kimenetében?\nCODE:\nENDCODE",
+  "options": [
+   "A csomag telepítve és futó állapotban van.",
+   "A csomag nincs telepítve, de a hozzá tartozó konfigurációs fájlok még megmaradhatnak.",
+   "A csomag letöltése folyamatban van.",
+   "A csomag hibás kernelmodult tartalmaz."
+  ],
+  "answer": 1,
+  "explanation": "A `dpkg` státuszjelölésben az `r` eltávolított állapotot, a `c` pedig megmaradt konfigurációs fájlokat jelez. Ez tipikusan akkor fordul elő, amikor egy csomagot eltávolítottak, de nem purge-ölték. Azért csábító telepített állapotként értelmezni, mert a csomag még szerepel a dpkg adatbázisában."
+ },
+ {
+  "id": 134,
+  "level": "medior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "debug",
+  "question": "Egy unit fájl módosítása után a `systemctl restart myservice` nem a módosított unit definíció alapján viselkedik. Mi hiányozhat?\nCODE:\nENDCODE",
+  "options": [
+   "`systemctl daemon-reload`",
+   "`systemctl enable myservice`",
+   "`systemctl is-active myservice`",
+   "`systemctl mask myservice`"
+  ],
+  "answer": 0,
+  "explanation": "A systemd unit fájlok módosítása után a manager konfigurációját újra kell tölteni `systemctl daemon-reload` segítségével, hogy az új definíciókat feldolgozza. Ez nem azonos a szolgáltatás újraindításával. Azért csábító csak a restartot használni, mert az valóban újraindítja a folyamatot, de önmagában nem szükségszerűen tölti újra a unit fájlokat."
+ },
+ {
+  "id": 135,
+  "level": "medior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "scenario",
+  "question": "Egy szerveren két hálózati interfész van, és egy adott célhálózathoz több route is létezik. Melyik tényező alapján választja ki a Linux routing alrendszere a legspecifikusabb útvonalat?\nCODE:\nENDCODE",
+  "options": [
+   "Mindig a konfigurációban legutoljára létrehozott route-ot választja.",
+   "Mindig a legalacsonyabb interfésznevet választja.",
+   "A célcímhez illeszkedő leghosszabb prefixet részesíti előnyben; további route-metrika dönthet az azonos prefixhosszúságú utak között.",
+   "Véletlenszerűen választ a route-ok közül."
+  ],
+  "answer": 2,
+  "explanation": "A routing döntés egyik alapelve a longest prefix match: a specifikusabb hálózati prefix előnyt élvez az általánosabbal szemben. Ha több azonos prefixhosszúságú útvonal marad, további attribútumok, például a route metric is szerepet játszhatnak. Azért csábító a létrehozási sorrendet figyelembe venni, mert konfigurációs problémáknál az utolsó változtatás gyakran látható, de nem ez az alapvető kiválasztási szabály."
+ },
+ {
+  "id": 136,
+  "level": "medior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "edgecase",
+  "question": "Egy SSH klienssel több szerverhez csatlakozol, és ugyanazt a kulcsot nem szeretnéd minden kapcsolathoz használni. Melyik konfigurációs lehetőség alkalmas különböző kulcsok megadására hostonként?\nCODE:\nENDCODE",
+  "options": [
+   "`IdentityFile` a megfelelő `Host` blokkban",
+   "`PortForward` a megfelelő `Match` blokkban",
+   "`KnownHostsFile` minden hosthoz",
+   "`CompressionLevel` minden felhasználóhoz"
+  ],
+  "answer": 0,
+  "explanation": "Az SSH kliens konfigurációjában az `IdentityFile` adja meg a használható privát kulcsot, és host-specifikus `Host` blokkokban eltérő érték adható meg. Ez lehetővé teszi, hogy különböző szerverekhez külön kulcsokat használj. Azért csábító a `KnownHostsFile`, mert az is hostazonosítással kapcsolatos, de az a szerver hostkulcsainak tárolását szabályozza, nem a felhasználói autentikáció kulcsát."
+ },
+ {
+  "id": 137,
+  "level": "medior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "output",
+  "question": "Mit jelezhet az alábbi kimenet?",
+  "code": "lsblk -f",
+  "options": [
+   "Kizárólag a CPU által támogatott fájlrendszereket.",
+   "A blokkeszközök és partíciók mellett többek között a fájlrendszer típusát, UUID-jét és mountpontját.",
+   "Csak a jelenlegi processzek által használt lemezterületet.",
+   "Kizárólag az LVM logical volume-ok titkosítási kulcsait."
+  ],
+  "answer": 1,
+  "explanation": "Az `lsblk -f` fájlrendszerrel kapcsolatos információkat is megjelenít, például típust, LABEL-t, UUID-t és mountpontot, az elérhető verziótól és konfigurációtól függően. Ez hasznos eszköz blokkeszközök és fájlrendszerek gyors áttekintésére. Azért csábító csak a partíciószerkezetre gondolni, mert az `lsblk` alapból is blokkeszköz-hierarchiát mutat."
+ },
+ {
+  "id": 138,
+  "level": "medior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "scenario",
+  "question": "Egy szolgáltatás logjai között egy konkrét PID-hez tartozó bejegyzéseket szeretnéd megtalálni. Melyik `journalctl` opció a legközvetlenebb?",
+  "code": "ENDCODE\njournalctl _PID=1234",
+  "options": [
+   "`_PID=1234`",
+   "`-k`",
+   "`-b`",
+   "`-u`"
+  ],
+  "answer": 0,
+  "explanation": "A journald strukturált mezői alapján a `_PID=1234` szűrővel az adott processzazonosítóhoz kapcsolódó bejegyzések kérhetők le. A `-k` kernelüzenetekre, a `-b` bootra, a `-u` pedig unitra szűr. Azért csábító a `-u` használata, mert szolgáltatáslogoknál gyakori, de az PID szerinti célzott szűrést nem ez végzi."
+ },
+ {
+  "id": 139,
+  "level": "medior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "behavior",
+  "question": "Egy cron jobnak 30 másodpercenként kellene futnia. Miért nem lehet ezt egyetlen hagyományos, ötmezős cron kifejezéssel pontosan megadni?\nCODE:\nENDCODE",
+  "options": [
+   "A cron csak rootként képes futni.",
+   "A cron nem tud parancsokat futtatni.",
+   "A klasszikus cron ötmezős szintaxisa perc alapú, ezért a másodperc pontosságú periodicitás nem fejezhető ki vele közvetlenül.",
+   "A cron kizárólag hetente képes feladatokat futtatni."
+  ],
+  "answer": 2,
+  "explanation": "A hagyományos cron formátum legkisebb időmezője a perc, ezért a 30 másodperces periodicitás nem írható le egyetlen standard cron sorral. Ilyen igényhez más mechanizmus, például systemd timer vagy külön ütemezési logika lehet megfelelő. Azért csábító egy `*/30` jellegű cron kifejezést használni, mert a szintaxis hasonló intervallumokat támogat, de azok percben értendők."
+ },
+ {
+  "id": 140,
+  "level": "medior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "output",
+  "question": "Mi lesz a kimenet?",
+  "code": "export APP_ENV=production\nbash -c 'printf \"%s\\n\" \"$APP_ENV\"'",
+  "options": [
+   "`production`",
+   "`APP_ENV`",
+   "Üres sor",
+   "`bash`"
+  ],
+  "answer": 0,
+  "explanation": "Az `export` a `APP_ENV` változót a shell környezetének részévé teszi, ezért az abból indított `bash` child process örökli. A `printf` ezután a környezeti változó értékét írja ki. Azért csábító üres sort várni, mert a child shell saját változóterében nem történt explicit hozzárendelés, de az exportált környezeti változó öröklődik."
+ },
+ {
+  "id": 141,
+  "level": "senior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "production",
+  "question": "Egy szerveren egyetlen processz CPU-kihasználtsága tartósan 100% körül van, miközben a gépnek 16 logikai CPU-ja van. Melyik következtetés a legpontosabb?\nCODE:\nENDCODE",
+  "options": [
+   "A teljes gép CPU-kapacitása biztosan 100%-on van.",
+   "A processz biztosan 16 szálat futtat.",
+   "A processz egyetlen CPU teljes kapacitását nagyjából kihasználhatja, miközben a gépen más CPU-k szabadok maradhatnak.",
+   "A processz biztosan kernelben fut."
+  ],
+  "answer": 2,
+  "explanation": "A klasszikus `top`-szerű processz CPU százalék egy CPU teljes kapacitásához viszonyított értéket jelenthet, ezért egyetlen egyszálú folyamat körülbelül 100%-ot érhet el egy 16 CPU-s gépen anélkül, hogy a teljes gép telített lenne. Többszálú folyamat ennél jóval magasabb értéket is mutathat. Azért csábító a teljes gép telítettségére következtetni, mert a 100% intuitívan teljes kihasználtságnak tűnik."
+ },
+ {
+  "id": 142,
+  "level": "senior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "scenario",
+  "question": "Egy webalkalmazásnak csak egy meghatározott könyvtár tartalmát kell olvasnia, és nincs szüksége a rendszer többi részének elérésére. Melyik megközelítés csökkentheti leginkább a fájlrendszerhez való hozzáférési felületet?\nCODE:\nENDCODE",
+  "options": [
+   "A teljes `/` fájlrendszer írhatóvá tétele az alkalmazás felhasználója számára.",
+   "Az alkalmazás rootként történő futtatása.",
+   "Minden fájl `777` jogosultságának beállítása.",
+   "Megfelelő jogosultságok és szükség esetén sandboxing/chroot jellegű izoláció használata, hogy az alkalmazás csak a szükséges erőforrásokat érhesse el."
+  ],
+  "answer": 3,
+  "explanation": "A hozzáférési felület csökkentéséhez az alkalmazásnak csak a szükséges fájlokra és könyvtárakra érdemes jogosultságot adni, és szükség esetén további izolációt alkalmazni. A chroot önmagában nem tekinthető teljes biztonsági határnak minden fenyegetési modellben, ezért más sandboxing mechanizmusok is relevánsak lehetnek. Azért csábító a root vagy `777` használata, mert megszünteti a permission hibákat, de közben jelentősen növeli a kompromittálás hatását."
+ },
+ {
+  "id": 143,
+  "level": "senior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "debug",
+  "question": "Egy Linux rendszer boot közben nem találja a root fájlrendszert, miközben az adott storage driver modulárisan van fordítva a kernelhez. Mi lehet az initramfs egyik kulcsszerepe ebben a helyzetben?\nCODE:\nENDCODE",
+  "options": [
+   "A felhasználói shell történetének visszaállítása.",
+   "A boot korai szakaszában a szükséges storage driverek és eszközfelismerési logika biztosítása.",
+   "A rendszer összes alkalmazásának újratelepítése.",
+   "A BIOS firmware-ének módosítása."
+  ],
+  "answer": 1,
+  "explanation": "Ha a root fájlrendszer eléréséhez szükséges driver nincs beépítve a kernelbe, az initramfs tartalmazhatja és betöltheti a megfelelő modult a korai userspace-ben. Így a kernel képes lehet felismerni és elérni a root storage eszközt a tényleges root fájlrendszer átadása előtt. Azért csábító az alkalmazások újratelepítésére gondolni, mert a hiba boot során jelentkezik, de az initramfs elsődleges szerepe a korai bootkörnyezet biztosítása."
+ },
+ {
+  "id": 144,
+  "level": "senior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "trap",
+  "question": "Egy fájl jogosultsága `-rwxrwxrwx`, de egy felhasználó mégsem tudja törölni a fájlt a könyvtárból. Mi lehet ennek az oka?\nCODE:\nENDCODE",
+  "options": [
+   "A fájl törléséhez mindig root jogosultság szükséges.",
+   "A fájl végrehajtási joga megakadályozza a törlést.",
+   "A fájl törlését elsősorban a szülőkönyvtár írási és végrehajtási jogosultságai, valamint például sticky bitje befolyásolja.",
+   "A három `rwx` csoport miatt a kernel automatikusan megakadályozza a törlést."
+  ],
+  "answer": 2,
+  "explanation": "A fájl törlésének engedélyezése alapvetően a könyvtár jogosultságaihoz kapcsolódik, mert a törlés a könyvtár bejegyzésének módosítása. A könyvtáron lévő sticky bit további korlátozást adhat, például `/tmp` esetén. Azért csábító a fájl saját `rwx` jogosultságait vizsgálni, mert ezek láthatóan teljes hozzáférést adnak, de a törlés nem a fájl írási jogától függ."
+ },
+ {
+  "id": 145,
+  "level": "senior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "production",
+  "question": "Egy szerveren egy alkalmazás több interfészen is elérhető, de csak egy adott hálózatról érkező kapcsolatoknak kellene elérniük. Miért nem elegendő kizárólag az alkalmazás bind címére hagyatkozni a hozzáférés szabályozásához?\nCODE:\nENDCODE",
+  "options": [
+   "A bind cím csak azt határozza meg, melyik helyi címen figyel a socket; a forráscím szerinti hozzáféréshez további hálózati szűrésre, például tűzfalra lehet szükség.",
+   "A bind cím minden esetben titkosítja a kapcsolatot.",
+   "A bind cím automatikusan hitelesíti a kliens felhasználóját.",
+   "A bind cím letiltja az összes TCP kapcsolatot."
+  ],
+  "answer": 0,
+  "explanation": "A socket bind címe meghatározza, hogy az alkalmazás melyik helyi címre vagy interfészre figyel, de önmagában nem általános forráscím-alapú hozzáférés-szabály. Ha például egy adott alhálózat számára kell engedélyezni a hozzáférést, tűzfal- vagy alkalmazásszintű szabályozás is szükséges lehet. Azért csábító a bind címet teljes hozzáférés-szabálynak tekinteni, mert valóban meghatározza, honnan lehet a szolgáltatást elérni bizonyos topológiákban, de nem helyettesíti a forgalomszűrést."
+ },
+ {
+  "id": 146,
+  "level": "senior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "performance",
+  "question": "Egy ext4 fájlrendszer `df -h` szerint 90%-ban megtelt, de az alkalmazás váratlanul `ENOSPC` hibát kap új fájl létrehozásakor. Melyik további tényezőt érdemes vizsgálni?\nCODE:\nENDCODE",
+  "options": [
+   "Csak a CPU hőmérsékletét.",
+   "Csak az SSH hostkulcsot.",
+   "Csak a kernel verzióját.",
+   "Inode-kimerülést, kvótákat, valamint reserved blockokat és az adott fájlrendszer tényleges kapacitáskorlátait."
+  ],
+  "answer": 3,
+  "explanation": "Az `ENOSPC` nem kizárólag azt jelenti, hogy a `df -h` által mutatott bájt alapú kapacitás teljesen elfogyott. Elfogyhatnak az inode-ok, elérhető lehet egy felhasználói vagy projektkvóta, illetve a fájlrendszer saját fenntartott területei és egyéb korlátai is relevánsak lehetnek. Azért csábító csak a százalékos lemezhasználatra koncentrálni, mert az `ENOSPC` gyakran klasszikus tárhelyhiányként jelenik meg."
+ },
+ {
+  "id": 147,
+  "level": "senior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "scenario",
+  "question": "Egy production szerveren egy unit folyamatosan újraindul, és gyorsan nagy mennyiségű logot generál. Melyik megközelítés segít egyszerre a kiváltó ok és a systemd újraindítási viselkedésének vizsgálatában?",
+  "code": "journalctl -u myservice -b\nsystemctl status myservice",
+  "options": [
+   "Csak a logfájl törlése.",
+   "A unit naplóinak és a `systemctl status` információinak együttes vizsgálata, beleértve az exit státuszt és az újraindítási beállításokat.",
+   "A szerver azonnali újratelepítése.",
+   "A szolgáltatás portjának véletlenszerű megváltoztatása."
+  ],
+  "answer": 1,
+  "explanation": "A `journalctl` részletes időrendi eseményeket adhat a szolgáltatásról, míg a `systemctl status` összefoglalhatja az aktuális állapotot, a legutóbbi hibát és az indítási eredményt. Ezek alapján ellenőrizhető többek között az exit státusz, az újraindítási ciklus és a kapcsolódó unit konfiguráció. Azért csábító csak a logokat törölni, mert azok gyorsan nőnek, de a törlés nem oldja meg a kiváltó okot."
+ },
+ {
+  "id": 148,
+  "level": "senior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "edgecase",
+  "question": "Egy szolgáltatásnak Linuxon 443-as TCP portra kell bindolnia, de nem szeretnéd rootként futtatni. Melyik megoldás adhat jogosultságot az alacsony port használatára anélkül, hogy teljes root jogosultságot adnál a folyamatnak?\nCODE:\nENDCODE",
+  "options": [
+   "A szolgáltatás teljes fájlrendszerének `777`-re állítása.",
+   "A root jelszó környezeti változóba helyezése.",
+   "Megfelelő Linux capability, például `CAP_NET_BIND_SERVICE`, használata a szükséges folyamatra.",
+   "A teljes `/etc` könyvtár írási jogának engedélyezése."
+  ],
+  "answer": 2,
+  "explanation": "A `CAP_NET_BIND_SERVICE` capability lehetővé teheti a privilegizált, 1024 alatti portokhoz való bindolást anélkül, hogy a folyamat teljes root jogosultságot kapna. A pontos beállítást a szolgáltatás indítási módjához és a security modellhez kell igazítani. Azért csábító rootként futtatni, mert az egyszerűen megoldja a bind jogosultsági problémát, de szükségtelenül széles jogosultságot ad."
+ },
+ {
+  "id": 149,
+  "level": "senior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "production",
+  "question": "Egy multi-threaded alkalmazás egyik szála magas CPU-terhelést okoz. Melyik megközelítés segíthet meghatározni, hogy pontosan melyik thread fogyasztja a CPU-t?\nCODE:\nENDCODE",
+  "options": [
+   "`top -H -p <PID>`",
+   "`df -h`",
+   "`ip route`",
+   "`journalctl --disk-usage`"
+  ],
+  "answer": 0,
+  "explanation": "A `top -H -p <PID>` a megadott processz threadjeit külön sorokban képes megjeleníteni, így azonosítható a kiugró CPU-használatú thread. További profilozás szükséges lehet annak megértéséhez, hogy a thread milyen kódútvonalon fogyasztja a CPU-t. Azért csábító a teljes processz CPU-értékét vizsgálni, mert az gyorsan megmutatja a terhelést, de nem azonosítja az egyes threadeket."
+ },
+ {
+  "id": 150,
+  "level": "senior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "production",
+  "question": "Egy Bash scriptben egy pipeline hibája alapján szeretnéd hibásnak tekinteni a teljes pipeline-t akkor is, ha a pipeline utolsó parancsa sikeresen fejeződik be. Melyik beállítás szükséges ehhez?",
+  "code": "set -o pipefail\nfalse | true\necho \"$?\"",
+  "options": [
+   "`set -u`",
+   "`set -x`",
+   "`set -e`",
+   "`set -o pipefail`"
+  ],
+  "answer": 3,
+  "explanation": "Alapértelmezésben a Bash pipeline kilépési státusza az utolsó parancs státusza, ezért a `false | true` eredménye 0 lenne. A `pipefail` hatására a pipeline nem nulla státuszt ad, ha valamelyik parancs hibával fejeződik be, és az utolsó nem nulla státuszt adó parancs státusza lesz a pipeline eredménye. Azért csábító a `set -e`, mert az is hibakezeléshez kapcsolódik, de nem változtatja meg önmagában a pipeline exit statusának szabályát."
+ },
+ {
+  "id": 151,
+  "level": "senior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "scenario",
+  "question": "Egy szolgáltatás több worker folyamatot indít, és a szülőfolyamat leállításakor biztosítani szeretnéd, hogy a teljes processzfa is leálljon. Miért nem elegendő pusztán a szülőfolyamatnak küldött SIGTERM?",
+  "options": [
+   "A SIGTERM automatikusan csak a legfiatalabb child processzt állítja le.",
+   "A child processzek mindig figyelmen kívül hagyják a SIGTERM-et.",
+   "A SIGTERM csak kernel threadekre alkalmazható.",
+   "A jel alapértelmezés szerint az adott PID-nek szól, ezért a child processzek nem kapják meg automatikusan."
+  ],
+  "answer": 3,
+  "explanation": "A normál kill egyetlen PID-nek küldi a jelet. A processzfa kezeléséhez külön megoldás kell, például process group vagy cgroup használata. A SIGTERM-et a child processzek saját signal handlerrel vagy alapértelmezett viselkedéssel kezelhetik, de nem öröklik meg automatikusan a szülőnek küldött jelet."
+ },
+ {
+  "id": 152,
+  "level": "senior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "theory",
+  "question": "Egy Linux szolgáltatásnak csak a 443-as TCP porthoz kell hozzáférnie, és nincs szüksége root jogosultságokra. Melyik megközelítés illeszkedik legjobban a legkisebb jogosultság elvéhez?",
+  "options": [
+   "A szolgáltatás folyamatos futtatása rootként.",
+   "Dedikált felhasználó és csak a szükséges capability-k vagy egyéb korlátozott jogosultságok biztosítása.",
+   "A szolgáltatás futtatása minden felhasználó számára teljes jogosultsággal.",
+   "A szolgáltatás számára a teljes `/dev` könyvtár elérhetővé tétele."
+  ],
+  "answer": 1,
+  "explanation": "A dedikált service user és a minimális szükséges capability-k csökkentik egy kompromittált szolgáltatás hatását. A rootként történő futtatás lényegesen nagyobb támadási felületet jelent. A 443-as port használatához például megfelelő esetben a `CAP_NET_BIND_SERVICE` lehet elegendő, de csak akkor érdemes capability-t adni, ha valóban szükséges."
+ },
+ {
+  "id": 153,
+  "level": "senior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "behavior",
+  "question": "Mi a legfontosabb különbség a bind mount és egy szimbolikus link között?",
+  "options": [
+   "A bind mount egy fájlrendszerben elérhető könyvtárat vagy fájlt egy másik mountponton tesz elérhetővé, míg a szimbolikus link egy fájlrendszerbeli hivatkozás.",
+   "A szimbolikus link mindig gyorsabb, mint a bind mount.",
+   "A bind mount csak reguláris fájlokra használható.",
+   "A szimbolikus link mindig megakadályozza a cél törlését."
+  ],
+  "answer": 0,
+  "explanation": "A bind mount ugyanazt a meglévő fájlt vagy könyvtárat másik helyen mountolja, ezért a kernel mount namespace szintjén jelenik meg. A szimbolikus link egy speciális fájlrendszerobjektum, amely egy elérési utat tartalmaz. Ezért a két mechanizmus feloldása, jogosultsági viselkedése és namespace-kezelése is eltérhet."
+ },
+ {
+  "id": 154,
+  "level": "senior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "trap",
+  "question": "Mit eredményez az alábbi Bash szkriptben a `trap` használata, ha a `cleanup` függvény egy ideiglenes fájlt töröl?",
+  "code": "cleanup() {\n    rm -f \"$tmp\"\n}\n\ntrap cleanup EXIT\n\ntmp=$(mktemp)\nprintf '%s\\n' \"work\" > \"$tmp\"",
+  "options": [
+   "A `cleanup` azonnal lefut a `trap` regisztrálásakor.",
+   "A `cleanup` csak akkor fut le, ha a script SIGTERM-et kap.",
+   "A `cleanup` a shell kilépésekor fut le.",
+   "A `cleanup` csak akkor fut le, ha a script `exit 0` paranccsal áll le."
+  ],
+  "answer": 2,
+  "explanation": "Az `EXIT` trap a shell kilépésekor hajtódik végre, függetlenül attól, hogy a script normál módon vagy például egy explicit `exit` miatt fejeződik be. Ez gyakori minta ideiglenes erőforrások takarítására. Azért lehet félrevezető az explicit `exit 0` említése, mert az valóban kiváltja az EXIT trapet, de nem ez az egyetlen eset."
+ },
+ {
+  "id": 155,
+  "level": "senior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "edgecase",
+  "question": "Mi a lényeges különbség a Bash process substitution és a hagyományos pipe között az alábbi példában?",
+  "code": "diff <(sort file1) <(sort file2)",
+  "options": [
+   "A process substitution mindig lemezre írja az eredményt.",
+   "A `diff` két olyan fájlt kap, amelyek a két parancs kimenetéhez kapcsolódnak, miközben a két parancs külön folyamatként fut.",
+   "A `sort` parancsok egymás után futnak, ezért nincs párhuzamosság.",
+   "A process substitution kizárólag bináris adatokkal működik."
+  ],
+  "answer": 1,
+  "explanation": "A `<(command)` process substitution egy shell által létrehozott fájlszerű hivatkozást ad a parancsnak, miközben a háttérben a parancs fut. Így a `diff` két bemenetet tud fájlargumentumként kezelni, anélkül hogy a kimeneteket előbb manuálisan ideiglenes fájlokba kellene menteni. A megoldás tipikusan pipe-nál összetettebb bemeneti struktúrákhoz hasznos."
+ },
+ {
+  "id": 156,
+  "level": "senior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "performance",
+  "question": "Egy production Linux szerveren a CPU kihasználtság alacsony, miközben az alkalmazás válaszideje jelentősen megnőtt. Az `iostat` magas `%util` értéket és növekvő I/O await értéket mutat egy adott blokkeszközön. Mi a legvalószínűbb következtetés?",
+  "options": [
+   "A CPU cache mérete túl kicsi.",
+   "A rendszer biztosan memóriahiány miatt lassú.",
+   "Az adott storage eszköz I/O késleltetése valószínűleg szűk keresztmetszetet jelent.",
+   "A hálózati interfész biztosan hibás."
+  ],
+  "answer": 2,
+  "explanation": "Az alacsony CPU-terhelés magas storage I/O várakozással együtt arra utalhat, hogy a folyamatok az I/O műveletek befejezésére várnak. Az `await` az I/O műveletek átlagos várakozási és feldolgozási idejére ad információt. Ez önmagában nem bizonyít minden esetben storage-problémát, de a megadott mérési adatokkal ez a legközvetlenebb hipotézis."
+ },
+ {
+  "id": 157,
+  "level": "senior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "debug",
+  "question": "Egy szervernek két hálózati interfésze van. Egy távoli kliensből érkező kapcsolatnál a szerver válasza nem azon az interfészen hagyja el a gépet, amelyiken a kérés érkezett. Melyik Linux mechanizmust kell elsőként megvizsgálni?",
+  "options": [
+   "A routing táblát és a route kiválasztását.",
+   "A fájlrendszer mount opcióit.",
+   "A processzek nice értékét.",
+   "A journald retention beállításait."
+  ],
+  "answer": 0,
+  "explanation": "A kimenő csomag útvonalát a kernel routing döntése határozza meg. Több interfész esetén ezért meg kell vizsgálni a routing táblát, a célhoz választott route-ot, szükség esetén a policy routing szabályokat és a kapcsolódó routing table-öket. A probléma nem a folyamat prioritásából vagy a logolásból következik."
+ },
+ {
+  "id": 158,
+  "level": "senior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "production",
+  "question": "Egy systemd szolgáltatás túl sok fájlt nyit meg, és időnként `Too many open files` hibával leáll. Melyik beállítás szolgál közvetlenül a szolgáltatás fájlleíró-limitjének növelésére?",
+  "options": [
+   "`LimitCPU=`",
+   "`LimitNOFILE=`",
+   "`MemoryMax=`",
+   "`TasksMax=`"
+  ],
+  "answer": 1,
+  "explanation": "A `LimitNOFILE=` a szolgáltatás által használható fájlleírók számának limitjét szabályozza. A `LimitCPU` CPU-időre, a `MemoryMax` memóriára, a `TasksMax` pedig a folyamatok és taskok számának korlátozására szolgál. A beállítás módosítása után a unitot újra kell tölteni és szükség esetén újra kell indítani."
+ },
+ {
+  "id": 159,
+  "level": "senior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "scenario",
+  "question": "Egy LVM logical volume méretét sikeresen megnövelted, de a `df -h` továbbra is a korábbi fájlrendszer-méretet mutatja. Mi a legvalószínűbb ok?",
+  "options": [
+   "Az LVM mindig automatikusan csökkenti a fájlrendszer méretét.",
+   "A `df` kizárólag inode-okat jelenít meg.",
+   "A block device mérete megnőtt, de a fájlrendszert külön meg kell növelni, ha az adott filesystem ezt igényli.",
+   "A `df` csak reboot után tud új méretet megjeleníteni."
+  ],
+  "answer": 2,
+  "explanation": "Az LVM logical volume és a rajta lévő fájlrendszer külön réteg. A logical volume növelése önmagában nem feltétlenül növeli a filesystem által használható területet. A konkrét filesystemtől függően külön resize művelet szükséges, például ext4 esetén `resize2fs`, XFS esetén pedig jellemzően `xfs_growfs`."
+ },
+ {
+  "id": 160,
+  "level": "senior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "scenario",
+  "question": "Egy adminisztrátornak egy belső szervert kell elérnie egy jump hoston keresztül. Melyik SSH-megoldás teszi lehetővé, hogy a célgépet közvetlenül a kliens konfigurációjából érje el, miközben a kapcsolat a jump hoston keresztül halad?",
+  "options": [
+   "`ProxyJump`",
+   "`StrictHostKeyChecking=no`",
+   "`ForwardAgent=no`",
+   "`ServerAliveCountMax`"
+  ],
+  "answer": 0,
+  "explanation": "A `ProxyJump` (`-J`) egy köztes SSH hoston keresztül hozza létre a kapcsolatot a célgépre. Ez tisztább és biztonságosabb megközelítés, mint kézzel több egymásba ágyazott SSH sessiont indítani. A többi beállítás más SSH-viselkedést szabályoz, nem jump hostos útvonalat."
+ },
+ {
+  "id": 161,
+  "level": "senior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "behavior",
+  "question": "Miért lehet hasznos a `/proc/sys` alatt található kernelparaméterek módosítása egy production rendszer teljesítményhangolásakor?",
+  "options": [
+   "Mert minden `/proc/sys` érték kizárólag a bootloader konfigurációját módosítja.",
+   "Mert ezek között runtime kernelparaméterek találhatók, amelyek bizonyos kernel-viselkedéseket futás közben szabályoznak.",
+   "Mert a `/proc/sys` fájlok a fizikai lemezen tárolt kernelmodulok.",
+   "Mert ezek a fájlok közvetlenül az alkalmazások bináris kódját módosítják."
+  ],
+  "answer": 1,
+  "explanation": "A `/proc/sys` virtuális procfs felületén több kernelparaméter runtime módosítható, például hálózati vagy memória-kezelési viselkedések. A módosítások egy része `sysctl` segítségével kezelhető, és tartós konfigurációhoz megfelelő rendszerkonfiguráció is szükséges. Nem minden paraméter módosítható biztonságosan production környezetben, ezért a változtatást méréshez és rollback-tervhez érdemes kötni."
+ },
+ {
+  "id": 162,
+  "level": "senior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "edgecase",
+  "question": "Egy alkalmazásnak hozzáférésre van szüksége egy fájlhoz, de a fájl tulajdonosát és csoportját nem szeretnéd megváltoztatni. Több különböző felhasználónak eltérő jogosultságot kell adni. Melyik Linux-mechanizmus alkalmas erre?",
+  "options": [
+   "Csak a sticky bit.",
+   "Csak a setgid bit.",
+   "ACL-ek, például `setfacl` és `getfacl` használatával.",
+   "A fájl nevének átnevezése."
+  ],
+  "answer": 2,
+  "explanation": "Az Access Control List lehetővé teszi, hogy a klasszikus owner/group/other jogosultságokon túl konkrét felhasználóknak vagy csoportoknak további hozzáférést adjunk. Például `setfacl -m u:alice:r file` egy adott felhasználó számára olvasási jogosultságot adhat. A sticky és setgid bitek más célokra szolgálnak."
+ },
+ {
+  "id": 163,
+  "level": "senior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "algorithm",
+  "question": "Egy több gigabájtos logfájlban minden olyan sort szeretnél megtalálni, amelyben szerepel egy HTTP 5xx státuszkód. Melyik megközelítés a leginkább közvetlen és streamelhető?",
+  "options": [
+   "`grep -E ' 5[0-9][0-9] ' application.log`",
+   "`cat application.log > /tmp/all.log && nano /tmp/all.log`",
+   "`sort application.log | uniq`",
+   "`sed 's/.*//' application.log`"
+  ],
+  "answer": 0,
+  "explanation": "A grep reguláris kifejezéssel közvetlenül, streaming módon képes a fájl sorait feldolgozni, így nem szükséges a teljes fájlt külön memóriába vagy ideiglenes feldolgozási lépésbe másolni. A minta a szóközökkel együtt a tipikus logformátumokban található státuszkódot célozza, bár konkrét logformátum esetén pontosítani kellhet."
+ },
+ {
+  "id": 164,
+  "level": "senior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "production",
+  "question": "Egy systemd szolgáltatás rövid idő alatt több ezer azonos hibát ír a journaldba. Milyen problémát okozhat ez, és melyik mechanizmus kapcsolódik közvetlenül a helyzet kezeléséhez?",
+  "options": [
+   "A journald automatikusan leállítja az egész rendszert; csak a cron konfigurációval kezelhető.",
+   "A journald minden ismétlődő sort örökre megőriz; csak `grep` használható ellene.",
+   "A systemd automatikusan törli az érintett szolgáltatást; csak az SSH konfiguráció módosítható.",
+   "A túlzott logolás erőforrást és tárhelyet fogyaszthat; a journald rate limiting beállításai korlátozhatják a túl gyors logáramlást."
+  ],
+  "answer": 3,
+  "explanation": "A nagy mennyiségű ismétlődő log növelheti a CPU-, I/O- és tárhelyterhelést. A journald rate limitingje a túl gyorsan érkező üzenetek mennyiségét korlátozhatja, miközben a tartós megoldás az alkalmazás hibájának megszüntetése. A rate limiting nem helyettesíti az alkalmazás hibájának kivizsgálását."
+ },
+ {
+  "id": 165,
+  "level": "senior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "behavior",
+  "question": "Mit jelent Linuxon, ha egy processz állapotában a `D` jelölés látható?",
+  "options": [
+   "A processz zombie állapotban van.",
+   "A processz általában megszakíthatatlan alvásban van, jellemzően kernelből végzett I/O vagy más erőforrás-várakozás miatt.",
+   "A processz debug módban fut.",
+   "A processz automatikusan le lett állítva SIGSTOP-pal."
+  ],
+  "answer": 1,
+  "explanation": "A `D` állapot tipikusan uninterruptible sleep, gyakran blokkoló I/O-val kapcsolatban. Az ilyen folyamat sok esetben nem reagál azonnal a hagyományos jelekre, amíg a kernelben várakozó művelet be nem fejeződik. Ez különösen storage- vagy hálózati fájlrendszer-problémák kivizsgálásakor fontos jel."
+ },
+ {
+  "id": 166,
+  "level": "senior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "debug",
+  "question": "Egy Bash scriptben szeretnéd biztonságosan feldolgozni egy parancs kimenetének sorait úgy, hogy a szóközök és backslash karakterek ne okozzanak váratlan feldarabolást vagy escape-kezelést. Melyik minta a legmegfelelőbb?",
+  "options": [
+   "`for x in $(command); do ...; done`",
+   "`while read line; do ...; done < <(command)`",
+   "`while IFS= read -r line; do ...; done < <(command)`",
+   "`for x in \"$(command)\"; do ...; done`"
+  ],
+  "answer": 2,
+  "explanation": "Az `IFS= read -r` megakadályozza a vezető és záró whitespace nem kívánt kezelését, valamint a backslash escape-elését. A process substitution a parancs kimenetét a while ciklus bemenetére kapcsolja. A command substitution alapú `for` ciklus a word splitting és globbing miatt könnyen hibás lehet."
+ },
+ {
+  "id": 167,
+  "level": "senior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "performance",
+  "question": "Egy Linux szerveren egy TCP kapcsolat létrejön, de nagy adatátvitel mellett jelentősen csökken az áteresztés. A hálózati interfészen nincs jelentős packet loss, de az MTU-környezet eltér a két hálózati szegmens között. Melyik problémát érdemes vizsgálni?",
+  "options": [
+   "Path MTU és az esetleges PMTUD/fragmentációs problémákat.",
+   "A `/etc/passwd` fájl inode-számát.",
+   "A systemd unit `Restart=` beállítását.",
+   "A cron daemon időzítését."
+  ],
+  "answer": 0,
+  "explanation": "Eltérő MTU-k és hibás vagy blokkolt Path MTU Discovery esetén túl nagy csomagok kezelése problémássá válhat, ami jelentős teljesítményromlást okozhat. A vizsgálat során érdemes az útvonal MTU-ját, ICMP hibákat, TCP retransmissionöket és a hálózati útvonalat is ellenőrizni. A kapcsolat létrejötte önmagában nem zárja ki az MTU-problémát."
+ },
+ {
+  "id": 168,
+  "level": "senior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "scenario",
+  "question": "Egy alkalmazásnak nincs szüksége hálózati adminisztrációra, raw socketekre vagy kernelmodulok betöltésére. Miért lehet előnyös a Linux capability-k célzott korlátozása?",
+  "options": [
+   "Mert a capability-k kikapcsolása minden esetben gyorsabbá teszi az alkalmazást.",
+   "Mert ettől az alkalmazás automatikusan titkosítottá válik.",
+   "Mert a capability-k kizárólag fájlok tulajdonosát szabályozzák.",
+   "Mert a teljes root jogosultság egyes részei különálló capability-kre bonthatók, így csökkenthető a szükséges privilegizált műveletek köre."
+  ],
+  "answer": 3,
+  "explanation": "A Linux capability-k a klasszikus root jogosultság több részét különálló jogosultsági egységekre bontják. Egy szolgáltatásnak így csak a ténylegesen szükséges privilegizált műveleteket lehet engedélyezni, például egy konkrét capability-t, miközben más jogosultságokat el lehet venni. Ez a privilege minimization egyik fontos eszköze."
+ },
+ {
+  "id": 169,
+  "level": "senior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "behavior",
+  "question": "Egy systemd unit `After=network-online.target` beállítást tartalmaz. Mit jelent ez önmagában?",
+  "options": [
+   "A szolgáltatás mindig létrehozza és konfigurálja a hálózati interfészeket.",
+   "A szolgáltatás csak akkor indulhat, ha minden hálózati kapcsolat fizikailag működik.",
+   "A systemd a unit indítását a megadott target után ütemezi, de ez önmagában nem hoz létre dependency-t az adott targetre.",
+   "A szolgáltatás automatikusan újraindul, ha a hálózat megszakad."
+  ],
+  "answer": 2,
+  "explanation": "Az `After=` indítási sorrendet határoz meg, de önmagában nem húzza be a függőséget. Ha a unitnak ténylegesen szüksége van a targetre, gyakran `Wants=` vagy `Requires=` is szükséges az adott helyzettől függően. Az `After=` tehát nem ugyanaz, mint egy dependency deklaráció."
+ },
+ {
+  "id": 170,
+  "level": "senior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "edgecase",
+  "question": "Egy fájlrendszeren még több gigabájt szabad hely látható `df -h` szerint, de új fájl létrehozásakor `No space left on device` hiba jelentkezik. Mi lehet ennek egyik tipikus oka?",
+  "options": [
+   "Elfogytak az inode-ok, amit `df -i` segítségével lehet ellenőrizni.",
+   "A CPU órajele túl alacsony.",
+   "A processznek nincs `SIGCONT` jogosultsága.",
+   "A DNS cache megtelt."
+  ],
+  "answer": 0,
+  "explanation": "A fájlrendszer két külön erőforrásból is kifogyhat: blokkokból vagy inode-okból. Ha az inode-ok elfogytak, új fájl nem hozható létre akkor sem, ha a blokkszinten még jelentős szabad terület van. A `df -i` segítségével ellenőrizhető az inode-kihasználtság."
+ },
+ {
+  "id": 171,
+  "level": "senior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "production",
+  "question": "Egy CPU-intenzív alkalmazás egyre lassabban fut, miközben a gépen sok más processz is aktív. A `perf` profilozás azt mutatja, hogy az alkalmazás futási idejének jelentős része egyetlen függvényben koncentrálódik. Mi a legfontosabb következő lépés?",
+  "options": [
+   "Azonnal újraindítani az egész szervert.",
+   "A kernel összes logját törölni.",
+   "A függvény hot pathjának profilozását és algoritmikus vagy implementációs optimalizálási lehetőségeit megvizsgálni.",
+   "A cron összes jobját törölni."
+  ],
+  "answer": 2,
+  "explanation": "A profilozás célja, hogy mérés alapján azonosítsa a CPU-idő jelentős részét felemésztő hot pathokat. Ha egyetlen függvény dominálja a futási időt, érdemes annak algoritmusát, ciklusait, memória-hozzáféréseit és hívási mintáját tovább vizsgálni. Az egész rendszer újraindítása nem oldja meg az alkalmazás determinisztikus CPU-szűk keresztmetszetét."
+ },
+ {
+  "id": 172,
+  "level": "senior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "scenario",
+  "question": "Egy friss kernelre történő frissítés után a gép nem tud bootolni, de a korábbi kernel továbbra is elérhető a boot menüben. Miért lehet hasznos először a korábbi kernellel elindítani a rendszert?",
+  "options": [
+   "Mert a korábbi kernel mindig automatikusan visszaállít minden fájlt.",
+   "Mert a korábbi, működő kernel segítségével ellenőrizhető a probléma, a boot konfiguráció, az initramfs és az új kernelhez tartozó driverek.",
+   "Mert a bootloader nem tud új kernelt betölteni.",
+   "Mert a régi kernel használata automatikusan törli az új kernelt."
+  ],
+  "answer": 1,
+  "explanation": "A működő korábbi kernel gyors helyreállítási lehetőséget ad, miközben lehetővé teszi az új kernelhez tartozó initramfs, modulok, konfiguráció és bootloader-beállítások vizsgálatát. Ez tipikus production recovery stratégia. A régi kernel indítása önmagában nem törli vagy javítja az új kernel telepítését."
+ },
+ {
+  "id": 173,
+  "level": "senior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "scenario",
+  "question": "Egy rendszeres háttérfeladatnak pontosan egy adott időpontban kell elindulnia, de a feladatnak szüksége van arra is, hogy a rendszer erőforrás-korlátokat, naplózást és függőségeket kezeljen. Miért lehet systemd timer megfelelőbb a klasszikus cron jobnál?",
+  "options": [
+   "Mert a systemd timer csak hálózati feladatokra használható.",
+   "Mert a cron nem tud parancsokat futtatni.",
+   "Mert a systemd timer automatikusan minden scriptet rootként futtat.",
+   "Mert a timer szorosan integrálható systemd service-ekkel, amelyekhez erőforráskorlátok, függőségek és naplózás is társítható."
+  ],
+  "answer": 3,
+  "explanation": "A systemd timer nem önmagában a parancsot futtatja, hanem jellemzően egy service unit aktiválásához kapcsolódik. Így a futtatás kihasználhatja a systemd dependency-kezelését, resource limitjeit és journald integrációját. A cron továbbra is egyszerű időzített feladatokra megfelelő lehet."
+ },
+ {
+  "id": 174,
+  "level": "senior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "security",
+  "question": "Egy rendszergazda SSH-agent forwardingot használ egy jump hoston keresztüli munkához. Mi a legfontosabb biztonsági kockázat?",
+  "options": [
+   "A célgép automatikusan megkapja a privát kulcs fájlját.",
+   "Az SSH protokoll ilyenkor mindig jelszavas hitelesítésre vált.",
+   "Egy kompromittált köztes gép a továbbított agent socketen keresztül felhasználhatja az agent által elérhető kulcsokat hitelesítési műveletekre.",
+   "Az agent forwarding letiltja a host key ellenőrzést."
+  ],
+  "answer": 2,
+  "explanation": "Agent forwarding esetén a privát kulcs maga nem kerül át a köztes gépre, de az agenthez vezető hozzáférés biztonsági kockázatot jelenthet. Egy kompromittált host megpróbálhat hitelesítési műveleteket kezdeményezni a forwarding csatornán keresztül. Ezért agent forwardingot csak megbízható köztes gépeken és szükséges esetben érdemes használni."
+ },
+ {
+  "id": 175,
+  "level": "senior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "edgecase",
+  "question": "Egy systemd service nem lát egy shellben beállított `export APP_ENV=production` változót, miközben ugyanarról a terminálról indított child processzek látják. Mi a helyes magyarázat?",
+  "options": [
+   "A systemd service nem a shell folyamat gyermekeként örökli a terminál környezetét; a service saját környezetét a systemd unit és a manager konfigurációja határozza meg.",
+   "Az `export` csak Windows alatt működik.",
+   "A systemd minden environment változót automatikusan töröl a gépről.",
+   "A változó csak akkor öröklődhetne, ha `readonly` lenne."
+  ],
+  "answer": 0,
+  "explanation": "Az environment változók processzöröklődéssel terjednek, nem globális rendszerállapotként. Egy systemd service jellemzően a systemd manager által összeállított környezetet kapja, nem pedig egy tetszőleges interaktív shell aktuális environmentjét. Service-specifikus változókhoz használható például az `Environment=` vagy egy `EnvironmentFile=` beállítás."
+ },
+ {
+  "id": 176,
+  "level": "senior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "edgecase",
+  "question": "Egy processz process group leaderként fut, és több child processzt indított. Mit tesz a `kill -- -1234` parancs, ha a 1234-es szám egy process group ID?",
+  "code": "kill -- -1234",
+  "options": [
+   "SIGTERM jelet küld a 1234-es PID-nek.",
+   "SIGTERM jelet küld a 1234-es process group minden tagjának.",
+   "SIGKILL jelet küld a teljes processzfának.",
+   "Leállítja a 1234-es process group leader által indított összes descendantet, függetlenül a process groupoktól."
+  ],
+  "answer": 1,
+  "explanation": "A negatív PID-et használó `kill` egy process groupnak küldi a jelet. A `kill -- -1234` ezért SIGTERM-et küld a 1234-es process group minden tagjának. Ez eltér attól, amikor egyetlen pozitív PID-et adunk meg. A process group és a teljes processzfa nem feltétlenül ugyanaz a halmaz."
+ },
+ {
+  "id": 177,
+  "level": "senior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "scenario",
+  "question": "Egy alkalmazást egy systemd service-ként futtatsz, és azt szeretnéd elérni, hogy kompromittálódás esetén minél kevesebb rendszererőforráshoz férhessen hozzá. Melyik megközelítés illeszkedik legjobban ehhez a célhoz?",
+  "options": [
+   "A szolgáltatás futtatása dedikált userrel és systemd sandboxing, namespace- és capability-korlátozások alkalmazása.",
+   "A szolgáltatás rootként futtatása, hogy a systemd egyszerűbben kezelhesse.",
+   "A teljes fájlrendszer írhatóvá tétele a service számára.",
+   "Az összes capability automatikus engedélyezése."
+  ],
+  "answer": 0,
+  "explanation": "A dedikált felhasználó, a szükséges capability-kre szűkített jogosultságok és a systemd sandboxing együtt csökkenthetik egy kompromittált szolgáltatás hatókörét. Ide tartozhatnak például fájlrendszer-, hálózati és device-hozzáférési korlátozások. A cél nem egyetlen izolációs mechanizmus használata, hanem a szükséges jogosultságok és erőforrások minimalizálása."
+ },
+ {
+  "id": 178,
+  "level": "senior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "behavior",
+  "question": "Mi történik tipikusan egy Linux rendszeren, ha egy folyamat megnyit egy fájlt, majd a fájlt egy másik processz törli, miközben az első folyamat továbbra is nyitva tartja?",
+  "options": [
+   "A kernel azonnal felszabadítja a fájl adatblokkjait.",
+   "A fájl automatikusan átkerül a `/lost+found` könyvtárba.",
+   "A fájl neve eltűnik a directoryból, de az inode és a hozzá tartozó adatok addig megmaradhatnak, amíg van nyitott hivatkozás.",
+   "A törlés mindig sikertelen lesz, amíg bármelyik processz használja a fájlt."
+  ],
+  "answer": 2,
+  "explanation": "A `unlink` eltávolítja a directory bejegyzést, de egy már megnyitott fájl file descriptoron keresztül továbbra is elérhető maradhat. A kernel a fájlhoz tartozó erőforrásokat csak akkor tudja végleg felszabadítani, amikor már nincs directory link és nincs aktív nyitott hivatkozás. Ezért fordulhat elő, hogy egy törölt, de nyitva maradt logfájl továbbra is helyet foglal."
+ },
+ {
+  "id": 179,
+  "level": "senior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "trap",
+  "question": "Egy Bash scriptben ezt használod:\nMiért lehet fontos a `set -E` ebben a példában?",
+  "code": "set -E\ntrap 'printf \"error at line %s\\n\" \"$LINENO\"' ERR\n\nfoo() {\n    false\n}\n\nfoo\nprintf '%s\\n' \"done\"",
+  "options": [
+   "Bekapcsolja a Bash POSIX módját.",
+   "Automatikusan `set -e` módba kapcsolja a scriptet.",
+   "Minden hibát automatikusan SIGKILL-lel állít le.",
+   "Lehetővé teszi, hogy az ERR trap a shell függvényeiben is öröklődjön."
+  ],
+  "answer": 3,
+  "explanation": "A `set -E`, illetve `set -o errtrace` hatására az ERR trap öröklődik shell functionökbe, command substitutionökbe és bizonyos más subshell-környezetekbe. Ez különösen összetettebb hibakezelésnél hasznos. Az ERR trap önmagában nem ugyanaz, mint az `errexit`, és nem garantálja, hogy minden lehetséges hibát elfog."
+ },
+ {
+  "id": 180,
+  "level": "senior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "edgecase",
+  "question": "Mit tesz lehetővé az alábbi konstrukció?",
+  "code": "while IFS= read -r line; do\n    printf '%s\\n' \"$line\"\ndone < <(generate_data)",
+  "options": [
+   "A `generate_data` kimenetét process substitution segítségével a `while` ciklus standard inputjára kapcsolja.",
+   "A `generate_data` kimenetét mindig egy állandó ideiglenes fájlba menti.",
+   "A `while` ciklus teljesen figyelmen kívül hagyja a `generate_data` kimenetét.",
+   "A `generate_data` mindig ugyanabban a shell folyamatban fut, mint a `while` ciklus."
+  ],
+  "answer": 0,
+  "explanation": "A `< <(generate_data)` process substitution létrehoz egy fájlszerű bemenetet, amelyből a `while` ciklus olvas. A `generate_data` külön végrehajtási környezetben futhat, miközben a ciklus saját shellkörnyezetében marad. Ez azért is hasznos, mert elkerülhető a hagyományos pipe-oknál gyakori subshell-probléma, amikor a ciklusban módosított változók nem maradnak meg a parent shellben."
+ },
+ {
+  "id": 181,
+  "level": "senior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "performance",
+  "question": "Egy szerver magas load average értéket mutat, de a CPU idle értéke is jelentős. A folyamatlistában több folyamat `D` állapotban van. Mi magyarázza ezt a helyzetet a legjobban?",
+  "options": [
+   "A load average kizárólag a CPU-használatot méri, ezért az eredmény ellentmondásos.",
+   "A `D` állapotban lévő, megszakíthatatlan várakozásban lévő taskok is hozzájárulhatnak a load average-hez.",
+   "A `D` állapot mindig azt jelenti, hogy a processz már zombie.",
+   "A magas load average ilyen esetben mindig DNS-hibát jelent."
+  ],
+  "answer": 1,
+  "explanation": "Linuxon a load average nem egyszerűen a CPU-használatot jelenti. A futásra kész taskok mellett bizonyos uninterruptible sleep állapotban lévő taskok, például blokkoló I/O-ra várók, szintén beleszámíthatnak. Ezért lehet magas a load average jelentős CPU-idle mellett is."
+ },
+ {
+  "id": 182,
+  "level": "senior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "debug",
+  "question": "Egy szerver több IP-címmel rendelkezik, és egy szolgáltatásnak csak az egyik konkrét címen kell elérhetőnek lennie. Melyik konfiguráció fejezi ki ezt a legpontosabban?",
+  "options": [
+   "A szolgáltatás bindoljon minden interfészre `0.0.0.0` címmel.",
+   "A szolgáltatás bindoljon egy nem létező IP-címre.",
+   "A szolgáltatás bindoljon a kívánt konkrét helyi IP-címre.",
+   "A szolgáltatás csak a kliens DNS-bejegyzését módosítsa."
+  ],
+  "answer": 2,
+  "explanation": "A konkrét helyi IP-címre történő bindolás lehetővé teszi, hogy a szolgáltatás csak azon a címen fogadjon kapcsolatokat. A `0.0.0.0` IPv4 esetén általában minden helyi IPv4 interfészre történő bindolást jelent. A bind címének megváltoztatása nem helyettesíti az összes szükséges hálózati vagy tűzfalszabály ellenőrzését."
+ },
+ {
+  "id": 183,
+  "level": "senior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "production",
+  "question": "Egy systemd szolgáltatásnak egy másik szolgáltatás sikeres elindulása után kell elindulnia, és az első szolgáltatás hiánya esetén a másodiknak sem lenne értelme. Melyik kombináció fejezi ki ezt leginkább?",
+  "options": [
+   "`After=` és `Requires=`",
+   "Csak `Description=`",
+   "`Restart=` és `Nice=`",
+   "`LimitNOFILE=` és `MemoryMax=`"
+  ],
+  "answer": 0,
+  "explanation": "A `Requires=` dependency kapcsolatot hoz létre, míg az `After=` meghatározza az indítási sorrendet. A kettő együtt azt fejezi ki, hogy az egyik unit a másikhoz kötődik, és az indításuk sorrendje is meghatározott. Az `After=` önmagában csak orderinget jelent, ezért dependency-ként nem elegendő."
+ },
+ {
+  "id": 184,
+  "level": "senior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "scenario",
+  "question": "Egy ext4 fájlrendszerrel rendelkező logical volume-ot növelni szeretnél. Melyik műveletsor a helyes általános megközelítés, ha először az LV méretét növeled?",
+  "options": [
+   "Csökkented az LV-t, majd újraformázod a teljes lemezt.",
+   "Növeled az LV-t, majd az ext4 fájlrendszert is megnöveled.",
+   "Csak a mountpoint könyvtár nevét módosítod.",
+   "Először törlöd a fájlrendszert, majd rebootolsz."
+  ],
+  "answer": 1,
+  "explanation": "Az LVM réteg és a fájlrendszer mérete külön kezelendő. Az LV növelése után az ext4 fájlrendszert is ki kell terjeszteni, például `resize2fs` segítségével, vagy megfelelő esetben az `lvextend -r` automatikusan elvégezheti a kapcsolódó filesystem-resize műveletet. A konkrét parancsokat mindig a filesystem és a rendelkezésre álló eszközök alapján kell megválasztani."
+ },
+ {
+  "id": 185,
+  "level": "senior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "scenario",
+  "question": "Egy adminisztrátor azt szeretné, hogy egy SSH kapcsolat TCP továbbításra is használható legyen egy belső szolgáltatás eléréséhez, miközben magára a távoli shellre nincs szüksége. Melyik SSH funkció lehet erre megfelelő?",
+  "options": [
+   "`ssh-keygen -R`",
+   "`ssh-copy-id`",
+   "`ssh -N -L`",
+   "`ssh -v`"
+  ],
+  "answer": 2,
+  "explanation": "Az `-L` local port forwardingot hoz létre, az `-N` pedig azt jelzi, hogy ne induljon távoli parancs vagy shell. Például egy helyi portot egy SSH szerveren keresztül egy belső célhoz lehet továbbítani. Ez hasznos lehet adminisztrációs és biztonságos hálózati hozzáférési helyzetekben."
+ },
+ {
+  "id": 186,
+  "level": "senior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "scenario",
+  "question": "Egy Linux gép boot során az initramfs környezetig eljut, de a root fájlrendszert nem tudja mountolni. Melyik okot érdemes elsőként vizsgálni?",
+  "options": [
+   "A felhasználó `.bashrc` fájlját.",
+   "A szükséges storage drivert, root filesystemhez tartozó modult és az initramfs tartalmát.",
+   "A felhasználó aktuális `PATH` változóját.",
+   "A cron daemon időzítését."
+  ],
+  "answer": 1,
+  "explanation": "Ha a boot folyamat az initramfs-ig eljut, de a root filesystem nem mountolható, gyakori ok a szükséges storage- vagy filesystem-driver hiánya, hibás initramfs vagy hibás root device paraméter. Az initramfs feladata többek között a root fájlrendszer eléréséhez szükséges korai boot környezet biztosítása. A shell vagy cron konfigurációja ekkor még jellemzően nem releváns."
+ },
+ {
+  "id": 187,
+  "level": "senior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "behavior",
+  "question": "Egy systemd szolgáltatás naplóit csak az aktuális boot időszakából szeretnéd megvizsgálni. Melyik `journalctl` használat a legpontosabb?",
+  "options": [
+   "`journalctl -b`",
+   "`journalctl --vacuum-time=1s`",
+   "`journalctl --disk-usage`",
+   "`journalctl --rotate`"
+  ],
+  "answer": 0,
+  "explanation": "A `journalctl -b` az aktuális boothoz tartozó journalbejegyzéseket szűri. Ha egy konkrét service logjaira van szükség, ezt például `journalctl -b -u myservice` formában lehet tovább szűkíteni. A többi parancs a journal karbantartására vagy tárhelyhasználatára szolgál."
+ },
+ {
+  "id": 188,
+  "level": "senior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "edgecase",
+  "question": "Egy cron jobnak hosszabb ideig kell futnia, és előfordulhat, hogy a következő ütemezett induláskor az előző példány még fut. Milyen problémát érdemes kezelni?",
+  "options": [
+   "A cron automatikusan mindig megvárja az előző példány befejezését.",
+   "A cron minden esetben SIGKILL-lel leállítja az előző példányt.",
+   "Az egymást átfedő futások versenyhelyzetet, duplikált feldolgozást vagy erőforrás-túlterhelést okozhatnak.",
+   "Az átfedés csak akkor lehetséges, ha a gépen nincs systemd."
+  ],
+  "answer": 2,
+  "explanation": "A klasszikus cron önmagában nem biztosít általános single-instance garanciát egy job számára. Hosszú futású feladatoknál ezért lockfile, `flock`, adatbázis-alapú lock vagy más koordinációs mechanizmus használható az átfedések kontrollálására. A megfelelő megoldás attól függ, hogy az alkalmazás idempotens-e és milyen párhuzamosság megengedett."
+ },
+ {
+  "id": 189,
+  "level": "senior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "behavior",
+  "question": "Egy Bash scriptben az alábbi parancsot használod:\nMi igaz az `APP_ENV` változóra?",
+  "code": "APP_ENV=production ./start.sh",
+  "options": [
+   "A változó minden később indított shellben globálisan elérhető lesz.",
+   "A változó csak a `start.sh` által elindított folyamat környezetében lesz jelen, és az abból öröklődő child processzek megkaphatják.",
+   "A változó automatikusan bekerül az `/etc/environment` fájlba.",
+   "A változó értéke minden felhasználó számára tartósan megváltozik."
+  ],
+  "answer": 1,
+  "explanation": "A parancs előtti `NAME=value` assignment az adott parancs környezetében állítja be a változót. A `start.sh` folyamat megkapja ezt az environmentet, és az abból indított child processzek örökölhetik. A változás nem módosítja automatikusan sem az interaktív shell környezetét, sem rendszerkonfigurációs fájlt."
+ },
+ {
+  "id": 190,
+  "level": "senior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "debug",
+  "question": "Egy alkalmazás CPU-használata magas, de az összesített CPU-terhelés nem magyarázza meg, hogy miért lassult le az alkalmazás. A `perf` alapján sok időt tölt kernelben, és a rendszerben nagyszámú context switch történik. Melyik irány lehet releváns a további vizsgálathoz?",
+  "options": [
+   "Csak a DNS TTL értékét kell módosítani.",
+   "A fájlrendszer mountpointjának nevét kell átnevezni.",
+   "A cron jobok kommentelése biztosan megoldja a problémát.",
+   "A rendszerhívások, lockok, I/O és context switchök okát kell profilozni, például `perf` eseményekkel és trace-ekkel."
+  ],
+  "answer": 3,
+  "explanation": "A magas kernel time és sok context switch arra utalhat, hogy az alkalmazás jelentős időt tölt rendszerhívásokkal, ütemezéssel, lockolással vagy I/O-val. Ilyenkor a további profilozás segíthet meghatározni, mely események dominálnak. Az összesített CPU százalék önmagában nem azonosítja a tényleges hot patht vagy kernelbeli szűk keresztmetszetet."
+ },
+ {
+  "id": 191,
+  "level": "senior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "behavior",
+  "question": "Mi a fő különbség a Linux SELinux vagy AppArmor típusú mandatory access control megközelítése és a hagyományos Unix owner/group/mode jogosultságok között?",
+  "options": [
+   "A mandatory access control kizárólag a fájlok tulajdonosát módosítja.",
+   "A mandatory access control minden processzt automatikusan rootként futtat.",
+   "A mandatory access control további, központilag vagy policy alapján kikényszerített hozzáférési szabályokat alkalmazhat a hagyományos DAC jogosultságok mellett.",
+   "A mandatory access control csak a hálózati csomagok titkosítására szolgál."
+  ],
+  "answer": 2,
+  "explanation": "A hagyományos Unix jogosultságok a discretionary access control modellhez tartoznak, ahol az owner és egyéb jogosultsági szabályok alapján történik az ellenőrzés. SELinux és AppArmor további policy-alapú korlátozásokat alkalmazhat, amelyek egy kompromittált folyamat mozgásterét is szűkíthetik. A pontos működés és policy-modell rendszerenként eltérhet."
+ },
+ {
+  "id": 192,
+  "level": "senior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "edgecase",
+  "question": "Miért lehet veszélyes egy rendszerfájlokat tartalmazó könyvtárat például egy külön mounttal úgy lecserélni vagy elfedni, hogy az eredeti könyvtár tartalma a mount alatt láthatatlanná válik?",
+  "options": [
+   "Mert a mountpoint alatti eredeti tartalom automatikusan törlődik.",
+   "Mert a mountpoint mögötti eredeti tartalom átmenetileg elérhetetlenné válik, ezért az alkalmazások vagy rendszerkomponensek nem feltétlenül találják meg a várt fájlokat.",
+   "Mert a Linux nem támogat több mountpointot egy rendszeren.",
+   "Mert minden mount automatikusan read-only lesz."
+  ],
+  "answer": 1,
+  "explanation": "Egy mountpoint alatti korábbi könyvtártartalom nem törlődik, de a mountolt fájlrendszer eltakarja azt a normál path feloldás elől. Ez különösen veszélyes lehet, ha egy rendszerkomponens olyan konfigurációs vagy runtime fájlt vár ott, amely az eredeti fájlrendszeren található. A mount eltávolítása után az eredeti tartalom ismét láthatóvá válik."
+ },
+ {
+  "id": 193,
+  "level": "senior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "algorithm",
+  "question": "Egy Bash scriptben több parancsot szeretnél futtatni úgy, hogy a script csak akkor folytassa, ha az előző parancs sikeres volt. Melyik megoldás fejezi ki ezt közvetlenül egyetlen parancssorban?",
+  "options": [
+   "`command1 && command2`",
+   "`command1 || command2`",
+   "`command1 ; command2`",
+   "`command1 & command2`"
+  ],
+  "answer": 0,
+  "explanation": "Az `&&` operátor csak akkor futtatja a második parancsot, ha az első sikeres, vagyis zero exit statuszal tér vissza. A `||` éppen a sikertelen első parancs esetén futtatja a másodikat, a pontosvessző nem teszi függővé a második parancsot az első sikerétől, az `&` pedig háttérbe helyezi az első parancsot."
+ },
+ {
+  "id": 194,
+  "level": "senior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "behavior",
+  "question": "Mit eredményez az alábbi parancs Bashben?",
+  "code": "printf '%s\\n' \"hello\" 2>/tmp/error.log | wc -l",
+  "options": [
+   "A `printf` és a `wc` kimenete is az `/tmp/error.log` fájlba kerül.",
+   "A `printf` standard error kimenete az `/tmp/error.log` fájlba kerül, míg a standard outputja a pipe-on keresztül a `wc`-hez jut.",
+   "A `wc` standard outputja az `/tmp/error.log` fájlba kerül.",
+   "A pipe nem működik, mert ugyanazon parancsban nem lehet redirectiont használni."
+  ],
+  "answer": 1,
+  "explanation": "A `2>/tmp/error.log` csak a `printf` standard error streamjét irányítja át. A standard output továbbra is a pipeline bemenete lesz, ezért a `wc -l` megszámolja a `printf` által előállított sort. A redirection és a pipeline egymással együtt használható."
+ },
+ {
+  "id": 195,
+  "level": "senior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "scenario",
+  "question": "Egy szerveren egy TCP port LISTEN állapotban van, de távoli kliensek nem tudnak csatlakozni, miközben ugyanazon a gépen a localhostról működik a kapcsolat. Melyik vizsgálati sorrend a legésszerűbb?",
+  "options": [
+   "Azonnal törölni a `/var/log` teljes tartalmát.",
+   "Megváltoztatni a processz nice értékét.",
+   "Először ellenőrizni a bind címet, majd a host- és hálózati tűzfalszabályokat, végül a routingot és az elérési útvonalat.",
+   "Rebootolni a gépet konfiguráció ellenőrzése nélkül."
+  ],
+  "answer": 2,
+  "explanation": "A localhostról működő, távolról mégsem elérhető szolgáltatásnál fontos megvizsgálni, hogy csak loopback címre bindol-e, illetve blokkolja-e a kapcsolatot host- vagy hálózati tűzfal. Ezután érdemes a routingot és a teljes hálózati útvonalat ellenőrizni. A `LISTEN` állapot önmagában nem garantálja a távoli elérhetőséget."
+ },
+ {
+  "id": 196,
+  "level": "senior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "production",
+  "question": "Egy szolgáltatás túl sok CPU-időt fogyaszt, és szeretnéd systemd szinten korlátozni a CPU használatát anélkül, hogy az alkalmazás kódját módosítanád. Melyik mechanizmus lehet erre alkalmas?",
+  "options": [
+   "`CPUQuota=`",
+   "`StandardOutput=`",
+   "`Description=`",
+   "`WorkingDirectory=`"
+  ],
+  "answer": 0,
+  "explanation": "A `CPUQuota=` systemd erőforráskorlátozást tesz lehetővé a szolgáltatás számára, jellemzően cgroup-alapon. Ezzel a szolgáltatás CPU-felhasználása korlátozható anélkül, hogy az alkalmazásnak ezt saját maga kellene kezelnie. A pontos hatás a beállított értéktől és a rendszer CPU-erőforrásaitól függ."
+ },
+ {
+  "id": 197,
+  "level": "senior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "performance",
+  "question": "Egy adatbázis nagy mennyiségű random I/O-t végez. Az `iostat` alapján magas az I/O latency, miközben a storage queue depth is tartósan magas. Melyik következtetés a leginkább megalapozott?",
+  "options": [
+   "A rendszer biztosan CPU-bound.",
+   "A storage alrendszer terhelése és I/O várakozása valószínűleg szűk keresztmetszetet jelent.",
+   "A DNS resolver biztosan túl lassú.",
+   "A processzek biztosan zombie állapotban vannak."
+  ],
+  "answer": 1,
+  "explanation": "A magas I/O latency és tartósan magas queue depth arra utalhat, hogy a storage alrendszerhez több I/O érkezik, mint amennyit az adott pillanatban hatékonyan fel tud dolgozni. Érdemes további metrikákkal, például throughputtal, IOPS-szal, awaittel és az alkalmazás I/O mintázatával együtt értékelni a helyzetet. Önmagában egyetlen metrika nem bizonyítja a teljesítményprobléma minden okát."
+ },
+ {
+  "id": 198,
+  "level": "senior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "edgecase",
+  "question": "Egy SSH kapcsolatot egy hálózati eszköz hosszabb inaktivitás után bont. Az alkalmazás nem generál folyamatos forgalmat. Melyik SSH-beállítás segíthet az idle kapcsolat életben tartásában?",
+  "options": [
+   "`IdentityAgent`",
+   "`UserKnownHostsFile`",
+   "`ServerAliveInterval`",
+   "`PreferredAuthentications`"
+  ],
+  "answer": 2,
+  "explanation": "A `ServerAliveInterval` meghatározza, hogy a kliens milyen időközönként küldjön SSH szintű keepalive üzenetet a szervernek, ha nincs egyéb forgalom. Ezzel bizonyos hálózati eszközök idle timeoutjai kezelhetők. A `ClientAliveInterval` ezzel szemben szerveroldali beállítás."
+ },
+ {
+  "id": 199,
+  "level": "senior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "debug",
+  "question": "Egy Linux rendszer boot után azonnal újraindul, és a konzolon röviden kernel panic üzenet jelenik meg. Melyik megközelítés segíthet leginkább a probléma izolálásában?",
+  "options": [
+   "Csak a felhasználói shell history törlése.",
+   "A cron jobok összes időzítésének módosítása.",
+   "A DNS szerver címének megváltoztatása.",
+   "Korábbi működő kernel indítása, a kernel- és bootparaméterek, initramfs, driverek és a releváns korai boot logok vizsgálata."
+  ],
+  "answer": 3,
+  "explanation": "A kernel panic korai bootproblémára utalhat, ezért a korábbi működő kernel használata gyorsan eldöntheti, hogy az új kernelhez kapcsolódik-e a hiba. Ezt követően vizsgálhatók az initramfs tartalma, a kernelparaméterek, a driverek és az elérhető bootlogok. A pontos diagnózis a panic üzenetétől és a bootfolyamattól függ."
+ },
+ {
+  "id": 200,
+  "level": "senior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "scenario",
+  "question": "Egy production szolgáltatás időszakosan lelassul. A CPU, memória és storage átlagos kihasználtsága normálisnak tűnik, de a lassulás rövid, nehezen reprodukálható időablakokban jelentkezik. Mi a legjobb diagnosztikai stratégia?",
+  "options": [
+   "A rendszert azonnal újraindítani minden lassuláskor.",
+   "Csak az aktuális pillanatban futó `top` kimenetet ellenőrizni.",
+   "Minden kernelparamétert egyszerre megváltoztatni.",
+   "Időbélyegzett metrikákat és célzott trace/profiling adatokat gyűjteni, majd a lassulási időablakokat összevetni a rendszer- és alkalmazásszintű eseményekkel."
+  ],
+  "answer": 3,
+  "explanation": "Rövid ideig fennálló teljesítményproblémáknál az egyszeri pillanatfelvétel könnyen elmulaszthatja a kiváltó eseményt. Időbélyegzett metrikák, trace-ek, alkalmazásszintű latency-adatok és célzott profilozás segítségével összevethető, mi történt pontosan a problémás időablakokban. A célzott megfigyelés és fokozatos hipotézisvizsgálat megbízhatóbb, mint több konfiguráció egyidejű megváltoztatása."
+ }
+]

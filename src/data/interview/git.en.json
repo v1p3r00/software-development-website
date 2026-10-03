@@ -1,0 +1,3219 @@
+[
+ {
+  "id": 1,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Which statement correctly describes how Git stores content associated with commits?",
+  "options": [
+   "A commit directly contains the complete contents of all files and does not reference other objects.",
+   "A commit references a tree object, as well as its parent commit(s) and metadata.",
+   "A commit stores only the diff of the modified files and does not represent the complete filesystem state.",
+   "A commit stores only a branch name and a timestamp."
+  ],
+  "answer": 1,
+  "explanation": "A commit contains, among other things, a reference to a tree object that describes the structure of the filesystem snapshot represented by that commit, as well as references to its parent commit(s) and author/committer metadata. Git's object model is therefore not simply a sequence of diffs stored per commit. The most common incorrect answer is tempting because Git can appear diff-based when using commands such as `log` and `diff`."
+ },
+ {
+  "id": 2,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "output",
+  "question": "What will the commit contain after the following operations?",
+  "code": "echo \"one\" > file.txt\ngit add file.txt\necho \"two\" >> file.txt\ngit commit -m \"Add file\"",
+  "options": [
+   "The commit will contain `file.txt` with two lines, \"one\" and \"two\".",
+   "The commit will fail because the file cannot be modified after `git add`.",
+   "The commit will contain only the \"two\" line.",
+   "The commit will contain the version of `file.txt` that was staged, containing only the single line \"one\"."
+  ],
+  "answer": 3,
+  "explanation": "`git add` stages the file's contents as they exist at that point in time. The later modification is made in the working tree and is not automatically added to the staging area. Therefore, the commit records the one-line version containing `one`. The most common incorrect answer is tempting because people often think of staging as a continuous state attached to a file rather than a snapshot of its contents at a specific point in time."
+ },
+ {
+  "id": 3,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "behavior",
+  "question": "In a Git repository, the `main` branch currently points to the end of the `A-B-C` commit chain. You create the `feature` branch at commit `C`, then create a new commit on the feature branch. What happens to the `main` branch?",
+  "options": [
+   "`main` automatically moves to the new feature commit.",
+   "`main` and `feature` are automatically merged.",
+   "`main` continues to point to commit `C`.",
+   "Git creates a new common commit for the two branches."
+  ],
+  "answer": 2,
+  "explanation": "In Git, a branch is essentially a movable reference to a commit. After creating `feature`, its reference can move to the new commit, but the `main` reference does not change as a result. The most common incorrect answer is tempting because people often think of a branch as a separate copy rather than as a reference pointing to a commit."
+ },
+ {
+  "id": 4,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "scenario",
+  "question": "Both the `main` and `feature` branches started from the same commit `C`. Each branch has exactly one additional commit, and they modify different files. What does `git merge feature` do by default when you are on the `main` branch?",
+  "options": [
+   "A merge conflict always occurs because both branches contain new commits.",
+   "Git deletes the feature commit and keeps only the state of `main`.",
+   "Git automatically squashes the two commits into a single commit.",
+   "Git creates a merge commit with two parents."
+  ],
+  "answer": 3,
+  "explanation": "Because both branches diverged from their common ancestor and neither branch is an ancestor of the other, a fast-forward is not possible. Git therefore creates a merge commit by default, provided there are no conflicts and the merge is not otherwise configured. The merge commit has two parents. The most common incorrect answer is tempting because people often assume that any divergence between branches necessarily causes a conflict."
+ },
+ {
+  "id": 5,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "theory",
+  "question": "What is the most important difference between `git fetch origin` and `git pull origin main` under normal circumstances?",
+  "options": [
+   "Fetch updates remote-tracking references without automatically integrating the changes into the current branch, while pull also performs an integration step after fetching.",
+   "Fetch downloads only tags, while pull downloads only branches.",
+   "Fetch modifies the working tree, while pull never modifies it.",
+   "The two commands are completely identical and are simply different names for the same operation."
+  ],
+  "answer": 0,
+  "explanation": "`git fetch` downloads new objects from the remote repository and updates remote-tracking references such as `origin/main`, but does not automatically merge or rebase the current branch. `git pull` is essentially a fetch followed by an integration step, which may be a merge or rebase depending on configuration and options. The most common incorrect answer is tempting because both commands involve network communication in everyday Git usage."
+ },
+ {
+  "id": 6,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "trap",
+  "question": "You have a published commit on the `main` branch that contains an incorrect change. Other developers have already fetched it. Which approach is generally the most appropriate if you want to avoid rewriting shared history?",
+  "options": [
+   "`git reset --hard HEAD~1` followed by a force push",
+   "`git restore --source HEAD~1 --staged --worktree .`",
+   "`git revert HEAD`",
+   "Delete the `.git` directory and initialize a new repository"
+  ],
+  "answer": 2,
+  "explanation": "`git revert HEAD` creates a new commit that reverses the changes introduced by the selected commit, preserving the published history. In contrast, `reset --hard` can move the branch reference and working tree backward, which can lead to history rewriting on a shared branch if followed by a force push. The most common incorrect answer is tempting because reset visibly moves the branch back to an earlier state."
+ },
+ {
+  "id": 7,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "behavior",
+  "question": "What does `git stash` do by default when the working tree contains uncommitted changes?",
+  "options": [
+   "It creates a commit containing the changes on a temporary branch.",
+   "It stores the changes in the stash and then restores the working tree to the HEAD state.",
+   "It permanently deletes the changes from the Git object database.",
+   "It automatically moves the changes into the staging area for the next commit."
+  ],
+  "answer": 1,
+  "explanation": "`git stash` saves the applicable tracked working-tree changes in the stash and then produces a cleaner working tree. The stash can later be restored using commands such as `git stash pop` or `git stash apply`. The most common incorrect answer is tempting because the stash acts as temporary storage and can easily be confused with a temporary commit or branch."
+ },
+ {
+  "id": 8,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "output",
+  "question": "A single commit on one branch modifies `config.txt`. You are on another branch and run `git cherry-pick <commit>` successfully without conflicts. What happens?",
+  "options": [
+   "Git moves the original commit to the current branch, so the original branch loses it.",
+   "Git copies only the commit message and not the file changes.",
+   "Git modifies the original commit object so that it has a new parent.",
+   "Git applies the changes introduced by the commit to the current branch and creates a new commit."
+  ],
+  "answer": 3,
+  "explanation": "Cherry-pick does not move the original commit. It applies the changes introduced by the selected commit to the current HEAD and normally creates a new commit, which can have a different parent and therefore a different commit ID. The most common incorrect answer is tempting because the command sounds as though it transfers an existing commit from one branch to another."
+ },
+ {
+  "id": 9,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "output",
+  "question": "What does the `HEAD -> main` decoration mean in the following output?",
+  "code": "$ git log --oneline --decorate -3\n8f12abc (HEAD -> main) Fix login bug\n4ab56de Add validation\n1c23aaa Initial commit",
+  "options": [
+   "The `main` branch points to commit `8f12abc`, and HEAD is currently attached to this branch.",
+   "The `8f12abc` commit is the first commit in the repository.",
+   "The `main` branch contains three commits, and HEAD points to a detached commit.",
+   "The `main` branch is a remote branch that HEAD automatically downloads."
+  ],
+  "answer": 0,
+  "explanation": "`HEAD -> main` indicates that HEAD is currently pointing to the `main` branch, whose current commit is `8f12abc`. The other lines show earlier commits. The most common incorrect answer is tempting because it is easy to interpret log decorations as additional commits or remote references."
+ },
+ {
+  "id": 10,
+  "level": "junior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "theory",
+  "question": "What happens when you create a lightweight tag with `git tag v1.0` without specifying another commit?",
+  "options": [
+   "Git creates a new commit named `v1.0`.",
+   "Git creates a new branch named `v1.0`.",
+   "Git creates a reference named `v1.0` that points to the current commit.",
+   "Git pushes the tag to all configured remotes."
+  ],
+  "answer": 2,
+  "explanation": "A lightweight tag is simply a named reference that points to a commit. Creating it does not create a new commit, and the tag is not pushed to a remote automatically. The most common incorrect answer is tempting because both tags and branches are references to commits, making it easy for beginners to assume they behave identically."
+ },
+ {
+  "id": 11,
+  "level": "junior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "scenario",
+  "question": "Your `.gitignore` file contains the line `*.log`. An `app.log` file that was already committed to the repository is modified. What happens?",
+  "options": [
+   "Git automatically removes `app.log` from the repository.",
+   "The modification does not appear in Git because `.gitignore` excludes every matching file.",
+   "The file is ignored only if you reinitialize the repository first.",
+   "`.gitignore` does not automatically apply to an already tracked file, so its modification remains tracked."
+  ],
+  "answer": 3,
+  "explanation": "`.gitignore` is primarily used to ignore untracked files and paths that match its patterns. An already tracked `app.log` file remains tracked, so its modifications are still visible to Git. The most common incorrect answer is tempting because the name `.gitignore` suggests that every matching file is universally hidden from Git."
+ },
+ {
+  "id": 12,
+  "level": "junior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "theory",
+  "question": "A Git repository uses a submodule to embed another repository. What does a commit in the parent repository record about the submodule's contents?",
+  "options": [
+   "The complete contents of every file in the submodule repository.",
+   "A Git object ID that identifies a specific commit in the submodule.",
+   "Only the name of the submodule's current branch.",
+   "The current HEAD of every branch in the submodule."
+  ],
+  "answer": 1,
+  "explanation": "The superproject records a specific submodule commit through a gitlink entry. This ensures that a particular superproject commit deterministically identifies which submodule commit belongs with it. The most common incorrect answer is tempting because a submodule appears as a directory in the filesystem, making it easy to think of it as an ordinary tracked directory."
+ },
+ {
+  "id": 13,
+  "level": "junior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "edgecase",
+  "question": "You accidentally run `git reset --hard HEAD~2` and want to find the previous position of the branch's HEAD. Which tool is the most direct help?",
+  "options": [
+   "`git reflog`",
+   "`gitignore`",
+   "`git clean`",
+   "`git archive`"
+  ],
+  "answer": 0,
+  "explanation": "The reflog records local movements of references such as HEAD. This often makes it possible to find and recover a commit after an accidental reset, rebase, or other reference rewrite. The most common incorrect answer is tempting because `git log` also displays history, but it does not necessarily show previously abandoned positions of branch references."
+ },
+ {
+  "id": 14,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "What will `git status` report after the following operations?",
+  "code": "echo \"hello\" > a.txt\ngit add a.txt\ngit status",
+  "options": [
+   "The file exists only in the working tree and is not staged.",
+   "The file is automatically committed.",
+   "The file appears in the index as a staged new file and is not yet part of a commit.",
+   "Git deletes the file because it has not been committed yet."
+  ],
+  "answer": 2,
+  "explanation": "`git add` places the new file's contents into the index, which is the staging area. At this point the file is staged, but no commit has been created yet. The most common incorrect answer is tempting because the name `git add` can make it sound as though the file has already been added to the repository's history."
+ },
+ {
+  "id": 15,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "debug",
+  "question": "A developer runs:\nAfter the commit, they notice that a previously modified file was not included. What could be the most likely explanation?",
+  "code": "git add .\ngit commit -m \"Feature\"",
+  "options": [
+   "Git allows at most 10 files in a commit.",
+   "The file was in a state that `git add .` did not stage, for example because it was an untracked file excluded by an applicable ignore rule.",
+   "`git commit` randomly selects which staged files to include.",
+   "Git stages only modified Java files."
+  ],
+  "answer": 1,
+  "explanation": "`git add .` stages files according to the path scope and Git's applicable rules; for example, an untracked file excluded by an ignore rule is not automatically staged. For already tracked files, other factors such as the current working directory and path scope can also matter. The most common incorrect answer is tempting because the short `add .` command can appear to mean \"add every possible file\" without restrictions."
+ },
+ {
+  "id": 16,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "output",
+  "question": "What will appear in the output of `git branch` after the following operations?",
+  "code": "git switch -c feature\ngit switch main\ngit branch",
+  "options": [
+   "Only the `feature` branch appears.",
+   "Both `feature` and `main` appear, with `*` next to `main`.",
+   "Only the `main` branch appears because you switched back from the feature branch.",
+   "Git automatically deletes the `feature` branch when you switch away from it."
+  ],
+  "answer": 1,
+  "explanation": "`git switch -c feature` creates the feature branch, and switching from it to `main` does not delete it. `git branch` lists both local branches, with `*` marking the currently checked-out `main` branch. The most common incorrect answer is tempting because the concepts of creating a branch and being currently on that branch can easily be confused."
+ },
+ {
+  "id": 17,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "You encounter a merge conflict. After removing the conflict markers and correctly editing the file, which sequence properly completes the conflicted merge?",
+  "options": [
+   "Run `git commit` directly, without staging, in every case.",
+   "Run `git reset --hard` followed by `git push`.",
+   "Run `git add <resolved-file>` followed by `git commit`.",
+   "Run `git branch --delete <resolved-file>` followed by `git merge --continue`."
+  ],
+  "answer": 2,
+  "explanation": "After resolving a conflict, Git needs to be told that the affected file is resolved; `git add` does this by staging the resolved version. The merge commit can then be created with `git commit`, or in certain workflows `git merge --continue` can be used. The most common incorrect answer is tempting because the file looks correct after editing, but Git still needs an explicit indication that the conflict has been resolved."
+ },
+ {
+  "id": 18,
+  "level": "junior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "behavior",
+  "question": "What happens during a simple `git rebase main` when you are on the `feature` branch and its two commits were based on an older `main` HEAD?",
+  "options": [
+   "Git reapplies the feature commits on top of the current `main`, creating new commit IDs.",
+   "Git always creates a merge commit between the feature and main branches.",
+   "Git deletes the feature commits and keeps only the main history.",
+   "Rebase modifies only the working tree and does not recreate commits."
+  ],
+  "answer": 0,
+  "explanation": "Rebase detaches the feature commits from their old base and reapplies them after the specified new base, in this case the current tip of `main`. The recreated commits normally receive new commit IDs. The most common incorrect answer is tempting because the result of a rebase is a linear history that can look superficially similar to the result of a merge."
+ },
+ {
+  "id": 19,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "scenario",
+  "question": "Your local `main` branch is one commit ahead of `origin/main`, with no other divergence. What does a successful `git push origin main` do?",
+  "options": [
+   "It downloads changes from `origin/main` but does not upload the local commit.",
+   "It deletes the local commit because the remote state takes precedence.",
+   "It creates a new merge commit on every push.",
+   "It uploads the necessary objects and moves the `origin/main` reference to the local `main` commit."
+  ],
+  "answer": 3,
+  "explanation": "If the remote branch can be updated by a fast-forward, the push uploads the missing Git objects and then updates the remote branch reference to the local commit. No merge commit is required. The most common incorrect answer is tempting because beginners frequently confuse the direction of data flow for push and fetch."
+ },
+ {
+  "id": 20,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "output",
+  "question": "What happens after the following command if the modification to `file.txt` has not been staged?",
+  "code": "git restore file.txt",
+  "options": [
+   "The modification is added to the staging area.",
+   "The working-tree modification is restored to the version currently stored in the index.",
+   "The entire Git repository history is deleted.",
+   "A new commit is created that records the reversal."
+  ],
+  "answer": 1,
+  "explanation": "`git restore file.txt` restores the working-tree file from the version in the index by default. Therefore, an unstaged modification can be discarded. The command does not create a commit or move the branch reference. The most common incorrect answer is tempting because the word \"restore\" can suggest a general operation that restores content from Git history."
+ },
+ {
+  "id": 21,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "edgecase",
+  "question": "You have a modified tracked file and a new, untracked file. What does plain `git stash` do by default?",
+  "options": [
+   "It stashes both files.",
+   "It stashes only the new untracked file.",
+   "It stashes the tracked modification but does not stash the untracked file by default.",
+   "It fails because an untracked file exists in the working tree."
+  ],
+  "answer": 2,
+  "explanation": "Plain `git stash` saves tracked working-tree changes by default but does not include untracked files. Untracked files can be included, for example, with `git stash -u`. The most common incorrect answer is tempting because stash is often thought of as a complete snapshot of the entire working directory."
+ },
+ {
+  "id": 22,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "scenario",
+  "question": "You want to bring a bug-fix commit onto a release branch, but the release branch should not receive the other development commits from the feature branch. Which Git operation best fits this goal?",
+  "options": [
+   "`git cherry-pick <bugfix-commit>`",
+   "`git reset --hard <bugfix-commit>`",
+   "`git stash push <bugfix-commit>`",
+   "`git branch --move <bugfix-commit>`"
+  ],
+  "answer": 0,
+  "explanation": "Cherry-pick is specifically useful for applying the changes introduced by an existing commit to another history line without merging the entire feature branch. If a conflict occurs, the cherry-pick process must be resolved or aborted. The most common incorrect answer is tempting because reset can also make a branch point at another commit, but it serves a fundamentally different purpose."
+ },
+ {
+  "id": 23,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "A regression was introduced somewhere within the last 40 commits, and every commit can be tested deterministically. Which Git tool can efficiently locate the problematic commit?",
+  "options": [
+   "`git blame`",
+   "`git bisect`",
+   "`git archive`",
+   "`git tag`"
+  ],
+  "answer": 1,
+  "explanation": "`git bisect` performs a binary search between a known good and a known bad commit, asking you to test an intermediate commit at each step. This narrows down the regression in roughly logarithmic time. The most common incorrect answer is tempting because `git blame` can also identify the commit associated with a particular line, but it is not designed to perform a binary search for regressions."
+ },
+ {
+  "id": 24,
+  "level": "junior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "A team uses a workflow where each change is developed on a separate short-lived branch and then merged into the shared `main` branch after code review. What is the most important benefit of this approach?",
+  "options": [
+   "Feature branches automatically prevent all merge conflicts.",
+   "Git no longer creates commits on feature branches.",
+   "Code review guarantees that no production bugs will occur.",
+   "Changes can be developed and reviewed in isolation before being integrated into the shared main branch."
+  ],
+  "answer": 3,
+  "explanation": "Short-lived feature branches isolate work, allowing development and code review to happen separately while giving the shared `main` branch a more controlled change process. This does not guarantee conflict-free merges or bug-free production deployments. The most common incorrect answer is tempting because branch isolation can be mistaken for a much stronger safety guarantee than it actually provides."
+ },
+ {
+  "id": 25,
+  "level": "junior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "A pull request contains a 2-line bug fix, but the branch also contains 35 completely unrelated commits. Which approach most improves review quality if supported by the team's workflow?",
+  "options": [
+   "Delete the entire branch history and reinitialize the repository.",
+   "Automatically delete the entire branch without using force push.",
+   "Organize the changes into logically focused, reviewable commits or otherwise prepare the branch history appropriately.",
+   "Rename every commit message to `fix`."
+  ],
+  "answer": 2,
+  "explanation": "Code review is significantly more effective when the PR contains the relevant changes and the history is understandable. Depending on the team's workflow, this can be achieved through techniques such as interactive rebase, squashing, or otherwise preparing the branch history appropriately. History rewriting should only be done in accordance with the team's branch-sharing and review rules. The most common incorrect answer is tempting because simply renaming commit messages can make the history look more uniform without actually making the underlying changes more focused."
+ },
+ {
+  "id": 26,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Which Git object type stores the structure of a directory's contents, meaning which files and subdirectories reference which blobs and tree objects?",
+  "options": [
+   "tree",
+   "commit",
+   "blob",
+   "tag"
+  ],
+  "answer": 0,
+  "explanation": "A `tree` object describes the structure of a directory snapshot: it contains references to blob and tree objects along with file names and modes. A `blob` stores file contents, while a `commit` references a tree and parent commits, among other metadata. The most common incorrect answer is tempting because a commit represents a complete state of the repository, making it easy to assume that the commit itself contains the directory structure."
+ },
+ {
+  "id": 27,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "output",
+  "question": "What will `git status` report after the following operations?",
+  "code": "echo \"hello\" > app.txt\ngit add app.txt\necho \"world\" >> app.txt\ngit status",
+  "options": [
+   "It will report no changes because `app.txt` is already staged.",
+   "`app.txt` can have both staged and unstaged changes at the same time.",
+   "`app.txt` will appear only as an unstaged change.",
+   "`app.txt` will be committed automatically."
+  ],
+  "answer": 1,
+  "explanation": "`git add` placed the first state, containing `hello`, into the index. The later `world` line exists only in the working tree, so the same file can simultaneously have staged and unstaged changes. The most common incorrect answer is tempting because people often assume that once a file is staged, all subsequent modifications to that file are automatically staged as well."
+ },
+ {
+  "id": 28,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "output",
+  "question": "What happens when the following commands are executed if the `feature` branch already exists?",
+  "code": "git switch main\ngit switch feature",
+  "options": [
+   "The `feature` branch is recreated from `main`.",
+   "The `feature` branch is deleted and then recreated.",
+   "Git switches to the `feature` branch and continues working from its current commit.",
+   "Git automatically merges the `feature` branch into `main`."
+  ],
+  "answer": 2,
+  "explanation": "`git switch feature` switches to an existing local branch. The branch reference itself does not change, and no merge occurs. The most common incorrect answer is tempting because `switch` is easy to confuse with the `switch -c` form, which creates a new branch."
+ },
+ {
+  "id": 29,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "scenario",
+  "question": "The `feature` branch is entirely ahead of `main`, meaning the current `main` commit is an ancestor of the `feature` tip. You are on `main` and run `git merge feature`. What happens without conflicts?",
+  "options": [
+   "Git always creates a two-parent merge commit.",
+   "Git deletes the `feature` branch.",
+   "Git creates a new commit whose only parent is `feature`.",
+   "Git fast-forwards the `main` reference to the current `feature` commit."
+  ],
+  "answer": 3,
+  "explanation": "If the current `main` commit is an ancestor of the feature tip, there is no need for a separate merge commit. Git simply advances the `main` reference to the feature commit; this is called a fast-forward merge. The most common incorrect answer is tempting because people often automatically associate the `merge` command with creating a merge commit."
+ },
+ {
+  "id": 30,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "What does `origin/main` represent in a typical Git repository?",
+  "options": [
+   "A local branch that is always automatically merged into `main`.",
+   "A remote-tracking reference representing the state of the `main` branch on the `origin` remote as last known to the local repository.",
+   "A special tag representing the production version.",
+   "A local commit that Git creates only during a push."
+  ],
+  "answer": 1,
+  "explanation": "`origin/main` is a remote-tracking reference representing the state of the `main` branch on the `origin` remote as known locally. After `git fetch`, this reference may be updated, but the local `main` branch does not automatically change as a result. The most common incorrect answer is tempting because the name `origin/main` looks very similar to the name of a normal local branch."
+ },
+ {
+  "id": 31,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "trap",
+  "question": "What is the essential difference between `git reset HEAD~1` and `git revert HEAD` when you want to undo the latest commit?",
+  "options": [
+   "Reset always deletes all files, while revert only changes the commit message.",
+   "The two commands always produce exactly the same result.",
+   "Reset can modify the branch history by moving the reference to an earlier commit, while revert creates a new commit that reverses the changes.",
+   "Revert works only on untracked files."
+  ],
+  "answer": 2,
+  "explanation": "`git reset HEAD~1` moves the current branch reference to an earlier commit, and depending on the reset mode, the state of the index and working tree may also change. `git revert HEAD`, by contrast, keeps the original commit in history and creates a new commit that reverses its changes. The most common incorrect answer is tempting because both commands can leave similar file contents while having significantly different effects on history."
+ },
+ {
+  "id": 32,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "output",
+  "question": "What does the following command do to the most recent stash entry?",
+  "code": "git stash apply",
+  "options": [
+   "It applies the most recent stash changes but does not remove the stash entry by default.",
+   "It applies the stash changes and then automatically deletes the stash entry.",
+   "It permanently deletes the most recent stash changes.",
+   "It creates a new branch from the stash and deletes the original stash entry."
+  ],
+  "answer": 0,
+  "explanation": "`git stash apply` reapplies the most recent stash changes to the current working tree but keeps the stash entry by default. `git stash pop`, in contrast, removes the applied stash after a successful application. The most common incorrect answer is tempting because people often assume that restoring a stash automatically consumes and deletes it."
+ },
+ {
+  "id": 33,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "debug",
+  "question": "A `git cherry-pick abc1234` operation encounters a conflict. You want to abort the operation and return to the state before the cherry-pick. Which command should you use?",
+  "options": [
+   "`git cherry-pick --continue`",
+   "`git merge --abort`",
+   "`git reset --soft HEAD~1`",
+   "`git cherry-pick --abort`"
+  ],
+  "answer": 3,
+  "explanation": "`git cherry-pick --abort` aborts the in-progress cherry-pick and attempts to restore the repository to its state before the operation. `--continue`, by contrast, continues the cherry-pick after the conflict has been resolved. The most common incorrect answer is tempting because `git merge --abort` is a similarly named recovery command, but it aborts a different Git operation."
+ },
+ {
+  "id": 34,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "output",
+  "question": "Which command is suitable for reviewing the previous changes to a specific file and the commits associated with those changes?",
+  "options": [
+   "`git log -- <file>`",
+   "`git clean -- <file>`",
+   "`git branch -- <file>`",
+   "`git stash -- <file>`"
+  ],
+  "answer": 0,
+  "explanation": "`git log -- <file>` filters the commit history to commits associated with the specified file. The `--` clearly separates revisions from the file path. The most common incorrect answer is tempting because several Git commands accept file paths, but not all of them are intended for querying history."
+ },
+ {
+  "id": 35,
+  "level": "junior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "scenario",
+  "question": "You create an annotated tag with `git tag -a v2.0 -m \"Release 2.0\"`. What is the key difference compared with a lightweight tag?",
+  "options": [
+   "An annotated tag always creates a new branch.",
+   "An annotated tag can exist only locally.",
+   "An annotated tag is a separate Git object that stores metadata such as a message and tagger information, and references another object.",
+   "An annotated tag cannot point to a commit."
+  ],
+  "answer": 2,
+  "explanation": "An annotated tag is a separate tag object that stores information such as a message, tagger identity, and timestamp, and references another Git object, typically a commit. A lightweight tag is simply a direct reference. The most common incorrect answer is tempting because both types of tags can be used to mark a release in everyday workflows."
+ },
+ {
+  "id": 36,
+  "level": "junior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "output",
+  "question": "A `.gitignore` file contains:\nWhat happens in a directory where both files exist?",
+  "code": "*.tmp\n!important.tmp",
+  "options": [
+   "Both files are ignored by Git.",
+   "Neither file is ignored.",
+   "Only `important.tmp` will be tracked, but only if it was previously committed.",
+   "Files matching `*.tmp` are ignored, but `important.tmp` is allowed as an exception."
+  ],
+  "answer": 3,
+  "explanation": "The `*.tmp` pattern ignores matching `.tmp` files, while the following `!important.tmp` pattern creates an exception for that specific file. The order of patterns matters, so a later negative pattern can override an earlier general ignore rule for the matching path. The most common incorrect answer is tempting because it is easy to treat the `*.tmp` rule as absolute and overlook the negation pattern."
+ },
+ {
+  "id": 37,
+  "level": "junior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "scenario",
+  "question": "You cloned a repository that uses submodules. After a regular `git clone`, the submodule directory exists, but it does not contain the expected contents. Which command initializes and checks out the submodules at the commits recorded by the superproject?",
+  "options": [
+   "`git submodule update --init --recursive`",
+   "`git branch --submodule`",
+   "`git fetch --submodule-only`",
+   "`git restore --submodules`"
+  ],
+  "answer": 0,
+  "explanation": "`git submodule update --init --recursive` initializes the required submodule configuration, fetches and checks out the commits referenced by the superproject, and recursively handles nested submodules. The most common incorrect answer is tempting because the directory structure may already be visible after a normal clone even though the actual submodule repository contents have not yet been initialized."
+ },
+ {
+  "id": 38,
+  "level": "junior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "scenario",
+  "question": "A developer ran `git reset --hard HEAD~1` but later realized that they need the commit they thought they had lost. Which recovery process is the most realistic?",
+  "options": [
+   "`git status` automatically restores the previous HEAD.",
+   "Use `git reflog` to find the previous HEAD, then create a new branch or another reference pointing to it.",
+   "Use `.gitignore` to restore the commit.",
+   "`git clean -fd` restores the previous commit."
+  ],
+  "answer": 1,
+  "explanation": "The reflog usually contains the previous HEAD position, for example as `HEAD@{1}` or through its associated commit ID. That object can then be made reachable again by creating a new branch or another reference pointing to it. The most common incorrect answer is tempting because `git status` also reports repository state, but it does not maintain the history of previous reference positions."
+ },
+ {
+  "id": 39,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "What does `git cat-file -t <object-id>` do?",
+  "options": [
+   "It prints the complete diff of the commit.",
+   "It shows which branch contains the object.",
+   "It prints the type of the specified Git object, such as `commit`, `tree`, or `blob`.",
+   "It deletes the object if no branch points to it."
+  ],
+  "answer": 2,
+  "explanation": "`git cat-file -t` prints the type of a Git object. This is useful for low-level diagnostics when you need to determine whether an object ID refers to a commit, tree, blob, or another object type. The most common incorrect answer is tempting because `cat-file` is a general-purpose inspection tool, making it easy to assume that it automatically displays the object's full contents or diff."
+ },
+ {
+  "id": 40,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "scenario",
+  "question": "You have staged changes to a file, but before committing you realize that you do not want to commit part of the modification. Which Git tool is most appropriate for interactively selecting which parts of the changes should be staged?",
+  "options": [
+   "`git commit --amend`",
+   "`git reset --hard`",
+   "`git clean -fd`",
+   "`git add -p`"
+  ],
+  "answer": 3,
+  "explanation": "`git add -p` provides interactive, patch-based staging, allowing individual parts of a file's changes to be selected for staging. This is particularly useful when a file contains multiple logically separate modifications. The most common incorrect answer is tempting because reset can change staging-related state, but it does not provide the same interactive hunk-level selection."
+ },
+ {
+  "id": 41,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "edgecase",
+  "question": "What happens if you try to delete a branch with `git branch -d feature` while the `feature` branch contains commits that have not yet been merged into an accessible history?",
+  "options": [
+   "Git warns you and refuses to delete the branch by default.",
+   "Git automatically merges the branch and then deletes it.",
+   "Git always deletes the branch, immediately destroying its commits as well.",
+   "Git copies the commits to the `main` branch."
+  ],
+  "answer": 0,
+  "explanation": "`git branch -d` is intended for safe branch deletion, so Git refuses the deletion when it determines that the branch contains commits that have not been properly merged. Forced deletion can be performed with `git branch -D`, but that may remove an easily accessible reference to those commits. The most common incorrect answer is tempting because deleting a branch can seem like merely removing a name, while Git deliberately protects work that has not yet been integrated."
+ },
+ {
+  "id": 42,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "output",
+  "question": "After a merge, you see the following state:\nWhat do the markers represent?",
+  "code": "<<<<<<< HEAD\ntimeout = 30\n=======\ntimeout = 60\n>>>>>>> feature",
+  "options": [
+   "A binary difference between files named `HEAD` and `feature`.",
+   "The two sides of the conflict: the current branch's version and the version from the branch being merged.",
+   "Two consecutive commits that Git will automatically replay.",
+   "A conflict between two remote repositories."
+  ],
+  "answer": 1,
+  "explanation": "The conflict markers separate the two versions involved in the conflict: the section between `<<<<<<< HEAD` and `=======` represents the current checkout's side, while the section between `=======` and `>>>>>>> feature` represents the version from the branch being merged. The developer must construct the desired final content and then stage the file to mark the conflict as resolved. The most common incorrect answer is tempting because the names inside the markers can initially look like file names or remote names."
+ },
+ {
+  "id": 43,
+  "level": "junior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "trap",
+  "question": "Why is modifying the history of a branch that is already used and pushed by other developers, for example with `git rebase`, potentially dangerous?",
+  "options": [
+   "Because rebase always deletes the working tree.",
+   "Because rebase cannot work with remote branches.",
+   "Because rebase can create new commits, changing their IDs, which can cause the shared history to diverge from other developers' local histories.",
+   "Because rebase automatically treats every file as binary."
+  ],
+  "answer": 2,
+  "explanation": "Rebase reapplies commits onto a different base, so the resulting commits can have different IDs. If other developers have already based work on the old history, reconciling the rewritten history requires additional work and often a force push. The most common incorrect answer is tempting because rebase appears to be a local operation, making it less obvious that it can change the structure of published history."
+ },
+ {
+  "id": 44,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "debug",
+  "question": "A developer attempts to push:\nWhat is the most likely reason?",
+  "code": "$ git push origin main\nTo github.example.com:team/app.git\n ! [rejected]        main -> main (non-fast-forward)\nerror: failed to push some refs",
+  "options": [
+   "The remote `main` branch contains commits that are not present in the local `main` history.",
+   "There are too many files in the repository.",
+   "The `main` branch name is too short.",
+   "The push command works only with annotated tags."
+  ],
+  "answer": 0,
+  "explanation": "A non-fast-forward push rejection typically means that the remote branch contains a history that the local branch does not contain, so the local branch cannot simply advance the remote reference. The appropriate solution is usually to fetch the remote changes and deliberately integrate them before trying to push again. The most common incorrect answer is tempting because the error message does not directly identify which missing commit caused the divergence."
+ },
+ {
+  "id": 45,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "output",
+  "question": "What happens after the following command?",
+  "code": "git restore --staged file.txt",
+  "options": [
+   "The file's modifications are permanently deleted from the working tree.",
+   "The file's latest commit is deleted.",
+   "The file is automatically restored to the state of the remote branch.",
+   "The file is removed from the staging area while the working-tree modification remains by default."
+  ],
+  "answer": 3,
+  "explanation": "`--staged` tells Git to restore the index, or staging area, state. The working-tree contents are not changed by default, so the modification can remain as an unstaged change. The most common incorrect answer is tempting because the word `restore` makes it easy to assume that the file's contents themselves are being restored."
+ },
+ {
+  "id": 46,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "scenario",
+  "question": "A developer has several independent pieces of temporary work and wants to keep them as separate stash entries. Which statement is correct?",
+  "options": [
+   "A Git repository can contain at most one stash.",
+   "Multiple stashes can be created, and `git stash list` displays them.",
+   "Every new stash automatically deletes the previous one.",
+   "Stash can be used for only one file."
+  ],
+  "answer": 1,
+  "explanation": "Git stash provides a stack-like storage mechanism that can contain multiple stash entries, such as `stash@{0}`, `stash@{1}`, and so on. `git stash list` displays these entries, and a specific entry can later be applied or dropped separately. The most common incorrect answer is tempting because many simple workflows use only the most recent stash."
+ },
+ {
+  "id": 47,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "edgecase",
+  "question": "You cherry-pick a commit onto another branch, but the change introduced by that commit is already partially or completely present on the target branch. What can happen?",
+  "options": [
+   "Git automatically deletes the original commit.",
+   "Cherry-pick always successfully creates an identical commit.",
+   "Cherry-pick can result in conflicts or even an empty change, depending on how much of the original change is already present.",
+   "Git automatically merges the entire original branch."
+  ],
+  "answer": 2,
+  "explanation": "Cherry-pick attempts to apply the patch introduced by a commit to the current state. If those changes are already present, the operation may encounter conflicts, or there may be no effective change left to apply, resulting in an empty cherry-pick. The most common incorrect answer is tempting because cherry-pick is often understood as simple commit copying, when it actually applies changes against a different base."
+ },
+ {
+  "id": 48,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "output",
+  "question": "What is `git blame file.txt` primarily useful for?",
+  "options": [
+   "Determining which commits and authors are associated with the current lines of a file.",
+   "Performing a binary search through the complete history of the file.",
+   "Automatically restoring all previous versions of the file.",
+   "Automatically resolving all merge conflicts in the file."
+  ],
+  "answer": 0,
+  "explanation": "`git blame` shows, line by line, which commit and author are associated with the current contents of a file. This can be useful for investigating when and in which commit a particular line changed. The most common incorrect answer is tempting because blame displays historical information, but it is not designed to perform a binary search through the complete history."
+ },
+ {
+  "id": 49,
+  "level": "junior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "scenario",
+  "question": "A release tag already exists locally, and you want to push it to the `origin` remote. Which command does this?",
+  "options": [
+   "`git push origin --branch v1.0`",
+   "`git push origin v1.0`",
+   "`git fetch origin v1.0`",
+   "`git pull origin v1.0`"
+  ],
+  "answer": 1,
+  "explanation": "`git push origin v1.0` can be used to push the `v1.0` tag to the remote. Creating a tag locally does not automatically make it available in the remote repository. The most common incorrect answer is tempting because branch-push syntax is similar, and it is easy to treat a tag like a branch."
+ },
+ {
+  "id": 50,
+  "level": "junior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "production",
+  "question": "A team wants the `main` branch to remain deployable while larger features are being developed over several days. Which workflow most directly supports this goal?",
+  "options": [
+   "Every developer commits directly to `main` without review.",
+   "Larger features must be added to `main` as a single huge commit.",
+   "Each feature is developed on a separate branch and integrated into `main` only after the appropriate checks.",
+   "The `main` branch must be deleted and recreated every day."
+  ],
+  "answer": 2,
+  "explanation": "Separate feature branches allow work in progress to remain isolated from the more stable `main` branch and to be integrated after the appropriate checks. This does not guarantee that `main` will always be bug-free, but it supports controlled integration. The most common incorrect answer is tempting because a single large commit may produce a simpler-looking history, but it does not solve the isolation problem for changes developed over several days."
+ },
+ {
+  "id": 51,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "What does `git rev-parse HEAD` display in a normal, non-detached HEAD state?",
+  "options": [
+   "The full SHA identifier of the current commit.",
+   "The name of the current branch.",
+   "The URL of the current remote.",
+   "The message of the latest commit."
+  ],
+  "answer": 0,
+  "explanation": "`git rev-parse HEAD` resolves the `HEAD` reference and prints the full object ID of the current commit. This is often useful in scripts and diagnostics when an exact commit identifier is required. The most common incorrect answer is tempting because `HEAD` is often associated with a branch, but the reference ultimately resolves to a commit."
+ },
+ {
+  "id": 52,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "trap",
+  "question": "You staged a file, then modified it, and subsequently run `git commit -a -m \"Update\"`. What happens?",
+  "options": [
+   "Git commits only the previously staged state and ignores everything else.",
+   "Git automatically stages modifications and deletions to tracked files, then commits the resulting index contents.",
+   "Git automatically adds all untracked files as well.",
+   "Git clears the existing staging area and stages every file again."
+  ],
+  "answer": 1,
+  "explanation": "`git commit -a` automatically stages modifications and deletions to already tracked files before creating the commit, but it does not add new untracked files. Therefore, a later modification to a previously staged file can also be included in the commit. The most common incorrect answer is tempting because `git commit` by itself commits only the contents of the index, while `-a` extends this behavior for tracked files."
+ },
+ {
+  "id": 53,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "scenario",
+  "question": "What is the difference between `git branch feature` and `git switch -c feature` when the `feature` branch does not yet exist?",
+  "options": [
+   "Both create the branch, but neither switches to it.",
+   "The first deletes the current branch, while the second renames it.",
+   "The first creates the branch, while the second creates it and immediately switches to it.",
+   "The first creates a remote branch, while the second creates a local branch."
+  ],
+  "answer": 2,
+  "explanation": "`git branch feature` creates the `feature` reference but leaves the current branch unchanged. `git switch -c feature` creates the new branch and switches to it at the same time. The most common incorrect answer is tempting because both commands create a new branch name, so the implicit switch performed by the latter can easily be overlooked."
+ },
+ {
+  "id": 54,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "During a merge, you get:\nWhich statement is correct?",
+  "code": "$ git merge feature\nAuto-merging app.txt\nCONFLICT (content): Merge conflict in app.txt\nAutomatic merge failed; fix conflicts and then commit the result.",
+  "options": [
+   "Git automatically created the merge commit; it just has not been pushed yet.",
+   "The conflict exists only in the remote repository.",
+   "`app.txt` was deleted, so it must be recreated.",
+   "The merge is incomplete, and the conflict in `app.txt` must be resolved before the merge can be completed."
+  ],
+  "answer": 3,
+  "explanation": "The merge did not complete because Git could not automatically combine the changes to `app.txt`. The conflict must be resolved, the file staged, and the merge process then completed. The most common incorrect answer is tempting because the automatic merge message can make it seem as though only the push step is missing."
+ },
+ {
+  "id": 55,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "output",
+  "question": "What does the following command do?",
+  "code": "git fetch origin main",
+  "options": [
+   "It downloads the required objects from the `main` branch of the `origin` remote and updates the corresponding remote-tracking reference without automatically modifying the local `main` branch.",
+   "It automatically merges the local `main` branch with the `origin/main` state.",
+   "It pushes the local `main` branch to the `origin` remote.",
+   "It deletes the `origin/main` remote-tracking reference."
+  ],
+  "answer": 0,
+  "explanation": "`fetch` retrieves available objects from the remote and updates the remote-tracking state. The local `main` branch does not move automatically as a result. The most common incorrect answer is tempting because the distinction between `pull` and `fetch` is often blurred in everyday Git usage."
+ },
+ {
+  "id": 56,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "behavior",
+  "question": "What is the typical effect of `git reset --soft HEAD~1` in a repository where you want to \"undo\" the latest commit but keep its changes ready to be committed again?",
+  "options": [
+   "The commit is removed from the current branch's history, while its changes remain staged.",
+   "The commit and all of its changes are permanently deleted.",
+   "The working tree remains unchanged, but the index is completely cleared.",
+   "Git creates a new revert commit."
+  ],
+  "answer": 0,
+  "explanation": "A `--soft` reset moves the branch reference backward but leaves both the index and working tree unchanged. As a result, the changes introduced by the previous commit remain staged relative to the new HEAD. The most common incorrect answer is tempting because many people associate the word `reset` with deleting file contents automatically."
+ },
+ {
+  "id": 57,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "output",
+  "question": "What happens when you run the following after creating a stash?",
+  "code": "git stash list",
+  "options": [
+   "It stages all files in the working tree again.",
+   "It lists the stash entries in the repository.",
+   "It deletes the most recent stash entry.",
+   "It displays all previous commits in the repository."
+  ],
+  "answer": 1,
+  "explanation": "`git stash list` displays the entries in the stash stack, typically using identifiers such as `stash@{0}`, `stash@{1}`, and so on. The command does not modify the working tree or delete stash entries. The most common incorrect answer is tempting because both stash entries and commit history can appear as chronological lists."
+ },
+ {
+  "id": 58,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "scenario",
+  "question": "You want to bring only a single bug-fix commit from a `feature` branch onto the `release/1.0` branch. The bug-fix commit does not depend on any additional commits from the feature branch. What is the appropriate approach?",
+  "options": [
+   "The entire `feature` branch must always be merged.",
+   "The `release/1.0` branch must be renamed to `feature`.",
+   "The bug-fix commit can be cherry-picked onto `release/1.0`.",
+   "The release branch must be reset to the bug-fix commit."
+  ],
+  "answer": 2,
+  "explanation": "Cherry-pick allows the changes introduced by a specific commit to be applied to another branch without integrating the entire feature branch. However, the commit's actual dependencies should always be checked. The most common incorrect answer is tempting because merge is the general-purpose branch integration mechanism, but here only one well-defined change needs to be integrated."
+ },
+ {
+  "id": 59,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "output",
+  "question": "Which command displays the changes introduced by a commit in patch form?",
+  "options": [
+   "`git show <commit>`",
+   "`git branch <commit>`",
+   "`git remote <commit>`",
+   "`git clean <commit>`"
+  ],
+  "answer": 0,
+  "explanation": "`git show <commit>` displays the commit metadata and, by default, the patch introduced by that commit. This is a quick way to inspect exactly what changed in a particular commit. The most common incorrect answer is tempting because `git log` also displays commits, but it does not show the patch contents with the same level of detail by default."
+ },
+ {
+  "id": 60,
+  "level": "junior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "edgecase",
+  "question": "What is the most important limitation of reflog-based recovery?",
+  "options": [
+   "Reflog exists only in remote repositories.",
+   "Reflog records only tags.",
+   "Reflog always preserves objects indefinitely.",
+   "Reflog is local, and unreachable objects can eventually be removed by garbage collection."
+  ],
+  "answer": 3,
+  "explanation": "Reflog primarily records local reference movements; it is not a centralized, shared history available to everyone. Git can eventually remove objects during garbage collection when they are no longer reachable through appropriate references and their retention period has expired. The most common incorrect answer is tempting because reflog is a very effective recovery mechanism, making it easy to assume that every previous state can be recovered forever."
+ },
+ {
+  "id": 61,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "A commit object references a tree and one or more parent commits. What does this imply about the structure of Git history?",
+  "options": [
+   "Commits always have exactly one parent.",
+   "The relationships between commits form a directed graph in which merge commits can have multiple parents.",
+   "Git identifies every commit with a single global sequential number.",
+   "Tree objects directly represent branches."
+  ],
+  "answer": 1,
+  "explanation": "Git history is best understood as a graph rather than a simple linear list. A normal commit typically has one parent, while a merge commit can have two or more parents. The most common incorrect answer is tempting because many feature histories look linear, while Git's object model supports a more general graph structure."
+ },
+ {
+  "id": 62,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "performance",
+  "question": "In a large repository, a developer wants to quickly inspect all file changes since the latest commit before committing. Which approach directly compares the working tree with HEAD?",
+  "options": [
+   "`git diff HEAD`",
+   "`git log --all`",
+   "`git branch -vv`",
+   "`git clean -n`"
+  ],
+  "answer": 0,
+  "explanation": "`git diff HEAD` compares the current working-tree state with the state recorded in the commit referenced by HEAD, so staged and unstaged differences are included in the comparison. This directly expresses the desired comparison, even in a large repository. The most common incorrect answer is tempting because `git status` also reports modified files, but it does not show the actual content differences."
+ },
+ {
+  "id": 63,
+  "level": "medior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "edgecase",
+  "question": "You modified the working tree before switching branches. The `git switch other-branch` command fails. What is the most likely reason?",
+  "options": [
+   "Git never allows branch switching when the working tree contains modifications.",
+   "`other-branch` is a remote branch, so it cannot be checked out.",
+   "The local modifications would conflict with files that would be changed by checking out the target branch, potentially overwriting or losing them.",
+   "Branch switching works only in a repository containing commits."
+  ],
+  "answer": 2,
+  "explanation": "Git can allow branch switching with uncommitted modifications in some situations. However, if checking out the target branch would change files that are also locally modified, Git stops to prevent those changes from being overwritten. The most common incorrect answer is tempting because people often assume that any unstaged modification automatically prevents branch switching for safety reasons."
+ },
+ {
+  "id": 64,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "trap",
+  "question": "Why is it not sufficient to simply remove the `<<<<<<<`, `=======`, and `>>>>>>>` markers when resolving a merge conflict?",
+  "options": [
+   "Because Git automatically decides which content is correct based only on the removal of the markers.",
+   "Because you must construct the correct final content from the conflicting sides and then tell Git that the file is resolved by staging it.",
+   "Because the conflict markers must always remain in the commit.",
+   "Because files involved in a merge conflict must always be deleted."
+  ],
+  "answer": 1,
+  "explanation": "Conflict markers only show the content that Git could not automatically merge. The developer must construct the correct final content and then use `git add` to tell Git that the file's conflict has been resolved. The most common incorrect answer is tempting because the file looks visually clean after the markers are removed, but the actual content decision and staging step still need to be completed."
+ },
+ {
+  "id": 65,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "output",
+  "question": "A `feature` branch contains two commits, while `main` has received three new commits in the meantime. You run `git rebase main` on the feature branch without conflicts. Which statement is correct?",
+  "options": [
+   "The two feature commits are reapplied on top of the current tip of `main`, making the feature history linear.",
+   "The three new commits on `main` are deleted.",
+   "Git always creates a single merge commit from the six commits.",
+   "The feature branch is automatically deleted."
+  ],
+  "answer": 0,
+  "explanation": "Rebase reapplies the feature commits on top of the current tip of `main`. The result is typically a linear history in which the three main commits are followed by the two recreated feature commits. The most common incorrect answer is tempting because the final state can look similar to what you might get by merging the feature branch, even though the history structure is different."
+ },
+ {
+  "id": 66,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "scenario",
+  "question": "You are working on `main` and want to inspect new commits that have appeared on `origin/main` without modifying the local `main` branch. Which workflow is most appropriate?",
+  "options": [
+   "`git pull origin main`, followed by `git reset --hard HEAD~1`",
+   "`git push origin main`, followed by `git log`",
+   "`git fetch origin`, followed by something like `git log HEAD..origin/main`",
+   "`git merge origin/main`, followed by `git fetch origin`"
+  ],
+  "answer": 2,
+  "explanation": "`git fetch origin` updates the `origin/main` remote-tracking reference without integrating it into the local `main` branch. `git log HEAD..origin/main` can then show commits reachable from the remote-tracking branch that are not contained in the current HEAD. The most common incorrect answer is tempting because `pull` also retrieves remote changes, but it additionally initiates an integration step."
+ },
+ {
+  "id": 67,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "output",
+  "question": "You want to remove a commit from the tip of a local branch while keeping its changes in the working tree, but not staged. Which command matches this goal?",
+  "options": [
+   "`git reset --hard HEAD~1`",
+   "`git reset --mixed HEAD~1`",
+   "`git revert HEAD`",
+   "`git restore --source HEAD~1 --staged --worktree .`"
+  ],
+  "answer": 1,
+  "explanation": "A `--mixed` reset moves the branch reference to the previous commit and resets the index to match the new HEAD while leaving working-tree changes intact. As a result, the changes from the previous commit appear as unstaged working-tree modifications. The most common incorrect answer is tempting because `--hard` also moves the branch back, but it can discard the working-tree changes as well."
+ },
+ {
+  "id": 68,
+  "level": "medior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "edgecase",
+  "question": "You want to create a stash that includes untracked files but still excludes ignored files. Which command does this?",
+  "options": [
+   "`git stash -u`",
+   "`git stash -a`",
+   "`git stash --ignored`",
+   "`git stash --tracked-only`"
+  ],
+  "answer": 0,
+  "explanation": "`git stash -u`, or `--include-untracked`, includes untracked files but does not include ignored files. `-a` also includes ignored files, so it is broader than required here. The most common incorrect answer is tempting because both untracked and ignored files are not tracked, but Git treats the two categories differently."
+ },
+ {
+  "id": 69,
+  "level": "medior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "debug",
+  "question": "A cherry-pick encounters a conflict. You resolve the conflict correctly and stage the file. What is the next step if you want to continue the operation?",
+  "options": [
+   "`git cherry-pick --continue`",
+   "`git cherry-pick --abort`",
+   "`git merge --continue`",
+   "`git rebase --continue`"
+  ],
+  "answer": 0,
+  "explanation": "After resolving and staging the conflict, `git cherry-pick --continue` continues the operation and, when appropriate, creates the cherry-picked commit. `--abort`, by contrast, cancels the operation. The most common incorrect answer is tempting because merge and rebase also provide similarly named `--continue` mechanisms."
+ },
+ {
+  "id": 70,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "performance",
+  "question": "In a large repository, you want to inspect commit history with branch relationships clearly visible, including merge commits. Which command is most appropriate?",
+  "options": [
+   "`git status --branches`",
+   "`git log --all --oneline --graph`",
+   "`git blame --graph`",
+   "`git show --branches`"
+  ],
+  "answer": 1,
+  "explanation": "`git log --all --oneline --graph` can include the histories of all reachable refs, uses a compact commit format, and displays the branch and merge structure as an ASCII graph. The most common incorrect answer is tempting because `git status` and `git branch` also provide branch-related information, but they do not display the commit history graph."
+ },
+ {
+  "id": 71,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "trap",
+  "question": "An annotated tag already exists locally, but you want to change the release commit, so you intend to move the same tag name to another commit. Why can this be problematic for an already published release?",
+  "options": [
+   "Git does not allow tags to point to commits.",
+   "Annotated tags cannot be pushed to a remote.",
+   "A tag only represents the working-tree state, so it has no effect on history.",
+   "Moving an already published tag changes which object the tag identifies, which can cause inconsistencies for users and release artifacts."
+  ],
+  "answer": 3,
+  "explanation": "A published release tag generally serves as a stable name identifying a specific Git object. If the same tag is later moved to another commit or tagged object, different clients and artifacts can associate the same version name with different content. The most common incorrect answer is tempting because a tag is technically just a reference, making it easy to overlook its role as a stable identifier in a release process."
+ },
+ {
+  "id": 72,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "scenario",
+  "question": "A repository has a shared ignore rule for a certain file type, but you want to ignore one additional local file without modifying the repository's `.gitignore`. Which approach is appropriate?",
+  "options": [
+   "Delete the `.git/` directory.",
+   "Use `.git/info/exclude`.",
+   "Create a new remote.",
+   "Rename the file to `HEAD`."
+  ],
+  "answer": 1,
+  "explanation": "`.git/info/exclude` can contain repository-local ignore rules without versioning them in the repository. This is useful for local IDE files or environment-specific files that should not affect other developers. The most common incorrect answer is tempting because `.gitignore` is the best-known ignore mechanism, but it is not the only option."
+ },
+ {
+  "id": 73,
+  "level": "medior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "production",
+  "question": "During a production build, a superproject commit references a specific commit of a submodule. Why is it important for the build environment to check out exactly that submodule commit?",
+  "options": [
+   "Because the submodule always uses the latest commit on its own `main` branch.",
+   "Because the superproject commit stores only the submodule directory name.",
+   "Because the pinned submodule commit ensures that the same submodule version is associated with the same superproject commit.",
+   "Because the submodule commit automatically affects all branches of the superproject."
+  ],
+  "answer": 2,
+  "explanation": "The superproject records a specific submodule commit, allowing a build to deterministically use the same submodule state. Later changes to the submodule's own branch do not by themselves modify the commit recorded by the superproject. The most common incorrect answer is tempting because developers often treat a submodule as though it automatically follows the latest state of its remote branch."
+ },
+ {
+  "id": 74,
+  "level": "medior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "scenario",
+  "question": "After a long rebase, a developer realizes they want to return to the original branch state. The branch reference already points to the rewritten history. Which approach is most appropriate?",
+  "options": [
+   "Find the pre-rebase branch/HEAD position in the reflog and restore the appropriate reference to it.",
+   "Use `git clean -fd` to restore the old commits.",
+   "Run `git fetch --all`, which automatically restores the previous local branch history.",
+   "Modify `.gitignore` to make the commits accessible again."
+  ],
+  "answer": 0,
+  "explanation": "Reference movements before and after a rebase are typically recorded in the local reflog. After finding the appropriate previous commit ID, you can create a recovery branch or restore the branch reference to it. The most common incorrect answer is tempting because `fetch --all` updates data from remotes, but it does not restore a previous state of local history."
+ },
+ {
+  "id": 75,
+  "level": "medior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "An eight-person team is experiencing large, difficult merge conflicts when integrating feature branches that have been kept alive for several weeks. Which change can most directly reduce the accumulation of such conflicts?",
+  "options": [
+   "Keep every feature branch completely isolated from `main` changes until development is finished.",
+   "Make feature branches shorter-lived and regularly integrate the latest `main` changes according to the team's workflow.",
+   "Resolve every merge conflict by force pushing.",
+   "Periodically delete the `main` branch so a new history can be started."
+  ],
+  "answer": 1,
+  "explanation": "Shorter-lived branches and more frequent integration reduce the amount of time during which parallel changes can diverge, allowing conflicts to appear in smaller, more manageable increments. This does not eliminate conflicts automatically, but it reduces the risk of large amounts of accumulated divergence. The most common incorrect answer is tempting because long isolation initially means less merge work, but it can create a much larger integration cost later."
+ },
+ {
+  "id": 76,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "behavior",
+  "question": "What happens if two different files have byte-for-byte identical content and both are added to the Git repository?",
+  "options": [
+   "Git always creates two separate blob objects because the filenames are different",
+   "Git stores only the first file, and the second file does not appear in the tree",
+   "The same blob object can be used for both files, while the tree assigns separate filenames to them",
+   "Git automatically creates a hard link between the two files in the working tree"
+  ],
+  "answer": 2,
+  "explanation": "A blob is identified by its content, so files with identical content can reference the same blob object. Filenames and directory structure are represented by tree objects. The assumption that every file must have its own separate object can be misleading because Git uses content-addressed object storage."
+ },
+ {
+  "id": 77,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "output",
+  "question": "You have a modified, tracked `app.java` file. You first run `git add app.java`, then make an additional modification to the same file. What does `git diff --cached` show?",
+  "options": [
+   "All modifications made since the state before the first `git add`",
+   "The difference between the version in the staging area and the current HEAD",
+   "The difference between the working tree and the staging area",
+   "The difference between the latest commit and the working tree"
+  ],
+  "answer": 1,
+  "explanation": "`git diff --cached` compares the contents of the staging area with HEAD, so it shows the first modification that was already staged. The later modification exists only in the working tree, so it appears in `git diff`. The assumption that `--cached` examines the current working-tree state can be misleading because it actually uses the index."
+ },
+ {
+  "id": 78,
+  "level": "medior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "behavior",
+  "question": "A remote-tracking branch `origin/feature` exists, and you want to create a new local `feature` branch from it so that it automatically tracks the upstream branch. Which command is suitable?",
+  "options": [
+   "`git switch -c feature --track origin/feature`",
+   "`git branch --remote feature origin/feature`",
+   "`git switch origin/feature -c feature`",
+   "`git checkout origin/feature --track`"
+  ],
+  "answer": 0,
+  "explanation": "`--track` configures the new local branch to track the `origin/feature` remote-tracking branch. This also establishes the default upstream relationship used by commands such as push and pull. Simply switching to a remote-tracking branch does not create a normal local branch."
+ },
+ {
+  "id": 79,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "behavior",
+  "question": "There is no actual divergence between `main` and `feature`, so `git merge feature` could perform a fast-forward merge. What happens with `git merge --no-ff feature`?",
+  "options": [
+   "Git rejects the merge because there are no conflicts",
+   "Git creates a new merge commit while preserving the feature branch's commits",
+   "Git rewrites all feature commits using rebase",
+   "Git automatically squashes the feature changes into a single commit"
+  ],
+  "answer": 1,
+  "explanation": "`--no-ff` prevents a fast-forward update, so Git creates a separate merge commit. This can be useful when you want the integration of a branch to remain visible as a distinct event in the history. Squashing may also reduce the number of commits visible in history, which can make it seem plausible, but `--no-ff` does not squash."
+ },
+ {
+  "id": 80,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "scenario",
+  "question": "The `feature` branch contains two of its own commits. Meanwhile, `main` has received three new commits. You want to move the feature commits onto the latest state of `main` so that the feature commits are recreated on the new base. Which operation should you use?",
+  "options": [
+   "`git merge main`",
+   "`git reset --hard main`",
+   "`git cherry-pick main`",
+   "`git rebase main`"
+  ],
+  "answer": 3,
+  "explanation": "`git rebase main` moves the feature branch's own commits onto a new base and creates new commit objects after the current tip of `main`. This can produce a more linear history. A merge, by contrast, preserves the divergence between the two branch tips and does not move the existing feature commits to a new base."
+ },
+ {
+  "id": 81,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "production",
+  "question": "Another developer has changed the history of a shared remote branch. You have also rewritten the history of your local branch and want to push the rewritten history, but only if the remote branch has not changed further since you last fetched it. Which approach is intended for this?",
+  "options": [
+   "`git push --force`",
+   "`git push --force-with-lease`",
+   "`git push --delete`",
+   "`git push --mirror`"
+  ],
+  "answer": 1,
+  "explanation": "`--force-with-lease` is a conditional force push: by default, it only allows the update if the remote ref is still at the state expected based on your local remote-tracking information. This reduces the risk of overwriting someone else's newer work. A plain `--force` may seem simpler because it also allows a non-fast-forward push, but it does not provide the same protection."
+ },
+ {
+  "id": 82,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "behavior",
+  "question": "Which command allows you to restore a single file in the working tree from an earlier commit without moving the branch pointer?",
+  "options": [
+   "`git reset --hard <commit>`",
+   "`git revert <commit>`",
+   "`git restore --source=<commit> -- file.txt`",
+   "`git branch --force <commit>`"
+  ],
+  "answer": 2,
+  "explanation": "`git restore --source=<commit> -- file.txt` restores the specified file from the given source commit without moving the branch pointer. `reset --hard` has a much broader effect because it can move HEAD and modify the working tree."
+ },
+ {
+  "id": 83,
+  "level": "medior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "behavior",
+  "question": "What does `git stash branch my-feature` do when you have a stash entry?",
+  "options": [
+   "It creates a new branch from the commit on which the stash was created, then applies the stashed changes to it",
+   "It permanently integrates all stash commits into the current branch",
+   "It pushes the stash contents as a remote branch",
+   "It renames the current branch to the name of the stash"
+  ],
+  "answer": 0,
+  "explanation": "`git stash branch my-feature` creates a new branch from the commit on which the stash was created and then attempts to apply the stashed changes. If the application succeeds, the stash entry is removed. A regular `stash pop` may seem similar because it also applies the changes, but it does not create a separate branch."
+ },
+ {
+  "id": 84,
+  "level": "medior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "edgecase",
+  "question": "What does the typical use of `git cherry-pick A^..B` mean if `A` and `B` are consecutive commits on the same branch?",
+  "options": [
+   "It applies only the parent of commit `A`",
+   "It merges the entire repository history between `A` and `B`",
+   "It copies only the files from commit `B` while preserving the original commit metadata",
+   "It selects the commits from `A` through `B` for application, including both `A` and `B`"
+  ],
+  "answer": 3,
+  "explanation": "The `A^..B` revision range starts at the parent of `A`, so the resulting range includes both `A` and `B`. Cherry-pick applies the changes introduced by those commits as new commits on the current HEAD. The `^` can be misleading here because it does not mean that commit `A` is excluded; it moves the lower boundary of the range to its parent."
+ },
+ {
+  "id": 85,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "behavior",
+  "question": "You want to inspect the history of a `main` branch containing multiple merge commits while primarily following commits created on the `main`line, without fully expanding the internal history of each feature branch. Which option helps with this?",
+  "options": [
+   "`git log --all`",
+   "`git log --first-parent`",
+   "`git log --no-merges`",
+   "`git log --reverse`"
+  ],
+  "answer": 1,
+  "explanation": "`--first-parent` follows the first parent of merge commits, keeping the mainline perspective without automatically expanding the internal history of topic branches. This is particularly useful for reviewing integration or release history. `--no-merges`, by contrast, hides merge commits entirely, so it removes different information."
+ },
+ {
+  "id": 86,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "output",
+  "question": "What is appropriate if you want a script to determine which nearby Git tag is associated with a commit and also display the distance from that tag?",
+  "options": [
+   "`git branch --contains`",
+   "`git tag --points-at`",
+   "`git describe --tags`",
+   "`git log --decorate-only`"
+  ],
+  "answer": 2,
+  "explanation": "`git describe --tags` can produce a human-readable description based on a nearby suitable tag, including the distance between the commit and the tag and an identifier for the current commit. `git tag --points-at` only finds tags that point directly at the specified object."
+ },
+ {
+  "id": 87,
+  "level": "medior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "A team deploys frequently, changes are small, and they want the `main` branch to remain as close as possible to release-ready at all times. Which strategy fits this best?",
+  "options": [
+   "Long-lived feature branches with infrequent integration",
+   "A separate integration branch for each developer lasting for months",
+   "Using only release branches with continuously increasing divergence",
+   "Short-lived branches and frequent integration into the main branch"
+  ],
+  "answer": 3,
+  "explanation": "Short-lived branches and frequent integration reduce accumulated divergence and support a continuously integrated, release-ready main branch. This is a common pattern in trunk-based development. Long-lived branches may seem safer because they isolate work, but they increase the cost of integration."
+ },
+ {
+  "id": 88,
+  "level": "medior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "A pull request contains 15 commits, several of which only contain changes made in response to review comments. The team wants the overall change to be easy to review. What is the most important consideration?",
+  "options": [
+   "The branch name should be short",
+   "The number of commits should always be exactly five",
+   "The reviewer should inspect the complete diff introduced by the PR as well as the relevant commit history",
+   "Only the latest commit needs to be reviewed"
+  ],
+  "answer": 2,
+  "explanation": "The primary goal of review is to verify that the complete change introduced by the branch meets the requirements, so the full PR diff is important. The commit history can provide additional context, especially for complex changes. Reviewing only the latest commit can be misleading because it may not contain all previous changes."
+ },
+ {
+  "id": 89,
+  "level": "medior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "theory",
+  "question": "Which statement correctly describes the typical role of a Git client-side `pre-commit` hook?",
+  "options": [
+   "It runs before the commit is created and can perform linting or validation",
+   "It runs only on the remote server after a push",
+   "It is used exclusively to resolve merge conflicts automatically",
+   "It performs garbage collection of the Git object database"
+  ],
+  "answer": 0,
+  "explanation": "A `pre-commit` hook runs before a commit is created, making it suitable for formatting, linting, or other local validation. Hooks are not general-purpose merge mechanisms, and client-side hooks alone do not guarantee that every developer or CI environment runs the same checks."
+ },
+ {
+  "id": 90,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "behavior",
+  "question": "What does the following `.gitattributes` configuration do?",
+  "code": "*.sh text eol=lf",
+  "options": [
+   "It treats all `.sh` files as binary files, so newline normalization does not occur",
+   "It requests that `.sh` files be treated as text in the repository and use LF line endings on checkout",
+   "It automatically marks all `.sh` files as executable",
+   "It automatically excludes `.sh` files from the repository"
+  ],
+  "answer": 1,
+  "explanation": "The `text` attribute treats the files as text, while `eol=lf` specifies LF line endings for their checked-out working-tree copies. This does not set the Unix executable bit and does not replace `.gitignore` rules. Executable permissions are handled separately through the Git file mode."
+ },
+ {
+  "id": 91,
+  "level": "medior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "behavior",
+  "question": "A superproject references a submodule, but the submodule directory has not yet been initialized. Which command downloads and initializes the required submodule at the state recorded by the superproject?",
+  "options": [
+   "`git clone --submodule-only`",
+   "`git submodule fetch --all`",
+   "`git submodule update --init`",
+   "`git checkout --submodule`"
+  ],
+  "answer": 2,
+  "explanation": "`git submodule update --init` initializes a submodule that has not yet been initialized and checks it out at the commit recorded by the superproject. For nested submodules, the `--recursive` option may also be required. A plain fetch may seem plausible because it also downloads Git objects, but it does not by itself initialize the working tree at the required commit."
+ },
+ {
+  "id": 92,
+  "level": "medior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "recovery",
+  "question": "You have a local `feature` branch that you accidentally moved to an earlier commit using `git reset --hard`. You want to find the previous branch tip. Which reflog command is most relevant?",
+  "options": [
+   "`git reflog show feature`",
+   "`git log origin/feature`",
+   "`git fsck --lost-found` only",
+   "`git remote show feature`"
+  ],
+  "answer": 0,
+  "explanation": "The reflog for a local branch records previous values of the branch ref, so `git reflog show feature` can be used to find the tip before the reset. Once the appropriate commit is identified, the branch can be restored, for example with `git reset --hard <recovered-commit>`. Remote history helps only if the previous state had actually been pushed."
+ },
+ {
+  "id": 93,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "trap",
+  "question": "What does content-addressed storage mean in this context in Git?",
+  "options": [
+   "Objects are identified exclusively by their filenames",
+   "Objects are identified by the directory in which they are stored in the repository",
+   "The object identifier is derived from a hash related to the object's content and type",
+   "Every commit object identifier is generated randomly"
+  ],
+  "answer": 2,
+  "explanation": "Git object identifiers are hash-based, and the object type, size, and content are part of the data from which the identifier is derived. As a result, identical content can produce the same object identifier when the same hash algorithm is used. The assumption that the hash is based only on file content can be misleading because Git's object format also incorporates additional information."
+ },
+ {
+  "id": 94,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "debug",
+  "question": "During `git pull`, a merge commit is created even though the developer expected their local commits to appear linearly after the remote changes. Which option can ensure that the pull uses rebase?",
+  "options": [
+   "`git pull --no-edit`",
+   "`git pull --rebase`",
+   "`git pull --force`",
+   "`git pull --tags`"
+  ],
+  "answer": 1,
+  "explanation": "`git pull --rebase` first fetches the remote changes and then rebases local, unpushed commits onto the updated remote base. This generally avoids creating a separate merge commit as a result of the pull. `--no-edit` only affects handling of the merge commit message; it does not replace the merge operation with a rebase."
+ },
+ {
+  "id": 95,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "edgecase",
+  "question": "A file is staged, but you want to remove it from the staging area while keeping the working-tree modification. Which command is appropriate?",
+  "options": [
+   "`git restore --staged file.txt`",
+   "`git restore --worktree file.txt`",
+   "`git reset --hard HEAD file.txt`",
+   "`git revert --no-commit HEAD`"
+  ],
+  "answer": 0,
+  "explanation": "`git restore --staged file.txt` restores the index entry to the state corresponding to HEAD while leaving the working-tree modification intact. This is exactly what is needed to unstage a file. A hard reset, by contrast, can also discard working-tree changes."
+ },
+ {
+  "id": 96,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "You know that a regression appeared somewhere between a `good` and a `bad` commit, but there are hundreds of commits between them. Which Git feature is suitable for narrowing down the faulty commit using a binary search?",
+  "options": [
+   "`git blame`",
+   "`git log --stat`",
+   "`git bisect`",
+   "`git reflog`"
+  ],
+  "answer": 2,
+  "explanation": "`git bisect` performs a binary search between the specified good and bad states, asking you to test an intermediate commit at each step. This reduces the search space in roughly logarithmic fashion even for a large history. `git blame` shows which commit last modified a given line, but it does not perform regression hunting."
+ },
+ {
+  "id": 97,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "behavior",
+  "question": "What is the key difference between a lightweight tag and an annotated tag?",
+  "options": [
+   "A lightweight tag is always a remote-only object",
+   "An annotated tag can have a separate tag object and metadata, while a lightweight tag is simply a ref",
+   "A lightweight tag cannot point to a commit",
+   "An annotated tag can only be used for merge commits"
+  ],
+  "answer": 1,
+  "explanation": "A lightweight tag is essentially a ref pointing to an object, while an annotated tag creates a separate tag object that can contain information such as the tagger, date, and message, and can also be signed. This makes annotated tags particularly useful for releases. The assumption that a lightweight tag cannot point to a commit is incorrect; that is one of their typical uses."
+ },
+ {
+  "id": 98,
+  "level": "medior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "scenario",
+  "question": "A pull request contains multiple independent changes, and the reviewer has difficulty determining whether all modifications belong to the same goal. Which approach best improves review focus?",
+  "options": [
+   "Add more unrelated changes",
+   "Squash the entire PR into one huge commit without any further explanation",
+   "Reduce the PR's size and scope, and handle independent changes as separate reviews",
+   "Delete the entire branch history"
+  ],
+  "answer": 2,
+  "explanation": "PRs with a smaller, coherent scope are easier to review because the reviewer can focus on a well-defined problem. Squashing alone does not solve an overly broad scope. Deleting the history causes information loss without addressing the logical separation of the changes."
+ },
+ {
+  "id": 99,
+  "level": "medior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "debug",
+  "question": "A team uses a `pre-commit` hook that runs linting locally. On one developer's machine, the hook does not run, but the commit is created successfully. Which explanation is technically correct?",
+  "options": [
+   "Git automatically disables all hooks when a repository has multiple branches",
+   "A `pre-commit` hook works only on Linux",
+   "Git runs hooks only when annotated tags are created",
+   "Client-side hooks are local to the repository, so a separate clone may require the hooks to be installed or configured separately"
+  ],
+  "answer": 3,
+  "explanation": "Client-side hooks are essentially local to the repository and are not automatically version-controlled just because the rest of the repository is managed by Git. As a result, a new clone may not have the hook or may require a separate installation step. Hooks can contain platform-specific details, but they are not limited to Linux."
+ },
+ {
+  "id": 100,
+  "level": "medior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "performance",
+  "question": "In a very large monorepo, a developer works only in a small directory and wants to avoid checking out the entire repository's working-tree structure. Which Git feature can be used for this?",
+  "options": [
+   "`git sparse-checkout`",
+   "`git clean -fd`",
+   "`git archive --delete`",
+   "`git gc --partial`"
+  ],
+  "answer": 0,
+  "explanation": "`git sparse-checkout` allows only selected parts of the repository to appear in the working tree while the repository's history and objects remain part of the Git data model. In large monorepos, this can reduce the working-tree and local development overhead. `git clean` only removes untracked files, so it is not suitable for configuring a partial checkout."
+ },
+ {
+  "id": 101,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Which statement correctly describes what a commit object stores?",
+  "options": [
+   "Only the complete contents of the modified files",
+   "A reference to a tree, references to parent commits, and commit metadata",
+   "The current state of all branches in the repository",
+   "Only the diff between the working tree and the index"
+  ],
+  "answer": 1,
+  "explanation": "A commit references a tree object representing the file structure recorded by the commit, as well as parent commits and metadata such as author, committer, and message. It does not directly store the complete contents of all files. The assumption that a commit itself contains all file contents can be misleading because the tree and blob objects in the object graph provide that information."
+ },
+ {
+  "id": 102,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "behavior",
+  "question": "You modified a tracked file, but the modification is not staged yet. What does `git commit --amend` do in this situation if you do not change the commit message?",
+  "options": [
+   "It automatically adds the modification to the unstaged parts of the previous commit",
+   "It creates a new commit at the tip of the current branch",
+   "It rewrites the previous commit using the current contents of the index, but does not include the unstaged modification",
+   "It adds the entire working-tree contents to the amended commit"
+  ],
+  "answer": 2,
+  "explanation": "`git commit --amend` uses the staged contents in the index to create a new version of the previous commit. Modifications that exist only in the working tree are not automatically included. The assumption that amend commits the entire current filesystem state can be misleading because the commit content still comes from the index."
+ },
+ {
+  "id": 103,
+  "level": "medior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "edgecase",
+  "question": "You have a `feature` branch that has already been fully merged into the `main` branch. What does `git branch -d feature` do by default?",
+  "options": [
+   "It safely deletes the branch ref because its commits are already reachable from the `main` history",
+   "It also deletes all commit objects belonging to the branch",
+   "It automatically deletes the remote `origin/feature` branch",
+   "It always refuses to delete the branch because only `-D` can be used after a merge"
+  ],
+  "answer": 0,
+  "explanation": "`git branch -d` safely deletes the local branch ref when Git can determine that the branch's commits have already been integrated into an appropriate upstream or reachable history. The commit objects themselves are not immediately deleted because other refs may still point to them. The assumption that deleting a branch automatically deletes its commits is incorrect."
+ },
+ {
+  "id": 104,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "During conflict resolution, you want to keep the complete version of the file from the other branch being merged. Which command can you use during the merge?",
+  "options": [
+   "`git restore --theirs file.txt`",
+   "`git restore --source=HEAD~1 file.txt`",
+   "`git revert --theirs file.txt`",
+   "`git reset --merge-theirs file.txt`"
+  ],
+  "answer": 0,
+  "explanation": "During a conflicted merge, `git restore --theirs file.txt` restores the version from the branch being merged, while `--ours` selects the version from the current branch. After choosing the desired version, the file must be staged to mark the conflict as resolved. The distinction between ours and theirs can be confusing because the labels are relative to the branch on which the merge is being performed."
+ },
+ {
+  "id": 105,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "scenario",
+  "question": "A `feature` branch diverged from the `old-base` commit, but you want to transplant its changes onto a new `new-base` commit without including the original base commit again in the branch history. Which command is suitable?",
+  "options": [
+   "`git rebase --onto new-base old-base feature`",
+   "`git rebase new-base old-base feature`",
+   "`git merge --onto new-base old-base feature`",
+   "`git reset --onto new-base old-base feature`"
+  ],
+  "answer": 0,
+  "explanation": "`git rebase --onto new-base old-base feature` selects the commits on `feature` that come after `old-base` and places them on top of `new-base`. This allows the base to be replaced in a targeted way. A simple `rebase new-base` may also move commits to a new base, which can make it seem plausible, but it does not specify the exact commit range in the same way."
+ },
+ {
+  "id": 106,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "A branch has been deleted from a remote repository, but the local `origin/feature` remote-tracking ref still exists. Which operation helps remove the stale remote-tracking ref?",
+  "options": [
+   "`git pull --force`",
+   "`git fetch --prune`",
+   "`git push --prune origin`",
+   "`git remote delete origin`"
+  ],
+  "answer": 1,
+  "explanation": "`git fetch --prune` removes remote-tracking refs during the fetch when their corresponding branches no longer exist on the remote. It only cleans up local remote-tracking refs; it does not delete branches from the remote repository. `git push --prune` operates in the opposite direction, so it does not solve this problem."
+ },
+ {
+  "id": 107,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "production",
+  "question": "You want to undo a commit that has already been deployed to production while preserving the original commit in the repository history and creating a new commit that reverses its changes. Which approach fits this requirement?",
+  "options": [
+   "`git reset --hard HEAD~1`",
+   "`git restore --source=HEAD~1 -- .`",
+   "`git revert <commit>`",
+   "`git branch -D main`"
+  ],
+  "answer": 2,
+  "explanation": "`git revert` creates a new commit that reverses the changes introduced by the specified commit. This is particularly appropriate for shared or production history because it does not rewrite the existing commit chain. Reset, by contrast, moves refs and may also modify the working tree, which can be problematic for shared history."
+ },
+ {
+  "id": 108,
+  "level": "medior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "edgecase",
+  "question": "You have modified several files, but you want to keep one file staged while stashing the other modifications. Which option can help with this?",
+  "options": [
+   "`git stash --include-untracked`",
+   "`git stash --keep-index`",
+   "`git stash --all`",
+   "`git stash --patch-only`"
+  ],
+  "answer": 1,
+  "explanation": "`--keep-index` preserves the current staging-area state while stashing the other working-tree modifications. This is useful when you have a completed part ready to commit while temporarily setting aside other unfinished changes. `--include-untracked` solves a different problem: including untracked files in the stash."
+ },
+ {
+  "id": 109,
+  "level": "medior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "behavior",
+  "question": "You are cherry-picking a commit onto another branch and want the new commit message to show which original commit it came from. Which option does this?",
+  "options": [
+   "`git cherry-pick --signoff`",
+   "`git cherry-pick --edit`",
+   "`git cherry-pick --no-commit`",
+   "`git cherry-pick -x`"
+  ],
+  "answer": 3,
+  "explanation": "`git cherry-pick -x` adds a line to the new commit message identifying the original commit. This can be useful when traceability of a change's origin matters across branches. `--no-commit`, by contrast, applies the changes without creating the commit immediately."
+ },
+ {
+  "id": 110,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "behavior",
+  "question": "You renamed a file from `old-name.java` to `new-name.java` and want to follow its history under the previous name as well. Which command is most appropriate?",
+  "options": [
+   "`git log --follow -- new-name.java`",
+   "`git log --rename-only -- new-name.java`",
+   "`git blame --history new-name.java`",
+   "`git show --follow new-name.java`"
+  ],
+  "answer": 0,
+  "explanation": "`git log --follow -- new-name.java` allows the history of a single file to be followed across a rename. This is particularly useful after refactoring long-lived files. Git detects renames during history analysis based on similarity, so following a rename does not depend simply on the existence of a separate explicit rename object."
+ },
+ {
+  "id": 111,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "production",
+  "question": "In a release process, you want to create an annotated tag on the current commit so that the tag can be clearly identified by its release message and metadata. Which command is appropriate?",
+  "options": [
+   "`git tag release-2.0`",
+   "`git tag -a release-2.0 -m \"Release 2.0\"`",
+   "`git branch release-2.0`",
+   "`git tag --delete release-2.0`"
+  ],
+  "answer": 1,
+  "explanation": "`git tag -a` creates an annotated tag that can contain a message and additional tag metadata. This is suitable for release tags where the tag represents more than just a name pointing to a commit. A plain `git tag` creates a lightweight tag without a separate annotated tag object."
+ },
+ {
+  "id": 112,
+  "level": "medior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "A team uses a Git Flow-like workflow in which development and production releases follow different cycles. What is one typical purpose of a release branch?",
+  "options": [
+   "Deleting the entire repository history before the release",
+   "Separating development work from stabilization/release work",
+   "Automatically squashing all feature branches",
+   "Disabling access to the remote repository during the release"
+  ],
+  "answer": 1,
+  "explanation": "A release branch typically allows stabilization of a particular release to happen separately while new development continues on the development branch. This serves organizational and integration purposes and is not a Git technical requirement. Using a release branch does not itself imply automatic squashing or history rewriting."
+ },
+ {
+  "id": 113,
+  "level": "medior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "A reviewer is examining an API change that modifies several hundred lines of code, but the PR description only says \"refactor\". What is most important for making the review focused?",
+  "options": [
+   "The PR branch's SHA-256 hash",
+   "The reviewer's complete local Git configuration",
+   "A clear description of the change's goal, scope, and expected behavior",
+   "Creating a new remote repository"
+  ],
+  "answer": 2,
+  "explanation": "A good PR description provides context about why the change was made, what problem it solves, and what behavior is expected. This helps the reviewer compare the technical diff with the intended business or functional goal. The diff shows what changed, but it does not necessarily explain why."
+ },
+ {
+  "id": 114,
+  "level": "medior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "theory",
+  "question": "Which statement is true about a server-side `pre-receive` hook?",
+  "options": [
+   "It runs before a client's local commit is created",
+   "It runs when the Git working tree is checked out",
+   "It can run before incoming push ref updates are accepted by the remote repository",
+   "It runs only when a local stash is created"
+  ],
+  "answer": 2,
+  "explanation": "A `pre-receive` hook runs on the server when a push arrives and can perform checks before the ref updates are accepted. This can be used for policies, authorization rules, or checks against incoming commits. Client-side hooks, by contrast, run in the developer's local repository."
+ },
+ {
+  "id": 115,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "edgecase",
+  "question": "A file is listed in `.gitignore`, but you previously committed it and it is already tracked. What happens when it is modified again?",
+  "options": [
+   "`.gitignore` automatically makes the file untracked",
+   "Git continues tracking the file's modifications until you explicitly remove it from tracking",
+   "Git deletes the file during the next `git pull`",
+   "The file becomes tracked only during a merge conflict"
+  ],
+  "answer": 1,
+  "explanation": "`.gitignore` primarily controls untracked files that Git should ignore. It does not automatically make an already tracked file untracked, so Git continues to track subsequent modifications. Removing such a file from tracking requires a separate operation such as `git rm --cached`."
+ },
+ {
+  "id": 116,
+  "level": "medior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "scenario",
+  "question": "In a monorepo, a developer works only with a subdirectory of a large project and rarely modifies the rest of the repository. Why can sparse-checkout be useful?",
+  "options": [
+   "It automatically splits the monorepo into multiple separate Git repositories",
+   "It can reduce the number of files present in the working tree while preserving the repository's shared history",
+   "It automatically squashes every commit",
+   "It deletes the complete history from the remote repository"
+  ],
+  "answer": 1,
+  "explanation": "Sparse-checkout restricts which paths appear in the working tree, so it can reduce the number of locally managed files in large monorepos. It does not split the repository into separate Git repositories and does not automatically change the commit history. Repository splitting may seem similar because sparse-checkout simplifies the development environment, but technically they are different solutions."
+ },
+ {
+  "id": 117,
+  "level": "medior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "behavior",
+  "question": "Why can a previously lost commit sometimes still be recoverable for a while even when no branch or tag points to it anymore?",
+  "options": [
+   "Because Git preserves every commit forever",
+   "Because the remote automatically restores every lost commit",
+   "Because the reflog and other reachability mechanisms can temporarily retain references to previous objects",
+   "Because the working tree stores every previous commit in a separate file"
+  ],
+  "answer": 2,
+  "explanation": "A local reflog preserves previous values of certain refs, so a commit that has fallen out of a branch can still be reachable through the reflog. Such objects are not necessarily retained forever; after reflog expiration and garbage collection, they may eventually be removed. The assumption that Git guarantees permanent retention of every created commit is incorrect."
+ },
+ {
+  "id": 118,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "What does `git cat-file -p <object>` typically show for a commit object?",
+  "options": [
+   "The human-readable contents of the commit object, such as the tree, parents, author/committer information, and message",
+   "The complete working tree binary snapshot in a single file",
+   "Only the commit SHA",
+   "The complete list of refs in the remote repository"
+  ],
+  "answer": 0,
+  "explanation": "`git cat-file -p` displays the object's contents in a formatted, human-readable form appropriate to its type. For a commit, this includes the tree and parent references as well as author, committer, and commit message information. The actual contents of blobs and trees are stored in separate objects."
+ },
+ {
+  "id": 119,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "scenario",
+  "question": "You have a large change and want to commit only a few hunks while leaving the remaining modifications for later. Which command most directly supports interactive staging?",
+  "options": [
+   "`git commit --only`",
+   "`git add -p`",
+   "`git stage --all`",
+   "`git commit --interactive-history`"
+  ],
+  "answer": 1,
+  "explanation": "`git add -p` lets you select which hunks to place into the index interactively. This allows you to create a logically focused commit from a larger set of working-tree changes. Interactive staging is useful because you do not need to manually split the entire change into separate files or branches first."
+ },
+ {
+  "id": 120,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "In a CI environment, you want to ensure that `git pull` does not automatically create a merge commit and instead fails if the local and remote histories cannot be reconciled using a fast-forward. Which option matches this requirement?",
+  "options": [
+   "`git pull --rebase`",
+   "`git pull --merge`",
+   "`git pull --ff-only`",
+   "`git pull --no-tags`"
+  ],
+  "answer": 2,
+  "explanation": "`--ff-only` requires the update to be performed as a fast-forward; otherwise, the pull fails. This can be useful in automated environments where you do not want an implicit merge commit to be created. `--rebase` uses a different strategy: it moves local commits onto a new base."
+ },
+ {
+  "id": 121,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "trap",
+  "question": "What happens when rebasing a branch that is already used by other developers and whose commits have already been pushed?",
+  "options": [
+   "The remote history automatically remains unchanged",
+   "The existing commits retain the same SHA because rebase only moves a ref",
+   "The branch commits can be recreated as new commit objects, so pushing them often requires rewriting the remote history",
+   "Rebase automatically creates a merge commit on the remote branch"
+  ],
+  "answer": 2,
+  "explanation": "Rebase moves commits onto a new base, so the commits can receive new object identifiers. If those commits are already part of shared remote history, the rewritten history may no longer be fast-forwardable, creating collaboration problems when it is pushed. The assumption that rebase only moves a branch pointer is incorrect because the commits themselves can be recreated."
+ },
+ {
+  "id": 122,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "scenario",
+  "question": "After resolving a merge conflict and removing the conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) from the file, what is the next required step to continue the merge?",
+  "options": [
+   "Stage the resolved file using `git add`",
+   "Immediately run `git push --force`",
+   "Delete the branch",
+   "Initialize a new repository"
+  ],
+  "answer": 0,
+  "explanation": "After manually resolving the conflict, the file must be staged so Git knows that the conflict has been resolved for that file. The merge commit can then be created, for example with `git commit`. Merely removing the conflict markers does not tell Git that the conflict has been resolved."
+ },
+ {
+  "id": 123,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "performance",
+  "question": "In a large repository, you want to inspect only the history reachable from the current branch and do not want to include commits reachable from all other refs in the log output. Which command best matches this?",
+  "options": [
+   "`git log --all`",
+   "`git log --branches`",
+   "`git log --remotes`",
+   "`git log`"
+  ],
+  "answer": 3,
+  "explanation": "Plain `git log` shows the history reachable from the current HEAD by default. `--all`, by contrast, can include history reachable from all refs, potentially producing a much larger result. Therefore, the requested behavior does not require explicitly including every ref."
+ },
+ {
+  "id": 124,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "behavior",
+  "question": "A team wants every developer to use the same repository-specific ignore rules and wants those rules to be version-controlled. Where should they be defined?",
+  "options": [
+   "`.git/info/exclude`",
+   "In the global Git configuration on every developer's machine",
+   "In a version-controlled `.gitignore` file in the repository",
+   "In the reflog"
+  ],
+  "answer": 2,
+  "explanation": "A `.gitignore` file in the repository can be version-controlled, so its rules can be shared with the team along with the repository. `.git/info/exclude` is suitable for local repository-specific exclusions, while global ignore rules apply to an individual developer's environment. Global configuration may seem convenient, but it does not provide consistent repository-level behavior."
+ },
+ {
+  "id": 125,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "production",
+  "question": "A release pipeline needs to reliably identify a specific commit, and in addition to the release name you want the tag to carry verifiable metadata. Which approach fits this requirement?",
+  "options": [
+   "Use a lightweight tag without additional metadata",
+   "Use an annotated, preferably signed tag",
+   "Create a temporary stash with the release name",
+   "Create a local branch and immediately delete it"
+  ],
+  "answer": 1,
+  "explanation": "An annotated tag provides a separate tag object with metadata and can also be signed using appropriate tooling, making release identification and provenance verification stronger. This does not replace a complete release-integrity process, but it is well suited to marking release points. A lightweight tag is a simpler ref and therefore carries less built-in metadata."
+ },
+ {
+  "id": 126,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "In a repository, you want to inspect which files and subdirectories a particular commit's tree references without checking it out. Which command is suitable?",
+  "options": [
+   "`git show-ref <commit>`",
+   "`git diff-tree --no-tree <commit>`",
+   "`git cat-file -t <commit>`",
+   "`git ls-tree <commit>`"
+  ],
+  "answer": 3,
+  "explanation": "`git ls-tree <commit>` directly displays the contents of the tree referenced by the commit, including files, subdirectories, modes, and their associated objects. This allows you to inspect the structure of a specific snapshot without checking it out. `git cat-file -t` would only show the object's type, not the tree entries."
+ },
+ {
+  "id": 127,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "behavior",
+  "question": "You want to add a new, currently empty file to the index so that Git treats it as tracked, while the file's actual contents are not yet included in the next commit. Which command does this?",
+  "options": [
+   "`git add -N file.txt`",
+   "`git add --empty file.txt`",
+   "`git commit --intent-to-add file.txt`",
+   "`git stage --placeholder file.txt`"
+  ],
+  "answer": 0,
+  "explanation": "`git add -N` creates an intent-to-add entry in the index, allowing the file's status and subsequent diff to be handled as a tracked file without staging its full contents. This is particularly useful for viewing diffs of new files before actually staging their contents. Intent-to-add does not mean that the file's full contents are already staged for the next commit."
+ },
+ {
+  "id": 128,
+  "level": "medior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "behavior",
+  "question": "You want to determine which local branches contain a particular commit in their history. Which command is intended for this?",
+  "options": [
+   "`git branch --merged <commit>`",
+   "`git branch --contains <commit>`",
+   "`git branch --points-at <commit>`",
+   "`git branch --track <commit>`"
+  ],
+  "answer": 1,
+  "explanation": "`git branch --contains <commit>` lists branches whose history can reach the specified commit. By contrast, `--points-at` shows only branches whose tips point directly at that commit. This distinction matters because a branch can contain a commit even when its tip is many commits ahead."
+ },
+ {
+  "id": 129,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "scenario",
+  "question": "You want to merge several independent branches into an integration branch at the same time. There are no conflicts between the branches, and integrating all of them in a single merge commit is acceptable. Which Git feature supports this?",
+  "options": [
+   "`git merge --linear`",
+   "`git merge --squash-all`",
+   "`git merge --octopus`",
+   "`git merge --multi-parent`"
+  ],
+  "answer": 2,
+  "explanation": "An octopus merge is designed to merge multiple heads simultaneously, typically when the branches contain independent changes. Git generally does not use an octopus merge when real content conflicts need to be resolved. Octopus merging can be confused with a normal merge because both can produce a merge commit, but octopus merge integrates multiple heads at once."
+ },
+ {
+  "id": 130,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "behavior",
+  "question": "You want to preserve several merge commits in a feature branch's history while rebasing the entire branch onto a new base. Which option is intended for this?",
+  "options": [
+   "`git rebase --flatten`",
+   "`git rebase --preserve`",
+   "`git rebase --keep-merges`",
+   "`git rebase --rebase-merges`"
+  ],
+  "answer": 3,
+  "explanation": "`git rebase --rebase-merges` allows merge structures in the branch history to be recreated during the rebase instead of flattening everything into a simple linear sequence. This is useful when preserving a more complex feature history matters. The older `--preserve-merges` approach is deprecated and less flexible."
+ },
+ {
+  "id": 131,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "A local `feature` branch is configured with an upstream branch, and when using `git push` you want the default destination to be exactly that configured upstream branch. Which `push.default` value matches this?",
+  "options": [
+   "`matching`",
+   "`current`",
+   "`nothing`",
+   "`upstream`"
+  ],
+  "answer": 3,
+  "explanation": "`push.default=upstream` pushes the current branch to its configured upstream branch. This makes the push destination explicit in terms of the upstream configuration associated with the local branch. `current`, by contrast, targets a remote branch with the same name as the local branch, which is not necessarily the same thing."
+ },
+ {
+  "id": 132,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "edgecase",
+  "question": "You want to revert a merge commit using `git revert`. Why do you typically need to specify the `-m` option?",
+  "options": [
+   "Because a merge commit has no commit message",
+   "Because revert works only with annotated tags",
+   "Because a merge commit has multiple parents, so you must specify which parent should be treated as the mainline",
+   "Because revert always performs a hard reset"
+  ],
+  "answer": 2,
+  "explanation": "A merge commit has multiple parents, so Git needs to know which parent to use as the basis for determining which changes should be reversed. `-m <parent-number>` specifies that mainline parent. Choosing the parent is critical because selecting a different parent changes which part of the merge result is considered the change to be reverted."
+ },
+ {
+  "id": 133,
+  "level": "medior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "behavior",
+  "question": "You want to create a stash entry without immediately applying or removing it, and a script also needs the object ID of the newly created stash object. Which command is suitable?",
+  "options": [
+   "`git stash create`",
+   "`git stash object`",
+   "`git stash save-id`",
+   "`git stash hash`"
+  ],
+  "answer": 0,
+  "explanation": "`git stash create` creates a stash-like commit and returns its object ID without necessarily updating the stash reflog in the same way as a normal `git stash push`. This can be useful for low-level or scripted use. `git stash push`, by contrast, creates a normal stash entry under the stash ref."
+ },
+ {
+  "id": 134,
+  "level": "medior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "edgecase",
+  "question": "You want to cherry-pick a merge commit onto another branch. Why might the `-m` option be required?",
+  "options": [
+   "Because cherry-pick can apply only working-tree changes",
+   "Because a merge commit has multiple parents, so you must specify the mainline parent",
+   "Because cherry-pick would otherwise automatically rebase the entire branch",
+   "Because merge commits can only be cherry-picked as tags"
+  ],
+  "answer": 1,
+  "explanation": "The changes introduced by a merge commit cannot be determined unambiguously relative to a single parent, so `git cherry-pick -m <parent-number> <merge-commit>` specifies which parent should be used to calculate the diff to apply. The selected parent determines which side of the merge the changes are considered relative to. This is why cherry-picking a merge commit requires particular care."
+ },
+ {
+  "id": 135,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "behavior",
+  "question": "In a large history, you want to examine the line-by-line evolution of a single function in a particular file rather than the entire history of the file. Which Git feature supports this?",
+  "options": [
+   "`git log --function`",
+   "`git blame --commit`",
+   "`git log -L`",
+   "`git bisect --function`"
+  ],
+  "answer": 2,
+  "explanation": "`git log -L` can follow the history of a specified line range or function within a file. This is useful when investigating how a function gradually evolved in a large repository. `git blame` shows the commits that last modified the current lines, but it does not provide the same historical range tracking."
+ },
+ {
+  "id": 136,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "output",
+  "question": "You use an annotated tag name in a command, but you want to resolve it explicitly to the commit behind the tag object rather than to the tag object itself. Which revision syntax can be used?",
+  "options": [
+   "`<tag>^{}`",
+   "`<tag>@@`",
+   "`<tag>..`",
+   "`<tag>:commit`"
+  ],
+  "answer": 0,
+  "explanation": "The `<tag>^{}` dereference syntax resolves through an annotated tag to the object it points to, and if the tag points to a commit, the resulting object is the commit. This is particularly useful in scripts when you do not want to confuse an annotated tag object with the commit behind it. A plain `<tag>` can resolve to the annotated tag object itself."
+ },
+ {
+  "id": 137,
+  "level": "medior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "A team uses a separate hotfix branch to urgently fix the version currently running in production while development of new features continues on another branch. What is the strategic benefit?",
+  "options": [
+   "The hotfix branch automatically prevents all merge conflicts",
+   "The production fix can be isolated from changes that have not yet been released",
+   "The hotfix branch guarantees that every commit is signed",
+   "The hotfix branch eliminates the need for release tags"
+  ],
+  "answer": 1,
+  "explanation": "A separate hotfix branch allows an urgent production fix to be isolated from changes that are still under development. The fix can then be merged or otherwise applied to other active branches as needed. Using a branch does not guarantee conflict-free integration or signed commits."
+ },
+ {
+  "id": 138,
+  "level": "medior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "scenario",
+  "question": "For a review of the `feature` branch, you want to see the complete change introduced by the branch relative to the common ancestor of `main` and `feature`, rather than only the diff of the latest commit. Which command is appropriate?",
+  "options": [
+   "`git diff feature~1 feature`",
+   "`git diff main..feature`",
+   "`git diff main...feature`",
+   "`git show feature`"
+  ],
+  "answer": 2,
+  "explanation": "The three-dot `git diff main...feature` shows the changes from the common ancestor of `main` and `feature` to the tip of `feature`, which typically corresponds to the complete diff of a pull request. The two-dot form has different revision-comparison semantics. A diff of the latest commit would show only the changes introduced by the most recent commit on the branch."
+ },
+ {
+  "id": 139,
+  "level": "medior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "production",
+  "question": "A team wants an automated test to run locally before a push, and the push should be prevented if the test fails. Which hook fits this requirement?",
+  "options": [
+   "`post-commit`",
+   "`pre-receive`",
+   "`post-receive`",
+   "`pre-push`"
+  ],
+  "answer": 3,
+  "explanation": "A `pre-push` client-side hook runs before the push is executed, making it suitable for local checks such as tests or validation. If the hook exits with a non-zero status, the push is aborted. A `pre-receive` hook can be used for similar policy checks, but it runs on the remote server."
+ },
+ {
+  "id": 140,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "behavior",
+  "question": "In a repository, you want to use a special merge rule for a particular file type, configured through `.gitattributes` and applied during Git merges. Which attribute mechanism is related to this?",
+  "options": [
+   "`merge`",
+   "`ignore`",
+   "`checkout`",
+   "`remote`"
+  ],
+  "answer": 0,
+  "explanation": "The `merge` attribute in `.gitattributes` can associate a merge driver with specific file types or paths. This makes it possible to apply specialized merge behavior, for example to generated or structured files. `.gitignore` serves a different purpose: controlling which untracked files Git should ignore."
+ },
+ {
+  "id": 141,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "edgecase",
+  "question": "You want to configure a submodule to follow a remote branch so that you can later update the submodule to a newer commit. What should you keep in mind?",
+  "options": [
+   "The superproject automatically always uses the latest commit from the remote branch",
+   "The submodule branch configuration can determine which remote branch is used for an update, but the superproject still records a specific submodule commit",
+   "A submodule can never track a remote branch",
+   "`git submodule update --remote` always automatically commits the superproject change"
+  ],
+  "answer": 1,
+  "explanation": "Submodule configuration can specify which remote branch `git submodule update --remote` should follow. Even so, the superproject records a specific submodule commit through a gitlink, so after an update the resulting gitlink change in the superproject must be committed separately. Automatic branch tracking and a reproducible, pinned superproject state are therefore two different concepts."
+ },
+ {
+  "id": 142,
+  "level": "senior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "trap",
+  "question": "A developer wants to recover a previous state of an `origin/main` remote-tracking ref from the reflog. Which statement is the most accurate?",
+  "options": [
+   "Remote-tracking refs are required to have reflogs with unlimited retention in every repository",
+   "`git reflog origin/main` always shows the complete reflog from the remote server",
+   "A local reflog for a remote-tracking ref may exist and can be useful, but its existence and retention depend on repository configuration and circumstances",
+   "Previous states of a remote-tracking ref can be found only in the `.git/objects` directory"
+  ],
+  "answer": 2,
+  "explanation": "Remote-tracking refs can have local reflogs, but their existence and retention should not be assumed to be mandatory or unlimited. A reflog is always local information and does not represent the remote server's reflog. Therefore, for recovery purposes, you should first verify that an appropriate reflog entry actually exists for the ref in question."
+ },
+ {
+  "id": 143,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "performance",
+  "question": "In a large repository, Git frequently needs to traverse commit reachability and the history graph efficiently. Which Git mechanism can accelerate calculations related to the commit graph?",
+  "options": [
+   "Commit-graph",
+   "`.gitignore`",
+   "Stash reflog",
+   "Merge driver"
+  ],
+  "answer": 0,
+  "explanation": "The commit-graph is a separate metadata structure that stores precomputed information about the commit graph in an efficient format. It can speed up various history and reachability operations in large repositories. It does not replace commit objects; instead, it acts as an auxiliary indexing mechanism."
+ },
+ {
+  "id": 144,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "scenario",
+  "question": "In a large monorepo, many files change at once, and the team wants to reduce the memory and I/O overhead of the Git index while keeping the normal staging workflow. Which Git feature can help with this?",
+  "options": [
+   "`git clean`",
+   "`git archive`",
+   "Split index",
+   "`git revert`"
+  ],
+  "answer": 2,
+  "explanation": "Split index allows Git to store the unchanged portion of the index in a separate shared index while keeping the changing portion in a smaller index structure. In large repositories, this can reduce the cost of updating the index. It does not change commit semantics and is not intended to remove files from the working tree."
+ },
+ {
+  "id": 145,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "behavior",
+  "question": "A team repeatedly encounters the same merge conflicts in the same files. Which Git feature can help Git reuse a conflict resolution that was manually performed previously?",
+  "options": [
+   "`git rerere`",
+   "`git reflog`",
+   "`git replace`",
+   "`git notes`"
+  ],
+  "answer": 0,
+  "explanation": "`rerere` stands for \"reuse recorded resolution\": Git can record how a conflict was resolved and attempt to apply the same resolution when a similar conflict occurs later. This is particularly useful during repeated merge or rebase operations involving long-lived branches. Reflog and notes serve different purposes and do not act as conflict-resolution caches."
+ },
+ {
+  "id": 146,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "production",
+  "question": "You created a commit with a `fixup!` prefix and want a later interactive rebase to automatically identify its associated earlier commit and squash it into that commit. Which option supports this?",
+  "options": [
+   "`git rebase --merge`",
+   "`git rebase --autostash`",
+   "`git rebase --exec`",
+   "`git rebase --autosquash`"
+  ],
+  "answer": 3,
+  "explanation": "`--autosquash` recognizes commits with `fixup!` and `squash!` prefixes and positions them next to the corresponding commit in the interactive rebase todo list. This can significantly simplify organizing fixup commits accumulated during review. `--autostash`, by contrast, handles temporarily stashing working-tree changes rather than automatically arranging fixup commits."
+ },
+ {
+  "id": 147,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "In a remote configuration, you want a single fetch operation to map multiple remote refs under a given namespace to local remote-tracking refs. Which mechanism defines this?",
+  "options": [
+   "`branch.*.merge`",
+   "`remote.<name>.fetch` refspec",
+   "`push.default`",
+   "`merge.conflictStyle`"
+  ],
+  "answer": 1,
+  "explanation": "The `remote.<name>.fetch` refspec defines which refs are fetched from the remote and how they are mapped to local refs. A refspec can contain wildcards, allowing multiple branches to be handled by a single rule. `branch.*.merge` primarily describes the upstream configuration of a particular local branch rather than the overall fetch mapping."
+ },
+ {
+  "id": 148,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "recovery",
+  "question": "After a complex operation such as a merge or rebase, you want to inspect what HEAD pointed to before the operation changed it. Which mechanism can provide a direct reference for this?",
+  "options": [
+   "`ORIG_HEAD`",
+   "`.gitignore`",
+   "`FETCH_HEAD`",
+   "`MERGE_MSG`"
+  ],
+  "answer": 0,
+  "explanation": "During certain history-rewriting or significant ref-moving operations, Git can record the previous HEAD under the name `ORIG_HEAD`. This can be useful for inspecting the state before a merge or rebase and for certain recovery operations. `ORIG_HEAD` is not a permanent history record, so the reflog remains important for longer-term recovery."
+ },
+ {
+  "id": 149,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "In the history between two commits, you want to inspect only commits that lie on a specific ancestry path, such as between a branch and one of its common ancestors. Which revision option can help narrow this down?",
+  "options": [
+   "`--decorate`",
+   "`--ancestry-path`",
+   "`--author`",
+   "`--reverse`"
+  ],
+  "answer": 1,
+  "explanation": "`--ancestry-path` can restrict the history to commits that lie on an ancestry path between the specified commits. This can be useful in complex histories with many parallel branches when only a particular line of descent is relevant. `--author`, for example, filters by author rather than by graph topology."
+ },
+ {
+  "id": 150,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "performance",
+  "question": "You want to clone a multi-gigabyte monorepo in a CI environment without initially downloading the complete object history, and instead fetch additional objects from the server when they are needed. Which Git capability fits this requirement?",
+  "options": [
+   "`git sparse-checkout`",
+   "`git archive`",
+   "Partial clone",
+   "`git clean`"
+  ],
+  "answer": 2,
+  "explanation": "A partial clone allows the client to initially avoid downloading all repository objects and fetch certain objects later when they are needed. This can reduce initial network transfer and storage requirements, particularly for large monorepos and CI environments. Sparse-checkout primarily controls which files appear in the working tree, whereas partial clone affects which repository objects are downloaded."
+ },
+ {
+  "id": 151,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "behavior",
+  "question": "You delete a branch that points to a commit, but an annotated tag still points to that same commit. What happens to the commit?",
+  "options": [
+   "The commit is immediately deleted because no branch points to it anymore.",
+   "The commit becomes unreachable and is always removed by the next garbage collection.",
+   "The commit remains reachable through the tag.",
+   "Git moves the tag automatically to the nearest parent commit."
+  ],
+  "answer": 2,
+  "explanation": "A commit does not need to be referenced by a branch to remain reachable. As long as the tag still references it, the commit remains reachable and is not considered unreachable for garbage collection. The tempting assumption is that branches are the only references that keep commits alive, but tags and other refs can also keep objects reachable."
+ },
+ {
+  "id": 152,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "edgecase",
+  "question": "You run `git commit --amend` without changing the file contents. What is the key consequence?",
+  "options": [
+   "Git reuses the existing commit object because the tree is unchanged.",
+   "Git creates a new commit object with a new commit ID.",
+   "Git only changes the branch name, not the commit object.",
+   "Git converts the commit into a lightweight tag."
+  ],
+  "answer": 1,
+  "explanation": "`git commit --amend` replaces the current commit with a new commit object. Even if the tree contents remain identical, commit metadata such as the committer timestamp can differ, so the commit ID changes. The tempting assumption is that an unchanged file tree means the commit itself can be reused, but the commit object also contains metadata and parent information."
+ },
+ {
+  "id": 153,
+  "level": "senior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "scenario",
+  "question": "You need to create a new `hotfix` branch starting from a specific historical commit rather than from the current `HEAD`. Which command does this directly?",
+  "options": [
+   "`git switch -c hotfix <commit>`",
+   "`git branch hotfix --merge <commit>`",
+   "`git switch hotfix <commit>`",
+   "`git checkout --detach hotfix <commit>`"
+  ],
+  "answer": 0,
+  "explanation": "`git switch -c hotfix <commit>` creates the new branch and makes it point at the specified commit, then switches to it. This is useful when a fix must be based on an older release point. The tempting alternative is to create the branch first and move it later, but that adds unnecessary steps."
+ },
+ {
+  "id": 154,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "trap",
+  "question": "Two branches modify the same file. Does this necessarily mean that merging them will produce a conflict?",
+  "options": [
+   "Yes, Git cannot automatically merge changes to the same file.",
+   "Yes, unless one branch is rebased first.",
+   "No, but only if the file is binary.",
+   "No, changes to different parts of the same file can often be merged automatically."
+  ],
+  "answer": 3,
+  "explanation": "Git can often merge changes to the same file when the modified regions do not overlap and the changes can be combined unambiguously. A conflict occurs when Git cannot determine a safe result automatically. The tempting assumption is that a shared filename is enough to cause a conflict, but Git considers the actual changed regions."
+ },
+ {
+  "id": 155,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "production",
+  "question": "During a rebase, Git stops on a commit whose changes are no longer needed because they are already present in the new base. Which command can skip the current commit and continue the rebase?",
+  "options": [
+   "`git rebase --abort`",
+   "`git rebase --skip`",
+   "`git rebase --continue`",
+   "`git rebase --quit`"
+  ],
+  "answer": 1,
+  "explanation": "`git rebase --skip` tells Git to omit the current commit from the rebased history and continue with the remaining commits. This is appropriate when the commit is empty or its changes are already represented by the new base. The tempting choice is `git rebase --continue`, but that is used after resolving the current rebase step rather than intentionally dropping it."
+ },
+ {
+  "id": 156,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "production",
+  "question": "Why can `git push --mirror` be dangerous when used against a normal shared remote?",
+  "options": [
+   "It pushes only the currently checked-out branch and never changes other refs.",
+   "It automatically creates a backup branch before every push.",
+   "It converts all remote-tracking branches into local branches.",
+   "It mirrors all refs and can delete destination refs that do not exist locally."
+  ],
+  "answer": 3,
+  "explanation": "`git push --mirror` mirrors all refs under the relevant ref namespace and can remove remote refs that are absent locally. This makes it useful for repository mirroring but potentially destructive when used against a normal collaboration remote. The tempting assumption is that push commands only add or update the branch being worked on, but `--mirror` has a much broader scope."
+ },
+ {
+  "id": 157,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "scenario",
+  "question": "A production branch contains an old commit that introduced a bug, but several valid commits were added afterward. You want to undo only the buggy change while preserving the later history. What should you use?",
+  "options": [
+   "`git reset --hard <commit>`",
+   "`git restore --source=<commit> .`",
+   "`git reset --soft <commit>`",
+   "`git revert <commit>`"
+  ],
+  "answer": 3,
+  "explanation": "`git revert <commit>` creates a new commit that reverses the changes introduced by the selected commit while preserving the existing history. This is generally appropriate for undoing an already published change without rewriting the branch. The tempting alternatives move or modify the current branch state instead of recording a new inverse change."
+ },
+ {
+  "id": 158,
+  "level": "senior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "scenario",
+  "question": "Which description best reflects how Git internally represents a stash?",
+  "options": [
+   "It is only a temporary copy of files outside the Git object database.",
+   "It is stored only as an entry in the index and has no commit representation.",
+   "It is represented using commit objects, with additional parent relationships describing relevant states.",
+   "It is implemented as a temporary branch that is automatically deleted."
+  ],
+  "answer": 2,
+  "explanation": "A stash is represented using Git commit objects rather than being merely an external copy of the working directory. Its commit structure can reference the `HEAD` state and the index state, with additional structure used when untracked or ignored files are included. The tempting assumption is that stash is just a file snapshot stored outside normal Git history, but Git stores it in its object database."
+ },
+ {
+  "id": 159,
+  "level": "senior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "production",
+  "question": "A bug was fixed in the main development branch, and you need the same fix on a release branch without merging unrelated changes. What is the most direct approach?",
+  "options": [
+   "`git merge --no-ff main`",
+   "`git cherry-pick <bugfix-commit>`",
+   "`git rebase main`",
+   "`git reset --hard <bugfix-commit>`"
+  ],
+  "answer": 1,
+  "explanation": "`git cherry-pick <bugfix-commit>` applies the changes introduced by a specific commit to the current branch and creates a new commit there. This is useful for targeted backports such as production fixes. The tempting alternative is merging the development branch, but that can bring along unrelated changes."
+ },
+ {
+  "id": 160,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "scenario",
+  "question": "You want to inspect a specific commit, including its metadata and the patch it introduced. Which command is most appropriate?",
+  "options": [
+   "`git show <commit>`",
+   "`git log --follow <commit>`",
+   "`git blame <commit>`",
+   "`git diff --cached <commit>`"
+  ],
+  "answer": 0,
+  "explanation": "`git show <commit>` displays information about the selected commit and, for a commit object, normally includes its patch. This makes it convenient for inspecting both metadata and the changes introduced. The tempting alternatives are history-oriented or comparison-oriented commands that do not provide the same focused commit inspection."
+ },
+ {
+  "id": 161,
+  "level": "senior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "security",
+  "question": "For a software release where you want cryptographic verification of the tag itself, which approach is appropriate?",
+  "options": [
+   "Create a lightweight tag and store the release notes in `.gitignore`.",
+   "Create an unsigned annotated tag and rely only on its name.",
+   "Create a signed annotated tag.",
+   "Create a branch with the release version as its name."
+  ],
+  "answer": 2,
+  "explanation": "A signed annotated tag contains tag metadata and a cryptographic signature that can be verified against the configured signing key. This provides provenance for the tag object itself; it does not prove that the software release is safe, bug-free, or trustworthy in every other respect. The tempting assumption is that a version label alone provides authenticity, but an unsigned ref does not provide cryptographic verification."
+ },
+ {
+  "id": 162,
+  "level": "senior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Which development approach best supports frequent integration while keeping individual feature branches relatively small?",
+  "options": [
+   "Keep long-lived feature branches isolated until the end of the project.",
+   "Use short-lived branches, integrate frequently, and use feature flags when necessary.",
+   "Require every feature to have its own permanent release branch.",
+   "Avoid merging until all related features are complete."
+  ],
+  "answer": 1,
+  "explanation": "Short-lived branches and frequent integration reduce the amount of divergent work that accumulates between branches. Feature flags can separate code deployment from feature activation when incomplete functionality must already be integrated. The tempting long-lived approach can feel safer because it isolates work, but it tends to increase integration complexity."
+ },
+ {
+  "id": 163,
+  "level": "senior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "A pull request has been merged. Does that mean the commit objects that were part of the PR should immediately be deleted?",
+  "options": [
+   "Yes, because merged PR commits are always unreachable.",
+   "Yes, because Git automatically deletes all commits after a merge.",
+   "Yes, unless the repository uses annotated tags.",
+   "No, the commits can remain reachable through the resulting history or other references."
+  ],
+  "answer": 3,
+  "explanation": "Merging a pull request does not inherently make its commit objects unreachable. Depending on the merge strategy, the original commits may remain in the resulting history, and they may also be referenced by other branches, tags, or reflogs. The tempting assumption is that the PR lifecycle controls object reachability, but Git reachability is determined by refs and the commit graph."
+ },
+ {
+  "id": 164,
+  "level": "senior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "edgecase",
+  "question": "Which Git hook is specifically intended to validate or modify a commit message before the commit is finalized?",
+  "options": [
+   "`commit-msg`",
+   "`pre-push`",
+   "`post-checkout`",
+   "`pre-rebase`"
+  ],
+  "answer": 0,
+  "explanation": "The `commit-msg` hook receives the path to the proposed commit message and can validate or modify it before Git creates the commit. It is commonly used for enforcing message conventions or ticket identifiers. The tempting alternative is `pre-commit`, but that hook primarily validates the staged content rather than the commit message itself."
+ },
+ {
+  "id": 165,
+  "level": "senior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "behavior",
+  "question": "What effect does the following `.gitattributes` rule have?\n`* text eol=lf`",
+  "options": [
+   "It marks all files as binary.",
+   "It enables text normalization and specifies LF as the working-tree line ending.",
+   "It ignores all files containing LF line endings.",
+   "It converts all files to CRLF in the repository."
+  ],
+  "answer": 1,
+  "explanation": "The `text` attribute enables Git's text handling for matching files, while `eol=lf` specifies LF line endings in the working tree. This is commonly used to make line-ending behavior consistent across platforms. The tempting assumption is that `eol=lf` changes the repository into a binary-safe format, but it is specifically about line-ending handling for text files."
+ },
+ {
+  "id": 166,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "scenario",
+  "question": "A large monorepo contains many components, but a CI job needs only one small directory and wants to minimize both downloaded objects and checked-out files. Which combination can help?",
+  "options": [
+   "Use sparse-checkout together with a partial clone.",
+   "Use only `git clean -fd`.",
+   "Use only `git tag --contains`.",
+   "Use a separate stash for each directory."
+  ],
+  "answer": 0,
+  "explanation": "Sparse-checkout limits which paths are materialized in the working tree, while partial clone can avoid downloading some objects until they are needed. Together they can significantly reduce the initial working-tree and object-transfer cost for suitable monorepo workflows. The tempting assumption is that deleting unwanted files after cloning provides the same benefit, but `git clean` does not reduce the objects already downloaded."
+ },
+ {
+  "id": 167,
+  "level": "senior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "recovery",
+  "question": "You accidentally run a destructive reset and find the previous branch tip in the reflog. What is a good way to create a stable recovery reference before doing further work?",
+  "options": [
+   "`git gc --prune=now`",
+   "`git branch recovery <commit>`",
+   "`git clean -fd`",
+   "`git remote prune origin`"
+  ],
+  "answer": 1,
+  "explanation": "Creating a branch such as `git branch recovery <commit>` gives the recovered commit a stable ref, making it easier to inspect or restore later and protecting it from becoming unreachable solely because the reflog eventually expires. The tempting cleanup commands do the opposite: they can remove untracked files or prune unreachable objects rather than preserve the recovered state."
+ },
+ {
+  "id": 168,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "What is the main purpose of Git's commit-graph infrastructure?",
+  "options": [
+   "To replace commit objects with a relational database.",
+   "To store working-tree files separately from the object database.",
+   "To precompute graph information that can speed up history and reachability operations.",
+   "To prevent commits from being garbage-collected."
+  ],
+  "answer": 2,
+  "explanation": "The commit-graph stores precomputed information about the commit graph, allowing Git to answer ancestry and reachability-related questions more efficiently. It complements the normal object database rather than replacing it. The tempting assumption is that the commit-graph exists mainly to preserve commits, but its primary purpose is performance."
+ },
+ {
+  "id": 169,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "performance",
+  "question": "What problem does Git's split index feature primarily address?",
+  "options": [
+   "It reduces the number of commits stored in the repository.",
+   "It can reduce the cost of rewriting a large index by separating relatively unchanged index data from the split portion.",
+   "It compresses all Git objects into a single file.",
+   "It prevents files from being added to the index."
+  ],
+  "answer": 1,
+  "explanation": "Split index allows Git to keep a shared base index containing relatively unchanged entries and store only changes in a smaller split index. This can reduce index-related work in repositories with very large numbers of tracked files. The tempting assumption is that split index reduces repository object storage, but its primary target is index performance."
+ },
+ {
+  "id": 170,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "A merge is in progress and you want to inspect the unmerged entries in the index, including the different stages of conflicted files. Which command is useful?",
+  "options": [
+   "`git ls-files -u`",
+   "`git branch --merged`",
+   "`git log --merges`",
+   "`git diff --stat`"
+  ],
+  "answer": 0,
+  "explanation": "`git ls-files -u` displays unmerged index entries, including the different stages representing the common ancestor and the competing versions involved in the conflict. This is useful for low-level conflict debugging. The tempting alternatives show branch relationships, merge history, or summary statistics rather than the unmerged index stages."
+ },
+ {
+  "id": 171,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "edgecase",
+  "question": "During a rebase, what can happen when a commit's changes are already present in the new base?",
+  "options": [
+   "Git must always duplicate the changes and create a second identical patch.",
+   "Git converts the commit into a tag automatically.",
+   "Git moves the commit to the reflog and stops the rebase.",
+   "The commit may become empty and can be skipped during the rebase."
+  ],
+  "answer": 3,
+  "explanation": "If the changes introduced by a commit are already represented in the new base, applying that commit during rebase can result in an empty change. Depending on the situation and Git's behavior, such a commit can be omitted or skipped rather than duplicated. The tempting assumption is that rebase blindly replays every commit, but Git can detect commits whose changes are already represented."
+ },
+ {
+  "id": 172,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "production",
+  "question": "You need to update a shared branch after rewriting your local history, but you want Git to reject the push if the remote branch changed unexpectedly since your last fetch. Which command is designed for this?",
+  "options": [
+   "`git push --force`",
+   "`git push --force-with-lease`",
+   "`git push --delete`",
+   "`git push --mirror`"
+  ],
+  "answer": 1,
+  "explanation": "`git push --force-with-lease` allows a history-rewriting push while checking that the remote ref still has the expected value. This reduces the risk of overwriting another contributor's work compared with an unconditional force push. The tempting alternative is `git push --force`, which rewrites the remote ref without the same lease protection."
+ },
+ {
+  "id": 173,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "recovery",
+  "question": "You have just completed a rebase and discover that you need to return to the state before the rebase. If `ORIG_HEAD` still points to that previous state, which command can restore it?",
+  "options": [
+   "`git reset --hard ORIG_HEAD`",
+   "`git revert ORIG_HEAD`",
+   "`git restore --staged ORIG_HEAD`",
+   "`git branch --delete ORIG_HEAD`"
+  ],
+  "answer": 0,
+  "explanation": "`ORIG_HEAD` can record the previous tip before operations such as rebase. If it still references the desired pre-rebase state, `git reset --hard ORIG_HEAD` moves the current branch back to that commit and updates the working tree to match it. The tempting alternative is `git revert`, but that creates new inverse commits rather than directly restoring the branch pointer. Be careful: `--hard` can discard uncommitted working-tree changes."
+ },
+ {
+  "id": 174,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "You have a script that can determine whether the current revision is good or bad for a regression investigation. Which command can automate the binary-search process using that script?",
+  "options": [
+   "`git bisect run <script>`",
+   "`git log --run <script>`",
+   "`git blame --script <script>`",
+   "`git diff --bisect <script>`"
+  ],
+  "answer": 0,
+  "explanation": "`git bisect run <script>` automates the execution of a test or diagnostic script at each bisect step. The script's exit status tells Git whether the tested revision should be considered good or bad, allowing Git to narrow the search automatically. The tempting alternatives are history or comparison commands and do not implement automated bisecting."
+ },
+ {
+  "id": 175,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "production",
+  "question": "A superproject uses a Git submodule. What ensures that the superproject records a deterministic submodule state?",
+  "options": [
+   "The submodule automatically follows its default branch whenever the superproject is checked out.",
+   "The submodule's latest remote commit is always embedded into the superproject.",
+   "The superproject records a gitlink pointing to a specific submodule commit.",
+   "The superproject stores the entire submodule repository inside every commit."
+  ],
+  "answer": 2,
+  "explanation": "The superproject records a gitlink that identifies the exact submodule commit to use. Checking out the superproject therefore points the submodule at that recorded commit rather than automatically following the latest remote branch state. The tempting assumption is that a submodule behaves like an ordinary nested directory, but its state is pinned by the superproject's gitlink."
+ },
+ {
+  "id": 176,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "edgecase",
+  "question": "In a Git repository, two different commits reference the same blob object because a file's contents are byte-for-byte identical. What happens from an object storage perspective?",
+  "options": [
+   "Git can store a single shared blob object for both files.",
+   "Git creates a separate blob for every filename.",
+   "A blob can only be shared if the filenames are also identical.",
+   "Git can only share a blob between commits, not between files."
+  ],
+  "answer": 0,
+  "explanation": "A Git blob object identifies file content, not the filename or path. If two files have identical contents, they can reference the same blob object, so the content does not necessarily need to be stored multiple times. The tempting assumption is that every file has its own separate object, while filenames and object contents are represented at different layers."
+ },
+ {
+  "id": 177,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "behavior",
+  "question": "You modify a file, run `git add`, and then make another modification to the same file. What will a subsequent `git commit` contain if you do not run `git add` again?",
+  "options": [
+   "Both modifications, because Git always commits the current working-tree state.",
+   "Only the first modification that was already staged.",
+   "Only the second modification, because it always overwrites the staging area.",
+   "Neither modification, because the file was modified twice."
+  ],
+  "answer": 1,
+  "explanation": "A commit is based primarily on the contents of the staging area. The change included by the first `git add` remains staged, while the later modification exists only in the working tree, so the newer change must be staged separately. The tempting assumption is that a commit always uses the latest complete state of the file, but Git commits the staged snapshot."
+ },
+ {
+  "id": 178,
+  "level": "senior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "scenario",
+  "question": "You want to create a new branch from an old commit while leaving the current branch and working tree unchanged. Which approach is suitable?",
+  "options": [
+   "`git reset --hard <commit>`",
+   "`git switch --detach <commit>`",
+   "`git branch recovery <commit>`",
+   "`git merge <commit>`"
+  ],
+  "answer": 2,
+  "explanation": "`git branch recovery <commit>` creates a new branch pointing to the specified commit without switching to that branch and without changing the current working-tree state. This is particularly useful for creating a safe starting point from a historical state. The tempting alternative is a detached HEAD state, which makes the commit accessible but does not automatically create a stable branch reference."
+ },
+ {
+  "id": 179,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "During a merge, Git reports a conflict, but you have already manually constructed the final content of the conflicted file. What is required for Git to consider the conflict resolved?",
+  "options": [
+   "`git commit --amend`",
+   "`git merge --continue`",
+   "`git reset --hard HEAD`",
+   "You must add the conflicted file to the staging area, for example with `git add file.txt`."
+  ],
+  "answer": 3,
+  "explanation": "After resolving the conflict, the final version of the file must be staged, for example with `git add file.txt`. This records in the index that you consider the file resolved and allows the merge to continue. The tempting assumption is that manually removing the conflict markers is sufficient, but Git also needs the index state to indicate that the conflict has been resolved."
+ },
+ {
+  "id": 180,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "production",
+  "question": "You want to rebase a feature branch onto the current state of `main`, but first you want to avoid problems caused by accidental uncommitted working-tree changes. What is the safest approach?",
+  "options": [
+   "Commit or stash the uncommitted changes first, then run the rebase.",
+   "`git rebase --hard main`",
+   "`git reset --merge main`",
+   "The rebase automatically preserves all uncommitted changes safely."
+  ],
+  "answer": 0,
+  "explanation": "Before rebasing, it is good practice to bring the working tree to a clean state, for example by committing or stashing the changes. This prevents the rebase from conflicting with local modifications and reduces the risk of accidental data loss. The tempting assumption is that rebase automatically preserves every working-tree change, but uncommitted changes can block the operation in certain situations."
+ },
+ {
+  "id": 181,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "output",
+  "question": "You previously fetched from a remote, and a branch was later deleted on the remote. Which command helps remove remote-tracking refs locally for branches that no longer exist on the remote?",
+  "options": [
+   "`git fetch --all`",
+   "`git fetch --prune`",
+   "`git pull --delete`",
+   "`git remote reset`"
+  ],
+  "answer": 1,
+  "explanation": "`git fetch --prune` removes remote-tracking refs during the fetch that no longer have corresponding refs in the remote repository. This helps prevent stale `origin/*` branches from accumulating locally. The tempting assumption is that a normal fetch automatically deletes every obsolete remote-tracking ref, but pruning is a separate behavior."
+ },
+ {
+  "id": 182,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "edgecase",
+  "question": "You want to undo an already published commit while keeping the original commit visible in the branch history. Which solution does this?",
+  "options": [
+   "`git reset --hard HEAD~1`",
+   "`git restore --source=HEAD~1 .`",
+   "`git revert <commit>`",
+   "`git branch --delete <commit>`"
+  ],
+  "answer": 2,
+  "explanation": "`git revert <commit>` creates a new commit that reverses the effect of the selected commit while keeping the original commit in the history. This makes it suitable for safely undoing a published change. The tempting alternatives either move the branch pointer or modify file states rather than creating a new historical commit that reverses the change."
+ },
+ {
+  "id": 183,
+  "level": "senior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "behavior",
+  "question": "What is the difference between `git stash apply` and `git stash pop` when the application succeeds?",
+  "options": [
+   "`apply` applies the stash and removes it, while `pop` only displays it.",
+   "`apply` only applies staged changes, while `pop` applies all changes.",
+   "`apply` creates a new stash, while `pop` creates a branch.",
+   "`apply` applies the stash but keeps the stash entry; `pop` removes the stash entry after a successful application."
+  ],
+  "answer": 3,
+  "explanation": "`git stash apply` restores the changes stored in the stash but keeps the stash entry. `git stash pop` also applies the changes and removes the stash entry after a successful application. The tempting assumption is that the two commands differ only in syntax, but they differ in how the stash entry is handled afterward."
+ },
+ {
+  "id": 184,
+  "level": "senior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "debug",
+  "question": "A `git cherry-pick <commit>` operation stops because of a conflict. You resolve the conflicts and stage the files. What is the appropriate next step?",
+  "options": [
+   "`git cherry-pick --continue`",
+   "`git cherry-pick --abort`",
+   "`git cherry-pick --skip`",
+   "`git commit --amend --no-edit`"
+  ],
+  "answer": 0,
+  "explanation": "During a conflicted cherry-pick, after resolving the conflicts and staging the affected files, `git cherry-pick --continue` resumes the interrupted operation. Abort cancels the entire cherry-pick, while skip omits the current commit. The tempting alternative is to create a commit manually, which may technically create a commit, but `--continue` is the command designed to complete the active cherry-pick operation."
+ },
+ {
+  "id": 185,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "performance",
+  "question": "In a very large repository, you frequently want to quickly determine whether one commit is an ancestor of another. Which Git mechanism can specifically help accelerate such graph-based queries?",
+  "options": [
+   "`.gitignore`",
+   "Commit-graph",
+   "Stash index",
+   "Lightweight tag"
+  ],
+  "answer": 1,
+  "explanation": "The commit-graph stores precomputed information about the commit graph, such as generation data, which can accelerate certain ancestry and reachability operations. This can provide significant performance benefits in large repositories. The tempting assumption is that branch or tag structures themselves accelerate ancestry checks, while the commit-graph is specifically designed as supporting infrastructure for this purpose."
+ },
+ {
+  "id": 186,
+  "level": "senior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "scenario",
+  "question": "You want to associate a release with an exactly identifiable Git object and also store a name, message, and additional metadata for the release. Which approach fits this requirement?",
+  "options": [
+   "Lightweight tag",
+   "Remote-tracking branch",
+   "Annotated tag",
+   "Stash entry"
+  ],
+  "answer": 2,
+  "explanation": "An annotated tag is stored as a separate Git object and contains the tag name, target object, message, and additional metadata such as tagger information. This makes it suitable for permanently and explicitly marking releases. The tempting lightweight tag works as a simple ref and therefore does not provide the same tag-object-level metadata."
+ },
+ {
+  "id": 187,
+  "level": "senior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "A team wants the `main` branch to remain as consistently integrable and deployable as possible while larger features take several weeks to develop. Which technique can help achieve this?",
+  "options": [
+   "Keep long-lived feature branches and merge them only at the end of development.",
+   "Keep the complete feature code only locally even after merging.",
+   "Commit every change directly to the production branch.",
+   "Integrate incrementally and frequently using feature flags."
+  ],
+  "answer": 3,
+  "explanation": "Feature flags allow code to be integrated into the main branch earlier without making an unfinished feature active for every user. Frequent, smaller integrations reduce the integration risk associated with branches diverging for long periods. The tempting long-lived branch strategy can initially feel safer because it isolates the work, but it can accumulate larger integration differences."
+ },
+ {
+  "id": 188,
+  "level": "senior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "During a pull request review, a reviewer notices a change that is unrelated to the PR's goal and is difficult to verify as necessary. Which practice most improves review efficiency?",
+  "options": [
+   "Narrow the PR scope and handle unrelated changes separately.",
+   "Combine every change into one large PR.",
+   "Hide the entire commit history from the reviewer.",
+   "Skip the review entirely if the code compiles."
+  ],
+  "answer": 0,
+  "explanation": "A focused PR makes it easier to verify whether the changes are actually related to the intended goal and reduces the amount of information reviewers must process. Unrelated refactoring or fixes should be handled as separate changes when practical. The tempting large-PR approach may appear more efficient because it results in fewer reviews, but it can significantly increase review complexity."
+ },
+ {
+  "id": 189,
+  "level": "senior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "production",
+  "question": "You want to prevent pushes that violate certain rules from being accepted by a central Git server. Which hook is suitable for this on the server side?",
+  "options": [
+   "`post-commit`",
+   "`pre-commit`",
+   "`pre-receive`",
+   "`post-checkout`"
+  ],
+  "answer": 2,
+  "explanation": "The server-side `pre-receive` hook runs before a push is accepted and can inspect incoming ref changes and reject them when necessary. This makes it suitable for enforcing centralized repository policies. Client-side hooks such as pre-commit cannot by themselves be considered reliable central enforcement mechanisms because a developer can bypass them locally."
+ },
+ {
+  "id": 190,
+  "level": "senior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "edgecase",
+  "question": "A file is already tracked, and you then add it to `.gitignore`. What happens by default?",
+  "options": [
+   "Git automatically removes the file from tracking.",
+   "The file remains tracked, and `.gitignore` does not automatically remove it from tracking.",
+   "The next commit automatically deletes the file from the repository.",
+   "The file is immediately moved to the stash."
+  ],
+  "answer": 1,
+  "explanation": "`.gitignore` primarily tells Git to ignore untracked files. It does not automatically remove a file from the repository index just because the file is later added to an ignore rule. The tempting assumption is that an ignore rule excludes the file from all subsequent Git operations regardless of whether it was already tracked."
+ },
+ {
+  "id": 191,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "edgecase",
+  "question": "A superproject commit references a specific commit in a submodule. What happens if new commits are later added to the submodule's remote branch?",
+  "options": [
+   "The superproject automatically switches to the new commits.",
+   "Without a new superproject commit, every checkout uses the new branch head.",
+   "The gitlink recorded by the superproject continues to point to the original specific commit.",
+   "The submodule is automatically merged into the superproject history."
+  ],
+  "answer": 2,
+  "explanation": "The superproject records a specific submodule commit through a gitlink. Later changes to the remote branch do not modify this reference by themselves, so the same superproject commit continues to identify the same submodule state. The tempting assumption is that a submodule automatically follows the latest state of its remote branch, but the superproject commit explicitly records the gitlink."
+ },
+ {
+  "id": 192,
+  "level": "senior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "recovery",
+  "question": "You want to find a previous state of a local branch after moving the branch pointer. Which command can you use to view previous ref values for that branch?",
+  "options": [
+   "`git reflog show <branch>`",
+   "`git remote show <branch>`",
+   "`git branch --history <branch>`",
+   "`git log --refs-only <branch>`"
+  ],
+  "answer": 0,
+  "explanation": "`git reflog show <branch>` displays previous values of the specified branch ref, which can be used to recover a state from before a reset or rebase, for example. The reflog is a local mechanism, and retention of entries depends on configuration and garbage collection. The tempting assumption is that normal `git log` preserves every previous branch pointer, while it primarily displays the commit graph history."
+ },
+ {
+  "id": 193,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Which statement correctly describes the fundamental principle of Git object identification?",
+  "options": [
+   "An object's identifier depends exclusively on the filename.",
+   "A commit SHA is derived only from the commit message.",
+   "Git generates a random, permanent identifier for every object.",
+   "The object identifier is derived from a hash associated with the object's type, size, and content."
+  ],
+  "answer": 3,
+  "explanation": "Git uses content-addressed object storage: the object identifier is derived from a hash based on the appropriate object type, size, and content. As a result, identical content of the same object type can produce the same object identifier. The tempting assumption is that Git assigns random IDs like a traditional database, while Git's object identification is content-based."
+ },
+ {
+  "id": 194,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "production",
+  "question": "In a very large repository, managing the Git index introduces significant performance overhead. Which Git feature specifically aims to reduce the cost of rewriting the index?",
+  "options": [
+   "Shallow clone",
+   "Split index",
+   "Annotated tag",
+   "Reflog expiration"
+  ],
+  "answer": 1,
+  "explanation": "Split index allows relatively unchanged portions of the index to remain in a shared base index while changes are stored in a smaller split index. This can reduce index management costs, particularly in repositories with very large numbers of tracked files. The tempting shallow clone reduces the depth of repository history but does not target the cost of rewriting the index."
+ },
+ {
+  "id": 195,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "edgecase",
+  "question": "You have manually resolved the same merge conflict several times. Which Git feature can record certain previous conflict resolutions and reuse them later?",
+  "options": [
+   "`git rerere`",
+   "`git reflog`",
+   "`git bisect`",
+   "`git clean`"
+  ],
+  "answer": 0,
+  "explanation": "`git rerere` can record the results of previously resolved conflicts and, when the same or a very similar conflict occurs later, attempt to apply the previous resolution automatically. This can be particularly useful during repeated merge or rebase operations. The tempting reflog tracks previous states of branch refs rather than storing conflict resolutions."
+ },
+ {
+  "id": 196,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "production",
+  "question": "A feature branch contains several \"fixup\" commits that you want to automatically fold into the corresponding earlier commits during a rebase. Which approach supports this?",
+  "options": [
+   "`git rebase --autosquash`",
+   "`git merge --squash-only`",
+   "`git reset --fixup`",
+   "`git cherry-pick --autosquash`"
+  ],
+  "answer": 0,
+  "explanation": "`git rebase --autosquash` recognizes matching `fixup!` and `squash!` commits and arranges them with their target commits for the appropriate consolidation during the rebase. This provides a convenient way to clean up corrective commits created during development. The tempting alternative may seem appropriate because squash serves a related purpose, but autosquash is specifically integrated into the rebase workflow."
+ },
+ {
+  "id": 197,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "algorithm",
+  "question": "In a Git remote configuration, which setting determines which remote refs a `fetch` maps to which local refs?",
+  "options": [
+   "`remote.<name>.url`",
+   "`branch.<name>.merge`",
+   "`remote.<name>.fetch`",
+   "`push.default`"
+  ],
+  "answer": 2,
+  "explanation": "The `remote.<name>.fetch` configuration setting contains refspecs that determine how refs fetched from the remote are mapped to local remote-tracking refs. `remote.<name>.url` primarily specifies the remote URL, while the branch and push settings serve other purposes. The tempting assumption is that the remote URL itself determines the mapping, but the URL and refspec are separate concepts."
+ },
+ {
+  "id": 198,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "scenario",
+  "question": "After running `git reset --hard`, you realize that you need the branch tip from before the reset, and you found the correct commit in the reflog. What is the safer first step for preserving the recovered state?",
+  "options": [
+   "Immediately run `git gc --prune=now`.",
+   "Create a new stable ref, for example with `git branch recovery <commit>`.",
+   "Delete the reflog so there are no more old states.",
+   "Run another `git reset --hard` to an arbitrary commit."
+  ],
+  "answer": 1,
+  "explanation": "Creating a recovery branch provides a stable ref for the discovered commit, so the state you want to recover no longer depends only on a reflog entry that may eventually expire. You can then safely inspect or restore the required state. The tempting cleanup approaches may seem useful because they relate to Git object management, but the immediate goal here is to preserve the recovered commit."
+ },
+ {
+  "id": 199,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "You are investigating a regression in a history containing thousands of commits. Why is the fundamental approach used by `git bisect` efficient?",
+  "options": [
+   "It tests every commit sequentially in chronological order.",
+   "It examines only merge commits.",
+   "It repeatedly reduces the search range to approximately half based on a known good and a known bad state.",
+   "It searches commit messages for keywords related to the bug."
+  ],
+  "answer": 2,
+  "explanation": "`git bisect` uses a binary-search strategy: it tests commits between a known good and a known bad revision, then discards one half of the search range based on the result. This means that far fewer tests are required for a large number of commits than with a linear search. The tempting assumption is that bisect analyzes commit messages, but it uses the behavior of revisions to guide the search."
+ },
+ {
+  "id": 200,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "production",
+  "question": "A CI pipeline wants to download and check out as little as possible from a large monorepo, because it only needs files belonging to a single component. Which combination can help achieve this?",
+  "options": [
+   "Use `git sparse-checkout` together with a partial clone.",
+   "Use only `git clean -fd` after a full clone.",
+   "Use only annotated tags.",
+   "Create a separate stash for every component."
+  ],
+  "answer": 0,
+  "explanation": "Sparse-checkout limits which paths are materialized in the working tree, while partial clone can avoid downloading certain Git objects until they are needed. Together they can significantly reduce the initial cost of a suitable monorepo CI workflow. The tempting `git clean` approach may seem useful because it removes files from the working tree, but it does not reduce the Git objects that have already been downloaded."
+ }
+]
