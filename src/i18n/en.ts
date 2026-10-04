@@ -370,6 +370,15 @@ export const en = {
 
   cursor: { open: 'Open case', follow: 'Follow', inspect: 'Inspect' },
   ux: {
+    followFacebook: 'Follow us on Facebook',
+    followLabel: 'Social',
+    copyLink: 'Copy link',
+    linkCopied: 'Link copied',
+    shareFacebook: 'Share on Facebook',
+    shareLabel: 'Share',
+    supportTitle: 'Support me with a share',
+    supportInterview: 'The interview simulator is free. If it helps you prepare, sharing it with a friend or on Facebook helps me keep building it.',
+    supportCv: 'The CV Maker is free and has no watermark. If it saved you time, a quick share helps others find it too.',
     search: 'Search',
     searchHint: 'Search pages, articles and lessons',
     cursorFx: 'Cursor highlight',

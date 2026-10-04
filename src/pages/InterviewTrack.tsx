@@ -9,6 +9,8 @@ import { clip } from '../hooks/useSeo';
 import type { Level, Question } from '../data/interview';
 import { Arrow, CornerMarks, Section, SectionHeader, cx } from '../components/ui';
 import { scrollBehavior } from '../lib/motion';
+import { SupportShare } from '../components/ShareButtons';
+import { site } from '../data/site';
 
 const LEVELS: Level[] = ['junior', 'medior', 'senior'];
 const QUICK = 20;
@@ -292,6 +294,8 @@ export default function InterviewTrack() {
             </div>
           </div>
         </div>
+
+        <SupportShare url={`${site.url}${lp(`/interview/${track.id}/`)}`} text={t.ux.supportInterview} className="mt-5" />
 
         {topicStats.length > 1 && (
           <details className="mt-5 border border-line bg-surface p-6 sm:p-8">

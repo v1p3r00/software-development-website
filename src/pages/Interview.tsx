@@ -3,6 +3,8 @@ import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
 import { readyTracks } from '../data/interview';
 import { Arrow, CornerMarks, Section, SectionHeader } from '../components/ui';
+import { SupportShare } from '../components/ShareButtons';
+import { site } from '../data/site';
 
 export default function Interview() {
   const { t, lp, lang } = useI18n();
@@ -60,6 +62,7 @@ export default function Interview() {
           </li>
         ))}
       </ol>
+      <SupportShare url={`${site.url}${lp('/interview/')}`} text={t.ux.supportInterview} className="mt-10" />
     </Section>
   );
 }

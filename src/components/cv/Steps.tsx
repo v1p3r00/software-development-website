@@ -4,6 +4,8 @@ import CvSheet from './CvSheet';
 import { templateDefs, templateOf } from './templates';
 import type { TemplateGroup } from './templates';
 import { cx } from '../ui';
+import { SupportShare } from '../ShareButtons';
+import { site } from '../../data/site';
 import { ActionBtn, Check, Field, IconBtn, Segmented } from './form';
 import { Icons } from './icons';
 import { accents, allKinds, move, newSection, readPhoto, uid, withTemplate } from './model';
@@ -334,6 +336,7 @@ export function ExportStep({
 }) {
   const file = useRef<HTMLInputElement>(null);
   const [importError, setImportError] = useState(false);
+  const { t: ui, lp } = useI18n();
   const p = cv.personal;
   const summary = cv.sections.find((s) => s.kind === 'summary')?.text.trim() ?? '';
   const sentences = summary.split(/[.!?]+\s/).filter((x) => x.trim()).length;
@@ -360,6 +363,7 @@ export function ExportStep({
 
   return (
     <div className="flex flex-col gap-8">
+      <SupportShare url={`${site.url}${lp('/cv-maker/')}`} text={ui.ux.supportCv} />
       <div className="relative border border-line bg-surface p-5">
         <div className="flex flex-wrap items-center gap-3">
           <ActionBtn solid onClick={onPrint}>

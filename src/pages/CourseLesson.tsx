@@ -11,6 +11,7 @@ import ExerciseBox from '../components/course/ExerciseBox';
 import PatreonBox from '../components/course/PatreonBox';
 import LessonBody from '../components/course/visual/LessonBody';
 import TableOfContents from '../components/TableOfContents';
+import ShareButtons from '../components/ShareButtons';
 import Diagram from '../components/course/visual/Diagram';
 import { moduleMap } from '../data/courseMaps';
 import { useProgress } from '../components/course/progress';
@@ -114,7 +115,10 @@ export default function CourseLesson() {
               </span>
               {done && <span className="text-accent">✓ {t.done}</span>}
             </div>
-            <h1 className="display mt-5 text-[clamp(2rem,5.5vw,3.6rem)] leading-[0.95]">{meta.title[lang]}</h1>
+            <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+              <h1 className="display min-w-0 text-[clamp(2rem,5.5vw,3.6rem)] leading-[0.95]">{meta.title[lang]}</h1>
+              <ShareButtons url={`${site.url}${lp(`/course/${slug}/`)}`} className="shrink-0 sm:flex-col sm:items-stretch sm:pt-1" />
+            </div>
             {content && <p className="mt-5 max-w-[62ch] text-base leading-relaxed text-muted sm:text-lg">{content.intro}</p>}
             {content && shownLang !== lang && <p className="mt-4 text-[13px] text-dim">{t.langFallback}</p>}
           </header>

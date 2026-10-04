@@ -12,6 +12,7 @@ import { usePageTransition } from '../lib/pageTransition';
 import { CourseLessonPage } from './lazy';
 import PatreonBox from '../components/course/PatreonBox';
 import Certificate from '../components/course/Certificate';
+import { FacebookShare } from '../components/ShareButtons';
 import Diagram from '../components/course/visual/Diagram';
 import { moduleMap } from '../data/courseMaps';
 
@@ -204,6 +205,10 @@ export default function Course() {
                             </Link>
                           ) : null;
                         })}
+                        {ready && (
+                          // a module is shared through its first lesson, which has its own preview title and text
+                          <FacebookShare url={`${site.url}${lp(`/course/${m.lessons[0].slug}/`)}`} className="sm:ml-auto" />
+                        )}
                       </div>
                       {!ready && <p className="mt-3 text-[13px] text-dim">{t.comingSoonModule}</p>}
                     </div>

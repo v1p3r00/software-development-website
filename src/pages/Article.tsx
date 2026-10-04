@@ -12,6 +12,7 @@ import { usePageTransition } from '../lib/pageTransition';
 import { ArticlePage, ArticlesPage } from './lazy';
 import Breadcrumbs from '../components/Breadcrumbs';
 import TableOfContents from '../components/TableOfContents';
+import ShareButtons from '../components/ShareButtons';
 
 export default function Article() {
   const { slug } = useParams();
@@ -148,7 +149,10 @@ export default function Article() {
               {v.minutes} {t.articles.minutes}
             </span>
           </div>
-          <h1 className="display mt-5 text-[clamp(2.2rem,6vw,4rem)] leading-[0.95]">{v.title}</h1>
+          <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+            <h1 className="display min-w-0 text-[clamp(2.2rem,6vw,4rem)] leading-[0.95]">{v.title}</h1>
+            <ShareButtons url={`${site.url}${lp(`/articles/${article.slug}/`)}`} className="shrink-0 sm:flex-col sm:items-stretch sm:pt-2" />
+          </div>
           {v.description && <p className="mt-5 text-base leading-relaxed text-muted sm:text-lg">{v.description}</p>}
           {v.tags.length > 0 && (
             <div className="mt-5 flex flex-wrap gap-1.5">
