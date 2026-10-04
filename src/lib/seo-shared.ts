@@ -27,7 +27,7 @@ export function siteGraph() {
         email: `mailto:${site.email}`,
         image: `${site.url}/portrait.jpg`,
         address: { '@type': 'PostalAddress', addressLocality: 'Budapest', addressCountry: 'HU' },
-        sameAs: [linkedin, site.github].filter(Boolean),
+        sameAs: [linkedin, site.github, site.facebook].filter(Boolean),
         knowsLanguage: ['en', 'hu'],
         knowsAbout: [
           'Full-stack development',

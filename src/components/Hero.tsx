@@ -199,6 +199,22 @@ export default function Hero() {
         {/* ── right column: system metadata ── */}
         <div className="order-3 flex flex-col justify-center gap-8 border-t border-line py-8 lg:col-span-2 lg:border-l lg:border-t-0 lg:py-12 lg:pl-6 2xl:pr-10">
           <div style={reveal(300)} className="flex flex-row flex-wrap justify-between gap-x-6 gap-y-5 lg:flex-col lg:flex-nowrap">
+            <div className="basis-full lg:basis-auto">
+              <div className="label mb-2">{t.ux.followLabel}</div>
+              <a
+                href={site.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor="follow"
+                aria-label={t.ux.followFacebook}
+                title={t.ux.followFacebook}
+                className="group inline-grid h-10 w-10 place-items-center border border-line-strong text-muted transition-all duration-300 hover:border-[#1877f2] hover:bg-[#1877f2]/10 hover:text-[#1877f2] hover:shadow-[0_0_14px_rgba(24,119,242,0.45)]"
+              >
+                <svg viewBox="0 0 16 16" className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" fill="currentColor" aria-hidden>
+                  <path d="M9.2 16V8.7h2.4l.4-2.8H9.2V4.1c0-.8.2-1.4 1.4-1.4H12V.1A19 19 0 0 0 9.9 0C7.8 0 6.4 1.3 6.4 3.6v2.3H4v2.8h2.4V16z" />
+                </svg>
+              </a>
+            </div>
             <VisitorCounter className="basis-full lg:basis-auto" />
             <div>
               <div className="label mb-2">{t.ui.location}</div>

@@ -4,6 +4,7 @@ export const site = {
   url: 'https://softwaredevelopment.hu',
   domain: 'softwaredevelopment.hu',
   github: 'https://github.com/v1p3r00',
+  facebook: 'https://www.facebook.com/profile.php?id=61594757618918',
   ogImage: '/og.png',
   email: 'meszarosdavid@softwaredevelopment.hu',
   // the contact form posts to Web3Forms, which mails it to the address above.
