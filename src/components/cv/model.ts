@@ -1,5 +1,5 @@
 import type { Lang } from '../../data/projects';
-import { templateIds } from './templates';
+import { templateIds, templateOf } from './templates';
 import type { TemplateId } from './templates';
 
 export type { TemplateId };
@@ -178,6 +178,12 @@ export function normalize(raw: unknown, lang: Lang): Cv | null {
     },
   };
 }
+
+/** switches layout and applies the colour that layout was designed around */
+export const withTemplate = (cv: Cv, id: TemplateId): Cv => ({
+  ...cv,
+  design: { ...cv.design, template: id, accent: templateOf(id).accent ?? cv.design.accent },
+});
 
 /** moves the element at `from` by `delta` places, returning a new array */
 export function move<T>(list: T[], from: number, delta: number): T[] {

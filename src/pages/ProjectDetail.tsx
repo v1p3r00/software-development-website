@@ -7,6 +7,8 @@ import { usePrefersReducedMotion } from '../hooks/useMisc';
 import { Arrow, CornerMarks, cx } from '../components/ui';
 import { clip, useSeo } from '../hooks/useSeo';
 import { site } from '../data/site';
+import Breadcrumbs from '../components/Breadcrumbs';
+import { useGoToSection } from '../hooks/useGoToSection';
 
 function Loader({ num, label, progress }: { num: string; label: string; progress: number }) {
   const cells = 20;
@@ -30,6 +32,7 @@ export default function ProjectDetail() {
   const { id } = useParams();
   const { t, pick, lp } = useI18n();
   const reduced = usePrefersReducedMotion();
+  const goTo = useGoToSection();
   const project = projects.find((p) => p.id === id);
   const idx = projects.findIndex((p) => p.id === id);
   const next = projects[(idx + 1) % projects.length];
@@ -92,14 +95,7 @@ export default function ProjectDetail() {
         <div className="tech-grid pointer-events-none absolute inset-x-0 top-0 h-[420px] opacity-50" aria-hidden />
 
         <div className="relative mx-auto w-full max-w-[1500px] px-5 sm:px-8 lg:px-12">
-          <Link
-            to={lp('/')}
-            data-cursor="follow"
-            className="group inline-flex items-center gap-3 font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
-          >
-            <Arrow className="rotate-180 transition-transform duration-300 group-hover:-translate-x-1" />
-            {t.projects.back}
-          </Link>
+          <Breadcrumbs items={[{ label: t.ux.home, to: lp('/') }, { label: t.ux.projects, to: `${lp('/')}#projects`, onClick: goTo('projects') }, { label: project.title }]} />
 
           <header className="mt-8 border-b border-line pb-8">
             <div className="flex flex-wrap items-baseline gap-4">
@@ -168,7 +164,7 @@ export default function ProjectDetail() {
                   <section key={b.label}>
                     <div className="mb-3 flex items-center gap-3">
                       <span className="label-a">{String(i + 1).padStart(2, '0')}</span>
-                      <h2 className="font-mono text-[11px] uppercase tracking-tech text-text">{b.label}</h2>
+                      <h2 className="font-mono text-[12.5px] uppercase tracking-tech text-text">{b.label}</h2>
                       <span className="h-px flex-1 bg-line" />
                     </div>
                     <p className="max-w-[68ch] text-[15px] leading-relaxed text-muted">{b.body}</p>

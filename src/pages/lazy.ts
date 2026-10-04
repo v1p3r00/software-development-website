@@ -30,9 +30,13 @@ export const InterviewPage = lazyPage(() => import('./Interview'));
 export const InterviewTrackPage = lazyPage(() => import('./InterviewTrack'));
 // the CV maker, its templates and guide
 export const CvMakerPage = lazyPage(() => import('./CvMaker'));
+// the full-stack course
+export const CoursePage = lazyPage(() => import('./Course'));
+export const CourseLessonPage = lazyPage(() => import('./CourseLesson'));
 
 /** preloaders for the interactive projects, by `labs` id */
 export const labPreload: Record<string, () => Promise<void>> = {
   interview: InterviewPage.preload,
   cv: CvMakerPage.preload,
+  course: CoursePage.preload,
 };

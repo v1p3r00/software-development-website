@@ -20,21 +20,34 @@ export interface Lab {
 
 export const labs: Lab[] = [
   {
-    id: 'cv',
+    id: 'course',
     num: '01',
+    short: 'EDU',
+    path: '/course/',
+    title: { en: 'Full-stack developer course', hu: 'Full-stack fejlesztő kurzus' },
+    desc: {
+      en: 'A free, hands-on path from the basics of the web to a deployed React + Spring Boot application — with quizzes, coding exercises that run in your browser, and a progress map.',
+      hu: 'Ingyenes, gyakorlatias út a web alapjaitól egy élesített React + Spring Boot alkalmazásig — kvízekkel, böngészőben futó kódolási feladatokkal és haladási térképpel.',
+    },
+    cta: { en: 'Start learning', hu: 'Kezdd el a tanulást' },
+    tags: ['React', 'Spring Boot', 'EN / HU'],
+  },
+  {
+    id: 'cv',
+    num: '02',
     short: 'CV',
     path: '/cv-maker/',
     title: { en: 'CV Maker', hu: 'Önéletrajz-készítő' },
     desc: {
-      en: 'Build a professional CV step by step with a live preview. Four layouts, reorderable sections, an optional photo and a print-ready PDF — plus a practical guide to writing a CV that gets read.',
-      hu: 'Készíts profi önéletrajzot lépésről lépésre, élő előnézettel. Négy elrendezés, átrendezhető szakaszok, opcionális fotó és nyomtatásra kész PDF — gyakorlati útmutatóval ahhoz, hogy el is olvassák.',
+      en: 'Build a professional CV step by step with a live preview. 24 modern, creative and classic layouts, reorderable sections, an optional photo and a print-ready PDF — plus a practical guide to writing a CV that gets read.',
+      hu: 'Készíts profi önéletrajzot lépésről lépésre, élő előnézettel. 24 modern, kreatív és klasszikus elrendezés, átrendezhető szakaszok, opcionális fotó és nyomtatásra kész PDF — gyakorlati útmutatóval ahhoz, hogy el is olvassák.',
     },
     cta: { en: 'Create your CV', hu: 'Készítsd el az önéletrajzod' },
     tags: ['React', 'PDF', 'EN / HU'],
   },
   {
     id: 'interview',
-    num: '02',
+    num: '03',
     short: 'SIM',
     path: '/interview/',
     title: { en: 'Interview simulator', hu: 'Interjú-szimulátor' },

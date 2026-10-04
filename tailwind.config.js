@@ -28,11 +28,11 @@ export default {
         hand: ['"Caveat"', 'cursive'],
       },
       letterSpacing: {
-        tech: '0.18em',
+        tech: '0.13em',
         wide2: '0.32em',
       },
       fontSize: {
-        '2xs': ['0.625rem', { lineHeight: '1rem' }],
+        '2xs': ['0.75rem', { lineHeight: '1.1rem' }],
       },
       transitionTimingFunction: {
         tech: 'cubic-bezier(0.16, 1, 0.3, 1)',

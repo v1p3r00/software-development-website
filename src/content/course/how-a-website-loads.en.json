@@ -1,0 +1,99 @@
+{
+  "title": "What happens when you open a website",
+  "intro": "When you type a website address into your browser and press Enter, a surprisingly long chain of events happens in a fraction of a second. In this lesson, you will follow that journey from the URL you typed to the finished page you see on your screen.",
+  "body": "## The journey starts with a URL\n\nA **URL** (Uniform Resource Locator) is the address of a resource on the web. You use URLs every day, even if you do not normally think about their individual parts.\n\n~~~widget request-journey\n~~~\n\nFor example:\n\n~~~text\nhttps://example.com/products/shoes?size=42&colour=black\n~~~\n\nA URL can contain several pieces of information:\n\n- `https` is the **protocol**. It tells the browser which communication rules to use.\n- `example.com` is the **hostname**. It identifies the website's server address by name.\n- `/products/shoes` is the **path**. It identifies the resource or location you want.\n- `?size=42&colour=black` is the **query string**. It contains additional parameters sent with the request.\n- A URL can also contain a **fragment**, such as `#reviews`, which usually tells the browser to move to a particular part of the current document.\n\nYou do not need to remember every part immediately. The important idea is that a URL gives the browser enough information to figure out what you are asking for and how to communicate with the server.\n\n## Step 1: Finding the server with DNS\n\nComputers communicate using **IP addresses**, such as `203.0.113.10`. People generally prefer names such as `example.com` because they are easier to remember.\n\nThis is where **DNS** (Domain Name System) comes in. DNS is essentially the naming system that helps translate a hostname into an IP address.\n\nWhen you visit a website, your browser may need to ask a DNS server something like:\n\n> \"What IP address belongs to example.com?\"\n\nThe DNS system finds the appropriate answer and returns an IP address. The browser can then use that address to contact the server.\n\nDNS is not necessarily contacted every time you open a website. Your computer, browser, operating system, network, or DNS provider may already have the answer stored in a **cache**. A cache is temporary stored information that can be reused instead of retrieving it again.\n\nThis is one of the first places where caching can make the web faster.\n\n## Step 2: Connecting to the server\n\nNow the browser knows where the server is. It needs to establish a connection.\n\nFor a typical modern HTTPS website, this involves **TCP** and **TLS**.\n\n**TCP** (Transmission Control Protocol) is a communication protocol that helps two computers establish a reliable connection and exchange data in the correct order. You can think of it as creating a dependable communication channel between the browser and the server.\n\nThen there is **TLS** (Transport Layer Security). TLS encrypts the communication between your browser and the server so that other people on the network cannot simply read the information being exchanged.\n\nThis is why you see `https://` rather than just `http://` on most modern websites.\n\nHTTPS is HTTP communication protected by TLS. The exact technical process behind TCP and TLS is more complicated than this, but you do not need to understand every packet to build web applications.\n\nA useful mental model is:\n\n~~~text\nDNS → find the server\nTCP → establish reliable communication\nTLS → protect the communication\nHTTP → exchange web data\n~~~\n\n## Step 3: Sending an HTTP request\n\nOnce the connection is ready, the browser can send an **HTTP request** to the server.\n\nHTTP (Hypertext Transfer Protocol) is the set of rules used for exchanging requests and responses on the web.\n\nA simplified request might look like this:\n\n~~~http\nGET /products/shoes?size=42 HTTP/1.1\nHost: example.com\nAccept: text/html\n~~~\n\n`GET` is an HTTP method. It tells the server that the client wants to retrieve something.\n\nThe path tells the server which resource was requested. Headers provide additional information about the request.\n\nThe **client** is the program making the request. In this example, the browser is the client.\n\nThe **server** receives the request and decides what to do with it.\n\n## Step 4: The backend does its work\n\nThis is where the **backend** can enter the journey.\n\nThe backend is the part of an application that runs on a server. It can contain business logic, authentication, validation, database access, and other operations that should not happen directly in the user's browser.\n\nImagine you open an online shop's product page. The browser might request:\n\n~~~text\nGET /products/123\n~~~\n\nThe backend could receive that request, find product `123` in a database, check whether the product is available, and create a response.\n\nIn this course, we will use **Spring Boot** for the backend and **PostgreSQL** for the database.\n\nThe backend might therefore have a journey of its own:\n\n~~~text\nBrowser\n  ↓\nSpring Boot\n  ↓\nPostgreSQL\n  ↓\nSpring Boot\n  ↓\nBrowser\n~~~\n\nThe browser does not normally communicate directly with PostgreSQL. The backend provides a controlled layer between the browser and the database.\n\n## Step 5: Receiving the HTTP response\n\nThe server sends an **HTTP response** back to the browser.\n\nA simplified response could look like this:\n\n~~~http\nHTTP/1.1 200 OK\nContent-Type: text/html\n\n<html>\n  ...\n</html>\n~~~\n\nThe first line contains a **status code**. `200 OK` means the request was successfully handled.\n\nThe response also contains headers. For example, `Content-Type` tells the browser what kind of content it received.\n\nThe response body contains the actual data. For a traditional website, this could be HTML.\n\nOther requests might return CSS, JavaScript, images, JSON data, or other resources.\n\n## Step 6: The browser processes HTML\n\nReceiving HTML is not the end of the journey. The browser has to turn the files it receives into the page you can interact with.\n\n~~~diagram\n{\"type\": \"flow\", \"title\": \"From bytes to pixels\", \"caption\": \"HTML and CSS are parsed into two trees, combined, laid out and painted. JavaScript can change both trees at any time.\", \"nodes\": [{\"id\": \"html\", \"label\": \"HTML\", \"kind\": \"file\"}, {\"id\": \"js\", \"label\": \"JavaScript\", \"kind\": \"code\"}, {\"id\": \"css\", \"label\": \"CSS\", \"kind\": \"file\"}, {\"id\": \"dom\", \"label\": \"DOM\", \"sub\": \"element tree\", \"highlight\": true}, {\"id\": \"cssom\", \"label\": \"CSSOM\", \"sub\": \"style rules\"}, {\"id\": \"rt\", \"label\": \"Render tree\", \"sub\": \"visible elements + styles\"}, {\"id\": \"layout\", \"label\": \"Layout\", \"sub\": \"sizes and positions\"}, {\"id\": \"paint\", \"label\": \"Paint\", \"sub\": \"pixels on screen\", \"highlight\": true}], \"edges\": [{\"from\": \"html\", \"to\": \"dom\", \"label\": \"parse\"}, {\"from\": \"css\", \"to\": \"cssom\", \"label\": \"parse\"}, {\"from\": \"dom\", \"to\": \"rt\"}, {\"from\": \"cssom\", \"to\": \"rt\"}, {\"from\": \"rt\", \"to\": \"layout\"}, {\"from\": \"layout\", \"to\": \"paint\"}, {\"from\": \"js\", \"to\": \"dom\", \"label\": \"changes\", \"dashed\": true}]}\n~~~\n\nHTML describes the structure and meaning of the document.\n\nFor example:\n\n~~~html\n<h1>Products</h1>\n<p>Welcome to our shop.</p>\n~~~\n\nThe browser parses this HTML and builds an in-memory structure called the **DOM** (Document Object Model).\n\nThe DOM represents the elements of the page as a tree-like structure.\n\nYou can imagine it like this:\n\n~~~text\nDocument\n├── h1\n│   └── \"Products\"\n└── p\n    └── \"Welcome to our shop.\"\n~~~\n\nJavaScript can interact with this structure. This is one reason the DOM is so important for frontend development.\n\n## CSS changes how the page looks\n\nHTML provides structure, but **CSS** (Cascading Style Sheets) describes presentation and layout.\n\nFor example:\n\n~~~css\nh1 {\n  font-size: 32px;\n}\n~~~\n\nThe browser downloads and processes CSS files, determines which rules apply to which HTML elements, and calculates how those elements should be displayed.\n\nThe browser then performs the work required to display the page. This overall process is commonly called **rendering**.\n\nRendering includes determining the layout of elements and eventually drawing the visible result on the screen.\n\nYou do not need to memorize the browser's internal rendering pipeline yet. The important idea is that HTML gives the browser structure, CSS gives it presentation rules, and the browser combines that information to produce the visual page.\n\n## JavaScript makes the page interactive\n\nJavaScript can add behaviour to the page.\n\nFor example, JavaScript could respond when you click a button, validate a form, update part of the page, or request additional information from a backend.\n\nA modern application might work like this:\n\n~~~text\nHTML → page structure\nCSS → appearance and layout\nJavaScript → behaviour and interaction\nBackend → server-side logic and data\nDatabase → persistent application data\n~~~\n\nThis separation is not absolute. Modern frameworks can blur some of these boundaries, but it is an excellent mental model for starting your full-stack journey.\n\n## Where React fits\n\nIn this course, we will use **React** for the frontend.\n\nReact is a JavaScript library for building user interfaces. Instead of manually changing every part of a page yourself, you describe UI components and how they should appear based on application state and data.\n\nFor example, a React application might request product information from a Spring Boot backend. Spring Boot might retrieve the information from PostgreSQL and return it as JSON.\n\nThe flow could look like:\n\n~~~text\nReact in the browser\n       ↓\nHTTP request\n       ↓\nSpring Boot backend\n       ↓\nPostgreSQL database\n       ↓\nSpring Boot response\n       ↓\nReact updates the interface\n~~~\n\nWe will build this kind of communication step by step later in the course.\n\n## Why some files come from cache\n\nYou may notice that a website sometimes loads much faster the second time you visit it. One reason is **caching**.\n\n~~~callout tip See the cache at work\nOpen DevTools → **Network**, reload the page, and look at the *Size* column: files served “(memory cache)” or “(disk cache)” never left your computer. Tick **Disable cache** while developing so you always see your latest CSS and JavaScript.\n~~~\n\nA cache stores previously retrieved information so it can potentially be reused.\n\nFor example, suppose a website uses the same logo image on many pages. Downloading that image every time would waste time and bandwidth. The browser can store a copy locally and reuse it when appropriate.\n\nThe browser can cache many kinds of resources, including CSS files, JavaScript files, images, and other responses.\n\nCaching is controlled by HTTP response headers and other browser rules. A server can tell the browser how long certain resources may be considered fresh.\n\nThis also explains something you will eventually encounter as a developer: you change a CSS or JavaScript file, but the browser appears to show the old version. Sometimes the code really is old because a cached resource is being reused.\n\nDeveloper tools give you ways to inspect and control caching while developing.\n\n## Frontend and backend in the complete journey\n\nIt is useful to separate two major areas of a web application.\n\nThe **frontend** is the part that runs in the user's browser. In our course, React will be the main frontend technology. It handles the user interface and interactions.\n\nThe **backend** runs on a server. Spring Boot will handle server-side application logic and provide APIs that the frontend can call.\n\nThe database stores persistent information. PostgreSQL will be our database technology.\n\nA simplified complete journey looks like this:\n\n~~~text\nYou enter a URL\n      ↓\nBrowser checks cached information\n      ↓\nDNS finds the server's IP address\n      ↓\nBrowser establishes a secure connection\n      ↓\nBrowser sends an HTTP request\n      ↓\nSpring Boot receives the request\n      ↓\nSpring Boot may query PostgreSQL\n      ↓\nSpring Boot sends an HTTP response\n      ↓\nBrowser receives HTML/CSS/JS or application data\n      ↓\nBrowser builds the DOM and calculates the layout\n      ↓\nBrowser renders the page\n      ↓\nJavaScript makes it interactive\n~~~\n\nNot every request follows exactly this sequence. For example, a React application may initially download JavaScript and then make additional HTTP requests for application data. Browsers also reuse existing connections and cached resources whenever possible.\n\nStill, this model gives you a strong foundation for understanding what happens underneath a website.\n\n## The whole trip in a few steps\n\nWhen you open a website, start thinking of it as a journey rather than a single action.\n\n1. **The URL tells the browser what you want and how to communicate.**\n2. **DNS helps turn the hostname into an IP address.**\n3. **TCP and TLS establish a reliable and secure connection.**\n4. **HTTP carries requests from the browser to the server and responses back.**\n5. **The backend can process requests and communicate with the database.**\n6. **The browser processes HTML, CSS, and JavaScript, builds the DOM, calculates layout, and renders the result.**\n7. **Caches let the browser reuse resources instead of downloading everything again.**\n\nOnce you understand this journey, technologies such as React, Spring Boot, and PostgreSQL stop looking like isolated tools. You can start seeing where each one belongs in the bigger picture of a web application.",
+  "takeaways": [
+    "A URL contains information such as the protocol, hostname, path, and query parameters.",
+    "DNS helps the browser find the server associated with a hostname.",
+    "HTTP is used to exchange requests and responses, while HTTPS protects that communication with TLS.",
+    "The browser turns HTML into a DOM, applies CSS, runs JavaScript, and renders the resulting interface.",
+    "React runs mainly in the frontend, Spring Boot handles backend logic, and PostgreSQL stores persistent data."
+  ],
+  "quiz": [
+    {
+      "question": "What is the main job of DNS when you open a website?",
+      "options": [
+        "It translates a hostname into an IP address.",
+        "It converts HTML into CSS.",
+        "It stores the website's database.",
+        "It encrypts every image on the page."
+      ],
+      "answer": 0,
+      "explanation": "DNS helps map human-friendly hostnames such as example.com to IP addresses that computers can use to communicate."
+    },
+    {
+      "question": "What does TLS provide when you use HTTPS?",
+      "options": [
+        "A database for the website.",
+        "Encryption and protection for the communication.",
+        "The HTML structure of the page.",
+        "The JavaScript framework used by the site."
+      ],
+      "answer": 1,
+      "explanation": "TLS protects data exchanged between the browser and server by encrypting the communication."
+    },
+    {
+      "question": "What is the DOM?",
+      "options": [
+        "A type of database server.",
+        "A DNS configuration file.",
+        "An in-memory representation of a document's structure.",
+        "A protocol used to encrypt HTTP."
+      ],
+      "answer": 2,
+      "explanation": "The browser parses HTML and creates the DOM, which represents the document's elements in a structure that scripts can work with."
+    },
+    {
+      "question": "Which part of our course stack is responsible for server-side application logic?",
+      "options": [
+        "PostgreSQL",
+        "CSS",
+        "React",
+        "Spring Boot"
+      ],
+      "answer": 3,
+      "explanation": "Spring Boot will be used for the backend, where server-side application logic and API endpoints can run."
+    },
+    {
+      "question": "Why can a browser load a previously visited resource without downloading it again?",
+      "options": [
+        "The browser may have a cached copy.",
+        "DNS permanently stores the entire website.",
+        "TCP automatically creates a new HTML page.",
+        "The database is copied into the browser every time."
+      ],
+      "answer": 0,
+      "explanation": "Browsers can cache resources such as images, CSS, and JavaScript so they can be reused when appropriate."
+    }
+  ],
+  "exercise": {
+    "title": "Build a URL parser",
+    "task": "Create a function named `parseUrl(address)` that uses the browser's built-in `URL` class to parse a URL. It must return an object with the exact properties `protocol`, `host`, `path`, and `query`; `protocol` must not contain the trailing colon, `host` must contain only the hostname without a port, and `path` must contain the pathname. Convert the URL's search parameters into a plain object stored in `query`, using parameter names as keys and their values as strings. The tests expect the function to be available as a top-level function named `parseUrl`.",
+    "kind": "js",
+    "starter": "// Parse a URL and return the information needed by the tests.\n// Use the browser's built-in URL class.\nfunction parseUrl(address) {\n  const url = new URL(address);\n\n  // TODO: return an object with protocol, host, path, and query.\n  // Remember that protocol should not contain ':' and host should not contain a port.\n}",
+    "solution": "function parseUrl(address) {\n  const url = new URL(address);\n\n  return {\n    protocol: url.protocol.replace(':', ''),\n    host: url.hostname,\n    path: url.pathname,\n    query: Object.fromEntries(url.searchParams.entries())\n  };\n}",
+    "hint": "The `URL` object provides `protocol`, `hostname`, and `pathname` directly. For the query parameters, `url.searchParams.entries()` gives key-value pairs that can be converted into a plain object with `Object.fromEntries()`.",
+    "tests": [
+      {
+        "name": "It parses a simple URL",
+        "code": "const result = parseUrl('https://example.com/products/shoes');\nreturn result.protocol === 'https' && result.host === 'example.com' && result.path === '/products/shoes' && Object.keys(result.query).length === 0;"
+      },
+      {
+        "name": "It removes the port from the host",
+        "code": "const result = parseUrl('http://localhost:8080/api/products');\nreturn result.protocol === 'http' && result.host === 'localhost' && result.path === '/api/products';"
+      },
+      {
+        "name": "It parses query parameters",
+        "code": "const result = parseUrl('https://example.com/search?q=shoes&page=2');\nreturn result.query.q === 'shoes' && result.query.page === '2' && Object.keys(result.query).length === 2;"
+      },
+      {
+        "name": "It handles encoded query values",
+        "code": "const result = parseUrl('https://example.com/search?q=red%20shoes&sort=price');\nreturn result.query.q === 'red shoes' && result.query.sort === 'price';"
+      },
+      {
+        "name": "It keeps the pathname separate from the query",
+        "code": "const result = parseUrl('https://example.com/products/42?colour=black');\nreturn result.path === '/products/42' && result.query.colour === 'black' && !result.path.includes('?');"
+      }
+    ]
+  }
+}

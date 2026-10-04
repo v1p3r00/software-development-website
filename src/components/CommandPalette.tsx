@@ -6,11 +6,20 @@ import { projects } from '../data/projects';
 import { site } from '../data/site';
 import { cx } from './ui';
 import { usePageTransition } from '../lib/pageTransition';
-import { ArticlesPage, CvMakerPage, InterviewPage } from '../pages/lazy';
+import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, InterviewPage } from '../pages/lazy';
+import { inLang, listedArticles } from '../data/articles';
+import { allLessons, isReady } from '../data/course';
+import { useCursorPref } from '../hooks/useCursorPref';
+import { scrollBehavior } from '../lib/motion';
+
+/** lower case without accents, so "kod" matches "kód" */
+const norm = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 interface Command {
   id: string;
   group: string;
+  /** content results (articles, lessons) only appear once the visitor types */
+  searchOnly?: boolean;
   label: string;
   hint?: string;
   run: () => void;
@@ -19,6 +28,7 @@ interface Command {
 export default function CommandPalette({ open, setOpen }: { open: boolean; setOpen: (v: boolean) => void }) {
   const { t, setLang, lang, lp } = useI18n();
   const { theme, toggle } = useTheme();
+  const [cursorFx, setCursorFx] = useCursorPref();
   const { go } = usePageTransition();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
@@ -31,7 +41,7 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
     setOpen(false);
     navigate(lp('/'));
     window.setTimeout(() => {
-      document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById(hash)?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
     }, 60);
   };
 
@@ -73,6 +83,16 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
           void go(lp('/cv-maker/'), 'slide', { prepare: CvMakerPage.preload });
         },
       },
+      {
+        id: 'course',
+        group: t.palette.navigate,
+        label: t.palette.goCourse,
+        hint: '10',
+        run: () => {
+          setOpen(false);
+          void go(lp('/course/'), 'slide', { prepare: CoursePage.preload });
+        },
+      },
     ];
     const cases: Command[] = projects.map((p) => ({
       id: `case-${p.id}`,
@@ -91,6 +111,13 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
         label: t.palette.theme,
         hint: theme === 'dark' ? 'dark' : 'light',
         run: () => toggle(),
+      },
+      {
+        id: 'cursor',
+        group: t.palette.actions,
+        label: t.ux.cursorFx,
+        hint: cursorFx ? t.ux.cursorOn : t.ux.cursorOff,
+        run: () => setCursorFx(!cursorFx),
       },
       {
         id: 'copy',
@@ -120,14 +147,56 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
         run: () => setLang('hu'),
       },
     ];
-    return [...nav, ...cases, ...actions, ...langs];
+    const articleCmds: Command[] = listedArticles().map((a) => {
+      const v = inLang(a, lang);
+      const to = lp(`/articles/${a.slug}/`);
+      return {
+        id: `article-${a.slug}`,
+        group: t.ux.paletteArticles,
+        label: v.title,
+        hint: v.tags.slice(0, 2).join(' · '),
+        searchOnly: true,
+        run: () => {
+          setOpen(false);
+          void go(to, 'slide', { prepare: ArticlePage.preload });
+        },
+      };
+    });
+    const lessonCmds: Command[] = allLessons
+      .filter((l) => isReady(l.slug))
+      .map((l) => {
+        const to = lp(`/course/${l.slug}/`);
+        return {
+          id: `lesson-${l.slug}`,
+          group: t.ux.paletteLessons,
+          label: l.title[lang],
+          hint: `${Number(l.module.num)}. ${l.module.title[lang]}`,
+          searchOnly: true,
+          run: () => {
+            setOpen(false);
+            void go(to, 'slide', { prepare: CourseLessonPage.preload });
+          },
+        };
+      });
+    return [...nav, ...cases, ...actions, ...langs, ...articleCmds, ...lessonCmds];
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t, theme, lang, copied, go]);
+  }, [t, theme, lang, copied, go, cursorFx]);
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return commands;
-    return commands.filter((c) => `${c.group} ${c.label}`.toLowerCase().includes(q));
+    const words = norm(query.trim()).split(/\s+/).filter(Boolean);
+    if (!words.length) return commands.filter((c) => !c.searchOnly);
+    const hits = commands.filter((c) => {
+      const text = norm(`${c.group} ${c.label} ${c.hint ?? ''}`);
+      return words.every((w) => text.includes(w));
+    });
+    // at most 8 results per content group, so commands stay visible
+    const perGroup = new Map<string, number>();
+    return hits.filter((c) => {
+      if (!c.searchOnly) return true;
+      const n = (perGroup.get(c.group) ?? 0) + 1;
+      perGroup.set(c.group, n);
+      return n <= 8;
+    });
   }, [commands, query]);
 
   useEffect(() => setIndex(0), [query, open]);
@@ -196,8 +265,8 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={t.palette.placeholder}
-            aria-label={t.palette.placeholder}
+            placeholder={t.ux.searchHint}
+            aria-label={t.ux.searchHint}
             className="w-full bg-transparent font-mono text-sm text-text placeholder:text-dim focus:outline-none"
           />
           <span className="label border border-line px-1.5 py-0.5">ESC</span>

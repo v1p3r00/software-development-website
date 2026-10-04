@@ -85,13 +85,20 @@
 .cv-sep {
   color: var(--cv-line);
 }
+/* block flow with margins, not flex gap: page breaks only honour
+   "keep the heading with its content" in normal block flow */
 .cv-main {
-  display: flex;
-  flex-direction: column;
-  gap: var(--cv-gap);
+  display: block;
+}
+.cv-main > * + *,
+.cv-side > * + * {
+  margin-top: var(--cv-gap);
 }
 .cv-section {
   break-inside: auto;
+}
+.cv-keep {
+  break-inside: avoid;
 }
 .cv-h {
   font-size: 10.5pt;
@@ -105,7 +112,7 @@
 .cv-entry {
   break-inside: avoid;
 }
-.cv-entry + .cv-entry {
+.cv-entry:not(:first-of-type) {
   margin-top: var(--cv-entry-gap);
 }
 .cv-entry-head {
@@ -228,9 +235,6 @@
   --cv-side-bg: color-mix(in srgb, var(--cv-accent) 9%, #fff);
   padding: var(--cv-pad-y) 7mm var(--cv-pad-y) 9mm;
   background: var(--cv-side-bg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--cv-gap);
 }
 .cv-layout-right .cv-side {
   padding: var(--cv-pad-y) 9mm var(--cv-pad-y) 7mm;
@@ -545,10 +549,14 @@
   padding-top: 2.4mm;
   border-top: 0.3mm solid var(--cv-ink);
 }
-.cv-swiss .cv-section > * {
+.cv-swiss .cv-keep {
+  display: contents;
+}
+.cv-swiss .cv-section > *,
+.cv-swiss .cv-keep > * {
   grid-column: 2;
 }
-.cv-swiss .cv-section > .cv-h {
+.cv-swiss .cv-section .cv-h {
   grid-column: 1;
   grid-row: 1 / span 40;
   color: var(--cv-ink);
@@ -556,7 +564,7 @@
   letter-spacing: 0.02em;
   text-transform: none;
 }
-.cv-swiss .cv-section > .cv-h::before {
+.cv-swiss .cv-section .cv-h::before {
   content: '';
   display: block;
   width: 4mm;
@@ -913,7 +921,7 @@
   border-left: 0.4mm solid var(--cv-line);
   --node: 0.6mm;
 }
-.cv-timeline :is(.cv-k-experience, .cv-k-education, .cv-k-projects, .cv-k-custom) .cv-entry + .cv-entry {
+.cv-timeline :is(.cv-k-experience, .cv-k-education, .cv-k-projects, .cv-k-custom) .cv-entry:not(:first-of-type) {
   margin-top: 0;
   padding-top: var(--cv-entry-gap);
   --node: calc(var(--cv-entry-gap) + 0.6mm);
@@ -948,7 +956,7 @@
   letter-spacing: -0.03em;
 }
 .cv-soft .cv-main {
-  gap: 3.5mm;
+  --cv-gap: 3.5mm;
 }
 .cv-soft .cv-section {
   padding: 4mm 5mm;
@@ -973,10 +981,6 @@
 .cv-bento .cv-side {
   --cv-side-bg: transparent;
   padding-left: 0;
-  gap: 3.5mm;
-}
-.cv-bento .cv-main {
-  gap: 3.5mm;
 }
 .cv-bento .cv-section,
 .cv-bento .cv-header {
@@ -1067,6 +1071,10 @@
 }
 .cv-compact .cv-side {
   --cv-side-bg: #f1f5f9;
+  font-size: 0.9em;
+}
+.cv-compact .cv-contact-list a {
+  overflow-wrap: anywhere;
 }
 .cv-compact .cv-name {
   font-size: 20pt;

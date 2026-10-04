@@ -8,6 +8,7 @@ import { areaLabel, loadQuestions, tracks } from '../data/interview';
 import { clip } from '../hooks/useSeo';
 import type { Level, Question } from '../data/interview';
 import { Arrow, CornerMarks, Section, SectionHeader, cx } from '../components/ui';
+import { scrollBehavior } from '../lib/motion';
 
 const LEVELS: Level[] = ['junior', 'medior', 'senior'];
 const QUICK = 20;
@@ -144,7 +145,7 @@ export default function InterviewTrack() {
   const start = (ids: number[]) => {
     if (!qs || !ids.length) return;
     update(newRound(qs, ids));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: scrollBehavior() });
   };
 
   const current = round && !round.done ? byId.get(round.ids[round.pos]) : undefined;
@@ -165,7 +166,7 @@ export default function InterviewTrack() {
     update(last ? { ...round, done: true } : { ...round, pos: round.pos + 1 });
     requestAnimationFrame(() => {
       const top = cardRef.current?.getBoundingClientRect().top ?? 0;
-      if (top < 80 || last) window.scrollTo({ top: last ? 0 : window.scrollY + top - 110, behavior: 'smooth' });
+      if (top < 80 || last) window.scrollTo({ top: last ? 0 : window.scrollY + top - 110, behavior: scrollBehavior() });
     });
   }, [round, update]);
 
@@ -257,7 +258,7 @@ export default function InterviewTrack() {
                   type="button"
                   onClick={() => start(missed.map((q) => q.id))}
                   data-cursor="follow"
-                  className="group inline-flex items-center gap-3 bg-accent px-5 py-3 font-mono text-[11px] uppercase tracking-tech text-onaccent transition-colors hover:bg-text"
+                  className="group inline-flex items-center gap-3 bg-accent px-5 py-3 font-mono text-[12.5px] uppercase tracking-tech text-onaccent transition-colors hover:bg-text"
                 >
                   {ti.retryMissed} ({missed.length})
                   <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
@@ -267,7 +268,7 @@ export default function InterviewTrack() {
                 type="button"
                 onClick={() => update(null)}
                 data-cursor="follow"
-                className="inline-flex items-center gap-3 border border-line-strong px-5 py-3 font-mono text-[11px] uppercase tracking-tech text-text transition-colors hover:border-accent hover:text-accent"
+                className="inline-flex items-center gap-3 border border-line-strong px-5 py-3 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors hover:border-accent hover:text-accent"
               >
                 {ti.again}
               </button>
@@ -345,7 +346,7 @@ export default function InterviewTrack() {
             href="#contact"
             onClick={goTo('contact')}
             data-cursor="follow"
-            className="group mt-6 inline-flex items-center gap-3 bg-accent px-5 py-3 font-mono text-[11px] uppercase tracking-tech text-onaccent transition-colors hover:bg-text"
+            className="group mt-6 inline-flex items-center gap-3 bg-accent px-5 py-3 font-mono text-[12.5px] uppercase tracking-tech text-onaccent transition-colors hover:bg-text"
           >
             {ti.ctaButton}
             <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
@@ -453,7 +454,7 @@ export default function InterviewTrack() {
               onClick={next}
               disabled={!answered}
               data-cursor="follow"
-              className="group inline-flex items-center gap-3 bg-accent px-5 py-3 font-mono text-[11px] uppercase tracking-tech text-onaccent transition-colors enabled:hover:bg-text disabled:opacity-30"
+              className="group inline-flex items-center gap-3 bg-accent px-5 py-3 font-mono text-[12.5px] uppercase tracking-tech text-onaccent transition-colors enabled:hover:bg-text disabled:opacity-30"
             >
               {last ? ti.finish : ti.next}
               <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
@@ -484,14 +485,14 @@ export default function InterviewTrack() {
               type="button"
               onClick={() => setRound(saved)}
               data-cursor="follow"
-              className="group inline-flex items-center gap-3 bg-accent px-4 py-2 font-mono text-[11px] uppercase tracking-tech text-onaccent hover:bg-text"
+              className="group inline-flex items-center gap-3 bg-accent px-4 py-2 font-mono text-[12.5px] uppercase tracking-tech text-onaccent hover:bg-text"
             >
               {ti.start} <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
             </button>
             <button
               type="button"
               onClick={() => update(null)}
-              className="border border-line px-4 py-2 font-mono text-[11px] uppercase tracking-tech text-muted hover:text-accent"
+              className="border border-line px-4 py-2 font-mono text-[12.5px] uppercase tracking-tech text-muted hover:text-accent"
             >
               {ti.discard}
             </button>
@@ -543,7 +544,7 @@ export default function InterviewTrack() {
                   disabled={!ids.length}
                   onClick={() => start(ids)}
                   data-cursor="follow"
-                  className="border border-line-strong px-4 py-2 font-mono text-[11px] uppercase tracking-tech text-text transition-colors hover:border-accent hover:text-accent disabled:opacity-30"
+                  className="border border-line-strong px-4 py-2 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors hover:border-accent hover:text-accent disabled:opacity-30"
                 >
                   {ti[l]} <span className="text-dim">· {ids.length}</span>
                 </button>
@@ -560,7 +561,7 @@ export default function InterviewTrack() {
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               aria-label={ti.modeTopic}
-              className="min-w-0 flex-1 border border-line-strong bg-bg px-3 py-2 font-mono text-[11px] uppercase tracking-tech text-text"
+              className="min-w-0 flex-1 border border-line-strong bg-bg px-3 py-2 font-mono text-[12.5px] uppercase tracking-tech text-text"
             >
               <option value="">{ti.allTopics}</option>
               {topics.map(([name, n]) => (
@@ -573,7 +574,7 @@ export default function InterviewTrack() {
               type="button"
               disabled={!topic}
               onClick={() => start(qs.filter((q) => q.area === topic).map((q) => q.id))}
-              className="group inline-flex items-center gap-3 bg-accent px-4 py-2 font-mono text-[11px] uppercase tracking-tech text-onaccent transition-colors enabled:hover:bg-text disabled:opacity-30"
+              className="group inline-flex items-center gap-3 bg-accent px-4 py-2 font-mono text-[12.5px] uppercase tracking-tech text-onaccent transition-colors enabled:hover:bg-text disabled:opacity-30"
             >
               {ti.start} <Arrow />
             </button>

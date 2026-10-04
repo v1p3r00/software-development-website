@@ -1,8 +1,12 @@
-import { useRef, useState } from 'react';
+import { memo, useLayoutEffect, useRef, useState } from 'react';
+import { useI18n } from '../../i18n';
+import CvSheet from './CvSheet';
+import { templateDefs, templateOf } from './templates';
+import type { TemplateGroup } from './templates';
 import { cx } from '../ui';
 import { ActionBtn, Check, Field, IconBtn, Segmented } from './form';
 import { Icons } from './icons';
-import { accents, allKinds, move, newSection, readPhoto, templates, uid } from './model';
+import { accents, allKinds, move, newSection, readPhoto, uid, withTemplate } from './model';
 import type { Cv, Design, Personal, Section, SectionKind, TemplateId } from './model';
 import type { CvText } from './text';
 
@@ -186,98 +190,83 @@ export function StructureStep({ cv, t, setCv, onEdit }: Props & { onEdit: (id: s
   );
 }
 
-/** a tiny schematic of each layout for the picker */
-function Thumb({ id, accent }: { id: TemplateId; accent: string }) {
-  const bar = (w: string, c = '#cfd4dc', h = 3) => <span className="block" style={{ width: w, height: h, background: c }} />;
-  const lines = (
-    <span className="flex flex-col gap-1">
-      {bar('90%')}
-      {bar('75%')}
-      {bar('82%')}
-    </span>
-  );
-  const ink = id === 'ats' ? '#2a2e36' : accent;
+/** the user's own CV in a given layout, shrunk to a thumbnail (first page only) */
+const ThumbSheet = memo(function ThumbSheet({ cv, id }: { cv: Cv; id: TemplateId }) {
+  const def = templateOf(id);
+  const shown = { ...cv, design: { ...cv.design, template: id, accent: def.accent ?? cv.design.accent } };
   return (
     <span className="relative block aspect-[210/297] w-full overflow-hidden bg-white shadow-sm" aria-hidden>
-      {id === 'modern' && (
-        <span className="absolute inset-0 grid grid-cols-[34%_1fr]">
-          <span className="flex flex-col gap-1.5 p-1.5" style={{ background: `color-mix(in srgb, ${accent} 12%, #fff)` }}>
-            <span className="block aspect-[4/5] w-full" style={{ background: '#d7dbe2' }} />
-            {bar('70%', accent, 2)}
-            {bar('90%')}
-            {bar('60%')}
-          </span>
-          <span className="flex flex-col gap-1.5 p-1.5">
-            {bar('80%', '#2a2e36', 5)}
-            {bar('50%', accent, 2)}
-            {lines}
-            {lines}
-          </span>
-        </span>
-      )}
-      {id === 'classic' && (
-        <span className="absolute inset-0 flex flex-col items-center gap-1.5 p-2">
-          {bar('60%', '#2a2e36', 4)}
-          {bar('40%', '#9aa3b2', 2)}
-          <span className="my-0.5 block h-px w-full bg-[#2a2e36]" />
-          <span className="flex w-full flex-col gap-1">{lines}{lines}{lines}</span>
-        </span>
-      )}
-      {id === 'technical' && (
-        <span className="absolute inset-0 flex flex-col gap-1.5 border-l-[4px] p-2" style={{ borderColor: accent }}>
-          {bar('85%', '#2a2e36', 7)}
-          {bar('45%', accent, 2)}
-          <span className="flex items-center gap-1">
-            <span className="block h-1.5 w-1.5" style={{ background: accent }} />
-            {bar('100%', '#e1e4ea', 1)}
-          </span>
-          {lines}
-          {lines}
-        </span>
-      )}
-      {id === 'ats' && (
-        <span className="absolute inset-0 flex flex-col gap-1.5 p-2">
-          {bar('55%', ink, 4)}
-          {bar('80%', '#9aa3b2', 2)}
-          {bar('100%', ink, 1)}
-          {lines}
-          {bar('100%', ink, 1)}
-          {lines}
-        </span>
-      )}
+      <span className="pointer-events-none absolute left-0 top-0 block origin-top-left" style={{ width: '210mm', transform: 'scale(var(--thumb-scale))' }}>
+        <CvSheet cv={shown} />
+      </span>
     </span>
   );
-}
+});
 
 export function DesignStep({ cv, t, setCv }: Props) {
   const d = cv.design;
+  const { lang } = useI18n();
+  const [group, setGroup] = useState<'all' | 'ats' | TemplateGroup>('all');
+  const grid = useRef<HTMLDivElement>(null);
+  const [thumbScale, setThumbScale] = useState(0.2);
+  useLayoutEffect(() => {
+    const el = grid.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      const cell = el.querySelector<HTMLElement>('[data-thumb]');
+      if (cell) setThumbScale(cell.clientWidth / ((210 * 96) / 25.4));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const list = templateDefs.filter((tp) => group === 'all' || (group === 'ats' ? tp.ats : tp.group === group));
+  const filters: Array<{ value: typeof group; label: string }> = [
+    { value: 'all', label: `${t.layoutsAll} · ${templateDefs.length}` },
+    { value: 'modern', label: t.layoutGroups.modern },
+    { value: 'creative', label: t.layoutGroups.creative },
+    { value: 'classic', label: t.layoutGroups.classic },
+    { value: 'ats', label: t.atsBadge },
+  ];
+  const plain = templateOf(d.template).id === 'ats' || templateOf(d.template).id === 'academic';
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-3">
-        <span className="label">{t.template}</span>
-        <div role="radiogroup" aria-label={t.template} className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {templates.map((id) => {
-            const on = d.template === id;
+        <Segmented label={t.template} value={group} options={filters} onChange={setGroup} />
+        <div
+          ref={grid}
+          role="radiogroup"
+          aria-label={t.template}
+          className="grid grid-cols-2 gap-3 sm:grid-cols-3"
+          style={{ '--thumb-scale': thumbScale } as React.CSSProperties}
+        >
+          {list.map((tp) => {
+            const on = d.template === tp.id;
             return (
               <button
-                key={id}
+                key={tp.id}
                 type="button"
                 role="radio"
                 aria-checked={on}
-                onClick={() => setDesign(setCv, { template: id })}
+                onClick={() => setCv((c) => withTemplate(c, tp.id))}
                 data-cursor="follow"
                 className={cx('group flex flex-col gap-2 border p-2 text-left transition-colors', on ? 'border-accent' : 'border-line hover:border-line-strong')}
               >
-                <Thumb id={id} accent={d.accent} />
-                <span className={cx('font-mono text-2xs uppercase tracking-tech', on ? 'text-accent' : 'text-text')}>{t.templates[id].name}</span>
-                <span className="text-[11px] leading-snug text-dim">{t.templates[id].text}</span>
+                <span data-thumb className="block transition-transform duration-300 group-hover:-translate-y-0.5">
+                  <ThumbSheet cv={cv} id={tp.id} />
+                </span>
+                <span className="flex items-center justify-between gap-2">
+                  <span className={cx('font-mono text-2xs uppercase tracking-tech', on ? 'text-accent' : 'text-text')}>{tp.name[lang]}</span>
+                  {tp.ats && <span className="border border-line px-1 font-mono text-[9px] uppercase tracking-tech text-dim">ATS</span>}
+                </span>
+                <span className="text-[11px] leading-snug text-dim">{tp.text[lang]}</span>
               </button>
             );
           })}
         </div>
       </div>
 
-      <div className={cx('flex flex-col gap-2', d.template === 'ats' && 'pointer-events-none opacity-40')}>
+      <div className={cx('flex flex-col gap-2', plain && 'pointer-events-none opacity-40')}>
         <span className="label">{t.accent}</span>
         <div className="flex flex-wrap items-center gap-2">
           {accents.map((c) => (
@@ -319,7 +308,7 @@ export function DesignStep({ cv, t, setCv }: Props) {
         ]}
         onChange={(v) => setDesign(setCv, { lang: v })}
       />
-      {d.template !== 'ats' && cv.personal.photo && (
+      {templateOf(d.template).photo && cv.personal.photo && (
         <Check label={t.showPhoto} checked={d.showPhoto} onChange={(v) => setDesign(setCv, { showPhoto: v })} />
       )}
     </div>

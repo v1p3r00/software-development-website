@@ -11,12 +11,19 @@ import { scrollToId } from '../components/cv/scroll';
 import { ContactStep, DesignStep, ExportStep, ProfileStep, StructureStep } from '../components/cv/Steps';
 import { ActionBtn, IconBtn } from '../components/cv/form';
 import { Icons } from '../components/cv/icons';
-import { blankCv, move, normalize, templates } from '../components/cv/model';
+import { blankCv, move, normalize, withTemplate } from '../components/cv/model';
+import type { TemplateId } from '../components/cv/model';
+import { templateDefs, templateIds } from '../components/cv/templates';
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/fraunces/wght-italic.css';
+import '@fontsource-variable/space-grotesk';
+import '@fontsource-variable/manrope';
 import type { Cv, Section as CvSection } from '../components/cv/model';
 import { exampleCv } from '../components/cv/examples';
 import { cvText } from '../components/cv/text';
 import { guides } from '../components/cv/guideContent';
 import '../components/cv/cv.css';
+import { scrollBehavior } from '../lib/motion';
 
 const STORE = 'dm.cv.v1';
 const EXAMPLE = 'dm.cv.example';
@@ -80,15 +87,20 @@ export default function CvMaker() {
     setStepKey(key);
     setView('edit');
     const top = editorTop.current?.getBoundingClientRect().top ?? 0;
-    if (top < 0) editorTop.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (top < 0) editorTop.current?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
   };
 
   // keep the active step chip visible in the scrolling row
   useEffect(() => {
-    chipRow.current?.querySelector<HTMLElement>('[aria-current="step"]')?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    chipRow.current?.querySelector<HTMLElement>('[aria-current="step"]')?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: scrollBehavior() });
   }, [stepKey]);
 
   const print = () => window.print();
+  const cycle = (delta: number) =>
+    setCv((c) => {
+      const i = templateIds.indexOf(c.design.template);
+      return withTemplate(c, templateIds[(i + delta + templateIds.length) % templateIds.length]);
+    });
   const confirmReplace = () => example || window.confirm(t.confirmReset);
   const loadExample = () => {
     if (!confirmReplace()) return;
@@ -114,7 +126,7 @@ export default function CvMaker() {
   const updateSection = (s: CvSection) => setCv((c) => ({ ...c, sections: c.sections.map((x) => (x.id === s.id ? s : x)) }));
   const sectionIndex = step.section ? cv.sections.findIndex((s) => s.id === step.section!.id) : -1;
   const tipKey = step.section ? step.section.kind : step.key;
-  const stepText = step.section ? t.kindHints[step.section.kind] : t.stepText[step.key as keyof typeof t.stepText];
+  const stepText = (step.section ? t.kindHints[step.section.kind] : t.stepText[step.key as keyof typeof t.stepText])?.replace('{n}', String(templateIds.length));
 
   let body: React.ReactNode;
   if (step.section) body = <SectionEditor key={step.section.id} section={step.section} t={t} onChange={updateSection} />;
@@ -149,7 +161,7 @@ export default function CvMaker() {
                   scrollToId('cv-guide');
                 }}
                 data-cursor="follow"
-                className="group flex items-center gap-2 font-mono text-[11px] uppercase tracking-tech text-text transition-colors hover:text-accent"
+                className="group flex items-center gap-2 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors hover:text-accent"
               >
                 {t.guideLink} <span className="transition-transform group-hover:translate-y-0.5">↓</span>
               </a>
@@ -189,7 +201,7 @@ export default function CvMaker() {
               onClick={() => setView(v)}
               aria-pressed={view === v}
               className={cx(
-                'relative py-3 font-mono text-[11px] uppercase tracking-tech transition-colors',
+                'relative py-3 font-mono text-[12.5px] uppercase tracking-tech transition-colors',
                 view === v ? 'text-text' : 'text-dim',
               )}
             >
@@ -305,23 +317,35 @@ export default function CvMaker() {
           <div className={cx('lg:col-span-6 xl:col-span-7', view === 'edit' && 'hidden lg:block')}>
             <div className="lg:sticky lg:top-24">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label={t.template}>
-                  {templates.map((id) => (
-                    <button
-                      key={id}
-                      type="button"
-                      role="radio"
-                      aria-checked={cv.design.template === id}
-                      onClick={() => setCv((c) => ({ ...c, design: { ...c.design, template: id } }))}
-                      data-cursor="follow"
-                      className={cx(
-                        'border px-2.5 py-1 font-mono text-2xs uppercase tracking-tech transition-colors',
-                        cv.design.template === id ? 'border-accent text-accent' : 'border-line text-dim hover:border-line-strong hover:text-text',
-                      )}
-                    >
-                      {t.templates[id].name}
-                    </button>
-                  ))}
+                <div className="flex min-w-0 flex-1 items-center gap-1.5">
+                  <IconBtn label={t.prevLayout} onClick={() => cycle(-1)}>
+                    <span className="inline-block -rotate-90">{Icons.up}</span>
+                  </IconBtn>
+                  <select
+                    aria-label={t.template}
+                    value={cv.design.template}
+                    onChange={(e) => setCv((c) => withTemplate(c, e.target.value as TemplateId))}
+                    className="h-8 min-w-0 max-w-[16rem] flex-1 border border-line bg-bg px-2 font-mono text-2xs uppercase tracking-tech text-text focus:border-accent focus:outline-none"
+                  >
+                    {(['modern', 'creative', 'classic'] as const).map((grp) => (
+                      <optgroup key={grp} label={t.layoutGroups[grp]}>
+                        {templateDefs
+                          .filter((tp) => tp.group === grp)
+                          .map((tp) => (
+                            <option key={tp.id} value={tp.id}>
+                              {tp.name[lang]}
+                              {tp.ats ? ' · ATS' : ''}
+                            </option>
+                          ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                  <IconBtn label={t.nextLayout} onClick={() => cycle(1)}>
+                    <span className="inline-block rotate-90">{Icons.up}</span>
+                  </IconBtn>
+                  <span className="label hidden whitespace-nowrap sm:inline">
+                    {String(templateIds.indexOf(cv.design.template) + 1).padStart(2, '0')} / {templateIds.length}
+                  </span>
                 </div>
                 <button
                   type="button"

@@ -9,6 +9,8 @@ export default function ScrollProgress() {
   const { t } = useI18n();
   const { pathname } = useLocation();
   const onHome = stripLang(pathname) === '/';
+  // a clearer reading-progress bar on articles and course lessons
+  const reading = /^\/(articles|course)\/[^/]+/.test(stripLang(pathname));
   const active = useActiveSection(site.sections, onHome);
   const progress = useScrollProgress();
   const labels: Record<string, string> = {
@@ -23,9 +25,9 @@ export default function ScrollProgress() {
   return (
     <>
       {/* thin top progress bar (all viewports) */}
-      <div aria-hidden className="fixed inset-x-0 top-0 z-50 h-px bg-line" style={{ viewTransitionName: 'scroll-bar' }}>
+      <div aria-hidden className={cx('fixed inset-x-0 top-0 z-[55] bg-line', reading ? 'h-[3px]' : 'h-px')} style={{ viewTransitionName: 'scroll-bar' }}>
         <div
-          className="h-px bg-accent transition-[width] duration-150 ease-linear"
+          className="h-full bg-accent transition-[width] duration-150 ease-linear"
           style={{ width: `${progress * 100}%` }}
         />
       </div>

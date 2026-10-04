@@ -1,0 +1,131 @@
+{
+  "title": "The testing pyramid",
+  "intro": "Automated tests give you confidence to change code without constantly wondering what you broke. In this lesson, you will learn how different types of tests fit together and why good tests focus on behaviour rather than implementation details.",
+  "body": "## Why write automated tests?\n\nAs your task manager grows, changing one part of the application can unexpectedly break another part. Automated tests give you a repeatable way to detect those regressions.\n\nA **regression** is a problem introduced when a change breaks behaviour that previously worked.\n\nTests give you confidence to change code. They also serve as executable documentation: a good test shows what the application is expected to do.\n\nWithout automated tests, you may need to manually click through the entire application after every change. That becomes slow and unreliable.\n\nWith tests, you can make a change and run a command such as:\n\n~~~shell\nmvn test\n~~~\n\nor:\n\n~~~shell\nnpm test\n~~~\n\nA useful test suite can catch problems before users do. That means fewer late-night production bugs and less time manually checking the same behaviour over and over.\n\nTests are not a guarantee that your software is correct. They are a tool for increasing confidence in the behaviour that you have chosen to verify.\n\n## The testing pyramid\n\nA common way to think about automated tests is the **testing pyramid**. The basic idea is that you should have many fast, focused tests at the bottom and fewer expensive tests at the top.\n\n~~~diagram\n{\"type\": \"layers\", \"pyramid\": true, \"title\": \"The testing pyramid\", \"layers\": [{\"label\": \"E2E\", \"sub\": \"few · slow · whole app\"}, {\"label\": \"Integration\", \"sub\": \"some · DB, HTTP, Spring\"}, {\"label\": \"Unit\", \"sub\": \"many · milliseconds · one class\", \"highlight\": true}]}\n~~~\n\n~~~widget test-pyramid\n~~~\n\n~~~text\n             /\\\\\n            /  \\\\\n           / E2E \\\\\n          /------\\\\\n         /Integration\\\\\n        /--------------\\\\\n       /   Unit tests   \\\\\n      /__________________\\\\\n~~~\n\nThe exact proportions are not a law. The pyramid is a useful mental model.\n\n### Unit tests\n\nA **unit test** checks a small piece of code in isolation. This might be a Java method, a TypeScript function, or a React component's logic.\n\nUnit tests are usually fast because they avoid unnecessary infrastructure such as databases and browsers.\n\nFor example, the task manager might have a function that calculates whether a task is overdue:\n\n~~~ts\nfunction isOverdue(dueDate, today) {\n  return dueDate < today;\n}\n~~~\n\nYou can test that logic with several small inputs without starting Spring Boot or PostgreSQL.\n\nBecause unit tests are fast, you can have many of them.\n\n### Integration tests\n\nAn **integration test** checks that multiple parts of the application work together.\n\nFor example, a Spring Boot integration test might verify that:\n\n~~~text\nHTTP request\n    ↓\nController\n    ↓\nService\n    ↓\nRepository\n    ↓\nDatabase\n~~~\n\nIntegration tests provide confidence that components communicate correctly. They are generally slower and require more setup than unit tests, so you normally have fewer of them than unit tests.\n\nFor database integration tests, Testcontainers can start real dependencies such as PostgreSQL in containers during testing. This gives you more realistic behaviour than replacing the database with a collection of mocks.\n\n### End-to-end tests\n\nAn **end-to-end test**, often called an E2E test, checks a complete user flow through the running application.\n\nFor example:\n\n~~~text\nOpen task manager\n    ↓\nLog in\n    ↓\nCreate task\n    ↓\nSee task in list\n    ↓\nEdit task\n    ↓\nDelete task\n~~~\n\nA browser automation tool such as Playwright can perform this kind of test.\n\nE2E tests are valuable because they test the system from the user's perspective. They are also slower and can fail for reasons unrelated to the application logic, such as timing or environment problems.\n\nThat is why a typical project has fewer E2E tests than unit tests.\n\n## The testing trophy for frontends\n\nThe testing pyramid is useful, but frontend testing is sometimes described with a **testing trophy** instead.\n\nThe trophy emphasizes having a strong middle layer of integration or component-level tests that exercise realistic user behaviour, rather than relying heavily on implementation-focused unit tests.\n\nFor React applications, this often means testing what users can see and do:\n\n~~~text\nrender component\n    ↓\nfind button by its visible name\n    ↓\nclick button\n    ↓\ncheck visible result\n~~~\n\nFor example, instead of testing that a specific internal state variable changes from `false` to `true`, test that clicking “Complete” causes the task to appear completed.\n\nThe important idea is not whether you literally use a pyramid or trophy. The goal is to put tests where they provide useful confidence without creating an unnecessarily slow or brittle test suite.\n\n## What should you test?\n\nTest **behaviour** that matters to users and the business.\n\nFor the task manager, useful tests include:\n\n- A user can create a task.\n- A user cannot update another user's private task.\n- An overdue task is identified correctly.\n- An invalid task cannot be saved.\n- An administrator can manage users.\n- Logging out removes access to protected features.\n\nThese tests describe what the application should do.\n\nYou generally should not test implementation details that users cannot observe.\n\nFor example, suppose a React component changes from:\n\n~~~tsx\nconst [open, setOpen] = useState(false);\n~~~\n\nto a reducer-based implementation.\n\nA good behaviour test should still pass if the visible behaviour remains unchanged.\n\n### Behaviour over implementation\n\nConsider a task editor with a Save button.\n\nA fragile test might assert:\n\n~~~text\nstate.isSaving === true\nsetIsSaving was called once\nhandleSave called with these exact internal arguments\n~~~\n\nA behaviour-focused test might instead assert:\n\n~~~text\nClick Save\n    ↓\nThe task is saved\n    ↓\nThe user sees “Task saved”\n~~~\n\nThe second test is more resilient because it describes the outcome rather than the internal mechanism.\n\n## Arrange, Act, Assert\n\nA simple structure makes tests easier to read. It is called **Arrange–Act–Assert**, or AAA.\n\n~~~compare\n{\"left\": {\"title\": \"Everything mixed\", \"lang\": \"java\", \"code\": \"@Test void test1() {\\n  var c = new Cart();\\n  assertEquals(0, c.total());\\n  c.add(new Item(\\\"A\\\", 10));\\n  assertEquals(10, c.total());\\n  c.clear(); assertTrue(c.isEmpty());\\n}\", \"note\": \"Three behaviours, one vague name.\"}, \"right\": {\"title\": \"Arrange · Act · Assert\", \"lang\": \"java\", \"code\": \"@Test void addingAnItemIncreasesTheTotal() {\\n  var cart = new Cart();              // Arrange\\n  cart.add(new Item(\\\"A\\\", 10));        // Act\\n  assertThat(cart.total()).isEqualTo(10); // Assert\\n}\", \"note\": \"One reason to fail, readable as a sentence.\"}}\n~~~\n\n### Arrange\n\nSet up the data and conditions required by the test.\n\n~~~ts\nconst task = { completed: false };\n~~~\n\n### Act\n\nPerform the action you are testing.\n\n~~~ts\ntask.completed = true;\n~~~\n\n### Assert\n\nVerify the expected result.\n\n~~~ts\nexpect(task.completed).toBe(true);\n~~~\n\nA complete test might look like:\n\n~~~ts\ntest(\"completes a task\", () => {\n  const task = { completed: false };\n\n  task.completed = true;\n\n  expect(task.completed).toBe(true);\n});\n~~~\n\nAAA is not a requirement that every test must have exactly three visibly separated blocks. It is a useful way to keep the test's purpose clear.\n\n## One reason to fail\n\nA test should have a clear purpose.\n\nCompare:\n\n~~~text\ntest(\"task page works\", ...)\n~~~\n\nwith:\n\n~~~text\ntest(\"shows the task title after loading it\", ...)\n~~~\n\nThe second name tells you exactly what behaviour failed.\n\nWhen a test fails, you should quickly understand what the application was expected to do.\n\nA test that verifies ten unrelated behaviours can be difficult to diagnose. Prefer focused tests with clear names.\n\nGood names often describe a condition and expected result:\n\n~~~text\nreturns 403 when a user edits another user's task\nshows validation error when the title is empty\ncreates a task when valid data is submitted\n~~~\n\n## Test doubles\n\nSometimes a test needs a replacement for a real dependency. These replacements are called **test doubles**.\n\n~~~terms\n[{\"term\": \"Stub\", \"def\": \"Returns canned answers: `when(repo.findById(1)).thenReturn(task)`.\"}, {\"term\": \"Mock\", \"def\": \"Records calls so you can verify them: `verify(mailer).send(…)`.\"}, {\"term\": \"Fake\", \"def\": \"A lightweight working version, e.g. an in-memory repository.\"}, {\"term\": \"Spy\", \"def\": \"A real object that also records how it was used.\"}]\n~~~\n\nA **stub** provides predefined responses. For example, a fake weather service might always return a known temperature.\n\nA **mock** is a test double that also lets you verify interactions, such as whether a particular method was called.\n\nA **fake** is a lightweight working implementation used instead of the real dependency. An in-memory repository is a common example.\n\nIn plain words:\n\n~~~text\nStub  -> “Here is the answer you need.”\nMock  -> “Here is the answer, and I will record how you used me.”\nFake  -> “I behave roughly like the real thing, but more simply.”\n~~~\n\nTest doubles are useful, but excessive mocking can produce tests that only verify that your code called other code in the expected way.\n\nFor example, a unit test with five mocks may pass even though the real components cannot communicate correctly. Integration tests provide a useful counterbalance.\n\n## Flaky tests\n\nA **flaky test** sometimes passes and sometimes fails even though the code has not changed.\n\nFlaky tests destroy confidence because developers start ignoring failures.\n\nCommon causes include:\n\n- Relying on exact timing.\n- Tests depending on execution order.\n- Shared mutable state.\n- Real external services.\n- Random data without controlled seeds.\n- Race conditions.\n- Assuming a specific database ordering without `ORDER BY`.\n\n### Bad example\n\n~~~ts\nawait new Promise(resolve => setTimeout(resolve, 100));\nexpect(screen.getByText(\"Saved\")).toBeTruthy();\n~~~\n\nA fixed delay does not guarantee that the operation will finish within that time.\n\n### Better approach\n\nWait for the actual condition or event you need. Testing libraries provide asynchronous waiting mechanisms for this purpose.\n\nAlso make tests independent. Each test should create the state it needs rather than relying on a previous test to prepare it.\n\n## Running tests in CI\n\nTests become much more valuable when they run automatically.\n\n**CI**, or Continuous Integration, is an automated process that builds and tests code when changes are pushed or submitted for review.\n\nA typical workflow is:\n\n~~~text\nDeveloper changes code\n        ↓\nGit push\n        ↓\nCI starts\n        ↓\nInstall dependencies\n        ↓\nBuild application\n        ↓\nRun tests\n        ↓\nPass -> continue\nFail -> report failure\n~~~\n\nRunning tests on every push means a broken change can be detected before it reaches production.\n\nYour Spring Boot project might run:\n\n~~~shell\nmvn test\n~~~\n\nA frontend project might run something such as:\n\n~~~shell\nnpm test\n~~~\n\nThe exact CI platform is less important than the principle: the same automated checks should run consistently for changes made by every developer.\n\n## Coverage is a hint, not a goal\n\n**Code coverage** measures how much of your code was executed while tests ran. A common metric is line coverage: what percentage of executable lines were reached by tests?\n\nCoverage can be useful. If a critical service has almost no coverage, that is a signal worth investigating.\n\nBut 100% coverage does not mean 100% security or correctness.\n\nThis code could have very high coverage:\n\n~~~ts\nfunction deleteTask() {\n  database.deleteEverything();\n}\n~~~\n\nA test could execute the line without verifying that the right records were deleted.\n\nCoverage tells you where tests executed code. It does not tell you whether the tests assert meaningful behaviour.\n\nA better goal is **useful coverage of important behaviour**.\n\n## Common mistakes\n\n### Testing implementation details\n\nTests coupled to internal variable names, component state, or private methods can break during harmless refactoring. Prefer observable behaviour.\n\n### Making every test an E2E test\n\nE2E tests are valuable but slower and often more fragile. Use fast unit tests and integration tests for most of your coverage, then add E2E tests for important complete user journeys.\n\n### Ignoring flaky tests\n\nA test that randomly fails is not harmless. Fix the cause, such as timing, shared state, ordering, or uncontrolled external dependencies.\n\n### Depending on test order\n\nEvery test should create the state it needs and clean up after itself. A test should not pass only because another test happened to run first.\n\n### Chasing 100% coverage\n\nCoverage is a measurement that can reveal gaps. It is not the purpose of testing. A smaller suite with strong behavioural assertions can be more valuable than a huge suite that executes code without checking meaningful outcomes.\n\n## A practical testing strategy\n\nFor the task manager, a balanced strategy might look like this:\n\n~~~text\nMany unit tests\n- validation rules\n- date calculations\n- authorization helpers\n- business logic\n\nFewer integration tests\n- controller + service + database\n- authentication flows\n- repository behaviour\n\nA few E2E tests\n- login\n- create task\n- complete task\n- important admin flow\n~~~\n\nFor the React frontend, add component and integration-style tests around important user interactions, while keeping a smaller number of full browser tests for critical journeys.\n\nThe goal is not to create as many tests as possible. The goal is to create a test suite that gives you useful confidence when the code changes.\n\nA good test suite should make you more willing to refactor, not more afraid to touch the code.",
+  "takeaways": [
+    "Automated tests provide confidence to change code and act as executable documentation for expected behaviour.",
+    "The testing pyramid favours many fast unit tests, fewer integration tests, and a small number of end-to-end tests.",
+    "Good tests verify observable behaviour rather than fragile implementation details.",
+    "Flaky tests and excessive mocking reduce confidence, so tests should be independent, deterministic, and focused.",
+    "Coverage is useful for finding gaps, but meaningful behavioural assertions matter more than achieving a particular percentage."
+  ],
+  "quiz": [
+    {
+      "question": "Why are unit tests usually found at the bottom of the testing pyramid?",
+      "options": [
+        "They require a real production browser",
+        "They are usually fast and focused, so a project can have many of them",
+        "They always test the entire application",
+        "They can only be written after E2E tests"
+      ],
+      "answer": 1,
+      "explanation": "Unit tests normally test small pieces of logic in isolation and therefore run quickly. Their low cost makes it practical to have many of them."
+    },
+    {
+      "question": "What should a good behaviour-focused test primarily verify?",
+      "options": [
+        "The exact names of internal variables",
+        "The number of private helper methods",
+        "What the application does from the user's or business perspective",
+        "The exact order of every internal function call"
+      ],
+      "answer": 2,
+      "explanation": "Behaviour-focused tests verify meaningful outcomes rather than implementation details. This makes them more resilient when the internal implementation changes."
+    },
+    {
+      "question": "What does Arrange–Act–Assert describe?",
+      "options": [
+        "A common structure for setting up a test, performing the action, and checking the result",
+        "A Maven dependency-management process",
+        "A browser security mechanism",
+        "A database indexing strategy"
+      ],
+      "answer": 0,
+      "explanation": "Arrange–Act–Assert is a simple structure that separates test setup, the action being tested, and the expected result."
+    },
+    {
+      "question": "What is a flaky test?",
+      "options": [
+        "A test that always fails because the implementation is incomplete",
+        "A test that only checks code coverage",
+        "A test that requires TypeScript",
+        "A test that sometimes passes and sometimes fails without a relevant code change"
+      ],
+      "answer": 3,
+      "explanation": "Flaky tests are nondeterministic. Timing, shared state, race conditions, external services, and other environmental factors can cause them to pass or fail unpredictably."
+    },
+    {
+      "question": "Why is 100% code coverage not a sufficient testing goal?",
+      "options": [
+        "Coverage tools cannot execute JavaScript",
+        "Code can be executed by tests without the tests actually verifying meaningful behaviour",
+        "Coverage always makes tests slower than E2E tests",
+        "Coverage prevents integration testing"
+      ],
+      "answer": 1,
+      "explanation": "Coverage measures which code was executed, not whether the tests made useful assertions about the application's behaviour."
+    }
+  ],
+  "exercise": {
+    "title": "Build a tiny test framework",
+    "task": "Build a tiny testing framework to understand what tools such as Jest, Vitest, and JUnit do under the hood. Write `test(name, fn)` to register a test. Write `expect(actual)` returning an object with three matchers: `toBe(expected)`, which compares values using `Object.is`; `toEqual(expected)`, which performs deep equality for plain objects, arrays, and primitives; and `toThrow()`, which expects `actual` to be a function that throws when called. Every failing matcher must throw an `Error` with a helpful message. Write `run()` as an async function that runs all registered tests in registration order. Each test function may be synchronous or asynchronous. The runner must record `{ name, passed: boolean, error?: string }` for every test, continue running after a failure, clear the test registry after the run, and resolve to the complete report array. The tests for this exercise register their own tests through your API and then inspect the result returned by `run()`.",
+    "kind": "js",
+    "starter": "const tests = [];\n\nfunction test(name, fn) {\n  // TODO\n}\n\nfunction expect(actual) {\n  // TODO\n}\n\nasync function run() {\n  // TODO\n  return [];\n}",
+    "solution": "const tests = [];\n\nfunction test(name, fn) {\n  tests.push({ name, fn });\n}\n\nfunction deepEqual(a, b) {\n  if (Object.is(a, b)) {\n    return true;\n  }\n\n  if (typeof a !== \"object\" || a === null || typeof b !== \"object\" || b === null) {\n    return false;\n  }\n\n  if (Array.isArray(a) !== Array.isArray(b)) {\n    return false;\n  }\n\n  const aKeys = Object.keys(a);\n  const bKeys = Object.keys(b);\n\n  if (aKeys.length !== bKeys.length) {\n    return false;\n  }\n\n  for (const key of aKeys) {\n    if (!Object.prototype.hasOwnProperty.call(b, key)) {\n      return false;\n    }\n\n    if (!deepEqual(a[key], b[key])) {\n      return false;\n    }\n  }\n\n  return true;\n}\n\nfunction expect(actual) {\n  return {\n    toBe(expected) {\n      if (!Object.is(actual, expected)) {\n        throw new Error(`Expected ${JSON.stringify(actual)} to be ${JSON.stringify(expected)}`);\n      }\n    },\n\n    toEqual(expected) {\n      if (!deepEqual(actual, expected)) {\n        throw new Error(`Expected ${JSON.stringify(actual)} to equal ${JSON.stringify(expected)}`);\n      }\n    },\n\n    toThrow() {\n      if (typeof actual !== \"function\") {\n        throw new Error(\"Expected a function to throw\");\n      }\n\n      let threw = false;\n\n      try {\n        actual();\n      } catch {\n        threw = true;\n      }\n\n      if (!threw) {\n        throw new Error(\"Expected function to throw\");\n      }\n    }\n  };\n}\n\nasync function run() {\n  const registered = tests.splice(0, tests.length);\n  const results = [];\n\n  for (const current of registered) {\n    try {\n      await current.fn();\n      results.push({ name: current.name, passed: true });\n    } catch (error) {\n      results.push({\n        name: current.name,\n        passed: false,\n        error: error instanceof Error ? error.message : String(error)\n      });\n    }\n  }\n\n  return results;\n}",
+    "hint": "Keep the registered tests in an array. The runner can remove all registered tests at the start with `splice`, then await each test function in order inside a try/catch. For `toEqual`, recursively compare arrays and plain objects while handling primitives with `Object.is`.",
+    "tests": [
+      {
+        "name": "It registers and runs a passing test",
+        "code": "test(\"addition works\", () => { expect(2 + 2).toBe(4); }); const report = await run(); return report.length === 1 && report[0].name === \"addition works\" && report[0].passed === true && !Object.prototype.hasOwnProperty.call(report[0], \"error\");"
+      },
+      {
+        "name": "It reports a failing matcher",
+        "code": "test(\"wrong value\", () => { expect(2).toBe(3); }); const report = await run(); return report.length === 1 && report[0].passed === false && typeof report[0].error === \"string\" && report[0].error.length > 0;"
+      },
+      {
+        "name": "It runs tests in registration order",
+        "code": "const order = []; test(\"first\", () => { order.push(\"first\"); }); test(\"second\", () => { order.push(\"second\"); }); test(\"third\", () => { order.push(\"third\"); }); const report = await run(); return order.join(\",\") === \"first,second,third\" && report.map(item => item.name).join(\",\") === \"first,second,third\";"
+      },
+      {
+        "name": "It continues after a failed test",
+        "code": "test(\"fails\", () => { throw new Error(\"boom\"); }); test(\"still runs\", () => { expect(true).toBe(true); }); const report = await run(); return report.length === 2 && report[0].passed === false && report[1].passed === true;"
+      },
+      {
+        "name": "It supports asynchronous tests",
+        "code": "test(\"async test\", async () => { await new Promise(resolve => setTimeout(resolve, 5)); expect(\"done\").toBe(\"done\"); }); const report = await run(); return report.length === 1 && report[0].passed === true;"
+      },
+      {
+        "name": "It uses Object.is for toBe",
+        "code": "test(\"object identity\", () => { const value = {}; expect(value).toBe(value); }); const report = await run(); return report[0].passed === true;"
+      },
+      {
+        "name": "It performs deep equality for objects",
+        "code": "test(\"objects are deeply equal\", () => { expect({ name: \"Anna\", task: { done: false } }).toEqual({ name: \"Anna\", task: { done: false } }); }); const report = await run(); return report[0].passed === true;"
+      },
+      {
+        "name": "It performs deep equality for arrays",
+        "code": "test(\"arrays are deeply equal\", () => { expect([1, { done: true }, 3]).toEqual([1, { done: true }, 3]); }); const report = await run(); return report[0].passed === true;"
+      },
+      {
+        "name": "It detects a failed deep equality check",
+        "code": "test(\"objects differ\", () => { expect({ id: 1 }).toEqual({ id: 2 }); }); const report = await run(); return report[0].passed === false && typeof report[0].error === \"string\";"
+      },
+      {
+        "name": "It detects a throwing function",
+        "code": "test(\"function throws\", () => { expect(() => { throw new Error(\"bad input\"); }).toThrow(); }); const report = await run(); return report[0].passed === true;"
+      },
+      {
+        "name": "It fails toThrow when the function does not throw",
+        "code": "test(\"function does not throw\", () => { expect(() => 123).toThrow(); }); const report = await run(); return report[0].passed === false && typeof report[0].error === \"string\";"
+      },
+      {
+        "name": "It rejects toThrow on a non-function",
+        "code": "test(\"value is not a function\", () => { expect(123).toThrow(); }); const report = await run(); return report[0].passed === false && typeof report[0].error === \"string\";"
+      },
+      {
+        "name": "It clears the registry after running",
+        "code": "test(\"temporary test\", () => {}); const first = await run(); const second = await run(); return first.length === 1 && second.length === 0;"
+      }
+    ]
+  }
+}

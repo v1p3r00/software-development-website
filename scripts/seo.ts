@@ -20,6 +20,7 @@ import { localePath } from '../src/i18n/paths.ts';
 import { articlePath, isoDate, isPublished, parseArticle } from '../src/content/frontmatter.ts';
 import { clip, siteGraph } from '../src/lib/seo-shared.ts';
 import { tracks } from '../src/data/interview/tracks.ts';
+import { modules as courseModules } from '../src/data/courseSyllabus.ts';
 
 type Lang = 'en' | 'hu';
 
@@ -83,6 +84,7 @@ function headTags(page: Page) {
     `<meta name="twitter:description" content="${esc(page.description)}" />`,
     `<meta name="twitter:image" content="${image}" />`,
     `<script type="application/ld+json" id="site-jsonld">${ld(siteGraph())}</script>`,
+    `<link rel="alternate" type="application/rss+xml" title="${esc(site.name)} — ${page.lang === 'hu' ? 'Cikkek' : 'Articles'}" href="${site.url}${page.lang === 'hu' ? '/hu/feed.xml' : '/feed.xml'}" />`,
   ];
   if (page.jsonLd) {
     tags.push(`<script type="application/ld+json" id="page-jsonld">${ld(page.jsonLd)}</script>`);
@@ -156,6 +158,25 @@ function pages(root: string): Page[] {
     });
 
     list.push({ path: at('/interview/'), lang, alternates: both('/interview/'), title: t.seo.interviewTitle, description: t.seo.interviewDescription });
+    list.push({ path: at('/course/'), lang, alternates: both('/course/'), title: t.seo.courseTitle, description: t.seo.courseDescription });
+    for (const lesson of courseModules.flatMap((m) => m.lessons)) {
+      // a page for every lesson that has content in this language
+      const file = path.join(root, `src/content/course/${lesson.slug}.${lang}.json`);
+      if (!fs.existsSync(file)) continue;
+      const content = JSON.parse(fs.readFileSync(file, 'utf8')) as { intro: string };
+      const bare = `/course/${lesson.slug}/`;
+      list.push({
+        path: at(bare),
+        lang,
+        alternates: {
+          en: fs.existsSync(path.join(root, `src/content/course/${lesson.slug}.en.json`)) ? bare : undefined,
+          hu: fs.existsSync(path.join(root, `src/content/course/${lesson.slug}.hu.json`)) ? localePath(bare, 'hu') : undefined,
+        },
+        title: `${lesson.title[lang]} — ${t.seo.courseTitle.split(':')[0]} | ${site.name}`,
+        description: clip(content.intro),
+        type: 'article',
+      });
+    }
     list.push({ path: at('/cv-maker/'), lang, alternates: both('/cv-maker/'), title: t.seo.cvTitle, description: t.seo.cvDescription });
     for (const tr of tracks) {
       // only tracks whose question set is in the build
@@ -216,6 +237,9 @@ function pages(root: string): Page[] {
   return list;
 }
 
+/** Budapest local time → RFC 822 (CET is close enough for a feed's ordering) */
+const rssDate = (iso: string) => new Date(iso.length === 10 ? `${iso}T12:00:00+01:00` : `${iso}+01:00`).toUTCString();
+
 export function seoPages(): Plugin {
   let root = process.cwd();
   let outDir = 'dist';
@@ -260,6 +284,35 @@ export function seoPages(): Plugin {
         path.join(outDir, 'sitemap.xml'),
         `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`,
       );
+      // RSS feeds of the published articles, one per language
+      const published = readArticles(root)
+        .filter((a) => isPublished(articleDate(a)))
+        .sort((a, b) => articleDate(b).localeCompare(articleDate(a)))
+        .slice(0, 40);
+      for (const lang of ['en', 'hu'] as const) {
+        const items = published
+          .map((a) => {
+            const v = a.versions[lang] ?? a.versions.en ?? a.versions.hu;
+            const link = `${site.url}${lang === 'hu' ? localePath(`/articles/${a.slug}/`, 'hu') : `/articles/${a.slug}/`}`;
+            return [
+              '    <item>',
+              `      <title>${esc(v.meta.title)}</title>`,
+              `      <link>${link}</link>`,
+              `      <guid isPermaLink="true">${link}</guid>`,
+              `      <pubDate>${rssDate(isoDate(v.meta.date))}</pubDate>`,
+              `      <description>${esc(v.meta.description)}</description>`,
+              ...v.meta.tags.map((tag) => `      <category>${esc(tag)}</category>`),
+              '    </item>',
+            ].join('\n');
+          })
+          .join('\n');
+        const self = `${site.url}${lang === 'hu' ? '/hu/feed.xml' : '/feed.xml'}`;
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n  <channel>\n    <title>${esc(site.name)} — ${lang === 'hu' ? 'Cikkek' : 'Articles'}</title>\n    <link>${site.url}${lang === 'hu' ? '/hu/articles/' : '/articles/'}</link>\n    <atom:link href="${self}" rel="self" type="application/rss+xml" />\n    <description>${esc(lang === 'hu' ? hu.seo.articlesDescription : en.seo.articlesDescription)}</description>\n    <language>${lang === 'hu' ? 'hu-HU' : 'en-GB'}</language>\n${items}\n  </channel>\n</rss>\n`;
+        const file = path.join(outDir, lang === 'hu' ? 'hu' : '', 'feed.xml');
+        fs.mkdirSync(path.dirname(file), { recursive: true });
+        fs.writeFileSync(file, xml);
+      }
+
       fs.writeFileSync(
         path.join(outDir, 'robots.txt'),
         `User-agent: *\nAllow: /\n\nSitemap: ${site.url}/sitemap.xml\n`,

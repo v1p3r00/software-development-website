@@ -1,0 +1,123 @@
+{
+  "title": "Authentication vs authorization",
+  "intro": "Authentication answers “Who are you?”, while authorization answers “What are you allowed to do?”. In this lesson, you will connect those two ideas to the task manager and learn why security checks must ultimately happen on the backend.",
+  "body": "## Authentication and authorization are different problems\n\nWhen you log in to the task manager, two security questions immediately appear. First: **who is this person?** Second: **what is this person allowed to do?**\n\n~~~diagram\n{\"type\": \"flow\", \"title\": \"Two separate questions\", \"nodes\": [{\"id\": \"r\", \"label\": \"Request\", \"sub\": \"DELETE /api/tickets/7\", \"kind\": \"client\"}, {\"id\": \"an\", \"label\": \"Authentication\", \"sub\": \"Who are you?\", \"highlight\": true}, {\"id\": \"az\", \"label\": \"Authorization\", \"sub\": \"May you do this?\", \"highlight\": true}, {\"id\": \"ok\", \"label\": \"Handler runs\", \"kind\": \"server\"}, {\"id\": \"e401\", \"label\": \"401 Unauthorized\", \"sub\": \"no / bad credentials\"}, {\"id\": \"e403\", \"label\": \"403 Forbidden\", \"sub\": \"known, but not allowed\"}], \"edges\": [{\"from\": \"r\", \"to\": \"an\"}, {\"from\": \"an\", \"to\": \"az\", \"label\": \"identity\"}, {\"from\": \"az\", \"to\": \"ok\", \"label\": \"allowed\"}, {\"from\": \"an\", \"to\": \"e401\", \"dashed\": true}, {\"from\": \"az\", \"to\": \"e403\", \"dashed\": true}]}\n~~~\n\nAuthentication, often shortened to **authn**, is the process of establishing identity. A login with an email address and password is an authentication mechanism: the server verifies that the person knows the correct credentials.\n\nAuthorization, often shortened to **authz**, happens after that. It decides what an authenticated user may access or change.\n\nFor example, imagine two users:\n\n~~~text\nAlice logs in successfully.\nAuthentication: Alice is user 42.\nAuthorization: Alice may update her own tasks, but not Bob's private tasks.\n~~~\n\nA useful rule to remember is:\n\n> Authentication tells you who someone is. Authorization decides what that identity can do.\n\nThese concepts are related, but they should not be mixed together. A user being successfully logged in does not mean they should be allowed to perform every operation.\n\n## Passwords done right\n\nYour application should **never store plain-text passwords**. If a database contains passwords such as `secret123`, anyone who obtains a database backup or gains database access can immediately use those passwords.\n\n~~~compare\n{\"left\": {\"title\": \"Never\", \"lang\": \"text\", \"code\": \"password      → stored as is\\nsha256(pass)  → fast to brute-force\", \"note\": \"A leaked table gives attackers every password.\"}, \"right\": {\"title\": \"Always\", \"lang\": \"text\", \"code\": \"BCrypt / Argon2id\\n$2a$12$Wq…  (salt + slow hash)\", \"note\": \"Unique salt per user and a deliberately slow algorithm.\"}}\n~~~\n\nInstead, applications store a **password hash**. Hashing transforms a password into a value that is designed to be difficult to reverse.\n\nFor password storage, algorithms such as **BCrypt** and **Argon2** are designed specifically for this job. They are intentionally expensive to calculate, which makes large-scale password guessing more difficult.\n\nA **salt** is an additional random value used when creating a password hash. The salt makes identical passwords produce different stored hashes. This prevents an attacker from easily recognizing that two accounts use the same password.\n\nYou normally do not need to implement the algorithm yourself. Spring Security provides password-hashing support that your application can configure and use.\n\nThe simplified flow looks like this:\n\n~~~text\nRegistration:\npassword + random salt -> password hash -> database\n\nLogin:\nsubmitted password + stored salt -> calculated hash\ncalculated hash == stored hash -> authentication succeeds\n~~~\n\nThe database should therefore contain something resembling a password hash, not the original password.\n\nPassword hashing is different from encryption. Encryption is designed so that authorized software can decrypt the original data. Password hashing is intended to make recovering the original password impractical.\n\n## Sessions, cookies, and tokens\n\nAfter authentication succeeds, your application needs a way to recognize subsequent requests.\n\n~~~compare\n{\"left\": {\"title\": \"Session cookie\", \"lang\": \"text\", \"code\": \"Set-Cookie: SESSION=8f2c…;\\n  HttpOnly; Secure; SameSite=Lax\", \"note\": \"Server keeps the state; easy to revoke; needs CSRF care.\"}, \"right\": {\"title\": \"Bearer token (JWT)\", \"lang\": \"text\", \"code\": \"Authorization: Bearer eyJhbGciOi…\", \"note\": \"Stateless and easy for APIs; harder to revoke, so keep it short-lived.\"}}\n~~~\n\nOne common approach is a **session**. The server creates a session associated with the authenticated user. The browser receives a session identifier, commonly stored in a cookie, and sends that cookie with later requests.\n\n~~~text\nBrowser -> POST /login -> Server\nBrowser <- session cookie <- Server\n\nBrowser -> GET /api/tasks + cookie -> Server\nServer -> identifies the session -> knows the user\n~~~\n\nA **cookie** is browser-managed data that can automatically be sent with requests to the appropriate server. Cookies are not themselves authentication; they are one mechanism for carrying information such as a session identifier.\n\nAnother approach is a **token**. The server gives the client a token that represents an authenticated identity. The client then sends the token with subsequent requests, often using an HTTP `Authorization` header.\n\nA common token format is JWT, or JSON Web Token. You will work with JWT authentication in lesson 7.2.\n\nNeither approach is automatically “more secure”. The security depends on how credentials are created, stored, transmitted, expired, revoked, and validated.\n\nFor browser applications, cookies can be configured with security properties such as `HttpOnly`, `Secure`, and an appropriate `SameSite` policy. An `HttpOnly` cookie cannot be read by normal JavaScript, which can reduce the impact of some cross-site scripting attacks.\n\n## Roles versus permissions\n\nA **role** is a broad category assigned to a user. Our task manager might have:\n\n~~~text\nUSER\nADMIN\n~~~\n\nA role can be useful for coarse-grained rules. For example, an administrator might be allowed to delete any task.\n\nA **permission** is a more specific capability, such as `TASK_DELETE` or `USER_MANAGE`.\n\nRoles and permissions are not competing concepts. A role can represent a collection of permissions:\n\n~~~text\nADMIN\n  -> TASK_READ\n  -> TASK_UPDATE\n  -> TASK_DELETE\n  -> USER_MANAGE\n\nUSER\n  -> TASK_READ\n  -> TASK_UPDATE_OWN\n  -> TASK_DELETE_OWN\n~~~\n\nFor a small application, simple roles may be enough. As an application grows, explicit permissions can make authorization rules easier to manage.\n\n## Ownership rules\n\nNot every authorization rule can be expressed with a role.\n\nSuppose Alice and Bob are both normal `USER`s. Alice should be able to edit her own task, but she should not be able to edit Bob's task.\n\nThis is an **ownership rule**. The server compares the authenticated user's ID with the task's owner ID.\n\n~~~text\nuser.id == task.ownerId\n~~~\n\nThe task manager can therefore use rules such as:\n\n- An administrator may read, update, or delete any task.\n- A normal user may read, update, or delete their own task.\n- A normal user may read another user's task when it is shared.\n- A normal user may not update or delete another user's task merely because it is shared.\n\nThis distinction is important because authorization is often about more than “does this user have the USER role?”. You may need the authenticated identity, the requested operation, and the resource being accessed.\n\n## Least privilege\n\nThe **principle of least privilege** means giving a user, service, or component only the access it needs to perform its job.\n\nFor example, a normal task-management user does not need permission to delete every account in the system. A reporting service may only need read access to selected data. An administrator may need broader access, but even administrative access should be intentional.\n\nLeast privilege limits the damage caused by mistakes, compromised accounts, and vulnerable components.\n\nWhen designing an authorization rule, ask:\n\n~~~text\nWhat does this user actually need to do?\nWhat is the smallest permission that allows it?\n~~~\n\n## Where security checks belong\n\nThe most important implementation rule is this: **authorization must be enforced by the backend**.\n\nIn our Spring Boot application, every protected request must be checked by the server. The frontend can help create a good user experience, but it cannot be trusted as the security boundary.\n\nFor example, React might hide an “Delete task” button from normal users:\n\n~~~tsx\n{user.roles.includes(\"ADMIN\") && <button>Delete</button>}\n~~~\n\nThat is useful for the interface, but it is **not security**.\n\nA malicious user can open browser developer tools and make their own HTTP request to:\n\n~~~text\nDELETE /api/tasks/123\n~~~\n\nThe backend must independently determine whether that request is allowed. The server must validate the authenticated user, the requested operation, and any ownership or permission rules on every protected request.\n\nNever rely on “the button is hidden” or “the React route is inaccessible”. The client is controlled by the user.\n\nA good architecture is:\n\n~~~text\nReact\n  -> sends request\nSpring Security / backend authorization\n  -> verifies identity and permissions\nApplication service\n  -> checks resource-specific rules\nDatabase\n  -> stores data\n~~~\n\nThis is particularly important for REST APIs because clients can be replaced completely. Your API should remain secure even if someone writes their own client instead of using your React application.\n\n## 401 vs 403\n\nHTTP provides useful status codes for authorization failures.\n\n**401 Unauthorized** means the request does not have valid authentication credentials. In practice, think: “You have not successfully authenticated.”\n\n**403 Forbidden** means the server knows who the user is, but that user is not allowed to perform the requested operation.\n\nFor example:\n\n~~~text\nNo login/session/token -> 401\nLogged in as USER, trying to delete someone else's task -> 403\nLogged in as ADMIN, allowed to delete it -> 200 or another successful response\n~~~\n\nThe distinction helps clients respond appropriately. A frontend might redirect an unauthenticated user to the login page after a `401`, while a `403` can display an access-denied message.\n\n## MFA and password reset\n\nA password is only one authentication factor. **Multi-factor authentication (MFA)** requires an additional factor, such as a time-based code from an authenticator application or a hardware security key.\n\nThe idea is simple: if an attacker obtains your password, they still need another factor.\n\nMFA is especially valuable for administrator accounts and other sensitive operations.\n\nPassword reset is another security-sensitive flow. A good reset process should not email the user's existing password. Instead, the server generates a short-lived, single-use reset token and sends a reset link to an address already associated with the account.\n\nThe server should also avoid revealing whether an email address exists. Otherwise, attackers can use the reset form to enumerate accounts.\n\nAfter a successful password reset, the application should consider whether existing sessions or tokens need to be invalidated. The exact strategy depends on the authentication architecture.\n\n## Common mistakes\n\n### Storing plain-text passwords\n\nNever put passwords directly into your database. Use a password hashing algorithm such as BCrypt or Argon2 through established security libraries.\n\n### Trusting the frontend\n\nHiding a button, protecting a React route, or disabling an input does not prevent a user from sending their own HTTP request. Authorization belongs on the backend.\n\n### Checking only the role\n\nA user having the `USER` role does not automatically mean they can modify every resource. Resource ownership and other business rules often matter.\n\n### Returning the wrong status code\n\nUse `401` when authentication is missing or invalid, and `403` when the user is authenticated but lacks permission.\n\n### Giving everyone too much access\n\nStart with the smallest set of permissions required. Expanding access deliberately is safer than trying to remove unnecessary access later.\n\n## Putting it together\n\nFor the task manager, authentication establishes which user is making a request. Authorization then decides whether that user can perform the requested action on the requested task.\n\nA useful mental model is:\n\n~~~text\n1. Who is making the request?\n2. Is that identity authenticated?\n3. What action are they requesting?\n4. What roles or permissions do they have?\n5. Does ownership or another business rule allow the action?\n6. If not authenticated -> 401\n7. If authenticated but forbidden -> 403\n8. Otherwise -> continue\n~~~\n\nIn the next security lesson, you will see how Spring Security can implement these ideas with JWT-based authentication in a real Spring Boot API.",
+  "takeaways": [
+    "Authentication establishes who the user is; authorization decides what that user may do.",
+    "Passwords must never be stored as plain text; use a dedicated password-hashing algorithm such as BCrypt or Argon2.",
+    "Roles provide broad access categories, while permissions and ownership rules handle more specific decisions.",
+    "The backend must enforce authorization on every protected request because frontend checks can be bypassed.",
+    "A missing or invalid authentication normally results in 401, while an authenticated user without permission receives 403."
+  ],
+  "quiz": [
+    {
+      "question": "What is authentication responsible for?",
+      "options": [
+        "Deciding which database rows a user may delete",
+        "Establishing the identity of the user",
+        "Hiding buttons in the React application",
+        "Assigning HTTP status code 403"
+      ],
+      "answer": 1,
+      "explanation": "Authentication establishes who the user is. Authorization is responsible for deciding what that authenticated user may do."
+    },
+    {
+      "question": "Why should passwords be hashed with algorithms such as BCrypt or Argon2?",
+      "options": [
+        "So the frontend can decode them before every request",
+        "So administrators can easily recover the original password",
+        "So the database never needs to store the original password",
+        "So every user automatically receives the ADMIN role"
+      ],
+      "answer": 2,
+      "explanation": "Password hashing stores a derived value rather than the original password. BCrypt and Argon2 are designed to make password guessing more difficult."
+    },
+    {
+      "question": "A logged-in USER tries to delete another user's private task. What should normally happen?",
+      "options": [
+        "The backend returns 403 because the user is authenticated but not allowed",
+        "The backend returns 401 because every authorization failure is 401",
+        "The React application must silently delete the task",
+        "The backend must promote the user to ADMIN"
+      ],
+      "answer": 0,
+      "explanation": "The user is already authenticated, so this is an authorization failure. A forbidden authenticated request normally receives HTTP 403."
+    },
+    {
+      "question": "Why is hiding an ADMIN-only button not a security control?",
+      "options": [
+        "React cannot render buttons",
+        "CSS always makes hidden buttons visible",
+        "Users cannot inspect frontend code",
+        "A user can bypass the interface and send an HTTP request directly"
+      ],
+      "answer": 3,
+      "explanation": "The frontend runs in an environment controlled by the user. A user can construct requests without using the visible interface, so the backend must enforce authorization."
+    },
+    {
+      "question": "What does the principle of least privilege mean?",
+      "options": [
+        "Every user should receive administrator access temporarily",
+        "Each user or component should receive only the access it needs",
+        "Only administrators should use authentication",
+        "All API endpoints should be publicly accessible"
+      ],
+      "answer": 1,
+      "explanation": "Least privilege limits access to what is actually necessary. This reduces the potential impact of mistakes, compromised accounts, and vulnerable components."
+    }
+  ],
+  "exercise": {
+    "title": "Implement task authorization",
+    "task": "Implement the TypeScript functions `can(user, action, task)` and `statusFor(user, allowed)` for the task manager. `user` is either `{ id: string, roles: string[] }` or `null` when the user is not logged in. `action` is `\"read\"`, `\"update\"`, or `\"delete\"`. `task` is `{ id: string, ownerId: string, shared: boolean }`. The rules are: a user who is not logged in cannot perform any action; an `ADMIN` can perform every action; an owner can read, update, and delete their own task; another `USER` can read a task only when `shared` is `true`; sharing does not allow another USER to update or delete the task. `statusFor` must return `401` when `user` is `null`, `403` when the user exists but `allowed` is false, and `200` otherwise. The module's sample project contains the real Java/Spring version of these authorization ideas.",
+    "kind": "ts",
+    "starter": "function can(user: { id: string; roles: string[] } | null, action: \"read\" | \"update\" | \"delete\", task: { id: string; ownerId: string; shared: boolean }): boolean {\n  return false;\n}\n\nfunction statusFor(user: { id: string; roles: string[] } | null, allowed: boolean): number {\n  return 0;\n}",
+    "solution": "function can(user: { id: string; roles: string[] } | null, action: \"read\" | \"update\" | \"delete\", task: { id: string; ownerId: string; shared: boolean }): boolean {\n  if (user === null) {\n    return false;\n  }\n\n  if (user.roles.includes(\"ADMIN\")) {\n    return true;\n  }\n\n  const isOwner = user.id === task.ownerId;\n\n  if (isOwner) {\n    return true;\n  }\n\n  return action === \"read\" && task.shared;\n}\n\nfunction statusFor(user: { id: string; roles: string[] } | null, allowed: boolean): number {\n  if (user === null) {\n    return 401;\n  }\n\n  return allowed ? 200 : 403;\n}",
+    "hint": "Check the rules in order: first reject a missing user, then allow ADMIN, then check whether the user owns the task. Only a non-owner can reach the final shared-read rule.",
+    "tests": [
+      {
+        "name": "Anonymous users cannot read tasks",
+        "code": "const task = { id: \"t1\", ownerId: \"u1\", shared: true }; return can(null, \"read\", task) === false;"
+      },
+      {
+        "name": "Admins can delete any task",
+        "code": "const user = { id: \"admin\", roles: [\"ADMIN\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: false }; return can(user, \"delete\", task) === true;"
+      },
+      {
+        "name": "Owners can update their own task",
+        "code": "const user = { id: \"u1\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: false }; return can(user, \"update\", task) === true;"
+      },
+      {
+        "name": "Owners can delete their own task",
+        "code": "const user = { id: \"u1\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: false }; return can(user, \"delete\", task) === true;"
+      },
+      {
+        "name": "Other users can read shared tasks",
+        "code": "const user = { id: \"u2\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: true }; return can(user, \"read\", task) === true;"
+      },
+      {
+        "name": "Other users cannot update shared tasks",
+        "code": "const user = { id: \"u2\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: true }; return can(user, \"update\", task) === false;"
+      },
+      {
+        "name": "Other users cannot delete shared tasks",
+        "code": "const user = { id: \"u2\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: true }; return can(user, \"delete\", task) === false;"
+      },
+      {
+        "name": "Private tasks cannot be read by other users",
+        "code": "const user = { id: \"u2\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: false }; return can(user, \"read\", task) === false;"
+      },
+      {
+        "name": "Anonymous users receive 401",
+        "code": "return statusFor(null, false) === 401;"
+      },
+      {
+        "name": "Forbidden users receive 403",
+        "code": "const user = { id: \"u1\", roles: [\"USER\"] }; return statusFor(user, false) === 403;"
+      },
+      {
+        "name": "Allowed users receive 200",
+        "code": "const user = { id: \"u1\", roles: [\"USER\"] }; return statusFor(user, true) === 200;"
+      }
+    ]
+  }
+}

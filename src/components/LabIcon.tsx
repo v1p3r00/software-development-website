@@ -3,6 +3,15 @@ import { cx } from './ui';
 /** line icons for the interactive projects, drawn in the site's 1px technical style */
 export default function LabIcon({ id, className = '' }: { id: string; className?: string }) {
   const common = { viewBox: '0 0 32 32', fill: 'none', 'aria-hidden': true, className: cx('h-8 w-8', className) } as const;
+  if (id === 'course') {
+    return (
+      <svg {...common}>
+        <path d="M3 11l13-6 13 6-13 6z" stroke="currentColor" />
+        <path d="M8 13.5V20c2.5 2 5 3 8 3s5.5-1 8-3v-6.5" stroke="currentColor" />
+        <path d="M29 11v8" stroke="currentColor" className="text-accent" />
+      </svg>
+    );
+  }
   if (id === 'cv') {
     return (
       <svg {...common}>

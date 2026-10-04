@@ -1,0 +1,123 @@
+{
+  "title": "Hitelesítés és jogosultságkezelés",
+  "intro": "A hitelesítés arra válaszol, hogy „Ki vagy?”, míg a jogosultságkezelés arra, hogy „Mit tehetsz meg?”. Ebben a leckében összekapcsolod ezt a két fogalmat a task managerrel, és megtanulod, miért kell a biztonsági ellenőrzéseket végső soron a backendnek elvégeznie.",
+  "body": "## A hitelesítés és a jogosultságkezelés különböző problémák\n\nAmikor bejelentkezel a task managerbe, rögtön két biztonsági kérdés merül fel. Először: **ki ez a személy?** Másodszor: **mit tehet meg ez a személy?**\n\n~~~diagram\n{\"type\": \"flow\", \"title\": \"Két külön kérdés\", \"nodes\": [{\"id\": \"r\", \"label\": \"Kérés\", \"sub\": \"DELETE /api/tickets/7\", \"kind\": \"client\"}, {\"id\": \"an\", \"label\": \"Hitelesítés\", \"sub\": \"Ki vagy?\", \"highlight\": true}, {\"id\": \"az\", \"label\": \"Jogosultság\", \"sub\": \"Megteheted ezt?\", \"highlight\": true}, {\"id\": \"ok\", \"label\": \"Lefut a kezelő\", \"kind\": \"server\"}, {\"id\": \"e401\", \"label\": \"401 Unauthorized\", \"sub\": \"nincs / rossz azonosítás\"}, {\"id\": \"e403\", \"label\": \"403 Forbidden\", \"sub\": \"ismert, de nem jogosult\"}], \"edges\": [{\"from\": \"r\", \"to\": \"an\"}, {\"from\": \"an\", \"to\": \"az\", \"label\": \"identitás\"}, {\"from\": \"az\", \"to\": \"ok\", \"label\": \"engedélyezve\"}, {\"from\": \"an\", \"to\": \"e401\", \"dashed\": true}, {\"from\": \"az\", \"to\": \"e403\", \"dashed\": true}]}\n~~~\n\nA hitelesítés, angolul **authentication**, gyakran rövidítve **authn**, az identitás megállapításának folyamata. Egy email-címmel és jelszóval történő bejelentkezés egy hitelesítési mechanizmus: a szerver ellenőrzi, hogy a felhasználó ismeri-e a megfelelő hitelesítő adatokat.\n\nA jogosultságkezelés, angolul **authorization**, gyakran rövidítve **authz**, ezután történik. Ez dönti el, hogy egy hitelesített felhasználó mihez férhet hozzá, illetve mit módosíthat.\n\nPéldául képzelj el két felhasználót:\n\n~~~text\nAlice successfully logs in.\nAuthentication: Alice is user 42.\nAuthorization: Alice may update her own tasks, but not Bob's private tasks.\n~~~\n\nEgy hasznos szabály, amit érdemes megjegyezned:\n\n> A hitelesítés megmondja, hogy ki valaki. A jogosultságkezelés dönti el, hogy ez az identitás mit tehet meg.\n\nEzek a fogalmak összefüggenek, de nem szabad összekeverni őket. Attól, hogy egy felhasználó sikeresen bejelentkezett, még nem következik, hogy minden műveletet végrehajthat.\n\n## Jelszavak helyes kezelése\n\nAz alkalmazásodnak **soha nem szabad egyszerű szövegként tárolnia a jelszavakat**. Ha az adatbázisban olyan jelszavak szerepelnek, mint például `secret123`, akkor bárki, aki megszerez egy adatbázismentést vagy hozzáfér az adatbázishoz, azonnal használhatja ezeket a jelszavakat.\n\n~~~compare\n{\"left\": {\"title\": \"Soha\", \"lang\": \"text\", \"code\": \"password      → stored as is\\nsha256(pass)  → fast to brute-force\", \"note\": \"Egy kiszivárgott tábla minden jelszót odaad a támadóknak.\"}, \"right\": {\"title\": \"Mindig\", \"lang\": \"text\", \"code\": \"BCrypt / Argon2id\\n$2a$12$Wq…  (salt + slow hash)\", \"note\": \"Felhasználónként egyedi só és szándékosan lassú algoritmus.\"}}\n~~~\n\nEhelyett az alkalmazások **jelszó-hash-t** tárolnak. A hash-elés egy olyan értékké alakítja a jelszót, amelyet szándékosan nehéz visszafejteni.\n\nJelszavak tárolására olyan algoritmusokat, mint a **BCrypt** és az **Argon2**, kifejezetten erre a célra terveztek. Szándékosan költséges a kiszámításuk, ami megnehezíti a nagyszabású jelszópróbálgatást.\n\nA **salt**, vagyis só egy további véletlenszerű érték, amelyet a jelszó-hash létrehozásakor használnak. A salt miatt azonos jelszavakból is különböző eltárolt hash-ek keletkeznek. Ez megakadályozza, hogy egy támadó könnyen felismerje, hogy két fiók ugyanazt a jelszót használja.\n\nÁltalában nincs szükséged arra, hogy magát az algoritmust te implementáld. A Spring Security biztosít jelszó-hash-elési támogatást, amelyet az alkalmazásod konfigurálhat és használhat.\n\nA leegyszerűsített folyamat így néz ki:\n\n~~~text\nRegistration:\npassword + random salt -> password hash -> database\n\nLogin:\nsubmitted password + stored salt -> calculated hash\ncalculated hash == stored hash -> authentication succeeds\n~~~\n\nAz adatbázisnak tehát valami jelszó-hash-hez hasonló értéket kell tartalmaznia, nem pedig az eredeti jelszót.\n\nA jelszó-hash-elés különbözik a titkosítástól. A titkosítás célja, hogy a jogosult szoftver vissza tudja fejteni az eredeti adatot. A jelszó-hash-elés ezzel szemben azt a célt szolgálja, hogy az eredeti jelszó visszaszerzése gyakorlatilag kivitelezhetetlen legyen.\n\n## Munkamenetek, cookie-k és tokenek\n\nMiután a hitelesítés sikeres, az alkalmazásodnak valamilyen módon fel kell ismernie a következő kéréseket.\n\n~~~compare\n{\"left\": {\"title\": \"Session süti\", \"lang\": \"text\", \"code\": \"Set-Cookie: SESSION=8f2c…;\\n  HttpOnly; Secure; SameSite=Lax\", \"note\": \"Az állapotot a szerver tárolja; könnyen visszavonható; CSRF-re figyelni kell.\"}, \"right\": {\"title\": \"Bearer token (JWT)\", \"lang\": \"text\", \"code\": \"Authorization: Bearer eyJhbGciOi…\", \"note\": \"Állapotmentes, API-khoz kényelmes; nehezebb visszavonni, ezért legyen rövid életű.\"}}\n~~~\n\nAz egyik gyakori megoldás a **session**, vagyis munkamenet. A szerver létrehoz egy munkamenetet, amelyet a hitelesített felhasználóhoz kapcsol. A böngésző kap egy session azonosítót, amelyet jellemzően cookie-ban tárol, és ezt a cookie-t elküldi a későbbi kérésekkel együtt.\n\n~~~text\nBrowser -> POST /login -> Server\nBrowser <- session cookie <- Server\n\nBrowser -> GET /api/tasks + cookie -> Server\nServer -> identifies the session -> knows the user\n~~~\n\nA **cookie** a böngésző által kezelt adat, amelyet a böngésző automatikusan elküldhet a megfelelő szervernek szóló kérésekkel. A cookie önmagában nem hitelesítés; ez egy olyan mechanizmus, amellyel például egy session azonosítót lehet továbbítani.\n\nEgy másik megközelítés a **token** használata. A szerver ad a kliensnek egy tokent, amely egy hitelesített identitást képvisel. A kliens ezt a tokent küldi el a későbbi kérésekkel, gyakran egy HTTP `Authorization` headerben.\n\nEgy gyakori tokenformátum a JWT, vagyis JSON Web Token. A JWT-alapú hitelesítéssel a 7.2-es leckében fogsz dolgozni.\n\nEgyik megközelítés sem automatikusan „biztonságosabb”. A biztonság attól függ, hogyan hozzuk létre, tároljuk, továbbítjuk, járatjuk le, vonjuk vissza és validáljuk a hitelesítő adatokat.\n\nBöngészős alkalmazásoknál a cookie-k olyan biztonsági beállításokkal konfigurálhatók, mint a `HttpOnly`, `Secure` és a megfelelő `SameSite` policy. A `HttpOnly` cookie-t a normál JavaScript nem tudja kiolvasni, ami csökkentheti bizonyos cross-site scripting támadások hatását.\n\n## Szerepkörök és jogosultságok\n\nA **szerepkör**, vagyis role egy felhasználóhoz rendelt általános kategória. A task managerünk például használhatja ezeket:\n\n~~~text\nUSER\nADMIN\n~~~\n\nA szerepkör hasznos lehet a durvább jogosultsági szabályokhoz. Például egy adminisztrátor jogosult lehet bármelyik task törlésére.\n\nA **jogosultság**, vagyis permission egy konkrétabb képesség, például `TASK_DELETE` vagy `USER_MANAGE`.\n\nA szerepkörök és a jogosultságok nem egymást kizáró fogalmak. Egy szerepkör egy jogosultságokból álló csoportot is reprezentálhat:\n\n~~~text\nADMIN\n  -> TASK_READ\n  -> TASK_UPDATE\n  -> TASK_DELETE\n  -> USER_MANAGE\n\nUSER\n  -> TASK_READ\n  -> TASK_UPDATE_OWN\n  -> TASK_DELETE_OWN\n~~~\n\nEgy kisebb alkalmazásnál az egyszerű szerepkörök elegendők lehetnek. Ahogy az alkalmazás növekszik, az explicit jogosultságok könnyebbé tehetik a jogosultsági szabályok kezelését.\n\n## Tulajdonosi szabályok\n\nNem minden jogosultsági szabály fejezhető ki szerepkörrel.\n\nTegyük fel, hogy Alice és Bob is normál `USER`. Alice szerkesztheti a saját taskját, de nem szerkesztheti Bob taskját.\n\nEz egy **tulajdonosi szabály**. A szerver összehasonlítja a hitelesített felhasználó ID-ját a task tulajdonosának ID-jával.\n\n~~~text\nuser.id == task.ownerId\n~~~\n\nA task manager ezért olyan szabályokat használhat, mint például:\n\n- Egy adminisztrátor bármelyik taskot olvashatja, módosíthatja vagy törölheti.\n- Egy normál felhasználó a saját taskját olvashatja, módosíthatja vagy törölheti.\n- Egy normál felhasználó egy másik felhasználó taskját is olvashatja, ha az meg van osztva vele.\n- Egy normál felhasználó nem módosíthatja és nem törölheti egy másik felhasználó taskját pusztán azért, mert az meg van osztva vele.\n\nEz a különbségtétel fontos, mert a jogosultságkezelés gyakran többről szól annál, mint hogy „rendelkezik-e a felhasználó USER szerepkörrel?”. Szükséged lehet a hitelesített identitásra, a kért műveletre és a hozzáférni kívánt erőforrásra is.\n\n## A legkisebb szükséges jogosultság elve\n\nA **legkisebb szükséges jogosultság elve**, angolul **principle of least privilege**, azt jelenti, hogy egy felhasználónak, szolgáltatásnak vagy komponensnek csak annyi hozzáférést adsz, amennyire a feladata elvégzéséhez szüksége van.\n\nPéldául egy normál task-management felhasználónak nincs szüksége arra, hogy a rendszerben minden fiókot törölhessen. Egy riportkészítő szolgáltatásnak lehet, hogy csak bizonyos adatokhoz kell olvasási hozzáférés. Egy adminisztrátornak szélesebb hozzáférésre lehet szüksége, de még az adminisztrátori hozzáférést is tudatosan kell megadni.\n\nA legkisebb szükséges jogosultság elve korlátozza a hibák, feltört fiókok és sérülékeny komponensek által okozott károkat.\n\nAmikor jogosultsági szabályt tervezel, tedd fel ezeket a kérdéseket:\n\n~~~text\nWhat does this user actually need to do?\nWhat is the smallest permission that allows it?\n~~~\n\n## Hol kell elvégezni a biztonsági ellenőrzéseket?\n\nA legfontosabb implementációs szabály a következő: **a jogosultságkezelést a backendnek kell kikényszerítenie**.\n\nA Spring Boot alkalmazásunkban minden védett kérést ellenőriznie kell a szervernek. A frontend segíthet jó felhasználói élményt kialakítani, de nem tekinthető megbízható biztonsági határnak.\n\nPéldául a React elrejtheti a „Delete task” gombot a normál felhasználók elől:\n\n~~~tsx\n{user.roles.includes(\"ADMIN\") && <button>Delete</button>}\n~~~\n\nEz hasznos a felhasználói felület szempontjából, de **nem biztonság**.\n\nEgy rosszindulatú felhasználó megnyithatja a böngésző fejlesztői eszközeit, és saját HTTP-kérést küldhet erre:\n\n~~~text\nDELETE /api/tasks/123\n~~~\n\nA backendnek ettől függetlenül meg kell állapítania, hogy a kérés engedélyezett-e. A szervernek minden védett kérésnél önállóan validálnia kell a hitelesített felhasználót, a kért műveletet, valamint a tulajdonosi és jogosultsági szabályokat.\n\nSoha ne támaszkodj arra, hogy „a gomb el van rejtve”, vagy hogy „a React route nem érhető el”. A klienst a felhasználó irányítja.\n\nEgy jó architektúra:\n\n~~~text\nReact\n  -> sends request\nSpring Security / backend authorization\n  -> verifies identity and permissions\nApplication service\n  -> checks resource-specific rules\nDatabase\n  -> stores data\n~~~\n\nEz különösen fontos REST API-k esetén, mert a klienseket teljesen le lehet cserélni. Az API-dnak akkor is biztonságosnak kell maradnia, ha valaki saját klienst ír a React alkalmazásod használata helyett.\n\n## 401 vs 403\n\nA HTTP hasznos státuszkódokat biztosít a hitelesítési és jogosultsági hibákhoz.\n\nA **401 Unauthorized** azt jelenti, hogy a kérés nem tartalmaz érvényes hitelesítési adatokat. A gyakorlatban gondolj erre úgy: „Nem hitelesítetted magad sikeresen.”\n\nA **403 Forbidden** azt jelenti, hogy a szerver tudja, ki a felhasználó, de az adott felhasználó nem jogosult a kért művelet végrehajtására.\n\nPéldául:\n\n~~~text\nNo login/session/token -> 401\nLogged in as USER, trying to delete someone else's task -> 403\nLogged in as ADMIN, allowed to delete it -> 200 or another successful response\n~~~\n\nEz a különbségtétel segít a kliensnek megfelelően reagálni. A frontend például egy `401` után átirányíthatja a nem hitelesített felhasználót a bejelentkezési oldalra, míg `403` esetén hozzáférés megtagadva üzenetet jeleníthet meg.\n\n## MFA és jelszó-visszaállítás\n\nA jelszó csak egyetlen hitelesítési faktor. A **többtényezős hitelesítés (MFA)** egy további faktort is megkövetel, például egy hitelesítő alkalmazásból származó időalapú kódot vagy egy hardveres biztonsági kulcsot.\n\nAz alapötlet egyszerű: ha egy támadó megszerzi a jelszavadat, akkor is szüksége lesz egy további faktorra.\n\nAz MFA különösen értékes adminisztrátori fiókoknál és más érzékeny műveleteknél.\n\nA jelszó-visszaállítás szintén biztonság szempontjából érzékeny folyamat. Egy jó visszaállítási folyamat nem küldi el emailben a felhasználó jelenlegi jelszavát. Ehelyett a szerver egy rövid ideig érvényes, egyszer használható reset tokent generál, és egy visszaállítási linket küld egy, a fiókhoz már hozzárendelt címre.\n\nA szervernek azt is kerülnie kell, hogy felfedje, létezik-e egy adott email-cím. Ellenkező esetben a támadók a jelszó-visszaállítási űrlapot fiókok felderítésére használhatják.\n\nSikeres jelszó-visszaállítás után az alkalmazásnak meg kell fontolnia, hogy a meglévő sessionöket vagy tokeneket érvényteleníteni kell-e. A pontos stratégia az alkalmazott hitelesítési architektúrától függ.\n\n## Gyakori hibák\n\n### Egyszerű szövegként tárolt jelszavak\n\nSoha ne tedd a jelszavakat közvetlenül az adatbázisba. Használj dedikált jelszó-hash-elési algoritmust, például BCryptet vagy Argon2-t, bevált biztonsági könyvtárakon keresztül.\n\n### A frontend megbízhatónak tekintése\n\nEgy gomb elrejtése, egy React route védelme vagy egy input letiltása nem akadályozza meg, hogy a felhasználó saját HTTP-kérést küldjön. A jogosultságkezelést a backendnek kell kikényszerítenie.\n\n### Csak a szerepkör ellenőrzése\n\nAttól, hogy egy felhasználó rendelkezik a `USER` szerepkörrel, még nem következik automatikusan, hogy minden erőforrást módosíthat. Az erőforrás tulajdonjoga és más üzleti szabályok is számíthatnak.\n\n### Rossz státuszkód visszaadása\n\nHasználj `401`-et, amikor a hitelesítés hiányzik vagy érvénytelen, és `403`-at, amikor a felhasználó hitelesített, de nincs jogosultsága.\n\n### Túl sok jogosultság adása mindenkinek\n\nIndulj a szükséges legkisebb jogosultságkészlettel. A hozzáférés tudatos kibővítése biztonságosabb, mint később megpróbálni eltávolítani a szükségtelen jogosultságokat.\n\n## Az egész összeállítása\n\nA task managerben a hitelesítés megállapítja, hogy melyik felhasználó küldi a kérést. Ezután a jogosultságkezelés dönti el, hogy az adott felhasználó végrehajthatja-e a kért műveletet a kért taskon.\n\nEgy hasznos mentális modell:\n\n~~~text\n1. Who is making the request?\n2. Is that identity authenticated?\n3. What action are they requesting?\n4. What roles or permissions do they have?\n5. Does ownership or another business rule allow the action?\n6. If not authenticated -> 401\n7. If authenticated but forbidden -> 403\n8. Otherwise -> continue\n~~~\n\nA következő biztonsági leckében azt nézed meg, hogyan valósíthatod meg ezeket az ötleteket Spring Security segítségével, JWT-alapú hitelesítéssel egy valódi Spring Boot API-ban.",
+  "takeaways": [
+    "A hitelesítés megállapítja, hogy ki a felhasználó; a jogosultságkezelés dönti el, hogy mit tehet meg az adott felhasználó.",
+    "A jelszavakat soha nem szabad egyszerű szövegként tárolni; használj dedikált jelszó-hash-elési algoritmust, például BCryptet vagy Argon2-t.",
+    "A szerepkörök általános hozzáférési kategóriákat biztosítanak, míg a jogosultságok és a tulajdonosi szabályok konkrétabb döntéseket kezelnek.",
+    "A backendnek minden védett kérésnél ki kell kényszerítenie a jogosultságokat, mert a frontend ellenőrzései megkerülhetők.",
+    "Hiányzó vagy érvénytelen hitelesítés esetén általában 401-et, jogosultsággal nem rendelkező, de hitelesített felhasználó esetén pedig 403-at adunk vissza."
+  ],
+  "quiz": [
+    {
+      "question": "Miért felelős a hitelesítés?",
+      "options": [
+        "Annak eldöntéséért, hogy mely adatbázissorokat törölheti a felhasználó",
+        "A felhasználó identitásának megállapításáért",
+        "Gombok elrejtéséért a React alkalmazásban",
+        "A 403-as HTTP státuszkód hozzárendeléséért"
+      ],
+      "answer": 1,
+      "explanation": "A hitelesítés azt állapítja meg, hogy ki a felhasználó. A jogosultságkezelés felel azért, hogy ez a hitelesített felhasználó mit tehet meg."
+    },
+    {
+      "question": "Miért kell a jelszavakat olyan algoritmusokkal hash-elni, mint a BCrypt vagy az Argon2?",
+      "options": [
+        "Hogy a frontend minden kérés előtt vissza tudja fejteni őket",
+        "Hogy az adminisztrátorok könnyen vissza tudják szerezni az eredeti jelszót",
+        "Hogy az adatbázisban soha ne kelljen az eredeti jelszót tárolni",
+        "Hogy minden felhasználó automatikusan ADMIN szerepkört kapjon"
+      ],
+      "answer": 2,
+      "explanation": "A jelszó-hash-elés egy származtatott értéket tárol az eredeti jelszó helyett. A BCrypt és az Argon2 célja, hogy megnehezítse a jelszavak kitalálását."
+    },
+    {
+      "question": "Egy bejelentkezett USER megpróbálja törölni egy másik felhasználó privát taskját. Mi történjen normál esetben?",
+      "options": [
+        "A backend 403-at ad vissza, mert a felhasználó hitelesített, de nincs jogosultsága",
+        "A backend 401-et ad vissza, mert minden jogosultsági hiba 401",
+        "A React alkalmazásnak csendben törölnie kell a taskot",
+        "A backendnek ADMIN szerepkörre kell emelnie a felhasználót"
+      ],
+      "answer": 0,
+      "explanation": "A felhasználó már hitelesített, ezért ez jogosultsági hiba. Egy tiltott, de hitelesített kérés normál esetben HTTP 403-at kap."
+    },
+    {
+      "question": "Miért nem biztonsági kontroll egy ADMIN-only gomb elrejtése?",
+      "options": [
+        "A React nem tud gombokat renderelni",
+        "A CSS mindig láthatóvá teszi az elrejtett gombokat",
+        "A felhasználók nem tudják megvizsgálni a frontend kódját",
+        "A felhasználó megkerülheti a felületet, és közvetlenül HTTP-kérést küldhet"
+      ],
+      "answer": 3,
+      "explanation": "A frontend a felhasználó által irányított környezetben fut. A felhasználó a látható felület használata nélkül is létrehozhat kéréseket, ezért a backendnek kell kikényszerítenie a jogosultságokat."
+    },
+    {
+      "question": "Mit jelent a legkisebb szükséges jogosultság elve?",
+      "options": [
+        "Minden felhasználónak ideiglenesen adminisztrátori hozzáférést kell adni",
+        "Minden felhasználónak vagy komponensnek csak a szükséges hozzáférést szabad megadni",
+        "Csak az adminisztrátorok használhatnak hitelesítést",
+        "Minden API endpointnak nyilvánosan elérhetőnek kell lennie"
+      ],
+      "answer": 1,
+      "explanation": "A legkisebb szükséges jogosultság elve a hozzáférést arra korlátozza, amire ténylegesen szükség van. Ez csökkenti a hibák, feltört fiókok és sérülékeny komponensek lehetséges hatását."
+    }
+  ],
+  "exercise": {
+    "title": "Task jogosultságainak implementálása",
+    "task": "Implementáld a TypeScript `can(user, action, task)` és `statusFor(user, allowed)` függvényeket a task managerhez. A `user` vagy `{ id: string, roles: string[] }`, vagy `null`, amikor a felhasználó nincs bejelentkezve. Az `action` `\"read\"`, `\"update\"` vagy `\"delete\"`. A `task` `{ id: string, ownerId: string, shared: boolean }`. A szabályok a következők: a nem bejelentkezett felhasználó egyetlen műveletet sem hajthat végre; egy `ADMIN` minden műveletet végrehajthat; a tulajdonos olvashatja, módosíthatja és törölheti a saját taskját; egy másik `USER` csak akkor olvashat egy taskot, ha az meg van osztva; a megosztás nem teszi lehetővé egy másik USER számára a task módosítását vagy törlését. A `statusFor` `401`-et adjon vissza, amikor `user` `null`, `403`-at, amikor a felhasználó létezik, de az `allowed` false, és `200`-at minden más esetben. A modul mintaprojektje tartalmazza ezeknek a jogosultságkezelési ötleteknek a valódi Java/Spring változatát.",
+    "kind": "ts",
+    "starter": "function can(user: { id: string; roles: string[] } | null, action: \"read\" | \"update\" | \"delete\", task: { id: string; ownerId: string; shared: boolean }): boolean {\n  return false;\n}\n\nfunction statusFor(user: { id: string; roles: string[] } | null, allowed: boolean): number {\n  return 0;\n}",
+    "solution": "function can(user: { id: string; roles: string[] } | null, action: \"read\" | \"update\" | \"delete\", task: { id: string; ownerId: string; shared: boolean }): boolean {\n  if (user === null) {\n    return false;\n  }\n\n  if (user.roles.includes(\"ADMIN\")) {\n    return true;\n  }\n\n  const isOwner = user.id === task.ownerId;\n\n  if (isOwner) {\n    return true;\n  }\n\n  return action === \"read\" && task.shared;\n}\n\nfunction statusFor(user: { id: string; roles: string[] } | null, allowed: boolean): number {\n  if (user === null) {\n    return 401;\n  }\n\n  return allowed ? 200 : 403;\n}",
+    "hint": "Ellenőrizd a szabályokat ebben a sorrendben: először utasítsd el a hiányzó felhasználót, ezután engedélyezd az ADMIN-t, majd ellenőrizd, hogy a felhasználó tulajdonosa-e a tasknak. Csak egy nem tulajdonos felhasználó juthat el a végső, megosztott olvasási szabályig.",
+    "tests": [
+      {
+        "name": "Anonymous users cannot read tasks",
+        "code": "const task = { id: \"t1\", ownerId: \"u1\", shared: true }; return can(null, \"read\", task) === false;"
+      },
+      {
+        "name": "Admins can delete any task",
+        "code": "const user = { id: \"admin\", roles: [\"ADMIN\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: false }; return can(user, \"delete\", task) === true;"
+      },
+      {
+        "name": "Owners can update their own task",
+        "code": "const user = { id: \"u1\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: false }; return can(user, \"update\", task) === true;"
+      },
+      {
+        "name": "Owners can delete their own task",
+        "code": "const user = { id: \"u1\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: false }; return can(user, \"delete\", task) === true;"
+      },
+      {
+        "name": "Other users can read shared tasks",
+        "code": "const user = { id: \"u2\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: true }; return can(user, \"read\", task) === true;"
+      },
+      {
+        "name": "Other users cannot update shared tasks",
+        "code": "const user = { id: \"u2\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: true }; return can(user, \"update\", task) === false;"
+      },
+      {
+        "name": "Other users cannot delete shared tasks",
+        "code": "const user = { id: \"u2\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: true }; return can(user, \"delete\", task) === false;"
+      },
+      {
+        "name": "Private tasks cannot be read by other users",
+        "code": "const user = { id: \"u2\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: false }; return can(user, \"read\", task) === false;"
+      },
+      {
+        "name": "Anonymous users receive 401",
+        "code": "return statusFor(null, false) === 401;"
+      },
+      {
+        "name": "Forbidden users receive 403",
+        "code": "const user = { id: \"u1\", roles: [\"USER\"] }; return statusFor(user, false) === 403;"
+      },
+      {
+        "name": "Allowed users receive 200",
+        "code": "const user = { id: \"u1\", roles: [\"USER\"] }; return statusFor(user, true) === 200;"
+      }
+    ]
+  }
+}

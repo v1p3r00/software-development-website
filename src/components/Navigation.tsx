@@ -40,7 +40,6 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
   const setOpen = (next: boolean | ((o: boolean) => boolean)) =>
     setOpenOn((typeof next === 'function' ? next(open) : next) ? pathname : null);
   const ref = useRef<HTMLDivElement>(null);
-  const hoverTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     if (!open) return;
@@ -58,21 +57,39 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
     };
   }, [open]);
 
-  const hover = (next: boolean) => () => {
-    window.clearTimeout(hoverTimer.current);
-    hoverTimer.current = window.setTimeout(() => setOpen(next), next ? 60 : 180);
+  // opens on click (not hover, which opened it by accident); arrow keys move through the list
+  const focusItem = (dir: 1 | -1 | 0) => {
+    const links = [...(ref.current?.querySelectorAll<HTMLElement>('[data-menu-item]') ?? [])];
+    if (!links.length) return;
+    const i = links.indexOf(document.activeElement as HTMLElement);
+    const next = dir === 0 ? 0 : (i + dir + links.length) % links.length;
+    links[next]?.focus();
+  };
+  const onMenuKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!open) {
+        setOpen(true);
+        window.setTimeout(() => focusItem(0), 30);
+      } else focusItem(e.key === 'ArrowDown' ? 1 : -1);
+    }
+    if (e.key === 'Escape' && open) {
+      setOpen(false);
+      ref.current?.querySelector<HTMLElement>('button')?.focus();
+    }
   };
 
   return (
-    <div ref={ref} className="relative" onMouseEnter={hover(true)} onMouseLeave={hover(false)}>
+    <div ref={ref} className="relative" onKeyDown={onMenuKey} onMouseEnter={() => labs.forEach((l) => void labPreload[l.id]?.())}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         onFocus={() => labs.forEach((l) => void labPreload[l.id]?.())}
         aria-expanded={open}
+        aria-controls="projects-menu"
         aria-haspopup="true"
         data-cursor="follow"
-        className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[11px] uppercase tracking-tech"
+        className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[12.5px] uppercase tracking-tech"
       >
         <span className={cx('transition-colors', active || open ? 'text-text' : 'text-muted group-hover:text-text')}>
           {t.nav.labs}
@@ -93,8 +110,9 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
       </button>
 
       <div
+        id="projects-menu"
         className={cx(
-          'absolute left-1/2 top-full z-50 w-[320px] -translate-x-1/2 pt-4 transition-all duration-300 ease-tech',
+          'absolute left-1/2 top-full z-50 w-[340px] -translate-x-1/2 pt-4 transition-all duration-300 ease-tech',
           open ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-1 opacity-0',
         )}
       >
@@ -107,6 +125,7 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
                   to={lp(lab.path)}
                   onClick={link(lp(lab.path), 'slide', labPreload[lab.id] ? { prepare: labPreload[lab.id] } : {})}
                   data-cursor="follow"
+                  data-menu-item
                   tabIndex={open ? 0 : -1}
                   className="group flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-surface"
                 >
@@ -130,6 +149,7 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
             }}
             tabIndex={open ? 0 : -1}
             data-cursor="follow"
+            data-menu-item
             className="flex items-center justify-between px-4 py-2.5 font-mono text-2xs uppercase tracking-tech text-dim transition-colors hover:text-accent"
           >
             {t.nav.labsAll}
@@ -140,6 +160,8 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
     </div>
   );
 }
+
+const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 
 export default function Navigation({ onOpenPalette }: { onOpenPalette: () => void }) {
   const { t, lp, lang } = useI18n();
@@ -203,7 +225,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
               compact ? 'max-h-4 opacity-70' : 'max-h-12 opacity-100',
             )}
           >
-            <div className="whitespace-nowrap font-mono text-[11px] uppercase tracking-tech text-text">{site.name}</div>
+            <div className="whitespace-nowrap font-mono text-[12.5px] uppercase tracking-tech text-text">{site.name}</div>
             {!compact && (
               <div className="label mt-0.5 leading-tight">{t.ui.roleLine}</div>
             )}
@@ -219,7 +241,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
                 href={`#${item.id}`}
                 onClick={goTo(item.id)}
                 data-cursor="follow"
-                className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[11px] uppercase tracking-tech"
+                className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[12.5px] uppercase tracking-tech"
               >
                 <span className={cx('transition-colors', on ? 'text-text' : 'text-muted group-hover:text-text')}>
                   {item.label}
@@ -237,7 +259,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             to={lp('/articles/')}
             onClick={toArticles}
             data-cursor="follow"
-            className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[11px] uppercase tracking-tech"
+            className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[12.5px] uppercase tracking-tech"
           >
             <span className={cx('transition-colors', onArticles ? 'text-text' : 'text-muted group-hover:text-text')}>
               {t.nav.articles}
@@ -257,11 +279,16 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             type="button"
             onClick={onOpenPalette}
             data-cursor="follow"
-            aria-label={t.palette.title}
-            className="hidden items-center gap-2 border border-line px-2.5 py-1.5 font-mono text-2xs uppercase tracking-tech text-dim transition-colors hover:border-line-strong hover:text-text md:flex"
+            aria-label={t.ux.searchHint}
+            title={t.ux.searchHint}
+            className="flex h-[30px] items-center gap-2 border border-line px-2 text-muted transition-colors hover:border-accent hover:text-text sm:px-2.5"
           >
-            <span>⌘</span>
-            <span>K</span>
+            <svg viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+              <circle cx="8.5" cy="8.5" r="5.5" />
+              <path d="m13 13 4.5 4.5" strokeLinecap="round" />
+            </svg>
+            <span className="hidden font-mono text-2xs uppercase tracking-tech md:inline">{t.ux.search}</span>
+            <kbd className="hidden border border-line px-1 font-mono text-[10.5px] text-dim lg:inline">{isMac ? '⌘K' : 'Ctrl K'}</kbd>
           </button>
 
           <button
@@ -287,7 +314,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             href="#contact"
             onClick={goTo('contact')}
             data-cursor="follow"
-            className="group hidden items-center gap-3 border border-line-strong px-4 py-2 font-mono text-[11px] uppercase tracking-tech text-text transition-colors hover:border-accent hover:text-accent sm:flex"
+            className="group hidden items-center gap-3 border border-line-strong px-4 py-2 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors hover:border-accent hover:text-accent sm:flex"
           >
             {t.nav.talk}
             <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />

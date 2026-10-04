@@ -1,0 +1,123 @@
+{
+  "title": "Spring Security and JWT",
+  "intro": "Spring Security gives your Spring Boot API a consistent way to authenticate requests and enforce authorization rules. In this lesson, you will see how a stateless JWT-based API works from login through token validation and method-level authorization.",
+  "body": "## What Spring Security does\n\nSpring Security is a framework for protecting your Spring Boot application. It handles common security tasks such as authentication, authorization, password handling, and request protection.\n\nA central concept is the **security filter chain**. A filter is a component that examines or changes an incoming HTTP request before it reaches your controller. The security filter chain is a sequence of these filters.\n\nIn simple terms, think of it as a security checkpoint in front of your API:\n\n~~~text\nHTTP request\n    ↓\nSecurity filters\n    ↓\nIs the request authenticated?\n    ↓\nIs the requested operation allowed?\n    ↓\nController\n~~~\n\nThis means security checks do not have to be manually repeated inside every controller method.\n\nYou can still add more specific authorization checks later, including checks directly on service methods.\n\n## Adding Spring Security\n\nFor a Maven-based Spring Boot application, add the Spring Security starter:\n\n~~~xml\n<dependency>\n    <groupId>org.springframework.boot</groupId>\n    <artifactId>spring-boot-starter-security</artifactId>\n</dependency>\n~~~\n\nThe Spring Boot starter brings the main Spring Security components into your application.\n\nIf you add it to an existing application without configuring anything, Spring Boot applies default security behaviour. Requests become protected, and Spring Security creates a default login setup suitable for getting started, not for your finished task manager API.\n\nThat default behaviour is useful because it immediately demonstrates that security is active. For a REST API, however, you normally configure your own authentication mechanism and request rules.\n\n## Creating a SecurityFilterChain\n\nA common starting point for our API is a `SecurityFilterChain` bean. A **bean** is an object managed by the Spring application context.\n\n~~~diagram\n{\"type\": \"flow\", \"title\": \"The security filter chain\", \"caption\": \"Every request passes the filters before it reaches your controller.\", \"nodes\": [{\"id\": \"req\", \"label\": \"HTTP request\", \"kind\": \"client\"}, {\"id\": \"cors\", \"label\": \"CorsFilter\"}, {\"id\": \"jwt\", \"label\": \"JwtAuthFilter\", \"sub\": \"reads Bearer token\", \"highlight\": true}, {\"id\": \"az\", \"label\": \"AuthorizationFilter\", \"sub\": \"permitAll · hasRole\"}, {\"id\": \"ctl\", \"label\": \"Controller\", \"kind\": \"server\"}, {\"id\": \"rej\", \"label\": \"401 / 403\", \"dashed\": true}], \"edges\": [{\"from\": \"req\", \"to\": \"cors\"}, {\"from\": \"cors\", \"to\": \"jwt\"}, {\"from\": \"jwt\", \"to\": \"az\", \"label\": \"SecurityContext\"}, {\"from\": \"az\", \"to\": \"ctl\"}, {\"from\": \"az\", \"to\": \"rej\", \"dashed\": true}]}\n~~~\n\nFor example:\n\n~~~java\n@Bean\nSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {\n    http\n        .csrf(csrf -> csrf.disable())\n        .sessionManagement(session -> session\n            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))\n        .authorizeHttpRequests(auth -> auth\n            .requestMatchers(\"/api/auth/**\").permitAll()\n            .anyRequest().authenticated());\n\n    return http.build();\n}\n~~~\n\nThe important part is the authorization configuration.\n\n`/api/auth/**` is publicly accessible. This is where you can expose endpoints such as login or registration.\n\n`anyRequest().authenticated()` means every other request requires an authenticated user.\n\nThis gives the application a useful default: new protected endpoints are not accidentally made public just because someone forgot to add a rule.\n\n## Stateless JWT authentication\n\nA traditional server-side session stores authentication state on the server. A JWT-based API can instead be **stateless**.\n\nStateless means the server does not keep a login session for each client. Each protected request carries a token containing the information needed to identify the authenticated user.\n\nSpring Security can be configured accordingly:\n\n~~~java\n.sessionManagement(session -> session\n    .sessionCreationPolicy(SessionCreationPolicy.STATELESS))\n~~~\n\nThe server still needs to validate the token on every protected request. Stateless does not mean “no security state exists”; it means the server is not maintaining a traditional session for each logged-in client.\n\n## Why disable CSRF here?\n\n**CSRF**, or Cross-Site Request Forgery, is an attack where a malicious website attempts to make a user's browser send an unwanted authenticated request to another website.\n\nCSRF protection is particularly important when authentication credentials are automatically attached by the browser, such as traditional session cookies.\n\nA stateless API using an `Authorization: Bearer <token>` header has a different threat model because the browser does not automatically attach that header to arbitrary cross-site requests.\n\nFor a genuinely stateless JWT API using bearer tokens rather than browser-managed authentication cookies, disabling CSRF protection can therefore be appropriate:\n\n~~~java\n.csrf(csrf -> csrf.disable())\n~~~\n\nDo not copy this setting blindly. If you authenticate browser requests with cookies, CSRF considerations change. In that architecture, you should carefully configure CSRF protection rather than assuming that “JWT means CSRF can always be disabled.”\n\n## Password encoding\n\nWhen users create accounts or change passwords, never store the original password. Spring Security provides password encoders for this purpose.\n\nFor example, you can configure BCrypt:\n\n~~~java\n@Bean\nPasswordEncoder passwordEncoder() {\n    return new BCryptPasswordEncoder();\n}\n~~~\n\nYour registration logic can then encode the password before saving the user:\n\n~~~java\nString encoded = passwordEncoder.encode(request.password());\nuser.setPassword(encoded);\n~~~\n\nDuring login, Spring Security can compare the submitted password against the stored hash without needing to recover the original password.\n\nThe salt and BCrypt processing are handled by the encoder. You should not implement password hashing yourself.\n\n## Login and JWTs\n\nA typical authentication flow begins with a login request:\n\n~~~diagram\n{\"type\": \"sequence\", \"title\": \"Login, then call the API\", \"actors\": [\"React\", \"Spring Security\", \"UserRepository\"], \"steps\": [{\"from\": \"React\", \"to\": \"Spring Security\", \"label\": \"POST /api/auth/login {email, password}\"}, {\"from\": \"Spring Security\", \"to\": \"UserRepository\", \"label\": \"findByEmail\"}, {\"from\": \"UserRepository\", \"to\": \"Spring Security\", \"label\": \"user + BCrypt hash\", \"dashed\": true}, {\"note\": \"passwordEncoder.matches(…) → sign JWT\", \"over\": \"Spring Security\"}, {\"from\": \"Spring Security\", \"to\": \"React\", \"label\": \"200 { token, expiresIn }\", \"dashed\": true}, {\"from\": \"React\", \"to\": \"Spring Security\", \"label\": \"GET /api/me + Authorization: Bearer …\"}, {\"note\": \"verify signature + exp\", \"over\": \"Spring Security\"}, {\"from\": \"Spring Security\", \"to\": \"React\", \"label\": \"200 { name, roles }\", \"dashed\": true}]}\n~~~\n\n~~~text\nPOST /api/auth/login\n        ↓\nemail + password\n        ↓\nverify password\n        ↓\ncreate JWT\n        ↓\nreturn token\n~~~\n\nA **JWT**, or JSON Web Token, is a compact token consisting of three parts separated by dots:\n\n~~~text\nheader.payload.signature\n~~~\n\nThe header describes the token, including the signing algorithm. The payload contains **claims**, which are pieces of information about the token or authenticated user. The signature allows the server to verify that the signed token has not been modified.\n\nCommon claims include:\n\n- `sub` — the subject, commonly the user's identifier.\n- `roles` — roles assigned to the user.\n- `iat` — issued-at time.\n- `exp` — expiration time.\n\nA simplified payload might look like:\n\n~~~json\n{\n  \"sub\": \"user-42\",\n  \"roles\": [\"USER\"],\n  \"iat\": 1791000000,\n  \"exp\": 1791003600\n}\n~~~\n\nJWTs are encoded, not automatically encrypted. You should not put passwords or other secrets into the payload simply because it is inside a JWT.\n\n## Signing the token\n\nThe signature is created using a cryptographic signing algorithm.\n\n~~~widget jwt-inspector\n~~~\n\nWith **HS256**, the server uses a shared secret to create and verify the signature. The same secret must therefore be available to every component that needs to verify or create tokens.\n\nWith **RS256**, the system uses asymmetric cryptography: a private key signs tokens and a corresponding public key verifies them. This can be useful when multiple services need to verify tokens without receiving the private signing key.\n\nWhichever approach you use, **never hard-code production secrets into your Java source code or commit them to Git**.\n\nFor example, your application can read a secret from configuration supplied through the environment:\n\n~~~yaml\njwt:\n  secret: ${JWT_SECRET}\n~~~\n\nThe actual secret should be supplied securely by the deployment environment.\n\n## Validating every request\n\nCreating a JWT at login is only half of the system. The API must validate the token on every protected request.\n\nThe server should verify that:\n\n1. The token has the expected structure.\n2. The signature is valid.\n3. The token has not expired.\n4. The token contains acceptable claims.\n5. The authenticated identity is established correctly.\n\nSpring Security supports JWT bearer-token authentication through its OAuth2 Resource Server support. This is generally preferable to writing your own token-validation filter when the standard support fits your architecture.\n\nConceptually:\n\n~~~text\nRequest\n  ↓\nBearer token\n  ↓\nSpring Security validates signature and claims\n  ↓\nAuthenticated user\n  ↓\nAuthorization rules\n  ↓\nController\n~~~\n\nA custom filter can also be implemented when an application has requirements that do not fit the standard mechanisms. However, custom security code creates more opportunities for mistakes, so use the framework's built-in support when possible.\n\n## Method security with @PreAuthorize\n\nRequest-level rules answer questions such as “Does this endpoint require authentication?”. Sometimes you also want to protect a particular service operation.\n\nSpring Security supports method security with `@PreAuthorize`.\n\nAfter enabling method security, you can write rules such as:\n\n~~~java\n@PreAuthorize(\"hasRole('ADMIN')\")\npublic void deleteUser(UUID userId) {\n    // ...\n}\n~~~\n\nThis means the method requires the appropriate role before the method is allowed to execute.\n\nMethod security is useful because authorization can live close to the operation it protects. For resource-specific rules, such as “a user can update only their own task”, you may still need application-specific logic comparing the authenticated user's ID with the task owner ID.\n\n## Token expiry and refresh tokens\n\nJWTs should normally expire. The `exp` claim specifies the expiration time.\n\nShort-lived access tokens reduce the amount of time a stolen token can remain useful. However, very short lifetimes can make users log in repeatedly, which is inconvenient.\n\nA common solution is a **refresh token**. The access token is short-lived and used for normal API requests. A longer-lived refresh token can be exchanged for a new access token after the access token expires.\n\n~~~text\nLogin\n  ↓\nshort-lived access token + refresh token\n  ↓\nAPI requests use access token\n  ↓\naccess token expires\n  ↓\nrefresh token -> new access token\n~~~\n\nRefresh tokens are powerful credentials and therefore need careful storage, expiry, rotation, and revocation strategies. Do not treat them as harmless strings.\n\n## Where should browser tokens live?\n\nFor browser applications, token storage involves trade-offs.\n\nAn `HttpOnly` cookie cannot normally be read by JavaScript. This can reduce the ability of injected JavaScript to directly steal the credential. However, cookies are automatically attached to matching requests, so you must consider CSRF protection and cookie configuration.\n\nKeeping a token only in JavaScript memory avoids persistent browser storage. The downside is that the token disappears when the page is refreshed, unless another mechanism obtains a new one.\n\nAvoid storing long-lived authentication tokens in `localStorage` as a default strategy. JavaScript can read `localStorage`, so a successful cross-site scripting attack can potentially access tokens stored there.\n\nThere is no single storage choice that makes authentication automatically secure. You need to consider XSS, CSRF, token lifetime, refresh-token handling, cookie configuration, and your application's architecture together.\n\n## Common mistakes\n\n### Hard-coding the JWT secret\n\nNever put production signing secrets directly in Java source code or commit them to Git. Load secrets from secure deployment configuration.\n\n### Trusting the JWT payload without verifying the signature\n\nA JWT payload is just encoded data until its signature has been successfully verified. The backend must perform real cryptographic validation.\n\n### Making every endpoint public\n\nA broad `permitAll()` rule can accidentally expose sensitive API operations. Prefer a secure default such as requiring authentication for requests that are not explicitly public.\n\n### Disabling CSRF without understanding the architecture\n\nDisabling CSRF can be appropriate for a stateless bearer-token API, but it should not be treated as a universal JWT setting. Cookie-based authentication requires different considerations.\n\n### Using long-lived access tokens\n\nLong-lived bearer tokens increase the impact of token theft. Use sensible expiration times and design refresh-token handling deliberately.\n\n### Writing custom security code unnecessarily\n\nSpring Security already provides mature mechanisms for common authentication and authorization patterns. Prefer the framework's built-in JWT support when it meets your requirements.\n\n## Putting the flow together\n\nThe complete task-manager flow now looks like this:\n\n~~~text\nPOST /api/auth/login\n        ↓\nSpring verifies the password hash\n        ↓\nServer creates signed JWT\n        ↓\nClient receives credential\n        ↓\nGET /api/tasks\nAuthorization: Bearer <token>\n        ↓\nSpring Security validates JWT\n        ↓\nUser identity and roles become available\n        ↓\nAuthorization rules run\n        ↓\nController/service executes\n~~~\n\nThe important idea is that JWT authentication is not simply “decode a token and trust its contents”. The server must verify the token's signature and validity before treating its claims as authenticated information.\n\nIn the exercise, you will practise the mechanical part of reading a JWT's header and payload. The exercise deliberately does not implement cryptographic verification: in the real Spring Boot application, Spring Security performs that security-critical validation on the server.",
+  "takeaways": [
+    "Spring Security uses a filter chain to process and protect incoming HTTP requests.",
+    "A stateless JWT API authenticates each protected request using a token instead of a traditional server-side session.",
+    "JWTs contain a header, payload, and signature, but their payload is encoded rather than automatically encrypted.",
+    "Production JWT signing secrets must stay outside source code, and every protected request must have its token validated.",
+    "Short-lived access tokens and carefully managed refresh tokens can balance security with a convenient login experience."
+  ],
+  "quiz": [
+    {
+      "question": "What is the main purpose of Spring Security's filter chain?",
+      "options": [
+        "To compile Java source files before startup",
+        "To store every user's password in memory",
+        "To process requests through security checks before they reach protected application code",
+        "To replace the PostgreSQL database"
+      ],
+      "answer": 2,
+      "explanation": "The security filter chain processes incoming requests through security-related filters before protected application code such as controllers is reached."
+    },
+    {
+      "question": "Why is SessionCreationPolicy.STATELESS commonly used for a JWT bearer-token API?",
+      "options": [
+        "The server does not maintain a traditional login session for each client",
+        "JWTs cannot contain an expiration time",
+        "It disables all authentication checks",
+        "It automatically encrypts every JWT"
+      ],
+      "answer": 0,
+      "explanation": "A stateless JWT API does not rely on a traditional server-side session. Each protected request carries a token that the server validates."
+    },
+    {
+      "question": "Which three parts make up the basic JWT structure?",
+      "options": [
+        "username.password.database",
+        "header.payload.signature",
+        "request.response.session",
+        "role.permission.password"
+      ],
+      "answer": 1,
+      "explanation": "A JWT consists of a header, payload, and signature separated by dots."
+    },
+    {
+      "question": "Why must the JWT signing secret not be committed to Git?",
+      "options": [
+        "Git cannot store strings containing numbers",
+        "Spring Boot refuses to read secrets from source code",
+        "JWTs only work with public secrets",
+        "Anyone who obtains the secret may be able to create or validate tokens depending on the signing architecture"
+      ],
+      "answer": 3,
+      "explanation": "A signing secret is security-sensitive. Exposing it can allow attackers to forge valid tokens in shared-secret architectures, so production secrets must be protected."
+    },
+    {
+      "question": "What is the purpose of a refresh token?",
+      "options": [
+        "To replace password hashing",
+        "To make every API endpoint public",
+        "To obtain a new access token after a short-lived access token expires",
+        "To store the user's original password"
+      ],
+      "answer": 2,
+      "explanation": "Refresh tokens can be used to obtain new access tokens without forcing the user to authenticate again after every short-lived access token expires."
+    }
+  ],
+  "exercise": {
+    "title": "Read a JWT",
+    "task": "Practise reading a JWT without implementing cryptography. Write `decodeJwt(token)` that splits a JWT into exactly three parts, base64url-decodes the header and payload, parses both as JSON, and returns `{ header, payload }`. For base64url decoding, replace `-` with `+`, replace `_` with `/`, add `=` padding until the length is divisible by 4, then use `atob` and `JSON.parse`. If the token does not have exactly three parts or either the header or payload cannot be decoded and parsed, throw `Error(\"Malformed token\")`. Also write `isExpired(payload, nowSeconds)`, which returns `true` when `payload.exp` is missing or `payload.exp <= nowSeconds`, and `false` otherwise. Finally, write `hasRole(payload, role)`, which returns whether `payload.roles` is an array containing the requested role. In the real Spring Boot application, Spring Security performs signature verification on the server; this exercise intentionally only practises reading the encoded header and payload. The tests build their own tokens with `btoa`, so their base64url data is always valid.",
+    "kind": "ts",
+    "starter": "function decodeJwt(token: string) {\n  // TODO\n}\n\nfunction isExpired(payload: any, nowSeconds: number): boolean {\n  // TODO\n  return false;\n}\n\nfunction hasRole(payload: any, role: string): boolean {\n  // TODO\n  return false;\n}",
+    "solution": "function decodeJwt(token: string) {\n  try {\n    const parts = token.split(\".\");\n\n    if (parts.length !== 3) {\n      throw new Error(\"Malformed token\");\n    }\n\n    const decodePart = (part: string) => {\n      const base64 = part\n        .replace(/-/g, \"+\")\n        .replace(/_/g, \"/\");\n      const padded = base64 + \"=\".repeat((4 - (base64.length % 4)) % 4);\n      return JSON.parse(atob(padded));\n    };\n\n    return {\n      header: decodePart(parts[0]),\n      payload: decodePart(parts[1])\n    };\n  } catch {\n    throw new Error(\"Malformed token\");\n  }\n}\n\nfunction isExpired(payload: any, nowSeconds: number): boolean {\n  return typeof payload.exp !== \"number\" || payload.exp <= nowSeconds;\n}\n\nfunction hasRole(payload: any, role: string): boolean {\n  return Array.isArray(payload.roles) && payload.roles.includes(role);\n}",
+    "hint": "Start by splitting on `.` and checking for exactly three parts. For each encoded part, convert URL-safe base64 characters back to normal base64, add padding, call `atob`, and parse the resulting JSON. Remember that `exp` must exist and be greater than `nowSeconds` for the token to be considered unexpired.",
+    "tests": [
+      {
+        "name": "It decodes the JWT header and payload",
+        "code": "const encode = value => btoa(JSON.stringify(value)).replace(/=/g, \"\").replace(/\\+/g, \"-\").replace(/\\//g, \"_\"); const header = { alg: \"HS256\", typ: \"JWT\" }; const payload = { sub: \"user-42\", roles: [\"USER\"] }; const token = encode(header) + \".\" + encode(payload) + \".signature\"; const result = decodeJwt(token); return result.header.alg === \"HS256\" && result.header.typ === \"JWT\" && result.payload.sub === \"user-42\" && Array.isArray(result.payload.roles) && result.payload.roles[0] === \"USER\";"
+      },
+      {
+        "name": "It rejects a token with the wrong number of parts",
+        "code": "let threw = false; try { decodeJwt(\"one.two\"); } catch (error) { threw = error instanceof Error && error.message === \"Malformed token\"; } return threw;"
+      },
+      {
+        "name": "It rejects invalid JSON",
+        "code": "const invalid = btoa(\"not-json\").replace(/=/g, \"\").replace(/\\+/g, \"-\").replace(/\\//g, \"_\"); let threw = false; try { decodeJwt(invalid + \".\" + invalid + \".signature\"); } catch (error) { threw = error instanceof Error && error.message === \"Malformed token\"; } return threw;"
+      },
+      {
+        "name": "It accepts a token that uses base64url characters",
+        "code": "const header = btoa(JSON.stringify({ alg: \"RS256\" })).replace(/=/g, \"\").replace(/\\+/g, \"-\").replace(/\\//g, \"_\"); const payload = btoa(JSON.stringify({ sub: \"user-1\", roles: [\"ADMIN\"] })).replace(/=/g, \"\").replace(/\\+/g, \"-\").replace(/\\//g, \"_\"); const result = decodeJwt(header + \".\" + payload + \".signature\"); return result.header.alg === \"RS256\" && result.payload.sub === \"user-1\";"
+      },
+      {
+        "name": "It marks a missing expiry as expired",
+        "code": "return isExpired({ sub: \"user-1\" }, 1000) === true;"
+      },
+      {
+        "name": "It marks an old expiry as expired",
+        "code": "return isExpired({ exp: 999 }, 1000) === true;"
+      },
+      {
+        "name": "It marks an equal expiry as expired",
+        "code": "return isExpired({ exp: 1000 }, 1000) === true;"
+      },
+      {
+        "name": "It accepts a future expiry",
+        "code": "return isExpired({ exp: 1001 }, 1000) === false;"
+      },
+      {
+        "name": "It finds a role in the payload",
+        "code": "return hasRole({ roles: [\"USER\", \"ADMIN\"] }, \"ADMIN\") === true;"
+      },
+      {
+        "name": "It rejects a missing role",
+        "code": "return hasRole({ roles: [\"USER\"] }, \"ADMIN\") === false;"
+      },
+      {
+        "name": "It rejects a non-array roles value",
+        "code": "return hasRole({ roles: \"ADMIN\" }, \"ADMIN\") === false;"
+      }
+    ]
+  }
+}

@@ -5,6 +5,7 @@ import InteractiveProjects from '../components/InteractiveProjects';
 import ProjectGrid from '../components/ProjectGrid';
 import Services from '../components/Services';
 import TechStack from '../components/TechStack';
+import Testimonials from '../components/Testimonials';
 import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
 
@@ -17,6 +18,7 @@ export default function Home() {
       <About />
       <ProjectGrid />
       <Services />
+      <Testimonials />
       <InteractiveProjects />
       <TechStack />
       <ContactTerminal />

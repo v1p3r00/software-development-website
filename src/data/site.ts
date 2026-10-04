@@ -12,6 +12,10 @@ export const site = {
   // Cloudflare Worker: every GET adds one visit and returns { visitors: n }
   counterEndpoint: 'https://softwaredevelopment-counter.punkboy40.workers.dev/',
   formAccessKey: '6663fd0a-d3f1-4c91-b881-8ea938ffb30e',
+  // Patreon page for the course's sample projects; set the real address here
+  patreon: 'https://www.patreon.com/',
+  // hides every Patreon button and link until the Patreon page is ready
+  showPatreon: false,
   build: '2026.09',
   version: 'v2.6',
   timezone: 'Europe/Budapest',

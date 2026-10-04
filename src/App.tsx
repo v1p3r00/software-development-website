@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useI18n } from './i18n';
 import { Route, Routes } from 'react-router-dom';
 import Navigation from './components/Navigation';
@@ -7,15 +7,21 @@ import CommandPalette from './components/CommandPalette';
 import SystemStatus from './components/SystemStatus';
 import ScrollProgress from './components/ScrollProgress';
 import TechnicalCursor from './components/TechnicalCursor';
+import BackToTop from './components/BackToTop';
+import MobileTalk from './components/MobileTalk';
+import NotFound from './pages/NotFound';
 import Home from './pages/Home';
 import ProjectDetail from './pages/ProjectDetail';
-import { ArticlePage, ArticlesPage, CvMakerPage, InterviewPage, InterviewTrackPage } from './pages/lazy';
+import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, InterviewPage, InterviewTrackPage } from './pages/lazy';
 import { useRouteCommitSignal } from './lib/pageTransition';
+import { countVisit } from './hooks/useVisitorCount';
 
 export default function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { t } = useI18n();
   useRouteCommitSignal();
+  // count the visit on whichever page it lands, not only when the home hero is shown
+  useEffect(() => countVisit(), []);
 
   return (
     <div className="grain relative min-h-screen bg-bg">
@@ -40,7 +46,9 @@ export default function App() {
             <Route path="/hu?/interview" element={<InterviewPage />} />
             <Route path="/hu?/interview/:id" element={<InterviewTrackPage />} />
             <Route path="/hu?/cv-maker" element={<CvMakerPage />} />
-            <Route path="*" element={<Home />} />
+            <Route path="/hu?/course" element={<CoursePage />} />
+            <Route path="/hu?/course/:slug" element={<CourseLessonPage />} />
+            <Route path="*" element={<NotFound onSearch={() => setPaletteOpen(true)} />} />
           </Routes>
         </Suspense>
       </main>
@@ -49,6 +57,8 @@ export default function App() {
       <SystemStatus />
       <CommandPalette open={paletteOpen} setOpen={setPaletteOpen} />
       <TechnicalCursor />
+      <BackToTop />
+      <MobileTalk />
     </div>
   );
 }

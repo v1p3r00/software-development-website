@@ -153,17 +153,20 @@ function SectionBlock({ section, cv, side = false }: { section: Section; cv: Cv;
   const style = templateOf(cv.design.template).skills;
   const title = section.title.trim() || h[section.kind];
   const short = section.kind === 'skills' || section.kind === 'languages';
+  const parts: ReactNode[] = [];
+  if (section.text.trim()) parts.push(<Desc key="text" text={section.text} allBullets={false} />);
+  if (short) parts.push(<ShortList key="list" section={section} side={side} style={style} />);
+  else
+    for (const it of section.items.filter((x) => x.title.trim() || x.description.trim()))
+      parts.push(<EntryBlock key={it.id} it={it} kind={section.kind} present={h.present} />);
   return (
     <section className={`cv-section cv-k-${section.kind}`}>
-      <h2 className="cv-h">{title}</h2>
-      {section.text.trim() && <Desc text={section.text} allBullets={false} />}
-      {short ? (
-        <ShortList section={section} side={side} style={style} />
-      ) : (
-        section.items
-          .filter((it) => it.title.trim() || it.description.trim())
-          .map((it) => <EntryBlock key={it.id} it={it} kind={section.kind} present={h.present} />)
-      )}
+      {/* the heading always travels to the next page together with its first entry */}
+      <div className="cv-keep">
+        <h2 className="cv-h">{title}</h2>
+        {parts[0]}
+      </div>
+      {parts.slice(1)}
     </section>
   );
 }

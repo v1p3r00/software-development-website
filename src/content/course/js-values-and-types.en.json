@@ -1,0 +1,103 @@
+{
+  "title": "Values, variables and types",
+  "intro": "JavaScript programs work with values: text, numbers, true/false values, and more complex objects. In this lesson, you will learn how to store these values, understand their types, convert between them, and avoid some of JavaScript's most common surprises.",
+  "body": "## What JavaScript actually works with\n\nBefore you build a React application or connect a frontend to Spring Boot, you need to understand one basic idea: JavaScript programs manipulate **values**.\n\nA value can be a piece of text, a number, a boolean, an object, or another kind of data. The kind of value is its **type**.\n\nFor example, a task manager might have a task title, a completion status, and a number of tasks remaining.\n\n~~~js\nconst title = \"Buy groceries\";\nconst completed = false;\nconst remainingTasks = 4;\n~~~\n\nEach of these variables contains a value. The kind of value is its **type**.\n\nUnderstanding types matters because JavaScript behaves differently depending on what kind of values you are working with. `\"5\"`, for example, is text, while `5` is a number.\n\n## Running JavaScript\n\nThere are several easy ways to run JavaScript while learning.\n\n### The browser console\n\nOpen your browser's developer tools and find the **Console** tab. You can type JavaScript directly there.\n\n~~~js\n2 + 3\n~~~\n\nThe console evaluates the expression and shows `5`.\n\nYou can also create variables:\n\n~~~js\nconst name = \"Anna\";\nconsole.log(name);\n~~~\n\n`console.log()` prints a value to the console. It is one of the simplest tools for checking what your program is doing.\n\n### A script tag\n\nYou can also put JavaScript into an HTML page using a `<script>` element.\n\n~~~html\n<!DOCTYPE html>\n<html>\n  <body>\n    <h1>My page</h1>\n\n    <script>\n      const message = \"Hello!\";\n      console.log(message);\n    </script>\n  </body>\n</html>\n~~~\n\nFor larger applications, JavaScript normally lives in separate `.js` files, but the basic idea is the same.\n\n### IntelliJ IDEA\n\nYour default IDE for this course is **IntelliJ IDEA Community Edition**. You can create a JavaScript file such as `app.js`, write your code there, and use IntelliJ's development tools while working on your project.\n\nFor browser-based code, the browser console remains particularly useful because you can immediately inspect values and experiment with expressions.\n\n## Variables: let and const\n\nA **variable** is a named place where you keep a value so that you can use it later.\n\nModern JavaScript gives you two main declarations: `const` and `let`.\n\nUse `const` when the variable should not be reassigned.\n\n~~~js\nconst productName = \"Keyboard\";\nconst price = 49.99;\n~~~\n\nUse `let` when the variable needs to receive a different value later.\n\n~~~js\nlet cartItems = 0;\ncartItems = cartItems + 1;\n~~~\n\nA useful default rule is:\n\n> Start with `const`. Use `let` only when reassignment is actually necessary.\n\nFor example, a booking application might keep the selected date in a variable that can change:\n\n~~~js\nlet selectedDate = \"Monday\";\nselectedDate = \"Tuesday\";\n~~~\n\nBut a fixed application name can remain a constant:\n\n~~~js\nconst applicationName = \"BookEasy\";\n~~~\n\n### Why not var?\n\nOlder JavaScript code often uses `var`. You will still encounter it in existing projects, but modern code normally uses `let` and `const` instead.\n\nOne important reason is **scope**. Scope describes where a variable is available in your program. `let` and `const` are block-scoped, which means they respect blocks such as `if` statements and loops.\n\n`var` has older scoping behaviour that can make code harder to reason about. Unless you are maintaining legacy JavaScript, prefer `const` and `let`.\n\n## Primitive types\n\nJavaScript has several **primitive types**. A primitive is a simple value that is not an object.\n\n~~~diagram\n{\"type\": \"tree\", \"title\": \"JavaScript types at a glance\", \"root\": {\"label\": \"Values\", \"children\": [{\"label\": \"Primitives\", \"sub\": \"copied by value\", \"highlight\": true, \"children\": [{\"label\": \"string\"}, {\"label\": \"number\"}, {\"label\": \"boolean\"}, {\"label\": \"null\"}, {\"label\": \"undefined\"}, {\"label\": \"bigint · symbol\"}]}, {\"label\": \"Objects\", \"sub\": \"shared by reference\", \"children\": [{\"label\": \"{ } object\"}, {\"label\": \"[ ] array\"}, {\"label\": \"function\"}]}]}}\n~~~\n\nThe most important ones for everyday application development are:\n\n- `string` — text\n- `number` — numeric values\n- `boolean` — `true` or `false`\n- `null` — an intentionally empty value\n- `undefined` — a value that has not been assigned\n\nFor example:\n\n~~~js\nconst username = \"David\";       // string\nconst age = 31;                  // number\nconst isLoggedIn = true;         // boolean\nconst selectedProduct = null;    // null\nlet result;                      // undefined\n~~~\n\nJavaScript also has `bigint`, for very large integers, and `symbol`, which creates unique symbol values. You will rarely need either when starting frontend development, so it is enough to know that they exist.\n\n### Objects\n\nAn **object** groups related values together.\n\nA webshop product might look like this:\n\n~~~js\nconst product = {\n  name: \"Keyboard\",\n  price: 49.99,\n  inStock: true\n};\n~~~\n\nArrays are also objects in JavaScript. An array stores an ordered collection of values.\n\n~~~js\nconst cart = [\"Keyboard\", \"Mouse\", \"Monitor\"];\n~~~\n\nThis distinction becomes very important when working with API responses and React state.\n\n## Checking a type with typeof\n\nThe `typeof` operator tells you the type of a value.\n\n~~~js\ntypeof \"hello\";       // \"string\"\ntypeof 42;             // \"number\"\ntypeof true;           // \"boolean\"\ntypeof undefined;      // \"undefined\"\n~~~\n\nIt works well most of the time, but JavaScript has a couple of famous quirks.\n\n~~~js\ntypeof null;     // \"object\"\ntypeof [];       // \"object\"\ntypeof {};       // \"object\"\n~~~\n\n`typeof null` returning `\"object\"` is an old JavaScript language quirk. It does **not** mean that `null` is actually an object.\n\nArrays are objects too, but if you specifically want to know whether something is an array, use `Array.isArray()`.\n\n~~~js\nArray.isArray([1, 2, 3]); // true\nArray.isArray({});        // false\n~~~\n\nThere is another important special number: `NaN`.\n\n`NaN` means **Not-a-Number**. It is a special value of type `number`.\n\n~~~js\ntypeof NaN; // \"number\"\n~~~\n\nYou can detect it with `Number.isNaN()`.\n\n## Template literals\n\nA **template literal** is a string written with backticks instead of quotes. It lets you insert expressions directly into the string.\n\n~~~js\nconst name = \"Anna\";\nconst age = 28;\n\nconst message = `Hello ${name}, you are ${age} years old.`;\n~~~\n\nThe `${...}` syntax evaluates the expression inside it.\n\nThis is particularly useful when creating messages for a task manager:\n\n~~~js\nconst completed = 7;\nconst total = 10;\n\nconst status = `${completed} of ${total} tasks completed`;\n~~~\n\nTemplate literals can also span multiple lines, which makes them useful for larger pieces of text.\n\n## Floating-point numbers can surprise you\n\nJavaScript's `number` type uses floating-point arithmetic. This means some decimal calculations cannot be represented perfectly in binary.\n\nYou may therefore see this famous result:\n\n~~~js\n0.1 + 0.2;\n// 0.30000000000000004\n~~~\n\nThis does not mean JavaScript cannot do arithmetic. It means that the internal binary representation of these decimal values is not always exact.\n\nFor many applications, you can handle this by rounding when displaying values.\n\n~~~js\nconst total = 0.1 + 0.2;\nconsole.log(total.toFixed(2));\n// \"0.30\"\n~~~\n\nFinancial applications often need more careful decimal handling than simple floating-point arithmetic. Keep this limitation in mind when you later build prices, invoices, or payment functionality.\n\n## Type coercion\n\n**Type coercion** means JavaScript automatically converts a value from one type to another in some situations.\n\nFor example:\n\n~~~js\n\"5\" + 2;\n// \"52\"\n~~~\n\nBecause `+` can concatenate strings, JavaScript converts the number to text.\n\nOther operators can behave differently:\n\n~~~js\n\"5\" - 2;\n// 3\n~~~\n\nJavaScript converts the string into a number here.\n\nThis automatic conversion can be convenient, but it can also make code confusing. Being explicit about conversions is often easier to understand.\n\n## == versus ===\n\nJavaScript has two commonly discussed equality operators.\n\n~~~compare\n{\"left\": {\"title\": \"== converts first\", \"lang\": \"js\", \"code\": \"0 == ''          // true\\n'1' == 1         // true\\nnull == undefined // true\", \"note\": \"Hidden type coercion makes bugs hard to spot.\"}, \"right\": {\"title\": \"=== compares as is\", \"lang\": \"js\", \"code\": \"0 === ''          // false\\n'1' === 1         // false\\nNumber('1') === 1 // true\", \"note\": \"Convert explicitly, then compare strictly.\"}}\n~~~\n\n`==` is **loose equality**. It can perform type coercion before comparing values.\n\n~~~js\n5 == \"5\"; // true\n~~~\n\n`===` is **strict equality**. It compares both the value and the type without performing this kind of automatic conversion.\n\n~~~js\n5 === \"5\"; // false\n~~~\n\nFor modern JavaScript, use `===` and `!==` by default. They make comparisons more predictable.\n\n~~~js\nconst quantity = 5;\n\nif (quantity === 5) {\n  console.log(\"Five items\");\n}\n~~~\n\n## Truthy and falsy values\n\nJavaScript allows values to be used directly in conditions. Some values are **falsy**, meaning JavaScript treats them as false in a boolean context.\n\n~~~terms\n[{\"term\": \"falsy\", \"def\": \"`false`, `0`, `-0`, `0n`, `''`, `null`, `undefined`, `NaN` — everything else is truthy.\"}, {\"term\": \"truthy\", \"def\": \"Includes surprises like `'0'`, `'false'`, `[]` and `{}`.\"}]\n~~~\n\nCommon falsy values include:\n\n- `false`\n- `0`\n- `-0`\n- `\"\"`\n- `null`\n- `undefined`\n- `NaN`\n\nMost other values are **truthy**, meaning they behave like `true` in a condition.\n\n~~~js\nconst username = \"Anna\";\n\nif (username) {\n  console.log(\"A username was provided\");\n}\n~~~\n\nThis can be useful for checking optional values, but remember that `0` and an empty string are also falsy. If zero is a valid value in your application, you may need an explicit comparison instead.\n\n## Converting values explicitly\n\nJavaScript provides functions for converting values.\n\n### Number()\n\nUse `Number()` when you want to convert a value to a number.\n\n~~~js\nNumber(\"42\");\n// 42\n\nNumber(\"3.5\");\n// 3.5\n~~~\n\nInvalid numeric text produces `NaN`.\n\n~~~js\nNumber(\"hello\");\n// NaN\n~~~\n\nAn empty string is a special case:\n\n~~~js\nNumber(\"\");\n// 0\n~~~\n\nThat behaviour is sometimes undesirable, so when accepting user input, validate the input before converting it.\n\n### String()\n\n`String()` converts a value to text.\n\n~~~js\nString(42);\n// \"42\"\n\nString(true);\n// \"true\"\n~~~\n\n### parseInt()\n\n`parseInt()` reads an integer from the beginning of a string.\n\n~~~js\nparseInt(\"42\", 10);\n// 42\n~~~\n\nNotice the second argument, `10`. It specifies the base-10 number system.\n\nHowever, `parseInt()` does not require the entire string to be numeric.\n\n~~~js\nparseInt(\"12px\", 10);\n// 12\n~~~\n\nThis is useful in some situations, but dangerous if your application requires the **whole input** to be valid numeric text. For strict input validation, `Number()` combined with an appropriate check is often a better choice.\n\n## Naming variables clearly\n\nGood names make code easier to understand without extra comments.\n\nUse **camelCase** for JavaScript variables and functions.\n\n~~~js\nconst firstName = \"Anna\";\nconst cartItemCount = 3;\nconst isPaymentComplete = false;\n~~~\n\nBoolean variables often read nicely when they start with `is`, `has`, or `can`.\n\n~~~js\nconst isAvailable = true;\nconst hasAccount = false;\nconst canCheckout = true;\n~~~\n\nAvoid vague names:\n\n~~~js\nconst x = 42;\nconst data = \"something\";\n~~~\n\nPrefer names that describe the actual meaning:\n\n~~~js\nconst remainingTasks = 42;\nconst customerEmail = \"anna@example.com\";\n~~~\n\nUse `UPPER_SNAKE_CASE` only for values that your project treats as constants by convention, such as configuration values.\n\n~~~js\nconst MAX_CART_ITEMS = 50;\n~~~\n\n## Common mistakes\n\n### Mistaking a number for a string\n\n~~~js\nconst price = \"100\";\n~~~\n\nThis is text, not a number. If you need arithmetic, convert it deliberately.\n\n~~~js\nconst price = Number(\"100\");\n~~~\n\n### Using == without understanding coercion\n\n~~~js\nif (userInput == 10) {\n  // ...\n}\n~~~\n\nThis can hide type problems. Prefer `===` unless you have a specific reason to use loose equality.\n\n### Assuming typeof is perfect\n\n~~~js\ntypeof null; // \"object\"\ntypeof [];   // \"object\"\n~~~\n\nUse `value === null` for `null`, and `Array.isArray(value)` for arrays.\n\n### Using parseInt() for strict validation\n\n~~~js\nparseInt(\"12px\", 10);\n// 12\n~~~\n\nIf the requirement is that the entire input must be numeric, this result is too permissive.\n\n### Reassigning a const\n\n~~~js\nconst count = 1;\ncount = 2; // error\n~~~\n\nIf the variable itself needs to be reassigned, use `let`.\n\n## Putting it together\n\nImagine a small task manager receiving text from an input field. The browser gives you text, even when the user types a number.\n\n~~~js\nconst input = \"  42 \";\nconst value = Number(input.trim());\n\nif (Number.isFinite(value)) {\n  console.log(`You entered ${value}`);\n}\n~~~\n\nThis combines several ideas from the lesson: strings, numbers, `const`, template literals, conversion, trimming whitespace, and validation.\n\nThese details may seem small, but they become important when your React frontend starts receiving user input and API responses. Before you can reliably manage application state or send data to a Spring Boot backend, you need to know what values you actually have.",
+  "takeaways": [
+    "Use const by default and let when a variable needs to be reassigned; avoid var in modern JavaScript.",
+    "JavaScript has primitive values such as strings, numbers, booleans, null, and undefined, while objects group more complex data.",
+    "Use typeof carefully: null is reported as object, arrays are objects, and NaN is a number.",
+    "Prefer === over == and use explicit conversions such as Number() and String() when you want predictable behaviour.",
+    "Truthy and falsy values, floating-point arithmetic, and type coercion are common sources of JavaScript bugs."
+  ],
+  "quiz": [
+    {
+      "question": "Which declaration should you normally use when a variable will not be reassigned?",
+      "options": [
+        "var",
+        "let",
+        "const",
+        "static"
+      ],
+      "answer": 2,
+      "explanation": "Use const when the variable itself will not be reassigned. It communicates your intention clearly and is the preferred default in modern JavaScript."
+    },
+    {
+      "question": "What does this expression evaluate to? `typeof null`",
+      "options": [
+        "\"null\"",
+        "\"object\"",
+        "\"undefined\"",
+        "\"boolean\""
+      ],
+      "answer": 1,
+      "explanation": "JavaScript has a historical quirk where typeof null returns \"object\", even though null represents an intentionally empty value."
+    },
+    {
+      "question": "What does this code produce?",
+      "options": [
+        "The number 52",
+        "An error",
+        "The boolean false",
+        "The string \"52\""
+      ],
+      "answer": 3,
+      "explanation": "Because one operand is a string, the + operator performs string concatenation and converts the number 2 to text."
+    },
+    {
+      "question": "Which comparison is strict and does not perform the type coercion used by loose equality?",
+      "options": [
+        "===",
+        "==",
+        "=",
+        "!="
+      ],
+      "answer": 0,
+      "explanation": "The === operator checks both the value and the type. For example, 5 === \"5\" is false."
+    },
+    {
+      "question": "What is the result of `parseInt(\"12px\", 10)`?",
+      "options": [
+        "NaN",
+        "12",
+        "\"12px\"",
+        "null"
+      ],
+      "answer": 1,
+      "explanation": "parseInt reads an integer from the beginning of the string and stops when it reaches characters that are not part of the number, so the result is 12."
+    }
+  ],
+  "exercise": {
+    "title": "Describe and safely convert values",
+    "task": "Implement exactly two functions: `describeValue(value)` and `toNumberOrNull(text)`. `describeValue(value)` must return `\"null\"` for `null`, `\"array\"` for arrays, `\"NaN\"` for `NaN`, and otherwise return the string produced by `typeof value`. `toNumberOrNull(text)` must trim the input and return a finite number when the entire trimmed text is numeric, such as `\" 42 \"` → `42` and `\"3.5\"` → `3.5`. It must return `null` for an empty or whitespace-only string and for anything that is not fully numeric, including `\"12px\"`; the tests call these exact function names.",
+    "kind": "js",
+    "starter": "function describeValue(value) {\n  // TODO: implement\n}\n\nfunction toNumberOrNull(text) {\n  // TODO: implement\n}",
+    "solution": "function describeValue(value) {\n  if (value === null) {\n    return \"null\";\n  }\n\n  if (Array.isArray(value)) {\n    return \"array\";\n  }\n\n  if (Number.isNaN(value)) {\n    return \"NaN\";\n  }\n\n  return typeof value;\n}\n\nfunction toNumberOrNull(text) {\n  const trimmed = text.trim();\n\n  if (trimmed === \"\") {\n    return null;\n  }\n\n  const value = Number(trimmed);\n\n  return Number.isFinite(value) ? value : null;\n}",
+    "hint": "Handle the special cases in `describeValue` before falling back to `typeof`. For numeric input, trim the text first, reject an empty result, convert it with Number(), and use Number.isFinite() so values such as NaN and Infinity are not accepted.",
+    "tests": [
+      {
+        "name": "Describes primitive values",
+        "code": "return describeValue(\"hello\") === \"string\" && describeValue(42) === \"number\" && describeValue(true) === \"boolean\" && describeValue(undefined) === \"undefined\";"
+      },
+      {
+        "name": "Describes null and arrays",
+        "code": "return describeValue(null) === \"null\" && describeValue([]) === \"array\" && describeValue([1, 2, 3]) === \"array\";"
+      },
+      {
+        "name": "Recognizes NaN",
+        "code": "return describeValue(NaN) === \"NaN\" && describeValue(0 / 0) === \"NaN\";"
+      },
+      {
+        "name": "Converts valid numeric text",
+        "code": "return toNumberOrNull(\" 42 \") === 42 && toNumberOrNull(\"3.5\") === 3.5 && toNumberOrNull(\"-7\") === -7;"
+      },
+      {
+        "name": "Rejects empty and partially numeric text",
+        "code": "return toNumberOrNull(\"\") === null && toNumberOrNull(\"   \") === null && toNumberOrNull(\"12px\") === null && toNumberOrNull(\"hello\") === null;"
+      },
+      {
+        "name": "Rejects non-finite numbers",
+        "code": "return toNumberOrNull(\"Infinity\") === null && toNumberOrNull(\"-Infinity\") === null;"
+      }
+    ]
+  }
+}

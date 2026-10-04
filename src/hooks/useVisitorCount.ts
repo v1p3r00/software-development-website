@@ -57,6 +57,14 @@ function loadCount(): Promise<number | null> {
   return pending;
 }
 
+/**
+ * Counts this visit once per browser session, whichever page it starts on
+ * (articles and course lessons are often the landing page, not the home page).
+ */
+export function countVisit(): void {
+  void loadCount();
+}
+
 /** undefined while loading, null if the counter is unavailable */
 export function useVisitorCount() {
   const [count, setCount] = useState<number | null | undefined>(undefined);

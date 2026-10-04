@@ -2,18 +2,21 @@ import { Link } from 'react-router-dom';
 import { labs } from '../data/labs';
 import type { Lab } from '../data/labs';
 import { readyTracks } from '../data/interview';
+import { allLessons, isReady, modules } from '../data/course';
+import { useProgress } from './course/progress';
 import { useI18n } from '../i18n';
 import { usePageTransition } from '../lib/pageTransition';
-import { InterviewTrackPage, labPreload } from '../pages/lazy';
+import { CourseLessonPage, InterviewTrackPage, labPreload } from '../pages/lazy';
 import LabIcon from './LabIcon';
 import { Arrow, CornerMarks, Section, SectionHeader, cx } from './ui';
+import { site } from '../data/site';
 
 /** stacked page schematics: the CV maker's layouts */
 function CvVisual({ lang }: { lang: 'en' | 'hu' }) {
   const features =
     lang === 'hu'
-      ? ['Élő előnézet', '4 elrendezés', 'PDF export', 'Útmutató']
-      : ['Live preview', '4 layouts', 'PDF export', 'Writing guide'];
+      ? ['Élő előnézet', '24 elrendezés', 'PDF export', 'Útmutató']
+      : ['Live preview', '24 layouts', 'PDF export', 'Writing guide'];
   const line = (w: string, extra = '') => <span className={cx('block h-[3px] bg-line-strong/70', extra)} style={{ width: w }} />;
   return (
     <div className="flex h-full flex-col">
@@ -52,6 +55,57 @@ function CvVisual({ lang }: { lang: 'en' | 'hu' }) {
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/** the course as a compact route of its ten modules */
+function CourseVisual({ lang }: { lang: 'en' | 'hu' }) {
+  const { t, lp } = useI18n();
+  const { link } = usePageTransition();
+  const { progress } = useProgress();
+  const last = progress.last ? allLessons.find((l) => l.slug === progress.last) : undefined;
+  const done = Object.keys(progress.done).length;
+  return (
+    <div>
+      {last && (
+        <Link
+          to={lp(`/course/${last.slug}/`)}
+          onClick={link(lp(`/course/${last.slug}/`), 'slide', { prepare: CourseLessonPage.preload })}
+          data-cursor="follow"
+          className="group mb-4 flex items-center gap-4 border border-accent bg-accent/10 px-4 py-3 transition-colors hover:bg-accent/20"
+        >
+          <span className="min-w-0 flex-1">
+            <span className="label-a block">
+              {t.ux.continueCourse} · {done}/{allLessons.length}
+            </span>
+            <span className="mt-1 block truncate text-[15px] font-semibold text-text">
+              {Number(last.module.num)}.{last.module.lessons.findIndex((l) => l.slug === last.slug) + 1} {last.title[lang]}
+            </span>
+          </span>
+          <Arrow className="shrink-0 text-accent transition-transform duration-300 group-hover:translate-x-1" />
+        </Link>
+      )}
+      <ol className="relative grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2">
+        {modules.map((m) => {
+          // a module is live once any of its lessons has content
+          const live = m.lessons.some((l) => isReady(l.slug));
+          return (
+          <li key={m.id} className="flex items-center gap-3 bg-surface px-3 py-2.5">
+            <span
+              className={cx(
+                'grid h-5 w-5 shrink-0 place-items-center border font-mono text-[9px]',
+                live ? 'border-accent bg-accent text-onaccent' : 'border-line-strong text-dim',
+              )}
+            >
+              {m.num}
+            </span>
+            <span className={cx('truncate text-[13px]', live ? 'text-text' : 'text-muted')}>{m.title[lang]}</span>
+          </li>
+          );
+        })}
+      </ol>
+      <p className="label mt-3">{lang === 'hu' ? `Kvízek · böngészős gyakorlatok · ${site.showPatreon ? 'mintaprojektek a Patreonon' : 'haladási térkép'}` : `Quizzes · in-browser exercises · ${site.showPatreon ? 'sample projects on Patreon' : 'progress map'}`}</p>
     </div>
   );
 }
@@ -129,7 +183,7 @@ function LabCard({ lab }: { lab: Lab }) {
               onClick={open}
               onMouseEnter={preload ? () => void preload() : undefined}
               data-cursor="follow"
-              className="group inline-flex items-center gap-4 bg-accent px-6 py-4 font-mono text-[11px] uppercase tracking-tech text-onaccent transition-colors duration-300 hover:bg-text"
+              className="group inline-flex items-center gap-4 bg-accent px-6 py-4 font-mono text-[12.5px] uppercase tracking-tech text-onaccent transition-colors duration-300 hover:bg-text"
             >
               {lab.cta[lang]}
               <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
@@ -145,7 +199,7 @@ function LabCard({ lab }: { lab: Lab }) {
         </div>
 
         <div className="border-t border-line p-6 sm:p-8 lg:col-span-5 lg:border-t-0">
-          {lab.id === 'cv' ? <CvVisual lang={lang} /> : <InterviewVisual />}
+          {lab.id === 'cv' ? <CvVisual lang={lang} /> : lab.id === 'course' ? <CourseVisual lang={lang} /> : <InterviewVisual />}
         </div>
       </div>
     </li>

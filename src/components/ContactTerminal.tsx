@@ -69,16 +69,32 @@ export default function ContactTerminal() {
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (status === 'sending') return;
+  const validate = (): Errors => {
     const next: Errors = {};
     if (!values.name.trim()) next.name = t.contact.errorName;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) next.email = t.contact.errorEmail;
     if (values.phone.trim() ? !PHONE.test(values.phone.trim()) : wantsCall) next.phone = t.contact.errorPhone;
     if (values.project.trim().length < 8) next.project = t.contact.errorProject;
+    return next;
+  };
+  // a field is checked when the visitor leaves it (only if something was typed), not while typing
+  const onBlurField = (field: Field) => () => {
+    if (!values[field].trim()) return;
+    const msg = validate()[field];
+    setErrors((prev) => ({ ...prev, [field]: msg }));
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (status === 'sending') return;
+    const next = validate();
     setErrors(next);
-    if (Object.keys(next).length) return;
+    if (Object.keys(next).length) {
+      // take the visitor straight to the first thing to fix
+      const first = (['name', 'email', 'phone', 'company', 'project'] as Field[]).find((f) => next[f]);
+      if (first) window.setTimeout(() => document.getElementById(`contact-${first}`)?.focus(), 0);
+      return;
+    }
 
     // bots fill the hidden field; pretend it worked and send nothing
     if (honey) {
@@ -167,6 +183,7 @@ export default function ContactTerminal() {
       name,
       value: values[name],
       onChange: set(name),
+      onBlur: onBlurField(name),
       placeholder,
       autoComplete: ({ name: 'name', email: 'email', phone: 'tel', company: 'organization', project: 'off' } as const)[name],
       'aria-invalid': invalid,
@@ -284,15 +301,18 @@ export default function ContactTerminal() {
                     type="submit"
                     disabled={status === 'sending'}
                     data-cursor="follow"
-                    className="group inline-flex items-center gap-3 bg-accent px-6 py-3.5 font-mono text-[11px] uppercase tracking-tech text-onaccent transition-colors duration-300 hover:bg-text disabled:cursor-wait disabled:opacity-70"
+                    className="group inline-flex items-center gap-3 bg-accent px-6 py-3.5 font-mono text-[12.5px] uppercase tracking-tech text-onaccent transition-colors duration-300 hover:bg-text disabled:cursor-wait disabled:opacity-70"
                   >
                     <span>
                       &gt; {status === 'sending' ? `${t.contact.sending}…` : t.contact.send}
                     </span>
                     <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
                   </button>
+                  {status !== 'sent' && <p className="w-full text-[13px] text-muted sm:w-auto">{t.contact.replyTime}</p>}
                   <p role="status" aria-live="polite" className="font-mono text-2xs uppercase tracking-tech">
-                    {status === 'sent' && <span className="text-accent">● {t.contact.sent}</span>}
+                    {status === 'sent' && (
+                      <span className="inline-flex items-center gap-2 border border-accent bg-accent/10 px-3 py-2 text-accent">✓ {t.contact.sent}</span>
+                    )}
                     {status === 'error' && (
                       <span className="text-muted">
                         ! {t.contact.error}{' '}

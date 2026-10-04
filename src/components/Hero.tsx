@@ -136,7 +136,7 @@ export default function Hero() {
             <a
               href="#projects"
               data-cursor="follow"
-              className="group relative inline-flex items-center gap-5 border border-line-strong px-7 py-4 font-mono text-[11px] uppercase tracking-tech text-text transition-colors duration-300 hover:border-accent hover:text-accent"
+              className="group relative inline-flex items-center gap-5 border border-line-strong px-7 py-4 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors duration-300 hover:border-accent hover:text-accent"
             >
               {t.hero.cta}
               <Arrow className="transition-transform duration-300 group-hover:translate-x-1.5" />
@@ -168,7 +168,7 @@ export default function Hero() {
               {t.hero.roles.map((role, i) => (
                 <span
                   key={role}
-                  className="absolute inset-0 font-mono text-[11px] uppercase tracking-tech text-text transition-all duration-500 ease-tech"
+                  className="absolute inset-0 font-mono text-[12.5px] uppercase tracking-tech text-text transition-all duration-500 ease-tech"
                   style={{
                     opacity: i === roleIndex ? 1 : 0,
                     transform: `translateY(${(i - roleIndex) * 100}%)`,
@@ -202,7 +202,7 @@ export default function Hero() {
             <VisitorCounter className="basis-full lg:basis-auto" />
             <div>
               <div className="label mb-2">{t.ui.location}</div>
-              <div className="font-mono text-[11px] uppercase leading-relaxed tracking-tech text-text">
+              <div className="font-mono text-[12.5px] uppercase leading-relaxed tracking-tech text-text">
                 Budapest
                 <br />
                 Central Europe
@@ -210,7 +210,7 @@ export default function Hero() {
             </div>
             <div>
               <div className="label mb-2">{t.ui.build}</div>
-              <div className="font-mono text-[11px] uppercase tracking-tech text-text">{site.build}</div>
+              <div className="font-mono text-[12.5px] uppercase tracking-tech text-text">{site.build}</div>
               <div className="label-a mt-1">{t.ui.systemOnline}</div>
             </div>
           </div>
@@ -220,7 +220,7 @@ export default function Hero() {
             <ul className="space-y-1">
               {STACK.map((s, i) => (
                 <li key={s} className="group flex items-center justify-between gap-2">
-                  <span className="font-mono text-[11px] uppercase tracking-tech text-muted transition-colors group-hover:text-text">
+                  <span className="font-mono text-[12.5px] uppercase tracking-tech text-muted transition-colors group-hover:text-text">
                     {s}
                   </span>
                   <span className="label">{String(i + 1).padStart(2, '0')}</span>

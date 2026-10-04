@@ -4,12 +4,14 @@ import { site } from '../data/site';
 import { Link } from 'react-router-dom';
 import { usePageTransition } from '../lib/pageTransition';
 import { ArticlesPage } from '../pages/lazy';
+import { useCursorPref } from '../hooks/useCursorPref';
 
 export default function Footer() {
   const { t, lp } = useI18n();
   const { link } = usePageTransition();
   const year = new Date().getFullYear();
   const goTo = useGoToSection();
+  const [cursorFx, setCursorFx] = useCursorPref();
 
   return (
     <footer className="relative border-t border-line">
@@ -21,7 +23,7 @@ export default function Footer() {
               <span className="absolute -bottom-px -right-px h-1.5 w-1.5 bg-accent" />
             </span>
             <div>
-              <div className="font-mono text-[11px] uppercase tracking-tech text-text">{site.name}</div>
+              <div className="font-mono text-[12.5px] uppercase tracking-tech text-text">{site.name}</div>
               <div className="label mt-1">{t.ui.roleLine}</div>
               <p className="mt-3 max-w-[38ch] text-[13px] leading-relaxed text-muted">{t.footer.tagline}</p>
             </div>
@@ -68,6 +70,13 @@ export default function Footer() {
             >
               {t.palette.goCv}
             </Link>
+            <Link
+              to={lp('/course/')}
+              data-cursor="follow"
+              className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
+            >
+              {t.palette.goCourse}
+            </Link>
           </nav>
 
           <div className="flex gap-2">
@@ -94,8 +103,21 @@ export default function Footer() {
             © {year} {site.name}. {t.footer.rights}
           </span>
           <span className="hidden sm:block">{t.footer.colophon}</span>
-          <span>
-            {site.version} / build {site.build}
+          <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <button
+              type="button"
+              aria-pressed={cursorFx}
+              onClick={() => setCursorFx(!cursorFx)}
+              className="hidden uppercase transition-colors hover:text-accent lg:inline"
+            >
+              {t.ux.cursorFx}: <span className={cursorFx ? 'text-accent' : ''}>{cursorFx ? t.ux.cursorOn : t.ux.cursorOff}</span>
+            </button>
+            <a href={lp('/') === '/' ? '/feed.xml' : '/hu/feed.xml'} className="transition-colors hover:text-accent">
+              RSS
+            </a>
+            <span>
+              {site.version} / build {site.build}
+            </span>
           </span>
         </div>
       </div>

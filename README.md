@@ -75,12 +75,58 @@ Content lives in `src/data` and `src/i18n`; components contain no copy.
 - **Interactive projects** (home-page Projects section and the Projects menu) —
   `src/data/labs.ts`; each entry's page preloader is in `labPreload`
   (`src/pages/lazy.ts`) and its icon in `components/LabIcon.tsx`.
+- **Full-stack course** (`/course/`, `/course/<slug>/`) — syllabus (10 modules,
+  titles in EN/HU) in `src/data/courseSyllabus.ts`; each lesson is
+  `src/content/course/<slug>.<lang>.json` (title, intro, Markdown body,
+  takeaways, quiz, exercise) — a lesson goes live as soon as its file exists.
+  Exercises run in a sandboxed iframe (`components/course/runner.ts`): `js`
+  exercises run the learner's script then the tests; `web` exercises render the
+  learner's HTML page and test it with the DOM. Progress is kept in
+  `localStorage`. Exercise kinds: `js`, `ts` (TypeScript, compiled in the frame),
+  `web` (an HTML page), `react` (JSX defining `App`) and `sql` (SQLite in the
+  browser, seeded with the exercise's `setup`); the compilers and SQLite live in
+  `public/vendor/` (see `scripts/code-lab/README.md`). Every test runs in its own
+  fresh sandboxed frame. Set the Patreon address in `site.patreon` (`src/data/site.ts`).
+  Lesson bodies can embed visual blocks (`components/course/visual/`): fenced
+  `~~~diagram` (JSON: `flow`, `sequence`, `layers`/pyramid, `tree`, `steps` —
+  laid out automatically as theme-aware SVG, flows switch to top-to-bottom on
+  narrow screens), `~~~callout tip|warn|ide|note|info Title`, `~~~compare`
+  (good vs. bad code), `~~~terms` and `~~~widget <name>` (16 interactive
+  explainers in `visual/widgets/`, lazy-loaded; `widgetFor` maps them to
+  lessons). Each module's overview diagram lives in `src/data/courseMaps.ts` and
+  shows on the course page and at the top of the module's first lesson.
 - **CV Maker** (`/cv-maker/`) — `src/pages/CvMaker.tsx` plus `src/components/cv/`:
   `model.ts` (data shape, section kinds), `text.ts` (EN/HU interface copy and
   tips), `guideContent.ts` (the “How to write an ideal CV” guide), `examples.ts`
-  (the sample CV), `CvSheet.tsx` + `cv.css` (the four layouts and print rules).
+  (the sample CV), `templates.ts` (the 24 layouts: structure, skill style,
+  default colour), `CvSheet.tsx` + `cv.css` (rendering, each layout's look under
+  `.cv-<id>`, print rules). To add a layout: an entry in `templates.ts` plus its CSS.
   PDF export uses the browser's print dialog, so the text stays selectable; the
   CV is autosaved in `localStorage` and can be exported/imported as JSON.
+
+## Site-wide UX features
+
+- **Search (⌘K / Ctrl K)**: the header search button opens the command palette. Typing also finds articles and course lessons.
+- **Articles**:
+  - list: search (accent-insensitive, full text loaded on first search), topic chips and sort, kept in the URL (`?q=`, `?tag=`, `?sort=`)
+  - article page: on-this-page TOC, previous/next and related articles (by shared topics)
+  - feeds: `feed.xml` and `hu/feed.xml`, written by `scripts/seo.ts`
+  - performance: the list ships only frontmatter (`scripts/articleMeta.ts`, `?meta` imports); article text is loaded on demand.
+- **Cursor**: the system cursor always stays visible; `TechnicalCursor` adds a ring that can be switched off in the footer or the palette (`dm.cursor` in localStorage).
+- **Global helpers**:
+  - back-to-top button
+  - floating "Let's talk" button on phones
+  - breadcrumbs on articles, projects and lessons
+  - real 404 page (`pages/NotFound.tsx`)
+  - smooth scrolling that respects reduced motion (`lib/motion.ts`)
+- **Course**:
+  - "Continue the course" on the home page
+  - the editor is collapsed on phones
+  - confirmation before "use solution" overwrites code
+  - a printable certificate once all lessons are done
+- **Testimonials**: add genuine client quotes to `src/data/testimonials.ts`; the home section stays hidden while it is empty.
+- **Patreon**: hidden while `site.showPatreon` is `false`.
+- **Visitor counter**: counted once per session on whichever page the visit starts.
 
 ## Interactions
 
