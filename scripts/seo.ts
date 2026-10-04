@@ -157,8 +157,10 @@ function pages(root: string): Page[] {
       noindex: !articles.some((a) => isPublished(articleDate(a))),
     });
 
-    list.push({ path: at('/interview/'), lang, alternates: both('/interview/'), title: t.seo.interviewTitle, description: t.seo.interviewDescription });
-    list.push({ path: at('/course/'), lang, alternates: both('/course/'), title: t.seo.courseTitle, description: t.seo.courseDescription });
+    // the free tools share with their own pictures (public/og/<tool>.<lang>.png)
+    const og = (tool: string) => ({ image: `/og/${tool}.${lang}.png`, imageAlt: tool === 'course' ? t.seo.courseTitle : tool === 'interview' ? t.seo.interviewTitle : t.seo.cvTitle });
+    list.push({ path: at('/interview/'), lang, alternates: both('/interview/'), title: t.seo.interviewTitle, description: t.seo.interviewDescription, ...og('interview') });
+    list.push({ path: at('/course/'), lang, alternates: both('/course/'), title: t.seo.courseTitle, description: t.seo.courseDescription, ...og('course') });
     for (const lesson of courseModules.flatMap((m) => m.lessons)) {
       // a page for every lesson that has content in this language
       const file = path.join(root, `src/content/course/${lesson.slug}.${lang}.json`);
@@ -175,9 +177,10 @@ function pages(root: string): Page[] {
         title: `${lesson.title[lang]} — ${t.seo.courseTitle.split(':')[0]} | ${site.name}`,
         description: clip(content.intro),
         type: 'article',
+        ...og('course'),
       });
     }
-    list.push({ path: at('/cv-maker/'), lang, alternates: both('/cv-maker/'), title: t.seo.cvTitle, description: t.seo.cvDescription });
+    list.push({ path: at('/cv-maker/'), lang, alternates: both('/cv-maker/'), title: t.seo.cvTitle, description: t.seo.cvDescription, ...og('cv-maker') });
     for (const tr of tracks) {
       // only tracks whose question set is in the build
       if (!fs.existsSync(path.join(root, `src/data/interview/${tr.id}.${lang}.json`))) continue;
@@ -188,6 +191,7 @@ function pages(root: string): Page[] {
         alternates: both(bare),
         title: t.seo.interviewTrackTitle.replace('{name}', tr.title[lang]),
         description: clip(t.seo.interviewTrackDescription.replace('{name}', tr.title[lang]).replace('{text}', tr.text[lang])),
+        ...og('interview'),
       });
     }
 
