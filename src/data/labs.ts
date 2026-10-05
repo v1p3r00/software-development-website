@@ -20,8 +20,21 @@ export interface Lab {
 
 export const labs: Lab[] = [
   {
-    id: 'course',
+    id: 'modernization',
     num: '01',
+    short: 'UX',
+    path: '/modernization/',
+    title: { en: 'Website modernization', hu: 'Weboldal-modernizálás' },
+    desc: {
+      en: 'Dated small-business websites and their redesigns in one frame — a confectionery, a law firm and a webshop. Drag the divider to compare; the new versions are working mockups with menus, forms and a cart.',
+      hu: 'Elavult kisvállalkozói weboldalak és újratervezett változataik egy keretben — cukrászda, ügyvédi iroda és webshop. Húzd az elválasztót; az új verziók működő mockupok menükkel, űrlapokkal és kosárral.',
+    },
+    cta: { en: 'Compare before & after', hu: 'Előtte–utána összehasonlítás' },
+    tags: ['UI / UX', 'Redesign', 'Responsive'],
+  },
+  {
+    id: 'course',
+    num: '02',
     short: 'EDU',
     path: '/course/',
     title: { en: 'Full-stack developer course', hu: 'Full-stack fejlesztő kurzus' },
@@ -34,7 +47,7 @@ export const labs: Lab[] = [
   },
   {
     id: 'cv',
-    num: '02',
+    num: '03',
     short: 'CV',
     path: '/cv-maker/',
     title: { en: 'CV Maker', hu: 'Önéletrajz-készítő' },
@@ -47,7 +60,7 @@ export const labs: Lab[] = [
   },
   {
     id: 'interview',
-    num: '03',
+    num: '04',
     short: 'SIM',
     path: '/interview/',
     title: { en: 'Interview simulator', hu: 'Interjú-szimulátor' },

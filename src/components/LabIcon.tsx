@@ -23,6 +23,18 @@ export default function LabIcon({ id, className = '' }: { id: string; className?
       </svg>
     );
   }
+  if (id === 'modernization') {
+    return (
+      <svg {...common}>
+        <rect x="3" y="6" width="26" height="20" stroke="currentColor" />
+        <path d="M3 10h26" stroke="currentColor" />
+        <path d="M6 14h7M6 17h5M6 20h7" stroke="currentColor" strokeDasharray="1.5 1.5" />
+        <path d="M19 14h7M19 17h7M19 20h4" stroke="currentColor" />
+        <path d="M16 3v26" stroke="currentColor" className="text-accent" />
+        <path d="M14 16l-1.5 0M18 16h1.5" stroke="currentColor" className="text-accent" />
+      </svg>
+    );
+  }
   return (
     <svg {...common}>
       <rect x="3" y="6" width="26" height="20" stroke="currentColor" />

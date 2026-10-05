@@ -15,12 +15,12 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <About />
+      <InteractiveProjects />
       <ProjectGrid />
       <Services />
-      <Testimonials />
-      <InteractiveProjects />
       <TechStack />
+      <Testimonials />
+      <About />
       <ContactTerminal />
     </>
   );

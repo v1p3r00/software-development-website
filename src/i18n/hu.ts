@@ -35,6 +35,7 @@ export const hu: Dict = {
     articles: 'Cikkek',
     interview: 'Interjú',
     labs: 'Projektek',
+    capabilities: 'Kompetenciák',
     labsAll: 'Összes projekt',
     talk: 'Beszéljünk',
     menu: 'Menü',
@@ -61,7 +62,7 @@ export const hu: Dict = {
     l3: 'Fejleszd.',
     intro:
       'Full-stack fejlesztő, webdizájner és terméképítő. Digitális termékeket, vállalati rendszereket és egyedi webes megoldásokat tervezek és fejlesztek.',
-    cta: 'Munkáim',
+    cta: 'Interaktív projektek',
     scroll: 'Görgess',
     roles: ['Full-stack fejlesztő', 'Terméképítő', 'Webdizájner'],
     note: 'Ugyanaz a kíváncsiság,\nmás-más probléma.',
@@ -71,7 +72,7 @@ export const hu: Dict = {
   },
 
   about: {
-    index: '02',
+    index: '06',
     title: 'Rólam',
     subtitle: 'Rendszerprofil',
     p1:
@@ -150,7 +151,7 @@ export const hu: Dict = {
   },
 
   labs: {
-    index: '05',
+    index: '02',
     title: 'Projektek',
     subtitle: 'Interaktív',
     hint: 'Saját fejlesztés, itt az oldalon fut',
@@ -162,8 +163,27 @@ export const hu: Dict = {
     more: 'Újabb interaktív projektek hamarosan.',
   },
 
+  modern: {
+    title: 'Weboldal-modernizálás',
+    subtitle: 'Előtte / utána',
+    concept: 'Élő újratervezési demók',
+    intro: 'Három tipikus kisvállalkozói weboldal úgy, ahogy sokszor ma is kinéz — és újratervezve. Az új változatok működő mockupok: nyisd le a menüket, töltsd ki az űrlapokat, használd a kosarat.',
+    examples: 'Példák',
+    before: 'Előtte',
+    after: 'Utána',
+    view: 'Eszköz',
+    compare: 'Összehasonlítás',
+    desktop: 'Asztali',
+    mobile: 'Mobil',
+    slider: 'Előtte–utána elválasztó',
+    hint: 'Húzd a kerek fogantyút (vagy használd a nyílbillentyűket) az összehasonlításhoz',
+    scrollHint: 'A keretben görgetve a teljes oldalt is megnézheted',
+    changedTitle: 'Mi változott',
+    note: 'A demókban szereplő márkák, személyek, árak és vélemények kitaláltak. Minden az oldalon belül fut: semmi nem kerül elküldésre, lefoglalásra vagy megvásárlásra, és egyik link sem visz el innen.',
+  },
+
   stack: {
-    index: '06',
+    index: '05',
     title: 'Technológiák',
     subtitle: 'Rendszertérkép',
     hint: 'Húzd a forgatáshoz — válassz egy elemet a részletekért',
@@ -248,11 +268,13 @@ export const hu: Dict = {
     goProjects: 'Munkáim',
     goLabs: 'Interaktív projektek',
     goServices: 'Szolgáltatások',
+    goCapabilities: 'Kompetenciák',
     goContact: 'Kapcsolat',
     goArticles: 'Cikkek',
     goInterview: 'Interjú-szimulátor',
     goCv: 'Önéletrajz-készítő',
     goCourse: 'Full-stack kurzus',
+    goModern: 'Weboldal-modernizálás',
     theme: 'Téma váltása',
     copyEmail: 'E-mail cím másolása',
     copied: 'Másolva',
@@ -282,6 +304,9 @@ export const hu: Dict = {
     cvTitle: 'Ingyenes önéletrajz-készítő sablonokkal és PDF exporttal — Mészáros Dávid',
     cvDescription:
       'Készíts profi önéletrajzot lépésről lépésre élő előnézettel, 24 elrendezéssel és PDF exporttal — gyakorlati útmutatóval ahhoz, hogy el is olvassák. Ingyenes, regisztráció nélkül.',
+    modernTitle: 'Weboldal-modernizálás: előtte–utána újratervezések — Mészáros Dávid',
+    modernDescription:
+      'Húzd az elválasztót, és hasonlítsd össze az elavult kisvállalkozói weboldalakat — cukrászda, ügyvédi iroda, webshop — a működő, mobilra tervezett új változataikkal.',
     notFoundTitle: 'Az oldal nem található — Mészáros Dávid',
   },
 

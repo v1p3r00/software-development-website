@@ -8,6 +8,7 @@ import { useI18n } from '../i18n';
 import { usePageTransition } from '../lib/pageTransition';
 import { CourseLessonPage, InterviewTrackPage, labPreload } from '../pages/lazy';
 import LabIcon from './LabIcon';
+import { Cake } from './modernization/art';
 import { Arrow, CornerMarks, Section, SectionHeader, cx } from './ui';
 import { site } from '../data/site';
 
@@ -135,6 +136,65 @@ function InterviewVisual() {
   );
 }
 
+/** the modernization showcase in miniature: an old and a new page split by a divider */
+function ModernVisual({ lang }: { lang: 'en' | 'hu' }) {
+  const points =
+    lang === 'hu'
+      ? ['3 élő demó', 'Asztali + mobil', 'Működő kosár', 'Foglalás, űrlapok']
+      : ['3 live demos', 'Desktop + mobile', 'Working cart', 'Booking & forms'];
+  return (
+    <div className="flex h-full flex-col">
+      <div className="relative aspect-[16/10] w-full overflow-hidden border border-line-strong bg-[#fff4f7]" aria-hidden>
+        {/* after */}
+        <div className="absolute inset-x-0 top-0 flex h-[13%] items-center justify-between border-b border-[#f4d5e0] bg-[#fffafc] px-[5%]">
+          <span className="font-serif text-[clamp(7px,1.1vw,11px)] tracking-[0.22em] text-[#b4245d]">MÁLNAVIRÁG</span>
+          <span className="h-[46%] w-[20%] rounded-full bg-[#b4245d]" />
+        </div>
+        <div className="absolute left-[6%] top-[30%] w-[40%] space-y-[6%]">
+          <span className="block h-2 w-full rounded-full bg-[#3a1a28]/80" />
+          <span className="block h-2 w-3/4 rounded-full bg-[#3a1a28]/80" />
+          <span className="block h-1.5 w-2/3 rounded-full bg-[#7c5967]/40" />
+          <span className="mt-3 block h-4 w-1/2 rounded-full bg-[#b4245d]" />
+        </div>
+        <Cake className="absolute bottom-[4%] right-[2%] w-[52%]" body="#f6c4d0" cream="#fff5f8" top="berries" accent="#e0245e" tiers={2} />
+        {/* before, clipped */}
+        <div className="absolute inset-0 bg-[#d63384] transition-[clip-path] duration-700 ease-tech [clip-path:inset(0_50%_0_0)] group-hover/lab:[clip-path:inset(0_78%_0_0)]">
+          <div className="absolute inset-0 opacity-60 [background:radial-gradient(circle,rgb(255_255_255/0.35)_0_2px,transparent_3px)_0_0/14px_14px]" />
+          <div className="absolute inset-x-[12%] top-[6%] h-[34%] overflow-hidden rounded-t-[50%] border-2 border-[#ffb3d6] bg-[#ffd6ea]">
+            <Cake className="mx-auto h-full [filter:saturate(1.7)_contrast(1.15)]" body="#4a2c22" cream="#f3d9c4" drip="#2c1712" top="candles" accent="#ff4fa3" plate={false} />
+          </div>
+          <div className="absolute inset-x-[12%] top-[40%] h-[8%] bg-gradient-to-b from-white via-[#ff9cc9] to-[#ffc4df]" />
+          <div className="absolute inset-x-[12%] bottom-0 top-[48%] bg-[#fff0f6] px-[6%] pt-[5%] text-center font-serif text-[clamp(7px,1.05vw,11px)] italic leading-tight text-[#e6007e]">
+            Üdvözöljük a honlapunkon!
+            <br />
+            <span className="text-black">Házi készítésű finomságok…</span>
+          </div>
+        </div>
+        {/* divider */}
+        <div className="absolute inset-y-0 left-1/2 w-[2px] -translate-x-1/2 bg-white transition-[left] duration-700 ease-tech group-hover/lab:left-[22%]">
+          <span className="absolute left-1/2 top-1/2 grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 border-white bg-black/60 text-[11px] text-white">
+            ⇆
+          </span>
+        </div>
+        <span className="absolute bottom-2 left-2 bg-black/70 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-tech text-white">
+          {lang === 'hu' ? 'Előtte' : 'Before'}
+        </span>
+        <span className="absolute bottom-2 right-2 bg-white/85 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-tech text-black">
+          {lang === 'hu' ? 'Utána' : 'After'}
+        </span>
+      </div>
+      <ul className="mt-6 grid grid-cols-2 gap-px border border-line bg-line">
+        {points.map((f) => (
+          <li key={f} className="flex items-center gap-2 bg-surface px-3 py-2.5 font-mono text-2xs uppercase tracking-tech text-muted">
+            <span className="h-1.5 w-1.5 bg-accent" aria-hidden />
+            {f}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function LabCard({ lab }: { lab: Lab }) {
   const { t, lp, lang } = useI18n();
   const { link } = usePageTransition();
@@ -199,7 +259,15 @@ function LabCard({ lab }: { lab: Lab }) {
         </div>
 
         <div className="border-t border-line p-6 sm:p-8 lg:col-span-5 lg:border-t-0">
-          {lab.id === 'cv' ? <CvVisual lang={lang} /> : lab.id === 'course' ? <CourseVisual lang={lang} /> : <InterviewVisual />}
+          {lab.id === 'cv' ? (
+            <CvVisual lang={lang} />
+          ) : lab.id === 'course' ? (
+            <CourseVisual lang={lang} />
+          ) : lab.id === 'modernization' ? (
+            <ModernVisual lang={lang} />
+          ) : (
+            <InterviewVisual />
+          )}
         </div>
       </div>
     </li>

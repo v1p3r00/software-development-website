@@ -1,0 +1,146 @@
+/* shared pieces of the live mockups (overlay host, modal, drawer, toast) */
+[data-mz-root] {
+  position: relative;
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+[data-mz-root] * {
+  box-sizing: border-box;
+}
+[data-mz-root] button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+[data-mz-root] input,
+[data-mz-root] select,
+[data-mz-root] textarea {
+  font: inherit;
+  color: inherit;
+}
+.mz-host {
+  position: sticky;
+  top: 0;
+  height: 0;
+  z-index: 80;
+}
+.mz-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: var(--mz-vh, 800px);
+  overflow: hidden;
+}
+.mz-layer.mz-pass {
+  pointer-events: none;
+}
+.mz-layer.mz-off {
+  pointer-events: none;
+}
+.mz-center {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.mz-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(20 10 16 / 0.5);
+  backdrop-filter: blur(3px);
+  animation: mz-fade 0.25s ease;
+  transition: opacity 0.3s;
+}
+.mz-off .mz-backdrop {
+  opacity: 0;
+}
+.mz-dialog {
+  position: relative;
+  width: min(520px, 100%);
+  max-height: calc(var(--mz-vh, 800px) - 48px);
+  overflow: auto;
+  animation: mz-pop 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mz-drawer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: min(420px, 92%);
+  overflow: auto;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mz-drawer.mz-right {
+  right: 0;
+}
+.mz-drawer.mz-left {
+  left: 0;
+}
+.mz-off .mz-right {
+  transform: translateX(105%);
+}
+.mz-off .mz-left {
+  transform: translateX(-105%);
+}
+.mz-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: #1d1a1c;
+  color: #fff;
+  font-size: 14px;
+  white-space: nowrap;
+  box-shadow: 0 14px 40px -10px rgb(0 0 0 / 0.5);
+  animation: mz-rise 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mz-flame {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: mz-flicker 0.9s ease-in-out infinite alternate;
+}
+@keyframes mz-flicker {
+  from {
+    transform: scale(1, 1) rotate(-3deg);
+  }
+  to {
+    transform: scale(0.85, 1.15) rotate(3deg);
+  }
+}
+@keyframes mz-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes mz-pop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+@keyframes mz-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+}
+@keyframes mz-bump {
+  40% {
+    transform: scale(1.35);
+  }
+}
+.mz-bump {
+  animation: mz-bump 0.4s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mz-flame,
+  .mz-dialog,
+  .mz-toast,
+  .mz-backdrop {
+    animation: none;
+  }
+}

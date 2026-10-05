@@ -6,7 +6,7 @@ import { projects } from '../data/projects';
 import { site } from '../data/site';
 import { cx } from './ui';
 import { usePageTransition } from '../lib/pageTransition';
-import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, InterviewPage } from '../pages/lazy';
+import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, InterviewPage, ModernizationPage } from '../pages/lazy';
 import { inLang, listedArticles } from '../data/articles';
 import { allLessons, isReady } from '../data/course';
 import { useCursorPref } from '../hooks/useCursorPref';
@@ -48,16 +48,17 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
   const commands = useMemo<Command[]>(() => {
     const nav: Command[] = [
       { id: 'home', group: t.palette.navigate, label: t.palette.goHome, hint: '01', run: goTo('home') },
-      { id: 'about', group: t.palette.navigate, label: t.palette.goAbout, hint: '02', run: goTo('about') },
+      { id: 'interactive', group: t.palette.navigate, label: t.palette.goLabs, hint: '02', run: goTo('interactive') },
       { id: 'projects', group: t.palette.navigate, label: t.palette.goProjects, hint: '03', run: goTo('projects') },
       { id: 'services', group: t.palette.navigate, label: t.palette.goServices, hint: '04', run: goTo('services') },
-      { id: 'interactive', group: t.palette.navigate, label: t.palette.goLabs, hint: '05', run: goTo('interactive') },
-      { id: 'contact', group: t.palette.navigate, label: t.palette.goContact, hint: '06', run: goTo('contact') },
+      { id: 'stack', group: t.palette.navigate, label: t.palette.goCapabilities, hint: '05', run: goTo('stack') },
+      { id: 'about', group: t.palette.navigate, label: t.palette.goAbout, hint: '06', run: goTo('about') },
+      { id: 'contact', group: t.palette.navigate, label: t.palette.goContact, hint: '07', run: goTo('contact') },
       {
         id: 'articles',
         group: t.palette.navigate,
         label: t.palette.goArticles,
-        hint: '07',
+        hint: '08',
         run: () => {
           setOpen(false);
           void go(lp('/articles/'), 'slide', { prepare: ArticlesPage.preload });
@@ -67,7 +68,7 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
         id: 'interview',
         group: t.palette.navigate,
         label: t.palette.goInterview,
-        hint: '08',
+        hint: '09',
         run: () => {
           setOpen(false);
           void go(lp('/interview/'), 'slide', { prepare: InterviewPage.preload });
@@ -77,7 +78,7 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
         id: 'cv',
         group: t.palette.navigate,
         label: t.palette.goCv,
-        hint: '09',
+        hint: '10',
         run: () => {
           setOpen(false);
           void go(lp('/cv-maker/'), 'slide', { prepare: CvMakerPage.preload });
@@ -87,10 +88,20 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
         id: 'course',
         group: t.palette.navigate,
         label: t.palette.goCourse,
-        hint: '10',
+        hint: '11',
         run: () => {
           setOpen(false);
           void go(lp('/course/'), 'slide', { prepare: CoursePage.preload });
+        },
+      },
+      {
+        id: 'modernization',
+        group: t.palette.navigate,
+        label: t.palette.goModern,
+        hint: '12',
+        run: () => {
+          setOpen(false);
+          void go(lp('/modernization/'), 'slide', { prepare: ModernizationPage.preload });
         },
       },
     ];

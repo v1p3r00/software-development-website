@@ -15,10 +15,11 @@ export default function ScrollProgress() {
   const progress = useScrollProgress();
   const labels: Record<string, string> = {
     home: t.nav.home,
-    about: t.nav.about,
+    interactive: t.nav.labs,
     projects: t.nav.projects,
     services: t.nav.services,
-    interactive: t.nav.labs,
+    stack: t.nav.capabilities,
+    about: t.nav.about,
     contact: t.nav.contact,
   };
 

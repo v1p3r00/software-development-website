@@ -134,7 +134,7 @@ export default function Hero() {
 
           <div style={reveal(600)} className="mt-9 flex flex-wrap items-center gap-6">
             <a
-              href="#projects"
+              href="#interactive"
               data-cursor="follow"
               className="group relative inline-flex items-center gap-5 border border-line-strong px-7 py-4 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors duration-300 hover:border-accent hover:text-accent"
             >
@@ -143,7 +143,7 @@ export default function Hero() {
               <span className="absolute -bottom-px -right-px h-1.5 w-1.5 bg-accent" />
             </a>
 
-            <a href="#about" className="group flex items-center gap-2" aria-label={t.hero.scroll} data-cursor="follow">
+            <a href="#interactive" className="group flex items-center gap-2" aria-label={t.hero.scroll} data-cursor="follow">
               <span className="label">[ {t.hero.scroll} ]</span>
               <svg viewBox="0 0 8 22" className="h-5 w-2 text-accent" fill="none" aria-hidden>
                 <path d="M4 0v18M1 15l3 3 3-3" stroke="currentColor" strokeWidth="1">

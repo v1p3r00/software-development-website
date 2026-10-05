@@ -33,6 +33,7 @@ export const en = {
     articles: 'Articles',
     interview: 'Interview',
     labs: 'Projects',
+    capabilities: 'Capabilities',
     labsAll: 'All projects',
     talk: "Let's talk",
     menu: 'Menu',
@@ -59,7 +60,7 @@ export const en = {
     l3: 'Improve.',
     intro:
       'Full-stack developer, web designer and product builder. I design and build digital products, enterprise systems and custom web experiences.',
-    cta: 'View my work',
+    cta: 'Interactive projects',
     scroll: 'Scroll',
     roles: ['Full-stack developer', 'Product builder', 'Web designer'],
     note: 'Same curiosity,\ndifferent problems.',
@@ -69,7 +70,7 @@ export const en = {
   },
 
   about: {
-    index: '02',
+    index: '06',
     title: 'About',
     subtitle: 'System profile',
     p1: 'I have spent the last eight years building software that other people depend on — enterprise platforms, banking integrations, government systems and the interfaces that sit on top of them.',
@@ -139,7 +140,7 @@ export const en = {
   },
 
   labs: {
-    index: '05',
+    index: '02',
     title: 'Projects',
     subtitle: 'Interactive',
     hint: 'Built by me, running on this site',
@@ -151,8 +152,27 @@ export const en = {
     more: 'More interactive projects are on the way.',
   },
 
+  modern: {
+    title: 'Website modernization',
+    subtitle: 'Before / after',
+    concept: 'Live redesign demos',
+    intro: 'Three typical small-business sites, as they often still look — and redesigned. The new versions are working mockups: open the menus, fill in the forms, use the cart.',
+    examples: 'Examples',
+    before: 'Before',
+    after: 'After',
+    view: 'Device',
+    compare: 'Compare',
+    desktop: 'Desktop',
+    mobile: 'Mobile',
+    slider: 'Before and after divider',
+    hint: 'Drag the round handle (or use the arrow keys) to compare',
+    scrollHint: 'Scroll inside the frame to see the whole page',
+    changedTitle: 'What changed',
+    note: 'All brands, people, prices and reviews on these demos are fictional. Everything runs in the page: nothing is sent, booked or bought, and no link leads away.',
+  },
+
   stack: {
-    index: '06',
+    index: '05',
     title: 'Tech stack',
     subtitle: 'System map',
     hint: 'Drag to rotate \u2014 select a node to inspect it',
@@ -237,11 +257,13 @@ export const en = {
     goProjects: 'View work',
     goLabs: 'Interactive projects',
     goServices: 'Services',
+    goCapabilities: 'Capabilities',
     goContact: 'Contact',
     goArticles: 'Articles',
     goInterview: 'Interview simulator',
     goCv: 'CV maker',
     goCourse: 'Full-stack course',
+    goModern: 'Website modernization',
     theme: 'Change theme',
     copyEmail: 'Copy email address',
     copied: 'Copied',
@@ -271,6 +293,9 @@ export const en = {
     cvTitle: 'Free CV Maker with templates and PDF export — David Mészáros',
     cvDescription:
       'Build a professional CV step by step with a live preview, 24 layouts and PDF export — plus a practical guide to writing a CV that gets read. Free, no sign-up.',
+    modernTitle: 'Website modernization: before & after redesigns — David Mészáros',
+    modernDescription:
+      'Drag the divider to compare dated small-business websites — a confectionery, a law firm and a webshop — with working, mobile-first redesigns.',
     notFoundTitle: 'Page not found — David Mészáros',
   },
 

@@ -5,6 +5,8 @@ export const site = {
   domain: 'softwaredevelopment.hu',
   github: 'https://github.com/v1p3r00',
   facebook: 'https://www.facebook.com/profile.php?id=61594757618918',
+  // Meta app id for the fb:app_id tag (optional; only Facebook's link insights use it). Create one at developers.facebook.com → My Apps.
+  fbAppId: '',
   ogImage: '/og.png',
   email: 'meszarosdavid@softwaredevelopment.hu',
   // the contact form posts to Web3Forms, which mails it to the address above.
@@ -24,7 +26,7 @@ export const site = {
     { label: 'LinkedIn', short: 'IN', href: 'https://www.linkedin.com/in/meszdav' },
     { label: 'Email', short: 'EM', href: 'mailto:meszarosdavid@softwaredevelopment.hu' },
   ],
-  sections: ['home', 'about', 'projects', 'services', 'interactive', 'contact'] as const,
+  sections: ['home', 'interactive', 'projects', 'services', 'stack', 'about', 'contact'] as const,
 };
 
 export type SectionId = (typeof site.sections)[number];

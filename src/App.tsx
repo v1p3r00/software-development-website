@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useI18n } from './i18n';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import CommandPalette from './components/CommandPalette';
@@ -12,7 +12,8 @@ import MobileTalk from './components/MobileTalk';
 import NotFound from './pages/NotFound';
 import Home from './pages/Home';
 import ProjectDetail from './pages/ProjectDetail';
-import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, InterviewPage, InterviewTrackPage } from './pages/lazy';
+import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, InterviewPage, InterviewTrackPage, ModernizationPage } from './pages/lazy';
+import { stripLang } from './i18n/paths';
 import { useRouteCommitSignal } from './lib/pageTransition';
 import { countVisit } from './hooks/useVisitorCount';
 
@@ -20,6 +21,8 @@ export default function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { t } = useI18n();
   useRouteCommitSignal();
+  // the modernization showcase is a full-screen stage: no footer or floating widgets
+  const showcase = stripLang(useLocation().pathname).startsWith('/modernization');
   // count the visit on whichever page it lands, not only when the home hero is shown
   useEffect(() => countVisit(), []);
 
@@ -32,7 +35,7 @@ export default function App() {
         {t.ui.skip}
       </a>
 
-      <ScrollProgress />
+      {!showcase && <ScrollProgress />}
       <Navigation onOpenPalette={() => setPaletteOpen(true)} />
 
       <main>
@@ -48,17 +51,18 @@ export default function App() {
             <Route path="/hu?/cv-maker" element={<CvMakerPage />} />
             <Route path="/hu?/course" element={<CoursePage />} />
             <Route path="/hu?/course/:slug" element={<CourseLessonPage />} />
+            <Route path="/hu?/modernization" element={<ModernizationPage />} />
             <Route path="*" element={<NotFound onSearch={() => setPaletteOpen(true)} />} />
           </Routes>
         </Suspense>
       </main>
 
-      <Footer />
-      <SystemStatus />
+      {!showcase && <Footer />}
+      {!showcase && <SystemStatus />}
       <CommandPalette open={paletteOpen} setOpen={setPaletteOpen} />
       <TechnicalCursor />
-      <BackToTop />
-      <MobileTalk />
+      {!showcase && <BackToTop />}
+      {!showcase && <MobileTalk />}
     </div>
   );
 }

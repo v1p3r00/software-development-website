@@ -70,6 +70,7 @@ function headTags(page: Page) {
     ...hreflang(page),
     `<meta property="og:type" content="${page.type ?? 'website'}" />`,
     `<meta property="og:site_name" content="${esc(site.name)}" />`,
+    ...(site.fbAppId ? [`<meta property="fb:app_id" content="${esc(site.fbAppId)}" />`] : []),
     `<meta property="og:locale" content="${page.lang === 'hu' ? 'hu_HU' : 'en_GB'}" />`,
     `<meta property="og:locale:alternate" content="${page.lang === 'hu' ? 'en_GB' : 'hu_HU'}" />`,
     `<meta property="og:title" content="${esc(page.title)}" />`,
@@ -158,7 +159,7 @@ function pages(root: string): Page[] {
     });
 
     // the free tools share with their own pictures (public/og/<tool>.<lang>.png)
-    const og = (tool: string) => ({ image: `/og/${tool}.${lang}.png`, imageAlt: tool === 'course' ? t.seo.courseTitle : tool === 'interview' ? t.seo.interviewTitle : t.seo.cvTitle });
+    const og = (tool: string) => ({ image: `/og/${tool}.${lang}.png`, imageAlt: tool === 'course' ? t.seo.courseTitle : tool === 'interview' ? t.seo.interviewTitle : tool === 'modernization' ? t.seo.modernTitle : t.seo.cvTitle });
     list.push({ path: at('/interview/'), lang, alternates: both('/interview/'), title: t.seo.interviewTitle, description: t.seo.interviewDescription, ...og('interview') });
     list.push({ path: at('/course/'), lang, alternates: both('/course/'), title: t.seo.courseTitle, description: t.seo.courseDescription, ...og('course') });
     for (const lesson of courseModules.flatMap((m) => m.lessons)) {
@@ -181,6 +182,7 @@ function pages(root: string): Page[] {
       });
     }
     list.push({ path: at('/cv-maker/'), lang, alternates: both('/cv-maker/'), title: t.seo.cvTitle, description: t.seo.cvDescription, ...og('cv-maker') });
+    list.push({ path: at('/modernization/'), lang, alternates: both('/modernization/'), title: t.seo.modernTitle, description: t.seo.modernDescription, ...og('modernization') });
     for (const tr of tracks) {
       // only tracks whose question set is in the build
       if (!fs.existsSync(path.join(root, `src/data/interview/${tr.id}.${lang}.json`))) continue;

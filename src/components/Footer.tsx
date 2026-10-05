@@ -32,10 +32,11 @@ export default function Footer() {
           <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2">
             {[
               ['home', t.nav.home],
-              ['about', t.nav.about],
+              ['interactive', t.nav.labs],
               ['projects', t.nav.projects],
               ['services', t.nav.services],
-              ['interactive', t.nav.labs],
+              ['stack', t.nav.capabilities],
+              ['about', t.nav.about],
               ['contact', t.nav.contact],
             ].map(([id, label]) => (
               <a
