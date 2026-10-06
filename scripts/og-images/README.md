@@ -13,3 +13,10 @@ To change the text or the pictures, edit `make.cjs` and regenerate:
 3. `node make.cjs ../../public/og`
 
 Facebook caches previews: after a deploy, re-scrape a URL with https://developers.facebook.com/tools/debug/
+
+## Landing pages and case studies
+
+`public/og/landing-pages.{en,hu}.png`, `landing-<slug>.{en,hu}.png` and `project-<id>.{en,hu}.png` are rendered
+from HTML with Playwright (the site's own fonts, each landing page's `poster.webp`, and each case study's
+card visual), in the same frame as the pictures above. `scripts/seo.ts` points the gallery, every landing
+page and every case study at them.

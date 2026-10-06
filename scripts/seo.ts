@@ -147,6 +147,9 @@ function pages(root: string): Page[] {
         alternates: both(bare),
         title: `${p.title}${p.kind ? ` — ${p.kind[lang]}` : ''} | ${site.name}`,
         description: clip(p.context[lang]),
+        // each case study shares with its own picture (public/og/project-<id>.<lang>.png)
+        image: `/og/project-${p.id}.${lang}.png`,
+        imageAlt: `${p.title}${p.kind ? ` — ${p.kind[lang]}` : ''}`,
       });
     }
 
@@ -161,10 +164,10 @@ function pages(root: string): Page[] {
 
     // the free tools share with their own pictures (public/og/<tool>.<lang>.png)
     const og = (tool: string) => ({ image: `/og/${tool}.${lang}.png`, imageAlt: tool === 'course' ? t.seo.courseTitle : tool === 'interview' ? t.seo.interviewTitle : tool === 'modernization' ? t.seo.modernTitle : t.seo.cvTitle });
-    list.push({ path: at('/landing-pages/'), lang, alternates: both('/landing-pages/'), title: t.seo.landingTitle, description: t.seo.landingDescription });
+    list.push({ path: at('/landing-pages/'), lang, alternates: both('/landing-pages/'), title: t.seo.landingTitle, description: t.seo.landingDescription, image: `/og/landing-pages.${lang}.png`, imageAlt: t.seo.landingTitle });
     for (const l of readyLandings) {
       const bare = `/landing-pages/${l.slug}/`;
-      list.push({ path: at(bare), lang, alternates: both(bare), title: `${l.name} — ${t.landing.seoTitle}`, description: `${l.concept[lang]} ${t.landing.seoDescription}` });
+      list.push({ path: at(bare), lang, alternates: both(bare), title: `${l.name} — ${t.landing.seoTitle}`, description: `${l.concept[lang]} ${t.landing.seoDescription}`, image: `/og/landing-${l.slug}.${lang}.png`, imageAlt: `${l.name} — ${t.landing.seoTitle}` });
     }
     list.push({ path: at('/interview/'), lang, alternates: both('/interview/'), title: t.seo.interviewTitle, description: t.seo.interviewDescription, ...og('interview') });
     list.push({ path: at('/course/'), lang, alternates: both('/course/'), title: t.seo.courseTitle, description: t.seo.courseDescription, ...og('course') });
