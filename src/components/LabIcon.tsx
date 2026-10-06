@@ -46,6 +46,23 @@ export default function LabIcon({ id, className = '' }: { id: string; className?
       </svg>
     );
   }
+  if (id === 'garage') {
+    return (
+      <svg {...common}>
+        <path d="M3 14l13-9 13 9" stroke="currentColor" />
+        <path d="M6 12v15h20V12" stroke="currentColor" />
+        <path d="M10 27V17h12v10M10 20h12M10 23.5h12" stroke="currentColor" className="text-accent" />
+      </svg>
+    );
+  }
+  if (id === 'shirt') {
+    return (
+      <svg {...common}>
+        <path d="M11 4l-8 4 3 6 3-1.5V28h14V12.5l3 1.5 3-6-8-4c-.6 2-2.6 3.5-5 3.5S11.6 6 11 4z" stroke="currentColor" strokeLinejoin="round" />
+        <path d="M13 16h6M14 19.5h4" stroke="currentColor" className="text-accent" />
+      </svg>
+    );
+  }
   return (
     <svg {...common}>
       <rect x="3" y="6" width="26" height="20" stroke="currentColor" />

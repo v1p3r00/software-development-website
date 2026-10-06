@@ -39,6 +39,10 @@ export const ModernizationPage = lazyPage(() => import('./Modernization'));
 export const LandingPagesPage = lazyPage(() => import('./LandingPages'));
 export const LandingStagePage = lazyPage(() => import('./LandingStage'));
 
+// the 3D configurators
+export const GarageDesignerPage = lazyPage(() => import('./GarageDesigner'));
+export const ShirtDesignerPage = lazyPage(() => import('./ShirtDesigner'));
+
 /** preloaders for the interactive projects, by `labs` id */
 export const labPreload: Record<string, () => Promise<void>> = {
   interview: InterviewPage.preload,
@@ -46,4 +50,6 @@ export const labPreload: Record<string, () => Promise<void>> = {
   course: CoursePage.preload,
   modernization: ModernizationPage.preload,
   landing: LandingPagesPage.preload,
+  garage: GarageDesignerPage.preload,
+  shirt: ShirtDesignerPage.preload,
 };

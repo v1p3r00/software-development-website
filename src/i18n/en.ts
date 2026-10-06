@@ -324,6 +324,12 @@ export const en = {
     modernTitle: 'Website modernization: before & after redesigns — David Mészáros',
     modernDescription:
       'Drag the divider to compare dated small-business websites — a confectionery, a law firm and a webshop — with working, mobile-first redesigns.',
+    garageTitle: '3D garage designer with a live estimate — David Mészáros',
+    garageDescription:
+      'An interactive 3D configurator: garage size, roof, door, cladding, colours and extras, with a live price estimate. I build custom configurators for your own products too.',
+    shirtTitle: '3D T-shirt designer: your text or image on a shirt — David Mészáros',
+    shirtDescription:
+      'An interactive 3D T-shirt designer: man and woman models, shirt colours, your own text or image on the front and back, with a live price. I build custom product configurators too.',
     notFoundTitle: 'Page not found — David Mészáros',
   },
 

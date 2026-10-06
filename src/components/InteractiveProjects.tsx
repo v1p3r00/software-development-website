@@ -425,6 +425,35 @@ function LandingVisual({ lang }: { lang: 'en' | 'hu' }) {
   );
 }
 
+/** a still from a 3D configurator, framed like the other previews */
+function ToolVisual({ id, lang }: { id: 'garage' | 'shirt'; lang: 'en' | 'hu' }) {
+  const points =
+    id === 'garage'
+      ? lang === 'hu'
+        ? ['Élő 3D modell', 'Tető, kapu, burkolat', 'Szín és extrák', 'Árbecslés']
+        : ['Live 3D model', 'Roof, door, cladding', 'Colours & extras', 'Price estimate']
+      : lang === 'hu'
+        ? ['Férfi és női modell', 'Saját szöveg vagy kép', 'Elöl és hátul', 'Mockup letöltés']
+        : ['Man & woman models', 'Your text or image', 'Front and back', 'Mockup download'];
+  return (
+    <div className="flex h-full flex-col">
+      <div className="relative aspect-[16/10] w-full overflow-hidden border border-line-strong bg-bg" aria-hidden>
+        <img
+          src={`/labs/${id}.webp`}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          width={960}
+          height={600}
+          className="h-full w-full object-cover transition-transform duration-700 ease-tech group-hover/lab:scale-[1.04]"
+        />
+        <span className="absolute bottom-2 right-2 bg-black/70 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-tech text-white">3D · WebGL</span>
+      </div>
+      <FeatureGrid items={points} />
+    </div>
+  );
+}
+
 function LabCard({ lab }: { lab: Lab }) {
   const { t, lp, lang } = useI18n();
   const { link } = usePageTransition();
@@ -485,6 +514,8 @@ function LabCard({ lab }: { lab: Lab }) {
             <ModernVisual lang={lang} />
           ) : lab.id === 'landing' ? (
             <LandingVisual lang={lang} />
+          ) : lab.id === 'garage' || lab.id === 'shirt' ? (
+            <ToolVisual id={lab.id} lang={lang} />
           ) : (
             <InterviewVisual />
           )}

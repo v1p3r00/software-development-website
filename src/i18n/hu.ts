@@ -335,6 +335,12 @@ export const hu: Dict = {
     modernTitle: 'Weboldal-modernizálás: előtte–utána újratervezések — Mészáros Dávid',
     modernDescription:
       'Húzd az elválasztót, és hasonlítsd össze az elavult kisvállalkozói weboldalakat — cukrászda, ügyvédi iroda, webshop — a működő, mobilra tervezett új változataikkal.',
+    garageTitle: '3D garázstervező élő árbecsléssel — Mészáros Dávid',
+    garageDescription:
+      'Interaktív 3D konfigurátor: garázs mérete, tető, kapu, burkolat, színek és extrák, élő árbecsléssel. Egyedi konfigurátort is készítek a saját termékeidre.',
+    shirtTitle: '3D pólótervező: saját szöveg vagy kép pólón — Mészáros Dávid',
+    shirtDescription:
+      'Interaktív 3D pólótervező: férfi és női modell, pólószín, saját szöveg vagy kép elöl és hátul, élő árral. Egyedi termékkonfigurátort is készítek.',
     notFoundTitle: 'Az oldal nem található — Mészáros Dávid',
   },
 
