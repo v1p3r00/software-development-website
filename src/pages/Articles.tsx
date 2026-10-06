@@ -127,7 +127,7 @@ export default function Articles() {
           <p className="mt-2 font-mono text-2xs uppercase tracking-tech text-accent">● {t.articles.emptyTitle}</p>
           <p className="mt-6 max-w-[52ch] text-sm leading-relaxed text-muted sm:text-base">{t.articles.emptyText}</p>
           <a
-            href="#contact"
+            href={`${lp('/')}#contact`}
             onClick={goTo('contact')}
             data-cursor="follow"
             className="group mt-8 inline-flex items-center gap-3 border border-line-strong px-5 py-3 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors hover:border-accent hover:text-accent"

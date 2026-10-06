@@ -11,7 +11,7 @@ import { cx } from './ui';
  * and inside the course and tools, where it would cover the work area.
  */
 export default function MobileTalk() {
-  const { t } = useI18n();
+  const { t, lp } = useI18n();
   const goTo = useGoToSection();
   const { pathname } = useLocation();
   const path = stripLang(pathname);
@@ -30,7 +30,7 @@ export default function MobileTalk() {
   if (!allowed) return null;
   return (
     <a
-      href="#contact"
+      href={`${lp('/')}#contact`}
       onClick={goTo('contact')}
       tabIndex={show ? 0 : -1}
       className={cx(

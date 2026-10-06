@@ -20,20 +20,20 @@
 }
 
 [data-theme='light'] {
-  /* daylight: paper white, ink black, one electric blue.
-     Ink is a hair softer than pure black (less glare on white), and the grey
-     tiers stay at AA contrast or better even at label sizes. */
-  --c-bg: 247 248 250;
+  /* daylight: paper white, ink black, one signal red.
+     Neutral (very slightly warm) greys so nothing reads blue; the red and the
+     grey tiers stay at AA contrast or better on the paper background. */
+  --c-bg: 249 248 247;
   --c-surface: 255 255 255;
-  --c-surface-2: 240 243 247;
-  --c-line: 218 223 230;
-  --c-line-strong: 156 165 178;
-  --c-text: 17 20 26;
-  --c-muted: 50 57 69;
-  --c-dim: 82 90 104;
-  --c-accent: 0 64 230;
+  --c-surface-2: 244 242 240;
+  --c-line: 226 222 219;
+  --c-line-strong: 170 163 158;
+  --c-text: 22 19 18;
+  --c-muted: 64 57 54;
+  --c-dim: 98 90 86;
+  --c-accent: 210 28 36;
   --c-on-accent: 255 255 255;
-  --c-sand: 30 58 138;
+  --c-sand: 140 30 34;
   --grid-alpha: 0.05;
   --img-bright: 1.04;
 }
@@ -175,23 +175,23 @@
   padding-bottom: 0.6em;
 }
 
-/* ---- light mode: crisp, cool surfaces ---- */
+/* ---- light mode: crisp, neutral surfaces ---- */
 /* the footer inverts to ink, closing the white page on a solid black band */
 [data-theme='light'] footer {
-  --c-bg: 9 10 13;
-  --c-surface: 17 19 24;
-  --c-line: 38 42 50;
-  --c-line-strong: 72 79 91;
-  --c-text: 244 246 250;
-  --c-muted: 160 168 181;
-  --c-dim: 118 126 140;
-  --c-accent: 77 124 255;
+  --c-bg: 12 10 10;
+  --c-surface: 20 17 17;
+  --c-line: 44 40 39;
+  --c-line-strong: 82 76 74;
+  --c-text: 247 245 244;
+  --c-muted: 172 165 162;
+  --c-dim: 132 125 122;
+  --c-accent: 255 82 82;
   --c-on-accent: 255 255 255;
   background-color: rgb(var(--c-bg));
   color: rgb(var(--c-text));
 }
 [data-theme='light'] .lift:hover {
-  box-shadow: 0 18px 40px -22px rgb(0 40 140 / 0.35);
+  box-shadow: 0 18px 40px -22px rgb(140 20 24 / 0.35);
 }
 [data-theme='light'] .tech-grid {
   background-image: linear-gradient(rgb(var(--c-accent) / 0.07) 1px, transparent 1px),
@@ -1074,4 +1074,28 @@ html[data-vt='collapse']::view-transition-new(root) {
     size: A4 landscape;
     margin: 0;
   }
+}
+
+/* hero "Interactive projects" call to action: soft pulsing glow + live dot */
+.hero-cta {
+  box-shadow: 0 0 0 0 rgb(var(--c-accent) / 0.45);
+  animation: hero-cta-glow 2.8s ease-out infinite;
+}
+.hero-cta:hover {
+  animation: none;
+  box-shadow: 0 10px 30px -10px rgb(var(--c-accent) / 0.7);
+}
+.hero-cta-dot {
+  animation: hero-cta-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes hero-cta-glow {
+  0% { box-shadow: 0 0 0 0 rgb(var(--c-accent) / 0.45); }
+  70% { box-shadow: 0 0 0 14px rgb(var(--c-accent) / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(var(--c-accent) / 0); }
+}
+@keyframes hero-cta-ping {
+  75%, 100% { transform: scale(2.4); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-cta, .hero-cta-dot { animation: none; }
 }

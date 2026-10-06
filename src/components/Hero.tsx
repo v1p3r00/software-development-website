@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useI18n } from '../i18n';
 import { site } from '../data/site';
+import { labs } from '../data/labs';
 import { usePrefersReducedMotion } from '../hooks/useMisc';
+import { useGoToSection } from '../hooks/useGoToSection';
 import HeroModel from './HeroModel';
 import VisitorCounter from './VisitorCounter';
 import { Arrow, CornerMarks, cx } from './ui';
@@ -71,7 +73,8 @@ function Portrait() {
 }
 
 export default function Hero() {
-  const { t } = useI18n();
+  const { t, lp } = useI18n();
+  const goTo = useGoToSection();
   const reduced = usePrefersReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [roleIndex, setRoleIndex] = useState(0);
@@ -134,16 +137,27 @@ export default function Hero() {
 
           <div style={reveal(600)} className="mt-9 flex flex-wrap items-center gap-6">
             <a
-              href="#interactive"
+              href={`${lp('/')}#interactive`}
+              onClick={goTo('interactive')}
               data-cursor="follow"
-              className="group relative inline-flex items-center gap-5 border border-line-strong px-7 py-4 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors duration-300 hover:border-accent hover:text-accent"
+              className="hero-cta group relative inline-flex items-center gap-5 bg-accent px-8 py-5 text-onaccent transition-[transform,box-shadow,background-color] duration-300 ease-tech hover:-translate-y-0.5 hover:bg-text sm:px-9"
             >
-              {t.hero.cta}
-              <Arrow className="transition-transform duration-300 group-hover:translate-x-1.5" />
-              <span className="absolute -bottom-px -right-px h-1.5 w-1.5 bg-accent" />
+              <span className="flex flex-col items-start gap-1.5">
+                <span className="flex items-center gap-2.5 font-mono text-[14px] font-semibold uppercase tracking-tech sm:text-[15px]">
+                  <span className="relative grid h-2 w-2 place-items-center" aria-hidden>
+                    <span className="hero-cta-dot absolute h-2 w-2 rounded-full bg-onaccent" />
+                    <span className="relative h-2 w-2 rounded-full bg-onaccent" />
+                  </span>
+                  {t.hero.cta}
+                </span>
+                <span className="font-mono text-[11px] normal-case tracking-normal opacity-80">
+                  {labs.length} {t.hero.ctaSub}
+                </span>
+              </span>
+              <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
             </a>
 
-            <a href="#interactive" className="group flex items-center gap-2" aria-label={t.hero.scroll} data-cursor="follow">
+            <a href={`${lp('/')}#interactive`} onClick={goTo('interactive')} className="group flex items-center gap-2" aria-label={t.hero.scroll} data-cursor="follow">
               <span className="label">[ {t.hero.scroll} ]</span>
               <svg viewBox="0 0 8 22" className="h-5 w-2 text-accent" fill="none" aria-hidden>
                 <path d="M4 0v18M1 15l3 3 3-3" stroke="currentColor" strokeWidth="1">

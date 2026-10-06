@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { stripLang } from '../i18n/paths';
-import { scrollBehavior } from '../lib/motion';
+import { scrollToSection } from '../lib/scrollToSection';
 
 /**
  * Anchor navigation that also works from a case-study route:
@@ -16,13 +16,13 @@ export function useGoToSection() {
   return useCallback(
     (id: string) => (e: React.MouseEvent) => {
       e.preventDefault();
-      const scroll = () => document.getElementById(id)?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
       if (stripLang(pathname) === '/') {
-        scroll();
-        history.replaceState(null, '', `#${id}`);
+        scrollToSection(id);
+        history.replaceState(null, '', id === 'home' ? lp('/') : `#${id}`);
       } else {
-        navigate(lp('/'));
-        window.setTimeout(scroll, 80);
+        // from another page (e.g. /modernization/): go to the home page, then to the section
+        navigate(id === 'home' ? lp('/') : `${lp('/')}#${id}`);
+        scrollToSection(id, false);
       }
     },
     [navigate, pathname, lp],

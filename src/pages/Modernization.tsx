@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import '@fontsource-variable/fraunces';
 import '@fontsource-variable/fraunces/wght-italic.css';
@@ -12,38 +13,70 @@ import { cx } from '../components/ui';
 
 type Device = 'desktop' | 'mobile';
 
-function Segmented<T extends string>({
+/** one big button that switches to the next option on each click */
+function BigToggle({
   label,
   value,
-  options,
-  onChange,
+  next,
+  icon,
+  onClick,
+  steps,
 }: {
   label: string;
-  value: T | null;
-  options: Array<{ id: T; label: string }>;
-  onChange: (id: T) => void;
+  value: string;
+  next: string;
+  icon: ReactNode;
+  onClick: () => void;
+  steps?: boolean[];
 }) {
   return (
-    <div role="group" aria-label={label} className="flex border border-line">
-      {options.map((o) => {
-        const on = value === o.id;
-        return (
-          <button
-            key={o.id}
-            type="button"
-            aria-pressed={on}
-            onClick={() => onChange(o.id)}
-            data-cursor="follow"
-            className={cx(
-              'px-3 py-1.5 font-mono text-2xs uppercase tracking-tech transition-colors duration-300 sm:px-3.5',
-              on ? 'bg-accent text-onaccent' : 'text-muted hover:text-text',
-            )}
-          >
-            {o.label}
-          </button>
-        );
-      })}
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      data-cursor="follow"
+      aria-label={`${label}: ${value} → ${next}`}
+      title={`→ ${next}`}
+      className="group flex min-w-0 items-center gap-2.5 border border-line-strong bg-surface px-2.5 py-2 text-left transition-colors duration-300 hover:border-accent sm:min-w-[190px] sm:gap-3.5 sm:px-4 sm:py-2.5"
+    >
+      <span className="grid h-9 w-9 shrink-0 place-items-center bg-accent text-onaccent sm:h-10 sm:w-10">{icon}</span>
+      <span className="min-w-0 flex-1">
+        <span className="label block truncate leading-tight">{label}</span>
+        <span className="mt-0.5 block truncate font-mono text-[13px] font-semibold uppercase tracking-tech text-text sm:text-[14px]">{value}</span>
+        {steps && (
+          <span className="mt-1.5 flex gap-1" aria-hidden>
+            {steps.map((on, i) => (
+              <i key={i} className={cx('h-1 w-5 transition-colors', on ? 'bg-accent' : 'bg-line-strong')} />
+            ))}
+          </span>
+        )}
+      </span>
+      <svg viewBox="0 0 16 16" className="hidden h-4 w-4 shrink-0 text-dim transition-transform sm:block duration-300 group-hover:rotate-180 group-hover:text-accent" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden>
+        <path d="M3 6h9l-2.5-2.5M13 10H4l2.5 2.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </button>
+  );
+}
+
+function DeviceIcon({ device }: { device: Device }) {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" aria-hidden>
+      {device === 'desktop' ? (
+        <path d="M3 5h18v11H3zM8 20h8M12 16v4" />
+      ) : (
+        <path d="M7 2.5h10v19H7zM10.5 18.5h3" />
+      )}
+    </svg>
+  );
+}
+
+function CompareIcon({ preset }: { preset: 'before' | 'half' | 'after' | null }) {
+  const x = preset === 'before' ? 20 : preset === 'after' ? 4 : 12;
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+      <rect x="3" y="5" width="18" height="14" />
+      <rect x="3" y="5" width={x - 3} height="14" fill="currentColor" opacity="0.35" stroke="none" />
+      <path d={`M${x} 3v18`} />
+    </svg>
   );
 }
 
@@ -135,20 +168,11 @@ export default function Modernization() {
   );
 
   return (
-    <section id="modernization" className="mx-auto w-full max-w-[1500px] px-4 pb-20 pt-[68px] sm:px-8 lg:px-12">
-      {/* title */}
-      <div className="flex flex-col gap-3 pt-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="min-w-0">
-          <div className="label mb-1.5">
-            // {tm.subtitle} · <span className="text-accent">{tm.concept}</span>
-          </div>
-          <h1 className="display text-[2rem] leading-[0.9] sm:text-[2.6rem]">{tm.title}</h1>
-        </div>
-        <p className="max-w-[62ch] text-sm leading-relaxed text-muted">{tm.intro}</p>
-      </div>
+    <section id="modernization" className="mx-auto w-full max-w-[1500px] px-4 pb-20 pt-[76px] sm:px-8 lg:px-12">
+      <h1 className="sr-only">{tm.title}</h1>
 
       {/* case switcher + controls */}
-      <div className="mt-5 flex flex-col gap-3 border-t border-line pt-4 xl:flex-row xl:items-center xl:justify-between">
+      <div className="mt-2 flex flex-col gap-3 pt-2 xl:flex-row xl:items-center xl:justify-between">
         <div role="tablist" aria-label={tm.examples} className="grid grid-cols-3 gap-px border border-line bg-line sm:flex sm:bg-transparent sm:gap-2 sm:border-0">
           {cases.map((c) => {
             const on = c.id === current.id;
@@ -174,25 +198,21 @@ export default function Modernization() {
             );
           })}
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Segmented<Device>
+        <div className="grid grid-cols-2 items-stretch gap-2 sm:flex sm:gap-3">
+          <BigToggle
             label={tm.view}
-            value={device}
-            onChange={setDevice}
-            options={[
-              { id: 'desktop', label: tm.desktop },
-              { id: 'mobile', label: tm.mobile },
-            ]}
+            onClick={() => setDevice((d) => (d === 'desktop' ? 'mobile' : 'desktop'))}
+            icon={<DeviceIcon device={device} />}
+            value={device === 'desktop' ? tm.desktop : tm.mobile}
+            next={device === 'desktop' ? tm.mobile : tm.desktop}
           />
-          <Segmented<'before' | 'half' | 'after'>
+          <BigToggle
             label={tm.compare}
-            value={preset}
-            onChange={(id) => setPos(id === 'before' ? 100 : id === 'after' ? 0 : 50)}
-            options={[
-              { id: 'before', label: tm.before },
-              { id: 'half', label: '50 / 50' },
-              { id: 'after', label: tm.after },
-            ]}
+            onClick={() => setPos(preset === 'before' ? 50 : preset === 'half' ? 0 : 100)}
+            icon={<CompareIcon preset={preset} />}
+            value={preset === 'before' ? tm.before : preset === 'after' ? tm.after : '50 / 50'}
+            next={preset === 'before' ? '50 / 50' : preset === 'half' ? tm.after : tm.before}
+            steps={(['before', 'half', 'after'] as const).map((id) => id === preset)}
           />
         </div>
       </div>

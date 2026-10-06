@@ -15,12 +15,15 @@ export interface Lab {
   desc: L10n;
   /** call to action on the card */
   cta: L10n;
+  /** one short line under the title in the site header */
+  tagline: L10n;
   tags: string[];
 }
 
 export const labs: Lab[] = [
   {
     id: 'modernization',
+    tagline: { en: 'Dated small-business sites vs. their redesigns', hu: 'Elavult kisvállalkozói oldalak és újratervezésük' },
     num: '01',
     short: 'UX',
     path: '/modernization/',
@@ -34,6 +37,7 @@ export const labs: Lab[] = [
   },
   {
     id: 'course',
+    tagline: { en: 'From zero to a deployed React + Spring Boot app', hu: 'Nulláról egy élesített React + Spring Boot alkalmazásig' },
     num: '02',
     short: 'EDU',
     path: '/course/',
@@ -47,6 +51,7 @@ export const labs: Lab[] = [
   },
   {
     id: 'cv',
+    tagline: { en: 'Build an ATS-friendly CV and download it as PDF', hu: 'ATS-barát önéletrajz, letölthető PDF-ben' },
     num: '03',
     short: 'CV',
     path: '/cv-maker/',
@@ -60,6 +65,7 @@ export const labs: Lab[] = [
   },
   {
     id: 'interview',
+    tagline: { en: 'Practise technical interviews: 14 tracks, 200 questions each', hu: 'Technikai interjúgyakorlás: 14 téma, témánként 200 kérdés' },
     num: '04',
     short: 'SIM',
     path: '/interview/',
@@ -72,3 +78,9 @@ export const labs: Lab[] = [
     tags: ['React', 'TypeScript', 'EN / HU'],
   },
 ];
+
+/** the interactive project a (language-stripped) path belongs to, e.g. /course/html-basics/ → course */
+export function labFor(path: string): Lab | undefined {
+  const p = path.endsWith('/') ? path : `${path}/`;
+  return labs.find((lab) => p.startsWith(lab.path));
+}

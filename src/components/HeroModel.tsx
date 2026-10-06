@@ -217,7 +217,7 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       // a floor that only shows the shadow the sun casts, to ground the figure
       const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(8, 8),
-        new THREE.ShadowMaterial({ color: 0x0b1a3a, opacity: 0.14 }),
+        new THREE.ShadowMaterial({ color: 0x1a1210, opacity: 0.14 }),
       );
       floor.rotation.x = -Math.PI / 2;
       floor.receiveShadow = true;

@@ -40,10 +40,10 @@ const FLAGS: Record<Lang, { Flag: () => React.JSX.Element; name: string }> = {
   hu: { Flag: FlagHU, name: 'Magyar' },
 };
 
-export default function LanguageSwitcher({ className = '' }: { className?: string }) {
+export default function LanguageSwitcher({ className = '', large = false }: { className?: string; large?: boolean }) {
   const { lang, setLang } = useI18n();
   return (
-    <div className={cx('flex items-center gap-1.5', className)} role="group" aria-label="Language / Nyelv">
+    <div className={cx('flex items-center', large ? 'gap-2.5' : 'gap-1.5', className)} role="group" aria-label="Language / Nyelv">
       {(['en', 'hu'] as const).map((code) => {
         const { Flag, name } = FLAGS[code];
         const on = lang === code;
@@ -57,7 +57,8 @@ export default function LanguageSwitcher({ className = '' }: { className?: strin
             title={name}
             data-cursor="follow"
             className={cx(
-              'relative block h-[16px] w-[24px] overflow-hidden border transition-all duration-200',
+              'relative block overflow-hidden border transition-all duration-200',
+              large ? 'h-[22px] w-[33px]' : 'h-[16px] w-[24px]',
               on
                 ? 'border-accent opacity-100 ring-1 ring-accent ring-offset-2 ring-offset-bg'
                 : 'border-line opacity-45 grayscale hover:opacity-100 hover:grayscale-0',

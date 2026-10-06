@@ -21,12 +21,23 @@ export function SectionHeader({
   title,
   subtitle,
   right,
+  inHeader = false,
 }: {
   index: string;
   title: string;
   subtitle?: string;
   right?: ReactNode;
+  /** the title already shows in the site header (interactive projects): keep it for screen readers only */
+  inHeader?: boolean;
 }) {
+  if (inHeader)
+    return (
+      <div className="mb-5 flex flex-col gap-2 border-b border-line pb-3 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="sr-only">{title}</h1>
+        {subtitle && <div className="label">// {subtitle}</div>}
+        {right && <div className="shrink-0">{right}</div>}
+      </div>
+    );
   return (
     <div className="mb-10 flex flex-col gap-4 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="flex items-end gap-4">

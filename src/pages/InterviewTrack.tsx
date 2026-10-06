@@ -209,7 +209,7 @@ export default function InterviewTrack() {
 
   if (!qs) {
     return (
-      <Section id="interview" className="min-h-[70vh] pt-32 lg:pt-36">
+      <Section id="interview" className="min-h-[70vh] pt-24 lg:pt-24">
         {header}
         <p className="font-mono text-2xs uppercase tracking-tech text-dim">
           $ load ./{track.id}.json <span className="animate-blink">_</span>
@@ -240,7 +240,7 @@ export default function InterviewTrack() {
     const missed = asked.filter((q) => !ok(q));
 
     return (
-      <Section id="interview" className="min-h-[70vh] pt-32 lg:pt-36">
+      <Section id="interview" className="min-h-[70vh] pt-24 lg:pt-24">
         {header}
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.1fr_1fr]">
           <div className="relative border border-line bg-surface p-6 sm:p-10">
@@ -347,7 +347,7 @@ export default function InterviewTrack() {
           <div className="font-display text-2xl font-extrabold uppercase tracking-tight">{ti.ctaTitle}</div>
           <p className="mt-2 text-sm leading-relaxed text-muted">{ti.ctaText}</p>
           <a
-            href="#contact"
+            href={`${lp('/')}#contact`}
             onClick={goTo('contact')}
             data-cursor="follow"
             className="group mt-6 inline-flex items-center gap-3 bg-accent px-5 py-3 font-mono text-[12.5px] uppercase tracking-tech text-onaccent transition-colors hover:bg-text"
@@ -366,7 +366,7 @@ export default function InterviewTrack() {
     const right = chosen === current.answer;
     const last = round.pos >= round.ids.length - 1;
     return (
-      <Section id="interview" className="min-h-[70vh] pt-32 lg:pt-36">
+      <Section id="interview" className="min-h-[70vh] pt-24 lg:pt-24">
         {header}
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 font-mono text-2xs uppercase tracking-tech">
           <span className="text-muted">
@@ -474,7 +474,7 @@ export default function InterviewTrack() {
   const card =
     'group relative flex flex-col border border-line bg-surface p-6 text-left transition-colors duration-300 hover:border-accent';
   return (
-    <Section id="interview" className="min-h-[70vh] pt-32 lg:pt-36">
+    <Section id="interview" className="min-h-[70vh] pt-24 lg:pt-24">
       {header}
       <p className="mb-10 max-w-[68ch] text-base leading-relaxed text-muted sm:text-lg">{track.text[lang]}</p>
 

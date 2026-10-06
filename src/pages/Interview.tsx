@@ -13,10 +13,11 @@ export default function Interview() {
   useSeo({ title: t.seo.interviewTitle, description: t.seo.interviewDescription, path: '/interview/' });
 
   return (
-    <Section id="interview" className="min-h-[70vh] pt-32 lg:pt-36">
+    <Section id="interview" className="min-h-[70vh] pt-24 lg:pt-24">
       <SectionHeader
         index={ti.index}
         title={ti.title}
+          inHeader
         subtitle={ti.subtitle}
         right={
           <span className="label">

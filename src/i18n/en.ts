@@ -61,6 +61,7 @@ export const en = {
     intro:
       'Full-stack developer, web designer and product builder. I design and build digital products, enterprise systems and custom web experiences.',
     cta: 'Interactive projects',
+    ctaSub: 'live demos — try them in your browser',
     scroll: 'Scroll',
     roles: ['Full-stack developer', 'Product builder', 'Web designer'],
     note: 'Same curiosity,\ndifferent problems.',

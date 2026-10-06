@@ -10,12 +10,14 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { usePageTransition } from '../lib/pageTransition';
 import { labPreload } from '../pages/lazy';
 import LabIcon from './LabIcon';
-import { labs } from '../data/labs';
+import { labFor, labs } from '../data/labs';
 import { Arrow, cx } from './ui';
 
 function Monogram({ compact }: { compact: boolean }) {
+  const goTo = useGoToSection();
+  const { lp } = useI18n();
   return (
-    <a href="#home" data-cursor="follow" className="group flex items-center gap-3" aria-label={site.name}>
+    <a href={lp('/')} onClick={goTo('home')} data-cursor="follow" className="group flex items-center gap-3" aria-label={site.name}>
       <span
         className={cx(
           'relative grid place-items-center border border-line-strong font-display font-extrabold leading-none transition-all duration-300 ease-tech',
@@ -142,7 +144,7 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
             ))}
           </ul>
           <a
-            href="#interactive"
+            href={`${lp('/')}#interactive`}
             onClick={(e) => {
               setOpen(false);
               onAll(e);
@@ -198,8 +200,9 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
   ];
   const home = { id: 'home', label: t.nav.home };
   const onInterview = stripLang(pathname).startsWith('/interview');
-  // the modernization showcase keeps only the menu button, so the comparison gets the stage
-  const showcase = stripLang(pathname).startsWith('/modernization');
+  // the interactive projects keep only the logo, their title and the menu button, so the project gets the stage
+  const lab = labFor(stripLang(pathname));
+  const showcase = !!lab;
   const headerRef = useRef<HTMLElement>(null);
 
   // there the menu is a dropdown, so a click outside it closes it
@@ -237,6 +240,21 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
       >
         <div className="flex items-center gap-4">
           <Monogram compact={compact} />
+          {lab && (
+            <Link
+              to={lp(lab.path)}
+              data-cursor="follow"
+              className="group min-w-0 border-l border-line pl-4"
+            >
+              <div className="label leading-tight">
+                <span className="text-accent">{lab.num}</span> / {t.nav.labs}
+              </div>
+              <div className="truncate font-display text-[15px] font-extrabold uppercase leading-tight tracking-tight transition-colors group-hover:text-accent sm:text-[17px]">
+                {lab.title[lang]}
+              </div>
+              <div className="hidden truncate text-[12.5px] leading-snug text-muted md:block">{lab.tagline[lang]}</div>
+            </Link>
+          )}
           <div
             className={cx(
               'hidden overflow-hidden border-l border-line pl-4 transition-all duration-500 ease-tech',
@@ -257,7 +275,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             return (
               <a
                 key={item.id}
-                href={`#${item.id}`}
+                href={`${lp('/')}#${item.id}`}
                 onClick={goTo(item.id)}
                 data-cursor="follow"
                 className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[12.5px] uppercase tracking-tech"
@@ -280,7 +298,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             return (
               <a
                 key={item.id}
-                href={`#${item.id}`}
+                href={`${lp('/')}#${item.id}`}
                 onClick={goTo(item.id)}
                 data-cursor="follow"
                 className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[12.5px] uppercase tracking-tech"
@@ -337,7 +355,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
           <LanguageSwitcher />
 
           <a
-            href="#contact"
+            href={`${lp('/')}#contact`}
             onClick={goTo('contact')}
             data-cursor="follow"
             className="group hidden items-center gap-3 border border-line-strong px-4 py-2 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors hover:border-accent hover:text-accent sm:flex"
@@ -347,15 +365,36 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
           </a>
           </>)}
 
+          {showcase && (<>
+          <LanguageSwitcher large className="mr-1 hidden sm:flex" />
+          <button
+            type="button"
+            onClick={toggle}
+            data-cursor="follow"
+            aria-label={t.palette.theme}
+            title={t.palette.theme}
+            className="grid h-10 w-10 place-items-center border border-line text-muted transition-colors hover:border-accent hover:text-accent"
+          >
+            <svg viewBox="0 0 16 16" className="h-5 w-5" fill="none" aria-hidden>
+              <circle cx="8" cy="8" r="4.5" stroke="currentColor" />
+              {theme === 'dark' ? (
+                <path d="M8 3.5A4.5 4.5 0 0 1 8 12.5z" fill="currentColor" />
+              ) : (
+                <path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3 3l1 1M12 12l1 1M13 3l-1 1M4 12l-1 1" stroke="currentColor" />
+              )}
+            </svg>
+          </button>
+          </>)}
+
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-label={open ? t.nav.close : t.nav.menu}
             data-cursor="follow"
-            className={cx('grid h-[30px] w-[30px] place-items-center border border-line text-text', !showcase && 'xl:hidden')}
+            className={cx('grid place-items-center border border-line text-text', showcase ? 'h-10 w-10 hover:border-accent' : 'h-[30px] w-[30px] xl:hidden')}
           >
-            <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" aria-hidden>
+            <svg viewBox="0 0 16 16" className={showcase ? 'h-5 w-5' : 'h-3.5 w-3.5'} fill="none" aria-hidden>
               {open ? (
                 <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" />
               ) : (
@@ -379,7 +418,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
       >
         <nav aria-label="Mobile" className="px-5 py-4 sm:px-8">
           <a
-            href="#home"
+            href={lp('/')}
             onClick={(e) => {
               setOpen(false);
               goTo('home')(e);
@@ -391,7 +430,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
           </a>
           <div className="border-b border-line py-4">
             <a
-              href="#interactive"
+              href={`${lp('/')}#interactive`}
               onClick={(e) => {
                 setOpen(false);
                 goTo('interactive')(e);
@@ -425,7 +464,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
           {items.map((item, i) => (
             <a
               key={item.id}
-              href={`#${item.id}`}
+              href={`${lp('/')}#${item.id}`}
               onClick={(e) => {
                 setOpen(false);
                 goTo(item.id)(e);

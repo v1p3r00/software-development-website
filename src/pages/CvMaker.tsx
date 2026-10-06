@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
-import { useGoToSection } from '../hooks/useGoToSection';
 import { Arrow, Section, SectionHeader, cx } from '../components/ui';
 import Preview, { PrintCopy } from '../components/cv/Preview';
 import SectionEditor from '../components/cv/SectionEditor';
@@ -46,7 +44,6 @@ export default function CvMaker() {
   const { t: site } = useI18n();
   const t = cvText[lang];
   const g = guides[lang];
-  const goTo = useGoToSection();
 
   useSeo({ title: site.seo.cvTitle, description: site.seo.cvDescription, path: '/cv-maker/' });
 
@@ -143,10 +140,11 @@ export default function CvMaker() {
 
   return (
     <>
-      <Section id="cv-maker" className="pt-32 lg:pt-36">
+      <Section id="cv-maker" className="pt-24 lg:pt-24">
         <SectionHeader
           index="10"
           title={t.title}
+          inHeader
           subtitle={t.subtitle}
           right={
             <div className="flex items-center gap-4">
@@ -168,21 +166,11 @@ export default function CvMaker() {
             </div>
           }
         />
-        <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <p className="max-w-[68ch] text-base leading-relaxed text-muted sm:text-lg">{t.intro}</p>
-          <Link
-            to="#interactive"
-            onClick={goTo('interactive')}
-            data-cursor="follow"
-            className="label shrink-0 transition-colors hover:text-accent"
-          >
-            ← {t.back}
-          </Link>
-        </div>
+        <p className="sr-only">{t.intro}</p>
 
         {example && (
-          <div className="mb-6 flex flex-col gap-3 border border-accent/40 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-text">
+          <div className="mb-5 flex items-center justify-between gap-3 border border-accent/40 bg-accent/5 px-3 py-2 sm:px-4">
+            <p className="min-w-0 text-[13px] leading-snug text-text">
               <span className="label-a mr-2">{t.tipLabel}</span>
               {t.exampleNote}
             </p>
@@ -193,7 +181,7 @@ export default function CvMaker() {
         )}
 
         {/* mobile: switch between the form and the preview */}
-        <div className="sticky top-[57px] z-30 -mx-5 mb-6 grid grid-cols-2 border-y border-line bg-bg/90 backdrop-blur-md sm:-mx-8 lg:hidden">
+        <div className="sticky top-[61px] z-30 -mx-5 mb-6 grid grid-cols-2 border-y border-line bg-bg/90 backdrop-blur-md sm:-mx-8 lg:hidden">
           {(['edit', 'preview'] as const).map((v) => (
             <button
               key={v}

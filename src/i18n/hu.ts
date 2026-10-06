@@ -63,6 +63,7 @@ export const hu: Dict = {
     intro:
       'Full-stack fejlesztő, webdizájner és terméképítő. Digitális termékeket, vállalati rendszereket és egyedi webes megoldásokat tervezek és fejlesztek.',
     cta: 'Interaktív projektek',
+    ctaSub: 'élő demó — próbáld ki a böngészőben',
     scroll: 'Görgess',
     roles: ['Full-stack fejlesztő', 'Terméképítő', 'Webdizájner'],
     note: 'Ugyanaz a kíváncsiság,\nmás-más probléma.',

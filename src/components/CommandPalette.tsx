@@ -1,3 +1,4 @@
+import { scrollToSection } from '../lib/scrollToSection';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n';
@@ -10,7 +11,6 @@ import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, I
 import { inLang, listedArticles } from '../data/articles';
 import { allLessons, isReady } from '../data/course';
 import { useCursorPref } from '../hooks/useCursorPref';
-import { scrollBehavior } from '../lib/motion';
 
 /** lower case without accents, so "kod" matches "kód" */
 const norm = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
@@ -40,9 +40,7 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
   const goTo = (hash: string) => () => {
     setOpen(false);
     navigate(lp('/'));
-    window.setTimeout(() => {
-      document.getElementById(hash)?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
-    }, 60);
+    scrollToSection(hash);
   };
 
   const commands = useMemo<Command[]>(() => {

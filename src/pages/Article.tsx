@@ -231,7 +231,7 @@ export default function Article() {
           <div className="font-display text-2xl font-extrabold uppercase tracking-tight">{t.articles.ctaTitle}</div>
           <p className="mt-2 text-sm leading-relaxed text-muted">{t.articles.ctaText}</p>
           <a
-            href="#contact"
+            href={`${lp('/')}#contact`}
             onClick={goTo('contact')}
             data-cursor="follow"
             className="group mt-6 inline-flex items-center gap-3 bg-accent px-5 py-3 font-mono text-[12.5px] uppercase tracking-tech text-onaccent transition-colors hover:bg-text"

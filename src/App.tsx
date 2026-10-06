@@ -14,6 +14,7 @@ import Home from './pages/Home';
 import ProjectDetail from './pages/ProjectDetail';
 import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, InterviewPage, InterviewTrackPage, ModernizationPage } from './pages/lazy';
 import { stripLang } from './i18n/paths';
+import { labFor } from './data/labs';
 import { useRouteCommitSignal } from './lib/pageTransition';
 import { countVisit } from './hooks/useVisitorCount';
 
@@ -21,15 +22,15 @@ export default function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { t } = useI18n();
   useRouteCommitSignal();
-  // the modernization showcase is a full-screen stage: no footer or floating widgets
-  const showcase = stripLang(useLocation().pathname).startsWith('/modernization');
+  // the interactive projects are full-screen stages: no footer or floating widgets
+  const showcase = !!labFor(stripLang(useLocation().pathname));
   // count the visit on whichever page it lands, not only when the home hero is shown
   useEffect(() => countVisit(), []);
 
   return (
     <div className="grain relative min-h-screen bg-bg">
       <a
-        href="#home"
+        href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[80] focus:border focus:border-accent focus:bg-bg focus:px-4 focus:py-2 focus:font-mono focus:text-2xs focus:uppercase focus:tracking-tech focus:text-accent"
       >
         {t.ui.skip}
@@ -38,7 +39,7 @@ export default function App() {
       {!showcase && <ScrollProgress />}
       <Navigation onOpenPalette={() => setPaletteOpen(true)} />
 
-      <main>
+      <main id="main" tabIndex={-1} className="outline-none">
         <Suspense fallback={<div className="min-h-screen" />}>
           <Routes>
             {/* every route also exists under /hu for the Hungarian version */}

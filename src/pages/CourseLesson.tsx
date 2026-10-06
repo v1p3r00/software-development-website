@@ -92,7 +92,7 @@ export default function CourseLesson() {
     });
 
   return (
-    <div className="relative mx-auto w-full max-w-[1500px] px-5 pb-24 pt-32 sm:px-8 lg:px-12 lg:pt-36">
+    <div className="relative mx-auto w-full max-w-[1500px] px-5 pb-24 pt-24 sm:px-8 lg:px-12 lg:pt-24">
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
         <article className="min-w-0 lg:col-span-8">
           <nav aria-label="Breadcrumb" className="label flex flex-wrap items-center gap-2">

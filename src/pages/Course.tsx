@@ -38,10 +38,11 @@ export default function Course() {
 
   return (
     <>
-      <Section id="course" className="pt-32 lg:pt-36">
+      <Section id="course" className="pt-24 lg:pt-24">
         <SectionHeader
           index="12"
           title={t.title}
+          inHeader
           subtitle={t.subtitle}
           right={
             <span className="label flex items-center gap-2">
