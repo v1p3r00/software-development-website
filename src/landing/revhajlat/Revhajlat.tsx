@@ -511,7 +511,11 @@ function Building({ onReserve }: { onReserve: (id: string) => void }) {
                         aria-pressed={on}
                         onPointerEnter={(e) => e.pointerType === 'mouse' && setFloor(f)}
                         onClick={() => setFloor(f)}
-                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setFloor(f))}
+                        onKeyDown={(e) => {
+                          if (e.key !== 'Enter' && e.key !== ' ') return;
+                          e.preventDefault();
+                          setFloor(f);
+                        }}
                       />
                     </g>
                   );
@@ -643,7 +647,7 @@ function Finder({ onReserve }: { onReserve: (id: string) => void }) {
               <legend>
                 Alapterület <output>{min}–{max} m²</output>
               </legend>
-              <div className="rh-range" style={{ '--a': `${pct(min)}%`, '--b': `${pct(max)}%` } as CSSProperties}>
+              <div className="rh-range" style={{ '--a': pct(min), '--b': pct(max) } as CSSProperties}>
                 <span className="rh-range-fill" aria-hidden />
                 <input type="range" min={40} max={200} step={5} value={min} aria-label="Minimum alapterület" onChange={(e) => setMin(Math.min(+e.target.value, max - 10))} />
                 <input type="range" min={40} max={200} step={5} value={max} aria-label="Maximum alapterület" onChange={(e) => setMax(Math.max(+e.target.value, min + 10))} />

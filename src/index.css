@@ -157,7 +157,7 @@
    more size and weight. */
 [data-theme='light'] body {
   font-weight: 400;
-  -webkit-font-smoothing: auto;
+  -webkit-font-smoothing: subpixel-antialiased;
   -moz-osx-font-smoothing: auto;
 }
 [data-theme='light'] .font-mono,
@@ -916,6 +916,7 @@ html[data-vt='collapse']::view-transition-new(root) {
 
 /* interactive explainers */
 .vis-widget {
+  --from: 0;
   position: relative;
   overflow: hidden;
   border: 1px solid rgb(var(--v-violet) / 0.45);
@@ -1188,6 +1189,10 @@ html[data-vt='collapse']::view-transition-new(root) {
 
 /* the loading screen between landing pages */
 .landing-loader {
+  /* the loading screen takes its colours inline from the brand */
+  --lb: #0b0b0d;
+  --lf: #fff;
+  --la: rgb(var(--c-accent));
   position: fixed;
   inset: 0;
   z-index: 70;
@@ -1526,4 +1531,16 @@ html[data-vt='collapse']::view-transition-new(root) {
   .landing-cta-dot::after {
     animation: none;
   }
+}
+
+/* work-card schematics: panels get a soft fill so the layout reads at a glance,
+   and the drawing brightens rather than dims when the card is hovered */
+.pv rect[stroke]:not([fill]) {
+  fill: rgb(var(--c-text) / 0.035);
+}
+.pv {
+  transition: filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.group:hover .pv {
+  filter: brightness(1.18) saturate(1.15);
 }

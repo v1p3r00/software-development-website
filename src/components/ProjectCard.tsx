@@ -31,18 +31,15 @@ export default function ProjectCard({ project, index }: { project: Project; inde
 
         {/* technical overlay on hover */}
         <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-          <div className="absolute inset-0 bg-bg/55" />
-          <div className="absolute left-3 top-3 font-mono text-2xs uppercase tracking-tech text-accent">
+          <div className="absolute left-3 top-3 bg-bg/85 px-1.5 py-0.5 font-mono text-2xs uppercase tracking-tech text-accent">
             ID {project.id}
           </div>
           {project.period && (
-            <div className="absolute bottom-3 left-3 font-mono text-2xs uppercase tracking-tech text-muted">
+            <div className="absolute bottom-3 left-3 bg-bg/85 px-1.5 py-0.5 font-mono text-2xs uppercase tracking-tech text-muted">
               {project.period.replace('present', t.ui.present)}
             </div>
           )}
-          <div className="absolute inset-x-0 top-1/2 h-px bg-accent/40" />
-          <div className="absolute inset-y-0 left-1/2 w-px bg-accent/40" />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 border border-accent px-2 py-1 font-mono text-2xs uppercase tracking-tech text-accent">
+          <span className="absolute bottom-3 right-3 border border-accent bg-bg/85 px-2 py-1 font-mono text-2xs uppercase tracking-tech text-accent">
             {t.projects.open}
           </span>
         </div>

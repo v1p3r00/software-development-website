@@ -142,6 +142,9 @@ export default function HeroModel({ className = '' }: { className?: string }) {
 
   const INLINE_DISTANCE = 4.2;
   const INSPECT_DISTANCE = 4.6;
+  /** closest zoom, and the distance at which the aim starts moving to the face */
+  const MIN_DISTANCE = 1.5;
+  const FACE_FROM = 4.2;
 
   useEffect(() => {
     let disposed = false;
@@ -330,6 +333,34 @@ export default function HeroModel({ className = '' }: { className?: string }) {
         }
       });
       pivot.add(model);
+
+      // where the face is: the centre of the highest slice of the figure,
+      // in the pivot's own space (measured before the pivot is turned)
+      const face = new THREE.Vector3(0, (bounds.max.y - centre.y) * unit - 0.22, 0);
+      {
+        pivot.updateMatrixWorld(true);
+        const top = (bounds.max.y - centre.y) * unit;
+        const v = new THREE.Vector3();
+        const sum = new THREE.Vector3();
+        let n = 0;
+        model.traverse((obj) => {
+          const mesh = obj as InstanceType<typeof THREE.Mesh>;
+          const pos = mesh.isMesh ? mesh.geometry?.attributes?.position : undefined;
+          if (!pos) return;
+          const step = Math.max(1, Math.floor(pos.count / 4000));
+          for (let i = 0; i < pos.count; i += step) {
+            v.fromBufferAttribute(pos, i).applyMatrix4(mesh.matrixWorld);
+            if (v.y > top - 0.32) {
+              sum.add(v);
+              n++;
+            }
+          }
+        });
+        if (n) face.copy(sum.divideScalar(n));
+        face.y -= 0.1; // below the crown: eyes rather than hair
+      }
+      const faceWorld = new THREE.Vector3();
+      const look = new THREE.Vector3();
       pivot.rotation.y = 0.35;
       floor.position.y = (bounds.min.y - centre.y) * unit;
       setMode(themeRef.current);
@@ -392,7 +423,7 @@ export default function HeroModel({ className = '' }: { className?: string }) {
 
       const wheel = (e: WheelEvent) => {
         e.preventDefault();
-        targetDistance = Math.max(1.7, Math.min(6.5, targetDistance + e.deltaY * 0.0022));
+        targetDistance = Math.max(MIN_DISTANCE, Math.min(6.5, targetDistance + e.deltaY * 0.0022));
       };
       el.addEventListener('wheel', wheel, { passive: false });
 
@@ -455,8 +486,14 @@ export default function HeroModel({ className = '' }: { className?: string }) {
         }
 
         distance += (targetDistance - distance) * Math.min(1, dt * 6);
-        camera.position.set(0, elevation, distance);
-        camera.lookAt(0, elevation * 0.25, 0);
+        // zooming in drifts the aim from the figure's middle to its face
+        const zoom = Math.min(1, Math.max(0, (FACE_FROM - distance) / (FACE_FROM - MIN_DISTANCE)));
+        const ease = zoom * zoom * (3 - 2 * zoom);
+        pivot.updateMatrixWorld();
+        faceWorld.copy(face).applyMatrix4(pivot.matrixWorld);
+        look.set(0, elevation * 0.25, 0).lerp(faceWorld, ease);
+        camera.position.set(look.x, look.y + (elevation - elevation * 0.25) * (1 - ease * 0.7), look.z + distance);
+        camera.lookAt(look);
         renderer.render(scene, camera);
 
         if (octx && w && h) {
@@ -528,7 +565,7 @@ export default function HeroModel({ className = '' }: { className?: string }) {
           targetDistance = d;
         },
         zoomBy: (d) => {
-          targetDistance = Math.max(1.7, Math.min(6.5, targetDistance + d));
+          targetDistance = Math.max(MIN_DISTANCE, Math.min(6.5, targetDistance + d));
         },
         resetView: () => {
           elevation = 0.15;

@@ -127,7 +127,10 @@ export default function ContactTerminal() {
         }),
       });
       const data = (await res.json().catch(() => ({}))) as { success?: string | boolean };
-      if (!res.ok || String(data.success) !== 'true') throw new Error('not delivered');
+      if (!res.ok || String(data.success) !== 'true') {
+        setStatus('error');
+        return;
+      }
       setStatus('sent');
       setValues(EMPTY);
       setChoices(NO_CHOICES);

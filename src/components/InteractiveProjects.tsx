@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom';
 import { labs } from '../data/labs';
 import type { Lab } from '../data/labs';
 import { readyTracks } from '../data/interview';
-import { allLessons, isReady, modules } from '../data/course';
+import { allLessons, modules } from '../data/course';
 import { useProgress } from './course/progress';
 import { useI18n } from '../i18n';
 import { usePageTransition } from '../lib/pageTransition';
-import { CourseLessonPage, InterviewTrackPage, labPreload } from '../pages/lazy';
+import { CourseLessonPage, labPreload } from '../pages/lazy';
 import LabIcon from './LabIcon';
 import { Cake } from './modernization/art';
 import LandingCover from './LandingCover';
@@ -14,41 +14,125 @@ import { landings, readyLandings } from '../data/landings';
 import { Arrow, CornerMarks, Section, SectionHeader, cx } from './ui';
 import { site } from '../data/site';
 
-/** stacked page schematics: the CV maker's layouts */
+/** a generic person silhouette for the sample CV photos */
+function Avatar({ className = '', hue = '#c9b8a6' }: { className?: string; hue?: string }) {
+  return (
+    <svg viewBox="0 0 40 48" className={className} aria-hidden>
+      <rect width="40" height="48" fill={hue} />
+      <circle cx="20" cy="18" r="8.5" fill="#f3e6da" />
+      <path d="M20 9c-6 0-9 4-9 9 0 1 .2 2 .5 3 1-4 4-6 8.5-6s7.5 2 8.5 6c.3-1 .5-2 .5-3 0-5-3-9-9-9z" fill="#5a3d30" />
+      <path d="M5 48c1.5-9 7.5-13 15-13s13.5 4 15 13z" fill="#2f3a4d" />
+      <path d="M17 35l3 5 3-5" fill="#fff" />
+    </svg>
+  );
+}
+
+/** the CV maker as it feels: three real-looking printed CVs in different layouts */
 function CvVisual({ lang }: { lang: 'en' | 'hu' }) {
-  const features =
-    lang === 'hu'
-      ? ['Élő előnézet', '24 elrendezés', 'PDF export', 'Útmutató']
-      : ['Live preview', '24 layouts', 'PDF export', 'Writing guide'];
-  const line = (w: string, extra = '') => <span className={cx('block h-[3px] bg-line-strong/70', extra)} style={{ width: w }} />;
+  const hu = lang === 'hu';
+  const features = hu
+    ? ['Élő előnézet', '24 elrendezés', 'PDF export', 'Útmutató']
+    : ['Live preview', '24 layouts', 'PDF export', 'Writing guide'];
+  const L = {
+    role: hu ? 'Termékdizájner' : 'Product Designer',
+    profile: hu ? 'Profil' : 'Profile',
+    exp: hu ? 'Tapasztalat' : 'Experience',
+    edu: hu ? 'Tanulmányok' : 'Education',
+    skills: hu ? 'Készségek' : 'Skills',
+    lang: hu ? 'Nyelvek' : 'Languages',
+    blurb: hu
+      ? 'Felhasználóközpontú termékeket tervezek, a kutatástól a kész felületig.'
+      : 'I design user-centred products, from research to polished interfaces.',
+  };
+  // greyed text lines, like body copy seen from a distance
+  const lines = (ws: number[], c = 'bg-[#c9ccd3]') => (
+    <span className="flex flex-col gap-[3px]">
+      {ws.map((w, i) => (
+        <span key={i} className={cx('block h-[2px] rounded-full', c)} style={{ width: `${w}%` }} />
+      ))}
+    </span>
+  );
+  const page = 'absolute aspect-[210/297] overflow-hidden rounded-[2px] bg-white text-[#1f2430] shadow-[0_18px_40px_-12px_rgb(0_0_0/0.55),0_2px_6px_rgb(0_0_0/0.25)] transition-transform duration-700 ease-tech';
   return (
     <div className="flex h-full flex-col">
-      <div className="relative mx-auto h-56 w-full max-w-[300px] sm:h-64" aria-hidden>
-        {/* back page: single column */}
-        <div className="absolute left-[6%] top-6 aspect-[210/297] h-[85%] -rotate-6 border border-line bg-bg p-3 transition-transform duration-500 ease-tech group-hover/lab:-translate-x-3 group-hover/lab:-rotate-[9deg]">
-          <span className="mb-2 block h-1.5 w-1/2 bg-line-strong" />
-          <span className="flex flex-col gap-1.5">{line('90%')}{line('70%')}{line('80%')}{line('60%')}</span>
+      <div className="relative mx-auto h-64 w-full max-w-[340px] sm:h-72" aria-hidden>
+        {/* back left: classic, centred header */}
+        <div className={cx(page, 'left-[2%] top-8 h-[80%] -rotate-[8deg] p-[7%] group-hover/lab:-translate-x-4 group-hover/lab:-rotate-[12deg]')}>
+          <div className="border-b border-[#1f2430] pb-[5%] text-center">
+            <div className="font-serif text-[9px] font-semibold tracking-[0.18em]">MÁRK SZABÓ</div>
+            <div className="mt-[2px] text-[5px] uppercase tracking-[0.2em] text-[#6b7280]">{hu ? 'Pénzügyi elemző' : 'Financial Analyst'}</div>
+          </div>
+          <div className="mt-[7%] text-[5px] font-bold uppercase tracking-[0.15em]">{L.exp}</div>
+          <div className="mt-[3%]">{lines([95, 88, 92, 70])}</div>
+          <div className="mt-[7%] text-[5px] font-bold uppercase tracking-[0.15em]">{L.edu}</div>
+          <div className="mt-[3%]">{lines([90, 60])}</div>
         </div>
-        {/* middle page: accent rail */}
-        <div className="absolute right-[6%] top-4 aspect-[210/297] h-[85%] rotate-6 border border-line border-l-4 border-l-accent bg-bg p-3 transition-transform duration-500 ease-tech group-hover/lab:translate-x-3 group-hover/lab:rotate-[9deg]">
-          <span className="mb-2 block h-2 w-3/4 bg-text/80" />
-          <span className="flex flex-col gap-1.5">{line('85%')}{line('65%')}{line('75%')}</span>
+        {/* back right: bold colour header */}
+        <div className={cx(page, 'right-[2%] top-6 h-[80%] rotate-[8deg] group-hover/lab:translate-x-4 group-hover/lab:rotate-[12deg]')}>
+          <div className="flex items-center gap-[6%] bg-[#0f766e] px-[7%] py-[8%] text-white">
+            <Avatar className="h-7 w-6 rounded-full" hue="#99d5cc" />
+            <div>
+              <div className="text-[8px] font-bold leading-none">Eszter Tóth</div>
+              <div className="mt-[3px] text-[5px] opacity-80">{hu ? 'Marketing vezető' : 'Marketing Lead'}</div>
+            </div>
+          </div>
+          <div className="p-[7%]">
+            <div className="text-[5px] font-bold uppercase tracking-[0.12em] text-[#0f766e]">{L.exp}</div>
+            <div className="mt-[3%]">{lines([92, 80, 86])}</div>
+            <div className="mt-[6%] text-[5px] font-bold uppercase tracking-[0.12em] text-[#0f766e]">{L.skills}</div>
+            <div className="mt-[3%] flex flex-wrap gap-[3px]">
+              {[16, 22, 12, 18, 14].map((w, i) => (
+                <span key={i} className="h-[5px] rounded-full bg-[#ccebe6]" style={{ width: w }} />
+              ))}
+            </div>
+          </div>
         </div>
-        {/* front page: sidebar layout */}
-        <div className="absolute left-1/2 top-0 grid aspect-[210/297] h-[92%] -translate-x-1/2 grid-cols-[34%_1fr] border border-line-strong bg-bg shadow-2xl transition-transform duration-500 ease-tech group-hover/lab:-translate-y-1">
-          <span className="flex flex-col gap-1.5 bg-accent/10 p-2">
-            <span className="block aspect-[4/5] w-full bg-line-strong/60" />
-            <span className="block h-[3px] w-2/3 bg-accent" />
-            {line('90%')}
-            {line('70%')}
-          </span>
-          <span className="flex flex-col gap-1.5 p-2">
-            <span className="block h-2 w-4/5 bg-text/80" />
-            <span className="block h-[3px] w-1/2 bg-accent" />
-            <span className="mt-1 flex flex-col gap-1">{line('95%')}{line('80%')}{line('88%')}</span>
-            <span className="mt-1 flex flex-col gap-1">{line('90%')}{line('70%')}</span>
-          </span>
+        {/* front: modern sidebar layout */}
+        <div className={cx(page, 'left-1/2 top-0 z-10 grid h-[94%] -translate-x-1/2 grid-cols-[36%_1fr] group-hover/lab:-translate-y-2 group-hover/lab:scale-[1.03]')}>
+          <div className="flex flex-col gap-[6px] bg-[#1f2a44] px-[10%] py-[12%] text-white">
+            <Avatar className="mx-auto h-11 w-9 rounded-[3px]" />
+            <div className="mt-1 text-[5px] font-bold uppercase tracking-[0.15em] text-[#f59e0b]">{hu ? 'Kapcsolat' : 'Contact'}</div>
+            <div className="space-y-[2px] text-[4.5px] leading-tight text-white/80">
+              <div>anna.kovacs@mail.hu</div>
+              <div>+36 30 123 4567</div>
+              <div>Budapest</div>
+            </div>
+            <div className="mt-1 text-[5px] font-bold uppercase tracking-[0.15em] text-[#f59e0b]">{L.skills}</div>
+            {[90, 75, 82, 60].map((w, i) => (
+              <span key={i} className="block h-[3px] w-full rounded-full bg-white/15">
+                <span className="block h-full rounded-full bg-[#f59e0b]" style={{ width: `${w}%` }} />
+              </span>
+            ))}
+            <div className="mt-1 text-[5px] font-bold uppercase tracking-[0.15em] text-[#f59e0b]">{L.lang}</div>
+            <div className="text-[4.5px] text-white/80">{hu ? 'Angol · Német' : 'English · German'}</div>
+          </div>
+          <div className="px-[9%] py-[10%]">
+            <div className="text-[11px] font-extrabold leading-none tracking-tight">Anna Kovács</div>
+            <div className="mt-[3px] text-[6px] font-semibold text-[#d97706]">{L.role}</div>
+            <div className="mt-[8%] text-[5px] font-bold uppercase tracking-[0.15em] text-[#1f2a44]">{L.profile}</div>
+            <p className="mt-[3px] text-[4.5px] leading-[1.35] text-[#4b5563]">{L.blurb}</p>
+            <div className="mt-[8%] text-[5px] font-bold uppercase tracking-[0.15em] text-[#1f2a44]">{L.exp}</div>
+            {[
+              ['Senior UX Designer', 'Nordlight · 2021–'],
+              ['UI Designer', 'Brightwave · 2018–21'],
+            ].map(([r, c]) => (
+              <div key={r} className="mt-[5px]">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-[5px] font-semibold">{r}</span>
+                  <span className="text-[4px] text-[#9ca3af]">{c}</span>
+                </div>
+                <div className="mt-[2px]">{lines([96, 84, 90])}</div>
+              </div>
+            ))}
+            <div className="mt-[8%] text-[5px] font-bold uppercase tracking-[0.15em] text-[#1f2a44]">{L.edu}</div>
+            <div className="mt-[3px] text-[4.5px] text-[#4b5563]">MOME · BA {hu ? 'Formatervezés' : 'Design'}</div>
+          </div>
         </div>
+        {/* export badge */}
+        <span className="absolute -bottom-1 right-[10%] z-20 flex items-center gap-1.5 bg-accent px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-tech text-onaccent shadow-lg transition-transform duration-500 ease-tech group-hover/lab:-translate-y-1">
+          <svg viewBox="0 0 12 12" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 1v7M3 5l3 3 3-3M2 11h8" /></svg>
+          PDF
+        </span>
       </div>
       <ul className="mt-6 grid grid-cols-2 gap-px border border-line bg-line">
         {features.map((f) => (
@@ -89,52 +173,153 @@ function CourseVisual({ lang }: { lang: 'en' | 'hu' }) {
           <Arrow className="shrink-0 text-accent transition-transform duration-300 group-hover:translate-x-1" />
         </Link>
       )}
-      <ol className="relative grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2">
-        {modules.map((m) => {
-          // a module is live once any of its lessons has content
-          const live = m.lessons.some((l) => isReady(l.slug));
-          return (
-          <li key={m.id} className="flex items-center gap-3 bg-surface px-3 py-2.5">
-            <span
-              className={cx(
-                'grid h-5 w-5 shrink-0 place-items-center border font-mono text-[9px]',
-                live ? 'border-accent bg-accent text-onaccent' : 'border-line-strong text-dim',
-              )}
-            >
-              {m.num}
+      {/* the course as it looks: module list on the left, a passing exercise on the right */}
+      <div className="relative flex aspect-[16/10] w-full flex-col overflow-hidden border border-line-strong bg-bg" aria-hidden>
+        <div className="flex items-center justify-between border-b border-line px-3 py-2 font-mono text-[10px] uppercase tracking-tech text-dim">
+          <span>
+            <span className="text-accent">04</span> / React / useState
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="h-1 w-16 bg-line">
+              <span className="block h-full w-[38%] bg-accent transition-[width] duration-700 ease-tech group-hover/lab:w-[46%]" />
             </span>
-            <span className={cx('truncate text-[13px]', live ? 'text-text' : 'text-muted')}>{m.title[lang]}</span>
-          </li>
-          );
-        })}
-      </ol>
-      <p className="label mt-3">{lang === 'hu' ? `Kvízek · böngészős gyakorlatok · ${site.showPatreon ? 'mintaprojektek a Patreonon' : 'haladási térkép'}` : `Quizzes · in-browser exercises · ${site.showPatreon ? 'sample projects on Patreon' : 'progress map'}`}</p>
+            {lang === 'hu' ? '18/48 lecke' : '18/48 lessons'}
+          </span>
+        </div>
+        <div className="grid min-h-0 flex-1 grid-cols-[38%_1fr]">
+          <ol className="flex min-h-0 flex-col overflow-hidden border-r border-line py-1">
+            {modules.map((m, i) => {
+              const state = i < 3 ? 'done' : i === 3 ? 'now' : 'todo';
+              return (
+                <li
+                  key={m.id}
+                  className={cx(
+                    'flex min-h-0 flex-1 items-center gap-2 px-2.5 text-[10.5px] leading-none',
+                    state === 'now' ? 'bg-accent/10 text-text' : state === 'done' ? 'text-muted' : 'text-dim',
+                  )}
+                >
+                  <span
+                    className={cx(
+                      'grid h-3.5 w-3.5 shrink-0 place-items-center border font-mono text-[8px]',
+                      state === 'done' && 'border-accent bg-accent text-onaccent',
+                      state === 'now' && 'border-accent text-accent',
+                      state === 'todo' && 'border-line-strong',
+                    )}
+                  >
+                    {state === 'done' ? '✓' : Number(m.num)}
+                  </span>
+                  <span className="truncate">{m.title[lang]}</span>
+                </li>
+              );
+            })}
+          </ol>
+          <div className="flex min-h-0 flex-col bg-[#0f1420]">
+            <pre className="min-h-0 flex-1 overflow-hidden px-3 py-3 font-mono text-[10px] leading-[1.7] text-[#c9d1e4] sm:text-[11px]">
+              <span className="text-[#c792ea]">function</span> <span className="text-[#82aaff]">Counter</span>() {'{'}
+              {'\n'}  <span className="text-[#c792ea]">const</span> [n, setN] ={'\n'}    <span className="text-[#82aaff]">useState</span>(<span className="text-[#f78c6c]">0</span>);
+              {'\n'}  <span className="text-[#c792ea]">return</span> <span className="text-[#89ddff]">&lt;button</span>{'\n'}    <span className="text-[#ffcb6b]">onClick</span>={'{'}() =&gt; <span className="text-[#82aaff]">setN</span>(n + <span className="text-[#f78c6c]">1</span>){'}'}<span className="text-[#89ddff]">&gt;</span>
+              {'\n'}    {'{'}n{'}'}<span className="text-[#89ddff]">&lt;/button&gt;</span>;{'\n'}{'}'}
+            </pre>
+            <div className="flex items-center justify-between border-t border-white/10 bg-[#0c2a1c] px-3 py-1.5 font-mono text-[10px]">
+              <span className="flex items-center gap-1.5 text-[#4ade80]">
+                <span className="grid h-3.5 w-3.5 place-items-center bg-[#22c55e] text-[8px] text-[#052e16]">✓</span>
+                {lang === 'hu' ? '3/3 teszt' : '3/3 tests'}
+              </span>
+              <span className="bg-accent px-1.5 py-0.5 font-bold text-onaccent transition-transform duration-500 ease-tech group-hover/lab:scale-110">+20 XP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <FeatureGrid
+        items={
+          lang === 'hu'
+            ? [`${modules.length} modul`, 'Kvízek', 'Böngészős gyakorlatok', site.showPatreon ? 'Mintaprojektek' : 'Haladási térkép']
+            : [`${modules.length} modules`, 'Quizzes', 'In-browser exercises', site.showPatreon ? 'Sample projects' : 'Progress map']
+        }
+      />
     </div>
   );
 }
 
-function InterviewVisual() {
-  const { t, lp, lang } = useI18n();
-  const { link } = usePageTransition();
+/** the four-up feature box every project card ends with */
+function FeatureGrid({ items }: { items: string[] }) {
   return (
-    <>
-      <div className="label-a mb-4">// {t.labs.jumpIn}</div>
-      <ul className="grid grid-cols-2 gap-px border border-line bg-line">
-        {readyTracks.map((track) => (
-          <li key={track.id} className="bg-surface">
-            <Link
-              to={lp(`/interview/${track.id}/`)}
-              onClick={link(lp(`/interview/${track.id}/`), 'slide', { prepare: InterviewTrackPage.preload })}
-              data-cursor="follow"
-              className="group flex items-center justify-between gap-2 px-3 py-2.5 font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:bg-bg hover:text-accent"
-            >
-              <span className="truncate">{track.title[lang]}</span>
-              <span className="text-dim transition-colors group-hover:text-accent">↗</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </>
+    <ul className="mt-6 grid grid-cols-2 gap-px border border-line bg-line">
+      {items.map((f) => (
+        <li key={f} className="flex items-center gap-2 bg-surface px-3 py-2.5 font-mono text-2xs uppercase tracking-tech text-muted">
+          <span className="h-1.5 w-1.5 bg-accent" aria-hidden />
+          {f}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** a question as the simulator shows it, framed like the other project previews */
+function InterviewVisual() {
+  const { lang } = useI18n();
+  const hu = lang === 'hu';
+  const options = ['"null"', '"object"', '"undefined"', '"number"'];
+  return (
+    <div className="flex h-full flex-col">
+      <div className="relative flex aspect-[16/10] w-full flex-col overflow-hidden border border-line-strong bg-bg" aria-hidden>
+        <div className="flex items-center justify-between border-b border-line px-3 py-2 font-mono text-[10px] uppercase tracking-tech text-dim">
+          <span className="flex items-center gap-2">
+            <span className="bg-[#f7df1e] px-1 py-px font-bold text-black">JS</span>
+            {hu ? '7. kérdés / 20' : 'Question 7 / 20'}
+          </span>
+          <span className="flex items-center gap-1.5 text-accent">
+            <span className="h-1.5 w-1.5 animate-pulse bg-accent" />
+            00:42
+          </span>
+        </div>
+        <div className="h-1 bg-line">
+          <span className="block h-full w-[35%] bg-accent transition-[width] duration-700 ease-tech group-hover/lab:w-[40%]" />
+        </div>
+        <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 px-4 py-3 sm:px-5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-[13px] font-semibold text-text sm:text-[15px]">{hu ? 'Mit ír ki ez a kód?' : 'What does this print?'}</div>
+            <div className="flex shrink-0 items-center gap-2 border border-line-strong bg-surface py-1 pl-1 pr-2.5">
+              <svg viewBox="0 0 36 36" className="h-7 w-7 -rotate-90">
+                <circle cx="18" cy="18" r="15" fill="none" stroke="rgb(var(--c-line))" strokeWidth="4" />
+                <circle cx="18" cy="18" r="15" fill="none" stroke="#22c55e" strokeWidth="4" strokeDasharray="94.2" strokeDashoffset="17" />
+              </svg>
+              <span className="font-mono text-[10px] leading-tight">
+                <span className="block font-bold text-text">82%</span>
+                <span className="block text-dim">{hu ? 'Medior' : 'Mid-level'}</span>
+              </span>
+            </div>
+          </div>
+          <pre className="bg-[#0f1420] px-3 py-2.5 font-mono text-[11.5px] text-[#c9d1e4] sm:text-[13px]">
+            <span className="text-[#82aaff]">console</span>.<span className="text-[#82aaff]">log</span>(<span className="text-[#c792ea]">typeof</span> <span className="text-[#f78c6c]">null</span>);
+          </pre>
+          <ul className="grid grid-cols-2 gap-1.5">
+            {options.map((o, i) => (
+              <li
+                key={o}
+                className={cx(
+                  'flex items-center gap-2 border px-2.5 py-1.5 font-mono text-[11px] transition-colors duration-500 sm:py-2 sm:text-[12px]',
+                  i === 1
+                    ? 'border-line-strong text-text group-hover/lab:border-[#22c55e] group-hover/lab:bg-[#22c55e]/15 group-hover/lab:text-[#4ade80]'
+                    : 'border-line text-muted',
+                )}
+              >
+                <span className="grid h-3.5 w-3.5 shrink-0 place-items-center border border-current text-[8px]">{'ABCD'[i]}</span>
+                {o}
+                {i === 1 && <span className="ml-auto opacity-0 transition-opacity duration-500 group-hover/lab:opacity-100">✓</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <FeatureGrid
+        items={
+          hu
+            ? [`${readyTracks.length} téma`, `${(readyTracks.length * 200).toLocaleString('hu')} kérdés`, 'Szint és pontszám', 'Kódolvasás, hibakeresés']
+            : [`${readyTracks.length} tracks`, `${(readyTracks.length * 200).toLocaleString('en')} questions`, 'Level & score', 'Code reading & bugs']
+        }
+      />
+    </div>
   );
 }
 
@@ -269,18 +454,6 @@ function LabCard({ lab }: { lab: Lab }) {
           </div>
           <p className="mt-5 max-w-[60ch] whitespace-pre-line text-sm leading-relaxed text-muted sm:text-base">{lab.desc[lang]}</p>
 
-          {lab.id === 'interview' && (
-            <dl className="mt-8 grid max-w-md grid-cols-2 gap-px border border-line bg-line">
-              <div className="bg-surface p-4">
-                <dt className="label">{tl.tracks}</dt>
-                <dd className="display mt-1 text-3xl">{String(readyTracks.length).padStart(2, '0')}</dd>
-              </div>
-              <div className="bg-surface p-4">
-                <dt className="label">{tl.questions}</dt>
-                <dd className="display mt-1 text-3xl">{(readyTracks.length * 200).toLocaleString(lang)}</dd>
-              </div>
-            </dl>
-          )}
 
           <div className="mt-auto flex flex-wrap items-center gap-4 pt-8">
             <Link

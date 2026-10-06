@@ -104,8 +104,7 @@ export function TechButton({
   href?: string;
   variant?: 'outline' | 'solid';
   className?: string;
-  [key: string]: unknown;
-}) {
+} & Record<string, unknown>) {
   const base =
     'group relative inline-flex items-center gap-4 px-6 py-4 font-mono text-[12.5px] uppercase tracking-tech transition-colors duration-300';
   const styles =

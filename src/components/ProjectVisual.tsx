@@ -1,7 +1,9 @@
 import type { VisualKey } from '../data/projects';
 
-const L = 'rgb(var(--c-line-strong))';
-const D = 'rgb(var(--c-line))';
+// drawn in text colour at varying strength, so the schematics read clearly
+// on both themes instead of disappearing into the card
+const L = 'rgb(var(--c-text) / 0.5)';
+const D = 'rgb(var(--c-text) / 0.22)';
 const A = 'rgb(var(--c-accent))';
 const T = 'rgb(var(--c-text))';
 
@@ -11,9 +13,17 @@ const T = 'rgb(var(--c-text))';
  */
 export default function ProjectVisual({ variant }: { variant: VisualKey }) {
   return (
-    <svg viewBox="0 0 320 200" className="h-full w-full" fill="none" aria-hidden role="presentation">
+    <svg viewBox="0 0 320 200" className="pv h-full w-full" fill="none" aria-hidden role="presentation">
+      <defs>
+        <radialGradient id={`pv-glow-${variant}`} cx="70%" cy="30%" r="75%">
+          <stop offset="0" stopColor={A} stopOpacity="0.22" />
+          <stop offset="0.55" stopColor={A} stopOpacity="0.05" />
+          <stop offset="1" stopColor={A} stopOpacity="0" />
+        </radialGradient>
+      </defs>
       <rect x="0" y="0" width="320" height="200" fill="rgb(var(--c-surface-2))" />
-      <g opacity="0.5">
+      <rect x="0" y="0" width="320" height="200" fill={`url(#pv-glow-${variant})`} />
+      <g opacity="0.35">
         {Array.from({ length: 8 }, (_, i) => (
           <line key={`v${i}`} x1={i * 40} y1="0" x2={i * 40} y2="200" stroke={D} strokeWidth="0.5" />
         ))}
