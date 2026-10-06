@@ -9,7 +9,6 @@ import { useTheme } from '../hooks/useTheme';
 import LanguageSwitcher from './LanguageSwitcher';
 import { usePageTransition } from '../lib/pageTransition';
 import { labPreload } from '../pages/lazy';
-import LabIcon from './LabIcon';
 import { labFor, labs } from '../data/labs';
 import { isLandingStage, readyLandings } from '../data/landings';
 import { Arrow, cx } from './ui';
@@ -115,7 +114,7 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
       <div
         id="projects-menu"
         className={cx(
-          'absolute left-1/2 top-full z-50 w-[340px] -translate-x-1/2 pt-4 transition-all duration-300 ease-tech',
+          'absolute left-1/2 top-full z-50 w-[330px] -translate-x-1/2 pt-4 transition-all duration-300 ease-tech',
           open ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-1 opacity-0',
         )}
       >
@@ -123,23 +122,20 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
           <div className="label border-b border-line px-4 py-2.5">// {t.labs.subtitle}</div>
           <ul>
             {labs.map((lab) => (
-              <li key={lab.id} className="border-b border-line">
+              <li key={lab.id}>
                 <Link
                   to={lp(lab.path)}
                   onClick={link(lp(lab.path), 'slide', labPreload[lab.id] ? { prepare: labPreload[lab.id] } : {})}
                   data-cursor="follow"
                   data-menu-item
                   tabIndex={open ? 0 : -1}
-                  className="group flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-surface"
+                  className="group flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-surface"
                 >
-                  <LabIcon id={lab.id} className="mt-0.5 h-6 w-6 shrink-0 text-muted transition-colors group-hover:text-text" />
-                  <span className="flex-1">
-                    <span className="block font-display text-base font-extrabold uppercase leading-tight tracking-tight transition-colors group-hover:text-accent">
-                      {lab.title[lang]}
-                    </span>
-                    <span className="mt-1 line-clamp-2 block text-[12px] leading-snug text-muted">{lab.desc[lang]}</span>
+                  <span className="w-5 shrink-0 font-mono text-2xs tracking-tech text-accent">{lab.num}</span>
+                  <span className="flex-1 whitespace-nowrap font-mono text-[12px] uppercase tracking-tech text-muted transition-colors group-hover:text-text">
+                    {lab.title[lang]}
                   </span>
-                  <Arrow className="mt-1 shrink-0 text-dim transition-all duration-300 group-hover:translate-x-1 group-hover:text-accent" />
+                  <Arrow className="shrink-0 text-dim opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:text-accent group-hover:opacity-100" />
                 </Link>
               </li>
             ))}
@@ -153,7 +149,7 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
             tabIndex={open ? 0 : -1}
             data-cursor="follow"
             data-menu-item
-            className="flex items-center justify-between px-4 py-2.5 font-mono text-2xs uppercase tracking-tech text-dim transition-colors hover:text-accent"
+            className="flex items-center justify-between border-t border-line px-4 py-2.5 font-mono text-2xs uppercase tracking-tech text-dim transition-colors hover:text-accent"
           >
             {t.nav.labsAll}
             <span>↓</span>
