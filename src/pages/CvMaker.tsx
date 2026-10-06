@@ -181,7 +181,7 @@ export default function CvMaker() {
         )}
 
         {/* mobile: switch between the form and the preview */}
-        <div className="sticky top-[61px] z-30 -mx-5 mb-6 grid grid-cols-2 border-y border-line bg-bg/90 backdrop-blur-md sm:-mx-8 lg:hidden">
+        <div className="sticky top-[61px] z-30 -mx-5 mb-6 grid grid-cols-2 border-y border-line bg-bg/95 sm:-mx-8 lg:hidden">
           {(['edit', 'preview'] as const).map((v) => (
             <button
               key={v}

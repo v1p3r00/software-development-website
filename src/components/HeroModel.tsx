@@ -65,6 +65,25 @@ function readAccent(): [number, number, number] {
 
 type Mode = 'dark' | 'light';
 
+/** Devices that should not spend a GPU on a decorative figure at all. */
+function isLowEnd() {
+  const nav = navigator as Navigator & {
+    deviceMemory?: number;
+    connection?: { saveData?: boolean };
+  };
+  return (
+    (nav.deviceMemory ?? 8) <= 2 ||
+    (nav.hardwareConcurrency ?? 8) <= 2 ||
+    nav.connection?.saveData === true
+  );
+}
+
+/** Touch-first, usually phone/tablet GPUs: render lighter. */
+const isCoarse = () => window.matchMedia?.('(pointer: coarse)').matches ?? false;
+
+/** Idle turn is slow, so 30 fps reads the same and halves the GPU work. */
+const IDLE_FRAME_MS = 1000 / 30;
+
 /** A small dark-theme code editor, drawn once, used as the laptop's display. */
 function drawEditor(THREE: typeof import('three')) {
   const c = document.createElement('canvas');
@@ -128,6 +147,10 @@ export default function HeroModel({ className = '' }: { className?: string }) {
     let disposed = false;
     let cleanup: (() => void) | undefined;
 
+    const coarse = isCoarse();
+    const dpr = window.devicePixelRatio || 1;
+    const pixelRatio = Math.min(coarse ? 1.25 : 1.5, dpr);
+
     const start = async () => {
       const THREE = await import('three');
       const [{ GLTFLoader }, { MeshoptDecoder }, { RoomEnvironment }] = await Promise.all([
@@ -139,11 +162,17 @@ export default function HeroModel({ className = '' }: { className?: string }) {
 
       let renderer: InstanceType<typeof THREE.WebGLRenderer>;
       try {
-        renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
+        // MSAA only where pixels are big enough to need it; on dense screens it
+        // multiplies fill cost for no visible gain
+        renderer = new THREE.WebGLRenderer({
+          alpha: true,
+          antialias: !coarse && dpr < 1.5,
+          powerPreference: 'low-power',
+        });
       } catch {
         return; // no WebGL: the hero simply goes without the model
       }
-      renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+      renderer.setPixelRatio(pixelRatio);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.15;
       renderer.shadowMap.enabled = true;
@@ -172,7 +201,7 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       const hemi = new THREE.HemisphereLight(0xc8d2e0, 0x0a0a0c, 1.1);
       scene.add(hemi);
       const key = new THREE.DirectionalLight(0xffffff, 2.2);
-      key.shadow.mapSize.set(2048, 2048);
+      key.shadow.mapSize.set(coarse ? 512 : 1024, coarse ? 512 : 1024);
       key.shadow.camera.left = -1.6;
       key.shadow.camera.right = 1.6;
       key.shadow.camera.top = 1.6;
@@ -181,8 +210,8 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       key.shadow.camera.far = 14;
       key.shadow.bias = -0.0004;
       key.shadow.normalBias = 0.025;
-      key.shadow.radius = 9;
-      key.shadow.blurSamples = 16;
+      key.shadow.radius = coarse ? 4 : 6;
+      key.shadow.blurSamples = 8;
       scene.add(key);
       const fill = new THREE.DirectionalLight(0x9fb0c8, 0.5);
       scene.add(fill);
@@ -294,8 +323,10 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       model.traverse((obj) => {
         const mesh = obj as InstanceType<typeof THREE.Mesh>;
         if (mesh.isMesh) {
+          // only the floor receives: self-shadowing every mesh means a soft
+          // shadow-map lookup per pixel of the whole figure, every frame
           mesh.castShadow = true;
-          mesh.receiveShadow = true;
+          mesh.receiveShadow = false;
         }
       });
       pivot.add(model);
@@ -316,10 +347,9 @@ export default function HeroModel({ className = '' }: { className?: string }) {
         renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
-        const dpr = Math.min(2, window.devicePixelRatio || 1);
-        overlay.width = Math.round(w * dpr);
-        overlay.height = Math.round(h * dpr);
-        octx?.setTransform(dpr, 0, 0, dpr, 0, 0);
+        overlay.width = Math.round(w * pixelRatio);
+        overlay.height = Math.round(h * pixelRatio);
+        octx?.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
       };
       const ro = new ResizeObserver(resize);
       ro.observe(el);
@@ -369,11 +399,45 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       let orbit = 0;
       let raf = 0;
       let last = performance.now();
+      let lastDrawn = 0;
       let solved = 0;
       const slots: Slot[] = [];
       for (let i = 0; i < SLOTS; i++) slots.push(spawn(last, new Set(slots.map((s) => s.text)), true));
+      // reused every frame, so the loop allocates nothing
+      const head = new THREE.Vector3();
+      const projected = new THREE.Vector3();
+      const placed = Array.from({ length: SLOTS }, () => ({ slot: slots[0], x: 0, y: 0, depth: 0, life: 0 }));
+      const byDepth = (m: (typeof placed)[number], n: (typeof placed)[number]) => m.depth - n.depth;
+      const takenTexts = () => new Set(slots.map((s) => s.text)); // only on a respawn, a few times a minute
+
+      // run only while the figure is on screen and the tab is visible
+      let onScreen = false;
+      let running = false;
+      const resume = () => {
+        if (running) return;
+        running = true;
+        last = performance.now();
+        raf = requestAnimationFrame(frame);
+      };
+      const pause = () => {
+        running = false;
+        cancelAnimationFrame(raf);
+      };
+      const sync = () => (onScreen && !document.hidden ? resume() : pause());
+      const io = new IntersectionObserver(([entry]) => {
+        onScreen = entry.isIntersecting;
+        sync();
+      });
+      io.observe(el);
+      document.addEventListener('visibilitychange', sync);
 
       const frame = (now: number) => {
+        if (!running) return;
+        raf = requestAnimationFrame(frame);
+        // full rate while someone is handling it, half rate for the idle turn
+        const interactive = dragging || Math.abs(velocity) > 1e-4 || Math.abs(targetDistance - distance) > 1e-3 || el.parentElement === modalHost.current;
+        if (!interactive && now - lastDrawn < IDLE_FRAME_MS - 2) return;
+        lastDrawn = now;
         const dt = Math.min(0.05, (now - last) / 1000);
         last = now;
 
@@ -402,33 +466,28 @@ export default function HeroModel({ className = '' }: { className?: string }) {
           octx.textAlign = 'center';
           octx.textBaseline = 'middle';
 
-          const head = orbitCentre.clone().project(camera);
+          head.copy(orbitCentre).project(camera);
           const hx = ((head.x + 1) / 2) * w;
           const hy = ((1 - head.y) / 2) * h;
 
-          const placed = slots
-            .map((slot, index) => {
-              if (!reduced && now - slot.born > slot.life) {
-                solved += 1;
-                slots[index] = spawn(now, new Set(slots.map((s) => s.text)));
-              }
-              const current = slots[index];
-              const a = current.phase + orbit + pivot.rotation.y;
-              probe.set(Math.cos(a) * current.r, headY + current.y, Math.sin(a) * current.r);
-              const p = probe.clone().project(camera);
-              const age = now - current.born;
-              const life = reduced
-                ? 1
-                : Math.min(age / FADE_IN, Math.max(0, (current.life - age) / FADE_OUT), 1);
-              return {
-                slot: current,
-                x: ((p.x + 1) / 2) * w,
-                y: ((1 - p.y) / 2) * h,
-                depth: probe.z,
-                life,
-              };
-            })
-            .sort((m, n) => m.depth - n.depth);
+          for (let index = 0; index < SLOTS; index++) {
+            if (!reduced && now - slots[index].born > slots[index].life) {
+              solved += 1;
+              slots[index] = spawn(now, takenTexts());
+            }
+            const current = slots[index];
+            const a = current.phase + orbit + pivot.rotation.y;
+            probe.set(Math.cos(a) * current.r, headY + current.y, Math.sin(a) * current.r);
+            projected.copy(probe).project(camera);
+            const age = now - current.born;
+            const e = placed[index];
+            e.slot = current;
+            e.x = ((projected.x + 1) / 2) * w;
+            e.y = ((1 - projected.y) / 2) * h;
+            e.depth = probe.z;
+            e.life = reduced ? 1 : Math.min(age / FADE_IN, Math.max(0, (current.life - age) / FADE_OUT), 1);
+          }
+          placed.sort(byDepth);
 
           for (const e of placed) {
             const depthFade = Math.min(1, Math.max(0, (e.depth + 0.95) / 1.7));
@@ -460,9 +519,7 @@ export default function HeroModel({ className = '' }: { className?: string }) {
           octx.fillStyle = `rgb(${accent[0]} ${accent[1]} ${accent[2]} / ${light ? 0.95 : 0.75})`;
           octx.fillText(`SOLVED ${String(solved).padStart(4, '0')}`, w - 10, small + 6);
         }
-        raf = requestAnimationFrame(frame);
       };
-      raf = requestAnimationFrame(frame);
 
       stageRef.current = {
         el,
@@ -484,7 +541,9 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       setReady(true);
 
       cleanup = () => {
-        cancelAnimationFrame(raf);
+        pause();
+        io.disconnect();
+        document.removeEventListener('visibilitychange', sync);
         ro.disconnect();
         el.removeEventListener('pointerdown', down);
         el.removeEventListener('pointermove', move);
@@ -507,13 +566,33 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       };
     };
 
+    if (isLowEnd()) return; // decorative only: low-memory / data-saver devices skip it
+
+    // download and build only once the hero is (nearly) in view, then on idle
     const canIdle = typeof window.requestIdleCallback === 'function';
-    const idle: number = canIdle
-      ? window.requestIdleCallback(() => void start(), { timeout: 2000 })
-      : window.setTimeout(() => void start(), 400);
+    let idle = 0;
+    const host = inlineHost.current;
+    const schedule = () => {
+      idle = canIdle
+        ? window.requestIdleCallback(() => void start(), { timeout: 2000 })
+        : window.setTimeout(() => void start(), 400);
+    };
+    let gate: IntersectionObserver | undefined;
+    if (host && 'IntersectionObserver' in window) {
+      gate = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          gate?.disconnect();
+          schedule();
+        },
+        { rootMargin: '200px' },
+      );
+      gate.observe(host);
+    } else schedule();
 
     return () => {
       disposed = true;
+      gate?.disconnect();
       if (canIdle) window.cancelIdleCallback(idle);
       else window.clearTimeout(idle);
       cleanup?.();
@@ -589,7 +668,7 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       {inspect &&
         createPortal(
         <div
-          className="fixed inset-0 z-[75] flex flex-col bg-bg/95 backdrop-blur-sm"
+          className="fixed inset-0 z-[75] flex flex-col bg-bg/[0.97]"
           role="dialog"
           aria-modal="true"
           aria-label={t.hero.inspectModel}

@@ -1,8 +1,9 @@
+import { useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useI18n } from '../i18n';
 import { stripLang } from '../i18n/paths';
 import { site } from '../data/site';
-import { useActiveSection, useScrollProgress } from '../hooks/useMisc';
+import { scrollProgress, useActiveSection, useScrollFrame } from '../hooks/useMisc';
 import { cx } from './ui';
 
 export default function ScrollProgress() {
@@ -12,7 +13,11 @@ export default function ScrollProgress() {
   // a clearer reading-progress bar on articles and course lessons
   const reading = /^\/(articles|course)\/[^/]+/.test(stripLang(pathname));
   const active = useActiveSection(site.sections, onHome);
-  const progress = useScrollProgress();
+  // the bar is moved directly with a transform: no React render on scroll
+  const bar = useRef<HTMLDivElement>(null);
+  useScrollFrame(() => {
+    if (bar.current) bar.current.style.transform = `scaleX(${scrollProgress()})`;
+  });
   const labels: Record<string, string> = {
     home: t.nav.home,
     interactive: t.nav.labs,
@@ -28,8 +33,9 @@ export default function ScrollProgress() {
       {/* thin top progress bar (all viewports) */}
       <div aria-hidden className={cx('fixed inset-x-0 top-0 z-[55] bg-line', reading ? 'h-[3px]' : 'h-px')} style={{ viewTransitionName: 'scroll-bar' }}>
         <div
-          className="h-full bg-accent transition-[width] duration-150 ease-linear"
-          style={{ width: `${progress * 100}%` }}
+          ref={bar}
+          className="h-full origin-left bg-accent will-change-transform"
+          style={{ transform: 'scaleX(0)' }}
         />
       </div>
 

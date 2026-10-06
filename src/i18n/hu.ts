@@ -165,7 +165,7 @@ export const hu: Dict = {
   },
 
   landing: {
-    title: 'Landing oldalak',
+    title: 'Bemutató oldalak',
     subtitle: 'Prémium egyoldalas weboldalak',
     live: 'Élő',
     intro:
@@ -173,12 +173,12 @@ export const hu: Dict = {
     open: 'Megnyitás teljes képernyőn',
     upcoming: 'Készülőben',
     loading: 'Az oldal betöltése',
-    menuTitle: 'Landing oldalak',
+    menuTitle: 'Bemutató oldalak',
     prev: 'Előző',
     next: 'Következő',
     all: 'Összes landing oldal',
     ctaTitle: 'Hasonló weboldalt szeretnél a vállalkozásodnak?',
-    ctaText: 'Olyan landing oldalakat tervezek és fejlesztek, amelyek erős első benyomást keltenek, bizalmat építenek, és segítenek a látogatókat érdeklődővé alakítani — legyen szó egy új termék bevezetéséről, kampányról vagy egy vállalkozás online megjelenésének megújításáról. Az első konzultáció ingyenes.',
+    ctaText: 'Olyan bemutató oldalakat tervezek és fejlesztek, amelyek erős első benyomást keltenek, bizalmat építenek, és segítenek a látogatókat érdeklődővé alakítani — legyen szó egy új termék bevezetéséről, kampányról vagy egy vállalkozás online megjelenésének megújításáról. Az első konzultáció ingyenes.',
     ctaAsk: 'Tetszik, amit látsz?',
     ctaBtn: 'Beszéljünk',
     ctaShort: 'Beszéljünk',
@@ -298,7 +298,7 @@ export const hu: Dict = {
     goInterview: 'Interjú-szimulátor',
     goCv: 'Önéletrajz-készítő',
     goCourse: 'Full-stack kurzus',
-    goLanding: 'Landing oldalak',
+    goLanding: 'Bemutató oldalak',
     goModern: 'Weboldal-modernizálás',
     theme: 'Téma váltása',
     copyEmail: 'E-mail cím másolása',
@@ -331,7 +331,7 @@ export const hu: Dict = {
       'Készíts profi önéletrajzot lépésről lépésre élő előnézettel, 24 elrendezéssel és PDF exporttal — gyakorlati útmutatóval ahhoz, hogy el is olvassák. Ingyenes, regisztráció nélkül.',
     landingTitle: 'Landing oldal bemutató: 10 prémium egyoldalas weboldal — Mészáros Dávid',
     landingDescription:
-      'Prémium landing oldalak márkáknak — fintech, vendéglátás, klinika, ingatlan és még több. Tervezte és fejlesztette Mészáros Dávid, teljes képernyőn, interaktívan.',
+      'Prémium oldalak márkáknak — fintech, vendéglátás, klinika, ingatlan és még több. Tervezte és fejlesztette Mészáros Dávid, teljes képernyőn, interaktívan.',
     modernTitle: 'Weboldal-modernizálás: előtte–utána újratervezések — Mészáros Dávid',
     modernDescription:
       'Húzd az elválasztót, és hasonlítsd össze az elavult kisvállalkozói weboldalakat — cukrászda, ügyvédi iroda, webshop — a működő, mobilra tervezett új változataikkal.',

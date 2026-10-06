@@ -27,12 +27,12 @@ export const labs: Lab[] = [
     num: '01',
     short: 'LP',
     path: '/landing-pages/',
-    title: { en: 'Landing pages', hu: 'Landing oldalak' },
+    title: { en: 'Landing pages', hu: 'Bemutató oldalak' },
     desc: {
       en: 'Visitors make a decision within seconds about whether a business feels worth their attention. These ten landing pages showcase how I approach modern web design: distinctive visual direction, smooth animations, and interactive features that are not only engaging, but also designed to support real business goals — from bookings and price calculators to product configurators.\n\nEach concept opens as a full-screen, standalone website. Explore the one that feels closest to your business and imagine what the same approach could look like for your own brand.',
       hu: 'A látogatók néhány másodperc alatt eldöntik, hogy egy vállalkozás felkelti-e az érdeklődésüket. Ez a tíz landing oldal azt mutatja meg, hogyan gondolkodom a modern webdesignról: karakteres vizuális világ, letisztult animációk és olyan interaktív funkciók, amelyek nemcsak látványosak, hanem valódi üzleti célokat is szolgálnak — legyen szó foglalásról, árkalkulátorról vagy konfigurátorról.\n\nMindegyik oldal teljes képernyős, önálló weboldalként nyílik meg. Nézd meg azt, amelyik a legközelebb áll a vállalkozásodhoz, és képzeld el, hogyan működhetne ugyanez a saját márkáddal.',
     },
-    cta: { en: 'See the landing pages', hu: 'Nézd meg a landing oldalakat' },
+    cta: { en: 'See the landing pages', hu: 'Nézd meg a bemutató oldalakat' },
     tags: ['Landing page', 'Conversion', 'Premium design'],
   },
   {

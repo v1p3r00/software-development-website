@@ -7,6 +7,7 @@ import { landingBySlug, readyLandings } from '../data/landings';
 import { loadLanding, prepareLanding } from '../data/landingLoaders';
 import type { Landing } from '../data/landings';
 import { useGoToSection } from '../hooks/useGoToSection';
+import { pauseOffscreenAnimations } from '../lib/pauseOffscreen';
 
 const MIN_LOADER_MS = 650;
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -82,11 +83,19 @@ function Stage({ target }: { target: Landing }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target.slug]);
 
+  // once the page is shown, pause its endless animations while they are off screen
+  const stageRef = useRef<HTMLDivElement>(null);
+  const settled = page !== null && loader === null;
+  useEffect(() => {
+    if (!settled || !stageRef.current) return;
+    return pauseOffscreenAnimations(stageRef.current);
+  }, [settled, page?.slug]);
+
   const C = page?.C;
   const index = readyLandings.findIndex((l) => l.slug === target.slug);
 
   return (
-    <div className="landing-stage">
+    <div ref={stageRef} className="landing-stage">
       {C ? <C key={page.slug} /> : <div className="min-h-screen" style={{ background: target.colors.bg }} />}
       {readyLandings.length > 1 &&
         ([

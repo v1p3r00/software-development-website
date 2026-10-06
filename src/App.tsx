@@ -1,9 +1,8 @@
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { useI18n } from './i18n';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
-import CommandPalette from './components/CommandPalette';
 import SystemStatus from './components/SystemStatus';
 import ScrollProgress from './components/ScrollProgress';
 import TechnicalCursor from './components/TechnicalCursor';
@@ -18,9 +17,35 @@ import { labFor } from './data/labs';
 import { isLandingStage } from './data/landings';
 import { useRouteCommitSignal } from './lib/pageTransition';
 import { countVisit } from './hooks/useVisitorCount';
+import { pauseOffscreenAnimations } from './lib/pauseOffscreen';
+
+// the command palette is only fetched once it is first opened (or on idle, below)
+const loadPalette = () => import('./components/CommandPalette');
+const CommandPalette = lazy(loadPalette);
 
 export default function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [paletteUsed, setPaletteUsed] = useState(false);
+  useEffect(() => {
+    if (paletteOpen) setPaletteUsed(true);
+  }, [paletteOpen]);
+  // until the palette is loaded it cannot hear ⌘K / Ctrl+K itself
+  useEffect(() => {
+    if (paletteUsed) return;
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setPaletteOpen(true);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    // warm it up in idle time so the first open is instant
+    const idle = window.setTimeout(() => void loadPalette(), 6000);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      window.clearTimeout(idle);
+    };
+  }, [paletteUsed]);
   const { t } = useI18n();
   useRouteCommitSignal();
   // the interactive projects are full-screen stages: no footer or floating widgets
@@ -30,6 +55,20 @@ export default function App() {
   const stage = isLandingStage(path);
   // count the visit on whichever page it lands, not only when the home hero is shown
   useEffect(() => countVisit(), []);
+  // endless CSS animations (marquee, pulsing dots…) pause while scrolled out of view;
+  // scanned a moment after each route change, once lazy content has rendered
+  useEffect(() => {
+    if (stage) return; // the landing stage runs its own scan
+    let stop: (() => void) | undefined;
+    const id = window.setTimeout(() => {
+      const main = document.getElementById('main');
+      if (main) stop = pauseOffscreenAnimations(main);
+    }, 1200);
+    return () => {
+      window.clearTimeout(id);
+      stop?.();
+    };
+  }, [path, stage]);
 
   return (
     <div className={stage ? 'relative min-h-screen' : 'grain relative min-h-screen bg-bg'}>
@@ -66,7 +105,11 @@ export default function App() {
 
       {!showcase && <Footer />}
       {!showcase && <SystemStatus />}
-      <CommandPalette open={paletteOpen} setOpen={setPaletteOpen} />
+      {paletteUsed && (
+        <Suspense fallback={null}>
+          <CommandPalette open={paletteOpen} setOpen={setPaletteOpen} />
+        </Suspense>
+      )}
       {!stage && <TechnicalCursor />}
       {!showcase && <BackToTop />}
       {!showcase && <MobileTalk />}

@@ -4,7 +4,7 @@ import { useI18n } from '../i18n';
 import { stripLang } from '../i18n/paths';
 import { useGoToSection } from '../hooks/useGoToSection';
 import { site } from '../data/site';
-import { useActiveSection } from '../hooks/useMisc';
+import { useActiveSection, useScrollFrame } from '../hooks/useMisc';
 import { useTheme } from '../hooks/useTheme';
 import LanguageSwitcher from './LanguageSwitcher';
 import { usePageTransition } from '../lib/pageTransition';
@@ -173,12 +173,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
   const active = onHome ? section : '';
   const goTo = useGoToSection();
 
-  useEffect(() => {
-    const onScroll = () => setCompact(window.scrollY > 64);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  useScrollFrame(() => setCompact(window.scrollY > 64));
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -230,7 +225,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
         stage
           ? 'pointer-events-none'
           : compact
-            ? 'border-b border-line bg-bg/85 backdrop-blur-md'
+            ? 'border-b border-line bg-bg/95 lg:bg-bg/90 lg:backdrop-blur-sm'
             : 'border-b border-transparent bg-gradient-to-b from-bg/80 to-transparent',
       )}
     >
@@ -402,7 +397,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             className={cx(
               'grid place-items-center border',
               stage
-                ? 'pointer-events-auto h-12 w-12 border-white/20 bg-black/55 text-white shadow-lg backdrop-blur-md transition-colors hover:border-white/60 hover:bg-black/75'
+                ? 'pointer-events-auto h-12 w-12 border-white/20 bg-black/70 text-white shadow-lg transition-colors hover:border-white/60 hover:bg-black/75'
                 : 'border-line text-text',
               !stage && (showcase ? 'h-10 w-10 hover:border-accent' : 'h-[30px] w-[30px] xl:hidden'),
             )}

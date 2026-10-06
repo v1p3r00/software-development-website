@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useI18n } from '../i18n';
 import { site } from '../data/site';
-import { useLocalClock } from '../hooks/useMisc';
+import { useLocalClock, useScrollFrame } from '../hooks/useMisc';
 
 export default function SystemStatus() {
   const { t } = useI18n();
@@ -9,17 +9,14 @@ export default function SystemStatus() {
   const clock = useLocalClock(site.timezone);
   const [shown, setShown] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => {
-      // step aside while the contact form is on screen so it never covers the send button
-      const form = document.querySelector('[data-scroll-target="contact"]')?.getBoundingClientRect();
-      const overForm = !!form && form.top < window.innerHeight && form.bottom > 0;
-      setShown(window.scrollY > window.innerHeight * 0.75 && !overForm);
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  useScrollFrame(() => {
+    // step aside while the contact form is on screen so it never covers the send button
+    const past = window.scrollY > window.innerHeight * 0.75;
+    if (!past) return setShown(false);
+    const form = document.querySelector('[data-scroll-target="contact"]')?.getBoundingClientRect();
+    const overForm = !!form && form.top < window.innerHeight && form.bottom > 0;
+    setShown(!overForm);
+  });
 
   return (
     <div
@@ -38,7 +35,7 @@ export default function SystemStatus() {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         data-cursor="follow"
-        className="flex items-center gap-2 border border-line bg-bg/85 px-3 py-2 font-mono text-2xs uppercase tracking-tech text-muted backdrop-blur-sm transition-colors hover:border-line-strong"
+        className="flex items-center gap-2 border border-line bg-bg/95 px-3 py-2 font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:border-line-strong"
       >
         <span className="relative flex h-1.5 w-1.5">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
@@ -49,7 +46,7 @@ export default function SystemStatus() {
       </button>
 
       <div
-        className="absolute bottom-full left-0 mb-2 w-[290px] origin-bottom-left border border-line bg-surface/95 p-4 backdrop-blur-sm transition-all duration-300 ease-tech"
+        className="absolute bottom-full left-0 mb-2 w-[290px] origin-bottom-left border border-line bg-surface/[0.98] p-4 transition-all duration-300 ease-tech"
         style={{
           opacity: open ? 1 : 0,
           transform: open ? 'translateY(0) scale(1)' : 'translateY(6px) scale(0.98)',

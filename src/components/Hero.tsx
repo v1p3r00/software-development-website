@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../i18n';
 import { site } from '../data/site';
 import { labs } from '../data/labs';
@@ -7,6 +7,57 @@ import { useGoToSection } from '../hooks/useGoToSection';
 import HeroModel from './HeroModel';
 import VisitorCounter from './VisitorCounter';
 import { Arrow, CornerMarks, cx } from './ui';
+
+/**
+ * The rotating role line. Its own component so the 2.6 s tick re-renders only
+ * this line, not the whole hero; it also stops while off screen or in a hidden tab.
+ */
+function RoleTicker({ roles, reduced }: { roles: readonly string[]; reduced: boolean }) {
+  const [roleIndex, setRoleIndex] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (reduced) return;
+    const el = ref.current;
+    let id = 0;
+    let onScreen = true;
+    const sync = () => {
+      window.clearInterval(id);
+      id = 0;
+      if (onScreen && !document.hidden) id = window.setInterval(() => setRoleIndex((i) => (i + 1) % roles.length), 2600);
+    };
+    const io = el
+      ? new IntersectionObserver(([entry]) => {
+          onScreen = entry.isIntersecting;
+          sync();
+        })
+      : undefined;
+    if (el) io?.observe(el);
+    document.addEventListener('visibilitychange', sync);
+    sync();
+    return () => {
+      window.clearInterval(id);
+      io?.disconnect();
+      document.removeEventListener('visibilitychange', sync);
+    };
+  }, [reduced, roles.length]);
+
+  return (
+    <span ref={ref} className="relative h-4 flex-1 overflow-hidden">
+      {roles.map((role, i) => (
+        <span
+          key={role}
+          className="absolute inset-0 font-mono text-[12.5px] uppercase tracking-tech text-text transition-all duration-500 ease-tech"
+          style={{
+            opacity: i === roleIndex ? 1 : 0,
+            transform: `translateY(${(i - roleIndex) * 100}%)`,
+          }}
+        >
+          {role}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 const STACK = ['Java', 'Angular', 'React', 'Spring Boot', 'PostgreSQL', 'Docker'];
 
@@ -20,13 +71,18 @@ function Portrait() {
 
       {/* image */}
       <div className="relative h-full w-full overflow-hidden">
-        <img
-          src="/portrait.jpg"
-          alt="David Mészáros"
-          width={960}
-          height={960}
-          className="portrait-img portrait-mask h-full w-full scale-[1.06] object-cover object-[50%_22%]"
-        />
+        <picture className="contents">
+          <source srcSet="/portrait.webp" type="image/webp" />
+          <img
+            src="/portrait.jpg"
+            alt="David Mészáros"
+            width={960}
+            height={960}
+            fetchPriority="high"
+            decoding="async"
+            className="portrait-img portrait-mask h-full w-full scale-[1.06] object-cover object-[50%_22%]"
+          />
+        </picture>
         <div className="scanlines pointer-events-none absolute inset-0 opacity-[0.18]" aria-hidden />
         <div
           className="pointer-events-none absolute inset-0"
@@ -77,18 +133,12 @@ export default function Hero() {
   const goTo = useGoToSection();
   const reduced = usePrefersReducedMotion();
   const [mounted, setMounted] = useState(false);
-  const [roleIndex, setRoleIndex] = useState(0);
 
   useEffect(() => {
     const id = window.setTimeout(() => setMounted(true), 40);
     return () => window.clearTimeout(id);
   }, []);
 
-  useEffect(() => {
-    if (reduced) return;
-    const id = window.setInterval(() => setRoleIndex((i) => (i + 1) % t.hero.roles.length), 2600);
-    return () => window.clearInterval(id);
-  }, [reduced, t.hero.roles.length]);
 
   const reveal = (delay: number) =>
     ({
@@ -178,20 +228,7 @@ export default function Hero() {
           {/* rotating role, reads like a status line */}
           <div style={reveal(680)} className="mt-10 flex items-center gap-3 border-t border-line pt-4">
             <span className="label">{t.ui.role}</span>
-            <span className="relative h-4 flex-1 overflow-hidden">
-              {t.hero.roles.map((role, i) => (
-                <span
-                  key={role}
-                  className="absolute inset-0 font-mono text-[12.5px] uppercase tracking-tech text-text transition-all duration-500 ease-tech"
-                  style={{
-                    opacity: i === roleIndex ? 1 : 0,
-                    transform: `translateY(${(i - roleIndex) * 100}%)`,
-                  }}
-                >
-                  {role}
-                </span>
-              ))}
-            </span>
+            <RoleTicker roles={t.hero.roles} reduced={reduced} />
             <span className="label-a">●</span>
           </div>
         </div>

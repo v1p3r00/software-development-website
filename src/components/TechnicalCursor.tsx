@@ -31,12 +31,22 @@ export default function TechnicalCursor() {
       raf = 0;
       if (ringRef.current) ringRef.current.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0)`;
     };
+    // pointermove only moves the ring; React state changes only when the
+    // visibility or the hovered element's kind actually changes
+    let shown = false;
     const onMove = (e: PointerEvent) => {
       if (e.pointerType === 'touch') return;
       pos.x = e.clientX;
       pos.y = e.clientY;
       if (!raf) raf = requestAnimationFrame(place);
-      setVisible(true);
+      if (!shown) {
+        shown = true;
+        setVisible(true);
+      }
+    };
+    // what is under the pointer only changes on pointerover, not every move
+    const onOver = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') return;
       const target = e.target as HTMLElement | null;
       let next: Kind = 'default';
       if (target?.closest?.(TEXT_ENTRY) || target?.closest?.('.code-plain')) next = 'text';
@@ -46,17 +56,22 @@ export default function TechnicalCursor() {
       }
       setKind((k) => (k === next ? k : next));
     };
-    const hide = () => setVisible(false);
+    const hide = () => {
+      shown = false;
+      setVisible(false);
+    };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Tab' || e.key.startsWith('Arrow')) hide();
     };
     window.addEventListener('pointermove', onMove, { passive: true });
+    document.addEventListener('pointerover', onOver, { passive: true });
     document.addEventListener('pointerleave', hide);
     window.addEventListener('keydown', onKey);
     window.addEventListener('blur', hide);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerover', onOver);
       document.removeEventListener('pointerleave', hide);
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('blur', hide);

@@ -13,6 +13,16 @@ function delta(a: number, b: number) {
   return ((((a - b) % 360) + 540) % 360) - 180;
 }
 
+const frontOf = (angle: number) => ((Math.round(-angle / STEP) % N) + N) % N;
+const ringTransform = (angle: number, radius: number) =>
+  `translate(-50%, -50%) translateY(${-Math.round(radius * 0.156)}px) rotateX(-9deg) rotateY(${angle}deg)`;
+const cardDepth = (i: number, angle: number) => Math.cos((delta(i * STEP + angle, 0) * Math.PI) / 180);
+const dotAt = (i: number, angle: number) => {
+  const a = ((i * STEP + angle - 90) * Math.PI) / 180;
+  return [45 + Math.cos(a) * 34, 45 + Math.sin(a) * 34] as const;
+};
+const theta = (angle: number) => String(Math.round(((-angle % 360) + 360) % 360)).padStart(3, '0');
+
 export default function TechStack() {
   const { t } = useI18n();
   const reduced = usePrefersReducedMotion();
@@ -24,6 +34,13 @@ export default function TechStack() {
   const [paused, setPaused] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
+  const [inView, setInView] = useState(false);
+  const radiusRef = useRef(420);
+  radiusRef.current = radius;
+  const ringRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const dotRefs = useRef<(SVGCircleElement | null)[]>([]);
+  const thetaRef = useRef<HTMLSpanElement>(null);
 
   /** adjacency is symmetric: a link declared on either side counts */
   const adjacency = useMemo(() => {
@@ -57,14 +74,42 @@ export default function TechStack() {
     return () => ro.disconnect();
   }, []);
 
+  /* ---- only spin while the ring is on screen ---- */
+  useEffect(() => {
+    const el = frameRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  /**
+   * Rotation is written straight to the DOM; React re-renders only when a
+   * different card comes to the front, a few times a minute instead of 60×/s.
+   */
   const setAngleBoth = useCallback((next: number) => {
+    const prevFront = frontOf(angleRef.current);
     angleRef.current = next;
-    setAngle(next);
+    if (ringRef.current) ringRef.current.style.transform = ringTransform(next, radiusRef.current);
+    cardRefs.current.forEach((card, i) => {
+      if (!card) return;
+      const depth = cardDepth(i, next);
+      card.style.opacity = String(Math.max(0.12, (depth + 1) / 2));
+      card.style.pointerEvents = depth > 0.2 ? 'auto' : 'none';
+    });
+    dotRefs.current.forEach((dot, i) => {
+      if (!dot) return;
+      const [x, y] = dotAt(i, next);
+      dot.setAttribute('cx', x.toFixed(2));
+      dot.setAttribute('cy', y.toFixed(2));
+    });
+    if (thetaRef.current) thetaRef.current.textContent = theta(next);
+    if (frontOf(next) !== prevFront) setAngle(next);
   }, []);
 
   /* ---- idle auto-rotation ---- */
   useEffect(() => {
-    if (reduced || paused || dragging || selected !== null) return;
+    if (reduced || paused || dragging || selected !== null || !inView) return;
     let raf = 0;
     let last = performance.now();
     const tick = (now: number) => {
@@ -75,7 +120,7 @@ export default function TechStack() {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [reduced, paused, dragging, selected, setAngleBoth]);
+  }, [reduced, paused, dragging, selected, inView, setAngleBoth]);
 
   /* ---- snap to a given card ---- */
   const goTo = useCallback(
@@ -158,7 +203,10 @@ export default function TechStack() {
     };
   }, [goTo, setAngleBoth]);
 
-  const frontIndex = ((Math.round(-angle / STEP) % N) + N) % N;
+  // render from the live angle; `angle` state only marks when the front card changed
+  void angle;
+  const live = angleRef.current;
+  const frontIndex = frontOf(live);
   const active = technologies[frontIndex];
   const connections = [...(adjacency.get(active.id) ?? [])]
     .map((id) => technologies.find((x) => x.id === id))
@@ -208,20 +256,24 @@ export default function TechStack() {
             />
 
             <div
+              ref={ringRef}
               className="absolute left-1/2 top-1/2"
               style={{
                 transformStyle: 'preserve-3d',
-                transform: `translate(-50%, -50%) translateY(${-Math.round(radius * 0.156)}px) rotateX(-9deg) rotateY(${angle}deg)`,
+                transform: ringTransform(live, radius),
+                willChange: 'transform',
               }}
             >
               {technologies.map((tech, i) => {
-                const d = delta(i * STEP + angle, 0); // 0 = facing the viewer
-                const front = Math.abs(d) < STEP / 2;
-                const depth = Math.cos((d * Math.PI) / 180); // 1 front … -1 back
+                const front = i === frontIndex; // facing the viewer
+                const depth = cardDepth(i, live); // 1 front … -1 back
                 const opacity = Math.max(0.12, (depth + 1) / 2);
                 return (
                   <button
                     key={tech.id}
+                    ref={(node) => {
+                      cardRefs.current[i] = node;
+                    }}
                     type="button"
                     onClick={() => goTo(i)}
                     aria-label={tech.name}
@@ -314,13 +366,16 @@ export default function TechStack() {
                 <circle cx="45" cy="45" r="1.5" fill="rgb(var(--c-line-strong))" />
                 <path d="M45 45 L45 5" stroke="rgb(var(--c-accent))" strokeWidth="0.8" opacity="0.5" />
                 {technologies.map((tech, i) => {
-                  const a = ((i * STEP + angle - 90) * Math.PI) / 180;
+                  const [x, y] = dotAt(i, live);
                   const on = i === frontIndex;
                   return (
                     <circle
                       key={tech.id}
-                      cx={45 + Math.cos(a) * 34}
-                      cy={45 + Math.sin(a) * 34}
+                      ref={(node) => {
+                        dotRefs.current[i] = node;
+                      }}
+                      cx={x.toFixed(2)}
+                      cy={y.toFixed(2)}
                       r={on ? 3 : 1.6}
                       fill={on ? 'rgb(var(--c-accent))' : 'rgb(var(--c-line-strong))'}
                     />
@@ -330,7 +385,7 @@ export default function TechStack() {
               <div className="min-w-0">
                 <div className="label mb-1">Ring / top view</div>
                 <div className="font-mono text-2xs uppercase tracking-tech text-muted">
-                  θ {String(Math.round(((-angle % 360) + 360) % 360)).padStart(3, '0')}°
+                  θ <span ref={thetaRef}>{theta(live)}</span>°
                 </div>
                 <div className="font-mono text-2xs uppercase tracking-tech text-dim">
                   {N} nodes · {STEP.toFixed(1)}° step

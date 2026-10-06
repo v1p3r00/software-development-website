@@ -24,48 +24,105 @@ export function useIsCoarsePointer(): boolean {
   return coarse;
 }
 
+/* ---- one shared, frame-batched scroll listener ----
+   Every scroll-driven widget subscribes here instead of adding its own
+   window listener; the callbacks run at most once per animation frame. */
+type ScrollSub = () => void;
+const scrollSubs = new Set<ScrollSub>();
+let scrollQueued = false;
+const flushScroll = () => {
+  scrollQueued = false;
+  scrollSubs.forEach((fn) => fn());
+};
+const queueScroll = () => {
+  if (scrollQueued) return;
+  scrollQueued = true;
+  requestAnimationFrame(flushScroll);
+};
+
+/** Subscribe to scroll + resize, batched to one call per frame. Runs once on subscribe. */
+export function subscribeScroll(fn: ScrollSub): () => void {
+  if (scrollSubs.size === 0) {
+    window.addEventListener('scroll', queueScroll, { passive: true });
+    window.addEventListener('resize', queueScroll, { passive: true });
+  }
+  scrollSubs.add(fn);
+  fn();
+  return () => {
+    scrollSubs.delete(fn);
+    if (scrollSubs.size === 0) {
+      window.removeEventListener('scroll', queueScroll);
+      window.removeEventListener('resize', queueScroll);
+    }
+  };
+}
+
+/** Runs `fn` on scroll/resize, once per frame at most. Keep `fn` cheap; set state only on change. */
+export function useScrollFrame(fn: ScrollSub, deps: readonly unknown[] = []) {
+  const ref = useRef(fn);
+  useEffect(() => {
+    ref.current = fn;
+  });
+  useEffect(() => {
+    return subscribeScroll(() => ref.current());
+  }, deps);
+}
+
+/* ---- active section: computed once per frame, shared by every reader ---- */
+const sectionStores = new Map<string, { value: string; subs: Set<(v: string) => void>; stop?: () => void }>();
+
+function computeActive(ids: readonly string[]) {
+  const probe = window.innerHeight * 0.35;
+  let current = ids[0];
+  for (const id of ids) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (el.getBoundingClientRect().top <= probe) current = id;
+    else break; // sections are in page order: the rest are further down
+  }
+  return current;
+}
+
 /** Tracks which section id is currently in view. */
 export function useActiveSection(ids: readonly string[], enabled = true): string {
   const [active, setActive] = useState(ids[0]);
   useEffect(() => {
     if (!enabled) return;
-    const onScroll = () => {
-      const probe = window.innerHeight * 0.35;
-      let current = ids[0];
-      for (const id of ids) {
-        const el = document.getElementById(id);
-        if (!el) continue;
-        if (el.getBoundingClientRect().top <= probe) current = id;
-      }
-      setActive(current);
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    const key = ids.join('|');
+    let store = sectionStores.get(key);
+    if (!store) {
+      const created = { value: ids[0], subs: new Set<(v: string) => void>() } as {
+        value: string;
+        subs: Set<(v: string) => void>;
+        stop?: () => void;
+      };
+      created.stop = subscribeScroll(() => {
+        const next = computeActive(ids);
+        if (next === created.value) return;
+        created.value = next;
+        created.subs.forEach((fn) => fn(next));
+      });
+      sectionStores.set(key, created);
+      store = created;
+    }
+    const s = store;
+    s.subs.add(setActive);
+    setActive(s.value);
     return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
+      s.subs.delete(setActive);
+      if (s.subs.size === 0) {
+        s.stop?.();
+        sectionStores.delete(key);
+      }
     };
   }, [ids, enabled]);
   return active;
 }
 
-export function useScrollProgress(): number {
-  const [p, setP] = useState(0);
-  useEffect(() => {
-    const onScroll = () => {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      setP(max > 0 ? Math.min(1, window.scrollY / max) : 0);
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-    };
-  }, []);
-  return p;
+/** Scroll progress 0..1, written to the element via a callback (no React render per scroll). */
+export function scrollProgress(): number {
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  return max > 0 ? Math.min(1, window.scrollY / max) : 0;
 }
 
 /** Counts up to `target` once the element enters the viewport. */
@@ -128,8 +185,12 @@ export function useLocalClock(timeZone: string): string {
         }).format(new Date()),
       );
     update();
-    const id = window.setInterval(update, 15_000);
-    return () => window.clearInterval(id);
+    const id = window.setInterval(() => !document.hidden && update(), 15_000);
+    document.addEventListener('visibilitychange', update);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener('visibilitychange', update);
+    };
   }, [timeZone]);
   return time;
 }

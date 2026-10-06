@@ -92,8 +92,14 @@ export function useToast() {
 export function useNow(every = 30000) {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
-    const id = window.setInterval(() => setNow(new Date()), every);
-    return () => window.clearInterval(id);
+    // no ticking in a background tab; catch up as soon as it is visible again
+    const id = window.setInterval(() => !document.hidden && setNow(new Date()), every);
+    const onShow = () => !document.hidden && setNow(new Date());
+    document.addEventListener('visibilitychange', onShow);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener('visibilitychange', onShow);
+    };
   }, [every]);
   return now;
 }
