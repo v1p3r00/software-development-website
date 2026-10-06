@@ -153,6 +153,29 @@ export const en = {
     more: 'More interactive projects are on the way.',
   },
 
+  landing: {
+    title: 'Landing pages',
+    subtitle: 'Premium one-page sites',
+    live: 'Live',
+    intro:
+      'Visitors make a decision within seconds about whether a business feels worth their attention. These ten landing pages showcase how I approach modern web design: distinctive visual direction, smooth animations, and interactive features that are not only engaging, but also designed to support real business goals — from bookings and price calculators to product configurators.\n\nEach concept opens as a full-screen, standalone website. Explore the one that feels closest to your business and imagine what the same approach could look like for your own brand.',
+    open: 'Open full screen',
+    upcoming: 'In production',
+    loading: 'Loading the page',
+    menuTitle: 'Landing pages',
+    prev: 'Previous',
+    next: 'Next',
+    all: 'All landing pages',
+    ctaTitle: 'Looking for a website like this for your business?',
+    ctaText: 'I design and build landing pages that make a strong first impression, build trust, and help turn visitors into enquiries — whether it’s for a product launch, a campaign, or a business looking to refresh its online presence. The first consultation is free.',
+    ctaAsk: 'Like what you see?',
+    ctaBtn: 'Let’s talk',
+    ctaShort: 'Let’s talk',
+    ctaHide: 'Hide',
+    seoTitle: 'landing page concept by David Mészáros',
+    seoDescription: 'A premium landing page concept designed and built by David Mészáros.',
+  },
+
   modern: {
     title: 'Website modernization',
     subtitle: 'Before / after',
@@ -206,7 +229,7 @@ export const en = {
     emailPh: 'you@company.com',
     projectPh: 'what are you trying to build?',
     phone: 'Phone',
-    phonePh: 'optional — +36 30 123 4567',
+    phonePh: '+36 30 123 4567',
     contactLabel: 'Contact via',
     contactMethods: ['Email', 'Phone', 'Meeting'],
     callLabel: 'Call hours',
@@ -264,6 +287,7 @@ export const en = {
     goInterview: 'Interview simulator',
     goCv: 'CV maker',
     goCourse: 'Full-stack course',
+    goLanding: 'Landing pages',
     goModern: 'Website modernization',
     theme: 'Change theme',
     copyEmail: 'Copy email address',
@@ -294,6 +318,9 @@ export const en = {
     cvTitle: 'Free CV Maker with templates and PDF export — David Mészáros',
     cvDescription:
       'Build a professional CV step by step with a live preview, 24 layouts and PDF export — plus a practical guide to writing a CV that gets read. Free, no sign-up.',
+    landingTitle: 'Landing page showcase: 10 premium one-page sites — David Mészáros',
+    landingDescription:
+      'Premium landing pages for fictional brands — fintech, hospitality, clinics, real estate and more. Designed and built by David Mészáros, full screen and interactive.',
     modernTitle: 'Website modernization: before & after redesigns — David Mészáros',
     modernDescription:
       'Drag the divider to compare dated small-business websites — a confectionery, a law firm and a webshop — with working, mobile-first redesigns.',

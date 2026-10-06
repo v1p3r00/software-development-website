@@ -22,9 +22,23 @@ export interface Lab {
 
 export const labs: Lab[] = [
   {
+    id: 'landing',
+    tagline: { en: 'Ten premium landing pages, each shown full screen', hu: 'Tíz prémium landing oldal, teljes képernyőn' },
+    num: '01',
+    short: 'LP',
+    path: '/landing-pages/',
+    title: { en: 'Landing pages', hu: 'Landing oldalak' },
+    desc: {
+      en: 'Visitors make a decision within seconds about whether a business feels worth their attention. These ten landing pages showcase how I approach modern web design: distinctive visual direction, smooth animations, and interactive features that are not only engaging, but also designed to support real business goals — from bookings and price calculators to product configurators.\n\nEach concept opens as a full-screen, standalone website. Explore the one that feels closest to your business and imagine what the same approach could look like for your own brand.',
+      hu: 'A látogatók néhány másodperc alatt eldöntik, hogy egy vállalkozás felkelti-e az érdeklődésüket. Ez a tíz landing oldal azt mutatja meg, hogyan gondolkodom a modern webdesignról: karakteres vizuális világ, letisztult animációk és olyan interaktív funkciók, amelyek nemcsak látványosak, hanem valódi üzleti célokat is szolgálnak — legyen szó foglalásról, árkalkulátorról vagy konfigurátorról.\n\nMindegyik oldal teljes képernyős, önálló weboldalként nyílik meg. Nézd meg azt, amelyik a legközelebb áll a vállalkozásodhoz, és képzeld el, hogyan működhetne ugyanez a saját márkáddal.',
+    },
+    cta: { en: 'See the landing pages', hu: 'Nézd meg a landing oldalakat' },
+    tags: ['Landing page', 'Conversion', 'Premium design'],
+  },
+  {
     id: 'modernization',
     tagline: { en: 'Dated small-business sites vs. their redesigns', hu: 'Elavult kisvállalkozói oldalak és újratervezésük' },
-    num: '01',
+    num: '02',
     short: 'UX',
     path: '/modernization/',
     title: { en: 'Website modernization', hu: 'Weboldal-modernizálás' },
@@ -38,7 +52,7 @@ export const labs: Lab[] = [
   {
     id: 'course',
     tagline: { en: 'From zero to a deployed React + Spring Boot app', hu: 'Nulláról egy élesített React + Spring Boot alkalmazásig' },
-    num: '02',
+    num: '03',
     short: 'EDU',
     path: '/course/',
     title: { en: 'Full-stack developer course', hu: 'Full-stack fejlesztő kurzus' },
@@ -52,7 +66,7 @@ export const labs: Lab[] = [
   {
     id: 'cv',
     tagline: { en: 'Build an ATS-friendly CV and download it as PDF', hu: 'ATS-barát önéletrajz, letölthető PDF-ben' },
-    num: '03',
+    num: '04',
     short: 'CV',
     path: '/cv-maker/',
     title: { en: 'CV Maker', hu: 'Önéletrajz-készítő' },
@@ -66,7 +80,7 @@ export const labs: Lab[] = [
   {
     id: 'interview',
     tagline: { en: 'Practise technical interviews: 14 tracks, 200 questions each', hu: 'Technikai interjúgyakorlás: 14 téma, témánként 200 kérdés' },
-    num: '04',
+    num: '05',
     short: 'SIM',
     path: '/interview/',
     title: { en: 'Interview simulator', hu: 'Interjú-szimulátor' },

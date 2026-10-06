@@ -21,6 +21,7 @@ import { articlePath, isoDate, isPublished, parseArticle } from '../src/content/
 import { clip, siteGraph } from '../src/lib/seo-shared.ts';
 import { tracks } from '../src/data/interview/tracks.ts';
 import { modules as courseModules } from '../src/data/courseSyllabus.ts';
+import { readyLandings } from '../src/data/landings.ts';
 
 type Lang = 'en' | 'hu';
 
@@ -160,6 +161,11 @@ function pages(root: string): Page[] {
 
     // the free tools share with their own pictures (public/og/<tool>.<lang>.png)
     const og = (tool: string) => ({ image: `/og/${tool}.${lang}.png`, imageAlt: tool === 'course' ? t.seo.courseTitle : tool === 'interview' ? t.seo.interviewTitle : tool === 'modernization' ? t.seo.modernTitle : t.seo.cvTitle });
+    list.push({ path: at('/landing-pages/'), lang, alternates: both('/landing-pages/'), title: t.seo.landingTitle, description: t.seo.landingDescription });
+    for (const l of readyLandings) {
+      const bare = `/landing-pages/${l.slug}/`;
+      list.push({ path: at(bare), lang, alternates: both(bare), title: `${l.name} — ${t.landing.seoTitle}`, description: `${l.concept[lang]} ${t.landing.seoDescription}` });
+    }
     list.push({ path: at('/interview/'), lang, alternates: both('/interview/'), title: t.seo.interviewTitle, description: t.seo.interviewDescription, ...og('interview') });
     list.push({ path: at('/course/'), lang, alternates: both('/course/'), title: t.seo.courseTitle, description: t.seo.courseDescription, ...og('course') });
     for (const lesson of courseModules.flatMap((m) => m.lessons)) {

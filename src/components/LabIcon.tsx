@@ -35,6 +35,17 @@ export default function LabIcon({ id, className = '' }: { id: string; className?
       </svg>
     );
   }
+  if (id === 'landing') {
+    return (
+      <svg {...common}>
+        <rect x="3" y="5" width="26" height="22" stroke="currentColor" />
+        <path d="M3 9h26" stroke="currentColor" />
+        <path d="M7 14h11M7 17.5h8" stroke="currentColor" />
+        <path d="M7 22h6" stroke="currentColor" className="text-accent" />
+        <circle cx="23" cy="18" r="3.5" stroke="currentColor" className="text-accent" />
+      </svg>
+    );
+  }
   return (
     <svg {...common}>
       <rect x="3" y="6" width="26" height="20" stroke="currentColor" />

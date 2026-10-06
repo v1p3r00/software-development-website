@@ -7,7 +7,7 @@ import { projects } from '../data/projects';
 import { site } from '../data/site';
 import { cx } from './ui';
 import { usePageTransition } from '../lib/pageTransition';
-import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, InterviewPage, ModernizationPage } from '../pages/lazy';
+import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, InterviewPage, LandingPagesPage, ModernizationPage } from '../pages/lazy';
 import { inLang, listedArticles } from '../data/articles';
 import { allLessons, isReady } from '../data/course';
 import { useCursorPref } from '../hooks/useCursorPref';
@@ -100,6 +100,16 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
         run: () => {
           setOpen(false);
           void go(lp('/modernization/'), 'slide', { prepare: ModernizationPage.preload });
+        },
+      },
+      {
+        id: 'landing',
+        group: t.palette.navigate,
+        label: t.palette.goLanding,
+        hint: '13',
+        run: () => {
+          setOpen(false);
+          void go(lp('/landing-pages/'), 'slide', { prepare: LandingPagesPage.preload });
         },
       },
     ];

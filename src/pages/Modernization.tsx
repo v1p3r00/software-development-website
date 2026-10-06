@@ -69,8 +69,8 @@ function DeviceIcon({ device }: { device: Device }) {
   );
 }
 
-function CompareIcon({ preset }: { preset: 'before' | 'half' | 'after' | null }) {
-  const x = preset === 'before' ? 20 : preset === 'after' ? 4 : 12;
+function CompareIcon({ preset }: { preset: 'before' | 'after' }) {
+  const x = preset === 'before' ? 20 : 4;
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
       <rect x="3" y="5" width="18" height="14" />
@@ -121,18 +121,17 @@ export default function Modernization() {
   const [device, setDevice] = useState<Device>(() =>
     typeof window !== 'undefined' && window.innerWidth < 768 ? 'mobile' : 'desktop',
   );
-  const [pos, setPos] = useState(50);
+  const [pos, setPos] = useState(100);
   const reveal = useCallback((side: 'before' | 'after') => setPos(side === 'after' ? 0 : 100), []);
 
-  // a single sweep on arrival (and on each case switch) shows that the divider moves
+  // on arrival (and on each case switch) the old site is wiped away to reveal the redesign
   useEffect(() => {
-    setPos(50);
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const steps: Array<[number, number]> = [
-      [700, 30],
-      [1300, 70],
-      [1900, 50],
-    ];
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setPos(0);
+      return;
+    }
+    setPos(100);
+    const steps: Array<[number, number]> = [[900, 0]];
     const timers = steps.map(([ms, p]) => window.setTimeout(() => setPos(p), ms));
     const stop = () => timers.forEach(clearTimeout);
     window.addEventListener('pointerdown', stop, { once: true });
@@ -144,7 +143,8 @@ export default function Modernization() {
     };
   }, [current.id]);
 
-  const preset = pos === 100 ? 'before' : pos === 0 ? 'after' : pos === 50 ? 'half' : null;
+  // two states only: whichever side the divider is closer to
+  const preset = pos >= 50 ? 'before' : 'after';
   const stageHeight = 'h-[clamp(460px,calc(100svh-230px),940px)]';
   const { Old, New } = current;
 
@@ -208,11 +208,11 @@ export default function Modernization() {
           />
           <BigToggle
             label={tm.compare}
-            onClick={() => setPos(preset === 'before' ? 50 : preset === 'half' ? 0 : 100)}
+            onClick={() => setPos(preset === 'before' ? 0 : 100)}
             icon={<CompareIcon preset={preset} />}
-            value={preset === 'before' ? tm.before : preset === 'after' ? tm.after : '50 / 50'}
-            next={preset === 'before' ? '50 / 50' : preset === 'half' ? tm.after : tm.before}
-            steps={(['before', 'half', 'after'] as const).map((id) => id === preset)}
+            value={preset === 'before' ? tm.before : tm.after}
+            next={preset === 'before' ? tm.after : tm.before}
+            steps={(['before', 'after'] as const).map((id) => id === preset)}
           />
         </div>
       </div>

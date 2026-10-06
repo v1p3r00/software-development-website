@@ -139,17 +139,17 @@ export default function ContactTerminal() {
 
   /** A row of toggle chips; picking the selected one again clears it. */
   const choice = (key: Choice, label: string, options: readonly string[], wideLabel = false) => (
-    <fieldset className="border-b border-line py-3">
+    <fieldset className="-mx-3 border-b border-line px-3 py-2">
       <div className={cx('flex flex-col gap-2', !wideLabel && 'sm:flex-row sm:items-start sm:gap-3')}>
         <legend
           className={cx(
-            'float-left mt-1.5 shrink-0 font-mono text-2xs uppercase tracking-tech text-dim',
+            'float-left mt-1.5 shrink-0 font-mono text-[12px] font-semibold uppercase tracking-tech text-text',
             !wideLabel && 'sm:w-[7rem]',
           )}
         >
           {/[?:]$/.test(label) ? label : `${label}:`}
         </legend>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1">
           {options.map((option) => {
             const on = choices[key] === option;
             return (
@@ -160,10 +160,10 @@ export default function ContactTerminal() {
                 data-cursor="follow"
                 onClick={() => setChoices((c) => ({ ...c, [key]: on ? '' : option }))}
                 className={cx(
-                  'border px-2.5 py-1.5 font-mono text-2xs uppercase tracking-tech transition-colors duration-200',
+                  'border px-2.5 py-1 font-mono text-[11.5px] font-medium uppercase tracking-tech transition-colors duration-200',
                   on
                     ? 'border-accent bg-accent text-onaccent'
-                    : 'border-line text-muted hover:border-line-strong hover:text-text',
+                    : 'border-line-strong text-text hover:border-accent hover:text-accent',
                 )}
               >
                 {option}
@@ -189,23 +189,23 @@ export default function ContactTerminal() {
       'aria-invalid': invalid,
       'aria-describedby': invalid ? `${id}-error` : undefined,
       className: cx(
-        'w-full resize-none border-0 bg-transparent px-0 py-1 font-mono text-sm text-text placeholder:text-dim focus:outline-none',
+        'w-full resize-none border-0 bg-transparent px-0 py-1 font-mono text-base text-text placeholder:text-dim focus:outline-none',
       ),
     };
     return (
-      <div className="border-b border-line py-3">
+      <div className="-mx-3 border-b border-line border-l-2 border-l-transparent px-3 py-2 transition-colors focus-within:border-l-accent focus-within:bg-accent/5">
         <div className="flex items-start gap-3">
           <label
             htmlFor={id}
             className={cx(
-              'mt-1 shrink-0 font-mono text-2xs uppercase tracking-tech',
-              invalid ? 'text-accent' : 'text-dim',
+              'mt-1.5 shrink-0 font-mono text-[12px] font-semibold uppercase tracking-tech',
+              invalid ? 'text-accent' : 'text-text',
             )}
           >
             {label}:
           </label>
           {textarea ? (
-            <textarea rows={3} {...shared} />
+            <textarea rows={2} {...shared} />
           ) : (
             <input
               type={name === 'email' ? 'email' : name === 'phone' ? 'tel' : 'text'}
@@ -229,23 +229,21 @@ export default function ContactTerminal() {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         <div ref={boxRef} className="lg:col-span-7">
-          <div className="border border-line bg-surface">
+          <div data-scroll-target="contact" className="contact-box border-2 border-accent bg-surface">
             {/* terminal chrome */}
-            <div className="flex items-center justify-between border-b border-line px-4 py-2">
-              <span className="font-mono text-2xs tracking-tech text-muted">$ ./contact</span>
+            <div className="flex items-center justify-between bg-accent px-4 py-2.5 text-onaccent">
+              <span className="font-mono text-[13px] font-semibold tracking-tech">
+                $ ./contact <span className="ml-2 hidden font-medium opacity-90 sm:inline">— {boot}{!reduced && boot.length < t.contact.boot.length + 3 && <span className="caret" />}</span>
+              </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 bg-line-strong" />
-                <span className="h-1.5 w-1.5 bg-line-strong" />
-                <span className="h-1.5 w-1.5 bg-accent" />
+                <span className="h-2 w-2 bg-onaccent/40" />
+                <span className="h-2 w-2 bg-onaccent/40" />
+                <span className="h-2 w-2 bg-onaccent" />
               </span>
             </div>
 
-            <div className="p-4 sm:p-6">
-              <p className="mb-1 font-mono text-2xs uppercase tracking-tech text-dim">
-                {boot}
-                {!reduced && <span className="caret" />}
-              </p>
-              <p className="mb-6 font-mono text-2xs uppercase tracking-tech text-accent">● {t.contact.ready}</p>
+            <div className="px-4 pb-4 pt-3 sm:px-6 sm:pb-5">
+              <p className="mb-2 font-mono text-[12px] font-semibold uppercase tracking-tech text-accent [@media(max-height:800px)]:hidden">● {t.contact.ready}</p>
 
               <form onSubmit={submit} noValidate>
                 {/* honeypot: hidden from people, tempting to bots */}
@@ -259,13 +257,15 @@ export default function ContactTerminal() {
                   aria-hidden
                   className="absolute -left-[9999px] h-px w-px opacity-0"
                 />
-                {field('name', t.contact.name, t.contact.namePh)}
-                {field('email', t.contact.email, t.contact.emailPh)}
-                {field('phone', t.contact.phone, t.contact.phonePh)}
-                {field('company', t.contact.company, t.contact.companyPh)}
+                <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-6">
+                  {field('name', t.contact.name, t.contact.namePh)}
+                  {field('email', t.contact.email, t.contact.emailPh)}
+                  {field('phone', t.contact.phone, t.contact.phonePh)}
+                  {field('company', t.contact.company, t.contact.companyPh)}
+                </div>
                 {choice('contact', t.contact.contactLabel, t.contact.contactMethods)}
                 {wantsCall && (
-                  <fieldset className="border-b border-line py-3">
+                  <fieldset className="-mx-3 border-b border-line px-3 py-3">
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
                       <legend className="float-left shrink-0 font-mono text-2xs uppercase tracking-tech text-dim sm:w-[7rem]">
                         └ {t.contact.callLabel}:
@@ -296,17 +296,17 @@ export default function ContactTerminal() {
                 {field('project', t.contact.project, t.contact.projectPh, true)}
                 {choice('source', t.contact.sourceLabel, t.contact.sources, true)}
 
-                <div className="mt-6 flex flex-wrap items-center gap-4">
+                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
                   <button
                     type="submit"
                     disabled={status === 'sending'}
                     data-cursor="follow"
-                    className="group inline-flex items-center gap-3 bg-accent px-6 py-3.5 font-mono text-[12.5px] uppercase tracking-tech text-onaccent transition-colors duration-300 hover:bg-text disabled:cursor-wait disabled:opacity-70"
+                    className="hero-cta group inline-flex w-full items-center justify-center gap-3 bg-accent px-8 py-4 font-mono text-[15px] font-semibold [@media(max-height:800px)]:py-3 uppercase tracking-tech text-onaccent transition-[transform,background-color] duration-300 hover:-translate-y-0.5 hover:bg-text disabled:cursor-wait disabled:opacity-70 sm:w-auto sm:px-10"
                   >
                     <span>
                       &gt; {status === 'sending' ? `${t.contact.sending}…` : t.contact.send}
                     </span>
-                    <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                    <span className="text-lg transition-transform duration-300 group-hover:translate-x-1">→</span>
                   </button>
                   {status !== 'sent' && <p className="w-full text-[13px] text-muted sm:w-auto">{t.contact.replyTime}</p>}
                   <p role="status" aria-live="polite" className="font-mono text-2xs uppercase tracking-tech">
@@ -337,7 +337,7 @@ export default function ContactTerminal() {
             ].map(([k, v, href]) => (
               <div key={k as string} className="flex items-baseline justify-between gap-4 border-b border-line py-3">
                 <dt className="label">{k}</dt>
-                <dd className="text-right font-mono text-[12px] tracking-tech text-text">
+                <dd className="text-right font-mono text-[12px] font-medium tracking-tech text-text">
                   {href ? (
                     <a href={href as string} data-cursor="follow" className="hover:text-accent [overflow-wrap:anywhere]">
                       {v}

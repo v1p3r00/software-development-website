@@ -164,6 +164,29 @@ export const hu: Dict = {
     more: 'Újabb interaktív projektek hamarosan.',
   },
 
+  landing: {
+    title: 'Landing oldalak',
+    subtitle: 'Prémium egyoldalas weboldalak',
+    live: 'Élő',
+    intro:
+      'A látogatók néhány másodperc alatt eldöntik, hogy egy vállalkozás felkelti-e az érdeklődésüket. Ez a tíz landing oldal azt mutatja meg, hogyan gondolkodom a modern webdesignról: karakteres vizuális világ, letisztult animációk és olyan interaktív funkciók, amelyek nemcsak látványosak, hanem valódi üzleti célokat is szolgálnak — legyen szó foglalásról, árkalkulátorról vagy konfigurátorról.\n\nMindegyik oldal teljes képernyős, önálló weboldalként nyílik meg. Nézd meg azt, amelyik a legközelebb áll a vállalkozásodhoz, és képzeld el, hogyan működhetne ugyanez a saját márkáddal.',
+    open: 'Megnyitás teljes képernyőn',
+    upcoming: 'Készülőben',
+    loading: 'Az oldal betöltése',
+    menuTitle: 'Landing oldalak',
+    prev: 'Előző',
+    next: 'Következő',
+    all: 'Összes landing oldal',
+    ctaTitle: 'Hasonló weboldalt szeretnél a vállalkozásodnak?',
+    ctaText: 'Olyan landing oldalakat tervezek és fejlesztek, amelyek erős első benyomást keltenek, bizalmat építenek, és segítenek a látogatókat érdeklődővé alakítani — legyen szó egy új termék bevezetéséről, kampányról vagy egy vállalkozás online megjelenésének megújításáról. Az első konzultáció ingyenes.',
+    ctaAsk: 'Tetszik, amit látsz?',
+    ctaBtn: 'Beszéljünk',
+    ctaShort: 'Beszéljünk',
+    ctaHide: 'Elrejtés',
+    seoTitle: 'landing oldal koncepció — Mészáros Dávid',
+    seoDescription: 'Prémium landing oldal koncepció, tervezte és fejlesztette Mészáros Dávid.',
+  },
+
   modern: {
     title: 'Weboldal-modernizálás',
     subtitle: 'Előtte / utána',
@@ -180,7 +203,7 @@ export const hu: Dict = {
     hint: 'Húzd a kerek fogantyút (vagy használd a nyílbillentyűket) az összehasonlításhoz',
     scrollHint: 'A keretben görgetve a teljes oldalt is megnézheted',
     changedTitle: 'Mi változott',
-    note: 'A demókban szereplő márkák, személyek, árak és vélemények kitaláltak. Minden az oldalon belül fut: semmi nem kerül elküldésre, lefoglalásra vagy megvásárlásra, és egyik link sem visz el innen.',
+    note: 'A demókban szereplő márkák, személyek, árak és vélemények maszkoltak. Minden az oldalon belül fut: semmi nem kerül elküldésre, lefoglalásra vagy megvásárlásra, és egyik link sem visz el innen.',
   },
 
   stack: {
@@ -217,7 +240,7 @@ export const hu: Dict = {
     emailPh: 'te@ceg.hu',
     projectPh: 'mit szeretnél megépíteni?',
     phone: 'Telefon',
-    phonePh: 'nem kötelező — +36 30 123 4567',
+    phonePh: '+36 30 123 4567',
     contactLabel: 'Elérés',
     contactMethods: ['E-mail', 'Telefon', 'Találkozó'],
     callLabel: 'Hívható',
@@ -275,6 +298,7 @@ export const hu: Dict = {
     goInterview: 'Interjú-szimulátor',
     goCv: 'Önéletrajz-készítő',
     goCourse: 'Full-stack kurzus',
+    goLanding: 'Landing oldalak',
     goModern: 'Weboldal-modernizálás',
     theme: 'Téma váltása',
     copyEmail: 'E-mail cím másolása',
@@ -305,6 +329,9 @@ export const hu: Dict = {
     cvTitle: 'Ingyenes önéletrajz-készítő sablonokkal és PDF exporttal — Mészáros Dávid',
     cvDescription:
       'Készíts profi önéletrajzot lépésről lépésre élő előnézettel, 24 elrendezéssel és PDF exporttal — gyakorlati útmutatóval ahhoz, hogy el is olvassák. Ingyenes, regisztráció nélkül.',
+    landingTitle: 'Landing oldal bemutató: 10 prémium egyoldalas weboldal — Mészáros Dávid',
+    landingDescription:
+      'Prémium landing oldalak márkáknak — fintech, vendéglátás, klinika, ingatlan és még több. Tervezte és fejlesztette Mészáros Dávid, teljes képernyőn, interaktívan.',
     modernTitle: 'Weboldal-modernizálás: előtte–utána újratervezések — Mészáros Dávid',
     modernDescription:
       'Húzd az elválasztót, és hasonlítsd össze az elavult kisvállalkozói weboldalakat — cukrászda, ügyvédi iroda, webshop — a működő, mobilra tervezett új változataikkal.',

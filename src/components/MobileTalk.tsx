@@ -34,10 +34,14 @@ export default function MobileTalk() {
       onClick={goTo('contact')}
       tabIndex={show ? 0 : -1}
       className={cx(
-        'fixed bottom-5 left-5 z-40 inline-flex items-center gap-2 bg-accent px-4 py-3 font-mono text-[12.5px] uppercase tracking-tech text-onaccent shadow-lg transition-all duration-300 sm:hidden',
+        'hero-cta fixed bottom-5 left-5 z-40 inline-flex items-center gap-2.5 bg-accent px-5 py-3.5 font-mono text-[14px] font-semibold uppercase tracking-tech text-onaccent shadow-lg transition-[transform,opacity] duration-300 sm:hidden',
         show ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0',
       )}
     >
+      <span className="relative grid h-2 w-2 place-items-center" aria-hidden>
+        <span className="hero-cta-dot absolute h-2 w-2 rounded-full bg-onaccent" />
+        <span className="relative h-2 w-2 rounded-full bg-onaccent" />
+      </span>
       {t.ux.talk} →
     </a>
   );

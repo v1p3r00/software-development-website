@@ -10,7 +10,12 @@ export default function SystemStatus() {
   const [shown, setShown] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setShown(window.scrollY > window.innerHeight * 0.75);
+    const onScroll = () => {
+      // step aside while the contact form is on screen so it never covers the send button
+      const form = document.querySelector('[data-scroll-target="contact"]')?.getBoundingClientRect();
+      const overForm = !!form && form.top < window.innerHeight && form.bottom > 0;
+      setShown(window.scrollY > window.innerHeight * 0.75 && !overForm);
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);

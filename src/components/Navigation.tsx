@@ -11,6 +11,7 @@ import { usePageTransition } from '../lib/pageTransition';
 import { labPreload } from '../pages/lazy';
 import LabIcon from './LabIcon';
 import { labFor, labs } from '../data/labs';
+import { isLandingStage, readyLandings } from '../data/landings';
 import { Arrow, cx } from './ui';
 
 function Monogram({ compact }: { compact: boolean }) {
@@ -203,6 +204,9 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
   // the interactive projects keep only the logo, their title and the menu button, so the project gets the stage
   const lab = labFor(stripLang(pathname));
   const showcase = !!lab;
+  // a landing page owns the screen: only the menu button stays, floating in the top-right corner
+  const stage = isLandingStage(stripLang(pathname));
+  const stageIdx = stage ? readyLandings.findIndex((l) => stripLang(pathname).startsWith(`/landing-pages/${l.slug}`)) : -1;
   const headerRef = useRef<HTMLElement>(null);
 
   // there the menu is a dropdown, so a click outside it closes it
@@ -226,19 +230,22 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
       // stays put above the page during route transitions
       style={{ viewTransitionName: 'site-header' }}
       className={cx(
-        'fixed inset-x-0 top-0 z-50 border-b transition-all duration-500 ease-tech',
-        compact
-          ? 'border-line bg-bg/85 backdrop-blur-md'
-          : 'border-transparent bg-gradient-to-b from-bg/80 to-transparent',
+        'fixed inset-x-0 top-0 z-50 transition-all duration-500 ease-tech',
+        stage
+          ? 'pointer-events-none'
+          : compact
+            ? 'border-b border-line bg-bg/85 backdrop-blur-md'
+            : 'border-b border-transparent bg-gradient-to-b from-bg/80 to-transparent',
       )}
     >
       <div
         className={cx(
-          'mx-auto flex w-full max-w-[1500px] items-center justify-between gap-6 px-5 transition-all duration-500 ease-tech sm:px-8 lg:px-12',
-          compact ? 'py-2.5' : 'py-4',
+          'mx-auto flex w-full items-center gap-6 transition-all duration-500 ease-tech',
+          stage ? 'justify-end px-3 py-3 sm:px-4 sm:py-4' : 'max-w-[1500px] justify-between px-5 sm:px-8 lg:px-12',
+          !stage && (compact ? 'py-2.5' : 'py-4'),
         )}
       >
-        <div className="flex items-center gap-4">
+        <div className={cx('flex items-center gap-4', stage && 'hidden')}>
           <Monogram compact={compact} />
           {lab && (
             <Link
@@ -331,8 +338,8 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
               <circle cx="8.5" cy="8.5" r="5.5" />
               <path d="m13 13 4.5 4.5" strokeLinecap="round" />
             </svg>
-            <span className="hidden font-mono text-2xs uppercase tracking-tech md:inline">{t.ux.search}</span>
-            <kbd className="hidden border border-line px-1 font-mono text-[10.5px] text-dim lg:inline">{isMac ? '⌘K' : 'Ctrl K'}</kbd>
+            <span className="hidden font-mono text-2xs uppercase tracking-tech md:inline xl:hidden min-[1700px]:inline">{t.ux.search}</span>
+            <kbd className="hidden border border-line px-1 font-mono text-[10.5px] text-dim lg:inline xl:hidden min-[1700px]:inline">{isMac ? '⌘K' : 'Ctrl K'}</kbd>
           </button>
 
           <button
@@ -358,14 +365,18 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             href={`${lp('/')}#contact`}
             onClick={goTo('contact')}
             data-cursor="follow"
-            className="group hidden items-center gap-3 border border-line-strong px-4 py-2 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors hover:border-accent hover:text-accent sm:flex"
+            className="hero-cta group hidden items-center gap-3 bg-accent px-5 py-2.5 font-mono text-[13.5px] font-semibold uppercase tracking-tech text-onaccent transition-[transform,background-color] duration-300 hover:-translate-y-px hover:bg-text sm:flex"
           >
+            <span className="relative grid h-2 w-2 place-items-center" aria-hidden>
+              <span className="hero-cta-dot absolute h-2 w-2 rounded-full bg-onaccent" />
+              <span className="relative h-2 w-2 rounded-full bg-onaccent" />
+            </span>
             {t.nav.talk}
             <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
           </a>
           </>)}
 
-          {showcase && (<>
+          {showcase && !stage && (<>
           <LanguageSwitcher large className="mr-1 hidden sm:flex" />
           <button
             type="button"
@@ -392,7 +403,13 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             aria-expanded={open}
             aria-label={open ? t.nav.close : t.nav.menu}
             data-cursor="follow"
-            className={cx('grid place-items-center border border-line text-text', showcase ? 'h-10 w-10 hover:border-accent' : 'h-[30px] w-[30px] xl:hidden')}
+            className={cx(
+              'grid place-items-center border',
+              stage
+                ? 'pointer-events-auto h-12 w-12 border-white/20 bg-black/55 text-white shadow-lg backdrop-blur-md transition-colors hover:border-white/60 hover:bg-black/75'
+                : 'border-line text-text',
+              !stage && (showcase ? 'h-10 w-10 hover:border-accent' : 'h-[30px] w-[30px] xl:hidden'),
+            )}
           >
             <svg viewBox="0 0 16 16" className={showcase ? 'h-5 w-5' : 'h-3.5 w-3.5'} fill="none" aria-hidden>
               {open ? (
@@ -408,15 +425,76 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
       {/* mobile panel */}
       <div
         className={cx(
-          'overflow-hidden border-t border-line bg-bg transition-[max-height,visibility] duration-500 ease-tech',
+          'pointer-events-auto overflow-hidden border-t border-line bg-bg transition-[max-height,visibility] duration-500 ease-tech',
           showcase && !open && 'invisible',
-          showcase
-            ? 'absolute right-0 top-full w-full overflow-y-auto sm:right-8 sm:w-[400px] sm:border-x sm:border-b sm:border-line-strong sm:shadow-2xl lg:right-12 min-[1500px]:right-[calc((100vw-1500px)/2+3rem)]'
-            : 'xl:hidden',
+          stage
+            ? 'absolute right-0 top-full w-full overflow-y-auto sm:right-4 sm:w-[400px] sm:border-x sm:border-b sm:border-line-strong sm:shadow-2xl'
+            : showcase
+              ? 'absolute right-0 top-full w-full overflow-y-auto sm:right-8 sm:w-[400px] sm:border-x sm:border-b sm:border-line-strong sm:shadow-2xl lg:right-12 min-[1500px]:right-[calc((100vw-1500px)/2+3rem)]'
+              : 'xl:hidden',
           open ? 'max-h-[80vh]' : 'max-h-0',
         )}
       >
         <nav aria-label="Mobile" className="px-5 py-4 sm:px-8">
+          {stage && (
+            <div className="border-b border-line pb-4">
+              <div className="flex items-center justify-between">
+                <Link
+                  to={lp('/landing-pages/')}
+                  onClick={() => setOpen(false)}
+                  className="font-display text-2xl font-extrabold uppercase tracking-tight hover:text-accent"
+                >
+                  {t.landing.menuTitle}
+                </Link>
+                <span className="font-mono text-2xs tracking-tech text-accent">
+                  {String(stageIdx + 1).padStart(2, '0')} / {String(readyLandings.length).padStart(2, '0')}
+                </span>
+              </div>
+              <ul className="mt-3 space-y-1 border-l border-line pl-4">
+                {readyLandings.map((l, i) => (
+                  <li key={l.slug}>
+                    <Link
+                      to={lp(`/landing-pages/${l.slug}/`)}
+                      onClick={() => setOpen(false)}
+                      aria-current={i === stageIdx ? 'page' : undefined}
+                      className={cx(
+                        'flex items-center gap-3 py-1.5 font-mono text-[12px] uppercase tracking-tech hover:text-accent',
+                        i === stageIdx ? 'text-text' : 'text-muted',
+                      )}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-accent">{l.num}</span>
+                        <span className="h-2 w-2 shrink-0" style={{ background: l.colors.accent }} aria-hidden />
+                        {l.name}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              {readyLandings.length > 1 && (
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {[
+                    [t.landing.prev, readyLandings[(stageIdx - 1 + readyLandings.length) % readyLandings.length]],
+                    [t.landing.next, readyLandings[(stageIdx + 1) % readyLandings.length]],
+                  ].map(([label, l], i) => (
+                    <Link
+                      key={i}
+                      to={lp(`/landing-pages/${(l as (typeof readyLandings)[number]).slug}/`)}
+                      onClick={() => setOpen(false)}
+                      className={cx(
+                        'border border-line px-3 py-2 font-mono text-2xs uppercase tracking-tech text-muted hover:border-accent hover:text-accent',
+                        i === 1 && 'text-right',
+                      )}
+                    >
+                      {i === 0 ? '← ' : ''}
+                      {label as string}
+                      {i === 1 ? ' →' : ''}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
           <a
             href={lp('/')}
             onClick={(e) => {

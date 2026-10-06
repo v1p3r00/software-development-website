@@ -12,9 +12,10 @@ import MobileTalk from './components/MobileTalk';
 import NotFound from './pages/NotFound';
 import Home from './pages/Home';
 import ProjectDetail from './pages/ProjectDetail';
-import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, InterviewPage, InterviewTrackPage, ModernizationPage } from './pages/lazy';
+import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, InterviewPage, InterviewTrackPage, LandingPagesPage, LandingStagePage, ModernizationPage } from './pages/lazy';
 import { stripLang } from './i18n/paths';
 import { labFor } from './data/labs';
+import { isLandingStage } from './data/landings';
 import { useRouteCommitSignal } from './lib/pageTransition';
 import { countVisit } from './hooks/useVisitorCount';
 
@@ -23,12 +24,15 @@ export default function App() {
   const { t } = useI18n();
   useRouteCommitSignal();
   // the interactive projects are full-screen stages: no footer or floating widgets
-  const showcase = !!labFor(stripLang(useLocation().pathname));
+  const path = stripLang(useLocation().pathname);
+  const showcase = !!labFor(path);
+  // a landing page owns the whole screen: no grain, no custom cursor, only the menu button
+  const stage = isLandingStage(path);
   // count the visit on whichever page it lands, not only when the home hero is shown
   useEffect(() => countVisit(), []);
 
   return (
-    <div className="grain relative min-h-screen bg-bg">
+    <div className={stage ? 'relative min-h-screen' : 'grain relative min-h-screen bg-bg'}>
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[80] focus:border focus:border-accent focus:bg-bg focus:px-4 focus:py-2 focus:font-mono focus:text-2xs focus:uppercase focus:tracking-tech focus:text-accent"
@@ -53,6 +57,8 @@ export default function App() {
             <Route path="/hu?/course" element={<CoursePage />} />
             <Route path="/hu?/course/:slug" element={<CourseLessonPage />} />
             <Route path="/hu?/modernization" element={<ModernizationPage />} />
+            <Route path="/hu?/landing-pages" element={<LandingPagesPage />} />
+            <Route path="/hu?/landing-pages/:slug" element={<LandingStagePage />} />
             <Route path="*" element={<NotFound onSearch={() => setPaletteOpen(true)} />} />
           </Routes>
         </Suspense>
@@ -61,7 +67,7 @@ export default function App() {
       {!showcase && <Footer />}
       {!showcase && <SystemStatus />}
       <CommandPalette open={paletteOpen} setOpen={setPaletteOpen} />
-      <TechnicalCursor />
+      {!stage && <TechnicalCursor />}
       {!showcase && <BackToTop />}
       {!showcase && <MobileTalk />}
     </div>

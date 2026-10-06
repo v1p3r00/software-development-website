@@ -35,6 +35,9 @@ export const CoursePage = lazyPage(() => import('./Course'));
 export const CourseLessonPage = lazyPage(() => import('./CourseLesson'));
 // the before/after modernization showcase
 export const ModernizationPage = lazyPage(() => import('./Modernization'));
+// the landing page showcase: the gallery and the full-screen stage (each landing page is its own chunk)
+export const LandingPagesPage = lazyPage(() => import('./LandingPages'));
+export const LandingStagePage = lazyPage(() => import('./LandingStage'));
 
 /** preloaders for the interactive projects, by `labs` id */
 export const labPreload: Record<string, () => Promise<void>> = {
@@ -42,4 +45,5 @@ export const labPreload: Record<string, () => Promise<void>> = {
   cv: CvMakerPage.preload,
   course: CoursePage.preload,
   modernization: ModernizationPage.preload,
+  landing: LandingPagesPage.preload,
 };

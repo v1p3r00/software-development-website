@@ -40,7 +40,7 @@ export function SectionHeader({
     );
   return (
     <div className="mb-10 flex flex-col gap-4 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="flex items-end gap-4">
+      <div className="flex shrink-0 items-end gap-4">
         <span className="font-mono text-2xs tracking-tech text-accent">[{index}]</span>
         <div>
           {subtitle && (
@@ -51,7 +51,7 @@ export function SectionHeader({
           <h2 className="display text-[2.4rem] leading-[0.9] sm:text-[3.4rem]">{title}</h2>
         </div>
       </div>
-      {right && <div className="shrink-0">{right}</div>}
+      {right && <div className="min-w-0">{right}</div>}
     </div>
   );
 }

@@ -9,6 +9,8 @@ import { usePageTransition } from '../lib/pageTransition';
 import { CourseLessonPage, InterviewTrackPage, labPreload } from '../pages/lazy';
 import LabIcon from './LabIcon';
 import { Cake } from './modernization/art';
+import LandingCover from './LandingCover';
+import { landings, readyLandings } from '../data/landings';
 import { Arrow, CornerMarks, Section, SectionHeader, cx } from './ui';
 import { site } from '../data/site';
 
@@ -195,6 +197,49 @@ function ModernVisual({ lang }: { lang: 'en' | 'hu' }) {
   );
 }
 
+/** a fan of brand covers that spreads out on hover */
+function LandingVisual({ lang }: { lang: 'en' | 'hu' }) {
+  const fan = [landings[3], landings[1], landings[4], landings[0]];
+  const points =
+    lang === 'hu'
+      ? [`${landings.length} márka`, 'Teljes képernyő', 'Élő interakciók', 'Könnyed animáció']
+      : [`${landings.length} brands`, 'Full screen', 'Live interactions', 'Light animation'];
+  return (
+    <div className="flex h-full flex-col">
+      <div className="relative aspect-[16/10] w-full" aria-hidden>
+        {fan.map((l, i) => (
+          <div
+            key={l.slug}
+            className="absolute inset-[8%] shadow-2xl transition-transform duration-700 ease-tech"
+            style={{
+              transform: `translateX(${(i - 3) * 7}%) rotate(${(i - 3) * 4}deg)`,
+              zIndex: i,
+            }}
+          >
+            <div
+              className="h-full w-full transition-transform duration-700 ease-tech group-hover/lab:[transform:translateX(var(--fx))_rotate(var(--fr))]"
+              style={{ '--fx': `${(i - 3) * 9}%`, '--fr': `${(i - 3) * 3}deg` } as React.CSSProperties}
+            >
+              <LandingCover l={l} className="h-full w-full" />
+            </div>
+          </div>
+        ))}
+        <span className="absolute bottom-2 right-2 z-10 bg-black/70 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-tech text-white">
+          {readyLandings.length} / {landings.length} live
+        </span>
+      </div>
+      <ul className="mt-6 grid grid-cols-2 gap-px border border-line bg-line">
+        {points.map((f) => (
+          <li key={f} className="flex items-center gap-2 bg-surface px-3 py-2.5 font-mono text-2xs uppercase tracking-tech text-muted">
+            <span className="h-1.5 w-1.5 bg-accent" aria-hidden />
+            {f}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function LabCard({ lab }: { lab: Lab }) {
   const { t, lp, lang } = useI18n();
   const { link } = usePageTransition();
@@ -222,7 +267,7 @@ function LabCard({ lab }: { lab: Lab }) {
             </span>
             <h3 className="display pt-1 text-[2rem] leading-none sm:text-[2.6rem]">{lab.title[lang]}</h3>
           </div>
-          <p className="mt-5 max-w-[60ch] text-sm leading-relaxed text-muted sm:text-base">{lab.desc[lang]}</p>
+          <p className="mt-5 max-w-[60ch] whitespace-pre-line text-sm leading-relaxed text-muted sm:text-base">{lab.desc[lang]}</p>
 
           {lab.id === 'interview' && (
             <dl className="mt-8 grid max-w-md grid-cols-2 gap-px border border-line bg-line">
@@ -265,6 +310,8 @@ function LabCard({ lab }: { lab: Lab }) {
             <CourseVisual lang={lang} />
           ) : lab.id === 'modernization' ? (
             <ModernVisual lang={lang} />
+          ) : lab.id === 'landing' ? (
+            <LandingVisual lang={lang} />
           ) : (
             <InterviewVisual />
           )}
