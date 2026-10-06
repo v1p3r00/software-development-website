@@ -479,7 +479,7 @@ function LabCard({ lab }: { lab: Lab }) {
             <span className="grid h-14 w-14 shrink-0 place-items-center border border-line-strong text-text transition-colors group-hover/lab:border-accent">
               <LabIcon id={lab.id} />
             </span>
-            <h3 className="display pt-1 text-[2rem] leading-none sm:text-[2.6rem]">{lab.title[lang]}</h3>
+            <h3 className="display min-w-0 pt-1 text-[clamp(1rem,calc((100vw-10rem)/9.3),2rem)] leading-none [overflow-wrap:anywhere] sm:text-[2.6rem]">{lab.title[lang]}</h3>
           </div>
           <p className="mt-5 max-w-[60ch] whitespace-pre-line text-sm leading-relaxed text-muted sm:text-base">{lab.desc[lang]}</p>
 

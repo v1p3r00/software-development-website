@@ -82,7 +82,7 @@ export default function LandingPages() {
       )}
       <aside className="relative mt-10 flex flex-col gap-5 border-2 border-accent bg-accent/[0.06] p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div>
-          <div className="font-display text-2xl font-extrabold uppercase tracking-tight">{tl.ctaTitle}</div>
+          <div className="font-display text-[clamp(1.2rem,6.4vw,1.5rem)] font-extrabold uppercase tracking-tight [overflow-wrap:anywhere]">{tl.ctaTitle}</div>
           <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-muted sm:text-base">{tl.ctaText}</p>
         </div>
         <a

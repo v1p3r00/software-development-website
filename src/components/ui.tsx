@@ -40,15 +40,15 @@ export function SectionHeader({
     );
   return (
     <div className="mb-10 flex flex-col gap-4 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="flex shrink-0 items-end gap-4">
+      <div className="flex min-w-0 items-end gap-4 sm:shrink-0">
         <span className="font-mono text-2xs tracking-tech text-accent">[{index}]</span>
-        <div>
+        <div className="min-w-0">
           {subtitle && (
             <div className="label mb-1">
               // {subtitle}
             </div>
           )}
-          <h2 className="display text-[2.4rem] leading-[0.9] sm:text-[3.4rem]">{title}</h2>
+          <h2 className="display text-[clamp(1.75rem,9vw,2.4rem)] leading-[0.9] [overflow-wrap:anywhere] sm:text-[3.4rem]">{title}</h2>
         </div>
       </div>
       {right && <div className="min-w-0">{right}</div>}

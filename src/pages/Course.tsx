@@ -122,7 +122,7 @@ export default function Course() {
                     <span className="mt-1.5 font-mono text-2xs tracking-tech text-accent">{m.num}</span>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                        <h3 className="display text-2xl leading-none sm:text-[2rem]">{m.title[lang]}</h3>
+                        <h3 className="display min-w-0 text-[clamp(1.25rem,6.4vw,1.5rem)] leading-none [overflow-wrap:anywhere] sm:text-[2rem]">{m.title[lang]}</h3>
                         <span className="label">{ready ? `${done}/${m.lessons.length} ${t.completed}` : t.soon}</span>
                       </div>
                       <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-muted">{m.summary[lang]}</p>
@@ -152,11 +152,11 @@ export default function Course() {
                               >
                                 {isDone ? '✓' : ''}
                               </span>
-                              <span className="font-mono text-2xs tracking-tech text-dim">
+                              <span className="shrink-0 font-mono text-2xs tracking-tech text-dim">
                                 {Number(m.num)}.{i + 1}
                               </span>
-                              <span className={cx('flex-1 text-sm', ok ? 'text-text group-hover:text-accent' : 'text-dim')}>{l.title[lang]}</span>
-                              <span className="label">{ok ? `${l.minutes} ${t.min}` : t.soon}</span>
+                              <span className={cx('min-w-0 flex-1 text-sm [overflow-wrap:anywhere]', ok ? 'text-text group-hover:text-accent' : 'text-dim')}>{l.title[lang]}</span>
+                              <span className="label shrink-0 whitespace-nowrap">{ok ? `${l.minutes} ${t.min}` : t.soon}</span>
                             </>
                           );
                           return (
@@ -184,7 +184,7 @@ export default function Course() {
                             target="_blank"
                             rel="noopener noreferrer"
                             data-cursor="follow"
-                            className="group flex items-center gap-2 border border-line px-3 py-2 text-[13px] text-muted transition-colors hover:border-accent hover:text-text"
+                            className="group flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 border border-line px-3 py-2 text-left text-[13px] text-muted transition-colors hover:border-accent hover:text-text"
                           >
                             <span className="label-a">{t.project}</span>
                             {m.project[lang]}
@@ -198,7 +198,7 @@ export default function Course() {
                               key={id}
                               to={lp(`/interview/${id}/`)}
                               data-cursor="follow"
-                              className="group flex items-center gap-2 border border-line px-3 py-2 text-[13px] text-muted transition-colors hover:border-accent hover:text-text"
+                              className="group flex max-w-full flex-wrap items-center gap-x-2 gap-y-1 border border-line px-3 py-2 text-left text-[13px] text-muted transition-colors hover:border-accent hover:text-text"
                             >
                               <span className="label">{t.practice}</span>
                               {tr.title[lang]}

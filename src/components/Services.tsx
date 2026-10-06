@@ -52,7 +52,7 @@ export default function Services() {
                     {service.num}
                   </span>
                   <span className="flex-1">
-                    <span className="display block text-2xl leading-none sm:text-[2rem]">
+                    <span className="display block text-[clamp(1.2rem,6vw,1.5rem)] leading-none [overflow-wrap:anywhere] sm:text-[2rem]">
                       {pick(service.title)}
                     </span>
                     <span

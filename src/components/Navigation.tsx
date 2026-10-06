@@ -17,7 +17,7 @@ function Monogram({ compact }: { compact: boolean }) {
   const goTo = useGoToSection();
   const { lp } = useI18n();
   return (
-    <a href={lp('/')} onClick={goTo('home')} data-cursor="follow" className="group flex items-center gap-3" aria-label={site.name}>
+    <a href={lp('/')} onClick={goTo('home')} data-cursor="follow" className="group flex shrink-0 items-center gap-3" aria-label={site.name}>
       <span
         className={cx(
           'relative grid place-items-center border border-line-strong font-display font-extrabold leading-none transition-all duration-300 ease-tech',
@@ -236,7 +236,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
           !stage && (compact ? 'py-2.5' : 'py-4'),
         )}
       >
-        <div className={cx('flex items-center gap-4', stage && 'hidden')}>
+        <div className={cx('flex min-w-0 items-center gap-4', stage && 'hidden')}>
           <Monogram compact={compact} />
           {lab && (
             <Link
@@ -315,7 +315,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
           })}
         </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           {!showcase && (<>
           <button
             type="button"

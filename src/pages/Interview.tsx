@@ -45,7 +45,7 @@ export default function Interview() {
                 </span>
                 <span className="text-accent">● {track.short}</span>
               </div>
-              <h2 className="mt-6 font-display text-2xl font-extrabold uppercase leading-tight tracking-tight transition-colors group-hover:text-accent">
+              <h2 className="mt-6 font-display text-[clamp(1.2rem,6.4vw,1.5rem)] font-extrabold uppercase leading-tight tracking-tight [overflow-wrap:anywhere] transition-colors group-hover:text-accent">
                 {track.title[lang]}
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-muted">{track.text[lang]}</p>

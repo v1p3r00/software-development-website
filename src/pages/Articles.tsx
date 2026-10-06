@@ -154,7 +154,7 @@ export default function Articles() {
                 className="w-full border border-line-strong bg-bg py-3 pl-10 pr-4 text-[15px] text-text outline-none transition-colors placeholder:text-dim focus:border-accent"
               />
             </label>
-            <div role="group" aria-label={t.articles.sort} className="flex shrink-0 items-center gap-1.5">
+            <div role="group" aria-label={t.articles.sort} className="flex flex-wrap items-center gap-1.5 sm:shrink-0 sm:flex-nowrap">
               <span className="label mr-1 hidden sm:inline">{t.articles.sort}</span>
               {SORTS.map((k) => (
                 <button
@@ -163,7 +163,7 @@ export default function Articles() {
                   aria-pressed={sort === k}
                   onClick={() => setParam('sort', k === 'new' ? '' : k)}
                   className={cx(
-                    'border px-3 py-2 font-mono text-[12.5px] uppercase tracking-tech transition-colors',
+                    'border px-2.5 py-2 font-mono text-[12px] uppercase tracking-tech transition-colors sm:px-3 sm:text-[12.5px]',
                     sort === k ? 'border-accent bg-accent text-onaccent' : 'border-line-strong text-muted hover:border-accent hover:text-text',
                   )}
                 >
