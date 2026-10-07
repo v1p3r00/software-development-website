@@ -87,6 +87,10 @@ export default function Preview({ cv, onPages }: { cv: Cv; onPages?: (n: number)
 
 /** an unscaled copy of the CV that only exists for the print dialog */
 export function PrintCopy({ cv }: { cv: Cv }) {
+  // portals need the document: mount after hydration (the page is prerendered)
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
+  if (!ready) return null;
   return createPortal(
     <div className="cv-print-root">
       <CvSheet cv={cv} />

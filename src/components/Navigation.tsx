@@ -8,7 +8,7 @@ import { useActiveSection, useScrollFrame } from '../hooks/useMisc';
 import { useTheme } from '../hooks/useTheme';
 import LanguageSwitcher from './LanguageSwitcher';
 import { usePageTransition } from '../lib/pageTransition';
-import { labPreload } from '../pages/lazy';
+import { ArticlesPage, labPreload } from '../pages/lazy';
 import { labFor, labs } from '../data/labs';
 import { isLandingStage, readyLandings } from '../data/landings';
 import { Arrow, cx } from './ui';
@@ -172,6 +172,9 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
   const section = useActiveSection(site.sections, onHome);
   const active = onHome ? section : '';
   const goTo = useGoToSection();
+  const { link } = usePageTransition();
+  const onArticles = stripLang(pathname).startsWith('/articles');
+  const toArticles = lp('/articles/');
 
   useScrollFrame(() => setCompact(window.scrollY > 64));
 
@@ -182,7 +185,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
     };
   }, [open]);
 
-  // the "Projects" dropdown sits right after Home; the rest follow in page order
+  // the "Projects" dropdown sits right after Home, then Articles; the rest follow in page order
   const items = [
     { id: 'projects', label: t.nav.projects },
     { id: 'services', label: t.nav.services },
@@ -267,7 +270,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
           </div>
         </div>
 
-        <nav aria-label="Primary" className={cx('hidden items-center gap-5 min-[1700px]:gap-6', !showcase && 'xl:flex')}>
+        <nav aria-label="Primary" className={cx('hidden items-center gap-3.5 min-[1440px]:gap-5 min-[1700px]:gap-6', !showcase && 'xl:flex')}>
           {[home].map((item) => {
             const on = active === item.id;
             return (
@@ -291,6 +294,23 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             );
           })}
           <ProjectsMenu active={onInterview || active === 'interactive'} onAll={goTo('interactive')} />
+          <Link
+            to={toArticles}
+            onClick={link(toArticles, 'slide', { prepare: ArticlesPage.preload })}
+            aria-current={onArticles ? 'page' : undefined}
+            data-cursor="follow"
+            className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[12.5px] uppercase tracking-tech"
+          >
+            <span className={cx('transition-colors', onArticles ? 'text-text' : 'text-muted group-hover:text-text')}>
+              {t.nav.articles}
+            </span>
+            <span
+              className={cx(
+                'absolute -bottom-0.5 left-0 h-px bg-accent transition-all duration-300 ease-tech',
+                onArticles ? 'w-full' : 'w-0 group-hover:w-full',
+              )}
+            />
+          </Link>
           {items.map((item) => {
             const on = active === item.id;
             return (
@@ -530,6 +550,18 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
               ))}
             </ul>
           </div>
+          <Link
+            to={toArticles}
+            onClick={(e) => {
+              setOpen(false);
+              link(toArticles, 'slide', { prepare: ArticlesPage.preload })(e);
+            }}
+            aria-current={onArticles ? 'page' : undefined}
+            className="flex items-baseline justify-between border-b border-line py-4 font-display text-2xl font-extrabold uppercase tracking-tight"
+          >
+            {t.nav.articles}
+            <span className="font-mono text-2xs tracking-tech text-accent">[03]</span>
+          </Link>
           {items.map((item, i) => (
             <a
               key={item.id}
@@ -542,7 +574,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             >
               {item.label}
               <span className="font-mono text-2xs tracking-tech text-accent">
-                [{String(i + 3).padStart(2, '0')}]
+                [{String(i + 4).padStart(2, '0')}]
               </span>
             </a>
           ))}

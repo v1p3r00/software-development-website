@@ -1,15 +1,14 @@
-import About from '../components/About';
-import ContactTerminal from '../components/ContactTerminal';
 import Hero from '../components/Hero';
-import InteractiveProjects from '../components/InteractiveProjects';
-import ProjectGrid from '../components/ProjectGrid';
-import Services from '../components/Services';
-import TechStack from '../components/TechStack';
-import Testimonials from '../components/Testimonials';
 import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
-import { useEffect } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import { scrollToSection } from '../lib/scrollToSection';
+
+// the sections below the hero load as one chunk, requested as soon as this module runs;
+// on a prerendered page their HTML is already there and hydrates when it arrives
+const loadSections = () => import('./HomeSections');
+const HomeSections = lazy(loadSections);
+if (typeof window !== 'undefined') void loadSections();
 
 export default function Home() {
   const { t } = useI18n();
@@ -22,13 +21,9 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <InteractiveProjects />
-      <ProjectGrid />
-      <Services />
-      <TechStack />
-      <Testimonials />
-      <About />
-      <ContactTerminal />
+      <Suspense fallback={null}>
+        <HomeSections />
+      </Suspense>
     </>
   );
 }

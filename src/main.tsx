@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { LanguageProvider } from './i18n';
@@ -11,9 +11,9 @@ import '@fontsource-variable/jetbrains-mono';
 import '@fontsource/caveat/500.css';
 import './index.css';
 
-applyInitialLang();
+const moved = applyInitialLang();
 
-createRoot(document.getElementById('root')!).render(
+const app = (
   <StrictMode>
     <ThemeProvider>
       <BrowserRouter>
@@ -22,5 +22,15 @@ createRoot(document.getElementById('root')!).render(
         </LanguageProvider>
       </BrowserRouter>
     </ThemeProvider>
-  </StrictMode>,
+  </StrictMode>
 );
+
+// pages are prerendered at build time (scripts/prerender.ts): pick up that HTML
+// instead of rebuilding it — unless the address just changed (a returning
+// Hungarian visitor sent from / to /hu/), when the markup no longer matches
+const root = document.getElementById('root')!;
+if (root.firstElementChild && !moved) hydrateRoot(root, app);
+else {
+  root.textContent = '';
+  createRoot(root).render(app);
+}

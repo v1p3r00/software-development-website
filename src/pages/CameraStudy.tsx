@@ -19,7 +19,7 @@ const FLOOR_Y = -0.94;
 
 const COPY = {
   en: {
-    menu: { face: 'Justitia', law: 'Scale', about: 'Full View', contact: 'Contact' },
+    menu: { face: 'Justitia', law: 'Law', about: 'About', contact: 'Contact' },
     shots: {
       face: {
         kicker: '3D model camera study',
@@ -49,7 +49,7 @@ const COPY = {
     note: 'Demo content',
   },
   hu: {
-    menu: { face: 'Iustitia', law: 'Jog', about: 'Rólunk', contact: 'Kapcsolat' },
+    menu: { face: 'Iustitia', law: 'Mérleg', about: 'Teljes Nézet', contact: 'Kapcsolat' },
     shots: {
       face: {
         kicker: '3D modell kameratanulmány',
@@ -57,12 +57,12 @@ const COPY = {
         body: 'Egy szobor, négy nézőpont. A menü itt nem oldalt vált, hanem útnak indítja a kamerát a modell körül.',
       },
       law: {
-        kicker: '01 / Mérleg',
+        kicker: '01 / Jog',
         title: 'Mérlegelés',
         body: 'Minden ügy két serpenyővel kezdődik. Tényeket, kockázatokat és lehetőségeket mérünk össze, mielőtt döntés születik.',
       },
       about: {
-        kicker: '02 / Teljes kép',
+        kicker: '02 / Rólunk',
         title: 'Az egész kép',
         body: 'Távolabbról a részletekből összeáll az alak. A jó tanács is így működik: a részek akkor kapnak értelmet, ha látszik, hogyan illeszkednek.',
       },
@@ -159,7 +159,10 @@ export default function CameraStudy() {
       setState('error');
       return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarse || lowEnd ? 1.5 : 1.75));
+    // resolution steps: start high, drop a step whenever frames run slow (see frame())
+    const dprSteps = [1.75, 1.5, 1.25, 1].map((d) => Math.min(window.devicePixelRatio, d)).filter((d, i, a) => a.indexOf(d) === i);
+    let dprStep = coarse || lowEnd ? Math.max(0, dprSteps.indexOf(Math.min(window.devicePixelRatio, 1.5))) : 0;
+    renderer.setPixelRatio(dprSteps[dprStep]);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
@@ -230,6 +233,7 @@ export default function CameraStudy() {
     // post: depth of field on capable desktops
     let composer: EffectComposer | null = null;
     let bokeh: BokehPass | null = null;
+    let dof = useDof;
     if (useDof) {
       composer = new EffectComposer(renderer);
       composer.addPass(new RenderPass(scene, camera));
@@ -248,10 +252,12 @@ export default function CameraStudy() {
     // the opening move: a slow push-in on the face once the model is ready
     let intro: { t0: number; dur: number } | null = null;
 
-    const resize = () => {
-      W = el.clientWidth;
-      H = el.clientHeight;
-      if (!W || !H) return;
+    const resize = (force = false) => {
+      const w = el.clientWidth;
+      const h = el.clientHeight;
+      if (!w || !h || (!force && w === W && h === H)) return;
+      W = w;
+      H = h;
       renderer.setSize(W, H, false);
       composer?.setSize(W, H);
       camera.aspect = W / H;
@@ -262,7 +268,7 @@ export default function CameraStudy() {
         if (!flight) Object.assign(cur, { pos: pose.pos.clone(), target: pose.target.clone(), fov: pose.fov, frameX: pose.frameX, frameY: pose.frameY, aperture: pose.aperture });
       }
     };
-    const ro = new ResizeObserver(resize);
+    const ro = new ResizeObserver(() => resize());
     ro.observe(el);
     resize();
 
@@ -301,17 +307,56 @@ export default function CameraStudy() {
     };
     window.addEventListener('pointermove', onMove);
 
+    // the text panel's size, measured only when it changes (never read layout in the frame loop)
+    let pw = 0;
+    let ph = 0;
+    const panelRo = new ResizeObserver(([entry]) => {
+      const box = entry.borderBoxSize?.[0];
+      pw = box ? box.inlineSize : (entry.target as HTMLElement).offsetWidth;
+      ph = box ? box.blockSize : (entry.target as HTMLElement).offsetHeight;
+    });
+    if (panel.current) panelRo.observe(panel.current);
+
+    // frame-time watchdog: average over ~1 s; when it runs slow, lower the
+    // resolution a step, and as a last step drop the depth of field
+    let acc = 0;
+    let frames = 0;
+    let warm = 0; // skip the first second after loading and after each change
+    const adapt = (dtMs: number) => {
+      if (warm > 0) {
+        warm -= dtMs;
+        return;
+      }
+      acc += dtMs;
+      frames++;
+      if (acc < 1000) return;
+      const avg = acc / frames;
+      acc = 0;
+      frames = 0;
+      if (avg < 21) return;
+      if (dprStep < dprSteps.length - 1) {
+        dprStep++;
+        renderer.setPixelRatio(dprSteps[dprStep]);
+        composer?.setPixelRatio(dprSteps[dprStep]);
+        resize(true);
+      } else if (dof) dof = false;
+      else return;
+      warm = 800;
+    };
+
     const tmp = new THREE.Vector3();
     const right = new THREE.Vector3();
     const up = new THREE.Vector3();
     const anchor = new THREE.Vector3();
     let raf = 0;
+    let model: THREE.Object3D | null = null;
     let last = performance.now();
     let visible = true;
     let shownSet = true;
 
     const frame = (now: number) => {
       raf = 0;
+      if (model) adapt(now - last);
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       const time = now / 1000;
@@ -383,7 +428,7 @@ export default function CameraStudy() {
       }
       pos.needsUpdate = true;
 
-      if (bokeh && composer) {
+      if (dof && bokeh && composer) {
         (bokeh.uniforms as Record<string, THREE.IUniform>).focus.value = camera.position.distanceTo(cur.target);
         (bokeh.uniforms as Record<string, THREE.IUniform>).aperture.value = cur.aperture;
         composer.render();
@@ -399,8 +444,6 @@ export default function CameraStudy() {
           anchor.set(...s.anchor).project(camera);
           const x = (anchor.x * 0.5 + 0.5) * W;
           const y = (-anchor.y * 0.5 + 0.5) * H;
-          const pw = pnl.offsetWidth;
-          const ph = pnl.offsetHeight;
           let px = s.side === 'left' ? x - pw - 56 : x + 56;
           let py = y - ph / 2;
           px = Math.max(32, Math.min(W - pw - 32, px));
@@ -431,26 +474,39 @@ export default function CameraStudy() {
     document.addEventListener('visibilitychange', onVis);
 
     // the model
-    let model: THREE.Object3D | null = null;
     const loader = new GLTFLoader();
     loader.setMeshoptDecoder(MeshoptDecoder);
     let cancelled = false;
     loader.load(
       MODEL_URL,
-      (gltf) => {
+      async (gltf) => {
         if (cancelled) return;
-        model = gltf.scene;
-        model.traverse((o) => {
+        const loaded = gltf.scene;
+        loaded.traverse((o) => {
           const m = o as THREE.Mesh;
           if (m.isMesh) {
             const mat = m.material as THREE.MeshStandardMaterial;
             mat.envMapIntensity = 1;
+            // upload the textures now, not in the middle of the first camera move
+            for (const tex of [mat.map, mat.normalMap, mat.roughnessMap, mat.metalnessMap]) if (tex) renderer.initTexture(tex);
           }
         });
-        scene.add(model);
-        pose = resolve(SHOTS.face, portrait);
-        Object.assign(cur, { pos: pose.pos.clone(), target: pose.target.clone(), fov: pose.fov, frameX: pose.frameX, frameY: pose.frameY, aperture: 0 });
-        if (!reduced) intro = { t0: performance.now(), dur: 3200 };
+        scene.add(loaded);
+        // compile the shaders up front for the same reason
+        try {
+          await renderer.compileAsync(scene, camera);
+        } catch {
+          /* compiled on first use instead */
+        }
+        if (cancelled) return;
+        model = loaded;
+        warm = 1200;
+        // open on the face with a push-in — unless the visitor already picked a shot while it loaded
+        if (activeRef.current === 'face' && !flight) {
+          pose = resolve(SHOTS.face, portrait);
+          Object.assign(cur, { pos: pose.pos.clone(), target: pose.target.clone(), fov: pose.fov, frameX: pose.frameX, frameY: pose.frameY, aperture: 0 });
+          if (!reduced) intro = { t0: performance.now(), dur: 3200 };
+        }
         setState('ready');
         window.setTimeout(() => !cancelled && activeRef.current === 'face' && setShown('face'), reduced ? 0 : 1400);
         start();
@@ -464,6 +520,7 @@ export default function CameraStudy() {
       cancelled = true;
       cancelAnimationFrame(raf);
       ro.disconnect();
+      panelRo.disconnect();
       io.disconnect();
       document.removeEventListener('visibilitychange', onVis);
       window.removeEventListener('pointermove', onMove);
@@ -567,15 +624,15 @@ export default function CameraStudy() {
       <div
         ref={panel}
         className={cx(
-          'absolute z-10 transition-[opacity,filter] duration-700 ease-out',
+          'absolute z-10 transition-opacity duration-700 ease-out',
           'inset-x-4 bottom-28 [@media(min-aspect-ratio:9/10)]:inset-x-auto [@media(min-aspect-ratio:9/10)]:bottom-auto [@media(min-aspect-ratio:9/10)]:left-0 [@media(min-aspect-ratio:9/10)]:top-0 [@media(min-aspect-ratio:9/10)]:w-[min(380px,40vw)]',
           '[@media(max-aspect-ratio:9/10)]:!transform-none',
-          shot ? 'opacity-100 blur-0' : 'pointer-events-none opacity-0 blur-[6px]',
+          shot ? 'opacity-100' : 'pointer-events-none opacity-0',
         )}
         aria-live="polite"
       >
         {shot && (
-          <div key={shown} className="border-l border-[#d8b77a]/60 bg-black/40 py-1 pl-5 pr-4 backdrop-blur-[3px] sm:bg-[#0a0a0c]/45 sm:py-6 sm:pl-6 sm:pr-7 [@media(max-height:640px)]:sm:py-4 sm:backdrop-blur-md [text-shadow:0_1px_12px_rgba(0,0,0,.55)]">
+          <div key={shown} className="border-l border-[#d8b77a]/60 bg-black/55 py-1 pl-5 pr-4 sm:bg-[#0a0a0c]/60 sm:py-6 sm:pl-6 sm:pr-7 [@media(max-height:640px)]:sm:py-4 [text-shadow:0_1px_12px_rgba(0,0,0,.55)]">
             <div className="font-mono text-[11px] uppercase tracking-[0.28em] text-[#d8b77a]">{shot.kicker}</div>
             <h2 className="mt-3 font-serif text-[clamp(2rem,4.4vw,3.6rem)] [@media(max-height:640px)]:mt-2 [@media(max-height:640px)]:text-[1.9rem] font-light italic leading-[0.95] tracking-tight">{shot.title}</h2>
             <p className="mt-4 text-[14.5px] leading-relaxed text-[#d9d2c6] sm:text-[15.5px] [@media(max-height:640px)]:mt-2 [@media(max-height:640px)]:text-[13.5px]">{shot.body}</p>

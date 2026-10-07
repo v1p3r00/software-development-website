@@ -6,7 +6,7 @@ import { langOfPath, localePath } from './paths';
  * Done with replaceState up front so the first render is already in the right
  * language (no flash, no extra history entry).
  */
-export function applyInitialLang() {
+export function applyInitialLang(): boolean {
   const { pathname, search, hash } = window.location;
   const params = new URLSearchParams(search);
   const fromQuery = params.get('lang');
@@ -26,5 +26,7 @@ export function applyInitialLang() {
   if (fromQuery !== null || wanted !== current) {
     const rest = params.toString() ? `?${params}` : '';
     window.history.replaceState(window.history.state, '', `${localePath(pathname, wanted)}${rest}${hash}`);
+    return true;
   }
+  return false;
 }

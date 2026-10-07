@@ -72,7 +72,11 @@ function Portrait() {
       {/* image */}
       <div className="relative h-full w-full overflow-hidden">
         <picture className="contents">
-          <source srcSet="/portrait.webp" type="image/webp" />
+          <source
+            srcSet="/portrait-480.webp 480w, /portrait-720.webp 720w, /portrait.webp 960w"
+            sizes="(min-width: 1024px) 40vw, min(520px, 100vw)"
+            type="image/webp"
+          />
           <img
             src="/portrait.jpg"
             alt="David Mészáros"
@@ -132,20 +136,8 @@ export default function Hero() {
   const { t, lp } = useI18n();
   const goTo = useGoToSection();
   const reduced = usePrefersReducedMotion();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const id = window.setTimeout(() => setMounted(true), 40);
-    return () => window.clearTimeout(id);
-  }, []);
-
-
-  const reveal = (delay: number) =>
-    ({
-      opacity: mounted ? 1 : 0,
-      transform: mounted ? 'translateY(0)' : 'translateY(14px)',
-      transition: `opacity .8s cubic-bezier(.16,1,.3,1) ${delay}ms, transform .8s cubic-bezier(.16,1,.3,1) ${delay}ms`,
-    }) as const;
+  // pure CSS entrances: they play on the first paint of the prerendered page, before any script runs
+  const reveal = (delay: number) => ({ animationDelay: `${delay}ms` }) as const;
 
   return (
     <section id="home" className="relative w-full overflow-hidden pt-24 lg:min-h-[100svh] lg:pt-20">
@@ -159,7 +151,7 @@ export default function Hero() {
       <div className="relative mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-0 px-5 sm:px-8 lg:grid-cols-12 lg:px-12">
         {/* ── left column: headline ── */}
         <div className="order-2 flex flex-col justify-center py-10 lg:order-1 lg:col-span-5 lg:py-16">
-          <div style={reveal(60)} className="label-a mb-5 flex items-center gap-3">
+          <div style={reveal(60)} className="hero-rise label-a mb-5 flex items-center gap-3">
             <span className="h-px w-8 bg-accent" />
             // {t.hero.kicker}
           </div>
@@ -168,7 +160,7 @@ export default function Hero() {
             {[t.hero.l1, t.hero.l2, t.hero.l3].map((line, i) => (
               <span key={line} className="block">
                 <span
-                  className="block"
+                  className="hero-rise block"
                   style={{
                     ...reveal(140 + i * 110),
                     color: i === 1 ? 'rgb(var(--c-muted))' : undefined,
@@ -181,11 +173,11 @@ export default function Hero() {
             ))}
           </h1>
 
-          <p style={reveal(520)} className="mt-7 max-w-[46ch] text-sm leading-relaxed text-muted sm:text-base">
+          <p style={reveal(520)} className="hero-rise mt-7 max-w-[46ch] text-sm leading-relaxed text-muted sm:text-base">
             {t.hero.intro}
           </p>
 
-          <div style={reveal(600)} className="mt-9 flex flex-wrap items-center gap-6">
+          <div style={reveal(600)} className="hero-rise mt-9 flex flex-wrap items-center gap-6">
             <a
               href={`${lp('/')}#interactive`}
               onClick={goTo('interactive')}
@@ -226,7 +218,7 @@ export default function Hero() {
           </div>
 
           {/* rotating role, reads like a status line */}
-          <div style={reveal(680)} className="mt-10 flex items-center gap-3 border-t border-line pt-4">
+          <div style={reveal(680)} className="hero-rise mt-10 flex items-center gap-3 border-t border-line pt-4">
             <span className="label">{t.ui.role}</span>
             <RoleTicker roles={t.hero.roles} reduced={reduced} />
             <span className="label-a">●</span>
@@ -236,12 +228,8 @@ export default function Hero() {
         {/* ── centre column: portrait ── */}
         <div className="relative order-1 lg:order-2 lg:col-span-5">
           <div
-            className="relative mx-auto h-[52vh] min-h-[340px] w-full max-w-[520px] sm:h-[62vh] lg:h-[calc(100svh-15rem)] lg:max-w-none"
-            style={{
-              opacity: mounted ? 1 : 0,
-              transform: mounted ? 'scale(1)' : 'scale(1.04)',
-              transition: 'opacity 1.2s cubic-bezier(.16,1,.3,1), transform 1.4s cubic-bezier(.16,1,.3,1)',
-            }}
+            className="hero-zoom relative mx-auto h-[52vh] min-h-[340px] w-full max-w-[520px] sm:h-[62vh] lg:h-[calc(100svh-15rem)] lg:max-w-none"
+
           >
             <Portrait />
           </div>
@@ -249,7 +237,7 @@ export default function Hero() {
 
         {/* ── right column: system metadata ── */}
         <div className="order-3 flex flex-col justify-center gap-8 border-t border-line py-8 lg:col-span-2 lg:border-l lg:border-t-0 lg:py-12 lg:pl-6 2xl:pr-10">
-          <div style={reveal(300)} className="flex flex-row flex-wrap justify-between gap-x-6 gap-y-5 lg:flex-col lg:flex-nowrap">
+          <div style={reveal(300)} className="hero-rise flex flex-row flex-wrap justify-between gap-x-6 gap-y-5 lg:flex-col lg:flex-nowrap">
             <div className="basis-full lg:basis-auto">
               <div className="label mb-2">{t.ux.followLabel}</div>
               <a
@@ -282,7 +270,7 @@ export default function Hero() {
             </div>
           </div>
 
-          <div style={reveal(380)} className="hidden lg:block">
+          <div style={reveal(380)} className="hero-rise hidden lg:block">
             <div className="label mb-2">{t.ui.stack}</div>
             <ul className="space-y-1">
               {STACK.map((s, i) => (
@@ -299,7 +287,7 @@ export default function Hero() {
 
           <div
             style={reveal(460)}
-            className="hidden rotate-[-4deg] font-hand text-lg leading-tight text-sand lg:block"
+            className="hero-rise hidden rotate-[-4deg] font-hand text-lg leading-tight text-sand lg:block"
             aria-hidden
           >
             {t.hero.note.split('\n').map((l) => (
@@ -314,7 +302,7 @@ export default function Hero() {
       {/* bottom metadata strip */}
       <div
         className={cx(
-          'relative mx-auto mt-2 w-full max-w-[1500px] border-t border-line px-5 sm:px-8 lg:px-12',
+          'hero-rise relative mx-auto mt-2 w-full max-w-[1500px] border-t border-line px-5 sm:px-8 lg:px-12',
           'flex flex-wrap items-stretch pb-3',
         )}
         style={reveal(760)}

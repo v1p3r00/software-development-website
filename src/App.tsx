@@ -10,8 +10,7 @@ import BackToTop from './components/BackToTop';
 import MobileTalk from './components/MobileTalk';
 import NotFound from './pages/NotFound';
 import Home from './pages/Home';
-import ProjectDetail from './pages/ProjectDetail';
-import { ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, GarageDesignerPage, InterviewPage, InterviewTrackPage, LandingPagesPage, LandingStagePage, ModernizationPage, ShirtDesignerPage, CameraStudyPage } from './pages/lazy';
+import { ProjectDetailPage, ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, GarageDesignerPage, InterviewPage, InterviewTrackPage, LandingPagesPage, LandingStagePage, ModernizationPage, ShirtDesignerPage, CameraStudyPage } from './pages/lazy';
 import { stripLang } from './i18n/paths';
 import { labFor } from './data/labs';
 import { isLandingStage } from './data/landings';
@@ -87,7 +86,7 @@ export default function App() {
           <Routes>
             {/* every route also exists under /hu for the Hungarian version */}
             <Route path="/hu?" element={<Home />} />
-            <Route path="/hu?/project/:id" element={<ProjectDetail />} />
+            <Route path="/hu?/project/:id" element={<ProjectDetailPage />} />
             <Route path="/hu?/articles" element={<ArticlesPage />} />
             <Route path="/hu?/articles/:slug" element={<ArticlePage />} />
             <Route path="/hu?/interview" element={<InterviewPage />} />

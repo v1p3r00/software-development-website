@@ -6,7 +6,13 @@ import { hu } from './hu';
 import type { Dict } from './en';
 import type { L10n, Lang } from '../data/projects';
 import { langOfPath, localePath } from './paths';
-import { captureMorph, playMorph, prefetchMorphFonts } from '../lib/morph/engine';
+
+// the letter-morph engine is fetched once the visitor starts using the page;
+// a language switch before that simply happens without the morph
+type Morph = typeof import('../lib/morph/engine');
+let morph: Morph | null = null;
+let morphLoading: Promise<Morph> | null = null;
+const loadMorph = () => (morphLoading ??= import('../lib/morph/engine').then((m) => (morph = m)));
 
 const dicts: Record<Lang, Dict> = { en, hu };
 const STORAGE_KEY = 'dm.lang';
@@ -47,17 +53,25 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   // and animated once every component has committed the new text — this layout
   // effect runs after the children's, before the browser paints.
   useLayoutEffect(() => {
-    playMorph();
+    morph?.playMorph();
   }, [lang]);
 
+  // the morph outlines are only fetched once the visitor starts using the page:
+  // scanning the text for its fonts is layout work the first load doesn't need
   useEffect(() => {
-    prefetchMorphFonts();
+    const events = ['pointerdown', 'pointermove', 'keydown', 'scroll', 'touchstart'] as const;
+    const go = () => {
+      events.forEach((e) => window.removeEventListener(e, go));
+      void loadMorph().then((m) => m.prefetchMorphFonts());
+    };
+    events.forEach((e) => window.addEventListener(e, go, { passive: true, once: true }));
+    return () => events.forEach((e) => window.removeEventListener(e, go));
   }, [pathname]);
 
   const setLang = useCallback(
     (l: Lang) => {
       if (l === lang) return;
-      captureMorph();
+      morph?.captureMorph();
       navigate(`${localePath(pathname, l)}${search}${hash}`, { replace: true });
     },
     [lang, pathname, search, hash, navigate],

@@ -22,6 +22,8 @@ function lazyPage(load: () => Promise<{ default: ComponentType }>) {
   return Object.assign(Page, { preload });
 }
 
+// the case-study pages
+export const ProjectDetailPage = lazyPage(() => import('./ProjectDetail'));
 // the article pages (and the Markdown renderer) load only when visited
 export const ArticlesPage = lazyPage(() => import('./Articles'));
 export const ArticlePage = lazyPage(() => import('./Article'));

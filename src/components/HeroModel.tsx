@@ -78,6 +78,24 @@ function isLowEnd() {
   );
 }
 
+/**
+ * WebGL drawn by the CPU (SwiftShader, llvmpipe… — no GPU, or a blocklisted
+ * one) would spend seconds per frame: those visitors keep the still portrait.
+ */
+function softwareGL() {
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl', { failIfMajorPerformanceCaveat: true });
+    if (!gl) return true;
+    const info = gl.getExtension('WEBGL_debug_renderer_info');
+    const name = String(gl.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER));
+    gl.getExtension('WEBGL_lose_context')?.loseContext();
+    return /swiftshader|llvmpipe|softpipe|software|basic render/i.test(name);
+  } catch {
+    return true;
+  }
+}
+
 /** Touch-first, usually phone/tablet GPUs: render lighter. */
 const isCoarse = () => window.matchMedia?.('(pointer: coarse)').matches ?? false;
 
@@ -603,16 +621,26 @@ export default function HeroModel({ className = '' }: { className?: string }) {
       };
     };
 
-    if (isLowEnd()) return; // decorative only: low-memory / data-saver devices skip it
+    // decorative only: low-memory / data-saver devices and CPU-drawn WebGL skip it
+    if (isLowEnd() || softwareGL()) return;
 
-    // download and build only once the hero is (nearly) in view, then on idle
+    // download and build only once the page has loaded and the hero is (nearly)
+    // in view, then on idle — three.js never competes with the first paint
     const canIdle = typeof window.requestIdleCallback === 'function';
     let idle = 0;
+    let onLoad: (() => void) | undefined;
     const host = inlineHost.current;
     const schedule = () => {
-      idle = canIdle
-        ? window.requestIdleCallback(() => void start(), { timeout: 2000 })
-        : window.setTimeout(() => void start(), 400);
+      const queue = () => {
+        idle = canIdle
+          ? window.requestIdleCallback(() => void start(), { timeout: 2500 })
+          : window.setTimeout(() => void start(), 600);
+      };
+      if (document.readyState === 'complete') queue();
+      else {
+        onLoad = queue;
+        window.addEventListener('load', onLoad, { once: true });
+      }
     };
     let gate: IntersectionObserver | undefined;
     if (host && 'IntersectionObserver' in window) {
@@ -630,6 +658,7 @@ export default function HeroModel({ className = '' }: { className?: string }) {
     return () => {
       disposed = true;
       gate?.disconnect();
+      if (onLoad) window.removeEventListener('load', onLoad);
       if (canIdle) window.cancelIdleCallback(idle);
       else window.clearTimeout(idle);
       cleanup?.();
