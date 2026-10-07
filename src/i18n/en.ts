@@ -17,7 +17,7 @@ export const en = {
     process: 'Process',
     signature: 'Signature',
     signatureText: 'Ask the uncomfortable question early.',
-    quote: 'Good software makes people\u2019s lives easier.',
+    quote: 'Let\u2019s make your ideas into products',
     buildTogether: 'Let\u2019s build something useful.',
     skip: 'Skip to content',
     present: 'present',
@@ -265,7 +265,7 @@ export const en = {
   footer: {
     tagline: 'Designing systems. Building products. Solving problems.',
     rights: 'All rights reserved.',
-    colophon: 'Built with React, TypeScript and too much coffee.',
+    colophon: 'Built with React, TypeScript and now let\u2019s start it over rm -rf.',
     version: 'v2.6',
   },
 

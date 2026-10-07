@@ -19,7 +19,7 @@ export const hu: Dict = {
     process: 'Folyamat',
     signature: 'Alapelv',
     signatureText: 'Tedd fel a kényelmetlen kérdést időben.',
-    quote: 'A jó szoftver megkönnyíti az emberek munkáját.',
+    quote: 'Dolgozzunk együtt, hogy az ötletet termékké dolgozzuk',
     buildTogether: 'Építsünk valami hasznosat.',
     skip: 'Ugrás a tartalomra',
     present: 'jelenleg',
@@ -276,7 +276,7 @@ export const hu: Dict = {
   footer: {
     tagline: 'Rendszereket tervezek. Termékeket építek. Problémákat oldok meg.',
     rights: 'Minden jog fenntartva.',
-    colophon: 'React és TypeScript alapon, rengeteg kávéval.',
+    colophon: 'React és TypeScript alapon, React, TypeScript. rm -rf — kezdjük elölről.',
     version: 'v2.6',
   },
 
