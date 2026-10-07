@@ -55,6 +55,14 @@ export default function LabIcon({ id, className = '' }: { id: string; className?
       </svg>
     );
   }
+  if (id === 'camera') {
+    return (
+      <svg {...common}>
+        <path d="M16 4v24M10 28h12M7 8h18" stroke="currentColor" />
+        <path d="M7 8l-4 9h8l-4-9zM25 8l-4 9h8l-4-9z" stroke="currentColor" strokeLinejoin="round" className="text-accent" />
+      </svg>
+    );
+  }
   if (id === 'shirt') {
     return (
       <svg {...common}>

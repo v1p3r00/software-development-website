@@ -163,7 +163,7 @@ function pages(root: string): Page[] {
     });
 
     // the free tools share with their own pictures (public/og/<tool>.<lang>.png)
-    const og = (tool: string) => ({ image: `/og/${tool}.${lang}.png`, imageAlt: tool === 'course' ? t.seo.courseTitle : tool === 'interview' ? t.seo.interviewTitle : tool === 'modernization' ? t.seo.modernTitle : tool === 'garage-designer' ? t.seo.garageTitle : tool === 'shirt-designer' ? t.seo.shirtTitle : t.seo.cvTitle });
+    const og = (tool: string) => ({ image: `/og/${tool}.${lang}.png`, imageAlt: tool === 'course' ? t.seo.courseTitle : tool === 'interview' ? t.seo.interviewTitle : tool === 'modernization' ? t.seo.modernTitle : tool === 'garage-designer' ? t.seo.garageTitle : tool === 'shirt-designer' ? t.seo.shirtTitle : tool === 'camera-study' ? t.seo.cameraTitle : t.seo.cvTitle });
     list.push({ path: at('/landing-pages/'), lang, alternates: both('/landing-pages/'), title: t.seo.landingTitle, description: t.seo.landingDescription, image: `/og/landing-pages.${lang}.png`, imageAlt: t.seo.landingTitle });
     for (const l of readyLandings) {
       const bare = `/landing-pages/${l.slug}/`;
@@ -194,6 +194,7 @@ function pages(root: string): Page[] {
     list.push({ path: at('/modernization/'), lang, alternates: both('/modernization/'), title: t.seo.modernTitle, description: t.seo.modernDescription, ...og('modernization') });
     list.push({ path: at('/garage-designer/'), lang, alternates: both('/garage-designer/'), title: t.seo.garageTitle, description: t.seo.garageDescription, ...og('garage-designer') });
     list.push({ path: at('/shirt-designer/'), lang, alternates: both('/shirt-designer/'), title: t.seo.shirtTitle, description: t.seo.shirtDescription, ...og('shirt-designer') });
+    list.push({ path: at('/camera-study/'), lang, alternates: both('/camera-study/'), title: t.seo.cameraTitle, description: t.seo.cameraDescription, ...og('camera-study') });
     for (const tr of tracks) {
       // only tracks whose question set is in the build
       if (!fs.existsSync(path.join(root, `src/data/interview/${tr.id}.${lang}.json`))) continue;

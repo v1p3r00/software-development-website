@@ -341,6 +341,9 @@ export const hu: Dict = {
     shirtTitle: '3D pólótervező: saját szöveg vagy kép pólón — Mészáros Dávid',
     shirtDescription:
       'Interaktív 3D pólótervező: férfi és női modell, pólószín, saját szöveg vagy kép elöl és hátul, élő árral. Egyedi termékkonfigurátort is készítek.',
+    cameraTitle: '3D modell kameratanulmány: filmes repülés Justitia körül — Mészáros Dávid',
+    cameraDescription:
+      'Weboldal-navigáció kamerarepülésként egy 3D Justitia-szobor körül: arc, mérleg, totál és kard, lágy kamerapályákkal és mélységélességgel. Saját oldaladra is készítek interaktív 3D élményt.',
     notFoundTitle: 'Az oldal nem található — Mészáros Dávid',
   },
 

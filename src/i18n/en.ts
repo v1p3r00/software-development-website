@@ -330,6 +330,9 @@ export const en = {
     shirtTitle: '3D T-shirt designer: your text or image on a shirt — David Mészáros',
     shirtDescription:
       'An interactive 3D T-shirt designer: man and woman models, shirt colours, your own text or image on the front and back, with a live price. I build custom product configurators too.',
+    cameraTitle: '3D Model Camera Study: a cinematic flight around Justice — David Mészáros',
+    cameraDescription:
+      'Website navigation as a camera flight around a 3D Justice statue: face, scales, a wide shot and the sword, with eased flight paths and depth of field. I build interactive 3D experiences for your site too.',
     notFoundTitle: 'Page not found — David Mészáros',
   },
 

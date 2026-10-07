@@ -78,9 +78,23 @@ export const labs: Lab[] = [
     tags: ['three.js', 'WebGL shader', 'Webshop'],
   },
   {
+    id: 'camera',
+    tagline: { en: 'A cinematic camera that flies around a 3D statue', hu: 'Filmes kamera, amely egy 3D szobor körül repül' },
+    num: '05',
+    short: 'CAM',
+    path: '/camera-study/',
+    title: { en: '3D Model Camera Study', hu: '3D modell kamera\u00ADtanulmány' },
+    desc: {
+      en: 'Navigation as a camera flight: every menu item is a destination around one Justice statue. The camera glides from her face to the scales, out to a wide shot and down to the sword, with eased flight paths and a soft depth of field, while the text appears where the camera arrives.\n\nIf you want a custom development like this for your own site, ask for a free consultation.',
+      hu: 'Navigáció kamerarepülésként: minden menüpont egy úti cél egyetlen Justitia-szobor körül. A kamera az arctól a mérleghez siklik, kitávolodik egy totálra, majd a kardhoz ereszkedik, lágy gyorsulással és mélységélességgel, a szöveg pedig ott jelenik meg, ahová a kamera megérkezik.\n\nHa szeretnél egy ilyen egyedi fejlesztést a saját oldaladra, kérj ingyenes konzultációt.',
+    },
+    cta: { en: 'Take the flight', hu: 'Indulhat a repülés' },
+    tags: ['three.js', 'Camera paths', 'Depth of field'],
+  },
+  {
     id: 'cv',
     tagline: { en: 'Build an ATS-friendly CV and download it as PDF', hu: 'ATS-barát önéletrajz, letölthető PDF-ben' },
-    num: '05',
+    num: '06',
     short: 'CV',
     path: '/cv-maker/',
     title: { en: 'CV Maker', hu: 'Önéletrajz-készítő' },
@@ -94,7 +108,7 @@ export const labs: Lab[] = [
   {
     id: 'course',
     tagline: { en: 'From zero to a deployed React + Spring Boot app', hu: 'Nulláról egy élesített React + Spring Boot alkalmazásig' },
-    num: '06',
+    num: '07',
     short: 'EDU',
     path: '/course/',
     title: { en: 'Full-stack developer course', hu: 'Full-stack fejlesztő kurzus' },
@@ -108,7 +122,7 @@ export const labs: Lab[] = [
   {
     id: 'interview',
     tagline: { en: 'Practise technical interviews: 14 tracks, 200 questions each', hu: 'Technikai interjúgyakorlás: 14 téma, témánként 200 kérdés' },
-    num: '07',
+    num: '08',
     short: 'SIM',
     path: '/interview/',
     title: { en: 'Interview simulator', hu: 'Interjú-szimulátor' },

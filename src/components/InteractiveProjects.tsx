@@ -426,9 +426,13 @@ function LandingVisual({ lang }: { lang: 'en' | 'hu' }) {
 }
 
 /** a still from a 3D configurator, framed like the other previews */
-function ToolVisual({ id, lang }: { id: 'garage' | 'shirt'; lang: 'en' | 'hu' }) {
+function ToolVisual({ id, lang }: { id: 'garage' | 'shirt' | 'camera'; lang: 'en' | 'hu' }) {
   const points =
-    id === 'garage'
+    id === 'camera'
+      ? lang === 'hu'
+        ? ['Arc → mérleg → totál → kard', 'Íves kamerapályák', 'Mélységélesség', 'Szöveg a jelenetben']
+        : ['Face → scales → wide → sword', 'Curved camera paths', 'Depth of field', 'Text placed in the scene']
+      : id === 'garage'
       ? lang === 'hu'
         ? ['Élő 3D modell', 'Tető, kapu, burkolat', 'Szín és extrák', 'Árbecslés']
         : ['Live 3D model', 'Roof, door, cladding', 'Colours & extras', 'Price estimate']
@@ -514,7 +518,7 @@ function LabCard({ lab }: { lab: Lab }) {
             <ModernVisual lang={lang} />
           ) : lab.id === 'landing' ? (
             <LandingVisual lang={lang} />
-          ) : lab.id === 'garage' || lab.id === 'shirt' ? (
+          ) : lab.id === 'garage' || lab.id === 'shirt' || lab.id === 'camera' ? (
             <ToolVisual id={lab.id} lang={lang} />
           ) : (
             <InterviewVisual />
