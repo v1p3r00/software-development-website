@@ -443,14 +443,15 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
       {/* mobile panel */}
       <div
         className={cx(
-          'pointer-events-auto overflow-hidden border-t border-line bg-bg transition-[max-height,visibility] duration-500 ease-tech',
+          // the list is taller than a phone screen: it scrolls inside the panel (the page behind is locked)
+          'pointer-events-auto overflow-x-hidden overflow-y-auto overscroll-contain border-t border-line bg-bg transition-[max-height,visibility] duration-500 ease-tech',
           showcase && !open && 'invisible',
           stage
             ? 'absolute right-0 top-full w-full overflow-y-auto sm:right-4 sm:w-[400px] sm:border-x sm:border-b sm:border-line-strong sm:shadow-2xl'
             : showcase
               ? 'absolute right-0 top-full w-full overflow-y-auto sm:right-8 sm:w-[400px] sm:border-x sm:border-b sm:border-line-strong sm:shadow-2xl lg:right-12 min-[1500px]:right-[calc((100vw-1500px)/2+3rem)]'
               : 'xl:hidden',
-          open ? 'max-h-[80vh]' : 'max-h-0',
+          open ? 'max-h-[calc(100svh-4.5rem)]' : 'max-h-0',
         )}
       >
         <nav aria-label="Mobile" className="px-5 py-4 sm:px-8">

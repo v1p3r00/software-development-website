@@ -2,7 +2,7 @@ import { scrollBehavior } from './motion';
 
 /**
  * Scrolls to a home-page section. The home page is lazy-loaded, so after a route change
- * the target may not exist yet: keep looking for it for a couple of seconds.
+ * the target may not exist yet: keep looking for it for a few seconds (the sections below the hero are their own chunk).
  */
 export function scrollToSection(id: string, smooth = true) {
   const behavior = smooth ? scrollBehavior() : 'auto';
@@ -35,7 +35,7 @@ export function scrollToSection(id: string, smooth = true) {
   if (go()) return;
   const started = performance.now();
   const tick = () => {
-    if (go() || performance.now() - started > 2500) return;
+    if (go() || performance.now() - started > 6000) return;
     window.setTimeout(tick, 50);
   };
   window.setTimeout(tick, 50);
