@@ -198,6 +198,8 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
   // the interactive projects keep only the logo, their title and the menu button, so the project gets the stage
   const lab = labFor(stripLang(pathname));
   const showcase = !!lab;
+  // the camera study fills a phone screen with the statue: there the bar keeps only the logo and the menu button
+  const bare = lab?.id === 'camera';
   // a landing page owns the screen: only the menu button stays, floating in the top-right corner
   const stage = isLandingStage(stripLang(pathname));
   const stageIdx = stage ? readyLandings.findIndex((l) => stripLang(pathname).startsWith(`/landing-pages/${l.slug}`)) : -1;
@@ -227,7 +229,9 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
         'fixed inset-x-0 top-0 z-50 transition-all duration-500 ease-tech',
         stage
           ? 'pointer-events-none'
-          : compact
+          : bare
+            ? 'sm:border-b sm:border-transparent sm:bg-gradient-to-b sm:from-bg/80 sm:to-transparent' // phones: nothing behind the logo and menu button
+            : compact
             ? 'border-b border-line bg-bg/95 lg:bg-bg/90 lg:backdrop-blur-sm'
             : 'border-b border-transparent bg-gradient-to-b from-bg/80 to-transparent',
       )}
@@ -245,7 +249,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             <Link
               to={lp(lab.path)}
               data-cursor="follow"
-              className="group min-w-0 border-l border-line pl-4"
+              className={cx('group min-w-0 border-l border-line pl-4', bare && 'hidden sm:block')}
             >
               <div className="label leading-tight">
                 <span className="text-accent">{lab.num}</span> / {t.nav.labs}
@@ -395,7 +399,10 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             data-cursor="follow"
             aria-label={t.palette.theme}
             title={t.palette.theme}
-            className="grid h-10 w-10 place-items-center border border-line text-muted transition-colors hover:border-accent hover:text-accent"
+            className={cx(
+              'h-10 w-10 place-items-center border border-line text-muted transition-colors hover:border-accent hover:text-accent',
+              bare ? 'hidden sm:grid' : 'grid',
+            )}
           >
             <svg viewBox="0 0 16 16" className="h-5 w-5" fill="none" aria-hidden>
               <circle cx="8" cy="8" r="4.5" stroke="currentColor" />

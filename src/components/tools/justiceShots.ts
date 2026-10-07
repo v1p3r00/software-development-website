@@ -54,7 +54,7 @@ export const SHOTS: Record<ShotId, Shot> = {
     aperture: 0.002,
     anchor: [-0.5, 0.15, 0.0],
     side: 'left',
-    mobile: { pos: [1.4, 0.2, 4.4], target: [0.0, -0.3, 0.0], fov: 38 },
+    mobile: { pos: [1.4, 0.26, 4.4], target: [0.0, -0.18, 0.0], fov: 38 },
   },
   contact: {
     pos: [1.05, -0.18, 0.92],
