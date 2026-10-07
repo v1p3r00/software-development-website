@@ -93,6 +93,48 @@ function resolve(s: Shot, portrait: boolean) {
 }
 type Pose = ReturnType<typeof resolve>;
 
+/**
+ * Performance test switches, read only when the address has ?bench — e.g.
+ * /camera-study/?bench&dpr=1&dof=0&dust=0. Each turns one cost off (or fixes
+ * it) so its share of the frame time can be measured; stats go to window.__camStats.
+ */
+function benchConfig() {
+  if (typeof window === 'undefined') return null;
+  const q = new URLSearchParams(window.location.search);
+  if (!q.has('bench')) return null;
+  const num = (k: string) => (q.has(k) ? Number(q.get(k)) : undefined);
+  const flag = (k: string) => (q.has(k) ? q.get(k) !== '0' : undefined);
+  return {
+    dpr: num('dpr'),
+    dof: flag('dof'),
+    lights: q.get('lights') ?? 'full', // full | one | nospot | nohemi | none
+    env: flag('env'),
+    dust: num('dust'),
+    fog: flag('fog'),
+    shadow: flag('shadow'),
+    tone: flag('tone'),
+    exposure: flag('exposure'),
+    drift: flag('drift'),
+    parallax: flag('parallax'),
+    side: q.get('side'), // front | double
+    sleep: flag('sleep'),
+    gpu: flag('gpu'),
+    aa: flag('aa'),
+  };
+}
+
+export interface CamStats {
+  frames: number;
+  cpuMs: number;
+  gpuMs: number | null;
+  dpr: number;
+  dof: boolean;
+  level: number;
+  levels: number;
+  sleeping: boolean;
+  canvas: [number, number];
+}
+
 /** a soft dark radial texture (floor glow, contact shadow) */
 function radialTexture(inner: string, outer: string) {
   const c = document.createElement('canvas');
@@ -150,47 +192,86 @@ export default function CameraStudy() {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const coarse = window.matchMedia('(pointer: coarse)').matches;
     const lowEnd = (navigator.hardwareConcurrency || 8) <= 4;
-    const useDof = !coarse && !lowEnd;
+    const bench = benchConfig();
+    const useDof = bench?.dof ?? (!coarse && !lowEnd);
 
+    // integrated PC/phone graphics (Intel, AMD APU, Mali, Adreno…): start at the cheapest step and let
+    // the controller try its way up, rather than opening the intro on a stutter. Apple silicon is fast enough.
+    // (also decides the canvas antialiasing, which costs these chips a third of their frame rate)
+    let gpuName = '';
+    try {
+      const g = document.createElement('canvas').getContext('webgl');
+      const info = g?.getExtension('WEBGL_debug_renderer_info');
+      if (g) gpuName = String(g.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : g.RENDERER));
+      g?.getExtension('WEBGL_lose_context')?.loseContext();
+    } catch {
+      /* unknown: treat as capable */
+    }
+    const integrated = !/apple/i.test(gpuName) && /intel|iris|uhd|radeon\(tm\)|vega \d+ graphics|mali|adreno|powervr|swiftshader|llvmpipe/i.test(gpuName);
     let renderer: THREE.WebGLRenderer;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: !useDof, powerPreference: 'high-performance' });
+      // MSAA on the canvas, used whenever the depth of field is off (the post-processing path draws
+      // into its own target) — except on integrated graphics, where it costs too much
+      renderer = new THREE.WebGLRenderer({ antialias: bench?.aa ?? !integrated, powerPreference: 'high-performance' });
     } catch {
       setState('error');
       return;
     }
-    // resolution steps: start high, drop a step whenever frames run slow (see frame())
-    const dprSteps = [1.75, 1.5, 1.25, 1].map((d) => Math.min(window.devicePixelRatio, d)).filter((d, i, a) => a.indexOf(d) === i);
-    let dprStep = coarse || lowEnd ? Math.max(0, dprSteps.indexOf(Math.min(window.devicePixelRatio, 1.5))) : 0;
-    renderer.setPixelRatio(dprSteps[dprStep]);
+
+    // quality ladder, cheapest first. Desktops start in the middle (pixel ratio
+    // 1.25 with depth of field) and move a step down when frames run slow, or a
+    // step up after a few seconds of frames at the screen's full rate (see adapt())
+    const cap = (d: number) => Math.min(window.devicePixelRatio || 1, d);
+    type Level = { dpr: number; dof: boolean };
+    const ladder: Level[] = useDof
+      ? [
+          { dpr: cap(1), dof: false },
+          { dpr: cap(1), dof: true },
+          { dpr: cap(1.25), dof: true },
+          { dpr: cap(1.5), dof: true },
+        ]
+      : [
+          { dpr: cap(1), dof: false },
+          { dpr: cap(1.25), dof: false },
+        ];
+    const levels = ladder.filter((l, i) => i === 0 || l.dpr !== ladder[i - 1].dpr || l.dof !== ladder[i - 1].dof);
+    let level = integrated ? 0 : useDof ? Math.min(2, levels.length - 1) : lowEnd ? 0 : levels.length - 1;
+    // a benchmark can pin the resolution (and the depth of field) instead
+    const fixed = bench?.dpr !== undefined;
+    if (fixed) {
+      levels.splice(0, levels.length, { dpr: cap(bench!.dpr!), dof: useDof });
+      level = 0;
+    }
+    renderer.setPixelRatio(levels[level].dpr);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMapping = bench?.tone === false ? THREE.NoToneMapping : THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = bench?.exposure === false ? 1 : 1.05;
     renderer.domElement.style.cssText = 'display:block;width:100%;height:100%;touch-action:none';
     el.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
     const bg = new THREE.Color('#0a0a0c');
     scene.background = bg;
-    scene.fog = new THREE.Fog(bg, 3.2, 9);
+    if (bench?.fog !== false) scene.fog = new THREE.Fog(bg, 3.2, 9);
 
     const pmrem = new THREE.PMREMGenerator(renderer);
     const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    scene.environment = env;
+    if (bench?.env !== false) scene.environment = env;
     scene.environmentIntensity = 0.32;
 
     // light: warm key from the front right, cool rim from behind, a low fill
+    const lights = bench?.lights ?? 'full';
     const key = new THREE.SpotLight('#ffe2b8', 9, 9, 0.5, 0.65, 1.2);
     key.position.set(1.6, 2.4, 2.2);
     key.target.position.set(0, 0.1, 0);
-    scene.add(key, key.target);
+    if (lights === 'full' || lights === 'nohemi') scene.add(key, key.target);
     const rim = new THREE.DirectionalLight('#9fb8ff', 1.6);
     rim.position.set(-1.8, 1.4, -2.2);
-    scene.add(rim);
+    if (lights !== 'none') scene.add(rim);
     const rim2 = new THREE.DirectionalLight('#ffd2a0', 0.9);
     rim2.position.set(2.2, 0.6, -1.6);
-    scene.add(rim2);
-    scene.add(new THREE.HemisphereLight('#3a3d48', '#120d08', 0.6));
+    if (lights === 'full' || lights === 'nospot' || lights === 'nohemi') scene.add(rim2);
+    if (lights === 'full' || lights === 'nospot') scene.add(new THREE.HemisphereLight('#3a3d48', '#120d08', 0.6));
 
     // floor: a dark disc that fades into the fog, with a contact shadow under the base
     const floorTex = radialTexture('rgba(60,52,40,1)', 'rgba(10,10,12,1)');
@@ -202,10 +283,10 @@ export default function CameraStudy() {
     const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.6), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false }));
     shadow.rotation.x = -Math.PI / 2;
     shadow.position.y = FLOOR_Y + 0.002;
-    scene.add(shadow);
+    if (bench?.shadow !== false) scene.add(shadow);
 
     // drifting dust: gives depth and catches the light as the camera moves
-    const N = coarse ? 260 : 520;
+    const N = bench?.dust ?? (coarse ? 260 : 520);
     const dustPos = new Float32Array(N * 3);
     const seeds = new Float32Array(N);
     for (let i = 0; i < N; i++) {
@@ -233,7 +314,7 @@ export default function CameraStudy() {
     // post: depth of field on capable desktops
     let composer: EffectComposer | null = null;
     let bokeh: BokehPass | null = null;
-    let dof = useDof;
+    let dof = levels[level].dof;
     if (useDof) {
       composer = new EffectComposer(renderer);
       composer.addPass(new RenderPass(scene, camera));
@@ -268,7 +349,10 @@ export default function CameraStudy() {
         if (!flight) Object.assign(cur, { pos: pose.pos.clone(), target: pose.target.clone(), fov: pose.fov, frameX: pose.frameX, frameY: pose.frameY, aperture: pose.aperture });
       }
     };
-    const ro = new ResizeObserver(() => resize());
+    const ro = new ResizeObserver(() => {
+      resize();
+      poke();
+    });
     ro.observe(el);
     resize();
 
@@ -290,12 +374,14 @@ export default function CameraStudy() {
           flight = null;
           pose = to;
           setShown(id);
+          poke();
           return;
         }
         const from = { pos: cur.pos.clone(), target: cur.target.clone(), fov: cur.fov, frameX: cur.frameX, frameY: cur.frameY, aperture: cur.aperture };
         const dist = from.pos.distanceTo(to.pos);
         flight = { from, to, ctrl: controlPoint(from.pos, to.pos), t0: performance.now(), dur: Math.min(3600, Math.max(2200, 1700 + dist * 650)), id };
         intro = null;
+        poke();
       },
     };
 
@@ -304,6 +390,7 @@ export default function CameraStudy() {
     const onMove = (e: PointerEvent) => {
       ptr.x = (e.clientX / window.innerWidth) * 2 - 1;
       ptr.y = (e.clientY / window.innerHeight) * 2 - 1;
+      poke();
     };
     window.addEventListener('pointermove', onMove);
 
@@ -314,35 +401,74 @@ export default function CameraStudy() {
       const box = entry.borderBoxSize?.[0];
       pw = box ? box.inlineSize : (entry.target as HTMLElement).offsetWidth;
       ph = box ? box.blockSize : (entry.target as HTMLElement).offsetHeight;
+      poke();
     });
     if (panel.current) panelRo.observe(panel.current);
 
-    // frame-time watchdog: average over ~1 s; when it runs slow, lower the
-    // resolution a step, and as a last step drop the depth of field
-    let acc = 0;
-    let frames = 0;
-    let warm = 0; // skip the first second after loading and after each change
+    const applyLevel = () => {
+      const l = levels[level];
+      renderer.setPixelRatio(l.dpr);
+      composer?.setPixelRatio(l.dpr);
+      dof = l.dof && !!composer;
+      resize(true);
+    };
+
+    // quality control: frame times averaged over ~1 s windows. Slower than 50 fps
+    // → one step down. Three windows in a row at the screen's own rate (the best
+    // average seen so far) → try one step up; if that step then has to be undone,
+    // stay put. Nothing is judged while the model is being set up.
+    let winMs = 0;
+    let winFrames = 0;
+    let warm = Infinity; // set once the model is ready
+    let refresh = 1000 / 60;
+    let fast = 0;
+    let justUp = false;
+    // integrated graphics stay on the cheapest step: on the Iris Xe even the next one (depth of field) fell to ~45 fps
+    let upLocked = fixed || integrated;
     const adapt = (dtMs: number) => {
+      if (fixed) return;
       if (warm > 0) {
         warm -= dtMs;
         return;
       }
-      acc += dtMs;
-      frames++;
-      if (acc < 1000) return;
-      const avg = acc / frames;
-      acc = 0;
-      frames = 0;
-      if (avg < 21) return;
-      if (dprStep < dprSteps.length - 1) {
-        dprStep++;
-        renderer.setPixelRatio(dprSteps[dprStep]);
-        composer?.setPixelRatio(dprSteps[dprStep]);
-        resize(true);
-      } else if (dof) dof = false;
-      else return;
-      warm = 800;
+      winMs += dtMs;
+      winFrames++;
+      if (winMs < 600) return;
+      const avg = winMs / winFrames;
+      winMs = 0;
+      winFrames = 0;
+      refresh = Math.max(6.5, Math.min(refresh, avg));
+      if (avg > 20 && level > 0) {
+        // well under 30 fps: two steps at once
+        level = Math.max(0, level - (avg > 33 ? 2 : 1));
+        if (justUp) upLocked = true;
+        justUp = false;
+        fast = 0;
+        warm = 900;
+        applyLevel();
+        return;
+      }
+      justUp = false;
+      // (never probe upwards during the opening push-in: a dip there is the most visible)
+      if (!upLocked && !intro && level < levels.length - 1 && avg <= refresh * 1.08) {
+        if (++fast >= 5) {
+          level++;
+          fast = 0;
+          justUp = true;
+          warm = 900;
+          applyLevel();
+        }
+      } else fast = 0;
     };
+
+    // GPU time per frame, for the benchmark only (where the browser exposes the timer)
+    const gl = renderer.getContext() as WebGL2RenderingContext;
+    const timerExt = bench?.gpu ? (gl.getExtension('EXT_disjoint_timer_query_webgl2') as { TIME_ELAPSED_EXT: number; GPU_DISJOINT_EXT: number } | null) : null;
+    const pending: WebGLQuery[] = [];
+    let gpuAcc = 0;
+    let gpuN = 0;
+    const stats: CamStats = { frames: 0, cpuMs: 0, gpuMs: null, dpr: 0, dof: false, level: 0, levels: levels.length, sleeping: false, canvas: [0, 0] };
+    if (bench) (window as unknown as { __camStats: CamStats }).__camStats = stats;
 
     const tmp = new THREE.Vector3();
     const right = new THREE.Vector3();
@@ -353,9 +479,20 @@ export default function CameraStudy() {
     let last = performance.now();
     let visible = true;
     let shownSet = true;
+    // idle: after a while without a move, the drift and the dust settle and the
+    // loop stops drawing altogether until the pointer, a flight or a resize wakes it
+    const IDLE_MS = 8000;
+    const canSleep = bench?.sleep !== false;
+    let lastActive = performance.now();
+    let amp = 1;
+    let sleeping = false;
+    let lastTransform = '';
+    const driftOn = !reduced && bench?.drift !== false;
+    const parallaxOn = !reduced && bench?.parallax !== false;
 
     const frame = (now: number) => {
       raf = 0;
+      const t0 = performance.now();
       if (model) adapt(now - last);
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
@@ -403,36 +540,63 @@ export default function CameraStudy() {
       // breathing drift and pointer parallax, scaled by distance so close-ups stay calm
       ptr.sx += (ptr.x - ptr.sx) * Math.min(1, dt * 2.5);
       ptr.sy += (ptr.y - ptr.sy) * Math.min(1, dt * 2.5);
+      const settling = Math.abs(ptr.x - ptr.sx) > 0.002 || Math.abs(ptr.y - ptr.sy) > 0.002;
+      if (!model || flight || intro || settling) lastActive = now;
+      const idle = canSleep && now - lastActive > IDLE_MS;
+      amp += ((idle ? 0 : 1) - amp) * Math.min(1, dt * 1.6);
       const dist = cur.pos.distanceTo(cur.target);
       camera.position.copy(cur.pos);
       camera.lookAt(cur.target);
       right.setFromMatrixColumn(camera.matrix, 0);
       up.setFromMatrixColumn(camera.matrix, 1);
-      const drift = reduced ? 0 : 1;
+      const drift = driftOn ? amp : 0;
+      const par = parallaxOn ? 1 : 0;
       camera.position
-        .addScaledVector(right, (Math.sin(time * 0.23) * 0.012 + ptr.sx * 0.035) * dist * drift)
-        .addScaledVector(up, (Math.sin(time * 0.31) * 0.008 - ptr.sy * 0.022) * dist * drift);
+        .addScaledVector(right, (Math.sin(time * 0.23) * 0.012 * drift + ptr.sx * 0.035 * par) * dist)
+        .addScaledVector(up, (Math.sin(time * 0.31) * 0.008 * drift - ptr.sy * 0.022 * par) * dist);
       camera.lookAt(cur.target);
       camera.fov = cur.fov;
       // composition: shift the frame so the subject sits off-centre, leaving room for the text
       camera.setViewOffset(W, H, (-cur.frameX * W) / 2, (cur.frameY * H) / 2, W, H);
       camera.updateProjectionMatrix();
 
-      // dust drifts slowly upward and sideways
-      const pos = dustGeo.attributes.position as THREE.BufferAttribute;
-      for (let i = 0; i < N; i++) {
-        let y = pos.getY(i) + dt * 0.012;
-        if (y > FLOOR_Y + 2.6) y = FLOOR_Y;
-        pos.setY(i, y);
-        pos.setX(i, pos.getX(i) + Math.sin(time * 0.2 + seeds[i]) * dt * 0.004);
+      // dust drifts slowly upward and sideways (and settles with the camera when idle)
+      if (N > 0 && amp > 0.002) {
+        const pos = dustGeo.attributes.position as THREE.BufferAttribute;
+        const arr = pos.array as Float32Array;
+        const rise = dt * 0.012 * amp;
+        const sway = dt * 0.004 * amp;
+        for (let i = 0; i < N; i++) {
+          let y = arr[i * 3 + 1] + rise;
+          if (y > FLOOR_Y + 2.6) y = FLOOR_Y;
+          arr[i * 3 + 1] = y;
+          arr[i * 3] += Math.sin(time * 0.2 + seeds[i]) * sway;
+        }
+        pos.needsUpdate = true;
       }
-      pos.needsUpdate = true;
 
+      let query: WebGLQuery | null = null;
+      if (timerExt) {
+        query = gl.createQuery();
+        if (query) gl.beginQuery(timerExt.TIME_ELAPSED_EXT, query);
+      }
       if (dof && bokeh && composer) {
         (bokeh.uniforms as Record<string, THREE.IUniform>).focus.value = camera.position.distanceTo(cur.target);
         (bokeh.uniforms as Record<string, THREE.IUniform>).aperture.value = cur.aperture;
         composer.render();
       } else renderer.render(scene, camera);
+      if (timerExt && query) {
+        gl.endQuery(timerExt.TIME_ELAPSED_EXT);
+        pending.push(query);
+        while (pending.length && gl.getQueryParameter(pending[0], gl.QUERY_RESULT_AVAILABLE)) {
+          const q = pending.shift()!;
+          if (!gl.getParameter(timerExt.GPU_DISJOINT_EXT)) {
+            gpuAcc += gl.getQueryParameter(q, gl.QUERY_RESULT) / 1e6;
+            gpuN++;
+          }
+          gl.deleteQuery(q);
+        }
+      }
 
       // pin the text panel next to the subject
       const pnl = panel.current;
@@ -448,17 +612,47 @@ export default function CameraStudy() {
           let py = y - ph / 2;
           px = Math.max(32, Math.min(W - pw - 32, px));
           py = Math.max(96, Math.min(H - ph - 120, py));
-          pnl.style.transform = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0)`;
+          const tr = `translate3d(${px.toFixed(1)}px, ${py.toFixed(1)}px, 0)`;
+          if (tr !== lastTransform) {
+            pnl.style.transform = tr;
+            lastTransform = tr;
+          }
         }
       }
 
-      if (visible) raf = requestAnimationFrame(frame);
+      if (bench) {
+        stats.frames++;
+        stats.cpuMs += (performance.now() - t0 - stats.cpuMs) * 0.05;
+        if (gpuN) stats.gpuMs = gpuAcc / gpuN;
+        if (gpuN >= 60) {
+          gpuAcc = 0;
+          gpuN = 0;
+        }
+        stats.dpr = renderer.getPixelRatio();
+        stats.dof = dof;
+        stats.level = level;
+        stats.canvas = [renderer.domElement.width, renderer.domElement.height];
+      }
+
+      // fully settled: stop drawing until something changes
+      sleeping = idle && amp < 0.002 && !!model;
+      stats.sleeping = sleeping;
+      if (visible && !sleeping) raf = requestAnimationFrame(frame);
     };
     const start = () => {
       if (!raf && visible) {
         last = performance.now();
         raf = requestAnimationFrame(frame);
       }
+    };
+    /** something happened: keep (or start) drawing */
+    const poke = () => {
+      lastActive = performance.now();
+      if (sleeping) {
+        sleeping = false;
+        if (model) warm = Math.max(warm, 300); // the first frames after a pause are not representative
+      }
+      start();
     };
 
     // pause off screen / hidden tab
@@ -487,6 +681,8 @@ export default function CameraStudy() {
           if (m.isMesh) {
             const mat = m.material as THREE.MeshStandardMaterial;
             mat.envMapIntensity = 1;
+            // a closed statue: back faces are never seen, so don't draw them
+            mat.side = bench?.side === 'double' ? THREE.DoubleSide : THREE.FrontSide;
             // upload the textures now, not in the middle of the first camera move
             for (const tex of [mat.map, mat.normalMap, mat.roughnessMap, mat.metalnessMap]) if (tex) renderer.initTexture(tex);
           }
@@ -500,7 +696,7 @@ export default function CameraStudy() {
         }
         if (cancelled) return;
         model = loaded;
-        warm = 1200;
+        warm = 700;
         // open on the face with a push-in — unless the visitor already picked a shot while it loaded
         if (activeRef.current === 'face' && !flight) {
           pose = resolve(SHOTS.face, portrait);
