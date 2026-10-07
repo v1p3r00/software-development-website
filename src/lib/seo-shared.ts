@@ -56,8 +56,20 @@ export function siteGraph() {
           { '@type': 'Country', name: 'Hungary' },
           { '@type': 'Place', name: 'Europe' },
         ],
-        availableLanguage: ['English', 'Hungarian'],
-        serviceType: ['Custom web applications', 'Websites', 'E-commerce', 'Enterprise systems', 'UI/UX design'],
+        // schema.org: languages belong on a ContactPoint, service names in an OfferCatalog
+        contactPoint: {
+          '@type': 'ContactPoint',
+          contactType: 'sales',
+          email: site.email,
+          availableLanguage: ['English', 'Hungarian'],
+        },
+        hasOfferCatalog: {
+          '@type': 'OfferCatalog',
+          name: 'Services',
+          itemListElement: ['Custom web applications', 'Websites', 'E-commerce', 'Enterprise systems', 'UI/UX design'].map(
+            (name) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name } }),
+          ),
+        },
       },
       {
         '@type': 'WebSite',

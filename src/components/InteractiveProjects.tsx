@@ -108,7 +108,7 @@ function CvVisual({ lang }: { lang: 'en' | 'hu' }) {
           </div>
           <div className="px-[9%] py-[10%]">
             <div className="text-[11px] font-extrabold leading-none tracking-tight">Anna Kovács</div>
-            <div className="mt-[3px] text-[6px] font-semibold text-[#d97706]">{L.role}</div>
+            <div className="mt-[3px] text-[6px] font-semibold text-[#b45309]">{L.role}</div>
             <div className="mt-[8%] text-[5px] font-bold uppercase tracking-[0.15em] text-[#1f2a44]">{L.profile}</div>
             <p className="mt-[3px] text-[4.5px] leading-[1.35] text-[#4b5563]">{L.blurb}</p>
             <div className="mt-[8%] text-[5px] font-bold uppercase tracking-[0.15em] text-[#1f2a44]">{L.exp}</div>

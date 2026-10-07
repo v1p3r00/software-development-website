@@ -279,6 +279,9 @@ export default function TechStack() {
                     aria-label={tech.name}
                     aria-current={front}
                     tabIndex={front ? 0 : -1}
+                    // cards turned away are faded and can't be clicked: mark them inactive so
+                    // contrast checks treat their dimmed text as an inactive control
+                    disabled={depth <= 0.2}
                     className="absolute left-1/2 top-1/2 w-[118px] sm:w-[150px]"
                     style={{
                       transform: `translate(-50%, -50%) rotateY(${i * STEP}deg) translateZ(${radius}px)`,

@@ -142,8 +142,14 @@ export default function ContactTerminal() {
 
   /** A row of toggle chips; picking the selected one again clears it. */
   const choice = (key: Choice, label: string, options: readonly string[], wideLabel = false) => (
-    <fieldset className="-mx-3 border-b border-line px-3 py-2">
-      <div className={cx('flex flex-col gap-2', !wideLabel && 'sm:flex-row sm:items-start sm:gap-3')}>
+    // the fieldset itself is the flex container: <legend> has to be its first child.
+    // A floated legend is laid out like any other child, so flex still applies.
+    <fieldset
+      className={cx(
+        '-mx-3 flex flex-col gap-2 border-b border-line px-3 py-2',
+        !wideLabel && 'sm:flex-row sm:items-start sm:gap-3',
+      )}
+    >
         <legend
           className={cx(
             'float-left mt-1.5 shrink-0 font-mono text-[12px] font-semibold uppercase tracking-tech text-text',
@@ -174,7 +180,6 @@ export default function ContactTerminal() {
             );
           })}
         </div>
-      </div>
     </fieldset>
   );
 
@@ -269,8 +274,7 @@ export default function ContactTerminal() {
                 </div>
                 {choice('contact', t.contact.contactLabel, t.contact.contactMethods)}
                 {wantsCall && (
-                  <fieldset className="-mx-3 border-b border-line px-3 py-3">
-                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                  <fieldset className="-mx-3 flex flex-col gap-2 border-b border-line px-3 py-3 sm:flex-row sm:items-center sm:gap-3">
                       <legend className="float-left shrink-0 font-mono text-2xs uppercase tracking-tech text-dim sm:w-[7rem]">
                         └ {t.contact.callLabel}:
                       </legend>
@@ -290,7 +294,6 @@ export default function ContactTerminal() {
                         ))}
                         <span className="font-mono text-2xs uppercase tracking-tech text-dim">{t.contact.callHint}</span>
                       </div>
-                    </div>
                   </fieldset>
                 )}
                 {wantsMeeting && choice('meeting', `└ ${t.contact.meetingLabel}`, t.contact.meetings)}

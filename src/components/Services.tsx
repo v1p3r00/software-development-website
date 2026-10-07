@@ -82,8 +82,8 @@ export default function Services() {
             <div className="label-a mb-1">// {t.ui.process}</div>
             <div className="display mb-6 text-xl">{pick(current.title)}</div>
 
-            <ol className="relative">
-              <span className="absolute bottom-3 left-[5px] top-3 w-px bg-line" aria-hidden />
+            {/* the vertical rail is drawn by ::before, so the <ol> holds only <li> items */}
+            <ol className="relative before:absolute before:bottom-3 before:left-[5px] before:top-3 before:w-px before:bg-line before:content-['']">
               {steps.map((step, i) => (
                 <li key={step.key} className="relative flex gap-4 pb-6 last:pb-0">
                   <span
