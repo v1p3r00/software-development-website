@@ -258,6 +258,7 @@ export default function ContactTerminal() {
                   tabIndex={-1}
                   autoComplete="off"
                   aria-hidden
+                  aria-label="Leave this field empty"
                   className="absolute -left-[9999px] h-px w-px opacity-0"
                 />
                 <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-6">

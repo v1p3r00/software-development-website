@@ -119,7 +119,7 @@ function CvVisual({ lang }: { lang: 'en' | 'hu' }) {
               <div key={r} className="mt-[5px]">
                 <div className="flex items-baseline justify-between">
                   <span className="text-[5px] font-semibold">{r}</span>
-                  <span className="text-[4px] text-[#9ca3af]">{c}</span>
+                  <span className="text-[4px] text-[#6b7280]">{c}</span>
                 </div>
                 <div className="mt-[2px]">{lines([96, 84, 90])}</div>
               </div>
