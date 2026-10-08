@@ -50,7 +50,7 @@ const T = {
     roof: 'Roof',
     roofs: { flat: 'Flat', mono: 'Mono-pitch', gable: 'Gable' },
     door: 'Garage door',
-    doors: { sectional: 'Sectional', tilt: 'Up & over', swing: 'Swing' },
+    doors: { sectional: 'Sectional', tilt: 'Up & over', swing: 'Swing', none: 'No gate' },
     doorCount: 'Number of doors',
     one: '1 door',
     two: '2 doors',
@@ -93,7 +93,7 @@ const T = {
     roof: 'Tető',
     roofs: { flat: 'Lapos', mono: 'Félnyereg', gable: 'Nyereg' },
     door: 'Garázskapu',
-    doors: { sectional: 'Szekcionált', tilt: 'Billenő', swing: 'Nyíló' },
+    doors: { sectional: 'Szekcionált', tilt: 'Billenő', swing: 'Nyíló', none: 'Nincs kapu' },
     doorCount: 'Kapuk száma',
     one: '1 kapu',
     two: '2 kapu',
@@ -137,8 +137,8 @@ function estimate(g: GarageOpts, t: (typeof T)['en']) {
   const base = 450_000 + area * 95_000;
   lines.push({ label: `${t.items.base} · ${area.toFixed(1).replace('.', ',')} m²`, value: base });
   if (g.roof !== 'flat') lines.push({ label: t.items.roof, value: base * (g.roof === 'gable' ? 0.12 : 0.06) });
-  const doorPrice = { sectional: 380_000, tilt: 190_000, swing: 160_000 }[g.door];
-  lines.push({ label: `${t.items.doors} × ${g.doors}`, value: doorPrice * g.doors });
+  const doorPrice = { sectional: 380_000, tilt: 190_000, swing: 160_000, none: 0 }[g.door];
+  if (doorPrice) lines.push({ label: `${t.items.doors} × ${g.doors}`, value: doorPrice * g.doors });
   if (g.cladding === 'wood') lines.push({ label: t.items.clad, value: base * 0.1 });
   if (g.sideDoor) lines.push({ label: t.items.side, value: 120_000 });
   if (g.window) lines.push({ label: t.items.window, value: 60_000 });
@@ -389,16 +389,18 @@ export default function GarageDesigner() {
               </button>
             ))}
           </div>
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            disabled={state !== 'ready'}
-            aria-pressed={open}
-            data-cursor="follow"
-            className="absolute bottom-3 right-3 border border-line bg-bg/85 px-3 py-2 font-mono text-[11px] uppercase tracking-tech text-text backdrop-blur transition-colors hover:text-accent disabled:opacity-40"
-          >
-            {open ? t.close : t.open}
-          </button>
+          {garage.door !== 'none' && (
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              disabled={state !== 'ready'}
+              aria-pressed={open}
+              data-cursor="follow"
+              className="absolute bottom-3 right-3 border border-line bg-bg/85 px-3 py-2 font-mono text-[11px] uppercase tracking-tech text-text backdrop-blur transition-colors hover:text-accent disabled:opacity-40"
+            >
+              {open ? t.close : t.open}
+            </button>
+          )}
           <div className="pointer-events-none absolute bottom-3 left-3 font-mono text-[10.5px] uppercase tracking-tech text-muted">{t.drag}</div>
         </div>
 
@@ -417,7 +419,7 @@ export default function GarageDesigner() {
             </Group>
             <Group title={t.door}>
               <div className="space-y-2">
-                <Segmented<Door> value={garage.door} onChange={(v) => setG('door', v)} options={opts(t.doors)} />
+                <Segmented<Door> value={garage.door} onChange={(v) => setG('door', v)} options={opts(t.doors)} cols={2} />
                 <Segmented<'1' | '2'>
                   value={String(garage.doors) as '1' | '2'}
                   onChange={(v) => setG('doors', v === '2' ? 2 : 1)}

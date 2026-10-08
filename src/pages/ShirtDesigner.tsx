@@ -14,6 +14,9 @@ import type { Design, FontId, Garment, Gender, LightPreset, LightRig, ModelId, S
 import { createStage, download } from '../components/tools/stage';
 import type { Stage } from '../components/tools/stage';
 
+/** bump when a model file changes, so browsers fetch the new one instead of a cached copy */
+const MODEL_VERSION = 5;
+
 const SHIRTS = [
   { id: '#f4f3ef', en: 'White', hu: 'Fehér' },
   { id: '#1d1e20', en: 'Black', hu: 'Fekete' },
@@ -247,18 +250,19 @@ export default function ShirtDesigner() {
     const loader = new GLTFLoader();
     loader.setMeshoptDecoder(MeshoptDecoder);
     loader
-      .loadAsync(`/model/${id}.glb`)
+      .loadAsync(`/model/${id}.glb?v=${MODEL_VERSION}`)
       .then((gltf) => {
         if (cancelled || !stage.current) return;
         const root = gltf.scene;
+        // model-space matrix of each mesh (a model with several materials nests its meshes under a group node)
+        root.updateMatrixWorld(true);
         root.traverse((o) => {
           const mesh = o as THREE.Mesh;
           if (!mesh.isMesh) return;
-          mesh.updateMatrix();
           // casts onto the floor only: the scans already carry their own baked shading, and
           // self-shadowing a simplified face shows its facets
           mesh.castShadow = true;
-          patchShirt(mesh.material as THREE.MeshStandardMaterial, mesh.matrix.clone(), u);
+          patchShirt(mesh.material as THREE.MeshStandardMaterial, mesh.matrixWorld.clone(), u);
         });
         s.scene.add(root);
         models.current[id] = root;

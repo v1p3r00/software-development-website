@@ -8,7 +8,7 @@ import * as THREE from 'three';
  * ------------------------------------------------------------------ */
 
 export type Roof = 'flat' | 'gable' | 'mono';
-export type Door = 'sectional' | 'tilt' | 'swing';
+export type Door = 'sectional' | 'tilt' | 'swing' | 'none';
 export type Cladding = 'sheet' | 'wood' | 'render';
 
 export interface GarageOpts {
@@ -385,7 +385,9 @@ export function buildGarage(o: GarageOpts, night = false): THREE.Group {
   const dz = D / 2 - t + 0.035;
   const movers: ((k: number) => void)[] = [];
   for (const x of doorX) {
-    if (o.door === 'sectional') {
+    if (o.door === 'none') {
+      // an open bay: just the framed opening
+    } else if (o.door === 'sectional') {
       // four panels that run up a curved track and back under the roof
       const zt = D / 2 - t - 0.03;
       const ph = dh / 4;
@@ -465,7 +467,11 @@ export function buildGarage(o: GarageOpts, night = false): THREE.Group {
     g.add(box(0.05, 2.0, 0.9, std(o.trim, { roughness: 0.36, metalness: 0.35 }), W / 2 + 0.005, y0 + 1.0, sz));
     g.add(box(0.07, 0.06, 1.02, trim, W / 2 + 0.01, y0 + 2.03, sz));
     for (const s of [-1, 1]) g.add(box(0.07, 2.0, 0.06, trim, W / 2 + 0.01, y0 + 1.0, sz + s * 0.48));
-    g.add(box(0.5, 0.05, 1.2, trim, W / 2 + 0.25, y0 + 2.28, sz));
+    // the canopy stays under the eave (and the gutter) of the roof: on a low wall the eave itself covers the door
+    const kGable = Math.min(1.4, W * 0.28) / (W / 2);
+    const under = o.roof === 'flat' ? top - 0.07 : o.roof === 'gable' ? top - kGable * 0.3 - 0.2 : top - 0.05;
+    const cy = Math.min(y0 + 2.28, under);
+    if (cy >= y0 + 2.12) g.add(box(0.5, 0.05, 1.2, trim, W / 2 + 0.25, cy, sz));
     g.add(lever(hm, W / 2 + 0.035, y0 + 1.02, sz - 0.34, -1, 'z'));
     if (night) g.add(lantern(W / 2 + 0.06, y0 + 1.9, sz + 0.75, true, 1));
   }

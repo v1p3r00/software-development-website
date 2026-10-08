@@ -49,6 +49,8 @@ export function makeUniforms(front: THREE.Texture, back: THREE.Texture): ShirtUn
 /** patch a glTF MeshStandardMaterial so it recolours and prints the garment */
 export function patchShirt(mat: THREE.MeshStandardMaterial, local: THREE.Matrix4, u: ShirtUniforms) {
   mat.metalness = 0;
+  // hoodies carry a drawstring mask in the emissive slot: it never glows, the shader only reads it
+  if (mat.emissiveMap) mat.emissive.setRGB(0, 0, 0);
   mat.onBeforeCompile = (shader) => {
     Object.assign(shader.uniforms, u, { uLocal: { value: local } });
     shader.vertexShader = shader.vertexShader
@@ -94,6 +96,12 @@ vec4 shirtPrint(sampler2D tex, vec4 box, float mirror) {
   float bz = smoothstep(0.12, 0.35, -vShirtNrm.z);
   vec4 pf = shirtPrint(uFront, uFrontBox, 1.0);
   vec4 pb = shirtPrint(uBack, uBackBox, -1.0);
+#ifdef USE_EMISSIVEMAP
+  // drawstrings keep the garment colour: no print on them
+  float noPrint = texture2D(emissiveMap, vEmissiveMapUv).r;
+  pf.a *= 1.0 - noPrint;
+  pb.a *= 1.0 - noPrint;
+#endif
   float shadeP = mix(1.0, shade, 0.55);
   shirt = mix(shirt, pf.rgb * shadeP, pf.a * fz);
   shirt = mix(shirt, pb.rgb * shadeP, pb.a * bz);
@@ -101,7 +109,7 @@ vec4 shirtPrint(sampler2D tex, vec4 box, float mirror) {
 }`,
       );
   };
-  mat.customProgramCacheKey = () => 'shirt-v2';
+  mat.customProgramCacheKey = () => 'shirt-v3';
   mat.needsUpdate = true;
 }
 
