@@ -175,7 +175,10 @@ async function check(target) {
       frame: !!h('x-frame-options') || /frame-ancestors/i.test(cspHeader),
       referrer: !!h('referrer-policy') || page.referrerMeta,
       permissions: !!h('permissions-policy'),
-      compression: /gzip|br|zstd|deflate/i.test(h('content-encoding') || ''),
+      // the Workers runtime decodes compressed bodies and can drop Content-Encoding; a Content-Length
+      // well below the decoded size, or the encoding Cloudflare reports, shows the transfer was compressed
+      compression: /gzip|br|zstd|deflate/i.test(h('content-encoding') || '') || (+h('content-length') > 0 && +h('content-length') < bytes * 0.9) || /gzip|br|zstd/i.test(res.cf?.contentEncoding || ''),
+      transfer: { encoding: h('content-encoding') || '', length: +h('content-length') || null, vary: h('vary') || '' },
       server: (h('server') || '').slice(0, 60),
       poweredBy: (h('x-powered-by') || '').slice(0, 60),
     },
