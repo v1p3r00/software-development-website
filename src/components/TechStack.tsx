@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useHydrated } from '../hooks/useHydrated';
+import { useNearViewport } from '../hooks/useNearViewport';
 import { groups, technologies } from '../data/technologies';
 import { useI18n } from '../i18n';
 import { usePrefersReducedMotion } from '../hooks/useMisc';
@@ -27,7 +27,7 @@ const theta = (angle: number) => String(Math.round(((-angle % 360) + 360) % 360)
 export default function TechStack() {
   const { t } = useI18n();
   const reduced = usePrefersReducedMotion();
-  const hydrated = useHydrated();
+  const [nearRef, near] = useNearViewport<HTMLDivElement>('400px');
 
   const frameRef = useRef<HTMLDivElement>(null);
   const angleRef = useRef(0);
@@ -223,7 +223,7 @@ export default function TechStack() {
         right={<span className="label hidden sm:block">{t.stack.hint}</span>}
       />
 
-      <div className="border border-line bg-surface">
+      <div ref={nearRef} className="border border-line bg-surface">
         {/* instrument header */}
         <div className="flex items-center justify-between border-b border-line px-4 py-2">
           <span className="label-a">stack_ring.3d</span>
@@ -266,8 +266,8 @@ export default function TechStack() {
                 willChange: 'transform',
               }}
             >
-              {/* the 3D cards are built after hydration; the prerendered page carries a plain list */}
-              {!hydrated ? (
+              {/* the 3D cards are built when scrolled near; the prerendered page carries a plain list */}
+              {!near ? (
                 <ul className="sr-only">
                   {technologies.map((tech) => (
                     <li key={tech.id}>
@@ -379,7 +379,7 @@ export default function TechStack() {
                 <circle cx="45" cy="45" r="34" stroke="rgb(var(--c-line))" strokeDasharray="2 4" />
                 <circle cx="45" cy="45" r="1.5" fill="rgb(var(--c-line-strong))" />
                 <path d="M45 45 L45 5" stroke="rgb(var(--c-accent))" strokeWidth="0.8" opacity="0.5" />
-                {hydrated && technologies.map((tech, i) => {
+                {near && technologies.map((tech, i) => {
                   const [x, y] = dotAt(i, live);
                   const on = i === frontIndex;
                   return (

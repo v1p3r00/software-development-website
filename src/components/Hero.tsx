@@ -83,7 +83,6 @@ function Portrait() {
             width={960}
             height={960}
             fetchPriority="high"
-            decoding="async"
             className="portrait-img portrait-mask h-full w-full scale-[1.06] object-cover object-[50%_22%]"
           />
         </picture>

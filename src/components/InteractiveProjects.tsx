@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useHydrated } from '../hooks/useHydrated';
+import { useNearViewport } from '../hooks/useNearViewport';
 import { labs } from '../data/labs';
 import type { Lab } from '../data/labs';
 import { readyTracks } from '../data/interview';
@@ -451,6 +451,8 @@ function ToolVisual({ id, lang }: { id: 'garage' | 'shirt' | 'camera'; lang: 'en
       <div className="relative aspect-[16/10] w-full overflow-hidden border border-line-strong bg-bg" aria-hidden>
         <img
           src={`/labs/${id}.webp`}
+          srcSet={`/labs/${id}-640.webp 640w, /labs/${id}.webp 960w`}
+          sizes="(min-width: 1024px) 36vw, 80vw"
           alt={TOOL_ALT[id][lang]}
           loading="lazy"
           decoding="async"
@@ -472,7 +474,7 @@ function LabCard({ lab }: { lab: Lab }) {
   const to = lp(lab.path);
   const preload = labPreload[lab.id];
   const open = link(to, 'slide', preload ? { prepare: preload } : {});
-  const hydrated = useHydrated();
+  const [visRef, near] = useNearViewport<HTMLDivElement>();
 
   return (
     <li className="group/lab lab">
@@ -517,9 +519,9 @@ function LabCard({ lab }: { lab: Lab }) {
           </div>
         </div>
 
-        <div className="border-t border-line p-6 sm:p-8 lg:col-span-5 lg:border-t-0">
-          {/* the previews are decorative mockups: built after hydration to keep the prerendered page light */}
-          {!hydrated ? (
+        <div ref={visRef} className="border-t border-line p-6 sm:p-8 lg:col-span-5 lg:border-t-0">
+          {/* the previews are decorative mockups: built only when scrolled near, to keep the initial load light */}
+          {!near ? (
             <div className="aspect-[16/10] w-full border border-line bg-surface2" aria-hidden />
           ) : lab.id === 'cv' ? (
             <CvVisual lang={lang} />

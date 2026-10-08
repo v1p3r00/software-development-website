@@ -171,7 +171,7 @@ function IndustryPage({ ind }: { ind: IndustryData }) {
           {demo && (
             <Link to={lp(demo.path)} data-cursor="follow" className="group relative block border border-line-strong bg-surface p-2">
               <CornerMarks />
-              {demo.poster && <img src={demo.poster} alt={`${demo.name} — ${demo.sector[lang]}`} width={1600} height={1000} className="aspect-[16/10] w-full object-cover" fetchPriority="high" />}
+              {demo.poster && <img src={demo.poster} srcSet={`${demo.poster.replace('.webp', '-640.webp')} 640w, ${demo.poster} 1600w`} sizes="(min-width: 1024px) 50vw, 80vw" alt={`${demo.name} — ${demo.sector[lang]}`} width={1600} height={1000} className="aspect-[16/10] w-full object-cover" fetchPriority="high" />}
               <div className="flex items-center justify-between gap-3 px-2 pb-1 pt-3">
                 <span>
                   <span className="block font-mono text-[10.5px] uppercase tracking-tech text-accent">{demo.redesign ? t.redesignLabel : t.demoLabel}</span>
@@ -232,7 +232,7 @@ function IndustryPage({ ind }: { ind: IndustryData }) {
             </div>
             {demo.poster && (
               <Link to={lp(demo.path)} data-cursor="follow" className="block border border-line-strong">
-                <img src={demo.poster} alt={`${demo.name} — ${demo.sector[lang]}`} loading="lazy" decoding="async" width={1600} height={1000} className="aspect-[16/10] w-full object-cover" />
+                <img src={demo.poster} srcSet={`${demo.poster.replace('.webp', '-640.webp')} 640w, ${demo.poster} 1600w`} sizes="(min-width: 1024px) 33vw, 80vw" alt={`${demo.name} — ${demo.sector[lang]}`} loading="lazy" decoding="async" width={1600} height={1000} className="aspect-[16/10] w-full object-cover" />
               </Link>
             )}
           </div>
@@ -343,7 +343,7 @@ function IndustriesIndex() {
           const demo = industryDemo(ind);
           return (
             <Link key={ind.slug} to={lp(`/industries/${ind.slug}/`)} data-cursor="follow" className="group border border-line bg-surface transition-colors hover:border-accent">
-              {demo?.poster && <img src={demo.poster} alt={`${ind.nav[lang]} — ${demo.name}`} loading="lazy" decoding="async" width={1600} height={1000} className="aspect-[16/8] w-full border-b border-line object-cover" />}
+              {demo?.poster && <img src={demo.poster} srcSet={`${demo.poster.replace('.webp', '-640.webp')} 640w, ${demo.poster} 1600w`} sizes="(min-width: 1024px) 33vw, 80vw" alt={`${ind.nav[lang]} — ${demo.name}`} loading="lazy" decoding="async" width={1600} height={1000} className="aspect-[16/8] w-full border-b border-line object-cover" />}
               <div className="p-5">
                 <div className="font-display text-[22px] font-extrabold uppercase leading-tight text-text">{ind.nav[lang]}</div>
                 <p className="mt-1.5 text-[14px] leading-relaxed text-muted">{ind.hero.lead[lang]}</p>
