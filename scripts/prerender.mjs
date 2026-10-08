@@ -75,6 +75,35 @@ function dropBlocks(html, tag, keep) {
  * put in front of the full page. Inlining the rules of every section made each page's
  * HTML tens of kilobytes heavier for no visible gain.
  */
+/** hover, focus and other interaction states can wait for the full stylesheet */
+const INTERACTIVE = /:(hover|focus|focus-visible|focus-within|active)\b|::placeholder|::selection/;
+let postcss = null;
+try {
+  ({ default: postcss } = await import('postcss'));
+} catch {
+  /* optional: without it the critical CSS keeps its interaction rules */
+}
+function dropInteractive(head) {
+  if (!postcss) return head;
+  return head.replace(/<style>([\s\S]*?)<\/style>/, (whole, css) => {
+    try {
+      const root = postcss.parse(css);
+      root.walkRules((rule) => {
+        if (rule.parent?.type === 'atrule' && /keyframes/i.test(rule.parent.name)) return;
+        const keep = rule.selectors.filter((sel) => !INTERACTIVE.test(sel));
+        if (!keep.length) rule.remove();
+        else if (keep.length !== rule.selectors.length) rule.selectors = keep;
+      });
+      root.walkAtRules((at) => {
+        if (at.nodes && !at.nodes.length) at.remove();
+      });
+      return `<style>${root.toString()}</style>`;
+    } catch {
+      return whole;
+    }
+  });
+}
+
 async function inlineCritical(html) {
   const cut = html.indexOf('<body');
   if (cut < 0) return beasties.process(html);
@@ -82,7 +111,7 @@ async function inlineCritical(html) {
   const processed = await beasties.process(firstScreen);
   const headEnd = processed.indexOf('<body');
   if (headEnd < 0) return beasties.process(html);
-  return processed.slice(0, headEnd) + html.slice(cut);
+  return dropInteractive(processed.slice(0, headEnd)) + html.slice(cut);
 }
 
 function* pagesIn(dir) {

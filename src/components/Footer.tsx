@@ -45,7 +45,7 @@ export default function Footer() {
                 href={`#${id}`}
                 onClick={goTo(id)}
                 data-cursor="follow"
-                className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
+                className="flink"
               >
                 {label}
               </a>
@@ -54,28 +54,28 @@ export default function Footer() {
               to={lp('/articles/')}
               onClick={link(lp('/articles/'), 'slide', { prepare: ArticlesPage.preload })}
               data-cursor="follow"
-              className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
+              className="flink"
             >
               {t.nav.articles}
             </Link>
             <Link
               to={lp('/interview/')}
               data-cursor="follow"
-              className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
+              className="flink"
             >
               {t.nav.interview}
             </Link>
             <Link
               to={lp('/cv-maker/')}
               data-cursor="follow"
-              className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
+              className="flink"
             >
               {t.palette.goCv}
             </Link>
             <Link
               to={lp('/course/')}
               data-cursor="follow"
-              className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
+              className="flink"
             >
               {t.palette.goCourse}
             </Link>
@@ -91,7 +91,7 @@ export default function Footer() {
                 key={ind.slug}
                 to={lp(`/industries/${ind.slug}/`)}
                 data-cursor="follow"
-                className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
+                className="flink"
               >
                 {ind.nav[lang]}
               </Link>

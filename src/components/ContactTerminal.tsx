@@ -169,10 +169,8 @@ export default function ContactTerminal() {
                 data-cursor="follow"
                 onClick={() => setChoices((c) => ({ ...c, [key]: on ? '' : option }))}
                 className={cx(
-                  'border px-2.5 py-1 font-mono text-[11.5px] font-medium uppercase tracking-tech transition-colors duration-200',
-                  on
-                    ? 'border-accent bg-accent text-onaccent'
-                    : 'border-line-strong text-text hover:border-accent hover:text-accent',
+                  'chip',
+                  on ? 'border-accent bg-accent text-onaccent' : 'chip-off',
                 )}
               >
                 {option}

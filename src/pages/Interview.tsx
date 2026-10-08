@@ -52,7 +52,7 @@ export default function Interview() {
               <div className="mt-auto flex items-end justify-between gap-4 pt-8">
                 <div className="flex flex-wrap gap-1.5">
                   {track.tags.map((tag) => (
-                    <span key={tag} className="border border-line px-2 py-0.5 font-mono text-2xs uppercase tracking-tech text-dim">
+                    <span key={tag} className="tag">
                       {tag}
                     </span>
                   ))}

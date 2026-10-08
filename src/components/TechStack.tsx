@@ -379,7 +379,7 @@ export default function TechStack() {
                 <circle cx="45" cy="45" r="34" stroke="rgb(var(--c-line))" strokeDasharray="2 4" />
                 <circle cx="45" cy="45" r="1.5" fill="rgb(var(--c-line-strong))" />
                 <path d="M45 45 L45 5" stroke="rgb(var(--c-accent))" strokeWidth="0.8" opacity="0.5" />
-                {technologies.map((tech, i) => {
+                {hydrated && technologies.map((tech, i) => {
                   const [x, y] = dotAt(i, live);
                   const on = i === frontIndex;
                   return (

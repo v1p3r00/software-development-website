@@ -475,11 +475,11 @@ function LabCard({ lab }: { lab: Lab }) {
   const hydrated = useHydrated();
 
   return (
-    <li className="group/lab relative border border-line bg-surface transition-colors duration-300 hover:border-line-strong">
+    <li className="group/lab lab">
       <CornerMarks />
       <div className="grid grid-cols-1 lg:grid-cols-12">
         <div className="flex flex-col p-6 sm:p-8 lg:col-span-7 lg:border-r lg:border-line">
-          <div className="flex items-center justify-between font-mono text-2xs uppercase tracking-tech text-dim">
+          <div className="lab-top">
             <span>
               <span className="text-accent">{lab.num}</span>
               <span className="mx-2">/</span>
@@ -488,12 +488,12 @@ function LabCard({ lab }: { lab: Lab }) {
             <span className="text-accent">● {lab.short}</span>
           </div>
           <div className="mt-6 flex items-start gap-4">
-            <span className="grid h-14 w-14 shrink-0 place-items-center border border-line-strong text-text transition-colors group-hover/lab:border-accent">
+            <span className="lab-icon">
               <LabIcon id={lab.id} />
             </span>
-            <h3 className="display min-w-0 pt-1 text-[clamp(1rem,calc((100vw-10rem)/9.3),2rem)] leading-none [overflow-wrap:anywhere] sm:text-[2.6rem]">{lab.title[lang]}</h3>
+            <h3 className="lab-title">{lab.title[lang]}</h3>
           </div>
-          <p className="mt-5 max-w-[60ch] whitespace-pre-line text-sm leading-relaxed text-muted sm:text-base">{lab.desc[lang]}</p>
+          <p className="lab-desc">{lab.desc[lang]}</p>
 
 
           <div className="mt-auto flex flex-wrap items-center gap-4 pt-8">
@@ -502,14 +502,14 @@ function LabCard({ lab }: { lab: Lab }) {
               onClick={open}
               onMouseEnter={preload ? () => void preload() : undefined}
               data-cursor="follow"
-              className="group inline-flex items-center gap-4 bg-accent px-6 py-4 font-mono text-[12.5px] uppercase tracking-tech text-onaccent transition-colors duration-300 hover:bg-text"
+              className="group btn-a"
             >
               {lab.cta[lang]}
               <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
             <div className="flex flex-wrap gap-1.5">
               {lab.tags.map((tag) => (
-                <span key={tag} className="border border-line px-2 py-0.5 font-mono text-2xs uppercase tracking-tech text-dim">
+                <span key={tag} className="tag">
                   {tag}
                 </span>
               ))}

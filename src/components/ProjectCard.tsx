@@ -12,12 +12,12 @@ export default function ProjectCard({ project, index }: { project: Project; inde
       to={lp(`/project/${project.id}`)}
       data-cursor="open"
       aria-label={`${project.num} — ${project.title}`}
-      className="lift group relative flex h-full flex-col border border-line bg-surface transition-[border-color,transform,box-shadow] duration-500 ease-tech hover:z-10 hover:border-line-strong hover:-translate-y-1"
+      className="lift group pc"
       style={{ animationDelay: `${index * 40}ms` }}
     >
       {/* top bar */}
       <div className="flex items-center justify-between border-b border-line px-3 py-2">
-        <span className="font-mono text-2xs tracking-tech text-dim transition-colors duration-300 group-hover:text-accent">
+        <span className="pc-num">
           {project.num}
         </span>
         <span className="label truncate">{t.projects.categories[project.category]}</span>
@@ -25,27 +25,27 @@ export default function ProjectCard({ project, index }: { project: Project; inde
 
       {/* visual */}
       <div className="relative aspect-[16/10] overflow-hidden border-b border-line">
-        <div className="absolute inset-0 transition-transform duration-[900ms] ease-tech group-hover:scale-[1.05] group-hover:-translate-y-1">
+        <div className="pc-vis">
           <ProjectVisual variant={project.visual} />
         </div>
 
         {/* technical overlay on hover */}
-        <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-          <div className="absolute left-3 top-3 bg-bg/85 px-1.5 py-0.5 font-mono text-2xs uppercase tracking-tech text-accent">
+        <div className="pc-ovl">
+          <div className="pc-chip left-3 top-3 text-accent">
             ID {project.id}
           </div>
           {project.period && (
-            <div className="absolute bottom-3 left-3 bg-bg/85 px-1.5 py-0.5 font-mono text-2xs uppercase tracking-tech text-muted">
+            <div className="pc-chip bottom-3 left-3 text-muted">
               {project.period.replace('present', t.ui.present)}
             </div>
           )}
-          <span className="absolute bottom-3 right-3 border border-accent bg-bg/85 px-2 py-1 font-mono text-2xs uppercase tracking-tech text-accent">
+          <span className="pc-open">
             {t.projects.open}
           </span>
         </div>
 
         {/* animated accent rule */}
-        <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-accent transition-[width] duration-500 ease-tech group-hover:w-full" />
+        <span className="pc-rule" />
       </div>
 
       {/* body */}
@@ -62,13 +62,13 @@ export default function ProjectCard({ project, index }: { project: Project; inde
           {project.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="border border-line px-1.5 py-0.5 font-mono text-2xs uppercase tracking-tech text-dim transition-colors duration-300 group-hover:border-line-strong group-hover:text-muted"
+              className="pc-tag"
             >
               {tag}
             </span>
           ))}
           </div>
-          <Arrow className="mb-1 ml-auto shrink-0 text-dim transition-all duration-300 group-hover:translate-x-1 group-hover:text-accent" />
+          <Arrow className="pc-arrow" />
         </div>
       </div>
     </Link>

@@ -91,7 +91,7 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
         aria-controls="projects-menu"
         aria-haspopup="true"
         data-cursor="follow"
-        className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[12.5px] uppercase tracking-tech"
+        className="group nv-link"
       >
         <span className={cx('transition-colors', active || open ? 'text-text' : 'text-muted group-hover:text-text')}>
           {t.nav.labs}
@@ -105,7 +105,7 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
         </svg>
         <span
           className={cx(
-            'absolute -bottom-0.5 left-0 h-px bg-accent transition-all duration-300 ease-tech',
+            'nv-rule',
             active ? 'w-full' : 'w-0 group-hover:w-full',
           )}
         />
@@ -129,13 +129,13 @@ function ProjectsMenu({ active, onAll }: { active: boolean; onAll: (e: React.Mou
                   data-cursor="follow"
                   data-menu-item
                   tabIndex={open ? 0 : -1}
-                  className="group flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-surface"
+                  className="group nm-item"
                 >
-                  <span className="w-5 shrink-0 font-mono text-2xs tracking-tech text-accent">{lab.num}</span>
-                  <span className="flex-1 whitespace-nowrap font-mono text-[12px] uppercase tracking-tech text-muted transition-colors group-hover:text-text">
+                  <span className="nm-num">{lab.num}</span>
+                  <span className="nm-title">
                     {lab.title[lang]}
                   </span>
-                  <Arrow className="shrink-0 text-dim opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:text-accent group-hover:opacity-100" />
+                  <Arrow className="nm-arrow" />
                 </Link>
               </li>
             ))}
@@ -287,14 +287,14 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
                 href={`${lp('/')}#${item.id}`}
                 onClick={goTo(item.id)}
                 data-cursor="follow"
-                className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[12.5px] uppercase tracking-tech"
+                className="group nv-link"
               >
                 <span className={cx('transition-colors', on ? 'text-text' : 'text-muted group-hover:text-text')}>
                   {item.label}
                 </span>
                 <span
                   className={cx(
-                    'absolute -bottom-0.5 left-0 h-px bg-accent transition-all duration-300 ease-tech',
+                    'nv-rule',
                     on ? 'w-full' : 'w-0 group-hover:w-full',
                   )}
                 />
@@ -307,14 +307,14 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             onClick={link(toArticles, 'slide', { prepare: ArticlesPage.preload })}
             aria-current={onArticles ? 'page' : undefined}
             data-cursor="follow"
-            className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[12.5px] uppercase tracking-tech"
+            className="group nv-link"
           >
             <span className={cx('transition-colors', onArticles ? 'text-text' : 'text-muted group-hover:text-text')}>
               {t.nav.articles}
             </span>
             <span
               className={cx(
-                'absolute -bottom-0.5 left-0 h-px bg-accent transition-all duration-300 ease-tech',
+                'nv-rule',
                 onArticles ? 'w-full' : 'w-0 group-hover:w-full',
               )}
             />
@@ -327,14 +327,14 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
                 href={`${lp('/')}#${item.id}`}
                 onClick={goTo(item.id)}
                 data-cursor="follow"
-                className="group relative flex items-baseline gap-1.5 py-1 font-mono text-[12.5px] uppercase tracking-tech"
+                className="group nv-link"
               >
                 <span className={cx('transition-colors', on ? 'text-text' : 'text-muted group-hover:text-text')}>
                   {item.label}
                 </span>
                 <span
                   className={cx(
-                    'absolute -bottom-0.5 left-0 h-px bg-accent transition-all duration-300 ease-tech',
+                    'nv-rule',
                     on ? 'w-full' : 'w-0 group-hover:w-full',
                   )}
                 />

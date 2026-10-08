@@ -261,7 +261,7 @@ export default function Articles() {
                     <div className="mt-auto flex items-end justify-between gap-4 pt-5">
                       <div className="flex flex-wrap gap-1.5">
                         {v.tags.slice(0, 3).map((tag) => (
-                          <span key={tag} className="border border-line px-2 py-0.5 font-mono text-2xs uppercase tracking-tech text-dim">
+                          <span key={tag} className="tag">
                             {tag}
                           </span>
                         ))}

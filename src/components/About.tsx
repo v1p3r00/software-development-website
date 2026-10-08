@@ -49,11 +49,11 @@ export default function About() {
             {t.about.disciplines.map((d, i) => (
               <li
                 key={d}
-                className="group flex items-baseline justify-between gap-4 border-b border-line py-2.5 transition-colors hover:bg-surface"
+                className="group ab-row"
               >
                 <span className="font-mono text-2xs tracking-tech text-dim">{String(i + 1).padStart(2, '0')}</span>
-                <span className="flex-1 text-sm text-muted transition-colors group-hover:text-text">{d}</span>
-                <span className="font-mono text-2xs text-accent opacity-0 transition-opacity group-hover:opacity-100">
+                <span className="ab-text">{d}</span>
+                <span className="ab-dot">
                   ●
                 </span>
               </li>

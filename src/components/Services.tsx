@@ -39,25 +39,25 @@ export default function Services() {
                   aria-expanded={on}
                   data-cursor="follow"
                   className={cx(
-                    'group flex w-full items-start gap-4 py-5 pr-4 text-left transition-colors duration-300 sm:gap-6',
+                    'group sv-row',
                     on ? 'text-text' : 'text-muted',
                   )}
                 >
                   <span
                     className={cx(
-                      'mt-1.5 font-mono text-2xs tracking-tech transition-colors',
+                      'sv-num',
                       on ? 'text-accent' : 'text-dim',
                     )}
                   >
                     {service.num}
                   </span>
                   <span className="flex-1">
-                    <span className="display block text-[clamp(1.2rem,6vw,1.5rem)] leading-none [overflow-wrap:anywhere] sm:text-[2rem]">
+                    <span className="sv-title">
                       {pick(service.title)}
                     </span>
                     <span
                       className={cx(
-                        'mt-2 block max-w-[58ch] text-[13px] leading-relaxed transition-colors sm:text-sm',
+                        'sv-text',
                         on ? 'text-muted' : 'text-dim',
                       )}
                     >
