@@ -92,8 +92,10 @@ vec4 shirtPrint(sampler2D tex, vec4 box, float mirror) {
   float lum = dot(c, vec3(0.2126, 0.7152, 0.0722));
   float shade = clamp(lum / 0.9, 0.0, 1.08);
   vec3 shirt = uTint * shade;
-  float fz = smoothstep(0.12, 0.35, vShirtNrm.z);
-  float bz = smoothstep(0.12, 0.35, -vShirtNrm.z);
+  // the print boxes sit inside the chest and back, so only faces turned clearly away lose it; scan folds
+  // and the webs where the drawstrings meet the chest face sideways and still take the print
+  float fz = smoothstep(-0.3, 0.0, vShirtNrm.z);
+  float bz = smoothstep(-0.3, 0.0, -vShirtNrm.z);
   vec4 pf = shirtPrint(uFront, uFrontBox, 1.0);
   vec4 pb = shirtPrint(uBack, uBackBox, -1.0);
 #ifdef USE_EMISSIVEMAP
@@ -109,7 +111,7 @@ vec4 shirtPrint(sampler2D tex, vec4 box, float mirror) {
 }`,
       );
   };
-  mat.customProgramCacheKey = () => 'shirt-v3';
+  mat.customProgramCacheKey = () => 'shirt-v4';
   mat.needsUpdate = true;
 }
 

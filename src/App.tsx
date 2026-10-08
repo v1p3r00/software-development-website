@@ -8,6 +8,7 @@ import ScrollProgress from './components/ScrollProgress';
 import TechnicalCursor from './components/TechnicalCursor';
 import BackToTop from './components/BackToTop';
 import MobileTalk from './components/MobileTalk';
+import SupportBot from './components/support/SupportBot';
 import NotFound from './pages/NotFound';
 import Home from './pages/Home';
 import { ProjectDetailPage, ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, GarageDesignerPage, InterviewPage, InterviewTrackPage, LandingPagesPage, LandingStagePage, ModernizationPage, ShirtDesignerPage, CameraStudyPage } from './pages/lazy';
@@ -115,6 +116,7 @@ export default function App() {
       {!stage && <TechnicalCursor />}
       {!showcase && <BackToTop />}
       {!showcase && <MobileTalk />}
+      {!stage && <SupportBot />}
     </div>
   );
 }

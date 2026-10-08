@@ -15,7 +15,7 @@ import { createStage, download } from '../components/tools/stage';
 import type { Stage } from '../components/tools/stage';
 
 /** bump when a model file changes, so browsers fetch the new one instead of a cached copy */
-const MODEL_VERSION = 5;
+const MODEL_VERSION = 6;
 
 const SHIRTS = [
   { id: '#f4f3ef', en: 'White', hu: 'Fehér' },
