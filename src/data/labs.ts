@@ -65,14 +65,14 @@ export const labs: Lab[] = [
   },
   {
     id: 'shirt',
-    tagline: { en: 'Put your text or image on a T-shirt, in 3D', hu: 'Saját szöveg vagy kép pólón, 3D-ben' },
+    tagline: { en: 'Put your text or image on a T-shirt or hoodie, in 3D', hu: 'Saját szöveg vagy kép pólón és pulóveren, 3D-ben' },
     num: '04',
     short: 'TEE',
     path: '/shirt-designer/',
-    title: { en: '3D T-shirt designer', hu: '3D pólótervező' },
+    title: { en: '3D T-shirt & hoodie designer', hu: '3D póló- és pulóvertervező' },
     desc: {
-      en: 'Choose a man or a woman model and a shirt colour, then print your own text or image on the front or the back. The print wraps onto the 3D shirt as you type, and the order price updates with size and quantity.\n\nIf you want a custom development like this for your own site, ask for a free consultation.',
-      hu: 'Válassz férfi vagy női modellt és pólószínt, majd nyomtass saját szöveget vagy képet az elejére vagy a hátára. A minta gépelés közben rákerül a 3D pólóra, a rendelési ár pedig követi a méretet és a mennyiséget.\n\nHa szeretnél egy ilyen egyedi fejlesztést a saját oldaladra, kérj ingyenes konzultációt.',
+      en: 'Choose a man or a woman model, a T-shirt or a hoodie and a colour, then print your own text or image on the front or the back. The print wraps onto the 3D garment as you type, studio lighting presets show it in different light, and the order price updates with size and quantity.\n\nIf you want a custom development like this for your own site, ask for a free consultation.',
+      hu: 'Válassz férfi vagy női modellt, pólót vagy kapucnis pulóvert és színt, majd nyomtass saját szöveget vagy képet az elejére vagy a hátára. A minta gépelés közben rákerül a 3D ruhára, a világítási beállításokkal különböző fényben is megnézheted, a rendelési ár pedig követi a méretet és a mennyiséget.\n\nHa szeretnél egy ilyen egyedi fejlesztést a saját oldaladra, kérj ingyenes konzultációt.',
     },
     cta: { en: 'Design a T-shirt', hu: 'Tervezz pólót' },
     tags: ['three.js', 'WebGL shader', 'Webshop'],

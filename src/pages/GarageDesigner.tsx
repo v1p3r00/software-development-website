@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
 import { useTheme } from '../hooks/useTheme';
 import { Section, SectionHeader } from '../components/ui';
 import { ConsultCta, Group, Segmented, Slider, Swatches, Toggle, huf } from '../components/tools/kit';
-import { buildGarage, buildGround, disposeGroup } from '../components/tools/garageScene';
+import { buildGarage, buildGround, disposeGroup, setDoors } from '../components/tools/garageScene';
 import type { Cladding, Door, GarageOpts, Roof } from '../components/tools/garageScene';
+import { createSky } from '../components/tools/garageSky';
+import type { Sky } from '../components/tools/garageSky';
 import { createStage, download } from '../components/tools/stage';
 import type { Stage } from '../components/tools/stage';
 
@@ -26,6 +30,13 @@ const TRIMS = [
   { id: '#a8acb0', en: 'Silver', hu: 'Ezüst' },
   { id: '#5b3d2a', en: 'Brown', hu: 'Barna' },
   { id: '#7d2f2a', en: 'Oxide red', hu: 'Oxidvörös' },
+];
+const HANDLES = [
+  { id: '#c9ccd0', en: 'Stainless', hu: 'Rozsdamentes' },
+  { id: '#1b1c1e', en: 'Matt black', hu: 'Matt fekete' },
+  { id: '#c49a52', en: 'Brass', hu: 'Sárgaréz' },
+  { id: '#b87452', en: 'Copper', hu: 'Vörösréz' },
+  { id: '#f2f2f0', en: 'White', hu: 'Fehér' },
 ];
 
 const T = {
@@ -47,6 +58,7 @@ const T = {
     cladd: { sheet: 'Steel sheet', wood: 'Wood look', render: 'Render' },
     wall: 'Wall colour',
     trim: 'Roof & door colour',
+    handle: 'Handle finish',
     extras: 'Extras',
     sideDoor: 'Side door',
     window: 'Window',
@@ -68,6 +80,8 @@ const T = {
     loading: 'Loading the 3D view…',
     noGl: 'This browser could not start the 3D view.',
     views: { front: 'Front', side: 'Side', top: 'From above' },
+    open: 'Open doors',
+    close: 'Close doors',
   },
   hu: {
     subtitle: 'Garázstervező — bemutató árak',
@@ -87,6 +101,7 @@ const T = {
     cladd: { sheet: 'Trapézlemez', wood: 'Fahatású', render: 'Vakolt' },
     wall: 'Falszín',
     trim: 'Tető- és kapuszín',
+    handle: 'Kilincs színe',
     extras: 'Extrák',
     sideDoor: 'Oldalajtó',
     window: 'Ablak',
@@ -108,6 +123,8 @@ const T = {
     loading: '3D nézet betöltése…',
     noGl: 'Ez a böngésző nem tudta elindítani a 3D nézetet.',
     views: { front: 'Elöl', side: 'Oldal', top: 'Felülről' },
+    open: 'Kapu nyitása',
+    close: 'Kapu zárása',
   },
 };
 
@@ -150,6 +167,7 @@ export default function GarageDesigner() {
     cladding: 'sheet',
     wall: WALLS[0].id,
     trim: TRIMS[0].id,
+    handle: HANDLES[0].id,
     sideDoor: true,
     window: true,
     gutter: true,
@@ -161,6 +179,11 @@ export default function GarageDesigner() {
   const groups = useRef<THREE.Object3D[]>([]);
   const sun = useRef<THREE.DirectionalLight | null>(null);
   const hemi = useRef<THREE.HemisphereLight | null>(null);
+  const sky = useRef<Sky | null>(null);
+  const [oak, setOak] = useState<THREE.Object3D | null>(null);
+  const night = theme === 'dark';
+  const [open, setOpen] = useState(false);
+  const openK = useRef(0);
 
   const setG = <K extends keyof GarageOpts>(k: K, v: GarageOpts[K]) => setGarage((g) => ({ ...g, [k]: v }));
 
@@ -192,17 +215,30 @@ export default function GarageDesigner() {
     d.position.set(12, 18, 10);
     d.castShadow = true;
     d.shadow.mapSize.set(2048, 2048);
-    d.shadow.camera.left = d.shadow.camera.bottom = -22;
-    d.shadow.camera.right = d.shadow.camera.top = 22;
-    d.shadow.camera.far = 60;
+    d.shadow.camera.left = d.shadow.camera.bottom = -28;
+    d.shadow.camera.right = d.shadow.camera.top = 28;
+    d.shadow.camera.far = 80;
     d.shadow.bias = -0.0004;
     d.shadow.normalBias = 0.03;
     s.scene.add(d);
     sun.current = d;
+    sky.current = createSky(s.scene, s.renderer);
+    // the oak model arrives a moment later; the garage shows without it meanwhile
+    let alive = true;
+    new GLTFLoader()
+      .setMeshoptDecoder(MeshoptDecoder)
+      .loadAsync('/model/oak.glb')
+      .then((gltf) => {
+        if (alive) setOak(gltf.scene);
+      })
+      .catch(() => {});
     s.camera.position.set(9, 6, 13);
     s.controls.target.set(0, 1.3, 0);
     setState('ready');
     return () => {
+      alive = false;
+      sky.current?.dispose();
+      sky.current = null;
       for (const g of groups.current) disposeGroup(g);
       groups.current = [];
       s.dispose();
@@ -210,20 +246,32 @@ export default function GarageDesigner() {
     };
   }, []);
 
-  // sky colour follows the site theme
+  // light theme: sunny day with a blue sky and clouds; dark theme: a starry night lit by the garage's own lights
   useEffect(() => {
     const s = stage.current;
-    if (!s) return;
-    const dark = theme === 'dark';
-    const sky = new THREE.Color(dark ? '#3a4552' : '#dce6ec');
-    s.scene.background = sky;
-    s.scene.fog = new THREE.Fog(sky, 28, 75);
-    // daylight in both themes, so the colours stay true; only the sky follows the site
-    if (hemi.current) hemi.current.intensity = 1.5;
-    if (sun.current) sun.current.intensity = 2.7;
-    s.renderer.toneMappingExposure = 1.05;
+    if (!s || !sun.current || !hemi.current) return;
+    const d = sun.current;
+    const h = hemi.current;
+    if (night) {
+      d.position.set(-14, 16, -6); // moonlight from behind, so the lit front reads
+      d.color.set('#9db2ff');
+      d.intensity = 0.8;
+      h.color.set('#6a7fb0');
+      h.groundColor.set('#1a1f2a');
+      h.intensity = 0.85;
+      s.renderer.toneMappingExposure = 1.1;
+    } else {
+      d.position.set(13, 19, 11);
+      d.color.set('#fff1d8');
+      d.intensity = 3.1;
+      h.color.set('#cfe3ff');
+      h.groundColor.set('#5f6a45');
+      h.intensity = 1.05;
+      s.renderer.toneMappingExposure = 1.0;
+    }
+    sky.current?.set(night, d.position.clone());
     s.render();
-  }, [theme, state]);
+  }, [night, state]);
 
   // rebuild the model on every change
   useEffect(() => {
@@ -233,18 +281,44 @@ export default function GarageDesigner() {
       s.scene.remove(g);
       disposeGroup(g);
     }
-    const next = [buildGround(garage), buildGarage(garage)];
+    const built = buildGarage(garage, night);
+    setDoors(built, openK.current);
+    const next = [buildGround(garage, oak, night), built];
     for (const g of next) s.scene.add(g);
     groups.current = next;
     s.render();
-  }, [garage, state]);
+  }, [garage, state, oak, night]);
+
+  // open / close the garage doors with a short eased animation
+  useEffect(() => {
+    const s = stage.current;
+    if (!s) return;
+    const from = openK.current;
+    const to = open ? 1 : 0;
+    if (from === to) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ms = reduced ? 1 : 1600 * Math.abs(to - from);
+    const t0 = performance.now();
+    let raf = 0;
+    const ease = (x: number) => (x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - t0) / ms);
+      openK.current = from + (to - from) * ease(p);
+      const g = groups.current[1];
+      if (g) setDoors(g, openK.current);
+      s.render();
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [open]);
 
   // camera presets around the garage
   const pose = (which: View) => {
     const r = Math.max(garage.width, garage.depth) * 1.5 + 7;
     const target = new THREE.Vector3(0, garage.height * 0.55, 0);
-    if (which === 'front') return { target, pos: new THREE.Vector3(0.55 * r, 0.42 * r, 0.75 * r) };
-    if (which === 'side') return { target, pos: new THREE.Vector3(0.95 * r, 0.32 * r, 0.3 * r) };
+    if (which === 'front') return { target, pos: new THREE.Vector3(0.55 * r, 0.26 * r, 0.78 * r) };
+    if (which === 'side') return { target, pos: new THREE.Vector3(0.96 * r, 0.2 * r, 0.3 * r) };
     return { target: new THREE.Vector3(0, 0, 0), pos: new THREE.Vector3(0.01, 1.15 * r, 0.3 * r) };
   };
   const view = (which: View) => {
@@ -315,6 +389,16 @@ export default function GarageDesigner() {
               </button>
             ))}
           </div>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            disabled={state !== 'ready'}
+            aria-pressed={open}
+            data-cursor="follow"
+            className="absolute bottom-3 right-3 border border-line bg-bg/85 px-3 py-2 font-mono text-[11px] uppercase tracking-tech text-text backdrop-blur transition-colors hover:text-accent disabled:opacity-40"
+          >
+            {open ? t.close : t.open}
+          </button>
           <div className="pointer-events-none absolute bottom-3 left-3 font-mono text-[10.5px] uppercase tracking-tech text-muted">{t.drag}</div>
         </div>
 
@@ -352,6 +436,9 @@ export default function GarageDesigner() {
             </Group>
             <Group title={t.trim} aside={TRIMS.find((c) => c.id === garage.trim)?.[lang]}>
               <Swatches value={garage.trim} options={colors(TRIMS)} onChange={(v) => setG('trim', v)} />
+            </Group>
+            <Group title={t.handle} aside={HANDLES.find((c) => c.id === garage.handle)?.[lang]}>
+              <Swatches value={garage.handle} options={colors(HANDLES)} onChange={(v) => setG('handle', v)} />
             </Group>
             <Group title={t.extras}>
               <div className="space-y-2">

@@ -327,9 +327,9 @@ export const en = {
     garageTitle: '3D garage designer with a live estimate — David Mészáros',
     garageDescription:
       'An interactive 3D configurator: garage size, roof, door, cladding, colours and extras, with a live price estimate. I build custom configurators for your own products too.',
-    shirtTitle: '3D T-shirt designer: your text or image on a shirt — David Mészáros',
+    shirtTitle: '3D T-shirt & hoodie designer: your text or image on a garment — David Mészáros',
     shirtDescription:
-      'An interactive 3D T-shirt designer: man and woman models, shirt colours, your own text or image on the front and back, with a live price. I build custom product configurators too.',
+      'An interactive 3D T-shirt and hoodie designer: man and woman models, colours, studio lighting, your own text or image on the front and back, with a live price. I build custom product configurators too.',
     cameraTitle: '3D Model Camera Study: a cinematic flight around Justice — David Mészáros',
     cameraDescription:
       'Website navigation as a camera flight around a 3D Justice statue: face, scales, a wide shot and the sword, with eased flight paths and depth of field. I build interactive 3D experiences for your site too.',

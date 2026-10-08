@@ -338,9 +338,9 @@ export const hu: Dict = {
     garageTitle: '3D garázstervező élő árbecsléssel — Mészáros Dávid',
     garageDescription:
       'Interaktív 3D konfigurátor: garázs mérete, tető, kapu, burkolat, színek és extrák, élő árbecsléssel. Egyedi konfigurátort is készítek a saját termékeidre.',
-    shirtTitle: '3D pólótervező: saját szöveg vagy kép pólón — Mészáros Dávid',
+    shirtTitle: '3D póló- és pulóvertervező: saját szöveg vagy kép — Mészáros Dávid',
     shirtDescription:
-      'Interaktív 3D pólótervező: férfi és női modell, pólószín, saját szöveg vagy kép elöl és hátul, élő árral. Egyedi termékkonfigurátort is készítek.',
+      'Interaktív 3D póló- és kapucnispulóver-tervező: férfi és női modell, színek, stúdióvilágítás, saját szöveg vagy kép elöl és hátul, élő árral. Egyedi termékkonfigurátort is készítek.',
     cameraTitle: '3D modell kameratanulmány: filmes repülés Justitia körül — Mészáros Dávid',
     cameraDescription:
       'Weboldal-navigáció kamerarepülésként egy 3D Justitia-szobor körül: arc, mérleg, totál és kard, lágy kamerapályákkal és mélységélességgel. Saját oldaladra is készítek interaktív 3D élményt.',

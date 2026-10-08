@@ -1,19 +1,29 @@
 import * as THREE from 'three';
 
 /* ------------------------------------------------------------------ *
- * The T-shirt material: the scanned models wear a white T-shirt, so  *
- * the shirt is found in the shader by colour (bright and unsaturated) *
- * inside a height band, then tinted and printed on.                   *
+ * The garment material: the scanned models wear a white T-shirt or   *
+ * hoodie, so the garment is found in the shader by colour (bright and *
+ * unsaturated) inside a height band, then tinted and printed on.      *
  * ------------------------------------------------------------------ */
 
 export type Gender = 'man' | 'woman';
+export type Garment = 'tee' | 'hoodie';
+export type ModelId = `${Garment}-${Gender}`;
 export type Side = 'front' | 'back';
 
-/** measured on each model, in its own units (1 = body height, centred on 0) */
-export const FIT: Record<Gender, { band: [number, number]; front: [number, number, number]; back: [number, number, number]; chest: number }> = {
-  // [centre y, half width, half height]
-  man: { band: [0.035, 0.375], front: [0.215, 0.1, 0.1], back: [0.225, 0.11, 0.11], chest: 0.21 },
-  woman: { band: [0.122, 0.375], front: [0.255, 0.075, 0.075], back: [0.26, 0.085, 0.085], chest: 0.25 },
+export const modelId = (garment: Garment, gender: Gender): ModelId => `${garment}-${gender}`;
+
+/**
+ * Measured on each model, in its own units (1 = body height, centred on 0).
+ * band: the garment's height range (keeps white shoes and the whites of the eyes out);
+ * front / back: [centre y, half width, half height] of the print area; chest: camera target.
+ * The hoodies' front prints sit above the pouch pocket, the backs below the hood.
+ */
+export const FIT: Record<ModelId, { band: [number, number]; front: [number, number, number]; back: [number, number, number]; chest: number }> = {
+  'tee-man': { band: [-0.04, 0.372], front: [0.2, 0.092, 0.092], back: [0.205, 0.1, 0.1], chest: 0.2 },
+  'tee-woman': { band: [-0.04, 0.365], front: [0.222, 0.072, 0.072], back: [0.205, 0.085, 0.085], chest: 0.205 },
+  'hoodie-man': { band: [-0.04, 0.385], front: [0.255, 0.078, 0.078], back: [0.205, 0.1, 0.1], chest: 0.22 },
+  'hoodie-woman': { band: [-0.04, 0.37], front: [0.222, 0.064, 0.064], back: [0.155, 0.08, 0.08], chest: 0.2 },
 };
 
 export interface ShirtUniforms {
@@ -36,7 +46,7 @@ export function makeUniforms(front: THREE.Texture, back: THREE.Texture): ShirtUn
   };
 }
 
-/** patch a glTF MeshStandardMaterial so it recolours and prints the shirt */
+/** patch a glTF MeshStandardMaterial so it recolours and prints the garment */
 export function patchShirt(mat: THREE.MeshStandardMaterial, local: THREE.Matrix4, u: ShirtUniforms) {
   mat.metalness = 0;
   mat.onBeforeCompile = (shader) => {
@@ -78,7 +88,7 @@ vec4 shirtPrint(sampler2D tex, vec4 box, float mirror) {
   float band = smoothstep(uBand.x - 0.012, uBand.x + 0.012, y) * (1.0 - smoothstep(uBand.y - 0.012, uBand.y + 0.012, y));
   float mask = white * band;
   float lum = dot(c, vec3(0.2126, 0.7152, 0.0722));
-  float shade = clamp(lum / 0.72, 0.0, 1.12);
+  float shade = clamp(lum / 0.9, 0.0, 1.08);
   vec3 shirt = uTint * shade;
   float fz = smoothstep(0.12, 0.35, vShirtNrm.z);
   float bz = smoothstep(0.12, 0.35, -vShirtNrm.z);
@@ -91,8 +101,108 @@ vec4 shirtPrint(sampler2D tex, vec4 box, float mirror) {
 }`,
       );
   };
-  mat.customProgramCacheKey = () => 'shirt-v1';
+  mat.customProgramCacheKey = () => 'shirt-v2';
   mat.needsUpdate = true;
+}
+
+/* ---------- lighting ---------- */
+
+export type LightPreset = 'studio' | 'daylight' | 'golden' | 'spotlight';
+
+interface PresetSpec {
+  key: [color: string, intensity: number, elevationDeg: number];
+  fill: [string, number];
+  rim: [string, number];
+  hemi: [sky: string, ground: string, intensity: number];
+  env: number;
+  exposure: number;
+  shadow: number;
+}
+
+/** three-point setups: a shadow-casting key, a soft fill, a rim from behind, sky light and reflections */
+export const LIGHTS: Record<LightPreset, PresetSpec> = {
+  studio: { key: ['#fff3e2', 2.3, 38], fill: ['#e6edff', 0.55], rim: ['#dfe8ff', 1.3], hemi: ['#ffffff', '#8a8070', 0.35], env: 0.6, exposure: 1, shadow: 0.32 },
+  daylight: { key: ['#fff1d8', 3, 58], fill: ['#bcd4ff', 0.35], rim: ['#ffffff', 0.7], hemi: ['#c4defc', '#a08a6a', 0.75], env: 0.45, exposure: 0.95, shadow: 0.45 },
+  golden: { key: ['#ffb36a', 2.7, 24], fill: ['#7088cc', 0.4], rim: ['#ffd29a', 1.7], hemi: ['#ffdcb6', '#5a4a3a', 0.35], env: 0.32, exposure: 1.02, shadow: 0.5 },
+  spotlight: { key: ['#ffffff', 3.4, 34], fill: ['#c9d4ff', 0.3], rim: ['#ff6a2a', 4.2], hemi: ['#ffffff', '#202020', 0.2], env: 0.18, exposure: 1.04, shadow: 0.7 },
+};
+
+export interface LightRig {
+  /** apply a preset; azimuth (degrees) turns the key light around the model, the rim follows opposite */
+  set: (preset: LightPreset, azimuthDeg: number) => void;
+  dispose: () => void;
+}
+
+/** the rig and a shadow-catching floor at the model's feet (y = -0.5) */
+export function createLightRig(scene: THREE.Scene, renderer: THREE.WebGLRenderer): LightRig {
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  const hemi = new THREE.HemisphereLight();
+  const key = new THREE.DirectionalLight();
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  key.shadow.bias = -0.0006;
+  key.shadow.normalBias = 0.02;
+  key.shadow.radius = 3;
+  const cam = key.shadow.camera;
+  cam.left = cam.bottom = -1.1;
+  cam.right = cam.top = 1.1;
+  cam.near = 0.1;
+  cam.far = 6;
+  const fill = new THREE.DirectionalLight();
+  const rim = new THREE.DirectionalLight();
+  // the floor only shows the shadow, fading out towards its rim so it never ends in a hard edge
+  const floorMat = new THREE.ShadowMaterial({ transparent: true, depthWrite: false });
+  floorMat.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec2 vFloor;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvFloor = position.xy;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nvarying vec2 vFloor;')
+      .replace(
+        'gl_FragColor = vec4( color, opacity * ( 1.0 - getShadowMask() ) );',
+        'gl_FragColor = vec4( color, opacity * ( 1.0 - getShadowMask() ) * ( 1.0 - smoothstep( 0.35, 1.0, length( vFloor ) ) ) );',
+      );
+  };
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(1, 64), floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -0.5;
+  floor.receiveShadow = true;
+  scene.add(hemi, key, key.target, fill, rim, floor);
+
+  const place = (l: THREE.DirectionalLight, az: number, el: number, r = 3) => {
+    const a = THREE.MathUtils.degToRad(az);
+    const e = THREE.MathUtils.degToRad(el);
+    l.position.set(Math.sin(a) * Math.cos(e) * r, 0.15 + Math.sin(e) * r, Math.cos(a) * Math.cos(e) * r);
+  };
+
+  return {
+    set(preset, azimuth) {
+      const p = LIGHTS[preset];
+      key.color.set(p.key[0]);
+      key.intensity = p.key[1];
+      place(key, azimuth, p.key[2]);
+      fill.color.set(p.fill[0]);
+      fill.intensity = p.fill[1];
+      place(fill, azimuth - 75, 12);
+      rim.color.set(p.rim[0]);
+      rim.intensity = p.rim[1];
+      place(rim, azimuth + 165, 28);
+      hemi.color.set(p.hemi[0]);
+      hemi.groundColor.set(p.hemi[1]);
+      hemi.intensity = p.hemi[2];
+      scene.environmentIntensity = p.env;
+      renderer.toneMappingExposure = p.exposure;
+      (floor.material as THREE.ShadowMaterial).opacity = p.shadow;
+    },
+    dispose() {
+      scene.remove(hemi, key, key.target, fill, rim, floor);
+      key.shadow.map?.dispose();
+      floor.geometry.dispose();
+      (floor.material as THREE.Material).dispose();
+    },
+  };
 }
 
 /* ---------- the print, drawn in a square canvas ---------- */

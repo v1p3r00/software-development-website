@@ -9,8 +9,8 @@ import { useSeo } from '../hooks/useSeo';
 import { useTheme } from '../hooks/useTheme';
 import { Section, SectionHeader, cx } from '../components/ui';
 import { ConsultCta, Group, Segmented, Slider, Swatches, huf } from '../components/tools/kit';
-import { FIT, FONTS, drawDesign, makeUniforms, patchShirt, printCanvas, printTexture } from '../components/tools/shirtScene';
-import type { Design, FontId, Gender, ShirtUniforms, Side } from '../components/tools/shirtScene';
+import { FIT, FONTS, createLightRig, drawDesign, makeUniforms, modelId, patchShirt, printCanvas, printTexture } from '../components/tools/shirtScene';
+import type { Design, FontId, Garment, Gender, LightPreset, LightRig, ModelId, ShirtUniforms, Side } from '../components/tools/shirtScene';
 import { createStage, download } from '../components/tools/stage';
 import type { Stage } from '../components/tools/stage';
 
@@ -33,17 +33,24 @@ const INKS = [
   { id: '#2a5fd1', en: 'Blue', hu: 'Kék' },
 ];
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'] as const;
+const BASE: Record<Garment, number> = { tee: 5990, hoodie: 12990 };
+const PRESETS: LightPreset[] = ['studio', 'daylight', 'golden', 'spotlight'];
 type Size = (typeof SIZES)[number];
 
 const T = {
   en: {
-    title: '3D T-shirt designer',
-    subtitle: 'T-shirt designer — demo prices',
-    intro: 'Pick a model and a shirt colour, then put your text or your own image on the front or the back — the print wraps onto the 3D shirt as you type.',
+    title: '3D T-shirt & hoodie designer',
+    subtitle: 'T-shirt and hoodie designer — demo prices',
+    intro: 'Pick a model, a T-shirt or a hoodie and a colour, then put your text or your own image on the front or the back — the print wraps onto the 3D garment as you type.',
     model: 'Model',
     man: 'Man',
     woman: 'Woman',
-    shirt: 'Shirt colour',
+    garment: 'Garment',
+    hoodie: 'Hoodie',
+    shirt: 'Colour',
+    lighting: 'Lighting',
+    lights: { studio: 'Studio', daylight: 'Daylight', golden: 'Golden hour', spotlight: 'Spotlight' },
+    lightDir: 'Light direction',
     custom: 'Custom colour',
     side: 'Print side',
     front: 'Front',
@@ -74,16 +81,21 @@ const T = {
     loading: 'Loading the 3D model…',
     noGl: 'This browser could not start the 3D view.',
     views: { chest: 'Close-up', body: 'Full figure' },
-    sample: 'BUDAPEST\nEST. 2026',
+    sample: 'softwaredevelopment.hu',
   },
   hu: {
-    title: '3D pólótervező',
-    subtitle: 'Pólótervező — bemutató árak',
-    intro: 'Válassz modellt és pólószínt, majd tegyél szöveget vagy saját képet az elejére vagy a hátára — a minta gépelés közben rákerül a 3D pólóra.',
+    title: '3D póló- és pulóvertervező',
+    subtitle: 'Póló- és pulóvertervező — bemutató árak',
+    intro: 'Válassz modellt, pólót vagy kapucnis pulóvert és színt, majd tegyél szöveget vagy saját képet az elejére vagy a hátára — a minta gépelés közben rákerül a 3D ruhára.',
     model: 'Modell',
     man: 'Férfi',
     woman: 'Női',
-    shirt: 'Pólószín',
+    garment: 'Ruhadarab',
+    hoodie: 'Kapucnis pulóver',
+    shirt: 'Szín',
+    lighting: 'Világítás',
+    lights: { studio: 'Stúdió', daylight: 'Nappali fény', golden: 'Aranyóra', spotlight: 'Reflektor' },
+    lightDir: 'Fény iránya',
     custom: 'Egyedi szín',
     side: 'Nyomat helye',
     front: 'Eleje',
@@ -114,11 +126,11 @@ const T = {
     loading: '3D modell betöltése…',
     noGl: 'Ez a böngésző nem tudta elindítani a 3D nézetet.',
     views: { chest: 'Közeli', body: 'Teljes alak' },
-    sample: 'BUDAPEST\nEST. 2026',
+    sample: 'softwaredevelopment.hu',
   },
 };
 
-const blank = (text: string): Design => ({ text, font: 'archivo', color: INKS[0].id, image: null, scale: 0.85, offset: 0 });
+const blank = (text: string): Design => ({ text, font: 'archivo', color: INKS[0].id, image: null, scale: 0.78, offset: 0 });
 
 export default function ShirtDesigner() {
   const { lang, t: site } = useI18n();
@@ -132,6 +144,10 @@ export default function ShirtDesigner() {
   });
 
   const [gender, setGender] = useState<Gender>('man');
+  const [garment, setGarment] = useState<Garment>('tee');
+  const [light, setLight] = useState<LightPreset>('studio');
+  const [lightAz, setLightAz] = useState(30);
+  const id: ModelId = modelId(garment, gender);
   const [color, setColor] = useState(SHIRTS[0].id);
   const [side, setSide] = useState<Side>('front');
   const [designs, setDesigns] = useState<Record<Side, Design>>(() => ({ front: blank(T[lang].sample), back: blank('') }));
@@ -144,7 +160,8 @@ export default function ShirtDesigner() {
 
   const host = useRef<HTMLDivElement>(null);
   const stage = useRef<Stage | null>(null);
-  const models = useRef<Partial<Record<Gender, THREE.Object3D>>>({});
+  const models = useRef<Partial<Record<ModelId, THREE.Object3D>>>({});
+  const rig = useRef<LightRig | null>(null);
   const uni = useRef<ShirtUniforms | null>(null);
   const canvases = useRef<Record<Side, HTMLCanvasElement> | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -164,13 +181,7 @@ export default function ShirtDesigner() {
     const pmrem = new THREE.PMREMGenerator(s.renderer);
     const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
     s.scene.environment = env;
-    s.scene.environmentIntensity = 0.75;
-    const key = new THREE.DirectionalLight('#fff4e6', 1.6);
-    key.position.set(1.2, 1.6, 2);
-    s.scene.add(key);
-    const rim = new THREE.DirectionalLight('#dfe8ff', 0.9);
-    rim.position.set(-1.5, 1, -2);
-    s.scene.add(rim);
+    rig.current = createLightRig(s.scene, s.renderer);
     s.controls.minDistance = 0.45;
     s.controls.maxDistance = 3.2;
     s.controls.minPolarAngle = 0.35;
@@ -195,6 +206,8 @@ export default function ShirtDesigner() {
         });
       }
       models.current = {};
+      rig.current?.dispose();
+      rig.current = null;
       uni.current?.uFront.value.dispose();
       uni.current?.uBack.value.dispose();
       env.dispose();
@@ -213,28 +226,28 @@ export default function ShirtDesigner() {
   }, [theme, state]);
 
   // load (once) and show the chosen model
-  const [modelReady, setModelReady] = useState<Gender | null>(null);
+  const [modelReady, setModelReady] = useState<ModelId | null>(null);
   useEffect(() => {
     const s = stage.current;
     const u = uni.current;
     if (state !== 'ready' || !s || !u) return;
     let cancelled = false;
-    const show = (g: Gender) => {
+    const show = (g: ModelId) => {
       for (const [k, m] of Object.entries(models.current)) if (m) m.visible = k === g;
       const fit = FIT[g];
       u.uBand.value.set(fit.band[0], fit.band[1]);
       setModelReady(g);
       s.render();
     };
-    if (models.current[gender]) {
-      show(gender);
+    if (models.current[id]) {
+      show(id);
       return;
     }
     setModelReady(null);
     const loader = new GLTFLoader();
     loader.setMeshoptDecoder(MeshoptDecoder);
     loader
-      .loadAsync(`/model/tee-${gender}.glb`)
+      .loadAsync(`/model/${id}.glb`)
       .then((gltf) => {
         if (cancelled || !stage.current) return;
         const root = gltf.scene;
@@ -242,17 +255,26 @@ export default function ShirtDesigner() {
           const mesh = o as THREE.Mesh;
           if (!mesh.isMesh) return;
           mesh.updateMatrix();
+          // casts onto the floor only: the scans already carry their own baked shading, and
+          // self-shadowing a simplified face shows its facets
+          mesh.castShadow = true;
           patchShirt(mesh.material as THREE.MeshStandardMaterial, mesh.matrix.clone(), u);
         });
         s.scene.add(root);
-        models.current[gender] = root;
-        show(gender);
+        models.current[id] = root;
+        show(id);
       })
       .catch(() => !cancelled && setState('error'));
     return () => {
       cancelled = true;
     };
-  }, [gender, state]);
+  }, [id, state]);
+
+  // lighting
+  useEffect(() => {
+    rig.current?.set(light, lightAz);
+    stage.current?.render();
+  }, [light, lightAz, state]);
 
   // shirt colour
   useEffect(() => {
@@ -265,14 +287,14 @@ export default function ShirtDesigner() {
   useEffect(() => {
     const u = uni.current;
     if (!u) return;
-    const fit = FIT[gender];
+    const fit = FIT[id];
     for (const sd of ['front', 'back'] as const) {
       const [cy, hw, hh] = fit[sd];
       const box = sd === 'front' ? u.uFrontBox.value : u.uBackBox.value;
       box.set(0, cy + designs[sd].offset * hh * 0.45, hw, hh);
     }
     stage.current?.render();
-  }, [gender, designs, state]);
+  }, [id, designs, state]);
 
   // redraw the prints
   useEffect(() => {
@@ -297,7 +319,7 @@ export default function ShirtDesigner() {
   const frame = (which: 'chest' | 'body', s2: Side = side, instant = false) => {
     const s = stage.current;
     if (!s) return;
-    const y = which === 'chest' ? FIT[gender].chest : 0.02;
+    const y = which === 'chest' ? FIT[id].chest : 0.02;
     const d = which === 'chest' ? 1.1 : 2.3;
     const dir = s2 === 'front' ? 1 : -1;
     const target = new THREE.Vector3(0, y, 0);
@@ -328,7 +350,7 @@ export default function ShirtDesigner() {
 
   const price = useMemo(() => {
     const lines: { label: string; value: number }[] = [];
-    lines.push({ label: `${t.tee} · ${size} × ${qty}`, value: 5990 * qty });
+    lines.push({ label: `${garment === 'tee' ? t.tee : t.hoodie} · ${size} × ${qty}`, value: BASE[garment] * qty });
     for (const sd of ['front', 'back'] as const) {
       const d = designs[sd];
       if (!d.text.trim() && !d.image) continue;
@@ -339,7 +361,7 @@ export default function ShirtDesigner() {
     const rate = qty >= 50 ? 0.2 : qty >= 25 ? 0.15 : qty >= 10 ? 0.1 : 0;
     if (rate) lines.push({ label: `${t.discount} −${rate * 100}%`, value: -sub * rate });
     return { lines, total: sub * (1 - rate) };
-  }, [designs, qty, size, t]);
+  }, [designs, qty, size, t, garment]);
 
   const colors = (list: typeof SHIRTS) => list.map((c) => ({ id: c.id, hex: c.id, label: c[lang] }));
   const shirtName = SHIRTS.find((c) => c.id === color)?.[lang] ?? t.custom;
@@ -355,7 +377,7 @@ export default function ShirtDesigner() {
         right={
           <button
             type="button"
-            onClick={() => stage.current && download(stage.current.snapshot(), lang === 'hu' ? 'polo-mockup.png' : 'tshirt-mockup.png')}
+            onClick={() => stage.current && download(stage.current.snapshot(), lang === 'hu' ? (garment === 'tee' ? 'polo-mockup.png' : 'pulover-mockup.png') : `${garment === 'tee' ? 'tshirt' : 'hoodie'}-mockup.png`)}
             disabled={!modelReady}
             data-cursor="follow"
             className="group flex items-center gap-2 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors hover:text-accent disabled:opacity-40"
@@ -419,6 +441,16 @@ export default function ShirtDesigner() {
                 ]}
               />
             </Group>
+            <Group title={t.garment}>
+              <Segmented<Garment>
+                value={garment}
+                onChange={setGarment}
+                options={[
+                  { id: 'tee', label: t.tee },
+                  { id: 'hoodie', label: t.hoodie },
+                ]}
+              />
+            </Group>
             <Group title={t.shirt} aside={shirtName}>
               <div className="flex flex-wrap items-center gap-2">
                 <Swatches value={color} options={colors(SHIRTS)} onChange={setColor} />
@@ -434,6 +466,12 @@ export default function ShirtDesigner() {
                   <span className="sr-only">{t.custom}</span>
                   <input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="absolute inset-0 h-full w-full cursor-pointer opacity-0" />
                 </label>
+              </div>
+            </Group>
+            <Group title={t.lighting} aside={t.lights[light]}>
+              <Segmented<LightPreset> value={light} onChange={setLight} options={PRESETS.map((p) => ({ id: p, label: t.lights[p] }))} />
+              <div className="mt-3">
+                <Slider label={t.lightDir} value={lightAz} min={-180} max={180} step={5} format={(v) => `${v}°`} onChange={setLightAz} />
               </div>
             </Group>
             <Group title={t.side}>

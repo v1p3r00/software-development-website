@@ -437,8 +437,8 @@ function ToolVisual({ id, lang }: { id: 'garage' | 'shirt' | 'camera'; lang: 'en
         ? ['Élő 3D modell', 'Tető, kapu, burkolat', 'Szín és extrák', 'Árbecslés']
         : ['Live 3D model', 'Roof, door, cladding', 'Colours & extras', 'Price estimate']
       : lang === 'hu'
-        ? ['Férfi és női modell', 'Saját szöveg vagy kép', 'Elöl és hátul', 'Mockup letöltés']
-        : ['Man & woman models', 'Your text or image', 'Front and back', 'Mockup download'];
+        ? ['Póló és kapucnis pulóver', 'Saját szöveg vagy kép', 'Stúdióvilágítás', 'Mockup letöltés']
+        : ['T-shirt & hoodie', 'Your text or image', 'Studio lighting', 'Mockup download'];
   return (
     <div className="flex h-full flex-col">
       <div className="relative aspect-[16/10] w-full overflow-hidden border border-line-strong bg-bg" aria-hidden>
