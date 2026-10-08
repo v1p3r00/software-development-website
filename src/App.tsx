@@ -11,7 +11,7 @@ import MobileTalk from './components/MobileTalk';
 import SupportBot from './components/support/SupportBot';
 import NotFound from './pages/NotFound';
 import Home from './pages/Home';
-import { ProjectDetailPage, ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, GarageDesignerPage, InterviewPage, InterviewTrackPage, LandingPagesPage, LandingStagePage, ModernizationPage, ShirtDesignerPage, CameraStudyPage } from './pages/lazy';
+import { ProjectDetailPage, ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, GarageDesignerPage, InterviewPage, InterviewTrackPage, LandingPagesPage, LandingStagePage, ModernizationPage, ShirtDesignerPage, CameraStudyPage, WebsiteCheckPage, IndustryPage } from './pages/lazy';
 import { stripLang } from './i18n/paths';
 import { labFor } from './data/labs';
 import { isLandingStage } from './data/landings';
@@ -101,6 +101,9 @@ export default function App() {
             <Route path="/hu?/garage-designer" element={<GarageDesignerPage />} />
             <Route path="/hu?/shirt-designer" element={<ShirtDesignerPage />} />
             <Route path="/hu?/camera-study" element={<CameraStudyPage />} />
+            <Route path="/hu?/website-check" element={<WebsiteCheckPage />} />
+            <Route path="/hu?/industries" element={<IndustryPage />} />
+            <Route path="/hu?/industries/:slug" element={<IndustryPage />} />
             <Route path="*" element={<NotFound onSearch={() => setPaletteOpen(true)} />} />
           </Routes>
         </Suspense>

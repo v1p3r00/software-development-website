@@ -41,6 +41,10 @@ export const ModernizationPage = lazyPage(() => import('./Modernization'));
 export const LandingPagesPage = lazyPage(() => import('./LandingPages'));
 export const LandingStagePage = lazyPage(() => import('./LandingStage'));
 
+// the free website check and the industry pages
+export const WebsiteCheckPage = lazyPage(() => import('./WebsiteCheck'));
+export const IndustryPage = lazyPage(() => import('./Industry'));
+
 // the 3D configurators
 export const GarageDesignerPage = lazyPage(() => import('./GarageDesigner'));
 export const ShirtDesignerPage = lazyPage(() => import('./ShirtDesigner'));

@@ -12,7 +12,7 @@ export default function LandingCover({ l, className = '' }: { l: Landing; classN
       aria-hidden
     >
       {l.poster ? (
-        <img src={l.poster} alt="" loading="lazy" decoding="async" className="landing-cover-img" />
+        <img src={l.poster} alt={`${l.name} — ${l.sector[lang]}, ${lang === 'hu' ? 'bemutató oldal' : 'landing page'}`} loading="lazy" decoding="async" className="landing-cover-img" />
       ) : (
         <span className="landing-cover-glow" />
       )}

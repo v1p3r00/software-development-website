@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useHydrated } from '../hooks/useHydrated';
 import { groups, technologies } from '../data/technologies';
 import { useI18n } from '../i18n';
 import { usePrefersReducedMotion } from '../hooks/useMisc';
@@ -26,6 +27,7 @@ const theta = (angle: number) => String(Math.round(((-angle % 360) + 360) % 360)
 export default function TechStack() {
   const { t } = useI18n();
   const reduced = usePrefersReducedMotion();
+  const hydrated = useHydrated();
 
   const frameRef = useRef<HTMLDivElement>(null);
   const angleRef = useRef(0);
@@ -264,7 +266,16 @@ export default function TechStack() {
                 willChange: 'transform',
               }}
             >
-              {technologies.map((tech, i) => {
+              {/* the 3D cards are built after hydration; the prerendered page carries a plain list */}
+              {!hydrated ? (
+                <ul className="sr-only">
+                  {technologies.map((tech) => (
+                    <li key={tech.id}>
+                      {tech.name} — {t.stack.groups[tech.group]}
+                    </li>
+                  ))}
+                </ul>
+              ) : technologies.map((tech, i) => {
                 const front = i === frontIndex; // facing the viewer
                 const depth = cardDepth(i, live); // 1 front … -1 back
                 const opacity = Math.max(0.12, (depth + 1) / 2);

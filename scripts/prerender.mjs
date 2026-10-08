@@ -44,6 +44,47 @@ const beasties =
     logLevel: 'silent',
   });
 
+/** removes each <tag>…</tag> block (nesting-aware) for which keep(index) is false */
+function dropBlocks(html, tag, keep) {
+  const re = new RegExp(`<(/?)${tag}\\b[^>]*>`, 'gi');
+  let out = '';
+  let at = 0;
+  let depth = 0;
+  let start = -1;
+  let n = 0;
+  for (const m of html.matchAll(re)) {
+    if (!m[1]) {
+      if (depth === 0) start = m.index;
+      depth++;
+    } else if (depth > 0) {
+      depth--;
+      if (depth === 0) {
+        if (!keep(n++)) {
+          out += html.slice(at, start);
+          at = m.index + m[0].length;
+        }
+      }
+    }
+  }
+  return out + html.slice(at);
+}
+
+/**
+ * Critical CSS covers the first screen only: beasties reads a copy of the page that keeps
+ * the header and the first section, and its result (inline styles + async stylesheet) is
+ * put in front of the full page. Inlining the rules of every section made each page's
+ * HTML tens of kilobytes heavier for no visible gain.
+ */
+async function inlineCritical(html) {
+  const cut = html.indexOf('<body');
+  if (cut < 0) return beasties.process(html);
+  const firstScreen = dropBlocks(dropBlocks(html, 'section', (i) => i === 0), 'footer', () => false);
+  const processed = await beasties.process(firstScreen);
+  const headEnd = processed.indexOf('<body');
+  if (headEnd < 0) return beasties.process(html);
+  return processed.slice(0, headEnd) + html.slice(cut);
+}
+
 function* pagesIn(dir) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const file = path.join(dir, entry.name);
@@ -64,7 +105,7 @@ for (const file of pagesIn(dist)) {
   try {
     const app = await render(url);
     let out = html.replace('<div id="root"></div>', () => `<div id="root">${app}</div>`);
-    if (beasties) out = await beasties.process(out);
+    if (beasties) out = await inlineCritical(out);
     fs.writeFileSync(file, out);
     done++;
   } catch (err) {

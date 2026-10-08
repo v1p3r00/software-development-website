@@ -5,6 +5,7 @@ import ProjectGrid from '../components/ProjectGrid';
 import Services from '../components/Services';
 import TechStack from '../components/TechStack';
 import Testimonials from '../components/Testimonials';
+import CheckBand from '../components/CheckBand';
 
 /** Everything below the hero: its own chunk, so the first screen hydrates without it. */
 export default function HomeSections() {
@@ -13,6 +14,7 @@ export default function HomeSections() {
       <InteractiveProjects />
       <ProjectGrid />
       <Services />
+      <CheckBand />
       <TechStack />
       <Testimonials />
       <About />

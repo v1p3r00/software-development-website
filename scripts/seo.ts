@@ -22,6 +22,9 @@ import { clip, siteGraph } from '../src/lib/seo-shared.ts';
 import { tracks } from '../src/data/interview/tracks.ts';
 import { modules as courseModules } from '../src/data/courseSyllabus.ts';
 import { readyLandings } from '../src/data/landings.ts';
+import { industries, INDUSTRIES_SEO } from '../src/data/industries.ts';
+import { industryDemo } from '../src/data/industryDemo.ts';
+import { CHECK_SEO } from '../src/data/siteCheck.ts';
 
 type Lang = 'en' | 'hu';
 
@@ -195,6 +198,29 @@ function pages(root: string): Page[] {
     list.push({ path: at('/garage-designer/'), lang, alternates: both('/garage-designer/'), title: t.seo.garageTitle, description: t.seo.garageDescription, ...og('garage-designer') });
     list.push({ path: at('/shirt-designer/'), lang, alternates: both('/shirt-designer/'), title: t.seo.shirtTitle, description: t.seo.shirtDescription, ...og('shirt-designer') });
     list.push({ path: at('/camera-study/'), lang, alternates: both('/camera-study/'), title: t.seo.cameraTitle, description: t.seo.cameraDescription, ...og('camera-study') });
+    // the free website check and the industry offers
+    list.push({ path: at('/website-check/'), lang, alternates: both('/website-check/'), title: CHECK_SEO[lang].title, description: CHECK_SEO[lang].description, image: `/og/website-check.${lang}.png`, imageAlt: CHECK_SEO[lang].title });
+    list.push({ path: at('/industries/'), lang, alternates: both('/industries/'), title: INDUSTRIES_SEO.title[lang], description: INDUSTRIES_SEO.description[lang], image: `/og/industries.${lang}.png`, imageAlt: INDUSTRIES_SEO.title[lang] });
+    for (const ind of industries) {
+      const bare = `/industries/${ind.slug}/`;
+      const url = site.url + at(bare);
+      list.push({
+        path: at(bare),
+        lang,
+        alternates: both(bare),
+        title: ind.seo.title[lang],
+        description: ind.seo.description[lang],
+        image: `/og/industry-${ind.slug}.${lang}.png`,
+        imageAlt: `${ind.hero.kicker[lang]} — ${industryDemo(ind)?.name ?? ''}`,
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@graph': [
+            { '@type': 'Service', name: ind.hero.kicker[lang], description: ind.seo.description[lang], url, provider: { '@id': `${site.url}/#person` }, areaServed: 'HU', inLanguage: lang },
+            { '@type': 'FAQPage', mainEntity: ind.faq.map((f) => ({ '@type': 'Question', name: f.q[lang], acceptedAnswer: { '@type': 'Answer', text: f.a[lang] } })) },
+          ],
+        },
+      });
+    }
     for (const tr of tracks) {
       // only tracks whose question set is in the build
       if (!fs.existsSync(path.join(root, `src/data/interview/${tr.id}.${lang}.json`))) continue;

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useHydrated } from '../hooks/useHydrated';
 import { labs } from '../data/labs';
 import type { Lab } from '../data/labs';
 import { readyTracks } from '../data/interview';
@@ -425,6 +426,12 @@ function LandingVisual({ lang }: { lang: 'en' | 'hu' }) {
   );
 }
 
+const TOOL_ALT = {
+  garage: { en: '3D garage designer: a configurable garage model with roof, door and cladding options', hu: '3D garázstervező: konfigurálható garázsmodell tető-, kapu- és burkolatválasztással' },
+  shirt: { en: '3D T-shirt and hoodie designer with a custom print on the model', hu: '3D póló- és pulóvertervező egyedi mintával a modellen' },
+  camera: { en: '3D camera study: a statue scene filmed along curved camera paths', hu: '3D kameratanulmány: szoborjelenet íves kamerapályákon' },
+};
+
 /** a still from a 3D configurator, framed like the other previews */
 function ToolVisual({ id, lang }: { id: 'garage' | 'shirt' | 'camera'; lang: 'en' | 'hu' }) {
   const points =
@@ -444,7 +451,7 @@ function ToolVisual({ id, lang }: { id: 'garage' | 'shirt' | 'camera'; lang: 'en
       <div className="relative aspect-[16/10] w-full overflow-hidden border border-line-strong bg-bg" aria-hidden>
         <img
           src={`/labs/${id}.webp`}
-          alt=""
+          alt={TOOL_ALT[id][lang]}
           loading="lazy"
           decoding="async"
           width={960}
@@ -465,6 +472,7 @@ function LabCard({ lab }: { lab: Lab }) {
   const to = lp(lab.path);
   const preload = labPreload[lab.id];
   const open = link(to, 'slide', preload ? { prepare: preload } : {});
+  const hydrated = useHydrated();
 
   return (
     <li className="group/lab relative border border-line bg-surface transition-colors duration-300 hover:border-line-strong">
@@ -510,7 +518,10 @@ function LabCard({ lab }: { lab: Lab }) {
         </div>
 
         <div className="border-t border-line p-6 sm:p-8 lg:col-span-5 lg:border-t-0">
-          {lab.id === 'cv' ? (
+          {/* the previews are decorative mockups: built after hydration to keep the prerendered page light */}
+          {!hydrated ? (
+            <div className="aspect-[16/10] w-full border border-line bg-surface2" aria-hidden />
+          ) : lab.id === 'cv' ? (
             <CvVisual lang={lang} />
           ) : lab.id === 'course' ? (
             <CourseVisual lang={lang} />

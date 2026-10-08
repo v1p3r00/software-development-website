@@ -10,6 +10,8 @@ import { modules } from '../../data/courseSyllabus';
 import { en } from '../../i18n/en';
 import { hu } from '../../i18n/hu';
 import { faqs } from './faq';
+import { industryDemo } from '../../data/industryDemo';
+import { industries } from '../../data/industries';
 import type { Faq } from './faq';
 
 /**
@@ -19,7 +21,7 @@ import type { Faq } from './faq';
  * are left out of the case studies.
  */
 
-export type Kind = 'faq' | 'service' | 'project' | 'lab' | 'landing' | 'case' | 'article' | 'tech' | 'track' | 'module';
+export type Kind = 'faq' | 'service' | 'project' | 'lab' | 'landing' | 'case' | 'article' | 'tech' | 'track' | 'module' | 'industry';
 
 export interface Item {
   id: string;
@@ -275,6 +277,25 @@ export function knowledge(lang: Lang): Item[] {
     });
   }
 
+  for (const ind of industries) {
+    const words = new Map<string, number>();
+    both(words, ind.nav, 3.2);
+    both(words, ind.hero.kicker, 2);
+    both(words, ind.hero.short, 1.5);
+    for (const p of ind.problems) both(words, p.t, 0.8);
+    for (const f of ind.features) both(words, f.t, 0.8);
+    items.push({
+      id: `industry:${ind.slug}`,
+      kind: 'industry',
+      title: L(ind.hero.kicker),
+      text: L(ind.hero.lead),
+      meta: lang === 'hu' ? 'IPARÁGI AJÁNLAT' : 'INDUSTRY OFFER',
+      path: `/industries/${ind.slug}/`,
+      image: industryDemo(ind)?.poster,
+      words,
+    });
+  }
+
   for (const c of CASES) {
     const words = new Map<string, number>();
     both(words, c.title, 3);
@@ -387,6 +408,7 @@ const KIND_BOOST: Record<Kind, number> = {
   tech: 1.1,
   track: 0.75,
   module: 0.7,
+  industry: 1.15,
 };
 
 function wordScore(q: string, w: string): number {

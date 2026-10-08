@@ -104,7 +104,7 @@ function nextStep(o: Order, from: Field | null, T: Text): Field | 'summary' {
 
 const textSteps: Field[] = ['url', 'message', 'name', 'email', 'phone'];
 
-export default function SupportPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function SupportPanel({ open, onClose, request }: { open: boolean; onClose: () => void; request?: { n: number; interest?: string } | null }) {
   const { lang, lp } = useI18n();
   const T = TEXT[lang];
   const { pathname } = useLocation();
@@ -229,7 +229,7 @@ export default function SupportPanel({ open, onClose }: { open: boolean; onClose
   const card = useCallback(
     (it: Item): Card => {
       const cta = it.kind === 'article' ? T.read : it.kind === 'lab' || it.kind === 'landing' || it.kind === 'case' ? T.try : T.open;
-      const like = it.kind === 'landing' || it.kind === 'lab' || it.kind === 'case' || it.kind === 'project' || it.kind === 'service' ? it.title : undefined;
+      const like = it.kind === 'landing' || it.kind === 'lab' || it.kind === 'case' || it.kind === 'project' || it.kind === 'service' || it.kind === 'industry' ? it.title : undefined;
       return { id: it.id, title: it.title, text: it.text, meta: it.meta, image: it.image, path: it.path, cta, like };
     },
     [T],
@@ -498,6 +498,17 @@ export default function SupportPanel({ open, onClose }: { open: boolean; onClose
     },
     [ask],
   );
+
+  // "Start a project" buttons elsewhere on the site open the chat with an interest
+  const handled = useRef(0);
+  useEffect(() => {
+    if (!request || request.n === handled.current) return;
+    handled.current = request.n;
+    if (!request.interest) return;
+    push({ from: 'user', text: TEXT[live.current.lang].menu.order });
+    startOrder(request.interest);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [request]);
 
   const sendOrder = useCallback(async () => {
     const t = TEXT[live.current.lang];
@@ -902,7 +913,7 @@ function CardView({ c, T, lp, onLike, onNavigate, single }: { c: Card; T: Text; 
   return (
     <article className={cx('flex shrink-0 snap-start flex-col border border-line bg-surface', single ? 'w-[88%]' : 'w-[230px]')}>
       {c.image ? (
-        <img src={c.image} alt="" loading="lazy" decoding="async" className="aspect-[16/9] w-full border-b border-line object-cover" />
+        <img src={c.image} alt={c.title} loading="lazy" decoding="async" className="aspect-[16/9] w-full border-b border-line object-cover" />
       ) : (
         <div className="support-cardart aspect-[16/6] w-full border-b border-line" aria-hidden />
       )}

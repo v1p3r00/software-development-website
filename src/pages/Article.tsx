@@ -127,7 +127,7 @@ export default function Article() {
         <header className="vt-article mt-8 border-b border-line pb-8">
           {image && (
             <div className="mb-8 aspect-[1200/630] overflow-hidden border border-line bg-surface2">
-              <img src={image} alt="" width={1200} height={630} decoding="async" className="vt-media h-full w-full object-cover" />
+              <img src={image} alt={v.title} width={1200} height={630} decoding="async" className="vt-media h-full w-full object-cover" />
             </div>
           )}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-2xs uppercase tracking-tech text-dim">

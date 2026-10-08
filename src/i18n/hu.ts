@@ -276,7 +276,7 @@ export const hu: Dict = {
   footer: {
     tagline: 'Rendszereket tervezek. Termékeket építek. Problémákat oldok meg.',
     rights: 'Minden jog fenntartva.',
-    colophon: 'React és TypeScript alapon, React, TypeScript. rm -rf — kezdjük elölről.',
+    colophon: 'React és TypeScript alapon és most kezdjük elölről - rm -rf.',
     version: 'v2.6',
   },
 

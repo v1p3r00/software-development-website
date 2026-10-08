@@ -31,6 +31,20 @@ export interface Faq {
 
 export const faqs: Faq[] = [
   {
+    id: 'check',
+    q: { en: 'Can you check my current website?', hu: 'Meg tudod nézni a mostani weboldalamat?' },
+    a: {
+      en: 'Yes — the free website check gives an instant report on speed (Google PageSpeed), findability on Google, mobile readiness and security, with a plain-language fix for each issue. From the report you can ask for a free personal review.',
+      hu: 'Igen — az ingyenes weboldal-ellenőrzés azonnali jelentést ad a sebességről (Google PageSpeed), a Google-ben való megtalálhatóságról, a mobilbarátságról és a biztonságról, minden hibához érthető javítási javaslattal. A jelentésből ingyenes személyes értékelést is kérhetsz.',
+    },
+    keys: {
+      en: ['check', 'audit', 'review', 'test', 'analyse', 'analyze', 'scan', 'score', 'my', 'current', 'existing', 'evaluate'],
+      hu: ['ellenőriz', 'ellenőrzés', 'ellenőrizd', 'audit', 'átvilágítás', 'teszt', 'elemzés', 'elemez', 'mostani', 'jelenlegi', 'meglévő', 'értékelés'],
+    },
+    link: { href: '/website-check/', label: { en: 'Free website check', hu: 'Ingyenes weboldal-ellenőrzés' } },
+    next: [{ href: '/website-check/', label: { en: 'Run the check', hu: 'Ellenőrzés indítása' } }, { faq: 'modernize' }, { order: true }],
+  },
+  {
     id: 'services',
     q: { en: 'What do you build?', hu: 'Mit fejlesztesz?' },
     a: {
@@ -124,7 +138,7 @@ export const faqs: Faq[] = [
       hu: ['modernizál', 'modernizálás', 'megújít', 'megújítás', 'újratervez', 'régi', 'elavult', 'frissít', 'felújít', 'legacy', 'meglévő', 'átalakít'],
     },
     link: { href: '/modernization/', label: { en: 'Website modernization: before & after', hu: 'Weboldal-modernizálás: előtte–utána' } },
-    next: [{ order: true }, { faq: 'takeover' }],
+    next: [{ faq: 'check' }, { order: true }, { faq: 'takeover' }],
   },
   {
     id: 'takeover',
@@ -202,7 +216,7 @@ export const faqs: Faq[] = [
       en: ['seo', 'google', 'search', 'found', 'ranking', 'rank', 'visibility', 'geo', 'aeo', 'traffic', 'speed', 'fast'],
       hu: ['seo', 'google', 'kereső', 'keresés', 'megtalál', 'helyezés', 'láthatóság', 'geo', 'aeo', 'forgalom', 'gyors', 'gyorsaság'],
     },
-    next: [{ show: 'articles' }, { order: true }],
+    next: [{ faq: 'check' }, { show: 'articles' }, { order: true }],
   },
   {
     id: 'ai',
@@ -352,4 +366,4 @@ export const faqs: Faq[] = [
 ];
 
 /** the questions offered as buttons when the visitor picks "Ask a question" */
-export const popular = ['price-website', 'timeline', 'process', 'modernize', 'shop', 'ai', 'demos', 'references'];
+export const popular = ['price-website', 'timeline', 'check', 'process', 'modernize', 'shop', 'ai', 'demos', 'references'];

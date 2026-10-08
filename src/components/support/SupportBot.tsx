@@ -5,6 +5,8 @@ import { stripLang } from '../../i18n/paths';
 import { isLandingStage } from '../../data/landings';
 import { cx } from '../ui';
 import { TEXT } from './text';
+import { SUPPORT_EVENT } from './open';
+import type { SupportRequest } from './open';
 import './support.css';
 
 // the conversation (and the site index it searches) is only fetched on the first open
@@ -124,6 +126,20 @@ export default function SupportBot() {
   };
   const close = useCallback(() => setOpen(false), []);
 
+  // other parts of the site can open the chat, e.g. a "Start a project" button
+  const [request, setRequest] = useState<{ n: number; interest?: string } | null>(null);
+  useEffect(() => {
+    const on = (e: Event) => {
+      const d = (e as CustomEvent<SupportRequest>).detail ?? {};
+      setMounted(true);
+      setOpen(true);
+      setUnread(false);
+      setRequest((r) => ({ n: (r?.n ?? 0) + 1, interest: d.interest }));
+    };
+    window.addEventListener(SUPPORT_EVENT, on);
+    return () => window.removeEventListener(SUPPORT_EVENT, on);
+  }, []);
+
   if (hidden) return null;
   return (
     <>
@@ -181,7 +197,7 @@ export default function SupportBot() {
 
       {mounted && (
         <Suspense fallback={null}>
-          <SupportPanel open={open} onClose={close} />
+          <SupportPanel open={open} onClose={close} request={request} />
         </Suspense>
       )}
     </>

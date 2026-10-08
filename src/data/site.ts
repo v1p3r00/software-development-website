@@ -14,6 +14,8 @@ export const site = {
   formEndpoint: 'https://api.web3forms.com/submit',
   // Cloudflare Worker: every GET adds one visit and returns { visitors: n }
   counterEndpoint: 'https://softwaredevelopment-counter.punkboy40.workers.dev/',
+  // Cloudflare Worker behind the free website check (source: workers/site-check/worker.js)
+  checkEndpoint: 'https://softwaredevelopment-site-check.punkboy40.workers.dev',
   formAccessKey: '6663fd0a-d3f1-4c91-b881-8ea938ffb30e',
   // Patreon page for the course's sample projects; set the real address here
   patreon: 'https://www.patreon.com/',

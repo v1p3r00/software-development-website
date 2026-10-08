@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import type { VisualKey } from '../data/projects';
 
 // drawn in text colour at varying strength, so the schematics read clearly
@@ -12,6 +13,10 @@ const T = 'rgb(var(--c-text))';
  * Each variant is a schematic of the kind of system the project is.
  */
 export default function ProjectVisual({ variant }: { variant: VisualKey }) {
+  // decorative only: drawn after hydration so the prerendered HTML stays light
+  const [ready, setReady] = useState(false);
+  useEffect(() => setReady(true), []);
+  if (!ready) return <div className="aspect-[16/10] h-full w-full bg-surface2" aria-hidden />;
   return (
     <svg viewBox="0 0 320 200" className="pv h-full w-full" fill="none" aria-hidden role="presentation">
       <defs>

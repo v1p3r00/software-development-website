@@ -235,7 +235,7 @@ export default function Articles() {
                     {image && (
                       <img
                         src={image}
-                        alt=""
+                        alt={v.title}
                         width={1200}
                         height={630}
                         loading={i < 6 ? 'eager' : 'lazy'}

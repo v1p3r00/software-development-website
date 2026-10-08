@@ -167,6 +167,10 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
   const { theme, toggle } = useTheme();
   const [compact, setCompact] = useState(false);
   const [open, setOpen] = useState(false);
+  // the mobile list is only built once it is first opened: the same links are in the
+  // desktop menu and the footer, so the prerendered page stays lighter
+  const [panelSeen, setPanelSeen] = useState(false);
+  if (open && !panelSeen) setPanelSeen(true);
   const { pathname } = useLocation();
   const onHome = stripLang(pathname) === '/';
   const section = useActiveSection(site.sections, onHome);
@@ -454,6 +458,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
           open ? 'max-h-[calc(100svh-4.5rem)]' : 'max-h-0',
         )}
       >
+        {(open || panelSeen) && (
         <nav aria-label="Mobile" className="px-5 py-4 sm:px-8">
           {stage && (
             <div className="border-b border-line pb-4">
@@ -570,6 +575,14 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             {t.nav.articles}
             <span className="font-mono text-2xs tracking-tech text-accent">[03]</span>
           </Link>
+          <Link
+            to={lp('/website-check/')}
+            onClick={() => setOpen(false)}
+            className="flex items-baseline justify-between border-b border-line py-4 font-display text-2xl font-extrabold uppercase tracking-tight"
+          >
+            {lang === 'hu' ? 'Weboldal-ellenőrzés' : 'Website check'}
+            <span className="font-mono text-2xs tracking-tech text-accent">{lang === 'hu' ? 'INGYENES' : 'FREE'}</span>
+          </Link>
           {items.map((item, i) => (
             <a
               key={item.id}
@@ -591,6 +604,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             <LanguageSwitcher />
           </div>
         </nav>
+        )}
       </div>
     </header>
   );

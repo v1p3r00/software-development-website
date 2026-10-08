@@ -5,9 +5,10 @@ import { Link } from 'react-router-dom';
 import { usePageTransition } from '../lib/pageTransition';
 import { ArticlesPage } from '../pages/lazy';
 import { useCursorPref } from '../hooks/useCursorPref';
+import { featuredIndustries } from '../data/industries';
 
 export default function Footer() {
-  const { t, lp } = useI18n();
+  const { t, lp, lang } = useI18n();
   const { link } = usePageTransition();
   const year = new Date().getFullYear();
   const goTo = useGoToSection();
@@ -77,6 +78,30 @@ export default function Footer() {
               className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
             >
               {t.palette.goCourse}
+            </Link>
+            <Link
+              to={lp('/website-check/')}
+              data-cursor="follow"
+              className="font-mono text-2xs uppercase tracking-tech text-accent transition-colors hover:text-text"
+            >
+              {lang === 'hu' ? 'Ingyenes weboldal-ellenőrzés' : 'Free website check'}
+            </Link>
+            {featuredIndustries.map((ind) => (
+              <Link
+                key={ind.slug}
+                to={lp(`/industries/${ind.slug}/`)}
+                data-cursor="follow"
+                className="font-mono text-2xs uppercase tracking-tech text-muted transition-colors hover:text-accent"
+              >
+                {ind.nav[lang]}
+              </Link>
+            ))}
+            <Link
+              to={lp('/industries/')}
+              data-cursor="follow"
+              className="font-mono text-2xs uppercase tracking-tech text-text transition-colors hover:text-accent"
+            >
+              {lang === 'hu' ? 'Összes iparág' : 'All industries'} →
             </Link>
           </nav>
 
