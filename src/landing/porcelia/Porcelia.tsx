@@ -1,9 +1,10 @@
-import { useMemo, useRef, useState } from 'react';
-import type { CSSProperties, FormEvent, KeyboardEvent, PointerEvent as RPointerEvent, ReactNode } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import type { CSSProperties, FormEvent, KeyboardEvent, MouseEvent as RMouseEvent, PointerEvent as RPointerEvent, ReactNode } from 'react';
 import '@fontsource-variable/fraunces';
 import '@fontsource-variable/fraunces/wght-italic.css';
 import './porcelia.css';
 import { jump, reducedMotion, useCountUp, useInView, useReveal, useScrolledPast, useToast } from '../kit';
+import { AppIcons, AppSheet, AppTabBar, SwipeDots, useLandingPhone } from '../appKit';
 
 /**
  * Porcelia Klinika — a fictional premium dental & aesthetic clinic in Budapest.
@@ -366,7 +367,10 @@ function Marquee({ children }: { children: ReactNode }) {
 
 /* --------------------------------------------------------------- sections */
 
-function Nav() {
+/** click handler for every "book" link: scrolls to the booking card, or opens the booking sheet on phones */
+type BookLink = (e: RMouseEvent) => void;
+
+function Nav({ onBook }: { onBook: BookLink }) {
   const solid = useScrolledPast(30);
   return (
     <nav className={`pc-nav ${solid ? 'is-solid' : ''}`} aria-label="Porcelia Klinika">
@@ -387,7 +391,7 @@ function Nav() {
             </a>
           ))}
         </div>
-        <a href="#foglalas" onClick={jump('foglalas')} className="pc-btn pc-btn--sm pc-btn--teal">
+        <a href="#foglalas" onClick={onBook} className="pc-btn pc-btn--sm pc-btn--teal">
           Időpontfoglalás
         </a>
       </div>
@@ -395,7 +399,7 @@ function Nav() {
   );
 }
 
-function Hero() {
+function Hero({ onBook }: { onBook: BookLink }) {
   return (
     <header className="pc-hero" id="top">
       <div className="pc-hero-bg" aria-hidden>
@@ -420,7 +424,7 @@ function Hero() {
             megmutatjuk — és csak akkor kezdünk bele, amikor Ön is biztos benne.
           </p>
           <div className="pc-cta-row" data-reveal style={d(260)}>
-            <a href="#foglalas" onClick={jump('foglalas')} className="pc-btn pc-btn--teal">
+            <a href="#foglalas" onClick={onBook} className="pc-btn pc-btn--teal">
               Díjtalan konzultáció <span aria-hidden>→</span>
             </a>
             <a href="#kalkulator" onClick={jump('kalkulator')} className="pc-btn pc-btn--ghost">
@@ -506,6 +510,7 @@ function Trust() {
 }
 
 function Pillars() {
+  const row = useRef<HTMLDivElement>(null);
   const items = [
     ['Nyugalom', 'Csendes kezelők, takaró, zajszűrős fejhallgató és szinte érezhetetlen, számítógép-vezérelt érzéstelenítés. Annyi idő, amennyire szüksége van.'],
     ['Átláthatóság', 'A konzultáció végén írásos, tételes árajánlatot kap, amely a kezelés végéig nem változik. Rejtett költség nincs, meglepetés sincs.'],
@@ -520,7 +525,7 @@ function Pillars() {
         <h2 className="pc-h2 pc-h2--narrow" data-reveal>
           Fogászat, amelytől nem kell tartani. <em>Csak várni rá.</em>
         </h2>
-        <div className="pc-pillars-grid">
+        <div className="pc-pillars-grid lp-swipe" ref={row}>
           {items.map(([h, p], i) => (
             <article key={h} className="pc-pillar" data-reveal style={d(i * 120)}>
               <span className="pc-num">0{i + 1}</span>
@@ -529,12 +534,14 @@ function Pillars() {
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={items.length} />
       </div>
     </section>
   );
 }
 
 function Treatments({ onAdd }: { onAdd: (id: TreatId) => void }) {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="pc-treat" id="kezelesek">
       <div className="pc-wrap">
@@ -552,7 +559,7 @@ function Treatments({ onAdd }: { onAdd: (id: TreatId) => void }) {
             egy kattintással.
           </p>
         </div>
-        <div className="pc-treat-grid">
+        <div className="pc-treat-grid lp-swipe" ref={row}>
           {TREATS.map((t, i) => (
             <article key={t.id} className="pc-tcard" data-reveal style={d((i % 3) * 90)}>
               <div className="pc-tcard-top">
@@ -573,6 +580,7 @@ function Treatments({ onAdd }: { onAdd: (id: TreatId) => void }) {
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={TREATS.length} />
       </div>
     </section>
   );
@@ -585,6 +593,7 @@ function Estimator({ qty, setQty, onBook }: { qty: Record<TreatId, number>; setQ
   const hi = chosen.reduce((s, t) => s + t.max * qty[t.id], 0);
   const mid = (lo + hi) / 2;
   const top = chosen.slice().sort((a, b) => b.max * qty[b.id] - a.max * qty[a.id])[0];
+  const phone = useLandingPhone();
   return (
     <section className="pc-est" id="kalkulator">
       <div className="pc-wrap">
@@ -595,31 +604,46 @@ function Estimator({ qty, setQty, onBook }: { qty: Record<TreatId, number>; setQ
           Tudja, mire számíthat — <em>még az első találkozás előtt.</em>
         </h2>
         <div className="pc-est-grid">
-          <ul className="pc-est-list" data-reveal>
-            {TREATS.map((t) => {
-              const n = qty[t.id];
-              return (
-                <li key={t.id} className={n ? 'is-on' : ''}>
-                  <Icon id={t.id} />
-                  <div className="pc-est-name">
-                    <b>{t.name}</b>
-                    <small>
-                      {ft(t.min)} – {ft(t.max)} / {t.unit}
-                    </small>
-                  </div>
-                  <div className="pc-step" role="group" aria-label={`${t.name} mennyiség`}>
-                    <button type="button" onClick={() => setQty(t.id, n - 1)} disabled={n === 0} aria-label="Kevesebb">
-                      −
-                    </button>
-                    <output aria-live="polite">{n}</output>
-                    <button type="button" onClick={() => setQty(t.id, n + 1)} disabled={n >= t.cap} aria-label="Több">
-                      +
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          {/* a plain grid item on desktop; on phones it bounds the sticky running total */}
+          <div className="pc-est-col">
+            {phone && (
+              <div className="pc-est-dock" aria-live="polite">
+                <div>
+                  <small>Becsült költség</small>
+                  <b>{chosen.length ? `${ft(lo).replace(' Ft', '')} – ${ft(hi)}` : 'Válasszon kezelést'}</b>
+                  {instal && mid >= 150000 && <small>vagy havonta {ft(lo / 12)}-tól, 0% THM</small>}
+                </div>
+                <button type="button" className="pc-btn pc-btn--teal pc-btn--sm" onClick={() => onBook(top ? top.id : '')}>
+                  Foglalok
+                </button>
+              </div>
+            )}
+            <ul className="pc-est-list" data-reveal>
+              {TREATS.map((t) => {
+                const n = qty[t.id];
+                return (
+                  <li key={t.id} className={n ? 'is-on' : ''}>
+                    <Icon id={t.id} />
+                    <div className="pc-est-name">
+                      <b>{t.name}</b>
+                      <small>
+                        {ft(t.min)} – {ft(t.max)} / {t.unit}
+                      </small>
+                    </div>
+                    <div className="pc-step" role="group" aria-label={`${t.name} mennyiség`}>
+                      <button type="button" onClick={() => setQty(t.id, n - 1)} disabled={n === 0} aria-label="Kevesebb">
+                        −
+                      </button>
+                      <output aria-live="polite">{n}</output>
+                      <button type="button" onClick={() => setQty(t.id, n + 1)} disabled={n >= t.cap} aria-label="Több">
+                        +
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
 
           <aside className="pc-est-card" data-reveal style={d(120)}>
             <div className="pc-est-glow" aria-hidden />
@@ -816,6 +840,7 @@ function Portrait({ mono, hue }: { mono: string; hue: string }) {
 }
 
 function Doctors() {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="pc-docs" id="orvosaink">
       <div className="pc-wrap">
@@ -832,7 +857,7 @@ function Doctors() {
             Kis csapatban dolgozunk, hogy minden páciens ugyanazzal az orvossal találkozzon a kezelés elejétől a végéig.
           </p>
         </div>
-        <div className="pc-docs-grid">
+        <div className="pc-docs-grid lp-swipe" ref={row}>
           {DOCTORS.map((doc, i) => (
             <article key={doc.name} className="pc-doc" data-reveal style={d(i * 90)}>
               <Portrait mono={doc.mono} hue={doc.hue} />
@@ -842,6 +867,7 @@ function Doctors() {
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={DOCTORS.length} />
       </div>
     </section>
   );
@@ -900,7 +926,10 @@ const BOOK_OPTS: Array<{ id: TreatId | 'consult'; name: string; note: string }> 
 const WD = ['V', 'H', 'K', 'Sze', 'Cs', 'P', 'Szo'];
 const SLOTS = ['8:30', '9:30', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00'];
 
-function Booking({ pick, setPick, notify }: { pick: string; setPick: (s: string) => void; notify: (m: string) => void }) {
+type BookProps = { pick: string; setPick: (s: string) => void; notify: (m: string) => void };
+
+/** the three-step booking card: inline in the booking section on larger screens, inside the booking sheet on phones */
+function BookingCard({ pick, setPick, notify, inSheet = false }: BookProps & { inSheet?: boolean }) {
   const [step, setStep] = useState(0);
   const [day, setDay] = useState(-1);
   const [slot, setSlot] = useState('');
@@ -945,6 +974,141 @@ function Booking({ pick, setPick, notify }: { pick: string; setPick: (s: string)
   });
 
   return (
+    <div className={`pc-book-card${inSheet ? ' pc-book-card--sheet' : ''}`} {...(inSheet ? {} : { 'data-reveal': '', style: d(100) })}>
+      <ol className="pc-progress" aria-label="Foglalás lépései">
+        {['Kezelés', 'Időpont', 'Adatok'].map((s, i) => (
+          <li key={s} className={`${i === step && !done ? 'is-now' : ''} ${i < step || done ? 'is-done' : ''}`} aria-current={i === step ? 'step' : undefined}>
+            <span>{i < step || done ? '✓' : i + 1}</span>
+            {s}
+          </li>
+        ))}
+      </ol>
+      <div className="pc-progress-bar" aria-hidden>
+        <i style={{ transform: `scaleX(${done ? 1 : (step + 1) / 3})` }} />
+      </div>
+
+      {done ? (
+        <div className="pc-book-done">
+          <svg viewBox="0 0 64 64" className="pc-done-ico" aria-hidden>
+            <circle cx="32" cy="32" r="29" />
+            <path d="M20 33l8 8 16-17" />
+          </svg>
+          <h3>Időpontját rögzítettük</h3>
+          <p>
+            {opt?.name} · {dateLabel}, {slot}
+          </p>
+          <p className="pc-fine">Designbemutató: adatai nem kerültek elküldésre.</p>
+          <button type="button" className="pc-btn pc-btn--ghost" onClick={reset}>
+            Új foglalás
+          </button>
+        </div>
+      ) : (
+        <div className="pc-book-body" key={step}>
+          {step === 0 && (
+            <div className="pc-opts" role="radiogroup" aria-label="Kezelés">
+              {BOOK_OPTS.map((o) => (
+                <button key={o.id} type="button" role="radio" aria-checked={pick === o.id} className={`pc-opt ${pick === o.id ? 'is-on' : ''}`} onClick={() => setPick(o.id)}>
+                  <b>{o.name}</b>
+                  <small>{o.note}</small>
+                </button>
+              ))}
+            </div>
+          )}
+          {step === 1 && (
+            <>
+              <p className="pc-book-label">Nap</p>
+              <div className="pc-days" role="radiogroup" aria-label="Nap">
+                {days.map((x, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    role="radio"
+                    aria-checked={day === i}
+                    className={`pc-day ${day === i ? 'is-on' : ''}`}
+                    onClick={() => {
+                      setDay(i);
+                      setSlot('');
+                    }}
+                  >
+                    <small>{WD[x.getDay()]}</small>
+                    <b>{x.getDate()}</b>
+                    <small>{x.toLocaleDateString('hu-HU', { month: 'short' })}</small>
+                  </button>
+                ))}
+              </div>
+              <p className="pc-book-label">Időpont {day >= 0 && <span>· {dateLabel}</span>}</p>
+              <div className="pc-slots" role="radiogroup" aria-label="Időpont">
+                {SLOTS.map((s, i) => {
+                  const sat = day >= 0 && days[day].getDay() === 6;
+                  const off = day < 0 || (day * 3 + i) % 5 === 0 || (sat && i > 3);
+                  return (
+                    <button key={s} type="button" role="radio" aria-checked={slot === s} disabled={off} className={`pc-slot ${slot === s ? 'is-on' : ''}`} onClick={() => setSlot(s)}>
+                      {s}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+          {step === 2 && (
+            <form id="pc-book-form" className="pc-form" onSubmit={submit} noValidate>
+              <p className="pc-summary">
+                <b>{opt?.name}</b> · {dateLabel}, {slot}
+              </p>
+              <label>
+                <span>Teljes név</span>
+                <input {...field('name')} autoComplete="name" placeholder="Kovács Júlia" />
+              </label>
+              <div className="pc-form-row">
+                <label>
+                  <span>Telefonszám</span>
+                  <input {...field('phone')} type="tel" autoComplete="tel" placeholder="+36 30 123 4567" />
+                </label>
+                <label>
+                  <span>E-mail-cím</span>
+                  <input {...field('email')} type="email" autoComplete="email" placeholder="julia@email.hu" />
+                </label>
+              </div>
+              <label>
+                <span>Megjegyzés (nem kötelező)</span>
+                <textarea {...field('note')} rows={2} placeholder="Pl. szeretném, ha lassan haladnánk." />
+              </label>
+              <label className="pc-check">
+                <input type="checkbox" checked={form.ok} onChange={(e) => setForm({ ...form, ok: e.target.checked })} />
+                <span>Elfogadom az adatkezelési tájékoztatót.</span>
+              </label>
+            </form>
+          )}
+        </div>
+      )}
+
+      {!done && (
+        <div className="pc-book-nav">
+          {step > 0 ? (
+            <button type="button" className="pc-btn pc-btn--ghost pc-btn--sm" onClick={() => setStep(step - 1)}>
+              ← Vissza
+            </button>
+          ) : (
+            <span />
+          )}
+          {step < 2 ? (
+            <button type="button" className="pc-btn pc-btn--teal pc-btn--sm" onClick={next}>
+              Tovább →
+            </button>
+          ) : (
+            <button type="submit" form="pc-book-form" className="pc-btn pc-btn--teal pc-btn--sm">
+              Foglalás véglegesítése
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Booking({ onOpen, ...props }: BookProps & { onOpen: () => void }) {
+  const phone = useLandingPhone();
+  return (
     <section className="pc-book" id="foglalas">
       <div className="pc-wrap pc-book-grid">
         <div className="pc-book-intro">
@@ -967,141 +1131,32 @@ function Booking({ pick, setPick, notify }: { pick: string; setPick: (s: string)
           </ul>
         </div>
 
-        <div className="pc-book-card" data-reveal style={d(100)}>
-          <ol className="pc-progress" aria-label="Foglalás lépései">
-            {['Kezelés', 'Időpont', 'Adatok'].map((s, i) => (
-              <li key={s} className={`${i === step && !done ? 'is-now' : ''} ${i < step || done ? 'is-done' : ''}`} aria-current={i === step ? 'step' : undefined}>
-                <span>{i < step || done ? '✓' : i + 1}</span>
-                {s}
-              </li>
-            ))}
-          </ol>
-          <div className="pc-progress-bar" aria-hidden>
-            <i style={{ transform: `scaleX(${done ? 1 : (step + 1) / 3})` }} />
+        {phone ? (
+          // phones: a compact entry point; the full three-step card opens as a bottom sheet
+          <div className="pc-book-launch">
+            <ol>
+              {['Kezelés', 'Időpont', 'Adatok'].map((x, n) => (
+                <li key={x}>
+                  <span>{n + 1}</span>
+                  {x}
+                </li>
+              ))}
+            </ol>
+            <button type="button" className="pc-btn pc-btn--teal pc-btn--block" onClick={onOpen}>
+              Időpontot foglalok <span aria-hidden>→</span>
+            </button>
+            <p className="pc-fine">Díjtalan konzultáció · visszahívás 24 órán belül</p>
           </div>
-
-          {done ? (
-            <div className="pc-book-done">
-              <svg viewBox="0 0 64 64" className="pc-done-ico" aria-hidden>
-                <circle cx="32" cy="32" r="29" />
-                <path d="M20 33l8 8 16-17" />
-              </svg>
-              <h3>Időpontját rögzítettük</h3>
-              <p>
-                {opt?.name} · {dateLabel}, {slot}
-              </p>
-              <p className="pc-fine">Designbemutató: adatai nem kerültek elküldésre.</p>
-              <button type="button" className="pc-btn pc-btn--ghost" onClick={reset}>
-                Új foglalás
-              </button>
-            </div>
-          ) : (
-            <div className="pc-book-body" key={step}>
-              {step === 0 && (
-                <div className="pc-opts" role="radiogroup" aria-label="Kezelés">
-                  {BOOK_OPTS.map((o) => (
-                    <button key={o.id} type="button" role="radio" aria-checked={pick === o.id} className={`pc-opt ${pick === o.id ? 'is-on' : ''}`} onClick={() => setPick(o.id)}>
-                      <b>{o.name}</b>
-                      <small>{o.note}</small>
-                    </button>
-                  ))}
-                </div>
-              )}
-              {step === 1 && (
-                <>
-                  <p className="pc-book-label">Nap</p>
-                  <div className="pc-days" role="radiogroup" aria-label="Nap">
-                    {days.map((x, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        role="radio"
-                        aria-checked={day === i}
-                        className={`pc-day ${day === i ? 'is-on' : ''}`}
-                        onClick={() => {
-                          setDay(i);
-                          setSlot('');
-                        }}
-                      >
-                        <small>{WD[x.getDay()]}</small>
-                        <b>{x.getDate()}</b>
-                        <small>{x.toLocaleDateString('hu-HU', { month: 'short' })}</small>
-                      </button>
-                    ))}
-                  </div>
-                  <p className="pc-book-label">Időpont {day >= 0 && <span>· {dateLabel}</span>}</p>
-                  <div className="pc-slots" role="radiogroup" aria-label="Időpont">
-                    {SLOTS.map((s, i) => {
-                      const sat = day >= 0 && days[day].getDay() === 6;
-                      const off = day < 0 || (day * 3 + i) % 5 === 0 || (sat && i > 3);
-                      return (
-                        <button key={s} type="button" role="radio" aria-checked={slot === s} disabled={off} className={`pc-slot ${slot === s ? 'is-on' : ''}`} onClick={() => setSlot(s)}>
-                          {s}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-              {step === 2 && (
-                <form id="pc-book-form" className="pc-form" onSubmit={submit} noValidate>
-                  <p className="pc-summary">
-                    <b>{opt?.name}</b> · {dateLabel}, {slot}
-                  </p>
-                  <label>
-                    <span>Teljes név</span>
-                    <input {...field('name')} autoComplete="name" placeholder="Kovács Júlia" />
-                  </label>
-                  <div className="pc-form-row">
-                    <label>
-                      <span>Telefonszám</span>
-                      <input {...field('phone')} type="tel" autoComplete="tel" placeholder="+36 30 123 4567" />
-                    </label>
-                    <label>
-                      <span>E-mail-cím</span>
-                      <input {...field('email')} type="email" autoComplete="email" placeholder="julia@email.hu" />
-                    </label>
-                  </div>
-                  <label>
-                    <span>Megjegyzés (nem kötelező)</span>
-                    <textarea {...field('note')} rows={2} placeholder="Pl. szeretném, ha lassan haladnánk." />
-                  </label>
-                  <label className="pc-check">
-                    <input type="checkbox" checked={form.ok} onChange={(e) => setForm({ ...form, ok: e.target.checked })} />
-                    <span>Elfogadom az adatkezelési tájékoztatót.</span>
-                  </label>
-                </form>
-              )}
-            </div>
-          )}
-
-          {!done && (
-            <div className="pc-book-nav">
-              {step > 0 ? (
-                <button type="button" className="pc-btn pc-btn--ghost pc-btn--sm" onClick={() => setStep(step - 1)}>
-                  ← Vissza
-                </button>
-              ) : (
-                <span />
-              )}
-              {step < 2 ? (
-                <button type="button" className="pc-btn pc-btn--teal pc-btn--sm" onClick={next}>
-                  Tovább →
-                </button>
-              ) : (
-                <button type="submit" form="pc-book-form" className="pc-btn pc-btn--teal pc-btn--sm">
-                  Foglalás véglegesítése
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+        ) : (
+          <BookingCard {...props} />
+        )}
       </div>
     </section>
   );
 }
 
 function Testimonials() {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="pc-quotes">
       <div className="pc-wrap">
@@ -1111,7 +1166,7 @@ function Testimonials() {
         <h2 className="pc-h2 pc-h2--center" data-reveal>
           A legszebb visszajelzés <em>egy mosoly.</em>
         </h2>
-        <div className="pc-quotes-grid">
+        <div className="pc-quotes-grid lp-swipe" ref={row}>
           {QUOTES.map((q, i) => (
             <figure key={q.who} className="pc-quote" data-reveal style={d(i * 110)}>
               <div className="pc-stars" aria-label="5 csillag">
@@ -1130,6 +1185,7 @@ function Testimonials() {
             </figure>
           ))}
         </div>
+        <SwipeDots row={row} count={QUOTES.length} />
         <p className="pc-fine pc-center">A vélemények kitaláltak — a Porcelia Klinika egy designbemutató.</p>
       </div>
     </section>
@@ -1170,7 +1226,7 @@ function Faq() {
   );
 }
 
-function FinalCta() {
+function FinalCta({ onBook }: { onBook: BookLink }) {
   return (
     <section className="pc-final">
       <div className="pc-final-art" aria-hidden>
@@ -1191,7 +1247,7 @@ function FinalCta() {
           45 perces konzultáció, 3D szkennelés és digitális mosolyterv-előnézet — kötelezettség nélkül.
         </p>
         <div className="pc-cta-row pc-cta-row--center" data-reveal>
-          <a href="#foglalas" onClick={jump('foglalas')} className="pc-btn pc-btn--mint">
+          <a href="#foglalas" onClick={onBook} className="pc-btn pc-btn--mint">
             Időpontot foglalok <span aria-hidden>→</span>
           </a>
           <a href="#kalkulator" onClick={jump('kalkulator')} className="pc-btn pc-btn--ghost-l">
@@ -1245,6 +1301,14 @@ export default function Porcelia() {
   const [toast, notify] = useToast(3600);
   const [qty, setQtyAll] = useState<Record<TreatId, number>>(START_QTY);
   const [pick, setPick] = useState('');
+  const phone = useLandingPhone();
+  const [sheet, setSheet] = useState(false);
+  const closeSheet = useCallback(() => setSheet(false), []);
+  const toBook = () => (phone ? setSheet(true) : go('foglalas'));
+  const onBookLink: BookLink = (e) => {
+    e.preventDefault();
+    toBook();
+  };
   const setQty = (id: TreatId, n: number) => {
     const t = TREATS.find((x) => x.id === id)!;
     setQtyAll((q) => ({ ...q, [id]: clamp(n, 0, t.cap) }));
@@ -1258,12 +1322,12 @@ export default function Porcelia() {
   const book = (id: TreatId | '') => {
     const opt = BOOK_OPTS.find((o) => o.id === id);
     setPick(opt ? opt.id : 'consult');
-    go('foglalas');
+    toBook();
   };
   return (
     <div ref={root} className="porcelia">
-      <Nav />
-      <Hero />
+      <Nav onBook={onBookLink} />
+      <Hero onBook={onBookLink} />
       <Trust />
       <Pillars />
       <Treatments onAdd={add} />
@@ -1271,14 +1335,28 @@ export default function Porcelia() {
       <Technology />
       <Doctors />
       <PriceList />
-      <Booking pick={pick} setPick={setPick} notify={notify} />
+      <Booking pick={pick} setPick={setPick} notify={notify} onOpen={() => setSheet(true)} />
       <Testimonials />
       <Faq />
-      <FinalCta />
+      <FinalCta onBook={onBookLink} />
       <Footer />
       <div className={`pc-toast ${toast ? 'is-on' : ''}`} role="status" aria-live="polite">
         {toast}
       </div>
+      {phone && (
+        <AppSheet open={sheet} title="Időpontfoglalás" onClose={closeSheet} closeLabel="Bezárás">
+          <BookingCard pick={pick} setPick={setPick} notify={notify} inSheet />
+        </AppSheet>
+      )}
+      <AppTabBar
+        tabs={[
+          { id: 'top', label: 'Főoldal', icon: <AppIcons.home /> },
+          { id: 'kezelesek', label: 'Kezelések', icon: <AppIcons.tooth /> },
+          { id: 'kalkulator', label: 'Árak', icon: <AppIcons.sliders /> },
+          { id: 'orvosaink', label: 'Orvosok', icon: <AppIcons.users /> },
+        ]}
+        action={{ label: 'Foglalás', icon: <AppIcons.calendar />, onClick: () => setSheet(true) }}
+      />
     </div>
   );
 }

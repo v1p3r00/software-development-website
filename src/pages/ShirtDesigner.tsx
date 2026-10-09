@@ -13,6 +13,8 @@ import { FIT, FONTS, createLightRig, drawDesign, makeUniforms, modelId, patchShi
 import type { Design, FontId, Garment, Gender, LightPreset, LightRig, ModelId, ShirtUniforms, Side } from '../components/tools/shirtScene';
 import { createStage, download } from '../components/tools/stage';
 import type { Stage } from '../components/tools/stage';
+import { useGoToSection } from '../hooks/useGoToSection';
+import { AppBar, AppCaption, AppCard, AppDots, AppPrice, AppRange, AppRow, AppSeg, AppSheet, AppShell, Download, Fab, FloatSeg, ImageIcon, Move, Palette, Shirt, Sun, TextIcon, Toast, Trash, Upload, Zoom, ZoomOut, usePhoneApp } from '../components/tools/phoneApp';
 
 /** bump when a model file changes, so browsers fetch the new one instead of a cached copy */
 const MODEL_VERSION = 7;
@@ -84,6 +86,16 @@ const T = {
     loading: 'Loading the 3D model…',
     noGl: 'This browser could not start the 3D view.',
     views: { chest: 'Close-up', body: 'Full figure' },
+    tabs: { garment: 'Garment', colour: 'Colour', text: 'Text', image: 'Image', place: 'Placement' },
+    quote: 'Get a quote',
+    closeSheet: 'Close',
+    saveShort: 'Save',
+    lightShort: 'Light',
+    closer: 'Closer',
+    wider: 'Full figure',
+    textPh: 'Type your text…',
+    noImage: 'No image on this side yet',
+    piece: 'per piece',
     sample: 'softwaredevelopment.hu',
   },
   hu: {
@@ -129,6 +141,16 @@ const T = {
     loading: '3D modell betöltése…',
     noGl: 'Ez a böngésző nem tudta elindítani a 3D nézetet.',
     views: { chest: 'Közeli', body: 'Teljes alak' },
+    tabs: { garment: 'Ruha', colour: 'Szín', text: 'Szöveg', image: 'Kép', place: 'Elhelyezés' },
+    quote: 'Ajánlatkérés',
+    closeSheet: 'Bezárás',
+    saveShort: 'Mentés',
+    lightShort: 'Fény',
+    closer: 'Közelebb',
+    wider: 'Teljes alak',
+    textPh: 'Írd be a szöveget…',
+    noImage: 'Ezen az oldalon még nincs kép',
+    piece: 'darabonként',
     sample: 'softwaredevelopment.hu',
   },
   sk: {
@@ -174,6 +196,16 @@ const T = {
     loading: 'Načítava sa 3D model…',
     noGl: 'Tento prehliadač nedokázal spustiť 3D zobrazenie.',
     views: { chest: 'Detail', body: 'Celá postava' },
+    tabs: { garment: 'Oblečenie', colour: 'Farba', text: 'Text', image: 'Obrázok', place: 'Umiestnenie' },
+    quote: 'Získať ponuku',
+    closeSheet: 'Zavrieť',
+    saveShort: 'Uložiť',
+    lightShort: 'Svetlo',
+    closer: 'Bližšie',
+    wider: 'Celá postava',
+    textPh: 'Napíšte svoj text…',
+    noImage: 'Na tejto strane zatiaľ nie je obrázok',
+    piece: 'za kus',
     sample: 'softwaredevelopment.hu',
   },
 };
@@ -191,6 +223,7 @@ export default function ShirtDesigner() {
     image: `/og/shirt-designer.${lang}.png`,
   });
 
+  const phone = usePhoneApp();
   const [gender, setGender] = useState<Gender>('man');
   const [garment, setGarment] = useState<Garment>('tee');
   const [light, setLight] = useState<LightPreset>('studio');
@@ -202,6 +235,8 @@ export default function ShirtDesigner() {
   const [size, setSize] = useState<Size>('M');
   const [qty, setQty] = useState(1);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [modelReady, setModelReady] = useState<ModelId | null>(null);
+  const framed = useRef(false);
 
   const design = designs[side];
   const setD = <K extends keyof Design>(k: K, v: Design[K]) => setDesigns((d) => ({ ...d, [side]: { ...d[side], [k]: v } }));
@@ -214,10 +249,10 @@ export default function ShirtDesigner() {
   const canvases = useRef<Record<Side, HTMLCanvasElement> | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  // stage, lights and the print textures
+  // stage, lights and the print textures (made again when the layout switches between phone and desktop)
   useEffect(() => {
     const el = host.current;
-    if (!el) return;
+    if (!el || phone === null) return;
     let s: Stage;
     try {
       s = createStage(el, { fov: 30 });
@@ -262,8 +297,11 @@ export default function ShirtDesigner() {
       pmrem.dispose();
       s.dispose();
       stage.current = null;
+      framed.current = false;
+      setModelReady(null);
+      setState('loading');
     };
-  }, []);
+  }, [phone]);
 
   // background follows the theme
   useEffect(() => {
@@ -274,7 +312,6 @@ export default function ShirtDesigner() {
   }, [theme, state]);
 
   // load (once) and show the chosen model
-  const [modelReady, setModelReady] = useState<ModelId | null>(null);
   useEffect(() => {
     const s = stage.current;
     const u = uni.current;
@@ -379,7 +416,6 @@ export default function ShirtDesigner() {
       s.render();
     } else s.glide(target, pos);
   };
-  const framed = useRef(false);
   useEffect(() => {
     if (!modelReady) return;
     if (!framed.current) {
@@ -415,6 +451,43 @@ export default function ShirtDesigner() {
   const colors = (list: typeof SHIRTS) => list.map((c) => ({ id: c.id, hex: c.id, label: c[lang] }));
   const shirtName = SHIRTS.find((c) => c.id === color)?.[lang] ?? t.custom;
   const busy = state === 'ready' && !modelReady;
+  const saveName =
+    lang === 'hu' ? (garment === 'tee' ? 'polo-mockup.png' : 'pulover-mockup.png') : lang === 'sk' ? (garment === 'tee' ? 'tricko-mockup.png' : 'mikina-mockup.png') : `${garment === 'tee' ? 'tshirt' : 'hoodie'}-mockup.png`;
+  const save = () => stage.current && download(stage.current.snapshot(), saveName);
+
+  if (phone)
+    return (
+      <PhoneShirt
+        t={t}
+        lang={lang}
+        host={host}
+        state={state}
+        busy={busy}
+        ready={!!modelReady}
+        gender={gender}
+        setGender={setGender}
+        garment={garment}
+        setGarment={setGarment}
+        color={color}
+        setColor={setColor}
+        side={side}
+        setSide={setSide}
+        design={design}
+        setD={setD}
+        light={light}
+        setLight={setLight}
+        size={size}
+        setSize={setSize}
+        qty={qty}
+        setQty={setQty}
+        price={price}
+        frame={frame}
+        save={save}
+        onFile={onFile}
+        shirtName={shirtName}
+        colors={colors}
+      />
+    );
 
   return (
     <Section id="shirt-designer" className="pt-24 lg:pt-24">
@@ -426,7 +499,7 @@ export default function ShirtDesigner() {
         right={
           <button
             type="button"
-            onClick={() => stage.current && download(stage.current.snapshot(), lang === 'hu' ? (garment === 'tee' ? 'polo-mockup.png' : 'pulover-mockup.png') : lang === 'sk' ? (garment === 'tee' ? 'tricko-mockup.png' : 'mikina-mockup.png') : `${garment === 'tee' ? 'tshirt' : 'hoodie'}-mockup.png`)}
+            onClick={save}
             disabled={!modelReady}
             data-cursor="follow"
             className="group flex items-center gap-2 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors hover:text-accent disabled:opacity-40"
@@ -622,5 +695,270 @@ export default function ShirtDesigner() {
         </aside>
       </div>
     </Section>
+  );
+}
+
+/* ---------------------------------------------------------------- phone */
+
+type Tab = 'garment' | 'colour' | 'text' | 'image' | 'place';
+type Swatch = { id: string; hex: string; label: string };
+
+/** the phone layout: an app screen built on the same 3D stage, prints and price list */
+function PhoneShirt(p: {
+  t: (typeof T)['en'];
+  lang: 'en' | 'hu' | 'sk';
+  host: React.RefObject<HTMLDivElement | null>;
+  state: 'loading' | 'ready' | 'error';
+  busy: boolean;
+  ready: boolean;
+  gender: Gender;
+  setGender: (g: Gender) => void;
+  garment: Garment;
+  setGarment: (g: Garment) => void;
+  color: string;
+  setColor: (c: string) => void;
+  side: Side;
+  setSide: (s: Side) => void;
+  design: Design;
+  setD: <K extends keyof Design>(k: K, v: Design[K]) => void;
+  light: LightPreset;
+  setLight: (l: LightPreset) => void;
+  size: Size;
+  setSize: (s: Size) => void;
+  qty: number;
+  setQty: (n: number) => void;
+  price: { lines: { label: string; value: number }[]; total: number };
+  frame: (which: 'chest' | 'body') => void;
+  save: () => void;
+  onFile: (f: File | undefined) => void;
+  shirtName: string;
+  colors: (list: typeof SHIRTS) => Swatch[];
+}) {
+  const { t, lang, design, setD } = p;
+  const goTo = useGoToSection();
+  const [tab, setTab] = useState<Tab>('garment');
+  const [sheet, setSheet] = useState(false);
+  const [close, setClose] = useState(true);
+  const [toast, setToast] = useState<string | null>(null);
+  const file = useRef<HTMLInputElement>(null);
+  const fmt = (n: number) => (n < 0 ? `−${money(-n, lang)}` : money(n, lang));
+
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(null), 2200);
+    return () => clearTimeout(id);
+  }, [toast]);
+
+  const nextLight = () => {
+    const l = PRESETS[(PRESETS.indexOf(p.light) + 1) % PRESETS.length];
+    p.setLight(l);
+    setToast(`${t.lighting}: ${t.lights[l]}`);
+  };
+
+  const tabs = [
+    { id: 'garment' as const, label: t.tabs.garment, icon: <Shirt /> },
+    { id: 'colour' as const, label: t.tabs.colour, icon: <Palette /> },
+    { id: 'text' as const, label: t.tabs.text, icon: <TextIcon /> },
+    { id: 'image' as const, label: t.tabs.image, icon: <ImageIcon /> },
+    { id: 'place' as const, label: t.tabs.place, icon: <Move /> },
+  ];
+
+  const canvas = (
+    <>
+      <div ref={p.host} className="absolute inset-0" />
+      {(p.state !== 'ready' || p.busy) && (
+        <div className="absolute inset-0 grid place-items-center px-6 text-center text-[13px] text-muted">{p.state === 'error' ? t.noGl : t.loading}</div>
+      )}
+      <div className="absolute left-3 top-3">
+        <FloatSeg<Side>
+          value={p.side}
+          onChange={p.setSide}
+          options={[
+            { id: 'front', label: t.front },
+            { id: 'back', label: t.back },
+          ]}
+        />
+      </div>
+      <Toast text={toast} />
+      <div className="absolute right-3 top-3 flex flex-col gap-2.5">
+        <Fab
+          label={close ? t.wider : t.closer}
+          onClick={() => {
+            p.frame(close ? 'body' : 'chest');
+            setClose((v) => !v);
+          }}
+          disabled={!p.ready}
+        >
+          {close ? <ZoomOut /> : <Zoom />}
+        </Fab>
+        <Fab label={t.lightShort} onClick={nextLight} disabled={!p.ready}>
+          <Sun />
+        </Fab>
+        <Fab label={t.saveShort} onClick={p.save} disabled={!p.ready}>
+          <Download />
+        </Fab>
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      <AppShell
+        label={t.subtitle}
+        canvas={canvas}
+        tabs={tabs}
+        tab={tab}
+        onTab={setTab}
+        bar={
+          <AppBar
+            title={t.order}
+            sub={`${p.garment === 'tee' ? t.tee : t.hoodie} · ${p.shirtName} · ${p.size} × ${p.qty}`}
+            price={money(p.price.total, lang)}
+            cta={t.quote}
+            onOpen={() => setSheet(true)}
+            onCta={goTo('contact')}
+          />
+        }
+      >
+        {tab === 'garment' && (
+          <>
+            <AppSeg<Gender>
+              value={p.gender}
+              onChange={p.setGender}
+              options={[
+                { id: 'man', label: t.man },
+                { id: 'woman', label: t.woman },
+              ]}
+            />
+            <AppRow className="mt-3">
+              <AppCard wide on={p.garment === 'tee'} onClick={() => p.setGarment('tee')} icon={<GarmentIcon kind="tee" color={p.color} />} label={t.tee} sub={money(BASE.tee, lang)} />
+              <AppCard wide on={p.garment === 'hoodie'} onClick={() => p.setGarment('hoodie')} icon={<GarmentIcon kind="hoodie" color={p.color} />} label={t.hoodie} sub={money(BASE.hoodie, lang)} />
+            </AppRow>
+          </>
+        )}
+
+        {tab === 'colour' && (
+          <>
+            <AppDots value={p.color} options={p.colors(SHIRTS)} onChange={p.setColor} custom={t.custom} />
+            <AppCaption>
+              <b className="font-medium text-text">{p.shirtName}</b>
+            </AppCaption>
+          </>
+        )}
+
+        {tab === 'text' && (
+          <>
+            <textarea
+              value={design.text}
+              rows={2}
+              maxLength={80}
+              placeholder={t.textPh}
+              aria-label={`${t.text} · ${p.side === 'front' ? t.front : t.back}`}
+              onChange={(e) => setD('text', e.target.value.split('\n').slice(0, 4).join('\n'))}
+              className="w-full resize-none rounded-2xl border border-line bg-surface px-3.5 py-2.5 text-[16px] text-text outline-none transition-colors placeholder:text-dim focus:border-accent"
+            />
+            <div className="app-row -mx-4 mt-2.5 flex gap-2 overflow-x-auto px-4">
+              {(Object.keys(FONTS) as FontId[]).map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setD('font', id)}
+                  aria-pressed={design.font === id}
+                  aria-label={FONTS[id].label}
+                  className={cx(
+                    'shrink-0 rounded-full border px-4 py-1.5 text-[17px] leading-tight transition-colors',
+                    design.font === id ? 'border-accent bg-accent/10 text-text' : 'border-line bg-surface text-muted',
+                  )}
+                  style={{ fontFamily: FONTS[id].family, fontWeight: FONTS[id].weight }}
+                >
+                  Aa <span className="ml-1 text-[12px] font-normal opacity-70" style={{ fontFamily: 'inherit' }}>{FONTS[id].label}</span>
+                </button>
+              ))}
+            </div>
+            <div className="mt-2">
+              <AppDots value={design.color} options={p.colors(INKS)} onChange={(v) => setD('color', v)} />
+            </div>
+          </>
+        )}
+
+        {tab === 'image' && (
+          <>
+            <input
+              ref={file}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                p.onFile(e.target.files?.[0]);
+                e.target.value = '';
+              }}
+            />
+            {design.image ? (
+              <div className="flex items-center gap-3">
+                <img src={design.image.src} alt="" className="h-[84px] w-[84px] shrink-0 rounded-2xl border border-line bg-[repeating-conic-gradient(rgb(var(--c-line))_0_25%,transparent_0_50%)] bg-[length:14px_14px] object-contain p-1.5" />
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  <button type="button" onClick={() => file.current?.click()} className="flex items-center justify-center gap-2 rounded-full border border-line-strong bg-surface py-2.5 text-[13.5px] text-text">
+                    <Upload className="h-4 w-4" /> {t.replace}
+                  </button>
+                  <button type="button" onClick={() => setD('image', null)} className="flex items-center justify-center gap-2 rounded-full border border-line py-2.5 text-[13.5px] text-muted">
+                    <Trash className="h-4 w-4" /> {t.remove}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => file.current?.click()}
+                className="flex w-full flex-col items-center justify-center gap-1.5 rounded-2xl border border-dashed border-line-strong bg-surface py-5 text-text active:scale-[0.99]"
+              >
+                <Upload className="h-6 w-6 text-accent" />
+                <span className="text-[14px] font-medium">{t.upload}</span>
+                <span className="text-[12px] text-dim">{t.noImage}</span>
+              </button>
+            )}
+            <AppCaption>{t.imageHint}</AppCaption>
+          </>
+        )}
+
+        {tab === 'place' && (
+          <div className="space-y-3 pt-1">
+            <AppRange label={t.size} value={design.scale} min={0.35} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => setD('scale', v)} />
+            <AppRange label={t.pos} value={design.offset} min={-1} max={1} step={0.05} format={(v) => (v > 0 ? `+${Math.round(v * 100)}` : `${Math.round(v * 100)}`)} onChange={(v) => setD('offset', v)} />
+            <AppCaption>
+              {t.side}: <b className="font-medium text-text">{p.side === 'front' ? t.front : t.back}</b>
+            </AppCaption>
+          </div>
+        )}
+      </AppShell>
+
+      {sheet && (
+        <AppSheet title={t.order} close={t.closeSheet} onClose={() => setSheet(false)}>
+          <p className="mb-2 text-[13px] text-muted">{t.shirtSize}</p>
+          <AppSeg<Size> value={p.size} onChange={p.setSize} options={SIZES.map((id) => ({ id, label: id }))} />
+          <div className="mb-4 mt-4">
+            <AppRange label={t.qty} value={p.qty} min={1} max={100} step={1} format={(v) => `${v} ${t.pcs}`} onChange={p.setQty} />
+          </div>
+          <AppPrice lines={p.price.lines.map((l) => ({ label: l.label, value: fmt(l.value) }))} total={money(p.price.total, lang)} totalLabel={t.total} note={t.demo} />
+          <ConsultCta className="mt-4" />
+        </AppSheet>
+      )}
+    </>
+  );
+}
+
+/** a T-shirt or a hoodie, drawn in the chosen colour */
+function GarmentIcon({ kind, color }: { kind: Garment; color: string }) {
+  return (
+    <svg viewBox="0 0 64 56" className="h-[52px] w-[60px]" aria-hidden>
+      {kind === 'tee' ? (
+        <path d="M22 4l-16 8 6 12 6-3v31h28V21l6 3 6-12-16-8c-1.5 4-5.3 6.5-10 6.5S23.5 8 22 4z" fill={color} stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      ) : (
+        <>
+          <path d="M21 9l-14 7 3 30 8-2v8h28v-8l8 2 3-30-14-7" fill={color} stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+          <path d="M21 9c0-5 5-8 11-8s11 3 11 8c0 6-5 10-11 10S21 15 21 9z" fill={color} stroke="currentColor" strokeWidth="1.6" />
+          <path d="M24 38h16v8H24z" fill="none" stroke="currentColor" strokeWidth="1.2" opacity="0.6" />
+        </>
+      )}
+    </svg>
   );
 }

@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CSSProperties, FormEvent } from 'react';
 import '@fontsource-variable/cormorant-garamond';
 import '@fontsource-variable/cormorant-garamond/wght-italic.css';
 import '@fontsource-variable/manrope';
 import './vizszel.css';
 import { jump, reducedMotion, useCountUp, useInView, useReveal, useScrolledPast, useToast } from '../kit';
+import { AppIcons, AppSheet, AppTabBar, SwipeDots, useLandingPhone } from '../appKit';
 
 /**
  * Vízszél Villa — a fictional boutique lakeside hotel & spa on Lake Balaton.
@@ -577,6 +578,7 @@ function Press() {
 
 function Intro() {
   const [ref, seen] = useInView<HTMLDListElement>(0.4);
+  const pillars = useRef<HTMLDivElement>(null);
   const rooms = useCountUp(14, seen, 1400);
   const steps = useCountUp(90, seen, 1600);
   const year = useCountUp(1908, seen, 1800);
@@ -613,7 +615,7 @@ function Intro() {
           </dl>
         </div>
       </div>
-      <div className="vz-wrap vz-pillars">
+      <div className="vz-wrap vz-pillars lp-swipe" ref={pillars}>
         {[
           ['I.', 'Saját stég és nádas', 'Hajnalban kajakkal, délben egy könyvvel, este egy pohár borral. A stég a vendégeinké.'],
           ['II.', 'Lassú reggelek', 'Reggeli tizenegyig a tóra néző teraszon, helyi termelők sajtjaival, mézével és barackjával.'],
@@ -626,6 +628,7 @@ function Intro() {
           </article>
         ))}
       </div>
+      <SwipeDots row={pillars} count={3} />
     </section>
   );
 }
@@ -712,6 +715,7 @@ function Rooms({ onPick }: { onPick: (id: string) => void }) {
           </li>
         ))}
       </ul>
+      <SwipeDots row={track} count={ROOMS.length} />
     </section>
   );
 }
@@ -866,6 +870,7 @@ function Experiences() {
 }
 
 function Offers({ onPick }: { onPick: (room: string, nights: number, name: string) => void }) {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="vz-offers" id="ajanlatok">
       <div className="vz-wrap">
@@ -875,7 +880,7 @@ function Offers({ onPick }: { onPick: (room: string, nights: number, name: strin
         <h2 className="vz-h2 vz-h2--light vz-center" data-reveal style={d(80)}>
           Maradjon <em>egy kicsit tovább.</em>
         </h2>
-        <div className="vz-offer-grid">
+        <div className="vz-offer-grid lp-swipe" ref={row}>
           {OFFERS.map((o, i) => (
             <article key={o.id} className={`vz-offer ${o.featured ? 'is-featured' : ''}`} data-reveal style={d(i * 110)}>
               {o.featured && <span className="vz-badge">Vendégeink kedvence</span>}
@@ -896,19 +901,21 @@ function Offers({ onPick }: { onPick: (room: string, nights: number, name: strin
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={OFFERS.length} />
       </div>
     </section>
   );
 }
 
 function Quotes() {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="vz-quotes">
       <div className="vz-wrap">
         <p className="vz-eyebrow vz-center" data-reveal>
           Vendégeink írták
         </p>
-        <div className="vz-quote-grid">
+        <div className="vz-quote-grid lp-swipe" ref={row}>
           {QUOTES.map(([q, who, where], i) => (
             <figure key={who} className="vz-quote" data-reveal style={d(i * 120)}>
               <span className="vz-stars" aria-label="5 csillag">
@@ -922,6 +929,7 @@ function Quotes() {
             </figure>
           ))}
         </div>
+        <SwipeDots row={row} count={QUOTES.length} />
         <p className="vz-fine vz-center" data-reveal>
           A vélemények fiktívek — a Vízszél Villa egy design-bemutató része.
         </p>
@@ -964,7 +972,7 @@ function Faq() {
   );
 }
 
-function FinalCta() {
+function FinalCta({ onBook }: { onBook?: () => void }) {
   return (
     <section className="vz-final">
       <Art html={NIGHT} className="vz-night-art" vb="0 0 1600 700" par="xMidYMax slice" />
@@ -979,7 +987,16 @@ function FinalCta() {
           Közvetlen foglalás esetén a legjobb árat, késői kijelentkezést és egy palack északi parti bort adunk ajándékba.
         </p>
         <div className="vz-cta-row" data-reveal style={d(240)}>
-          <a href="#foglalas" onClick={jump('foglalas')} className="vz-btn vz-btn--coral">
+          <a
+            href="#foglalas"
+            onClick={(e) => {
+              if (onBook) {
+                e.preventDefault();
+                onBook();
+              } else jump('foglalas')(e);
+            }}
+            className="vz-btn vz-btn--coral"
+          >
             Időpontot választok <span aria-hidden>→</span>
           </a>
           <a href="#gyik" onClick={jump('gyik')} className="vz-btn vz-btn--glass">
@@ -1034,6 +1051,8 @@ export default function Vizszel() {
     return { arr, dep: addDays(arr, 3), guests: 2, room: 'naplemente' };
   });
   const [pulse, setPulse] = useState(0);
+  const phone = useLandingPhone();
+  const [sheet, setSheet] = useState(false);
   const set = (p: Partial<Booking>) => setB((prev) => ({ ...prev, ...p }));
 
   // the dock shows once the page is past the hero and the full bar is out of view (observer, no scroll handler)
@@ -1055,20 +1074,30 @@ export default function Vizszel() {
       notify('A távozás napja legyen legalább egy nappal az érkezés után.');
       return;
     }
+    setSheet(false);
     notify(`Foglalási kérés: ${q.room.name}, ${q.nights} éj, ${b.guests} fő — ${ft(q.total)}. (Design-bemutató, nem történt foglalás.)`);
   };
 
+  const closeSheet = useCallback(() => setSheet(false), []);
   const bringBar = () => setPulse((n) => n + 1);
 
   const pickRoom = (id: string) => {
     const r = ROOMS.find((x) => x.id === id) ?? ROOMS[0];
     set({ room: id, guests: Math.min(b.guests, r.cap) });
+    if (phone) {
+      setSheet(true);
+      return;
+    }
     bringBar();
     notify(`${r.name} kiválasztva — az árat lent, a foglalási sávban látja.`);
   };
 
   const pickOffer = (room: string, nights: number, name: string) => {
     set({ room, dep: addDays(b.arr, nights), guests: 2 });
+    if (phone) {
+      setSheet(true);
+      return;
+    }
     setPulse((n) => n + 1);
     document.getElementById('foglalas')?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
     notify(`„${name}” betöltve: ${nights} éj — ellenőrizze a dátumokat a foglalási sávban.`);
@@ -1102,12 +1131,30 @@ export default function Vizszel() {
       <Offers onPick={pickOffer} />
       <Quotes />
       <Faq />
-      <FinalCta />
+      <FinalCta onBook={phone ? () => setSheet(true) : undefined} />
       <Footer />
       <Dock b={b} show={dock} pulse={pulse} onBook={book} />
       <div className={`vz-toast ${toast ? 'is-on' : ''}`} role="status" aria-live="polite">
         {toast}
       </div>
+      <AppSheet open={sheet} title="Foglalás" onClose={closeSheet} closeLabel="Bezárás">
+        <div className="vz-sheet">
+          <p className="vz-sheet-room">
+            {quote(b).room.tag} · {quote(b).room.size} m² · max. {quote(b).room.cap} fő
+          </p>
+          <BookingBar b={b} set={set} onBook={book} pulse={0} />
+          <p className="vz-fine">Reggeli, spa és kerékpár az árban · 7 napig díjmentes lemondás</p>
+        </div>
+      </AppSheet>
+      <AppTabBar
+        tabs={[
+          { id: 'top', label: 'Villa', icon: <AppIcons.home /> },
+          { id: 'szobak', label: 'Szobák', icon: <AppIcons.bed /> },
+          { id: 'wellness', label: 'Spa', icon: <AppIcons.wave /> },
+          { id: 'ajanlatok', label: 'Csomagok', icon: <AppIcons.gift /> },
+        ]}
+        action={{ label: 'Foglalás', icon: <AppIcons.calendar />, onClick: () => setSheet(true) }}
+      />
     </div>
   );
 }

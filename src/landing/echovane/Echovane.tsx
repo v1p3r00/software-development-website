@@ -3,6 +3,7 @@ import type { CSSProperties, FormEvent } from 'react';
 import '@fontsource-variable/bricolage-grotesque';
 import './echovane.css';
 import { jump, reducedMotion, useCountUp, useInView, useReveal, useScrolledPast, useToast } from '../kit';
+import { AppIcons, AppSheet, AppTabBar, SwipeDots, useLandingPhone } from '../appKit';
 
 /**
  * Echovane — a fictional AI meeting assistant.
@@ -329,6 +330,7 @@ function How() {
     ['Understand', 'Decisions, risks and owners are pulled out of the conversation, not just keywords.', 'mark'],
     ['Act', 'Tasks land in your tracker, notes in your docs and a follow-up email in your drafts.', 'check'],
   ];
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="lu-how" id="how">
       <div className="lu-wrap">
@@ -338,7 +340,7 @@ function How() {
         <h2 className="lu-h2" data-reveal>
           From talk to done, <span className="lu-grad">in three quiet steps.</span>
         </h2>
-        <div className="lu-steps">
+        <div className="lu-steps lp-swipe" ref={row}>
           {steps.map(([h, p, kind], i) => (
             <article key={h} className="lu-step" data-reveal style={{ '--d': `${i * 120}ms` } as CSSProperties}>
               <div className={`lu-step-vis lu-step-vis--${kind}`} aria-hidden>
@@ -362,6 +364,7 @@ function How() {
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={steps.length} />
       </div>
     </section>
   );
@@ -539,8 +542,19 @@ function Stats() {
   );
 }
 
-function Pricing({ notify }: { notify: (m: string) => void }) {
-  const [yearly, setYearly] = useState(true);
+function Pricing({
+  notify,
+  yearly,
+  setYearly,
+  onPick,
+}: {
+  notify: (m: string) => void;
+  yearly: boolean;
+  setYearly: (f: (y: boolean) => boolean) => void;
+  /** phones: open the sign-up sheet with this plan instead of the toast */
+  onPick?: (plan: string) => void;
+}) {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="lu-pricing" id="pricing">
       <div className="lu-wrap">
@@ -559,7 +573,7 @@ function Pricing({ notify }: { notify: (m: string) => void }) {
             Yearly <em>save 20%</em>
           </span>
         </div>
-        <div className="lu-tiers">
+        <div className="lu-tiers lp-swipe" ref={row}>
           {TIERS.map((t, i) => (
             <article key={t.name} className={`lu-tier ${t.featured ? 'is-featured' : ''}`} data-reveal style={{ '--d': `${i * 100}ms` } as CSSProperties}>
               {t.featured && <span className="lu-pop">Most popular</span>}
@@ -569,7 +583,7 @@ function Pricing({ notify }: { notify: (m: string) => void }) {
                 <b>${yearly ? t.y : t.m}</b>
                 <span>{t.m ? 'per user / month' : 'forever'}</span>
               </div>
-              <button type="button" className={`lu-btn lu-btn--block ${t.featured ? 'lu-btn--grad' : 'lu-btn--ghost'}`} onClick={() => notify(`${t.name} plan picked — this is a design showcase, nothing is charged.`)}>
+              <button type="button" className={`lu-btn lu-btn--block ${t.featured ? 'lu-btn--grad' : 'lu-btn--ghost'}`} onClick={() => (onPick ? onPick(t.name) : notify(`${t.name} plan picked — this is a design showcase, nothing is charged.`))}>
                 {t.m ? 'Start 14-day trial' : 'Start free'}
               </button>
               <ul>
@@ -580,6 +594,7 @@ function Pricing({ notify }: { notify: (m: string) => void }) {
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={TIERS.length} />
         <div className="lu-enterprise" data-reveal>
           <div>
             <h3>Enterprise</h3>
@@ -595,13 +610,14 @@ function Pricing({ notify }: { notify: (m: string) => void }) {
 }
 
 function Quotes() {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="lu-quotes">
       <div className="lu-wrap">
         <h2 className="lu-h2 lu-c" data-reveal>
           Teams that <span className="lu-grad">stopped taking notes.</span>
         </h2>
-        <div className="lu-quote-grid">
+        <div className="lu-quote-grid lp-swipe" ref={row}>
           {QUOTES.map(([q, who, role, ini], i) => (
             <figure key={who} className="lu-quote" data-reveal style={{ '--d': `${i * 100}ms` } as CSSProperties}>
               <blockquote>“{q}”</blockquote>
@@ -617,6 +633,7 @@ function Quotes() {
             </figure>
           ))}
         </div>
+        <SwipeDots row={row} count={QUOTES.length} />
         <p className="lu-fine lu-c">Quotes and companies are fictional — Echovane is a design showcase.</p>
       </div>
     </section>
@@ -649,7 +666,8 @@ function Faq() {
   );
 }
 
-function Start({ notify }: { notify: (m: string) => void }) {
+/** the work-email form (inline in the closing section, and inside the phone sign-up sheet) */
+function SignupForm({ notify, id, cta = 'Start free', onDone, reveal = true }: { notify: (m: string) => void; id: string; cta?: string; onDone?: () => void; reveal?: boolean }) {
   const [email, setEmail] = useState('');
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -659,7 +677,22 @@ function Start({ notify }: { notify: (m: string) => void }) {
     }
     setEmail('');
     notify('Check your inbox! (Design showcase — nothing was sent.)');
+    onDone?.();
   };
+  return (
+    <form className="lu-form" onSubmit={submit} noValidate data-reveal={reveal ? '' : undefined}>
+      <label htmlFor={id} className="sr-only">
+        Work email
+      </label>
+      <input id={id} type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+      <button type="submit" className="lu-btn lu-btn--grad">
+        {cta}
+      </button>
+    </form>
+  );
+}
+
+function Start({ notify }: { notify: (m: string) => void }) {
   return (
     <section className="lu-start" id="start">
       <div className="lu-aurora lu-aurora--low" aria-hidden>
@@ -674,17 +707,73 @@ function Start({ notify }: { notify: (m: string) => void }) {
         <p className="lu-lead" data-reveal>
           Free for 20 meetings a month. Set up in two minutes, no card needed.
         </p>
-        <form className="lu-form" onSubmit={submit} noValidate data-reveal>
-          <label htmlFor="lu-email" className="sr-only">
-            Work email
-          </label>
-          <input id="lu-email" type="email" placeholder="you@company.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
-          <button type="submit" className="lu-btn lu-btn--grad">
-            Start free
-          </button>
-        </form>
+        <SignupForm notify={notify} id="lu-email" />
       </div>
     </section>
+  );
+}
+
+/** phones: the "Start" sheet — pick a plan and billing, then the same email form */
+function StartSheet({
+  open,
+  onClose,
+  plan,
+  setPlan,
+  yearly,
+  setYearly,
+  notify,
+}: {
+  open: boolean;
+  onClose: () => void;
+  plan: string;
+  setPlan: (p: string) => void;
+  yearly: boolean;
+  setYearly: (f: (y: boolean) => boolean) => void;
+  notify: (m: string) => void;
+}) {
+  const t = TIERS.find((x) => x.name === plan) ?? TIERS[1];
+  const price = yearly ? t.y : t.m;
+  return (
+    <AppSheet open={open} title="Start with Echovane" onClose={onClose}>
+      <div className="lu-sheet-label">Plan</div>
+      <div className="lu-seg" role="radiogroup" aria-label="Plan">
+        {TIERS.map((x) => (
+          <button key={x.name} type="button" role="radio" aria-checked={x.name === plan} className={x.name === plan ? 'is-on' : ''} onClick={() => setPlan(x.name)}>
+            {x.name}
+          </button>
+        ))}
+      </div>
+      {t.m > 0 && (
+        <>
+          <div className="lu-sheet-label">Billing</div>
+          <div className="lu-seg" role="radiogroup" aria-label="Billing">
+            <button type="button" role="radio" aria-checked={!yearly} className={!yearly ? 'is-on' : ''} onClick={() => setYearly(() => false)}>
+              Monthly
+            </button>
+            <button type="button" role="radio" aria-checked={yearly} className={yearly ? 'is-on' : ''} onClick={() => setYearly(() => true)}>
+              Yearly <em>−20%</em>
+            </button>
+          </div>
+        </>
+      )}
+      <div className="lu-sheet-sum">
+        <div>
+          <b>{t.name}</b>
+          <span>{t.note}</span>
+        </div>
+        <div className="lu-sheet-price">
+          <b>${price}</b>
+          <span>{t.m ? 'per user / mo' : 'forever'}</span>
+        </div>
+      </div>
+      <ul className="lu-sheet-perks">
+        {t.perks.map((p) => (
+          <li key={p}>{p}</li>
+        ))}
+      </ul>
+      <SignupForm notify={notify} id="lu-email-sheet" reveal={false} cta={t.m ? 'Start 14-day trial' : 'Start free'} onDone={onClose} />
+      <p className="lu-sheet-fine">{t.m ? 'No card for the trial. Cancel any time.' : 'No card needed. 20 meetings a month.'}</p>
+    </AppSheet>
   );
 }
 
@@ -708,6 +797,15 @@ export default function Echovane() {
   const root = useRef<HTMLDivElement>(null);
   useReveal(root);
   const [toast, notify] = useToast();
+  const phone = useLandingPhone();
+  const bento = useRef<HTMLDivElement>(null);
+  const [yearly, setYearly] = useState(true);
+  const [sheet, setSheet] = useState(false);
+  const [plan, setPlan] = useState('Pro');
+  const openSheet = (p?: string) => {
+    if (p) setPlan(p);
+    setSheet(true);
+  };
   return (
     <div ref={root} className="lumen">
       <Nav />
@@ -722,17 +820,18 @@ export default function Echovane() {
           <h2 className="lu-h2 lu-c" data-reveal>
             Less admin. <span className="lu-grad">More of the work you were hired for.</span>
           </h2>
-          <div className="lu-bento">
+          <div className="lu-bento lp-swipe" ref={bento}>
             <AskTile />
             <TalkTile />
             <LangTile />
             <SyncTile />
             <MailTile />
           </div>
+          <SwipeDots row={bento} count={5} />
         </div>
       </section>
       <Stats />
-      <Pricing notify={notify} />
+      <Pricing notify={notify} yearly={yearly} setYearly={setYearly} onPick={phone ? openSheet : undefined} />
       <Quotes />
       <Faq />
       <Start notify={notify} />
@@ -740,6 +839,18 @@ export default function Echovane() {
       <div className={`lu-toast ${toast ? 'is-on' : ''}`} role="status" aria-live="polite">
         {toast}
       </div>
+      {phone && (
+        <StartSheet open={sheet} onClose={() => setSheet(false)} plan={plan} setPlan={setPlan} yearly={yearly} setYearly={setYearly} notify={notify} />
+      )}
+      <AppTabBar
+        tabs={[
+          { id: 'top', label: 'Home', icon: <AppIcons.home /> },
+          { id: 'features', label: 'Features', icon: <AppIcons.sparkle /> },
+          { id: 'pricing', label: 'Pricing', icon: <AppIcons.card /> },
+          { id: 'faq', label: 'Help', icon: <AppIcons.question /> },
+        ]}
+        action={{ label: 'Start free', icon: <AppIcons.bolt />, onClick: () => openSheet() }}
+      />
     </div>
   );
 }

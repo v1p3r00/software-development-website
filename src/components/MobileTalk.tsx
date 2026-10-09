@@ -33,7 +33,7 @@ export default function MobileTalk() {
       onClick={goTo('contact')}
       tabIndex={show ? 0 : -1}
       className={cx(
-        'hero-cta fixed bottom-5 left-5 z-40 inline-flex items-center gap-2.5 bg-accent px-5 py-3.5 font-mono text-[14px] font-semibold uppercase tracking-tech text-onaccent shadow-lg transition-[transform,opacity] duration-300 sm:hidden',
+        'mobile-talk hero-cta fixed bottom-5 left-5 z-40 inline-flex items-center gap-2.5 bg-accent px-5 py-3.5 font-mono text-[14px] font-semibold uppercase tracking-tech text-onaccent shadow-lg transition-[transform,opacity] duration-300 sm:hidden',
         show ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0',
       )}
     >

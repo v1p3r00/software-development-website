@@ -1,9 +1,10 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, FormEvent, ReactNode } from 'react';
 import '@fontsource/instrument-serif/400.css';
 import '@fontsource/instrument-serif/400-italic.css';
 import './vaulmere.css';
 import { jump, useCountUp, useInView, usePointerTilt, useReveal, useScrolledPast, useToast } from '../kit';
+import { AppIcons, AppSheet, AppTabBar, SwipeDots, useLandingPhone } from '../appKit';
 
 /**
  * Vaulmere — a fictional private wealth app and metal card.
@@ -251,6 +252,7 @@ function Statement() {
 }
 
 function Pillars() {
+  const row = useRef<HTMLDivElement>(null);
   const items = [
     ['01', 'One view of everything', 'Bank accounts, brokers, pensions, property and crypto — reconciled every night into one honest number.'],
     ['02', 'A banker, not a bot', 'A named private banker with real authority, on chat, phone or in person. Average first reply: eleven minutes.'],
@@ -258,14 +260,17 @@ function Pillars() {
   ];
   return (
     <section className="au-pillars">
-      <div className="au-wrap au-pillars-grid">
-        {items.map(([n, h, p], i) => (
-          <article key={n} className="au-pillar" data-reveal style={{ '--d': `${i * 120}ms` } as CSSProperties}>
-            <span className="au-num">{n}</span>
-            <h3>{h}</h3>
-            <p>{p}</p>
-          </article>
-        ))}
+      <div className="au-wrap">
+        <div className="au-pillars-grid lp-swipe" ref={row}>
+          {items.map(([n, h, p], i) => (
+            <article key={n} className="au-pillar" data-reveal style={{ '--d': `${i * 120}ms` } as CSSProperties}>
+              <span className="au-num">{n}</span>
+              <h3>{h}</h3>
+              <p>{p}</p>
+            </article>
+          ))}
+        </div>
+        <SwipeDots row={row} count={items.length} />
       </div>
     </section>
   );
@@ -301,7 +306,7 @@ function CardSection() {
             Each card is laser-cut from a single sheet of stainless steel, then brushed, coated and checked by hand. It
             lands on a table with a sound you will learn to like.
           </p>
-          <div className="au-finishes" role="radiogroup" aria-label="Card finish" data-reveal>
+          <div className="au-finishes lp-chips" role="radiogroup" aria-label="Card finish" data-reveal>
             {FINISHES.map((f) => (
               <button
                 key={f.id}
@@ -356,6 +361,7 @@ function Bento() {
     [range],
   );
   const gain = { '1M': '+2.4%', '1Y': '+14.8%', '5Y': '+61.2%' }[range];
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="au-bento-sec" id="app">
       <div className="au-wrap">
@@ -408,6 +414,8 @@ function Bento() {
             </ul>
           </article>
 
+          {/* the four small tiles: part of the bento grid on larger screens (display: contents), a swipe row on phones */}
+          <div className="au-bento-rest lp-swipe" ref={row}>
           <article className="au-tile au-tile--chat" data-reveal style={{ '--d': '100ms' } as CSSProperties}>
             <div className="au-glass-label">Private banker</div>
             <div className="au-bubbles">
@@ -453,7 +461,9 @@ function Bento() {
             </div>
             <p>Share what you choose, with who you choose — down to a single account.</p>
           </article>
+          </div>
         </div>
+        <SwipeDots row={row} count={4} />
       </div>
     </section>
   );
@@ -461,6 +471,15 @@ function Bento() {
 
 function Membership({ onPick }: { onPick: (tier: string) => void }) {
   const [yearly, setYearly] = useState(true);
+  const phone = useLandingPhone();
+  const row = useRef<HTMLDivElement>(null);
+  // on phones the plans are a swipe row: open it on the featured plan
+  useEffect(() => {
+    const el = row.current;
+    const featured = el?.querySelector<HTMLElement>('.is-featured');
+    if (!phone || !el || !featured) return;
+    el.scrollLeft = featured.offsetLeft - el.offsetLeft - parseFloat(getComputedStyle(el).paddingLeft || '0');
+  }, [phone]);
   return (
     <section className="au-member" id="membership">
       <div className="au-wrap">
@@ -478,7 +497,7 @@ function Membership({ onPick }: { onPick: (tier: string) => void }) {
             Yearly <span>2 months free</span>
           </button>
         </div>
-        <div className="au-tiers">
+        <div className="au-tiers lp-swipe" ref={row}>
           {TIERS.map((tier, i) => {
             const price = yearly ? Math.round((tier.monthly * 10) / 12) : tier.monthly;
             return (
@@ -503,6 +522,7 @@ function Membership({ onPick }: { onPick: (tier: string) => void }) {
             );
           })}
         </div>
+        <SwipeDots row={row} count={TIERS.length} />
       </div>
     </section>
   );
@@ -511,9 +531,20 @@ function Membership({ onPick }: { onPick: (tier: string) => void }) {
 function Quotes() {
   const [i, setI] = useState(0);
   const [q, who, where] = QUOTES[i];
+  const startX = useRef<number | null>(null);
   return (
     <section className="au-quotes">
-      <div className="au-wrap au-quotes-in" data-reveal>
+      <div
+        className="au-wrap au-quotes-in"
+        data-reveal
+        onTouchStart={(e) => (startX.current = e.touches[0].clientX)}
+        onTouchEnd={(e) => {
+          if (startX.current === null) return;
+          const dx = e.changedTouches[0].clientX - startX.current;
+          startX.current = null;
+          if (Math.abs(dx) > 50) setI((n) => (n + (dx < 0 ? 1 : QUOTES.length - 1)) % QUOTES.length);
+        }}
+      >
         <blockquote key={i} className="au-quote">
           <p>{q}</p>
           <footer>
@@ -562,7 +593,7 @@ function Faq() {
   );
 }
 
-function Invite({ notify }: { notify: (m: string) => void }) {
+function InviteForm({ notify, id = 'au-email', className = '', onDone }: { notify: (m: string) => void; id?: string; className?: string; onDone?: () => void }) {
   const [email, setEmail] = useState('');
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -571,8 +602,23 @@ function Invite({ notify }: { notify: (m: string) => void }) {
       return;
     }
     setEmail('');
+    onDone?.();
     notify('You are on the list. (Design showcase — nothing was sent.)');
   };
+  return (
+    <form className={`au-form ${className}`} onSubmit={submit} data-reveal={onDone ? undefined : ''} noValidate>
+      <label className="sr-only" htmlFor={id}>
+        Email address
+      </label>
+      <input id={id} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@domain.com" autoComplete="email" />
+      <button type="submit" className="au-btn au-btn--gold">
+        Request invitation
+      </button>
+    </form>
+  );
+}
+
+function Invite({ notify }: { notify: (m: string) => void }) {
   return (
     <section className="au-invite" id="invite">
       <div className="au-glow au-glow--c" aria-hidden />
@@ -586,15 +632,7 @@ function Invite({ notify }: { notify: (m: string) => void }) {
         <p className="au-lead au-center" data-reveal>
           We open a limited number of memberships each month. Leave your email and we will be in touch personally.
         </p>
-        <form className="au-form" onSubmit={submit} data-reveal noValidate>
-          <label className="sr-only" htmlFor="au-email">
-            Email address
-          </label>
-          <input id="au-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@domain.com" autoComplete="email" />
-          <button type="submit" className="au-btn au-btn--gold">
-            Request invitation
-          </button>
-        </form>
+        <InviteForm notify={notify} />
       </div>
     </section>
   );
@@ -647,10 +685,35 @@ function Marquee({ children }: { children: ReactNode }) {
   );
 }
 
+/** phones: the invitation form as a bottom sheet (opened from the tab bar or a plan) */
+function InviteSheet({ open, plan, onClose, notify }: { open: boolean; plan: string; onClose: () => void; notify: (m: string) => void }) {
+  return (
+    <AppSheet open={open} title="Request an invitation" onClose={onClose}>
+      <div className="au-sheet">
+        <div className="au-sheet-card" aria-hidden>
+          <MetalCard finish="obsidian" small />
+        </div>
+        {plan && (
+          <p className="au-sheet-plan">
+            <span>Membership</span> <b>{plan}</b>
+          </p>
+        )}
+        <p className="au-sheet-copy">We open a limited number of memberships each month. Leave your email and we will be in touch personally.</p>
+        <InviteForm notify={notify} id="au-email-sheet" className="au-form--sheet" onDone={onClose} />
+        <p className="au-fine">A member of the team replies within two working days.</p>
+      </div>
+    </AppSheet>
+  );
+}
+
 export default function Vaulmere() {
   const root = useRef<HTMLDivElement>(null);
   useReveal(root);
   const [toast, notify] = useToast();
+  const phone = useLandingPhone();
+  const [sheet, setSheet] = useState<{ open: boolean; plan: string }>({ open: false, plan: '' });
+  const openInvite = (plan = '') => setSheet({ open: true, plan });
+  const closeInvite = useMemo(() => () => setSheet((s) => ({ ...s, open: false })), []);
   return (
     <div ref={root} className="aurel">
       <Nav onInvite={jump('invite')} />
@@ -669,7 +732,7 @@ export default function Vaulmere() {
       <Pillars />
       <CardSection />
       <Bento />
-      <Membership onPick={(tier) => notify(`${tier} selected — this is a design showcase, nothing is charged.`)} />
+      <Membership onPick={(tier) => (phone ? openInvite(tier) : notify(`${tier} selected — this is a design showcase, nothing is charged.`))} />
       <Quotes />
       <Faq />
       <Invite notify={notify} />
@@ -677,6 +740,16 @@ export default function Vaulmere() {
       <div className={`au-toast ${toast ? 'is-on' : ''}`} role="status" aria-live="polite">
         {toast}
       </div>
+      <InviteSheet open={sheet.open} plan={sheet.plan} onClose={closeInvite} notify={notify} />
+      <AppTabBar
+        tabs={[
+          { id: 'top', label: 'Home', icon: <AppIcons.home /> },
+          { id: 'card', label: 'Card', icon: <AppIcons.card /> },
+          { id: 'app', label: 'App', icon: <AppIcons.grid /> },
+          { id: 'membership', label: 'Plans', icon: <AppIcons.star /> },
+        ]}
+        action={{ label: 'Invite', icon: <AppIcons.key />, onClick: () => openInvite() }}
+      />
     </div>
   );
 }

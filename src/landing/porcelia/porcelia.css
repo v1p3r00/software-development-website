@@ -2483,3 +2483,614 @@
     transform: translateY(150px);
   }
 }
+
+/* ======================================================================
+   Phone app mode (≤767px): compact app bar, bottom tab bar (appKit), swipe rows,
+   booking in a bottom sheet, sticky estimator total. Desktop/tablet untouched.
+   ====================================================================== */
+@media (max-width: 767px) {
+  .porcelia {
+    --app-bg: #f7f5f2;
+    --app-fg: #0e3b43;
+    --app-dim: rgb(14 59 67 / 0.55);
+    --app-accent: #155560;
+    --app-on-accent: #e9fff8;
+    --app-line: rgb(14 59 67 / 0.14);
+    --app-font: 'Inter Variable', Inter, system-ui, sans-serif;
+    --app-gutter: 20px;
+    --safe-r: 68px;
+  }
+  /* the sheet lives inside the root, so its panel uses the white "paper" surface */
+  .porcelia .lp-sheet {
+    --app-bg: #ffffff;
+  }
+
+  /* ---- app bar ---- */
+  .pc-nav,
+  .pc-nav.is-solid {
+    background: rgb(247 245 242 / 0.8);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border-color: var(--line);
+  }
+  .pc-nav-in {
+    height: 60px;
+    padding-left: 16px;
+  }
+  .pc-nav .pc-btn--sm {
+    display: none;
+  }
+  .pc-nav .pc-wordmark {
+    gap: 8px;
+    font-size: 22px;
+  }
+  .pc-nav .pc-logo {
+    width: 26px;
+    height: 26px;
+  }
+  .pc-nav .pc-wm-sub {
+    font-size: 9px;
+    padding-bottom: 2px;
+  }
+
+  /* ---- hero ---- */
+  .pc-hero {
+    padding: 84px 0 36px;
+  }
+  .pc-hero-grid {
+    gap: 32px;
+  }
+  .pc-pill {
+    font-size: 12.5px;
+    padding: 7px 13px;
+  }
+  .pc-h1 {
+    font-size: clamp(38px, 10.6vw, 46px);
+    margin-top: 18px;
+  }
+  .pc-lead {
+    margin-top: 16px;
+    font-size: 16.5px;
+    line-height: 1.6;
+  }
+  .pc-cta-row {
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .pc-cta-row .pc-btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 52px;
+    padding: 0 16px;
+    font-size: 14.5px;
+  }
+  .pc-cta-row .pc-btn:first-child {
+    flex-grow: 1.4;
+  }
+  .pc-cta-row--center {
+    flex-wrap: wrap;
+  }
+  .pc-cta-row--center .pc-btn {
+    flex-basis: 100%;
+  }
+  .pc-hero-ticks {
+    flex-wrap: nowrap;
+    gap: 8px;
+    margin-top: 24px;
+    padding-top: 16px;
+    margin-inline: calc(-1 * var(--app-gutter));
+    padding-inline: var(--app-gutter);
+    overflow-x: auto;
+    scrollbar-width: none;
+    font-size: 13px;
+  }
+  .pc-hero-ticks::-webkit-scrollbar {
+    display: none;
+  }
+  .pc-hero-ticks li {
+    flex: none;
+    gap: 7px;
+    padding: 7px 12px 7px 8px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.65);
+    border: 1px solid var(--line);
+  }
+  .pc-hero-stage {
+    padding-bottom: 66px;
+  }
+  .pc-ba {
+    aspect-ratio: 1 / 1;
+  }
+  .pc-ba-tag {
+    top: 12px;
+    font-size: 10.5px;
+  }
+  .pc-ba-tag--l {
+    left: 12px;
+  }
+  .pc-ba-tag--r {
+    right: 12px;
+  }
+  .pc-chip--b {
+    display: none;
+  }
+  .pc-chip--a {
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: none;
+  }
+
+  /* ---- trust ---- */
+  .pc-trust {
+    padding: 8px 0 40px;
+  }
+  .pc-stat {
+    padding: 18px 16px;
+  }
+  .pc-stat dd {
+    font-size: 34px;
+  }
+  .pc-stat dt {
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+  .pc-press-label {
+    margin-top: 36px;
+    margin-bottom: 14px;
+  }
+
+  /* ---- shared section rhythm ---- */
+  .pc-pillars,
+  .pc-est,
+  .pc-tech,
+  .pc-docs,
+  .pc-prices,
+  .pc-book,
+  .pc-quotes,
+  .pc-faq {
+    padding-top: 56px;
+    padding-bottom: 56px;
+  }
+  /* the treatments section follows the pillars without its own top padding; give it room under the app bar */
+  .pc-pillars {
+    padding-bottom: 8px;
+  }
+  .pc-treat {
+    padding-top: 48px;
+    padding-bottom: 56px;
+  }
+  .pc-h2 {
+    font-size: clamp(30px, 8.4vw, 36px);
+    margin-top: 10px;
+  }
+  .pc-body {
+    margin-top: 12px;
+    font-size: 15.5px;
+  }
+  .pc-head-row {
+    gap: 0;
+    margin-bottom: 24px;
+  }
+  .pc-kicker {
+    font-size: 11.5px;
+  }
+
+  /* swipe rows: cards stay readable while sliding in, no scroll-reveal sideways */
+  .porcelia .lp-swipe > [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+  .porcelia .lp-swipe {
+    align-items: stretch;
+  }
+
+  /* ---- pillars: three swipe cards ---- */
+  .pc-pillars-grid {
+    margin-top: 24px;
+  }
+  .pc-pillar {
+    padding: 22px 20px 24px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--paper);
+    box-shadow: var(--shadow);
+  }
+  .pc-pillar h3 {
+    margin-top: 16px;
+    font-size: 26px;
+  }
+  .pc-pillar p {
+    font-size: 15px;
+  }
+
+  /* ---- treatments: swipe cards ---- */
+  .pc-tcard {
+    padding: 22px;
+    border-radius: 24px;
+  }
+  .pc-tcard h3 {
+    margin-top: 20px;
+    font-size: 25px;
+  }
+  .pc-tcard-foot {
+    margin-top: 18px;
+    padding-top: 14px;
+  }
+  .pc-add {
+    width: 48px;
+    height: 48px;
+    background: var(--teal);
+    border-color: var(--teal);
+    color: var(--mint);
+  }
+  .pc-tcard:hover,
+  .pc-add:hover {
+    transform: none;
+  }
+
+  /* ---- estimator ---- */
+  .pc-est-grid {
+    margin-top: 24px;
+    gap: 20px;
+  }
+  .pc-est-col {
+    position: relative;
+  }
+  .pc-est-dock {
+    position: sticky;
+    top: 68px;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 10px 10px 10px 18px;
+    border-radius: 20px;
+    background: rgb(14 59 67 / 0.94);
+    color: #e9f5f2;
+    box-shadow: 0 18px 40px -18px rgb(14 59 67 / 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .pc-est-dock > div {
+    min-width: 0;
+  }
+  .pc-est-dock small {
+    display: block;
+    font-size: 11px;
+    line-height: 1.3;
+    letter-spacing: 0.04em;
+    color: var(--mint);
+  }
+  .pc-est-dock b {
+    display: block;
+    font-family: var(--serif), serif;
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+  }
+  .pc-est-dock .pc-btn {
+    flex: none;
+    height: 44px;
+    padding: 0 18px;
+    background: var(--mint);
+    color: var(--teal-3);
+    box-shadow: none;
+  }
+  .pc-est-list li {
+    gap: 12px;
+    padding: 10px 10px 10px 14px;
+    border-radius: 18px;
+  }
+  .pc-est-name b {
+    font-size: 15px;
+  }
+  .pc-est-name small {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+  .pc-step button {
+    width: 44px;
+    height: 44px;
+    font-size: 21px;
+  }
+  .pc-step button:hover:not(:disabled) {
+    background: none;
+    color: inherit;
+  }
+  .pc-step button:active:not(:disabled) {
+    background: var(--teal);
+    color: var(--mint);
+  }
+  .pc-est-card {
+    padding: 26px 20px 22px;
+    border-radius: 26px;
+  }
+  .pc-est-range {
+    font-size: 30px;
+  }
+
+  /* ---- technology: the screen sits right under the heading, tabs follow ---- */
+  .pc-tech-grid {
+    gap: 0;
+  }
+  .pc-tech-grid > div:first-child {
+    display: contents;
+  }
+  .pc-tech-grid .pc-kicker {
+    order: 1;
+  }
+  .pc-tech-grid .pc-h2 {
+    order: 2;
+  }
+  .pc-tech-stage {
+    order: 3;
+    margin-top: 24px;
+  }
+  .pc-tabs {
+    order: 4;
+    margin-top: 20px;
+  }
+  .pc-tech-screen {
+    padding: 8px;
+    border-radius: 22px;
+  }
+  .pc-tab {
+    min-height: 56px;
+    padding: 16px 0;
+  }
+  .pc-tab-head {
+    font-size: 21px;
+    gap: 14px;
+  }
+  .pc-tab-body > span {
+    padding-left: 30px;
+    font-size: 15px;
+  }
+
+  /* ---- doctors: swipe row of portraits ---- */
+  .pc-docs-grid {
+    --app-card: 62%;
+  }
+  .pc-doc:hover .pc-portrait {
+    transform: none;
+  }
+  .pc-doc h3 {
+    font-size: 20px;
+  }
+
+  /* ---- price list: grouped cards ---- */
+  .pc-prices-grid {
+    gap: 24px;
+  }
+  .pc-table,
+  .pc-table tbody,
+  .pc-table tr {
+    display: block;
+  }
+  .pc-table tbody {
+    margin-top: 14px;
+    padding: 4px 16px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--porcelain);
+  }
+  .pc-table tbody:first-child {
+    margin-top: 0;
+  }
+  .pc-table tr:not(.pc-table-group) {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .pc-table tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .pc-table th,
+  .pc-table td {
+    padding: 0;
+    border: 0;
+  }
+  .pc-table th {
+    font-size: 15px;
+  }
+  .pc-table td {
+    font-size: 16.5px;
+  }
+  .pc-table-group th,
+  .pc-table tbody:first-child .pc-table-group th {
+    display: block;
+    padding: 12px 0 6px;
+    border: 0;
+    font-size: 11px;
+  }
+  .pc-table tbody tr:not(.pc-table-group):hover {
+    background: none;
+  }
+
+  /* ---- booking ---- */
+  .pc-book-grid {
+    gap: 24px;
+  }
+  .pc-book-facts {
+    margin-top: 18px;
+  }
+  .pc-book-launch {
+    padding: 20px;
+    border-radius: 24px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    box-shadow: 0 30px 70px -40px rgb(14 59 67 / 0.45);
+  }
+  .pc-book-launch ol {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .pc-book-launch li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 550;
+    color: var(--mute);
+  }
+  .pc-book-launch li span {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--mint-3);
+    color: var(--teal-2);
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+  .pc-book-launch .pc-fine {
+    text-align: center;
+  }
+  /* the card inside the bottom sheet drops its own chrome; the step buttons stay at thumb reach */
+  .pc-book-card--sheet {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: none;
+  }
+  .pc-book-card--sheet .pc-progress-bar {
+    margin: 14px 0 18px;
+  }
+  .pc-book-card--sheet .pc-book-body {
+    min-height: 0;
+  }
+  .pc-book-card--sheet .pc-book-nav {
+    position: sticky;
+    bottom: calc(-22px - env(safe-area-inset-bottom));
+    margin: 18px -18px calc(-22px - env(safe-area-inset-bottom));
+    padding: 12px 18px calc(14px + env(safe-area-inset-bottom));
+    background: rgb(255 255 255 / 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .pc-book-nav .pc-btn--sm {
+    height: 48px;
+    padding: 0 22px;
+    font-size: 15px;
+  }
+  .pc-book-card--sheet .pc-book-done {
+    min-height: 260px;
+    padding-bottom: 8px;
+  }
+  .pc-progress li {
+    font-size: 13px;
+    gap: 8px;
+  }
+  .pc-opt {
+    min-height: 56px;
+    padding: 13px 16px;
+  }
+  .pc-day {
+    width: 60px;
+    min-height: 72px;
+  }
+  .pc-days {
+    margin-inline: -18px;
+    padding-inline: 18px;
+    scroll-padding-inline: 18px;
+    scrollbar-width: none;
+  }
+  .pc-slot {
+    height: 48px;
+  }
+  /* 16px inputs: no iOS zoom on focus */
+  .pc-form input:not([type='checkbox']),
+  .pc-form textarea {
+    font-size: 16px;
+    padding: 12px 14px;
+  }
+  .pc-form .pc-check {
+    min-height: 44px;
+  }
+
+  /* ---- testimonials ---- */
+  .pc-quotes-grid {
+    margin: 24px 0 14px;
+  }
+  .pc-quote {
+    padding: 24px 22px;
+    border-radius: 24px;
+  }
+  .pc-quote blockquote {
+    font-size: 18px;
+  }
+
+  /* ---- faq ---- */
+  .pc-faq-grid {
+    gap: 24px;
+  }
+  .pc-acc-item button {
+    min-height: 60px;
+    padding: 16px 0;
+    font-size: 18px;
+  }
+  .pc-acc-item.is-open .pc-acc-body p {
+    padding-bottom: 18px;
+    font-size: 15px;
+  }
+
+  /* ---- final cta + footer ---- */
+  .pc-final {
+    padding: 72px 0 80px;
+  }
+  .pc-h1--mid {
+    font-size: clamp(34px, 9.6vw, 42px);
+  }
+  .pc-footer {
+    padding: 48px 0 28px;
+  }
+  .pc-wordmark--xl {
+    font-size: 36px;
+  }
+  .pc-wordmark--xl .pc-logo {
+    width: 36px;
+    height: 36px;
+  }
+  .pc-footer-grid {
+    gap: 28px 20px;
+  }
+  .pc-footer-base {
+    margin-top: 36px;
+  }
+  /* the space kept free for the tab bar continues the dark footer */
+  .porcelia > .lp-tabbar-space {
+    background: var(--teal-3);
+  }
+
+  /* ---- toast: under the app bar, above the tab bar and the sheet ---- */
+  .pc-toast {
+    top: 70px;
+    bottom: auto;
+    z-index: 80;
+    width: max-content;
+    max-width: calc(100vw - 32px);
+    border-radius: 18px;
+    transform: translate(-50%, -24px);
+  }
+  .pc-toast.is-on {
+    transform: translate(-50%, 0);
+  }
+}
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .porcelia .pc-chip--a {
+    transform: translateX(-50%);
+  }
+}

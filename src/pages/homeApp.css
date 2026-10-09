@@ -1,0 +1,483 @@
+/*
+ * The home page on a phone (≤767px), laid out like an app: compact screens, swipe rows,
+ * an accordion and a bottom tab bar (the landing app kit, src/landing/appKit.*).
+ * Everything here sits inside the phone media query and is scoped to .home-app (the home
+ * page's wrapper) or to pages that contain it (body:has(.home-app)), so larger screens
+ * and the other pages are untouched.
+ */
+
+.home-app {
+  /* the app kit's colours, from the site's theme */
+  --app-bg: rgb(var(--c-bg));
+  --app-fg: rgb(var(--c-text));
+  --app-dim: rgb(var(--c-muted));
+  --app-accent: rgb(var(--c-accent));
+  --app-on-accent: rgb(var(--c-on-accent));
+  --app-line: rgb(var(--c-line));
+  --app-font: 'Inter Variable', Inter, system-ui, sans-serif;
+  --app-gutter: 20px;
+}
+
+@media (max-width: 767px) {
+  /* ---------- header: a compact, translucent app bar ---------- */
+  body:has(.home-app) .site-header {
+    border-bottom: 1px solid rgb(var(--c-line));
+    background: rgb(var(--c-bg) / 0.86);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(16px) saturate(1.4);
+  }
+  body:has(.home-app) .site-header > div:first-child {
+    gap: 12px;
+    padding: 9px 16px;
+  }
+  body:has(.home-app) .site-header > div:first-child > div:first-child a > span {
+    width: 34px;
+    height: 34px;
+    font-size: 0.875rem;
+  }
+  body:has(.home-app) .site-header > div:first-child > div:last-child > button {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  /* the menu panel scrolls clear of the tab bar */
+  body:has(.home-app) .site-header nav[aria-label='Mobile'] {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+
+  /* ---------- floating buttons: the tab bar's action replaces "Let's talk" ---------- */
+  body:has(.home-app) .mobile-talk,
+  body:has(.home-app) .back-to-top {
+    display: none;
+  }
+  body:has(.home-app) .support-launcher {
+    right: 14px;
+    bottom: calc(68px + env(safe-area-inset-bottom) + 12px);
+    width: 48px;
+    height: 48px;
+  }
+  body:has(.home-app) .support-teaser {
+    right: 72px;
+    bottom: calc(68px + env(safe-area-inset-bottom) + 12px);
+    width: min(250px, calc(100vw - 88px));
+  }
+  /* the tab bar sits at the very bottom, the footer keeps clear of it */
+  .home-app .lp-tabbar-space {
+    display: none;
+  }
+  body:has(.home-app) .site-footer {
+    padding-bottom: calc(68px + env(safe-area-inset-bottom));
+  }
+  .home-tabbar {
+    background: rgb(var(--c-bg) / 0.86);
+    color: rgb(var(--c-muted));
+  }
+  .home-tabbar .lp-tab-label {
+    font-size: 10.5px;
+    letter-spacing: 0.02em;
+  }
+  .home-tabbar .lp-tab-action-icon {
+    border-radius: 999px;
+  }
+
+  /* ---------- sections: app screens ---------- */
+  .home-app > section:not(#home) {
+    padding-top: 52px;
+    padding-bottom: 52px;
+  }
+  .home-app > section {
+    scroll-margin-top: 14px; /* tab bar / menu jumps: the heading lands clear of the header */
+  }
+  .home-app > section + section:not(#home) {
+    border-top: 1px solid rgb(var(--c-line) / 0.6);
+  }
+  .home-app .sec-head {
+    margin-bottom: 18px;
+    gap: 8px;
+    padding-bottom: 12px;
+  }
+  .home-app .sec-head h2 {
+    font-size: clamp(1.6rem, 8vw, 2.1rem);
+  }
+  .home-app .sec-head .label {
+    margin-bottom: 2px;
+  }
+
+  /* ---------- hero: one screen ---------- */
+  .home-app #home {
+    padding-top: 60px;
+  }
+  .home-app #home .hero-portrait {
+    height: 46svh;
+    min-height: 300px;
+    max-height: 430px;
+  }
+  /* the rotating desk model gets most of the frame on a phone */
+  .home-app #home .hero-model {
+    left: -8%;
+    width: 116%;
+    height: 76%;
+  }
+  .home-app #home .hero-model > div:last-child {
+    left: calc(8% + 6px); /* keeps the model's label on screen */
+  }
+  .home-app #home .hero-text {
+    padding-top: 2px;
+    padding-bottom: 6px;
+  }
+  .home-app #home .hero-kicker {
+    display: none; /* the portrait's tag and the headline say it */
+  }
+  .home-app #home .hero-h1 {
+    font-size: clamp(2rem, 8.8vw, 2.7rem);
+  }
+  .home-app #home .hero-intro {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .home-app #home .hero-actions {
+    margin-top: 14px;
+  }
+  .home-app #home .hero-actions .hero-cta {
+    width: 100%;
+    justify-content: space-between;
+    padding: 14px 20px;
+  }
+  .home-app #home .hero-scroll {
+    display: none;
+  }
+  .home-app #home .hero-role {
+    margin-top: 16px;
+    padding-top: 12px;
+  }
+  /* metadata: one row — social, visitors, build */
+  .home-app #home .hero-meta {
+    gap: 0;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .home-app #home .hero-meta > div:first-child {
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    gap: 16px;
+  }
+  .home-app #home .hero-meta > div:first-child > * {
+    flex-basis: auto;
+  }
+  .home-app #home .hero-meta > div:first-child > div:nth-last-child(2) {
+    display: none; /* location: it is in the contact section */
+  }
+  .home-app #home .hero-meta .label {
+    margin-bottom: 6px;
+  }
+  .home-app #home .hero-stats {
+    margin-top: 0;
+    padding-bottom: 0;
+  }
+  .home-app #home .hero-stats > div:nth-child(3) {
+    border-right: 0;
+  }
+  .home-app #home .hero-stats > div {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .home-app #home .hero-stats .display {
+    font-size: 1.6rem;
+  }
+
+  /* ---------- interactive projects: a swipe row of compact app cards ---------- */
+  .home-app .hp-labs {
+    --app-card: 86%;
+    gap: 12px;
+  }
+  .home-app .hp-labs > li > div {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+  }
+  .home-app .hp-lab-vis {
+    order: -1;
+    height: 196px;
+    overflow: hidden;
+    border-top: 0;
+    border-bottom: 1px solid rgb(var(--c-line));
+    padding: 12px;
+    -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent);
+    mask-image: linear-gradient(to bottom, #000 80%, transparent);
+  }
+  .home-app .hp-lab-vis > * {
+    height: auto;
+  }
+  .home-app .hp-lab-vis > * > * {
+    flex-shrink: 0;
+  }
+  .home-app .hp-lab-body {
+    flex: 1;
+    padding: 14px 16px 16px;
+  }
+  .home-app .hp-lab-body > div:nth-child(2) {
+    margin-top: 12px;
+    align-items: center;
+    gap: 12px;
+  }
+  .home-app .hp-labs .lab-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .home-app .hp-labs .lab-icon svg {
+    max-width: 22px;
+    max-height: 22px;
+  }
+  .home-app .hp-labs .lab-title {
+    padding-top: 0;
+    font-size: 1.35rem;
+  }
+  .home-app .hp-labs .lab-desc {
+    display: -webkit-box;
+    margin-top: 10px;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    font-size: 13.5px;
+    line-height: 1.5;
+    white-space: normal;
+  }
+  .home-app .hp-lab-foot {
+    gap: 10px;
+    padding-top: 14px;
+  }
+  .home-app .hp-lab-foot .btn-a {
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+  .home-app .hp-lab-tags {
+    flex-wrap: nowrap;
+    overflow: hidden;
+    gap: 4px;
+  }
+  .home-app .hp-lab-tags .tag {
+    flex: none;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 10px;
+  }
+  .home-app #interactive > p.label {
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  /* ---------- selected work: filter chips and a swipe row ---------- */
+  .home-app .hp-filters {
+    gap: 6px;
+    padding-bottom: 2px;
+  }
+  .home-app .hp-filters button {
+    min-height: 34px;
+    border-radius: 999px;
+    padding: 0 12px;
+    white-space: nowrap;
+  }
+  .home-app .hp-work {
+    --app-card: 80%;
+    gap: 12px;
+  }
+  .home-app .hp-work .pc p {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+  .home-app .hp-work > * {
+    height: auto; /* let the row stretch every card to the tallest */
+  }
+  .home-app .hp-work .pc .flex-wrap {
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+  .home-app .hp-work .pc-tag {
+    flex: none;
+    border-radius: 999px;
+    padding: 2px 8px;
+  }
+  .home-app .hp-work-quote {
+    min-height: 0;
+  }
+
+  /* ---------- services: an accordion ---------- */
+  .home-app .hp-services .sv-row {
+    gap: 12px;
+    padding: 14px 4px 14px 0;
+  }
+  .home-app .hp-services .sv-title {
+    font-size: 1.2rem;
+  }
+  .home-app .hp-services .sv-num {
+    margin-top: 3px;
+  }
+  .home-app .hp-services button[aria-expanded='false'] .sv-text {
+    display: none;
+  }
+  .home-app .hp-services .sv-text {
+    margin-top: 6px;
+  }
+  .home-app .hp-sv-panel {
+    display: none;
+  }
+  .home-app .hp-sv-flow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: -4px 0 0;
+    padding: 0 0 16px 30px;
+    animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .home-app .hp-sv-flow > li {
+    position: relative;
+    border: 1px solid rgb(var(--c-line));
+    background: rgb(var(--c-surface));
+    padding: 8px 10px;
+  }
+  .home-app .hp-sv-dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 7px;
+    height: 7px;
+    border: 1px solid rgb(var(--c-line-strong));
+  }
+  .home-app .hp-sv-dot.is-end {
+    border-color: rgb(var(--c-accent));
+    background: rgb(var(--c-accent));
+  }
+
+  /* ---------- website check band ---------- */
+  .home-app > #website-check-band {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .home-app #website-check-band > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    padding: 18px;
+  }
+  .home-app #website-check-band input {
+    font-size: 16px;
+  }
+
+  /* ---------- tech stack: a smaller ring, touch-sized controls ---------- */
+  .home-app .hp-ring {
+    height: 260px;
+  }
+  .home-app .hp-stack-read {
+    --app-gutter: 16px;
+    padding: 14px 16px 16px;
+  }
+  .home-app .hp-stack-conn {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+  .home-app .hp-stack-conn button,
+  .home-app .hp-stack-groups button {
+    min-height: 34px;
+    border-radius: 999px;
+    padding: 0 12px;
+    white-space: nowrap;
+  }
+  .home-app .hp-stack-top {
+    display: none;
+  }
+  .home-app .hp-stack-nav {
+    margin-top: 14px;
+  }
+  .home-app .hp-stack-nav button {
+    width: 44px;
+    height: 44px;
+  }
+  .home-app .hp-stack-groups {
+    margin-top: 12px;
+    gap: 6px;
+  }
+
+  /* ---------- about ---------- */
+  .home-app #about > div:nth-child(2) {
+    gap: 28px;
+  }
+  .home-app #about p:first-child {
+    font-size: 16px;
+  }
+  .home-app #about p + p {
+    margin-top: 12px;
+  }
+  .home-app #about .grid-cols-3 {
+    margin-top: 22px;
+    gap: 12px;
+  }
+  .home-app #about .grid-cols-3 .display {
+    font-size: 2rem;
+  }
+  .home-app #about .sec-head > div + div {
+    display: none; /* "/ profile.read()" */
+  }
+  .home-app #about ul.border-t {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 14px;
+  }
+  .home-app #about .ab-row {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .home-app #about .border.p-4 {
+    margin-top: 18px;
+  }
+
+  /* ---------- contact: no zoom on focus, big targets ---------- */
+  .home-app #contact > div:nth-child(2) {
+    gap: 22px;
+  }
+  .home-app #contact input,
+  .home-app #contact textarea {
+    font-size: 16px;
+  }
+  .home-app #contact form .chip {
+    min-height: 36px;
+    padding: 0 12px;
+  }
+  .home-app #contact form .flex-wrap.gap-1 {
+    gap: 6px;
+  }
+  .home-app #contact aside .mt-8 {
+    margin-top: 16px;
+  }
+
+  /* ---------- footer ---------- */
+  body:has(.home-app) .site-footer > div {
+    padding-top: 24px;
+  }
+  body:has(.home-app) .site-footer > div > div:first-child {
+    gap: 18px;
+  }
+  body:has(.home-app) .site-footer-nav {
+    column-gap: 16px;
+    row-gap: 10px;
+  }
+  body:has(.home-app) .site-footer-ticks {
+    display: none;
+  }
+  body:has(.home-app) .site-footer > div > div:last-child {
+    margin-top: 18px;
+  }
+}
+
+/* phones held wider than 640px: the chat panel opens above the raised launcher */
+@media (min-width: 640px) and (max-width: 767px) {
+  body:has(.home-app) .support-panel {
+    bottom: calc(68px + env(safe-area-inset-bottom) + 72px);
+    height: min(600px, calc(100dvh - 68px - 9rem));
+  }
+}

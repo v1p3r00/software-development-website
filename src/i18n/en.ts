@@ -36,6 +36,8 @@ export const en = {
     capabilities: 'Capabilities',
     labsAll: 'All projects',
     talk: "Let's talk",
+    /** the phone tab bar's action button: a short label */
+    talkShort: 'Let’s talk',
     menu: 'Menu',
     close: 'Close',
   },

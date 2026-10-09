@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { SwipeDots } from '../landing/appKit';
 import { filterKeys, projects } from '../data/projects';
 import type { FilterKey } from '../data/projects';
 import { useI18n } from '../i18n';
@@ -14,6 +15,12 @@ export default function ProjectGrid() {
     [filter],
   );
 
+  // phones: the cards are a swipe row; a new filter starts it from the first card
+  const row = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    row.current?.scrollTo({ left: 0 });
+  }, [filter]);
+
   const labelFor = (key: FilterKey) => (key === 'all' ? t.projects.all : t.projects.categories[key]);
 
   return (
@@ -23,7 +30,7 @@ export default function ProjectGrid() {
         title={t.projects.title}
         subtitle={t.projects.subtitle}
         right={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="hp-filters lp-chips flex flex-wrap items-center gap-2">
             <span className="label mr-1 hidden sm:inline">{t.projects.filterLabel}</span>
             {filterKeys.map((key) => {
               const on = filter === key;
@@ -56,13 +63,13 @@ export default function ProjectGrid() {
         <span className="ticks-x h-2 flex-1 opacity-30" aria-hidden />
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div ref={row} className="hp-work lp-swipe grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {visible.map((project, i) => (
           <ProjectCard key={project.id} project={project} index={i} />
         ))}
 
         {/* statement cell — fills the grid and carries the CTA */}
-        <div className="relative flex min-h-[260px] flex-col justify-between border border-line bg-surface p-5">
+        <div className="hp-work-quote relative flex min-h-[260px] flex-col justify-between border border-line bg-surface p-5">
           <div className="crosshair -left-[4px] -top-[4px]" aria-hidden />
           <div className="crosshair -bottom-[4px] -right-[4px]" aria-hidden />
           <p className="display max-w-[16ch] text-xl leading-[1.05] sm:text-2xl">{t.ui.quote}</p>
@@ -81,6 +88,7 @@ export default function ProjectGrid() {
           </div>
         </div>
       </div>
+      <SwipeDots row={row} count={visible.length + 1} />
     </Section>
   );
 }

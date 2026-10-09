@@ -5,6 +5,7 @@ import '@fontsource/instrument-serif/400-italic.css';
 import '@fontsource-variable/manrope';
 import './velmira.css';
 import { jump, useCountUp, useInView, usePointerTilt, useReveal, useScrolledPast, useToast } from '../kit';
+import { AppIcons, AppTabBar, SwipeDots, useLandingPhone } from '../appKit';
 
 /**
  * Velmira — a fictional clean skincare brand.
@@ -500,6 +501,7 @@ function Pillars() {
     ['Glass, made to be kept', 'Weighty refillable glass and aluminium. Refills arrive in compostable pouches and cost up to 20% less.', <path key="c" d="M9 3h6v3l2 3v11a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V9l2-3zM7 13h10" />],
     ['Kind to reactive skin', 'Dermatologist-tested on sensitive skin, pH-balanced and gentle enough to use twice a day, every day.', <path key="d" d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z" />],
   ];
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="vm-promise" id="promise">
       <div className="vm-wrap">
@@ -511,7 +513,7 @@ function Pillars() {
             Fewer steps. <em>Better ones.</em>
           </h2>
         </div>
-        <div className="vm-pillars">
+        <div className="vm-pillars lp-swipe" ref={row}>
           {items.map(([h, p, icon], i) => (
             <article key={h} className="vm-pillar" data-reveal style={{ '--d': `${i * 100}ms` } as CSSProperties}>
               <svg viewBox="0 0 24 24" className="vm-pillar-ico" aria-hidden>
@@ -522,6 +524,7 @@ function Pillars() {
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={items.length} />
       </div>
     </section>
   );
@@ -529,6 +532,7 @@ function Pillars() {
 
 function BestSellers({ onAdd }: { onAdd: (id: string) => void }) {
   const list = ['clarity', 'cloud', 'dew', 'veil'].map(byId);
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="vm-shop" id="shop">
       <div className="vm-wrap">
@@ -545,7 +549,7 @@ function BestSellers({ onAdd }: { onAdd: (id: string) => void }) {
             Each one works alone and better together. Every bottle is refillable and every formula carries its full ingredient list.
           </p>
         </div>
-        <div className="vm-grid">
+        <div className="vm-grid lp-swipe" ref={row}>
           {list.map((p, i) => (
             <article key={p.id} className="vm-prod" data-reveal style={{ '--d': `${i * 90}ms` } as CSSProperties}>
               <div className={`vm-prod-art vm-tint-${i}`}>
@@ -570,6 +574,7 @@ function BestSellers({ onAdd }: { onAdd: (id: string) => void }) {
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={list.length} />
       </div>
     </section>
   );
@@ -584,6 +589,7 @@ function Routine({ onAddMany }: { onAddMany: (ids: string[]) => void }) {
   const cur = sel[time];
   const chosen = STEPS.map(([s]) => cur[s]).filter(Boolean) as string[];
   const total = chosen.reduce((t, id) => t + byId(id).price, 0);
+  const phone = useLandingPhone();
   const pick = (step: Step, id: string) => setSel((o) => ({ ...o, [time]: { ...o[time], [step]: o[time][step] === id ? null : id } }));
 
   return (
@@ -652,6 +658,20 @@ function Routine({ onAddMany }: { onAddMany: (ids: string[]) => void }) {
               );
             })}
           </ol>
+
+          {phone && (
+            <div className="vm-dock" aria-label="Routine total">
+              <span className="vm-dock-txt">
+                <i>
+                  {time === 'am' ? 'Morning' : 'Evening'} · {chosen.length} step{chosen.length === 1 ? '' : 's'}
+                </i>
+                <b>{eur(total)}</b>
+              </span>
+              <button type="button" className="vm-btn vm-btn--olive vm-btn--sm" disabled={!chosen.length} onClick={() => onAddMany(chosen)}>
+                Add to bag
+              </button>
+            </div>
+          )}
 
           <aside className="vm-summary" data-reveal style={{ '--d': '120ms' } as CSSProperties}>
             <div className="vm-shelf" data-time={time}>
@@ -773,7 +793,7 @@ function Texture() {
           <p className="vm-body" data-reveal>
             We test every texture for weeks before we test it in a lab. Choose one and feel it with your eyes first.
           </p>
-          <div className="vm-tex-tabs" role="tablist" aria-label="Textures" data-reveal>
+          <div className="vm-tex-tabs lp-chips" role="tablist" aria-label="Textures" data-reveal>
             {TEXTURES.map((x, n) => (
               <button key={x.id} type="button" role="tab" aria-selected={i === n} className={i === n ? 'is-on' : ''} onClick={() => setI(n)}>
                 <span style={{ background: `linear-gradient(135deg, ${x.a}, ${x.b})` }} aria-hidden />
@@ -826,7 +846,7 @@ function Ingredients({ onAdd }: { onAdd: (id: string) => void }) {
             Every ingredient, <em>out in the open.</em>
           </h2>
         </div>
-        <div className="vm-chips" role="tablist" aria-label="Ingredients" data-reveal>
+        <div className="vm-chips lp-chips" role="tablist" aria-label="Ingredients" data-reveal>
           {INGREDIENTS.map((x) => (
             <button key={x.id} type="button" role="tab" aria-selected={sel === x.id} className={sel === x.id ? 'is-on' : ''} onClick={() => setSel(x.id)}>
               <span style={{ background: x.hue }} aria-hidden />
@@ -890,6 +910,7 @@ function Ingredients({ onAdd }: { onAdd: (id: string) => void }) {
 
 function Reviews() {
   const dist = [82, 13, 3, 1, 1];
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="vm-reviews" id="reviews">
       <div className="vm-wrap">
@@ -917,7 +938,7 @@ function Reviews() {
             </ul>
           </div>
         </div>
-        <div className="vm-rev-grid">
+        <div className="vm-rev-grid lp-swipe" ref={row}>
           {REVIEWS.map((r, i) => (
             <figure key={r.who} className="vm-rev" data-reveal style={{ '--d': `${i * 110}ms` } as CSSProperties}>
               <Stars r={r.r} />
@@ -936,6 +957,7 @@ function Reviews() {
             </figure>
           ))}
         </div>
+        <SwipeDots row={row} count={REVIEWS.length} />
         <p className="vm-fine vm-center">Reviews are fictional — Velmira is a design showcase.</p>
       </div>
     </section>
@@ -1219,6 +1241,14 @@ export default function Velmira() {
   };
   const setQty = (id: string, q: number) => setLines((l) => ({ ...l, [id]: Math.max(0, Math.min(9, q)) }));
   const closeBag = useRef(() => setBagOpen(false)).current;
+  const phone = useLandingPhone();
+  // on phones the bag is a bottom sheet: lock the page behind it and hide the floating offer
+  useEffect(() => {
+    if (!phone || !bagOpen) return;
+    const html = document.documentElement;
+    html.classList.add('lp-sheet-open');
+    return () => html.classList.remove('lp-sheet-open');
+  }, [phone, bagOpen]);
 
   return (
     <div ref={root} className="velmira">
@@ -1257,6 +1287,19 @@ export default function Velmira() {
       <div className={`vm-toast ${toast ? 'is-on' : ''}`} role="status" aria-live="polite">
         {toast}
       </div>
+      <AppTabBar
+        tabs={[
+          { id: 'top', label: 'Home', icon: <AppIcons.home /> },
+          { id: 'shop', label: 'Shop', icon: <AppIcons.grid /> },
+          { id: 'routine', label: 'Routine', icon: <AppIcons.sparkle /> },
+          { id: 'ingredients', label: 'Ingredients', icon: <AppIcons.leaf /> },
+        ]}
+        action={{
+          label: count ? `Bag · ${count}` : 'Bag',
+          icon: <AppIcons.bag />,
+          onClick: () => setBagOpen(true),
+        }}
+      />
     </div>
   );
 }

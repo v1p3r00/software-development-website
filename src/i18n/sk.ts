@@ -38,6 +38,8 @@ export const sk: Dict = {
     capabilities: 'Kompetencie',
     labsAll: 'Všetky projekty',
     talk: 'Poďme sa porozprávať',
+    /** the phone tab bar's action button: a short label */
+    talkShort: 'Napíšte mi',
     menu: 'Menu',
     close: 'Zavrieť',
   },

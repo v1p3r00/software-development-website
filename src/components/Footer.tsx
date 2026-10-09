@@ -15,7 +15,7 @@ export default function Footer() {
   const [cursorFx, setCursorFx] = useCursorPref();
 
   return (
-    <footer className="relative border-t border-line">
+    <footer className="site-footer relative border-t border-line">
       <div className="mx-auto w-full max-w-[1500px] px-5 py-10 sm:px-8 lg:px-12">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex items-start gap-4">
@@ -30,7 +30,7 @@ export default function Footer() {
             </div>
           </div>
 
-          <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2">
+          <nav aria-label="Footer" className="site-footer-nav flex flex-wrap gap-x-6 gap-y-2">
             {[
               ['home', t.nav.home],
               ['interactive', t.nav.labs],
@@ -122,7 +122,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="ticks-x mt-10 h-2 opacity-30" aria-hidden />
+        <div className="site-footer-ticks ticks-x mt-10 h-2 opacity-30" aria-hidden />
 
         <div className="mt-4 flex flex-col gap-2 border-t border-line pt-4 font-mono text-2xs uppercase tracking-tech text-dim sm:flex-row sm:items-center sm:justify-between">
           <span>

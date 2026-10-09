@@ -1,9 +1,10 @@
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, FormEvent, ReactNode } from 'react';
 import '@fontsource-variable/bodoni-moda/standard.css';
 import '@fontsource-variable/bodoni-moda/standard-italic.css';
 import './revhajlat.css';
 import { jump, reducedMotion, useCountUp, useInView, useReveal, useScrolledPast, useToast } from '../kit';
+import { AppIcons, AppSheet, AppTabBar, SwipeDots, useLandingPhone } from '../appKit';
 
 /**
  * Révhajlat Rezidencia — a fictional riverside residence on the Danube in Budapest.
@@ -151,7 +152,7 @@ function StatusPill({ s }: { s: Status }) {
   return <span className={`rh-pill rh-pill--${s}`}>{s}</span>;
 }
 
-function Nav() {
+function Nav({ onBook }: { onBook: (e: React.MouseEvent) => void }) {
   const solid = useScrolledPast(40);
   return (
     <nav className={`rh-nav ${solid ? 'is-solid' : ''}`} aria-label="Révhajlat Rezidencia">
@@ -172,7 +173,7 @@ function Nav() {
             </a>
           ))}
         </div>
-        <a href="#bejaras" onClick={jump('bejaras')} className="rh-btn rh-btn--line rh-btn--sm">
+        <a href="#bejaras" onClick={onBook} className="rh-btn rh-btn--line rh-btn--sm">
           Bejárás foglalása
         </a>
       </div>
@@ -181,7 +182,7 @@ function Nav() {
 }
 
 /* ---------- hero ---------- */
-function Hero() {
+function Hero({ onBook }: { onBook: (e: React.MouseEvent) => void }) {
   const towns = useMemo(() => {
     const r: Array<[number, number, number]> = [];
     let x = 0;
@@ -279,7 +280,7 @@ function Hero() {
           <a href="#epulet" onClick={jump('epulet')} className="rh-btn rh-btn--brass">
             Válasszon emeletet <span aria-hidden>→</span>
           </a>
-          <a href="#bejaras" onClick={jump('bejaras')} className="rh-btn rh-btn--ghost">
+          <a href="#bejaras" onClick={onBook} className="rh-btn rh-btn--ghost">
             Bejárás foglalása
           </a>
         </div>
@@ -342,6 +343,7 @@ function Statement() {
   const a = useCountUp(33, seen, 1400);
   const b = useCountUp(Math.round((sold / UNITS.length) * 100), seen, 1600);
   const c = useCountUp(3.1, seen, 1400);
+  const pillars = useRef<HTMLDivElement>(null);
   return (
     <section className="rh-statement">
       <div className="rh-wrap">
@@ -355,7 +357,7 @@ function Statement() {
             </span>
           ))}
         </p>
-        <div className="rh-pillars">
+        <div className="rh-pillars lp-swipe" ref={pillars}>
           {[
             ['Víz felé fordítva', 'A Duna-oldali lakások teljes szélességben üvegezettek; a 2,4 méter mély erkélyek nyáron árnyékolnak, télen beengedik a fényt.'],
             ['Csendes anyagok', 'Tölgy, travertin, bronz és füstüveg. Kevés anyag, sok gonddal — úgy, hogy húsz év múlva is ugyanilyen jó legyen hozzájuk érni.'],
@@ -368,6 +370,7 @@ function Statement() {
             </article>
           ))}
         </div>
+        <SwipeDots row={pillars} count={3} />
         <div className="rh-counters" ref={ref}>
           <div>
             <b>{Math.round(a)}</b>
@@ -615,6 +618,11 @@ function Finder({ onReserve }: { onReserve: (id: string) => void }) {
     setOnlyFree(false);
   };
   const pct = (v: number) => ((v - 40) / 160) * 100;
+  const row = useRef<HTMLUListElement>(null);
+  const resKey = res.map((u) => u.id).join();
+  useEffect(() => {
+    row.current?.scrollTo({ left: 0 });
+  }, [resKey]);
   return (
     <section className="rh-finder" id="kereso">
       <div className="rh-wrap">
@@ -696,7 +704,7 @@ function Finder({ onReserve }: { onReserve: (id: string) => void }) {
               </button>
             </div>
             {res.length ? (
-              <ul className="rh-cards">
+              <ul className="rh-cards lp-swipe" ref={row}>
                 {res.map((u) => (
                   <li key={u.id} className="rh-card">
                     <div className="rh-card-top">
@@ -718,7 +726,8 @@ function Finder({ onReserve }: { onReserve: (id: string) => void }) {
                   </li>
                 ))}
               </ul>
-            ) : (
+            ) : null}
+            {res.length ? <SwipeDots row={row} count={res.length} /> : (
               <div className="rh-empty">
                 <p>Ezekkel a feltételekkel most nincs szabad lakás.</p>
                 <button type="button" className="rh-btn rh-btn--line rh-btn--sm" onClick={reset}>
@@ -971,7 +980,7 @@ function Location() {
               </li>
             ))}
           </ol>
-          <div className="rh-dist" data-reveal>
+          <div className="rh-dist lp-chips" data-reveal>
             <span>Repülőtér · 28 perc</span>
             <span>Körgyűrű · 9 perc</span>
             <span>Metró · 6 perc gyalog</span>
@@ -1058,6 +1067,7 @@ const AMEN: Array<[string, string, string, string]> = [
   ['EV-töltés', '11 kW', 'Minden beálló előkészítve saját fogyasztásmérős töltőre; két 22 kW-os közös töltő a vendégeknek.', 'M26 8l-10 18h9l-3 14 12-20h-9z'],
 ];
 function Amenities() {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="rh-amen" id="szolgaltatasok">
       <div className="rh-wrap">
@@ -1069,7 +1079,7 @@ function Amenities() {
             A ház, amely <em>gondol Önre.</em>
           </h2>
         </div>
-        <div className="rh-amen-grid">
+        <div className="rh-amen-grid lp-swipe" ref={row}>
           {AMEN.map(([h, big, p, icon], i) => (
             <article key={h} className="rh-amen-card" data-reveal style={d(i * 90)}>
               <svg viewBox="0 0 48 48" className="rh-icon" aria-hidden>
@@ -1081,6 +1091,7 @@ function Amenities() {
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={AMEN.length} />
         <ul className="rh-amen-more" data-reveal>
           {['Tetőkert grillezővel', 'Saját stég kajakoknak', 'Vendégapartman', 'Okosotthon-vezérlés', 'Kutyamosó', 'Borospince-rekeszek'].map((x) => (
             <li key={x}>{x}</li>
@@ -1176,7 +1187,7 @@ function Payment() {
             Minden részlet egy független műszaki ellenőr által igazolt készültségi fokhoz kötött. Előre semmit, csak azt, ami már áll.
           </p>
         </div>
-        <div className="rh-pay-pick" data-reveal role="group" aria-label="Példa lakás">
+        <div className="rh-pay-pick lp-chips" data-reveal role="group" aria-label="Példa lakás">
           <span>Példa:</span>
           {examples.map((x, i) => (
             <button key={x.id} type="button" aria-pressed={ex === i} className={ex === i ? 'is-on' : ''} onClick={() => setEx(i)}>
@@ -1217,13 +1228,14 @@ const QUOTES: Array<[string, string, string]> = [
   ['A letéti konstrukciót a saját ügyvédünk is rendben találta, az ütemezés pedig átlátható. Nálunk ez döntött.', 'Kertész-Molnár Dóra', 'a 4.03 vásárlója'],
 ];
 function Quotes() {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="rh-quotes">
       <div className="rh-wrap">
         <p className="rh-kicker rh-center" data-reveal>
           09 — Akik már itt laknak — gondolatban
         </p>
-        <div className="rh-quote-grid">
+        <div className="rh-quote-grid lp-swipe" ref={row}>
           {QUOTES.map(([q, who, what], i) => (
             <figure key={who} className="rh-quote" data-reveal style={d(i * 120)}>
               <span className="rh-qmark" aria-hidden>
@@ -1237,6 +1249,7 @@ function Quotes() {
             </figure>
           ))}
         </div>
+        <SwipeDots row={row} count={QUOTES.length} />
         <p className="rh-fine rh-center">A vásárlói idézetek fiktívek — a Révhajlat Rezidencia egy design-bemutató.</p>
       </div>
     </section>
@@ -1284,7 +1297,9 @@ function Faq() {
 
 /* ---------- booking ---------- */
 const SLOTS = ['Hétköznap délelőtt', 'Hétköznap délután', 'Szombat', 'Naplemente-bejárás'];
-function Booking({ unit, setUnit, notify }: { unit: string; setUnit: (s: string) => void; notify: (m: string) => void }) {
+type BookProps = { unit: string; setUnit: (s: string) => void; notify: (m: string) => void };
+/** the viewing request form — inline on larger screens, inside the bottom sheet on phones */
+function BookingForm({ unit, setUnit, notify, idp = 'rh', onDone, reveal = false }: BookProps & { idp?: string; onDone?: () => void; reveal?: boolean }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -1297,7 +1312,47 @@ function Booking({ unit, setUnit, notify }: { unit: string; setUnit: (s: string)
     setName('');
     setEmail('');
     setPhone('');
+    onDone?.();
   };
+  return (
+    <form className="rh-form" onSubmit={submit} noValidate data-reveal={reveal ? '' : undefined} style={reveal ? d(120) : undefined}>
+      <div className="rh-field">
+        <label htmlFor={`${idp}-name`}>Név</label>
+        <input id={`${idp}-name`} value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="Kovács Anna" />
+      </div>
+      <div className="rh-field-row">
+        <div className="rh-field">
+          <label htmlFor={`${idp}-email`}>E-mail</label>
+          <input id={`${idp}-email`} type="email" inputMode="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" placeholder="anna@pelda.hu" />
+        </div>
+        <div className="rh-field">
+          <label htmlFor={`${idp}-phone`}>Telefon (nem kötelező)</label>
+          <input id={`${idp}-phone`} type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" placeholder="+36 30 123 4567" />
+        </div>
+      </div>
+      <div className="rh-field">
+        <label htmlFor={`${idp}-unit`}>Érdeklő lakás</label>
+        <input id={`${idp}-unit`} value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="pl. 6.02 — vagy hagyja üresen" />
+      </div>
+      <fieldset className="rh-field">
+        <legend>Időpont</legend>
+        <div className="rh-chips rh-chips--wrap">
+          {SLOTS.map((s, i) => (
+            <button key={s} type="button" aria-pressed={slot === i} className={slot === i ? 'is-on' : ''} onClick={() => setSlot(i)}>
+              {s}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+      <button type="submit" className="rh-btn rh-btn--brass rh-btn--block">
+        Bejárást kérek <span aria-hidden>→</span>
+      </button>
+      <p className="rh-fine">Munkatársunk egy munkanapon belül visszahívja az időpont egyeztetéséhez.</p>
+    </form>
+  );
+}
+
+function Booking({ phone, onOpen, ...props }: BookProps & { phone: boolean; onOpen: () => void }) {
   return (
     <section className="rh-book" id="bejaras">
       <div className="rh-book-glow" aria-hidden />
@@ -1324,40 +1379,18 @@ function Booking({ unit, setUnit, notify }: { unit: string; setUnit: (s: string)
             </li>
           </ul>
         </div>
-        <form className="rh-form" onSubmit={submit} noValidate data-reveal style={d(120)}>
-          <div className="rh-field">
-            <label htmlFor="rh-name">Név</label>
-            <input id="rh-name" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="Kovács Anna" />
+        {phone ? (
+          <div className="rh-book-cta">
+            <button type="button" className="rh-btn rh-btn--brass rh-btn--block" onClick={onOpen}>
+              Időpontot kérek <span aria-hidden>→</span>
+            </button>
+            <a className="rh-btn rh-btn--line rh-btn--block" href="tel:+3615550140">
+              Hívás · +36 1 555 0140
+            </a>
           </div>
-          <div className="rh-field-row">
-            <div className="rh-field">
-              <label htmlFor="rh-email">E-mail</label>
-              <input id="rh-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" placeholder="anna@pelda.hu" />
-            </div>
-            <div className="rh-field">
-              <label htmlFor="rh-phone">Telefon (nem kötelező)</label>
-              <input id="rh-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" placeholder="+36 30 123 4567" />
-            </div>
-          </div>
-          <div className="rh-field">
-            <label htmlFor="rh-unit">Érdeklő lakás</label>
-            <input id="rh-unit" value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="pl. 6.02 — vagy hagyja üresen" />
-          </div>
-          <fieldset className="rh-field">
-            <legend>Időpont</legend>
-            <div className="rh-chips rh-chips--wrap">
-              {SLOTS.map((s, i) => (
-                <button key={s} type="button" aria-pressed={slot === i} className={slot === i ? 'is-on' : ''} onClick={() => setSlot(i)}>
-                  {s}
-                </button>
-              ))}
-            </div>
-          </fieldset>
-          <button type="submit" className="rh-btn rh-btn--brass rh-btn--block">
-            Bejárást kérek <span aria-hidden>→</span>
-          </button>
-          <p className="rh-fine">Munkatársunk egy munkanapon belül visszahívja az időpont egyeztetéséhez.</p>
-        </form>
+        ) : (
+          <BookingForm {...props} reveal />
+        )}
       </div>
     </section>
   );
@@ -1402,14 +1435,23 @@ export default function Revhajlat() {
   useReveal(root);
   const [toast, notify] = useToast(3600);
   const [unit, setUnit] = useState('');
+  const phone = useLandingPhone();
+  const [sheet, setSheet] = useState(false);
+  const closeSheet = useCallback(() => setSheet(false), []);
   const reserve = (id: string) => {
     setUnit(id);
+    if (phone) return setSheet(true);
     document.getElementById('bejaras')?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
+  };
+  const book = (e: React.MouseEvent) => {
+    if (!phone) return jump('bejaras')(e);
+    e.preventDefault();
+    setSheet(true);
   };
   return (
     <div ref={root} className="revhajlat">
-      <Nav />
-      <Hero />
+      <Nav onBook={book} />
+      <Hero onBook={book} />
       <Marquee />
       <Statement />
       <Building onReserve={reserve} />
@@ -1421,11 +1463,23 @@ export default function Revhajlat() {
       <Payment />
       <Quotes />
       <Faq />
-      <Booking unit={unit} setUnit={setUnit} notify={notify} />
+      <Booking unit={unit} setUnit={setUnit} notify={notify} phone={phone} onOpen={() => setSheet(true)} />
       <Footer />
       <div className={`rh-toast ${toast ? 'is-on' : ''}`} role="status" aria-live="polite">
         {toast}
       </div>
+      <AppSheet open={sheet && phone} title="Bejárás foglalása" onClose={closeSheet} closeLabel="Bezárás">
+        <BookingForm unit={unit} setUnit={setUnit} notify={notify} idp="rh-s" onDone={closeSheet} />
+      </AppSheet>
+      <AppTabBar
+        tabs={[
+          { id: 'top', label: 'Kezdő', icon: <AppIcons.home /> },
+          { id: 'epulet', label: 'Emeletek', icon: <AppIcons.building /> },
+          { id: 'kereso', label: 'Lakások', icon: <AppIcons.key /> },
+          { id: 'fizetes', label: 'Fizetés', icon: <AppIcons.card /> },
+        ]}
+        action={{ label: 'Bejárás', icon: <AppIcons.calendar />, onClick: () => setSheet(true) }}
+      />
     </div>
   );
 }

@@ -24,7 +24,11 @@ export function useNearViewport<T extends Element>(margin = '300px') {
       },
       { rootMargin: margin },
     );
-    io.observe(el);
+    // inside a sideways swipe row (phones) the cards past the first are clipped by the row,
+    // so they would never intersect: watch the row itself and build them all as it comes near
+    const row = el.closest<HTMLElement>('.lp-swipe');
+    const clipped = !!row && getComputedStyle(row).overflowX !== 'visible';
+    io.observe(clipped ? row : el);
     return () => io.disconnect();
   }, [near, margin]);
   return [ref, near] as const;

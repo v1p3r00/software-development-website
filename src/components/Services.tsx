@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { services } from '../data/services';
 import { useI18n } from '../i18n';
 import { Section, SectionHeader, cx } from './ui';
@@ -7,6 +7,16 @@ export default function Services() {
   const { t, pick } = useI18n();
   const [active, setActive] = useState(0);
   const current = services[active];
+  // phones (accordion): opening a service closes the one above it, which moves it up —
+  // once the change is on screen, bring it back under the header if it went past it
+  const tapped = useRef<HTMLButtonElement | null>(null);
+  useLayoutEffect(() => {
+    const el = tapped.current;
+    tapped.current = null;
+    if (!el || !window.matchMedia('(max-width: 767px)').matches) return;
+    const top = el.getBoundingClientRect().top;
+    if (top < 72) window.scrollBy({ top: top - 84, behavior: 'instant' });
+  }, [active]);
 
   const steps = [
     { key: 'input', label: t.services.flow.input, value: pick(current.flow.input) },
@@ -26,7 +36,7 @@ export default function Services() {
 
       <div className="grid grid-cols-1 gap-0 lg:grid-cols-12">
         {/* list */}
-        <ul className="border-t border-line lg:col-span-7">
+        <ul className="hp-services border-t border-line lg:col-span-7">
           {services.map((service, i) => {
             const on = i === active;
             return (
@@ -35,7 +45,11 @@ export default function Services() {
                   type="button"
                   onMouseEnter={() => setActive(i)}
                   onFocus={() => setActive(i)}
-                  onClick={() => setActive(i)}
+                  onPointerDown={(e) => (tapped.current = e.currentTarget)}
+                  onClick={() => {
+                    setActive(i);
+                    tapped.current = null;
+                  }}
                   aria-expanded={on}
                   data-cursor="follow"
                   className={cx(
@@ -71,13 +85,25 @@ export default function Services() {
                     )}
                   />
                 </button>
+                {/* phones: the list is an accordion, the open service shows its process inline (the panel is hidden) */}
+                {on && (
+                  <ol className="hp-sv-flow md:hidden">
+                    {steps.map((step, j) => (
+                      <li key={step.key}>
+                        <span className={cx('hp-sv-dot', j === 3 && 'is-end')} aria-hidden />
+                        <span className="label block">{step.label}</span>
+                        <span className="mt-0.5 block font-mono text-[12.5px] uppercase tracking-tech text-text">{step.value}</span>
+                      </li>
+                    ))}
+                  </ol>
+                )}
               </li>
             );
           })}
         </ul>
 
         {/* process panel */}
-        <div className="mt-8 lg:col-span-5 lg:mt-0 lg:border-l lg:border-t lg:border-line lg:pl-8 lg:pt-6">
+        <div className="hp-sv-panel mt-8 lg:col-span-5 lg:mt-0 lg:border-l lg:border-t lg:border-line lg:pl-8 lg:pt-6">
           <div className="sticky top-28">
             <div className="label-a mb-1">// {t.ui.process}</div>
             <div className="display mb-6 text-xl">{pick(current.title)}</div>

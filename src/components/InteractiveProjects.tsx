@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { SwipeDots } from '../landing/appKit';
 import { useNearViewport } from '../hooks/useNearViewport';
 import { labs } from '../data/labs';
 import type { Lab } from '../data/labs';
@@ -538,7 +540,7 @@ function LabCard({ lab }: { lab: Lab }) {
     <li className="group/lab lab">
       <CornerMarks />
       <div className="grid grid-cols-1 lg:grid-cols-12">
-        <div className="flex flex-col p-6 sm:p-8 lg:col-span-7 lg:border-r lg:border-line">
+        <div className="hp-lab-body flex flex-col p-6 sm:p-8 lg:col-span-7 lg:border-r lg:border-line">
           <div className="lab-top">
             <span>
               <span className="text-accent">{lab.num}</span>
@@ -556,7 +558,7 @@ function LabCard({ lab }: { lab: Lab }) {
           <p className="lab-desc">{lab.desc[lang]}</p>
 
 
-          <div className="mt-auto flex flex-wrap items-center gap-4 pt-8">
+          <div className="hp-lab-foot mt-auto flex flex-wrap items-center gap-4 pt-8">
             <Link
               to={to}
               onClick={open}
@@ -567,7 +569,7 @@ function LabCard({ lab }: { lab: Lab }) {
               {lab.cta[lang]}
               <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="hp-lab-tags flex flex-wrap gap-1.5">
               {lab.tags.map((tag) => (
                 <span key={tag} className="tag">
                   {tag}
@@ -577,7 +579,7 @@ function LabCard({ lab }: { lab: Lab }) {
           </div>
         </div>
 
-        <div ref={visRef} className="border-t border-line p-6 sm:p-8 lg:col-span-5 lg:border-t-0">
+        <div ref={visRef} className="hp-lab-vis border-t border-line p-6 sm:p-8 lg:col-span-5 lg:border-t-0">
           {/* the previews are decorative mockups: built only when scrolled near, to keep the initial load light */}
           {!near ? (
             <div className="aspect-[16/10] w-full border border-line bg-surface2" aria-hidden />
@@ -604,6 +606,7 @@ function LabCard({ lab }: { lab: Lab }) {
 export default function InteractiveProjects() {
   const { t } = useI18n();
   const tl = t.labs;
+  const row = useRef<HTMLUListElement>(null);
   return (
     <Section id="interactive">
       <SectionHeader
@@ -612,11 +615,13 @@ export default function InteractiveProjects() {
         subtitle={tl.subtitle}
         right={<span className="label hidden sm:block">{tl.hint}</span>}
       />
-      <ul className="grid grid-cols-1 gap-5">
+      {/* phones: a sideways swipe row of compact cards (homeApp.css) */}
+      <ul ref={row} className="hp-labs lp-swipe grid grid-cols-1 gap-5">
         {labs.map((lab) => (
           <LabCard key={lab.id} lab={lab} />
         ))}
       </ul>
+      <SwipeDots row={row} count={labs.length} />
       <p className="label mt-6">{tl.more}</p>
     </Section>
   );

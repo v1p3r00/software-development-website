@@ -98,7 +98,7 @@ function Portrait() {
       </div>
 
       {/* rotating wireframe model, sitting in the dark below the photograph */}
-      <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-[56%] w-[92%] sm:h-[60%]">
+      <div className="hero-model pointer-events-none absolute bottom-0 left-0 z-10 h-[56%] w-[92%] sm:h-[60%]">
         <div
           className="absolute inset-0 bg-gradient-to-t from-bg via-bg/85 to-transparent"
           aria-hidden
@@ -149,13 +149,13 @@ export default function Hero() {
 
       <div className="relative mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-0 px-5 sm:px-8 lg:grid-cols-12 lg:px-12">
         {/* ── left column: headline ── */}
-        <div className="order-2 flex flex-col justify-center py-10 lg:order-1 lg:col-span-5 lg:py-16">
-          <div style={reveal(60)} className="hero-rise label-a mb-5 flex items-center gap-3">
+        <div className="hero-text order-2 flex flex-col justify-center py-10 lg:order-1 lg:col-span-5 lg:py-16">
+          <div style={reveal(60)} className="hero-kicker hero-rise label-a mb-5 flex items-center gap-3">
             <span className="h-px w-8 bg-accent" />
             // {t.hero.kicker}
           </div>
 
-          <h1 className="display text-[clamp(2.8rem,10.5vw,5rem)] lg:text-[clamp(2.6rem,5.6vw,6rem)]">
+          <h1 className="hero-h1 display text-[clamp(2.8rem,10.5vw,5rem)] lg:text-[clamp(2.6rem,5.6vw,6rem)]">
             {[t.hero.l1, t.hero.l2, t.hero.l3].map((line, i) => (
               <span key={line} className="block">
                 <span
@@ -172,11 +172,11 @@ export default function Hero() {
             ))}
           </h1>
 
-          <p style={reveal(520)} className="hero-rise mt-7 max-w-[46ch] text-sm leading-relaxed text-muted sm:text-base">
+          <p style={reveal(520)} className="hero-intro hero-rise mt-7 max-w-[46ch] text-sm leading-relaxed text-muted sm:text-base">
             {t.hero.intro}
           </p>
 
-          <div style={reveal(600)} className="hero-rise mt-9 flex flex-wrap items-center gap-6">
+          <div style={reveal(600)} className="hero-actions hero-rise mt-9 flex flex-wrap items-center gap-6">
             <a
               href={`${lp('/')}#interactive`}
               onClick={goTo('interactive')}
@@ -198,7 +198,7 @@ export default function Hero() {
               <Arrow className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
             </a>
 
-            <a href={`${lp('/')}#interactive`} onClick={goTo('interactive')} className="group flex items-center gap-2" aria-label={t.hero.scroll} data-cursor="follow">
+            <a href={`${lp('/')}#interactive`} onClick={goTo('interactive')} className="hero-scroll group flex items-center gap-2" aria-label={t.hero.scroll} data-cursor="follow">
               <span className="label">[ {t.hero.scroll} ]</span>
               <svg viewBox="0 0 8 22" className="h-5 w-2 text-accent" fill="none" aria-hidden>
                 <path d="M4 0v18M1 15l3 3 3-3" stroke="currentColor" strokeWidth="1">
@@ -217,7 +217,7 @@ export default function Hero() {
           </div>
 
           {/* rotating role, reads like a status line */}
-          <div style={reveal(680)} className="hero-rise mt-10 flex items-center gap-3 border-t border-line pt-4">
+          <div style={reveal(680)} className="hero-role hero-rise mt-10 flex items-center gap-3 border-t border-line pt-4">
             <span className="label">{t.ui.role}</span>
             <RoleTicker roles={t.hero.roles} reduced={reduced} />
             <span className="label-a">●</span>
@@ -227,7 +227,7 @@ export default function Hero() {
         {/* ── centre column: portrait ── */}
         <div className="relative order-1 lg:order-2 lg:col-span-5">
           <div
-            className="hero-zoom relative mx-auto h-[52vh] min-h-[340px] w-full max-w-[520px] sm:h-[62vh] lg:h-[calc(100svh-15rem)] lg:max-w-none"
+            className="hero-zoom hero-portrait relative mx-auto h-[52vh] min-h-[340px] w-full max-w-[520px] sm:h-[62vh] lg:h-[calc(100svh-15rem)] lg:max-w-none"
 
           >
             <Portrait />
@@ -235,7 +235,7 @@ export default function Hero() {
         </div>
 
         {/* ── right column: system metadata ── */}
-        <div className="order-3 flex flex-col justify-center gap-8 border-t border-line py-8 lg:col-span-2 lg:border-l lg:border-t-0 lg:py-12 lg:pl-6 2xl:pr-10">
+        <div className="hero-meta order-3 flex flex-col justify-center gap-8 border-t border-line py-8 lg:col-span-2 lg:border-l lg:border-t-0 lg:py-12 lg:pl-6 2xl:pr-10">
           <div style={reveal(300)} className="hero-rise flex flex-row flex-wrap justify-between gap-x-6 gap-y-5 lg:flex-col lg:flex-nowrap">
             <div className="basis-full lg:basis-auto">
               <div className="label mb-2">{t.ux.followLabel}</div>
@@ -301,7 +301,7 @@ export default function Hero() {
       {/* bottom metadata strip */}
       <div
         className={cx(
-          'hero-rise relative mx-auto mt-2 w-full max-w-[1500px] border-t border-line px-5 sm:px-8 lg:px-12',
+          'hero-stats hero-rise relative mx-auto mt-2 w-full max-w-[1500px] border-t border-line px-5 sm:px-8 lg:px-12',
           'flex flex-wrap items-stretch pb-3',
         )}
         style={reveal(760)}

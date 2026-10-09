@@ -230,7 +230,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
       // stays put above the page during route transitions
       style={{ viewTransitionName: 'site-header' }}
       className={cx(
-        'fixed inset-x-0 top-0 z-50 transition-all duration-500 ease-tech',
+        'site-header fixed inset-x-0 top-0 z-50 transition-all duration-500 ease-tech',
         stage
           ? 'pointer-events-none'
           : bare

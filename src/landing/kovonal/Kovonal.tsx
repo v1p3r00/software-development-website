@@ -1,8 +1,9 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, FormEvent, ReactNode, RefObject } from 'react';
 import '@fontsource-variable/syne';
 import './kovonal.css';
 import { jump, reducedMotion, useCountUp, useInView, useReveal, useScrolledPast, useToast } from '../kit';
+import { AppIcons, AppSheet, AppTabBar, SwipeDots, useLandingPhone } from '../appKit';
 
 /**
  * Kővonal Stúdió — a fictional architecture & interior design studio in Budapest.
@@ -624,6 +625,7 @@ function Clients() {
 }
 
 function Statement() {
+  const row = useRef<HTMLDivElement>(null);
   const text = 'Nem stílust tervezünk, hanem viszonyokat: a fény és a fal, a lépés és a lépcső, a ház és a telek között. Ami jól van megtervezve, arról nem beszélünk — csak jól érezzük magunkat benne.';
   const accent = new Set(['viszonyokat:', 'jól']);
   return (
@@ -639,7 +641,7 @@ function Statement() {
             </span>
           ))}
         </p>
-        <div className="ko-pillars">
+        <div className="ko-pillars lp-swipe" ref={row}>
           {[
             ['Fény', 'Minden tervünk a nap járásával kezdődik: hol ébred a ház, és hová esik az utolsó délutáni sugár.'],
             ['Anyag', 'Kő, fa, mész, beton — kevés, őszinte anyag, amely szépen öregszik, és nem kér folyamatos figyelmet.'],
@@ -652,18 +654,25 @@ function Statement() {
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={3} />
       </div>
     </section>
   );
 }
 
-function Projects({ notify }: { notify: (m: string) => void }) {
+function Projects({ notify, phone }: { notify: (m: string) => void; phone: boolean }) {
   const [cat, setCat] = useState<(typeof CATS)[number]>('Mind');
   const grid = useRef<HTMLDivElement>(null);
   const before = useRef(new Map<string, DOMRect>());
 
   const pick = (c: (typeof CATS)[number]) => {
     if (c === cat || !grid.current) return;
+    if (phone) {
+      // phones: the grid is a sideways swipe row — no FLIP, just start the new list from its first card
+      grid.current.scrollTo({ left: 0 });
+      setCat(c);
+      return;
+    }
     const m = new Map<string, DOMRect>();
     grid.current.querySelectorAll<HTMLElement>('[data-id]').forEach((el) => {
       if (!el.hidden) m.set(el.dataset.id!, el.getBoundingClientRect());
@@ -706,7 +715,7 @@ function Projects({ notify }: { notify: (m: string) => void }) {
               Projektek, <em>közelről.</em>
             </h2>
           </div>
-          <div className="ko-filter" role="tablist" aria-label="Projektek szűrése" data-reveal>
+          <div className="ko-filter lp-chips" role="tablist" aria-label="Projektek szűrése" data-reveal>
             {CATS.map((c) => (
               <button key={c} type="button" role="tab" aria-selected={cat === c} className={cat === c ? 'is-on' : ''} onClick={() => pick(c)}>
                 {c}
@@ -715,8 +724,8 @@ function Projects({ notify }: { notify: (m: string) => void }) {
             ))}
           </div>
         </div>
-        <div className="ko-grid" ref={grid} aria-live="polite">
-          {PROJECTS.map((p) => {
+        <div className="ko-grid lp-swipe" ref={grid} aria-live="polite">
+          {(phone ? visible : PROJECTS).map((p) => {
             const idx = visible.indexOf(p);
             const [col, ar, mt] = SLOTS[Math.max(0, idx) % SLOTS.length];
             const Pic = ART[p.id];
@@ -751,12 +760,14 @@ function Projects({ notify }: { notify: (m: string) => void }) {
             );
           })}
         </div>
+        <SwipeDots row={grid} count={visible.length} />
       </div>
     </section>
   );
 }
 
 function Services() {
+  const row = useRef<HTMLOListElement>(null);
   return (
     <section className="ko-services" id="ko-services">
       <div className="ko-wrap ko-services-grid">
@@ -771,7 +782,8 @@ function Services() {
             Kis csapattal dolgozunk, egyszerre legfeljebb nyolc projekten. Így minden tervet az a két ember visz végig, akivel az első kávét megittuk.
           </p>
         </div>
-        <ol className="ko-svc-list">
+        <div className="ko-svc-wrap">
+          <ol className="ko-svc-list lp-swipe" ref={row}>
           {SERVICES.map(([h, p, tags], i) => (
             <li key={h} className="ko-svc" data-reveal style={d(i * 70)}>
               <span className="ko-num">0{i + 1}</span>
@@ -789,13 +801,16 @@ function Services() {
               </span>
             </li>
           ))}
-        </ol>
+          </ol>
+          <SwipeDots row={row} count={SERVICES.length} />
+        </div>
       </div>
     </section>
   );
 }
 
 function Process() {
+  const row = useRef<HTMLOListElement>(null);
   return (
     <section className="ko-process" id="ko-process">
       <div className="ko-wrap">
@@ -805,7 +820,7 @@ function Process() {
         <h2 className="ko-h2 ko-h2--wide" data-reveal>
           Négy lépés a telektől <em>a kulcsátadásig.</em>
         </h2>
-        <ol className="ko-steps">
+        <ol className="ko-steps lp-swipe" ref={row}>
           {STEPS.map(([h, t, p], i) => (
             <li key={h} className="ko-step" data-reveal style={d(i * 140)}>
               <span className="ko-step-line" aria-hidden />
@@ -816,6 +831,7 @@ function Process() {
             </li>
           ))}
         </ol>
+        <SwipeDots row={row} count={STEPS.length} />
       </div>
     </section>
   );
@@ -874,10 +890,11 @@ function Awards() {
 }
 
 function Quotes() {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="ko-quotes">
       <div className="ko-wrap">
-        <div className="ko-quotes-grid">
+        <div className="ko-quotes-grid lp-swipe" ref={row}>
           {QUOTES.map(([q, who, what], i) => (
             <figure key={who} className={`ko-quote ${i === 0 ? 'is-lead' : ''}`} data-reveal style={d(i * 120)}>
               <span className="ko-qmark" aria-hidden>
@@ -891,6 +908,7 @@ function Quotes() {
             </figure>
           ))}
         </div>
+        <SwipeDots row={row} count={QUOTES.length} />
         <p className="ko-fine ko-center" data-reveal>
           A vélemények és a megbízók kitaláltak — a Kővonal Stúdió egy design bemutató.
         </p>
@@ -900,6 +918,7 @@ function Quotes() {
 }
 
 function Team() {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="ko-team" id="ko-studio">
       <div className="ko-wrap">
@@ -916,7 +935,7 @@ function Team() {
             Építészek, belsőépítészek és egy makettező, egy VIII. kerületi egykori nyomdaműhelyben. Minden hétfőn ugyanannál a hosszú tölgyasztalnál kezdünk.
           </p>
         </div>
-        <div className="ko-team-grid">
+        <div className="ko-team-grid lp-swipe" ref={row}>
           {TEAM.map(([n, r, p, m], i) => (
             <article key={n} className="ko-person" data-reveal style={d(i * 100)}>
               <div className={`ko-portrait ko-portrait--${i}`} aria-hidden>
@@ -928,6 +947,7 @@ function Team() {
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={TEAM.length} />
       </div>
     </section>
   );
@@ -964,7 +984,8 @@ function Faq() {
   );
 }
 
-function Contact({ notify }: { notify: (m: string) => void }) {
+/** the project enquiry form — inline in the contact section on larger screens, in a bottom sheet on phones */
+function ContactForm({ notify, onSent }: { notify: (m: string) => void; onSent?: () => void }) {
   const [type, setType] = useState('');
   const [budget, setBudget] = useState('');
   const submit = (e: FormEvent<HTMLFormElement>) => {
@@ -981,7 +1002,55 @@ function Contact({ notify }: { notify: (m: string) => void }) {
     setType('');
     setBudget('');
     notify('Köszönjük! Ez egy design bemutató — az üzenet nem lett elküldve.');
+    onSent?.();
   };
+  return (
+    <form className="ko-form" onSubmit={submit} noValidate data-reveal style={d(120)}>
+      <div className="ko-field-row">
+        <label className="ko-field">
+          <span>Név</span>
+          <input name="name" autoComplete="name" placeholder="Kovács Anna" />
+        </label>
+        <label className="ko-field">
+          <span>E-mail</span>
+          <input name="email" type="email" autoComplete="email" placeholder="anna@email.hu" />
+        </label>
+      </div>
+      <fieldset className="ko-chips">
+        <legend>Projekt típusa</legend>
+        {['Lakóház', 'Iroda', 'Belsőépítészet', 'Vendéglátás', 'Egyéb'].map((t) => (
+          <button key={t} type="button" aria-pressed={type === t} className={type === t ? 'is-on' : ''} onClick={() => setType(t)}>
+            {t}
+          </button>
+        ))}
+      </fieldset>
+      <fieldset className="ko-chips">
+        <legend>Becsült keret</legend>
+        {['50 M Ft alatt', '50–150 M Ft', '150 M Ft felett', 'Még nem tudom'].map((t) => (
+          <button key={t} type="button" aria-pressed={budget === t} className={budget === t ? 'is-on' : ''} onClick={() => setBudget(t)}>
+            {t}
+          </button>
+        ))}
+      </fieldset>
+      <label className="ko-field">
+        <span>Helyszín</span>
+        <input name="place" placeholder="pl. Budapest XII., vagy Balaton-felvidék" />
+      </label>
+      <label className="ko-field">
+        <span>Pár mondat a tervről</span>
+        <textarea name="msg" rows={4} placeholder="Egy 1930-as évekbeli villát szeretnénk felújítani, kerttel együtt…" />
+      </label>
+      <div className="ko-form-foot">
+        <p className="ko-fine">Az űrlap nem küld adatot — ez egy design bemutató.</p>
+        <button type="submit" className="ko-btn ko-btn--light" data-magnet>
+          Üzenet küldése <span aria-hidden>→</span>
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function Contact({ notify, phone, onOpen }: { notify: (m: string) => void; phone: boolean; onOpen: () => void }) {
   return (
     <section className="ko-contact" id="ko-contact">
       <div className="ko-wrap ko-contact-grid">
@@ -1014,48 +1083,16 @@ function Contact({ notify }: { notify: (m: string) => void }) {
             </div>
           </dl>
         </div>
-        <form className="ko-form" onSubmit={submit} noValidate data-reveal style={d(120)}>
-          <div className="ko-field-row">
-            <label className="ko-field">
-              <span>Név</span>
-              <input name="name" autoComplete="name" placeholder="Kovács Anna" />
-            </label>
-            <label className="ko-field">
-              <span>E-mail</span>
-              <input name="email" type="email" autoComplete="email" placeholder="anna@email.hu" />
-            </label>
-          </div>
-          <fieldset className="ko-chips">
-            <legend>Projekt típusa</legend>
-            {['Lakóház', 'Iroda', 'Belsőépítészet', 'Vendéglátás', 'Egyéb'].map((t) => (
-              <button key={t} type="button" aria-pressed={type === t} className={type === t ? 'is-on' : ''} onClick={() => setType(t)}>
-                {t}
-              </button>
-            ))}
-          </fieldset>
-          <fieldset className="ko-chips">
-            <legend>Becsült keret</legend>
-            {['50 M Ft alatt', '50–150 M Ft', '150 M Ft felett', 'Még nem tudom'].map((t) => (
-              <button key={t} type="button" aria-pressed={budget === t} className={budget === t ? 'is-on' : ''} onClick={() => setBudget(t)}>
-                {t}
-              </button>
-            ))}
-          </fieldset>
-          <label className="ko-field">
-            <span>Helyszín</span>
-            <input name="place" placeholder="pl. Budapest XII., vagy Balaton-felvidék" />
-          </label>
-          <label className="ko-field">
-            <span>Pár mondat a tervről</span>
-            <textarea name="msg" rows={4} placeholder="Egy 1930-as évekbeli villát szeretnénk felújítani, kerttel együtt…" />
-          </label>
-          <div className="ko-form-foot">
-            <p className="ko-fine">Az űrlap nem küld adatot — ez egy design bemutató.</p>
-            <button type="submit" className="ko-btn ko-btn--light" data-magnet>
-              Üzenet küldése <span aria-hidden>→</span>
+        {phone ? (
+          <div className="ko-contact-app">
+            <button type="button" className="ko-btn ko-btn--light" onClick={onOpen}>
+              Projekt indítása <span aria-hidden>→</span>
             </button>
+            <p className="ko-fine">Pár kérdés, kb. 2 perc. Az első konzultáció díjtalan.</p>
           </div>
-        </form>
+        ) : (
+          <ContactForm notify={notify} />
+        )}
       </div>
     </section>
   );
@@ -1103,24 +1140,39 @@ export default function Kovonal() {
   useReveal(root);
   usePointerMagnets(root);
   const [toast, notify] = useToast(3600);
+  const phone = useLandingPhone();
+  const [sheet, setSheet] = useState(false);
+  const closeSheet = useCallback(() => setSheet(false), []);
   return (
     <div ref={root} className="kovonal">
       <Nav />
       <Hero />
       <Clients />
       <Statement />
-      <Projects notify={notify} />
+      <Projects notify={notify} phone={phone} />
       <Services />
       <Process />
       <Awards />
       <Quotes />
       <Team />
       <Faq />
-      <Contact notify={notify} />
+      <Contact notify={notify} phone={phone} onOpen={() => setSheet(true)} />
       <Footer />
       <div className={`ko-toast ${toast ? 'is-on' : ''}`} role="status" aria-live="polite">
         {toast}
       </div>
+      <AppSheet open={sheet && phone} title="Projekt indítása" onClose={closeSheet} closeLabel="Bezárás">
+        <ContactForm notify={notify} onSent={closeSheet} />
+      </AppSheet>
+      <AppTabBar
+        tabs={[
+          { id: 'ko-top', label: 'Kezdés', icon: <AppIcons.home /> },
+          { id: 'ko-projects', label: 'Munkák', icon: <AppIcons.grid /> },
+          { id: 'ko-process', label: 'Folyamat', icon: <AppIcons.list /> },
+          { id: 'ko-studio', label: 'Stúdió', icon: <AppIcons.users /> },
+        ]}
+        action={{ label: 'Projekt', icon: <AppIcons.ruler />, onClick: () => setSheet(true) }}
+      />
     </div>
   );
 }

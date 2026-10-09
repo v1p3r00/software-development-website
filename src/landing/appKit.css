@@ -1,0 +1,316 @@
+/*
+ * Phone "app mode" for the landing pages (appKit.tsx). Everything applies at ≤767px.
+ * A page sets its colours on its root element:
+ *   --app-bg, --app-fg, --app-dim, --app-accent, --app-on-accent, --app-line, --app-font
+ * and may set --app-gutter (its side padding, default 20px) and --app-card (swipe card width).
+ */
+
+@media (max-width: 767px) {
+  /* the showcase's prev / next tabs on the screen edges would cover the app; the menu lists the demos */
+  html.lp-app .landing-arrow {
+    display: none;
+  }
+  /* the floating offer shrinks to a small chip under the showcase menu button, top right,
+     so it never covers a page's bottom bars (tab bar, sticky totals, sheets) */
+  html.lp-app .landing-cta {
+    left: auto;
+    right: 10px;
+    top: 70px;
+    bottom: auto;
+    gap: 2px;
+    max-width: none;
+    padding: 3px;
+    border-radius: 999px;
+  }
+  html.lp-app .landing-cta-dot,
+  html.lp-app .landing-cta-ask {
+    display: none;
+  }
+  html.lp-app .landing-cta-btn {
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+  }
+  html.lp-app .landing-cta-long {
+    display: none;
+  }
+  html.lp-app .landing-cta-short {
+    display: inline;
+  }
+  html.lp-app .landing-cta-x {
+    width: 28px;
+    height: 28px;
+  }
+  html.lp-sheet-open {
+    overflow: hidden;
+  }
+  html.lp-sheet-open .landing-cta {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* ---------- bottom tab bar ---------- */
+.lp-tabbar-space {
+  height: calc(68px + env(safe-area-inset-bottom));
+}
+.lp-tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 54;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--app-line, rgb(0 0 0 / 0.1));
+  background: color-mix(in srgb, var(--app-bg, #fff) 94%, transparent);
+  color: var(--app-dim, rgb(0 0 0 / 0.55));
+  font-family: var(--app-font, 'Inter Variable', Inter, system-ui, sans-serif);
+  box-shadow: 0 -10px 30px -18px rgb(0 0 0 / 0.35);
+  -webkit-tap-highlight-color: transparent;
+}
+@supports (backdrop-filter: blur(12px)) {
+  .lp-tabbar {
+    background: color-mix(in srgb, var(--app-bg, #fff) 82%, transparent);
+    backdrop-filter: blur(16px) saturate(1.4);
+  }
+}
+.lp-tab,
+.lp-tab-action {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.lp-tab-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 28px;
+  border-radius: 999px;
+  transition: background-color 0.25s, color 0.25s;
+}
+.lp-tab svg,
+.lp-tab-action svg {
+  width: 22px;
+  height: 22px;
+}
+.lp-tab-label {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lp-tab.is-on {
+  color: var(--app-fg, #111);
+}
+.lp-tab.is-on .lp-tab-icon {
+  background: color-mix(in srgb, var(--app-accent, #111) 16%, transparent);
+  color: var(--app-accent, #111);
+}
+.lp-tab:active .lp-tab-icon {
+  transform: scale(0.92);
+}
+.lp-tab-action {
+  flex: 1.15 1 0;
+  color: var(--app-fg, #111);
+}
+.lp-tab-action-icon {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 34px;
+  margin-top: -2px;
+  border-radius: 999px;
+  background: var(--app-accent, #111);
+  color: var(--app-on-accent, #fff);
+  box-shadow: 0 8px 20px -8px var(--app-accent, #111);
+  transition: transform 0.2s;
+}
+.lp-tab-action:active .lp-tab-action-icon {
+  transform: scale(0.92);
+}
+
+/* ---------- bottom sheet ---------- */
+.lp-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: var(--app-fg, #111);
+  font-family: var(--app-font, 'Inter Variable', Inter, system-ui, sans-serif);
+}
+.lp-sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgb(0 0 0 / 0.5);
+  animation: lp-fade 0.25s ease-out;
+}
+.lp-sheet-panel {
+  position: relative;
+  max-height: 88svh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 22px 22px 0 0;
+  background: var(--app-bg, #fff);
+  box-shadow: 0 -20px 60px -20px rgb(0 0 0 / 0.5);
+  animation: lp-rise 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lp-sheet-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 18px 10px;
+  touch-action: none;
+}
+.lp-sheet-grip {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--app-line, rgb(0 0 0 / 0.15));
+  transform: translateX(-50%);
+}
+.lp-sheet-title {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+.lp-sheet-close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--app-line, rgb(0 0 0 / 0.12));
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+}
+.lp-sheet-close svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+.lp-sheet-body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 4px 18px calc(22px + env(safe-area-inset-bottom));
+}
+@media (min-width: 768px) {
+  .lp-sheet {
+    justify-content: center;
+    align-items: center;
+  }
+  .lp-sheet-panel {
+    width: min(560px, calc(100vw - 48px));
+    border-radius: 18px;
+  }
+  .lp-sheet-grip {
+    display: none;
+  }
+}
+@keyframes lp-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes lp-rise {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+/* ---------- sideways swipe rows ---------- */
+@media (max-width: 767px) {
+  .lp-swipe {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    grid-template-columns: none !important;
+    gap: 12px;
+    margin-inline: calc(-1 * var(--app-gutter, 20px)) !important;
+    padding: 4px var(--app-gutter, 20px) 8px !important;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--app-gutter, 20px);
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .lp-swipe::-webkit-scrollbar {
+    display: none;
+  }
+  .lp-swipe > * {
+    flex: 0 0 var(--app-card, 82%) !important;
+    min-width: 0;
+    max-width: none !important;
+    margin: 0 !important;
+    scroll-snap-align: start;
+  }
+  /* chips / filters that should scroll sideways instead of wrapping */
+  .lp-chips {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 8px;
+    margin-inline: calc(-1 * var(--app-gutter, 20px)) !important;
+    padding-inline: var(--app-gutter, 20px) !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .lp-chips::-webkit-scrollbar {
+    display: none;
+  }
+  .lp-chips > * {
+    flex: none !important;
+  }
+}
+.lp-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+.lp-dots button {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--app-line, rgb(0 0 0 / 0.2));
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+}
+.lp-dots button.is-on {
+  width: 18px;
+  background: var(--app-accent, #111);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-sheet-backdrop,
+  .lp-sheet-panel {
+    animation: none;
+  }
+}

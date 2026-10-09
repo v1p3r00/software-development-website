@@ -239,7 +239,7 @@ export default function TechStack() {
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
             className={cx(
-              'relative col-span-1 h-[340px] touch-pan-y select-none overflow-hidden sm:h-[420px] lg:col-span-8 lg:h-[480px]',
+              'hp-ring relative col-span-1 h-[340px] touch-pan-y select-none overflow-hidden sm:h-[420px] lg:col-span-8 lg:h-[480px]',
               dragging ? 'cursor-grabbing' : 'cursor-grab',
             )}
             style={{ perspective: '1800px', perspectiveOrigin: '50% 50%' }}
@@ -349,12 +349,12 @@ export default function TechStack() {
           </div>
 
           {/* ── readout ── */}
-          <div className="col-span-1 border-t border-line p-4 sm:p-6 lg:col-span-4 lg:border-l lg:border-t-0">
+          <div className="hp-stack-read col-span-1 border-t border-line p-4 sm:p-6 lg:col-span-4 lg:border-l lg:border-t-0">
             <div className="label-a mb-1">// {t.stack.node}</div>
             <div className="display text-3xl leading-none">{active.name}</div>
             <div className="label mt-2">{t.stack.groups[active.group]}</div>
 
-            <div className="mt-6 border-t border-line pt-4">
+            <div className="hp-stack-conn mt-6 border-t border-line pt-4">
               <div className="label mb-3">
                 {t.stack.connections} · {String(connections.length).padStart(2, '0')}
               </div>
@@ -374,7 +374,7 @@ export default function TechStack() {
             </div>
 
             {/* top view of the ring */}
-            <div className="mt-8 flex items-center gap-4">
+            <div className="hp-stack-top mt-8 flex items-center gap-4">
               <svg viewBox="0 0 90 90" className="h-[90px] w-[90px] shrink-0" fill="none" aria-hidden>
                 <circle cx="45" cy="45" r="34" stroke="rgb(var(--c-line))" strokeDasharray="2 4" />
                 <circle cx="45" cy="45" r="1.5" fill="rgb(var(--c-line-strong))" />
@@ -408,7 +408,7 @@ export default function TechStack() {
             </div>
 
             {/* transport */}
-            <div className="mt-6 flex items-center gap-2">
+            <div className="hp-stack-nav mt-6 flex items-center gap-2">
               {([-1, 1] as const).map((dir) => (
                 <button
                   key={dir}
@@ -429,7 +429,7 @@ export default function TechStack() {
             </div>
 
             {/* group jump */}
-            <div className="mt-6 flex flex-wrap gap-1.5">
+            <div className="hp-stack-groups lp-chips mt-6 flex flex-wrap gap-1.5">
               {groups.map((g) => (
                 <button
                   key={g}

@@ -5,6 +5,7 @@ import '@fontsource-variable/cormorant/wght-italic.css';
 import '@fontsource-variable/manrope';
 import './napkorso.css';
 import { jump, reducedMotion, useCountUp, useInView, usePointerTilt, useReveal, useScrolledPast, useToast } from '../kit';
+import { AppIcons, AppSheet, AppTabBar, SwipeDots, goToSection, useLandingPhone } from '../appKit';
 
 /**
  * Napkorsó Birtok — a fictional family winery in Tokaj.
@@ -330,8 +331,9 @@ function Hero() {
   );
 }
 
-function Nav() {
+function Nav({ cart = 0 }: { cart?: number }) {
   const solid = useScrolledPast(30);
+  const phone = useLandingPhone();
   return (
     <nav className={`nk-nav ${solid ? 'is-solid' : ''}`} aria-label="Napkorsó Birtok">
       <div className="nk-wrap nk-nav-in">
@@ -351,9 +353,16 @@ function Nav() {
             </a>
           ))}
         </div>
-        <a href="#booking" onClick={jump('booking')} className="nk-btn nk-btn--sm nk-btn--wine">
-          Kóstoló
-        </a>
+        {phone ? (
+          <button type="button" className="nk-cartbtn" onClick={() => goToSection('shop')} aria-label={`Borbolt, ${cart} tétel a kosárban`}>
+            <AppIcons.bag />
+            {cart > 0 && <b key={cart}>{cart}</b>}
+          </button>
+        ) : (
+          <a href="#booking" onClick={jump('booking')} className="nk-btn nk-btn--sm nk-btn--wine">
+            Kóstoló
+          </a>
+        )}
       </div>
     </nav>
   );
@@ -373,6 +382,7 @@ function Marquee({ children }: { children: ReactNode }) {
 /* ------------------------------------------------------------------ story */
 
 function Statement() {
+  const row = useRef<HTMLDivElement>(null);
   const text = 'Nem siettetjük a szőlőt. Megvárjuk a ködöt, a napot és a nemes rothadást — és csak azt szedjük le, ami már kész.';
   return (
     <section className="nk-statement">
@@ -384,7 +394,7 @@ function Statement() {
             </span>
           ))}
         </p>
-        <div className="nk-pillars">
+        <div className="nk-pillars lp-swipe" ref={row}>
           {[
             ['Föld', 'Vulkáni riolit, andezit és vörös nyirok. A hegy ásványossága minden pohárban ott van.', 'M4 26 L12 12 L18 20 L24 8 L32 26 Z'],
             ['Idő', 'A Bodrog és a Tisza őszi párája hívja elő a botritiszt — ezt kivárni a mesterségünk.', 'M18 6 a12 12 0 1 0 0.01 0 M18 11 V18 L23 22'],
@@ -400,6 +410,7 @@ function Statement() {
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={3} />
       </div>
     </section>
   );
@@ -632,7 +643,7 @@ function Finder({ onAdd }: { onAdd: (w: Wine) => void }) {
         <p className="nk-body nk-center" data-reveal>
           Válassz egyet a hat borunk közül, és nézd meg az ízprofilját — a pincemesterünk jegyzetei alapján, tízes skálán.
         </p>
-        <div className="nk-chips" role="tablist" aria-label="Borok" data-reveal>
+        <div className="nk-chips lp-chips" role="tablist" aria-label="Borok" data-reveal>
           {WINES.map((w) => (
             <button key={w.id} type="button" role="tab" aria-selected={id === w.id} className={id === w.id ? 'is-on' : ''} onClick={() => setId(w.id)}>
               <i style={{ background: w.label }} aria-hidden />
@@ -702,6 +713,7 @@ const mapFg =
 
 function Plots() {
   const [act, setAct] = useState('napkorso');
+  const phone = useLandingPhone();
   const p = PLOTS.find((x) => x.id === act)!;
   return (
     <section className="nk-plots" id="plots">
@@ -716,6 +728,15 @@ function Plots() {
           <p className="nk-body" data-reveal>
             Ugyanaz a hegy, mégis minden parcella mást mond. Vidd az egeret — vagy koppints — egy dűlőre, és megmutatjuk, mi teszi különlegessé.
           </p>
+          {phone && (
+            <div className="nk-plot-chips lp-chips" role="tablist" aria-label="Dűlők">
+              {PLOTS.map((pl) => (
+                <button key={pl.id} type="button" role="tab" aria-selected={act === pl.id} className={act === pl.id ? 'is-on' : ''} onClick={() => setAct(pl.id)}>
+                  {pl.name}
+                </button>
+              ))}
+            </div>
+          )}
           <div className="nk-plot-card" key={p.id} aria-live="polite">
             <div className="nk-plot-card-head">
               <h3>{p.name}</h3>
@@ -845,6 +866,7 @@ function Cellar() {
 /* ------------------------------------------------------------------ shop */
 
 function Shop({ onAdd }: { onAdd: (w: Wine) => void }) {
+  const row = useRef<HTMLUListElement>(null);
   return (
     <section className="nk-shop" id="shop">
       <div className="nk-wrap">
@@ -861,7 +883,7 @@ function Shop({ onAdd }: { onAdd: (w: Wine) => void }) {
             Ingyenes kiszállítás 6 palacktól. Minden üveget kézzel csomagolunk, papírba és szalmába.
           </p>
         </div>
-        <ul className="nk-shop-grid">
+        <ul className="nk-shop-grid lp-swipe" ref={row}>
           {WINES.map((w, i) => (
             <li key={w.id} className="nk-prod" data-reveal style={d((i % 3) * 90)}>
               <div className="nk-prod-art" style={{ '--tint': w.label } as CSSProperties}>
@@ -885,6 +907,7 @@ function Shop({ onAdd }: { onAdd: (w: Wine) => void }) {
             </li>
           ))}
         </ul>
+        <SwipeDots row={row} count={WINES.length} />
       </div>
     </section>
   );
@@ -892,7 +915,7 @@ function Shop({ onAdd }: { onAdd: (w: Wine) => void }) {
 
 /* ------------------------------------------------------------------ booking */
 
-function Booking({ notify }: { notify: (m: string) => void }) {
+function useBookingState() {
   const [pkg, setPkg] = useState('dulo');
   const [people, setPeople] = useState(2);
   const [date, setDate] = useState('');
@@ -907,16 +930,122 @@ function Booking({ notify }: { notify: (m: string) => void }) {
   const sub = p.price * people;
   const disc = people >= 6 ? Math.round(sub * 0.1) : 0;
   const total = sub - disc;
+  return { pkg, setPkg, people, setPeople, date, setDate, name, setName, email, setEmail, min, p, sub, disc, total };
+}
+type BookingState = ReturnType<typeof useBookingState>;
+
+/** validates and "sends" the booking; true when it went through */
+function submitBooking(b: BookingState, notify: (m: string) => void) {
+  const { date, min, name, email, p, people, total } = b;
+  if (!date) return notify('Kérjük, válassz dátumot a kóstolóhoz.'), false;
+  if (date < min) return notify('A legkorábbi időpont holnap — válassz későbbi napot.'), false;
+  if (new Date(`${date}T12:00:00`).getDay() === 1) return notify('Hétfőn a pince zárva tart — válassz másik napot.'), false;
+  if (name.trim().length < 2) return notify('Kérjük, add meg a neved.'), false;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return notify('Kérjük, érvényes e-mail-címet adj meg.'), false;
+  notify(`Köszönjük, ${name.trim()}! ${p.name}, ${people} fő, ${ft(total)} — design bemutató, foglalás nem történt.`);
+  b.setName('');
+  b.setEmail('');
+  return true;
+}
+
+function PkgOption({ x, b }: { x: (typeof PACKAGES)[number]; b: BookingState }) {
+  return (
+    <label className={`nk-pkg ${b.pkg === x.id ? 'is-on' : ''}`}>
+      <input type="radio" name="pkg" value={x.id} checked={b.pkg === x.id} onChange={() => b.setPkg(x.id)} />
+      <span className="nk-pkg-head">
+        <b>{x.name}</b>
+        {x.featured && <em>Kedvenc</em>}
+      </span>
+      <span className="nk-pkg-price">
+        {ft(x.price)} <small>/ fő · {x.time}</small>
+      </span>
+      <ul>
+        {x.items.map((it) => (
+          <li key={it}>{it}</li>
+        ))}
+      </ul>
+    </label>
+  );
+}
+
+function BookingFields({ b, ids }: { b: BookingState; ids: string }) {
+  const { min, date, setDate, people, setPeople, name, setName, email, setEmail } = b;
+  return (
+    <div className="nk-fields">
+      <label className="nk-field">
+        <span>2. Dátum</span>
+        <input type="date" min={min} value={date} onChange={(e) => setDate(e.target.value)} />
+      </label>
+      <div className="nk-field">
+        <span id={ids}>3. Létszám</span>
+        <div className="nk-stepper" role="group" aria-labelledby={ids}>
+          <button type="button" onClick={() => setPeople(Math.max(1, people - 1))} aria-label="Kevesebb fő" disabled={people <= 1}>
+            −
+          </button>
+          <output aria-live="polite">{people} fő</output>
+          <button type="button" onClick={() => setPeople(Math.min(12, people + 1))} aria-label="Több fő" disabled={people >= 12}>
+            +
+          </button>
+        </div>
+      </div>
+      <label className="nk-field">
+        <span>Név</span>
+        <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Kovács Eszter" autoComplete="name" />
+      </label>
+      <label className="nk-field">
+        <span>E-mail</span>
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="eszter@pelda.hu" autoComplete="email" />
+      </label>
+    </div>
+  );
+}
+
+function BookingSummary({ b, sheet = false, ...rest }: { b: BookingState; sheet?: boolean; style?: CSSProperties; 'data-reveal'?: boolean }) {
+  const { p, people, sub, disc, date, total } = b;
+  return (
+    <aside className={`nk-summary${sheet ? ' nk-summary--sheet' : ''}`} {...rest}>
+      <p className="nk-summary-k">Összesítő</p>
+      <h3>{p.name}</h3>
+      <ul>
+        <li>
+          <span>
+            {ft(p.price)} × {people} fő
+          </span>
+          <span>{ft(sub)}</span>
+        </li>
+        <li className={disc ? '' : 'is-muted'}>
+          <span>Csoportkedvezmény (6 főtől −10%)</span>
+          <span>{disc ? `−${ft(disc)}` : '—'}</span>
+        </li>
+        <li>
+          <span>Időpont</span>
+          <span>{date ? new Date(`${date}T12:00:00`).toLocaleDateString('hu-HU', { month: 'long', day: 'numeric', weekday: 'short' }) : 'válassz napot'}</span>
+        </li>
+      </ul>
+      {sheet ? (
+        <p className="nk-fine">Kedd–vasárnap, 10–19 óra. Lemondás díjmentesen 48 órával előtte.</p>
+      ) : (
+        <>
+          <div className="nk-total">
+            <span>Fizetendő a helyszínen</span>
+            <b key={total}>{ft(total)}</b>
+          </div>
+          <button type="submit" className="nk-btn nk-btn--gold nk-btn--block">
+            Foglalás elküldése
+          </button>
+          <p className="nk-fine">Kedd–vasárnap, 10–19 óra. Lemondás díjmentesen 48 órával előtte.</p>
+        </>
+      )}
+    </aside>
+  );
+}
+
+function Booking({ b, notify, onOpen }: { b: BookingState; notify: (m: string) => void; onOpen: () => void }) {
+  const phone = useLandingPhone();
+  const row = useRef<HTMLDivElement>(null);
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    if (!date) return notify('Kérjük, válassz dátumot a kóstolóhoz.');
-    if (date < min) return notify('A legkorábbi időpont holnap — válassz későbbi napot.');
-    if (new Date(`${date}T12:00:00`).getDay() === 1) return notify('Hétfőn a pince zárva tart — válassz másik napot.');
-    if (name.trim().length < 2) return notify('Kérjük, add meg a neved.');
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return notify('Kérjük, érvényes e-mail-címet adj meg.');
-    notify(`Köszönjük, ${name.trim()}! ${p.name}, ${people} fő, ${ft(total)} — design bemutató, foglalás nem történt.`);
-    setName('');
-    setEmail('');
+    submitBooking(b, notify);
   };
   return (
     <section className="nk-book" id="booking">
@@ -928,92 +1057,82 @@ function Booking({ notify }: { notify: (m: string) => void }) {
         <h2 className="nk-h2 nk-center" data-reveal>
           Gyertek le <em>a pincébe.</em>
         </h2>
-        <form className="nk-book-grid" onSubmit={submit} noValidate>
-          <div className="nk-book-main" data-reveal>
-            <fieldset className="nk-pkgs">
-              <legend>1. Kóstolócsomag</legend>
+        {phone ? (
+          /* phones: pick a package here, the date and details open in a sheet */
+          <div className="nk-book-phone">
+            <p className="nk-book-step">1. Válassz kóstolócsomagot</p>
+            <div className="nk-pkgs nk-pkg-row lp-swipe" ref={row} role="radiogroup" aria-label="Kóstolócsomag">
               {PACKAGES.map((x) => (
-                <label key={x.id} className={`nk-pkg ${pkg === x.id ? 'is-on' : ''}`}>
-                  <input type="radio" name="pkg" value={x.id} checked={pkg === x.id} onChange={() => setPkg(x.id)} />
-                  <span className="nk-pkg-head">
-                    <b>{x.name}</b>
-                    {x.featured && <em>Kedvenc</em>}
-                  </span>
-                  <span className="nk-pkg-price">
-                    {ft(x.price)} <small>/ fő · {x.time}</small>
-                  </span>
-                  <ul>
-                    {x.items.map((it) => (
-                      <li key={it}>{it}</li>
-                    ))}
-                  </ul>
-                </label>
+                <PkgOption key={x.id} x={x} b={b} />
               ))}
-            </fieldset>
-            <div className="nk-fields">
-              <label className="nk-field">
-                <span>2. Dátum</span>
-                <input type="date" min={min} value={date} onChange={(e) => setDate(e.target.value)} />
-              </label>
-              <div className="nk-field">
-                <span id="nk-ppl">3. Létszám</span>
-                <div className="nk-stepper" role="group" aria-labelledby="nk-ppl">
-                  <button type="button" onClick={() => setPeople(Math.max(1, people - 1))} aria-label="Kevesebb fő" disabled={people <= 1}>
-                    −
-                  </button>
-                  <output aria-live="polite">{people} fő</output>
-                  <button type="button" onClick={() => setPeople(Math.min(12, people + 1))} aria-label="Több fő" disabled={people >= 12}>
-                    +
-                  </button>
-                </div>
-              </div>
-              <label className="nk-field">
-                <span>Név</span>
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Kovács Eszter" autoComplete="name" />
-              </label>
-              <label className="nk-field">
-                <span>E-mail</span>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="eszter@pelda.hu" autoComplete="email" />
-              </label>
+            </div>
+            <SwipeDots row={row} count={PACKAGES.length} />
+            <div className="nk-book-bar">
+              <span>
+                <small>
+                  {b.p.name} · {b.people} fő
+                </small>
+                <b key={b.total}>{ft(b.total)}</b>
+              </span>
+              <button type="button" className="nk-btn nk-btn--gold" onClick={onOpen}>
+                Időpont <span aria-hidden>→</span>
+              </button>
             </div>
           </div>
-          <aside className="nk-summary" data-reveal style={d(120)}>
-            <p className="nk-summary-k">Összesítő</p>
-            <h3>{p.name}</h3>
-            <ul>
-              <li>
-                <span>
-                  {ft(p.price)} × {people} fő
-                </span>
-                <span>{ft(sub)}</span>
-              </li>
-              <li className={disc ? '' : 'is-muted'}>
-                <span>Csoportkedvezmény (6 főtől −10%)</span>
-                <span>{disc ? `−${ft(disc)}` : '—'}</span>
-              </li>
-              <li>
-                <span>Időpont</span>
-                <span>{date ? new Date(`${date}T12:00:00`).toLocaleDateString('hu-HU', { month: 'long', day: 'numeric', weekday: 'short' }) : 'válassz napot'}</span>
-              </li>
-            </ul>
-            <div className="nk-total">
-              <span>Fizetendő a helyszínen</span>
-              <b key={total}>{ft(total)}</b>
+        ) : (
+          <form className="nk-book-grid" onSubmit={submit} noValidate>
+            <div className="nk-book-main" data-reveal>
+              <fieldset className="nk-pkgs">
+                <legend>1. Kóstolócsomag</legend>
+                {PACKAGES.map((x) => (
+                  <PkgOption key={x.id} x={x} b={b} />
+                ))}
+              </fieldset>
+              <BookingFields b={b} ids="nk-ppl" />
             </div>
-            <button type="submit" className="nk-btn nk-btn--gold nk-btn--block">
-              Foglalás elküldése
-            </button>
-            <p className="nk-fine">Kedd–vasárnap, 10–19 óra. Lemondás díjmentesen 48 órával előtte.</p>
-          </aside>
-        </form>
+            <BookingSummary b={b} data-reveal style={d(120)} />
+          </form>
+        )}
       </div>
     </section>
+  );
+}
+
+/** the booking form as a bottom sheet (phones: the tab bar's main action) */
+function BookingSheet({ b, notify, open, onClose }: { b: BookingState; notify: (m: string) => void; open: boolean; onClose: () => void }) {
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    if (submitBooking(b, notify)) onClose();
+  };
+  return (
+    <AppSheet open={open} title="Kóstoló foglalása" onClose={onClose} closeLabel="Bezárás" style={{ '--app-bg': '#4a1420', '--app-fg': '#f8f1e4', '--app-line': 'rgb(233 201 133 / 0.3)' } as CSSProperties}>
+      <form className="nk-sheet-form" onSubmit={submit} noValidate>
+        <fieldset className="nk-pkgs nk-pkgs--compact">
+          <legend>1. Kóstolócsomag</legend>
+          {PACKAGES.map((x) => (
+            <PkgOption key={x.id} x={x} b={b} />
+          ))}
+        </fieldset>
+        <BookingFields b={b} ids="nk-ppl-sheet" />
+        <BookingSummary b={b} sheet />
+        <div className="nk-sheet-bar">
+          <span>
+            <small>Fizetendő a helyszínen</small>
+            <b key={b.total}>{ft(b.total)}</b>
+          </span>
+          <button type="submit" className="nk-btn nk-btn--gold">
+            Foglalás elküldése
+          </button>
+        </div>
+      </form>
+    </AppSheet>
   );
 }
 
 /* ------------------------------------------------------------------ voices, faq, cta, footer */
 
 function Voices() {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="nk-voices">
       <div className="nk-wrap">
@@ -1023,7 +1142,7 @@ function Voices() {
         <h2 className="nk-h2 nk-center" data-reveal>
           Akik már <em>koccintottak velünk.</em>
         </h2>
-        <div className="nk-voice-grid">
+        <div className="nk-voice-grid lp-swipe" ref={row}>
           {QUOTES.map((q, i) => (
             <figure key={q.who} className="nk-voice" data-reveal style={d(i * 110)}>
               <svg viewBox="0 0 40 30" className="nk-qmark" aria-hidden>
@@ -1036,6 +1155,7 @@ function Voices() {
             </figure>
           ))}
         </div>
+        <SwipeDots row={row} count={QUOTES.length} />
         <p className="nk-fine nk-center" data-reveal>
           A vendégvélemények kitaláltak — a Napkorsó Birtok egy design bemutató része.
         </p>
@@ -1150,10 +1270,16 @@ export default function Napkorso() {
   const root = useRef<HTMLDivElement>(null);
   useReveal(root);
   const [toast, notify] = useToast(4200);
-  const add = (w: Wine) => notify(`${w.name} a kosárban — design bemutató, vásárlás nem történik.`);
+  const [cart, setCart] = useState(0);
+  const [sheet, setSheet] = useState(false);
+  const booking = useBookingState();
+  const add = (w: Wine) => {
+    setCart((n) => n + 1);
+    notify(`${w.name} a kosárban — design bemutató, vásárlás nem történik.`);
+  };
   return (
     <div ref={root} className="napkorso">
-      <Nav />
+      <Nav cart={cart} />
       <Hero />
       <section className="nk-band" aria-label="Fajták és stílusok">
         <Marquee>
@@ -1174,7 +1300,7 @@ export default function Napkorso() {
       <Plots />
       <Cellar />
       <Shop onAdd={add} />
-      <Booking notify={notify} />
+      <Booking b={booking} notify={notify} onOpen={() => setSheet(true)} />
       <Voices />
       <Faq />
       <FinalCta />
@@ -1182,6 +1308,16 @@ export default function Napkorso() {
       <div className={`nk-toast ${toast ? 'is-on' : ''}`} role="status" aria-live="polite">
         {toast}
       </div>
+      <BookingSheet b={booking} notify={notify} open={sheet} onClose={() => setSheet(false)} />
+      <AppTabBar
+        tabs={[
+          { id: 'top', label: 'Birtok', icon: <AppIcons.home /> },
+          { id: 'vintages', label: 'Évjáratok', icon: <AppIcons.leaf /> },
+          { id: 'finder', label: 'Borok', icon: <AppIcons.glass /> },
+          { id: 'shop', label: 'Borbolt', icon: <AppIcons.bag /> },
+        ]}
+        action={{ label: 'Foglalás', icon: <AppIcons.calendar />, onClick: () => setSheet(true) }}
+      />
     </div>
   );
 }

@@ -38,6 +38,8 @@ export const hu: Dict = {
     capabilities: 'Kompetenciák',
     labsAll: 'Összes projekt',
     talk: 'Beszéljünk',
+    /** the phone tab bar's action button: a short label */
+    talkShort: 'Beszéljünk',
     menu: 'Menü',
     close: 'Bezárás',
   },

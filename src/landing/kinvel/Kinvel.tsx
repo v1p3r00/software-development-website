@@ -1,8 +1,9 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { CSSProperties, FormEvent, ReactNode } from 'react';
 import '@fontsource-variable/unbounded';
 import './kinvel.css';
 import { jump, useCountUp, useInView, usePointerTilt, useReveal, useScrolledPast, useToast } from '../kit';
+import { AppIcons, AppSheet, AppTabBar, SwipeDots, useLandingPhone } from '../appKit';
 
 /**
  * Kinvel One — a fictional premium city e-bike launch.
@@ -303,6 +304,7 @@ function Pillars() {
     ['02', 'Silence as a feature', 'A carbon belt instead of a chain. No oil, no stretch, no grease on your trousers — 30,000 km between swaps.'],
     ['03', 'Power you do not notice', '70 Nm arrives with the pressure of your foot, not after it. The motor reads your cadence 1,000 times a second.'],
   ];
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="kv-statement" id="story">
       <div className="kv-wrap">
@@ -313,7 +315,7 @@ function Pillars() {
           We took everything off the bike that a city does not need — <span className="kv-dim">the chain, the cables, the bolt-on battery, the noise</span> — and kept
           the one thing it does: <span className="kv-volt">momentum.</span>
         </p>
-        <div className="kv-pillars">
+        <div className="kv-pillars lp-swipe" ref={row}>
           {items.map(([n, h, p], i) => (
             <article key={n} className="kv-pillar" data-reveal style={{ '--d': `${i * 110}ms` } as CSSProperties}>
               <span className="kv-num">{n}</span>
@@ -322,6 +324,7 @@ function Pillars() {
             </article>
           ))}
         </div>
+        <SwipeDots row={row} count={items.length} />
       </div>
     </section>
   );
@@ -407,7 +410,7 @@ function Design() {
               <h3>{s.t}</h3>
               <p>{s.d}</p>
             </div>
-            <div className="kv-callout-nav">
+            <div className="kv-callout-nav lp-chips">
               {SPOTS.map((p, i) => (
                 <button key={p.t} type="button" className={on === i ? 'is-on' : ''} onClick={() => setOn(i)}>
                   {p.t}
@@ -421,15 +424,78 @@ function Design() {
   );
 }
 
-function Configurator({ notify }: { notify: (m: string) => void }) {
+type Build = ReturnType<typeof useBuild>;
+
+/** the configurator's choices, shared by the inline configurator and the phone reserve sheet */
+function useBuild(notify: (m: string) => void) {
   const [colour, setColour] = useState<Colour>('volt');
   const [size, setSize] = useState<Size>('M');
-  const [view, setView] = useState<View>('side');
   const [acc, setAcc] = useState<Record<Acc, boolean>>({ rack: false, lights: true, lock: false });
   const total = BASE + ACCS.reduce((s, a) => s + (acc[a.id] ? a.price : 0), 0);
   const c = COLOURS.find((x) => x.id === colour)!;
   const reserve = () =>
     notify(`Kinvel One · ${c.name} · ${size} reserved for €199 — design showcase, nothing is charged.`);
+  return { colour, setColour, size, setSize, acc, setAcc, total, c, reserve };
+}
+
+function BuildPanel({ b, onReserve, style, reveal = true }: { b: Build; onReserve: () => void; style?: CSSProperties; reveal?: boolean }) {
+  const { colour, setColour, size, setSize, acc, setAcc, total, c } = b;
+  return (
+    <div className="kv-panel" data-reveal={reveal ? '' : undefined} style={style}>
+      <fieldset>
+        <legend>Colourway</legend>
+        <div className="kv-swatches">
+          {COLOURS.map((x) => (
+            <button key={x.id} type="button" aria-pressed={colour === x.id} className={`kv-swatch ${colour === x.id ? 'is-on' : ''}`} onClick={() => setColour(x.id)}>
+              <i data-c={x.id} />
+              {x.name}
+            </button>
+          ))}
+        </div>
+        <p className="kv-note">{c.note}</p>
+      </fieldset>
+      <fieldset>
+        <legend>Frame size</legend>
+        <div className="kv-seg">
+          {(Object.keys(SIZES) as Size[]).map((s) => (
+            <button key={s} type="button" aria-pressed={size === s} className={size === s ? 'is-on' : ''} onClick={() => setSize(s)}>
+              <b>{s}</b>
+              <span>{SIZES[s]}</span>
+            </button>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Accessories</legend>
+        {ACCS.map((a) => (
+          <label key={a.id} className={`kv-toggle ${acc[a.id] ? 'is-on' : ''}`}>
+            <input type="checkbox" checked={acc[a.id]} onChange={() => setAcc({ ...acc, [a.id]: !acc[a.id] })} />
+            <span className="kv-switch" aria-hidden />
+            <span className="kv-toggle-t">
+              {a.name}
+              <small>{a.note}</small>
+            </span>
+            <b>+€{a.price}</b>
+          </label>
+        ))}
+      </fieldset>
+      <div className="kv-total">
+        <div>
+          <span>Your Kinvel One</span>
+          <strong key={total}>{fmt(total)}</strong>
+        </div>
+        <button type="button" className="kv-btn kv-btn--volt" onClick={onReserve}>
+          Reserve for €199
+        </button>
+      </div>
+      <p className="kv-note">Fully refundable deposit · pay the rest when your bike ships</p>
+    </div>
+  );
+}
+
+function Configurator({ b }: { b: Build }) {
+  const { colour, size, acc, c } = b;
+  const [view, setView] = useState<View>('side');
   return (
     <section className="kv-config" id="configure">
       <div className="kv-wrap">
@@ -464,58 +530,32 @@ function Configurator({ notify }: { notify: (m: string) => void }) {
             </span>
           </div>
 
-          <div className="kv-panel" data-reveal style={{ '--d': '120ms' } as CSSProperties}>
-            <fieldset>
-              <legend>Colourway</legend>
-              <div className="kv-swatches">
-                {COLOURS.map((x) => (
-                  <button key={x.id} type="button" aria-pressed={colour === x.id} className={`kv-swatch ${colour === x.id ? 'is-on' : ''}`} onClick={() => setColour(x.id)}>
-                    <i data-c={x.id} />
-                    {x.name}
-                  </button>
-                ))}
-              </div>
-              <p className="kv-note">{c.note}</p>
-            </fieldset>
-            <fieldset>
-              <legend>Frame size</legend>
-              <div className="kv-seg">
-                {(Object.keys(SIZES) as Size[]).map((s) => (
-                  <button key={s} type="button" aria-pressed={size === s} className={size === s ? 'is-on' : ''} onClick={() => setSize(s)}>
-                    <b>{s}</b>
-                    <span>{SIZES[s]}</span>
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend>Accessories</legend>
-              {ACCS.map((a) => (
-                <label key={a.id} className={`kv-toggle ${acc[a.id] ? 'is-on' : ''}`}>
-                  <input type="checkbox" checked={acc[a.id]} onChange={() => setAcc({ ...acc, [a.id]: !acc[a.id] })} />
-                  <span className="kv-switch" aria-hidden />
-                  <span className="kv-toggle-t">
-                    {a.name}
-                    <small>{a.note}</small>
-                  </span>
-                  <b>+€{a.price}</b>
-                </label>
-              ))}
-            </fieldset>
-            <div className="kv-total">
-              <div>
-                <span>Your Kinvel One</span>
-                <strong key={total}>{fmt(total)}</strong>
-              </div>
-              <button type="button" className="kv-btn kv-btn--volt" onClick={reserve}>
-                Reserve for €199
-              </button>
-            </div>
-            <p className="kv-note">Fully refundable deposit · pay the rest when your bike ships</p>
-          </div>
+          <BuildPanel b={b} onReserve={b.reserve} style={{ '--d': '120ms' } as CSSProperties} />
         </div>
       </div>
     </section>
+  );
+}
+
+/** phones: the reserve flow as a bottom sheet — same choices as the configurator */
+function ReserveSheet({ b, open, onClose }: { b: Build; open: boolean; onClose: () => void }) {
+  return (
+    <AppSheet open={open} title="Reserve your Kinvel One" onClose={onClose}>
+      <div className="kv-sheet-bike" aria-hidden>
+        <Bike colour={b.colour} rack={b.acc.rack} lights={b.acc.lights} lock={b.acc.lock} />
+        <span className="kv-stage-tag">
+          {b.c.name} · {b.size} · {SIZES[b.size]}
+        </span>
+      </div>
+      <BuildPanel
+        b={b}
+        reveal={false}
+        onReserve={() => {
+          onClose();
+          b.reserve();
+        }}
+      />
+    </AppSheet>
   );
 }
 
@@ -599,6 +639,7 @@ function Range() {
 }
 
 function Bento() {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="kv-bento-sec">
       <div className="kv-wrap">
@@ -610,7 +651,7 @@ function Bento() {
             Engineered to <span className="kv-steel">disappear.</span>
           </h2>
         </div>
-        <div className="kv-bento">
+        <div className="kv-bento lp-swipe" ref={row}>
           <article className="kv-tile kv-tile--screen" data-reveal>
             <div className="kv-screen">
               <span className="kv-screen-mode">TOUR</span>
@@ -668,6 +709,7 @@ function Bento() {
             <p>Motor lock, movement alarm and live GPS — included for life, no subscription.</p>
           </article>
         </div>
+        <SwipeDots row={row} count={4} />
       </div>
     </section>
   );
@@ -787,6 +829,7 @@ const REVIEWS = [
 ];
 
 function Reviews() {
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="kv-reviews">
       <div className="kv-wrap">
@@ -798,7 +841,7 @@ function Reviews() {
             4.9 from 2,140 <span className="kv-steel">test rides.</span>
           </h2>
         </div>
-        <div className="kv-review-grid">
+        <div className="kv-review-grid lp-swipe" ref={row}>
           {REVIEWS.map(([q, n, r, b], i) => (
             <figure key={n} className="kv-review" data-reveal style={{ '--d': `${i * 110}ms` } as CSSProperties}>
               <span className="kv-stars" aria-label="5 out of 5">
@@ -818,6 +861,7 @@ function Reviews() {
             </figure>
           ))}
         </div>
+        <SwipeDots row={row} count={REVIEWS.length} />
         <p className="kv-fine">Reviews and riders are fictional — Kinvel One is a design showcase.</p>
       </div>
     </section>
@@ -864,7 +908,7 @@ function Faq() {
   );
 }
 
-function Final({ notify }: { notify: (m: string) => void }) {
+function Final({ notify, onReserve }: { notify: (m: string) => void; onReserve?: () => void }) {
   const [email, setEmail] = useState('');
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -890,7 +934,18 @@ function Final({ notify }: { notify: (m: string) => void }) {
           <Bike colour="bone" />
         </div>
         <div className="kv-final-row" data-reveal>
-          <a href="#configure" onClick={jump('configure')} className="kv-btn kv-btn--volt">
+          <a
+            href="#configure"
+            onClick={
+              onReserve
+                ? (e) => {
+                    e.preventDefault();
+                    onReserve();
+                  }
+                : jump('configure')
+            }
+            className="kv-btn kv-btn--volt"
+          >
             Reserve for €199 <span aria-hidden>→</span>
           </a>
           <form className="kv-form" onSubmit={submit} noValidate>
@@ -942,10 +997,24 @@ function Footer() {
   );
 }
 
+function BikeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="5.5" cy="15.5" r="3.5" />
+      <circle cx="18.5" cy="15.5" r="3.5" />
+      <path d="M5.5 15.5l4-7h7l2 7M9.5 8.5l3.5 7H5.5M15 5.5h2.5" />
+    </svg>
+  );
+}
+
 export default function Kinvel() {
   const root = useRef<HTMLDivElement>(null);
   useReveal(root);
   const [toast, notify] = useToast(3600);
+  const phone = useLandingPhone();
+  const build = useBuild(notify);
+  const [sheet, setSheet] = useState(false);
+  const closeSheet = useCallback(() => setSheet(false), []);
   return (
     <div ref={root} className="kinvel">
       <Nav />
@@ -963,18 +1032,28 @@ export default function Kinvel() {
       <Pillars />
       <Specs />
       <Design />
-      <Configurator notify={notify} />
+      <Configurator b={build} />
       <Range />
       <Bento />
       <Compare />
       <Batch notify={notify} />
       <Reviews />
       <Faq />
-      <Final notify={notify} />
+      <Final notify={notify} onReserve={phone ? () => setSheet(true) : undefined} />
       <Footer />
       <div className={`kv-toast ${toast ? 'is-on' : ''}`} role="status" aria-live="polite">
         {toast}
       </div>
+      <ReserveSheet b={build} open={sheet} onClose={closeSheet} />
+      <AppTabBar
+        tabs={[
+          { id: 'top', label: 'Bike', icon: <BikeIcon /> },
+          { id: 'configure', label: 'Build', icon: <AppIcons.sliders /> },
+          { id: 'range', label: 'Range', icon: <AppIcons.bolt /> },
+          { id: 'compare', label: 'Compare', icon: <AppIcons.list /> },
+        ]}
+        action={{ label: 'Reserve', icon: <AppIcons.key />, onClick: () => setSheet(true) }}
+      />
     </div>
   );
 }

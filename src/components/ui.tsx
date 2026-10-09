@@ -39,7 +39,7 @@ export function SectionHeader({
       </div>
     );
   return (
-    <div className="mb-10 flex flex-col gap-4 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
+    <div className="sec-head mb-10 flex flex-col gap-4 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="flex min-w-0 items-end gap-4 sm:shrink-0">
         <span className="font-mono text-2xs tracking-tech text-accent">[{index}]</span>
         <div className="min-w-0">

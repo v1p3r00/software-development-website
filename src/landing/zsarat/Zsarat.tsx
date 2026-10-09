@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, FormEvent, ReactNode } from "react";
 import "@fontsource-variable/playfair-display";
 import "@fontsource-variable/playfair-display/wght-italic.css";
@@ -14,6 +14,7 @@ import {
   useScrolledPast,
   useToast,
 } from "../kit";
+import { AppIcons, AppSheet, AppTabBar, SwipeDots, useLandingPhone } from "../appKit";
 
 /**
  * Zsarát — a fictional live-fire tasting-menu restaurant in Budapest.
@@ -1232,6 +1233,8 @@ function Philosophy() {
       "Tizennyolc vendég ül a nyitott konyha körül. A szakácsok szolgálják fel, amit főztek, és el is mesélik.",
     ],
   ];
+  const phone = useLandingPhone();
+  const pillarRow = useRef<HTMLDivElement>(null);
   return (
     <section className="zs-philo" id="hitvallas">
       <div className="zs-wrap">
@@ -1300,7 +1303,7 @@ function Philosophy() {
             </p>
           </div>
         </div>
-        <div className="zs-pillars">
+        <div className={`zs-pillars${phone ? " lp-swipe" : ""}`} ref={pillarRow}>
           {pillars.map(([n, h, p], i) => (
             <article
               key={n}
@@ -1314,6 +1317,7 @@ function Philosophy() {
             </article>
           ))}
         </div>
+        <SwipeDots row={pillarRow} count={pillars.length} />
       </div>
     </section>
   );
@@ -1322,7 +1326,26 @@ function Philosophy() {
 function Menu() {
   const [active, setActive] = useState(0);
   const items = useRef<Array<HTMLElement | null>>([]);
+  const phone = useLandingPhone();
+  const row = useRef<HTMLOListElement>(null);
+  // phones: the courses are a sideways swipe row and the plate follows the card in view
   useEffect(() => {
+    const el = row.current;
+    if (!phone || !el) return;
+    const on = () => {
+      const first = el.children[0] as HTMLElement | undefined;
+      if (!first) return;
+      const step =
+        first.offsetWidth + parseFloat(getComputedStyle(el).columnGap || "0");
+      const i = Math.round(el.scrollLeft / Math.max(1, step));
+      setActive(Math.max(0, Math.min(COURSES.length - 1, i)));
+    };
+    on();
+    el.addEventListener("scroll", on, { passive: true });
+    return () => el.removeEventListener("scroll", on);
+  }, [phone]);
+  useEffect(() => {
+    if (phone) return;
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries)
@@ -1333,12 +1356,22 @@ function Menu() {
     );
     items.current.forEach((el) => el && io.observe(el));
     return () => io.disconnect();
-  }, []);
-  const go = (i: number) =>
-    items.current[i]?.scrollIntoView({
+  }, [phone]);
+  const go = (i: number) => {
+    const el = row.current;
+    const card = items.current[i];
+    if (phone && el && card) {
+      el.scrollTo({
+        left: card.offsetLeft - el.offsetLeft - parseFloat(getComputedStyle(el).paddingLeft || "0"),
+        behavior: reducedMotion() ? "auto" : "smooth",
+      });
+      return;
+    }
+    card?.scrollIntoView({
       behavior: reducedMotion() ? "auto" : "smooth",
       block: "center",
     });
+  };
   const c = COURSES[active];
   const R = 46;
   const C = 2 * Math.PI * R;
@@ -1397,7 +1430,7 @@ function Menu() {
               </div>
             </div>
           </div>
-          <ol className="zs-courses">
+          <ol className={`zs-courses${phone ? " lp-swipe" : ""}`} ref={row}>
             {COURSES.map((x, i) => (
               <li
                 key={x.key}
@@ -1813,6 +1846,43 @@ const MONTHS = [
 ];
 
 function Booking({ notify }: { notify: (m: string) => void }) {
+  return (
+    <section className="zs-book" id="foglalas">
+      <div className="zs-ember zs-ember--book" aria-hidden />
+      <div className="zs-wrap zs-book-grid">
+        <div className="zs-book-copy">
+          <p className="zs-kicker" data-reveal>
+            Asztalfoglalás
+          </p>
+          <h2 className="zs-h2" data-reveal style={d(80)}>
+            Foglaljon helyet <em>a tűz mellett.</em>
+          </h2>
+          <p className="zs-body" data-reveal style={d(160)}>
+            Szerdától vasárnapig, két ültetéssel. A foglalásokat hat héttel
+            előre nyitjuk meg, minden hónap első hétfőjén, 10 órakor.
+          </p>
+          <ul className="zs-ticks" data-reveal style={d(220)}>
+            <li>72 óráig díjmentes lemondás</li>
+            <li>Vegetáriánus menü kérésre</li>
+            <li>A pult melletti helyek kérhetők</li>
+          </ul>
+        </div>
+        <BookingForm notify={notify} reveal />
+      </div>
+    </section>
+  );
+}
+
+/** the booking widget — inline in the booking section, and in a bottom sheet on phones */
+function BookingForm({
+  notify,
+  reveal = false,
+  onBooked,
+}: {
+  notify: (m: string) => void;
+  reveal?: boolean;
+  onBooked?: () => void;
+}) {
   const dates = useMemo(() => {
     const out: Date[] = [];
     const base = new Date();
@@ -1840,36 +1910,17 @@ function Booking({ notify }: { notify: (m: string) => void }) {
       notify("Kérjük, válasszon időpontot.");
       return;
     }
+    onBooked?.();
     notify(
       `Asztal ${guests} főre, ${MONTHS[day.getMonth()]} ${day.getDate()}. ${slot} — design-bemutató, foglalás nem történt.`,
     );
   };
   return (
-    <section className="zs-book" id="foglalas">
-      <div className="zs-ember zs-ember--book" aria-hidden />
-      <div className="zs-wrap zs-book-grid">
-        <div className="zs-book-copy">
-          <p className="zs-kicker" data-reveal>
-            Asztalfoglalás
-          </p>
-          <h2 className="zs-h2" data-reveal style={d(80)}>
-            Foglaljon helyet <em>a tűz mellett.</em>
-          </h2>
-          <p className="zs-body" data-reveal style={d(160)}>
-            Szerdától vasárnapig, két ültetéssel. A foglalásokat hat héttel
-            előre nyitjuk meg, minden hónap első hétfőjén, 10 órakor.
-          </p>
-          <ul className="zs-ticks" data-reveal style={d(220)}>
-            <li>72 óráig díjmentes lemondás</li>
-            <li>Vegetáriánus menü kérésre</li>
-            <li>A pult melletti helyek kérhetők</li>
-          </ul>
-        </div>
         <form
           className="zs-widget"
           onSubmit={submit}
-          data-reveal
-          style={d(120)}
+          data-reveal={reveal ? "" : undefined}
+          style={reveal ? d(120) : undefined}
           noValidate
         >
           <fieldset>
@@ -1967,6 +2018,7 @@ function Booking({ notify }: { notify: (m: string) => void }) {
               Borpárosítás <small>+{ft(PRICES[menu].wine)} / fő</small>
             </span>
           </label>
+          <div className="zs-book-foot">
           <div className="zs-total">
             <div>
               <span>Összesen</span>
@@ -1982,9 +2034,8 @@ function Booking({ notify }: { notify: (m: string) => void }) {
               ? `· ${MONTHS[day.getMonth()]} ${day.getDate()}. ${slot}`
               : ""}
           </button>
+          </div>
         </form>
-      </div>
-    </section>
   );
 }
 
@@ -2091,6 +2142,8 @@ function Voucher({ notify }: { notify: (m: string) => void }) {
 }
 
 function Testimonials() {
+  const phone = useLandingPhone();
+  const row = useRef<HTMLDivElement>(null);
   return (
     <section className="zs-quotes">
       <div className="zs-wrap">
@@ -2100,7 +2153,7 @@ function Testimonials() {
         <h2 className="zs-h2 zs-center" data-reveal style={d(80)}>
           Amit a tűz <em>után</em> mondanak.
         </h2>
-        <div className="zs-quote-grid">
+        <div className={`zs-quote-grid${phone ? " lp-swipe" : ""}`} ref={row}>
           {QUOTES.map(([q, who, where], i) => (
             <figure
               key={who}
@@ -2115,6 +2168,7 @@ function Testimonials() {
             </figure>
           ))}
         </div>
+        <SwipeDots row={row} count={QUOTES.length} />
         <p className="zs-fine zs-center">
           A vélemények kitaláltak — a Zsarát egy design-bemutató.
         </p>
@@ -2253,6 +2307,8 @@ export default function Zsarat() {
   const root = useRef<HTMLDivElement>(null);
   useReveal(root);
   const [toast, notify] = useToast(3600);
+  const [sheet, setSheet] = useState(false);
+  const closeSheet = useCallback(() => setSheet(false), []);
   return (
     <div ref={root} className="zsarat">
       <Nav />
@@ -2276,6 +2332,27 @@ export default function Zsarat() {
       >
         {toast}
       </div>
+      <AppSheet
+        open={sheet}
+        title="Asztalfoglalás"
+        onClose={closeSheet}
+        closeLabel="Bezárás"
+      >
+        <BookingForm notify={notify} onBooked={closeSheet} />
+      </AppSheet>
+      <AppTabBar
+        tabs={[
+          { id: "top", label: "Főoldal", icon: <AppIcons.flame /> },
+          { id: "menu", label: "Menü", icon: <AppIcons.plate /> },
+          { id: "pince", label: "Pince", icon: <AppIcons.glass /> },
+          { id: "ajandek", label: "Utalvány", icon: <AppIcons.gift /> },
+        ]}
+        action={{
+          label: "Foglalás",
+          icon: <AppIcons.calendar />,
+          onClick: () => setSheet(true),
+        }}
+      />
     </div>
   );
 }

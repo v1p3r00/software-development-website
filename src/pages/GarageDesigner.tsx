@@ -12,6 +12,8 @@ import type { Cladding, Door, GarageOpts, Roof } from '../components/tools/garag
 import { createSky } from '../components/tools/garageSky';
 import type { Sky } from '../components/tools/garageSky';
 import { createStage, download } from '../components/tools/stage';
+import { useGoToSection } from '../hooks/useGoToSection';
+import { AppBar, AppCaption, AppCard, AppDots, AppPrice, AppRange, AppRow, AppSeg, AppSheet, AppShell, AppSwitch, Door as DoorTab, Download, Fab, FloatSeg, Palette, Plusbox, Roof as RoofTab, Ruler, usePhoneApp } from '../components/tools/phoneApp';
 import type { Stage } from '../components/tools/stage';
 
 type View = 'front' | 'side' | 'top';
@@ -82,6 +84,15 @@ const T = {
     views: { front: 'Front', side: 'Side', top: 'From above' },
     open: 'Open doors',
     close: 'Close doors',
+    tabs: { size: 'Size', roof: 'Roof', door: 'Door', look: 'Look', extras: 'Extras' },
+    quote: 'Get a quote',
+    colourOf: { wall: 'Walls', trim: 'Roof & door', handle: 'Handle' },
+    area: 'Floor area',
+    closeSheet: 'Close',
+    saveShort: 'Save',
+    doorsShort: 'Doors',
+    twoNeeds: 'Two doors need a width of at least 5,4 m.',
+    summary: 'Estimate',
   },
   hu: {
     subtitle: 'Garázstervező — bemutató árak',
@@ -125,6 +136,15 @@ const T = {
     views: { front: 'Elöl', side: 'Oldal', top: 'Felülről' },
     open: 'Kapu nyitása',
     close: 'Kapu zárása',
+    tabs: { size: 'Méret', roof: 'Tető', door: 'Kapu', look: 'Megjelenés', extras: 'Extrák' },
+    quote: 'Ajánlatkérés',
+    colourOf: { wall: 'Fal', trim: 'Tető és kapu', handle: 'Kilincs' },
+    area: 'Alapterület',
+    closeSheet: 'Bezárás',
+    saveShort: 'Mentés',
+    doorsShort: 'Kapu',
+    twoNeeds: 'Két kapuhoz legalább 5,4 m szélesség kell.',
+    summary: 'Árbecslés',
   },
   sk: {
     subtitle: 'Návrhár garáže — orientačné ceny',
@@ -168,6 +188,15 @@ const T = {
     views: { front: 'Spredu', side: 'Zboku', top: 'Zhora' },
     open: 'Otvoriť bránu',
     close: 'Zatvoriť bránu',
+    tabs: { size: 'Rozmery', roof: 'Strecha', door: 'Brána', look: 'Vzhľad', extras: 'Doplnky' },
+    quote: 'Získať ponuku',
+    colourOf: { wall: 'Steny', trim: 'Strecha a brána', handle: 'Kľučka' },
+    area: 'Zastavaná plocha',
+    closeSheet: 'Zavrieť',
+    saveShort: 'Uložiť',
+    doorsShort: 'Brána',
+    twoNeeds: 'Dve brány potrebujú šírku aspoň 5,4 m.',
+    summary: 'Odhad ceny',
   },
 };
 
@@ -228,6 +257,7 @@ export default function GarageDesigner() {
   const [open, setOpen] = useState(false);
   const openK = useRef(0);
 
+  const phone = usePhoneApp();
   const setG = <K extends keyof GarageOpts>(k: K, v: GarageOpts[K]) => setGarage((g) => ({ ...g, [k]: v }));
 
   // two doors need room
@@ -236,10 +266,10 @@ export default function GarageDesigner() {
     if (!twoFits && garage.doors === 2) setG('doors', 1);
   }, [twoFits, garage.doors]);
 
-  // the stage
+  // the stage (made again when the layout switches between phone and desktop)
   useEffect(() => {
     const el = host.current;
-    if (!el) return;
+    if (!el || phone === null) return;
     let s: Stage;
     try {
       s = createStage(el, { fov: 38, shadows: true });
@@ -286,8 +316,9 @@ export default function GarageDesigner() {
       groups.current = [];
       s.dispose();
       stage.current = null;
+      setState('loading');
     };
-  }, []);
+  }, [phone]);
 
   // light theme: sunny day with a blue sky and clouds; dark theme: a starry night lit by the garage's own lights
   useEffect(() => {
@@ -383,6 +414,26 @@ export default function GarageDesigner() {
   const est = useMemo(() => estimate(garage, t), [garage, t]);
   const opts = <K extends string>(o: Record<K, string>) => (Object.keys(o) as K[]).map((id) => ({ id, label: o[id] }));
   const colors = (list: typeof WALLS) => list.map((c) => ({ id: c.id, hex: c.id, label: c[lang] }));
+  const save = () => stage.current && download(stage.current.snapshot(), { en: 'garage-design.png', hu: 'garazs-terv.png', sk: 'garaz-navrh.png' }[lang]);
+
+  if (phone)
+    return (
+      <PhoneGarage
+        t={t}
+        lang={lang}
+        garage={garage}
+        setG={setG}
+        twoFits={twoFits}
+        est={est}
+        host={host}
+        state={state}
+        open={open}
+        setOpen={setOpen}
+        view={view}
+        save={save}
+        colors={colors}
+      />
+    );
 
   return (
     <Section id="garage-designer" className="pt-24 lg:pt-24">
@@ -394,7 +445,7 @@ export default function GarageDesigner() {
         right={
           <button
             type="button"
-            onClick={() => stage.current && download(stage.current.snapshot(), { en: 'garage-design.png', hu: 'garazs-terv.png', sk: 'garaz-navrh.png' }[lang])}
+            onClick={save}
             disabled={state !== 'ready'}
             data-cursor="follow"
             className="group flex items-center gap-2 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors hover:text-accent disabled:opacity-40"
@@ -521,3 +572,267 @@ export default function GarageDesigner() {
     </Section>
   );
 }
+
+/* ---------------------------------------------------------------- phone */
+
+type Tab = 'size' | 'roof' | 'door' | 'look' | 'extras';
+type ColourOf = 'wall' | 'trim' | 'handle';
+type Swatch = { id: string; hex: string; label: string };
+
+/** the phone layout: an app screen built on the same 3D stage and price list */
+function PhoneGarage({
+  t,
+  lang,
+  garage,
+  setG,
+  twoFits,
+  est,
+  host,
+  state,
+  open,
+  setOpen,
+  view,
+  save,
+  colors,
+}: {
+  t: (typeof T)['en'];
+  lang: 'en' | 'hu' | 'sk';
+  garage: GarageOpts;
+  setG: <K extends keyof GarageOpts>(k: K, v: GarageOpts[K]) => void;
+  twoFits: boolean;
+  est: { lines: { label: string; value: number }[]; total: number };
+  host: React.RefObject<HTMLDivElement | null>;
+  state: 'loading' | 'ready' | 'error';
+  open: boolean;
+  setOpen: (f: (v: boolean) => boolean) => void;
+  view: (v: View) => void;
+  save: () => void;
+  colors: (list: typeof WALLS) => Swatch[];
+}) {
+  const goTo = useGoToSection();
+  const [tab, setTab] = useState<Tab>('size');
+  const [colourOf, setColourOf] = useState<ColourOf>('wall');
+  const [sheet, setSheet] = useState(false);
+  const [lastView, setLastView] = useState<View | null>('front');
+  const area = `${(garage.width * garage.depth).toFixed(1).replace('.', ',')} m²`;
+  const list = { wall: WALLS, trim: TRIMS, handle: HANDLES }[colourOf];
+  const sub = [t.roofs[garage.roof], garage.door === 'none' ? t.doors.none : `${t.doors[garage.door]}${garage.doors === 2 ? ' ×2' : ''}`, t.cladd[garage.cladding]].join(' · ');
+  const opts = <K extends string>(o: Record<K, string>) => (Object.keys(o) as K[]).map((id) => ({ id, label: o[id] }));
+
+  const tabs = [
+    { id: 'size' as const, label: t.tabs.size, icon: <Ruler /> },
+    { id: 'roof' as const, label: t.tabs.roof, icon: <RoofTab /> },
+    { id: 'door' as const, label: t.tabs.door, icon: <DoorTab /> },
+    { id: 'look' as const, label: t.tabs.look, icon: <Palette /> },
+    { id: 'extras' as const, label: t.tabs.extras, icon: <Plusbox /> },
+  ];
+
+  const canvas = (
+    <>
+      <div ref={host} className="absolute inset-0" onPointerDown={() => setLastView(null)} />
+      {state !== 'ready' && (
+        <div className="absolute inset-0 grid place-items-center px-6 text-center text-[13px] text-muted">{state === 'error' ? t.noGl : t.loading}</div>
+      )}
+      <div className="absolute left-3 top-3">
+        <FloatSeg<View>
+          value={lastView}
+          onChange={(v) => {
+            setLastView(v);
+            view(v);
+          }}
+          options={(['front', 'side', 'top'] as const).map((v) => ({ id: v, label: t.views[v] }))}
+        />
+      </div>
+      <div className="absolute right-3 top-3 flex flex-col gap-2.5">
+        {garage.door !== 'none' && (
+          <Fab label={open ? t.close : t.open} on={open} onClick={() => setOpen((v) => !v)} disabled={state !== 'ready'}>
+            <GateIcon open={open} />
+          </Fab>
+        )}
+        <Fab label={t.saveShort} onClick={save} disabled={state !== 'ready'}>
+          <Download />
+        </Fab>
+      </div>
+      <span className="pointer-events-none absolute bottom-3 left-3 rounded-full border border-line-strong bg-bg/75 px-3 py-1.5 font-mono text-[11.5px] text-text backdrop-blur-md">
+        {m(garage.width)} × {m(garage.depth)}
+      </span>
+    </>
+  );
+
+  return (
+    <>
+      <AppShell
+        label={t.subtitle}
+        canvas={canvas}
+        tabs={tabs}
+        tab={tab}
+        onTab={setTab}
+        bar={
+          <AppBar
+            title={t.summary}
+            sub={sub}
+            price={money(est.total, lang)}
+            cta={t.quote}
+            onOpen={() => setSheet(true)}
+            onCta={goTo('contact')}
+          />
+        }
+      >
+        {tab === 'size' && (
+          <div className="space-y-3 pt-1">
+            <AppRange label={t.width} value={garage.width} min={2.6} max={7} step={0.1} format={m} onChange={(v) => setG('width', v)} />
+            <AppRange label={t.depth} value={garage.depth} min={4.5} max={9} step={0.1} format={m} onChange={(v) => setG('depth', v)} />
+            <AppRange label={t.height} value={garage.height} min={2.2} max={3.2} step={0.05} format={m} onChange={(v) => setG('height', v)} />
+            <p className="flex justify-between border-t border-line pt-3 text-[12.5px] text-muted">
+              <span>{t.area}</span>
+              <b className="font-mono font-normal text-text">{area}</b>
+            </p>
+          </div>
+        )}
+
+        {tab === 'roof' && (
+          <AppRow>
+            {(Object.keys(t.roofs) as Roof[]).map((r) => (
+              <AppCard key={r} wide on={garage.roof === r} onClick={() => setG('roof', r)} icon={<RoofIcon roof={r} />} label={t.roofs[r]} />
+            ))}
+          </AppRow>
+        )}
+
+        {tab === 'door' && (
+          <>
+            <AppRow>
+              {(Object.keys(t.doors) as Door[]).map((d) => (
+                <AppCard key={d} on={garage.door === d} onClick={() => setG('door', d)} icon={<DoorIcon door={d} />} label={t.doors[d]} />
+              ))}
+            </AppRow>
+            {garage.door !== 'none' && (
+              <>
+                <AppSeg<'1' | '2'>
+                  className="mt-3"
+                  value={String(garage.doors) as '1' | '2'}
+                  onChange={(v) => setG('doors', v === '2' ? 2 : 1)}
+                  options={[
+                    { id: '1', label: t.one },
+                    { id: '2', label: t.two, disabled: !twoFits },
+                  ]}
+                />
+                {!twoFits && <AppCaption>{t.twoNeeds}</AppCaption>}
+              </>
+            )}
+          </>
+        )}
+
+        {tab === 'look' && (
+          <>
+            <AppSeg<Cladding> value={garage.cladding} onChange={(v) => setG('cladding', v)} options={opts(t.cladd)} />
+            <div className="mt-3.5 flex items-center gap-2">
+              {(['wall', 'trim', 'handle'] as const).map((k) => (
+                <button
+                  key={k}
+                  type="button"
+                  onClick={() => setColourOf(k)}
+                  aria-pressed={colourOf === k}
+                  className={`flex min-w-0 items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[12px] transition-colors ${colourOf === k ? 'border-text text-text' : 'border-line text-muted'}`}
+                >
+                  <span className="h-3 w-3 shrink-0 rounded-full border border-black/20" style={{ background: garage[k] }} />
+                  <span className="truncate">{t.colourOf[k]}</span>
+                </button>
+              ))}
+            </div>
+            <div className="mt-2.5">
+              <AppDots value={garage[colourOf]} options={colors(list)} onChange={(v) => setG(colourOf, v)} />
+            </div>
+          </>
+        )}
+
+        {tab === 'extras' && (
+          <div className="space-y-2">
+            <AppSwitch label={t.sideDoor} icon={<SideDoorIcon />} checked={garage.sideDoor} onChange={(v) => setG('sideDoor', v)} />
+            <AppSwitch label={t.window} icon={<WindowIcon />} checked={garage.window} onChange={(v) => setG('window', v)} />
+            <AppSwitch label={t.gutter} icon={<GutterIcon />} checked={garage.gutter} onChange={(v) => setG('gutter', v)} />
+          </div>
+        )}
+      </AppShell>
+
+      {sheet && (
+        <AppSheet title={t.estimate} close={t.closeSheet} onClose={() => setSheet(false)}>
+          <p className="mb-3 text-[13px] text-muted">
+            {m(garage.width)} × {m(garage.depth)} × {m(garage.height)} · {sub}
+          </p>
+          <AppPrice lines={est.lines.map((l) => ({ label: l.label, value: money(l.value, lang) }))} total={money(est.total, lang)} totalLabel={t.total} note={t.demo} />
+          <ConsultCta className="mt-4" />
+        </AppSheet>
+      )}
+    </>
+  );
+}
+
+/* the option pictures: simple line drawings of each choice */
+const svg = (children: React.ReactNode, className = 'h-[50px] w-[78px]') => (
+  <svg viewBox="0 0 78 50" className={className} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" aria-hidden>
+    {children}
+  </svg>
+);
+
+function RoofIcon({ roof }: { roof: Roof }) {
+  const top = roof === 'flat' ? 'M8 18h62' : roof === 'mono' ? 'M8 22L70 10' : 'M6 22L39 6l33 16';
+  const walls = roof === 'flat' ? 'M12 18v28h54V18' : roof === 'mono' ? 'M12 21.2V46h54V11.6' : 'M12 19v27h54V19';
+  return svg(
+    <>
+      <path d={top} strokeWidth="2.4" />
+      <path d={walls} opacity="0.55" />
+      <path d="M26 46V30h26v16" opacity="0.55" />
+      <path d="M2 46h74" opacity="0.35" />
+    </>,
+  );
+}
+
+function DoorIcon({ door }: { door: Door }) {
+  const frame = <path d="M14 46V10h50v36" opacity="0.45" />;
+  if (door === 'none') return svg(<>{frame}<path d="M22 46V17h34v29" strokeDasharray="3 3" opacity="0.6" /></>);
+  if (door === 'sectional')
+    return svg(
+      <>
+        {frame}
+        <rect x="22" y="17" width="34" height="29" />
+        {[23.5, 30, 36.5].map((y) => (
+          <path key={y} d={`M22 ${y}h34`} opacity="0.7" />
+        ))}
+      </>,
+    );
+  if (door === 'tilt')
+    return svg(
+      <>
+        {frame}
+        <rect x="22" y="17" width="34" height="29" />
+        <path d="M26 21l26 21M52 21L26 42" opacity="0.35" />
+        <path d="M37 38h4" strokeWidth="2.4" />
+      </>,
+    );
+  return svg(
+    <>
+      {frame}
+      <rect x="22" y="17" width="34" height="29" />
+      <path d="M39 17v29" />
+      <path d="M35.5 30v4M42.5 30v4" strokeWidth="2.2" />
+    </>,
+  );
+}
+
+function GateIcon({ open }: { open: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" aria-hidden>
+      <path d="M3.5 20.5V8.5L12 3.5l8.5 5v12" />
+      {open ? <path d="M7 11h10v2.5H7z" /> : <><rect x="7" y="11" width="10" height="9.5" /><path d="M7 14h10M7 17h10" /></>}
+    </svg>
+  );
+}
+
+const small = (d: React.ReactNode) => (
+  <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" aria-hidden>
+    {d}
+  </svg>
+);
+const SideDoorIcon = () => small(<><rect x="6.5" y="3.5" width="11" height="17" /><path d="M14.5 12h.8" strokeWidth="2.2" /></>);
+const WindowIcon = () => small(<><rect x="4" y="5" width="16" height="14" /><path d="M12 5v14M4 12h16" /></>);
+const GutterIcon = () => small(<path d="M3 6h15v3H3zM16 9v9a2 2 0 0 0 2 2h2" />);
