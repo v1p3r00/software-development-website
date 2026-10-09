@@ -209,6 +209,53 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
   const stageIdx = stage ? readyLandings.findIndex((l) => stripLang(pathname).startsWith(`/landing-pages/${l.slug}`)) : -1;
   const headerRef = useRef<HTMLElement>(null);
 
+  // the name block beside the logo must never show a cut-off name. It takes the richest form
+  // that fits beside the menu and the controls (a longer menu in another language leaves less
+  // room): name and role on one line each → the name alone → the name on two lines → nothing.
+  // Invisible copies are measured against the space the rest of the row leaves free.
+  const leftRef = useRef<HTMLDivElement>(null);
+  const probeFull = useRef<HTMLDivElement>(null);
+  const probeName = useRef<HTMLDivElement>(null);
+  const probeStack = useRef<HTMLDivElement>(null);
+  const [nameMode, setNameMode] = useState<'full' | 'name' | 'stack' | 'none'>('full');
+  useEffect(() => {
+    const left = leftRef.current;
+    const row = left?.parentElement;
+    if (!left || !row || !probeFull.current || !probeName.current || !probeStack.current) return;
+    let raf = 0;
+    const check = () => {
+      raf = 0;
+      const cs = getComputedStyle(row);
+      const gap = parseFloat(cs.columnGap) || 0;
+      const inner = row.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const others = [...row.children].filter((c) => c !== left && getComputedStyle(c).display !== 'none');
+      const used = others.reduce((w, c) => w + (c as HTMLElement).offsetWidth, 0) + gap * others.length;
+      const logo = (left.firstElementChild as HTMLElement | null)?.offsetWidth ?? 0;
+      const free = inner - used - logo - 16;
+      setNameMode(
+        free >= probeFull.current!.offsetWidth
+          ? 'full'
+          : free >= probeName.current!.offsetWidth
+            ? 'name'
+            : free >= probeStack.current!.offsetWidth
+              ? 'stack'
+              : 'none',
+      );
+    };
+    const queue = () => {
+      if (!raf) raf = requestAnimationFrame(check);
+    };
+    const ro = new ResizeObserver(queue);
+    ro.observe(row);
+    for (const c of row.children) ro.observe(c);
+    void document.fonts?.ready.then(queue);
+    queue();
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, [lang]);
+
   // there the menu is a dropdown, so a click outside it closes it
   useEffect(() => {
     if (!open || !showcase) return;
@@ -247,7 +294,7 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
           !stage && (compact ? 'py-2.5' : 'py-4'),
         )}
       >
-        <div className={cx('flex min-w-0 items-center gap-4', stage && 'hidden')}>
+        <div ref={leftRef} className={cx('flex min-w-0 items-center gap-4', stage && 'hidden')}>
           <Monogram compact={compact} />
           {lab && (
             <Link
@@ -264,17 +311,34 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
               <div className="hidden truncate text-[12.5px] leading-snug text-muted md:block">{lab.tagline[lang]}</div>
             </Link>
           )}
+          {/* name (and role): never cut off — see nameMode */}
           <div
             className={cx(
-              'hidden overflow-hidden border-l border-line pl-4 transition-all duration-500 ease-tech',
-              !showcase && 'sm:block xl:hidden min-[1400px]:block',
+              'hidden shrink-0 overflow-hidden border-l border-line pl-4 transition-all duration-500 ease-tech',
+              !showcase && nameMode !== 'none' && 'sm:block xl:hidden min-[1400px]:block',
               compact ? 'max-h-4 opacity-70' : 'max-h-12 opacity-100',
+              compact && nameMode === 'stack' && 'max-h-8',
             )}
           >
-            <div className="whitespace-nowrap font-mono text-[12.5px] uppercase tracking-tech text-text">{site.name}</div>
-            {!compact && (
-              <div className="label mt-0.5 leading-tight">{t.ui.roleLine}</div>
-            )}
+            <div className={cx('font-mono text-[12.5px] uppercase tracking-tech text-text', nameMode === 'stack' ? 'leading-tight' : 'whitespace-nowrap')}>
+              {nameMode === 'stack' ? t.ui.fullName.split(' ').map((w) => <div key={w}>{w}</div>) : t.ui.fullName}
+            </div>
+            {!compact && nameMode === 'full' && <div className="label mt-0.5 whitespace-nowrap leading-tight">{t.ui.roleLine}</div>}
+          </div>
+          {/* invisible copies of the block in each form, measured to choose the one that fits */}
+          <div aria-hidden className="pointer-events-none invisible absolute left-0 top-0">
+            <div ref={probeFull} className="absolute w-max border-l pl-4">
+              <div className="whitespace-nowrap font-mono text-[12.5px] uppercase tracking-tech">{t.ui.fullName}</div>
+              <div className="label mt-0.5 whitespace-nowrap leading-tight">{t.ui.roleLine}</div>
+            </div>
+            <div ref={probeName} className="absolute w-max border-l pl-4">
+              <div className="whitespace-nowrap font-mono text-[12.5px] uppercase tracking-tech">{t.ui.fullName}</div>
+            </div>
+            <div ref={probeStack} className="absolute w-max border-l pl-4 font-mono text-[12.5px] uppercase tracking-tech">
+              {t.ui.fullName.split(' ').map((w) => (
+                <div key={w}>{w}</div>
+              ))}
+            </div>
           </div>
         </div>
 

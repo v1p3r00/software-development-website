@@ -10,6 +10,7 @@ export const sk: Dict = {
 
   ui: {
     roleLine: 'Full-stack vývojár a tvorca produktov',
+    fullName: 'David Mészáros',
     location: 'Lokalita',
     build: 'Vývoj',
     stack: 'Technológie',

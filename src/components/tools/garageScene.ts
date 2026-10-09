@@ -365,9 +365,11 @@ export function buildGarage(o: GarageOpts, night = false): THREE.Group {
   g.add(box(W - 2 * t, H, t, clad, 0, y0 + H / 2, -D / 2 + t / 2));
 
   // front wall around the door opening(s)
-  const n = o.doors;
-  const dw = n === 2 ? Math.min(2.6, (W - 0.9) / 2) : Math.min(o.door === 'swing' ? 2.6 : 3.0, W - 0.9);
-  const dh = Math.min(2.25, H - 0.35);
+  // "no gate": a closed front with a single entrance door instead of a garage door
+  const walkIn = o.door === 'none';
+  const n = walkIn ? 1 : o.doors;
+  const dw = walkIn ? 0.92 : n === 2 ? Math.min(2.6, (W - 0.9) / 2) : Math.min(o.door === 'swing' ? 2.6 : 3.0, W - 0.9);
+  const dh = walkIn ? Math.min(2.05, H - 0.3) : Math.min(2.25, H - 0.35);
   const gap = n === 2 ? W - 2 * dw - 0.6 : 0; // pier between two doors
   const side = (W - n * dw - gap) / 2;
   const z = D / 2 - t / 2;
@@ -385,8 +387,17 @@ export function buildGarage(o: GarageOpts, night = false): THREE.Group {
   const dz = D / 2 - t + 0.035;
   const movers: ((k: number) => void)[] = [];
   for (const x of doorX) {
-    if (o.door === 'none') {
-      // an open bay: just the framed opening
+    if (walkIn) {
+      // one entrance door on a hinge at the left, with a lever handle
+      const hinge = new THREE.Group();
+      hinge.position.set(x - dw / 2, y0, dz + 0.025);
+      const lw = dw - 0.008;
+      hinge.add(box(lw, dh, 0.05, std(o.trim, { roughness: 0.36, metalness: 0.35 }), lw / 2, dh / 2, -0.025));
+      hinge.add(lever(hm, dw - 0.09, 1.02, 0.005, -1));
+      g.add(hinge);
+      movers.push((k) => {
+        hinge.rotation.y = -k * 1.6;
+      });
     } else if (o.door === 'sectional') {
       // four panels that run up a curved track and back under the roof
       const zt = D / 2 - t - 0.03;

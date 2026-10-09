@@ -24,7 +24,7 @@ export default function Footer() {
               <span className="absolute -bottom-px -right-px h-1.5 w-1.5 bg-accent" />
             </span>
             <div>
-              <div className="font-mono text-[12.5px] uppercase tracking-tech text-text">{site.name}</div>
+              <div className="font-mono text-[12.5px] uppercase tracking-tech text-text">{t.ui.fullName}</div>
               <div className="label mt-1">{t.ui.roleLine}</div>
               <p className="mt-3 max-w-[38ch] text-[13px] leading-relaxed text-muted">{t.footer.tagline}</p>
             </div>
@@ -126,7 +126,7 @@ export default function Footer() {
 
         <div className="mt-4 flex flex-col gap-2 border-t border-line pt-4 font-mono text-2xs uppercase tracking-tech text-dim sm:flex-row sm:items-center sm:justify-between">
           <span>
-            © {year} {site.name}. {t.footer.rights}
+            © {year} {t.ui.fullName}. {t.footer.rights}
           </span>
           <span className="hidden sm:block">{t.footer.colophon}</span>
           <span className="flex flex-wrap items-center gap-x-4 gap-y-1">

@@ -10,6 +10,7 @@ export const hu: Dict = {
 
   ui: {
     roleLine: 'Full-stack fejlesztő és terméképítő',
+    fullName: 'Mészáros Dávid',
     location: 'Helyszín',
     build: 'Fejlesztés',
     stack: 'Technológia',

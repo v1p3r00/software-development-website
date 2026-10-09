@@ -8,6 +8,7 @@ export const en = {
 
   ui: {
     roleLine: 'Full-stack developer & product builder',
+    fullName: 'David Mészáros',
     location: 'Location',
     build: 'Build',
     stack: 'Stack',

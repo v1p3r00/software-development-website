@@ -52,7 +52,7 @@ const T = {
     roof: 'Roof',
     roofs: { flat: 'Flat', mono: 'Mono-pitch', gable: 'Gable' },
     door: 'Garage door',
-    doors: { sectional: 'Sectional', tilt: 'Up & over', swing: 'Swing', none: 'No gate' },
+    doors: { sectional: 'Sectional', tilt: 'Up & over', swing: 'Swing', none: 'Door only' },
     doorCount: 'Number of doors',
     one: '1 door',
     two: '2 doors',
@@ -70,6 +70,7 @@ const T = {
     total: 'Total',
     items: {
       base: 'Garage structure',
+      entry: 'Entrance door',
       roof: 'Roof upgrade',
       doors: 'Garage door',
       side: 'Side door',
@@ -104,7 +105,7 @@ const T = {
     roof: 'Tető',
     roofs: { flat: 'Lapos', mono: 'Félnyereg', gable: 'Nyereg' },
     door: 'Garázskapu',
-    doors: { sectional: 'Szekcionált', tilt: 'Billenő', swing: 'Nyíló', none: 'Nincs kapu' },
+    doors: { sectional: 'Szekcionált', tilt: 'Billenő', swing: 'Nyíló', none: 'Csak ajtó' },
     doorCount: 'Kapuk száma',
     one: '1 kapu',
     two: '2 kapu',
@@ -122,6 +123,7 @@ const T = {
     total: 'Összesen',
     items: {
       base: 'Garázs szerkezet',
+      entry: 'Bejárati ajtó',
       roof: 'Tető felár',
       doors: 'Garázskapu',
       side: 'Oldalajtó',
@@ -156,7 +158,7 @@ const T = {
     roof: 'Strecha',
     roofs: { flat: 'Plochá', mono: 'Pultová', gable: 'Sedlová' },
     door: 'Garážová brána',
-    doors: { sectional: 'Sekcionálna', tilt: 'Výklopná', swing: 'Krídlová', none: 'Bez brány' },
+    doors: { sectional: 'Sekcionálna', tilt: 'Výklopná', swing: 'Krídlová', none: 'Len dvere' },
     doorCount: 'Počet brán',
     one: '1 brána',
     two: '2 brány',
@@ -174,6 +176,7 @@ const T = {
     total: 'Spolu',
     items: {
       base: 'Konštrukcia garáže',
+      entry: 'Vchodové dvere',
       roof: 'Príplatok za strechu',
       doors: 'Garážová brána',
       side: 'Bočné dvere',
@@ -209,8 +212,12 @@ function estimate(g: GarageOpts, t: (typeof T)['en']) {
   const base = 450_000 + area * 95_000;
   lines.push({ label: `${t.items.base} · ${area.toFixed(1).replace('.', ',')} m²`, value: base });
   if (g.roof !== 'flat') lines.push({ label: t.items.roof, value: base * (g.roof === 'gable' ? 0.12 : 0.06) });
-  const doorPrice = { sectional: 380_000, tilt: 190_000, swing: 160_000, none: 0 }[g.door];
-  if (doorPrice) lines.push({ label: `${t.items.doors} × ${g.doors}`, value: doorPrice * g.doors });
+  // "door only": a closed front with one entrance door instead of a garage door
+  if (g.door === 'none') lines.push({ label: t.items.entry, value: 140_000 });
+  else {
+    const doorPrice = { sectional: 380_000, tilt: 190_000, swing: 160_000 }[g.door];
+    lines.push({ label: `${t.items.doors} × ${g.doors}`, value: doorPrice * g.doors });
+  }
   if (g.cladding === 'wood') lines.push({ label: t.items.clad, value: base * 0.1 });
   if (g.sideDoor) lines.push({ label: t.items.side, value: 120_000 });
   if (g.window) lines.push({ label: t.items.window, value: 60_000 });
@@ -483,18 +490,16 @@ export default function GarageDesigner() {
               </button>
             ))}
           </div>
-          {garage.door !== 'none' && (
-            <button
-              type="button"
-              onClick={() => setOpen((v) => !v)}
-              disabled={state !== 'ready'}
-              aria-pressed={open}
-              data-cursor="follow"
-              className="absolute bottom-3 right-3 border border-line bg-bg/85 px-3 py-2 font-mono text-[11px] uppercase tracking-tech text-text backdrop-blur transition-colors hover:text-accent disabled:opacity-40"
-            >
-              {open ? t.close : t.open}
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            disabled={state !== 'ready'}
+            aria-pressed={open}
+            data-cursor="follow"
+            className="absolute bottom-3 right-3 border border-line bg-bg/85 px-3 py-2 font-mono text-[11px] uppercase tracking-tech text-text backdrop-blur transition-colors hover:text-accent disabled:opacity-40"
+          >
+            {open ? t.close : t.open}
+          </button>
           <div className="pointer-events-none absolute bottom-3 left-3 font-mono text-[10.5px] uppercase tracking-tech text-muted">{t.drag}</div>
         </div>
 
@@ -519,7 +524,7 @@ export default function GarageDesigner() {
                   onChange={(v) => setG('doors', v === '2' ? 2 : 1)}
                   options={[
                     { id: '1', label: t.one },
-                    { id: '2', label: t.two, disabled: !twoFits },
+                    { id: '2', label: t.two, disabled: !twoFits || garage.door === 'none' },
                   ]}
                 />
               </div>
@@ -644,11 +649,9 @@ function PhoneGarage({
         />
       </div>
       <div className="absolute right-3 top-3 flex flex-col gap-2.5">
-        {garage.door !== 'none' && (
-          <Fab label={open ? t.close : t.open} on={open} onClick={() => setOpen((v) => !v)} disabled={state !== 'ready'}>
-            <GateIcon open={open} />
-          </Fab>
-        )}
+        <Fab label={open ? t.close : t.open} on={open} onClick={() => setOpen((v) => !v)} disabled={state !== 'ready'}>
+          <GateIcon open={open} />
+        </Fab>
         <Fab label={t.saveShort} onClick={save} disabled={state !== 'ready'}>
           <Download />
         </Fab>
@@ -789,7 +792,15 @@ function RoofIcon({ roof }: { roof: Roof }) {
 
 function DoorIcon({ door }: { door: Door }) {
   const frame = <path d="M14 46V10h50v36" opacity="0.45" />;
-  if (door === 'none') return svg(<>{frame}<path d="M22 46V17h34v29" strokeDasharray="3 3" opacity="0.6" /></>);
+  if (door === 'none')
+    return svg(
+      <>
+        {frame}
+        <path d="M14 10h50v36H14z" opacity="0.2" fill="currentColor" stroke="none" />
+        <rect x="33" y="20" width="12" height="26" />
+        <path d="M42 33h1.5" strokeWidth="2.2" />
+      </>,
+    );
   if (door === 'sectional')
     return svg(
       <>
