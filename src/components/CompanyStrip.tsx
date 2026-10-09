@@ -7,10 +7,11 @@ import { useI18n } from '../i18n';
  */
 const COMPANIES: { name: string; years: string; logo?: string }[] = [
   { name: 'Tricise', years: '2025 —' },
-  { name: 'Capture Europe', years: '2025 —' },
+  { name: 'Capture', years: '2025 —' },
   { name: 'United Consult', years: '2024 — 2025' },
   { name: 'ICZ a.s.', years: '2022 — 2023' },
   { name: 'MOL Group', years: '2019 — 2020' },
+  { name: 'Bootcamp', years: '2016 — 2018' },
 ];
 
 const LABEL = {
