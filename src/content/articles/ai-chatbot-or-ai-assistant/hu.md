@@ -307,7 +307,7 @@ Igen.
 
 Ez 2026-ban különösen fontos.
 
-Az EU AI Act 50. cikkéhez kapcsolódó átláthatósági szabályok 2026. augusztus 2-től alkalmazandók. Az Európai Bizottság iránymutatása szerint az embereket tájékoztatni kell arról, hogy AI-rendszerrel lépnek kapcsolatba, ha a rendszer közvetlenül kommunikál velük – kivéve, ha ez az adott helyzetben nyilvánvaló. :contentReference[oaicite:0]{index=0}
+Az EU AI Act 50. cikkéhez kapcsolódó átláthatósági szabályok 2026. augusztus 2-től alkalmazandók. Az Európai Bizottság iránymutatása szerint az embereket tájékoztatni kell arról, hogy AI-rendszerrel lépnek kapcsolatba, ha a rendszer közvetlenül kommunikál velük – kivéve, ha ez az adott helyzetben nyilvánvaló.
 
 Ez azt jelenti, hogy egy weboldalas AI-asszisztensnél nem érdemes úgy tenni, mintha egy valódi ügyintéző lenne.
 
@@ -317,7 +317,7 @@ Például:
 
 Ez egyszerű, egyértelmű és átlátható.
 
-Az AI Act szabályozása szerint a tájékoztatást már az első interakció kezdetén világosan és megkülönböztethető módon kell megadni, ha az adott kötelezettség alkalmazandó. :contentReference[oaicite:1]{index=1}
+Az AI Act szabályozása szerint a tájékoztatást már az első interakció kezdetén világosan és megkülönböztethető módon kell megadni, ha az adott kötelezettség alkalmazandó.
 
 ---
 

@@ -21,7 +21,7 @@ And in many cases, the off-the-shelf product really is the better choice.
 
 **The problem starts when you compare only the initial price rather than the total cost and business value over the life of the system.**
 
-Microsoft's Azure Well-Architected Framework recommends considering development resources, infrastructure, maintenance, support, licensing and subscription costs together when making a build-or-buy decision. :contentReference[oaicite:7]{index=7}
+Microsoft's Azure Well-Architected Framework recommends considering development resources, infrastructure, maintenance, support, licensing and subscription costs together when making a build-or-buy decision.
 
 ---
 
@@ -71,7 +71,7 @@ And that may not include:
 - migration,
 - implementation work.
 
-This is why total cost of ownership, or TCO, matters. TCO looks at the full lifecycle cost of a product or service, including direct and indirect costs rather than just the initial purchase price. :contentReference[oaicite:8]{index=8}
+This is why total cost of ownership, or TCO, matters. TCO looks at the full lifecycle cost of a product or service, including direct and indirect costs rather than just the initial purchase price.
 
 ---
 
@@ -181,7 +181,7 @@ You may also need:
 - data synchronisation,
 - ongoing maintenance.
 
-Microsoft's build-or-buy guidance highlights exactly this trade-off: buying can offer faster deployment and lower upfront costs, while customisation and long-term maintenance need to be considered separately. :contentReference[oaicite:9]{index=9}
+Microsoft's build-or-buy guidance highlights exactly this trade-off: buying can offer faster deployment and lower upfront costs, while customisation and long-term maintenance need to be considered separately.
 
 ---
 
@@ -202,7 +202,7 @@ The provider may decide to:
 
 That is part of the SaaS model.
 
-Subscriptions can be billed monthly or annually, while the provider continues to operate and maintain the product. :contentReference[oaicite:10]{index=10}
+Subscriptions can be billed monthly or annually, while the provider continues to operate and maintain the product.
 
 This is convenient.
 
@@ -230,7 +230,7 @@ You may need:
 - new features,
 - third-party API maintenance.
 
-Microsoft's guidance also points out that custom solutions require significant upfront investment as well as ongoing maintenance. :contentReference[oaicite:11]{index=11}
+Microsoft's guidance also points out that custom solutions require significant upfront investment as well as ongoing maintenance.
 
 With SaaS, much of this work is handled by the provider.
 
@@ -290,7 +290,7 @@ If an existing product:
 
 then custom development may simply be unnecessary.
 
-Microsoft's application platform guidance similarly recommends custom development primarily for unique, high-value areas, while using off-the-shelf solutions elsewhere. :contentReference[oaicite:12]{index=12}
+Microsoft's application platform guidance similarly recommends custom development primarily for unique, high-value areas, while using off-the-shelf solutions elsewhere.
 
 ---
 
@@ -347,7 +347,7 @@ Planning
 = total cost
 ```
 
-TCO exists precisely to bring one-off and ongoing costs, as well as direct and indirect costs, into the same calculation. :contentReference[oaicite:13]{index=13}
+TCO exists precisely to bring one-off and ongoing costs, as well as direct and indirect costs, into the same calculation.
 
 ---
 

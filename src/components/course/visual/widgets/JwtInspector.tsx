@@ -36,7 +36,7 @@ export default function JwtInspector({ lang }: WidgetProps) {
   const expired = exp <= 0;
   const valid = !tamper && !expired;
   return (
-    <Frame lang={lang} title={t('Inside a JWT', 'Egy JWT belseje')} hint={t('Edit the claims. The token is re-signed with HMAC-SHA256 — then try to cheat.', 'Módosítsd a claimeket. A token HMAC-SHA256-tal újra aláíródik — aztán próbálj csalni.')}>
+    <Frame lang={lang} title={t('Inside a JWT', 'Egy JWT belseje', 'Vnútro JWT')} hint={t('Edit the claims. The token is re-signed with HMAC-SHA256 — then try to cheat.', 'Módosítsd a claimeket. A token HMAC-SHA256-tal újra aláíródik — aztán próbálj csalni.', 'Uprav claimy. Token sa znova podpíše cez HMAC-SHA256 – potom skús podvádzať.')}>
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="sub">
           <input value={sub} onChange={(e) => setSub(e.target.value)} className="border border-line bg-bg px-2 py-1.5 font-mono text-[14px] text-text outline-none focus:border-accent" />
@@ -44,7 +44,7 @@ export default function JwtInspector({ lang }: WidgetProps) {
         <Field label="role">
           <Seg label="role" options={['USER', 'ADMIN'] as const} value={role} onChange={setRole} />
         </Field>
-        <Field label={`exp: ${exp <= 0 ? t('expired', 'lejárt') : t(`in ${exp} min`, `${exp} perc múlva`)}`}>
+        <Field label={`exp: ${exp <= 0 ? t('expired', 'lejárt', 'vypršal') : t(`in ${exp} min`, `${exp} perc múlva`, `o ${exp} min`)}`}>
           <input className="vw-range" type="range" min={-5} max={60} value={exp} onChange={(e) => setExp(Number(e.target.value))} aria-label="expiry" />
         </Field>
       </div>
@@ -68,13 +68,13 @@ export default function JwtInspector({ lang }: WidgetProps) {
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <label className="flex items-center gap-2 text-[15px] text-muted">
           <input type="checkbox" checked={tamper} onChange={(e) => setTamper(e.target.checked)} className="accent-[rgb(var(--c-accent))]" />
-          {t('Attacker edits the payload to role: "ADMIN" (without the secret)', 'Támadó a payloadot role: "ADMIN"-ra írja (titok nélkül)')}
+          {t('Attacker edits the payload to role: "ADMIN" (without the secret)', 'Támadó a payloadot role: "ADMIN"-ra írja (titok nélkül)', 'Útočník prepíše payload na role: "ADMIN" (bez tajného kľúča)')}
         </label>
         <span className={'ml-auto border px-2.5 py-1 font-mono text-[13.5px] ' + (valid ? 'border-[#30a46c] text-[#30a46c]' : 'border-[#e5484d] text-[#e5484d]')}>
-          {valid ? t('✓ server accepts: signature valid', '✓ a szerver elfogadja: az aláírás érvényes') : tamper ? t('✕ 401: signature does not match', '✕ 401: az aláírás nem egyezik') : t('✕ 401: token expired', '✕ 401: lejárt token')}
+          {valid ? t('✓ server accepts: signature valid', '✓ a szerver elfogadja: az aláírás érvényes', '✓ server akceptuje: podpis je platný') : tamper ? t('✕ 401: signature does not match', '✕ 401: az aláírás nem egyezik', '✕ 401: podpis nesedí') : t('✕ 401: token expired', '✕ 401: lejárt token', '✕ 401: token vypršal')}
         </span>
       </div>
-      <p className="mt-3 text-[14.5px] leading-relaxed text-muted">{t('Anyone can decode a JWT — it is only Base64. Never put secrets in the payload; the signature only proves nobody changed it.', 'Bárki dekódolhat egy JWT-t — ez csak Base64. Soha ne tegyél titkot a payloadba; az aláírás csak azt bizonyítja, hogy senki nem módosította.')}</p>
+      <p className="mt-3 text-[14.5px] leading-relaxed text-muted">{t('Anyone can decode a JWT — it is only Base64. Never put secrets in the payload; the signature only proves nobody changed it.', 'Bárki dekódolhat egy JWT-t — ez csak Base64. Soha ne tegyél titkot a payloadba; az aláírás csak azt bizonyítja, hogy senki nem módosította.', 'JWT dokáže dekódovať ktokoľvek – je to len Base64. Nikdy nedávaj do payloadu tajomstvá; podpis iba dokazuje, že ho nikto nezmenil.')}</p>
     </Frame>
   );
 }

@@ -352,4 +352,165 @@ const hu: Guide = {
   cta: 'Kezdd el az önéletrajzodat',
 };
 
-export const guides: Record<Lang, Guide> = { en, hu };
+const sk: Guide = {
+  title: 'Ako napísať ideálny životopis',
+  subtitle: 'Príručka',
+  intro:
+    'Personalista sa často do minúty rozhodne, či si životopis prečíta poriadne. Tieto zásady pomôžu, aby ten váš prešiel prvým zbežným pohľadom — aj automatickým triedením, ktoré mnohé firmy spúšťajú skôr, než ho uvidí človek.',
+  weak: 'Slabé',
+  strong: 'Silné',
+  why: 'Prečo to funguje',
+  topics: [
+    {
+      id: 'concise',
+      title: 'Stručne a prehľadne',
+      body: 'Jedna strana pre uchádzačov na začiatku kariéry, dve strany pre väčšinu skúsených odborníkov. Personalisti najprv prebehnú text očami a až potom čítajú, preto musí byť to dôležité nájditeľné na prvý pohľad.',
+      points: [
+        'Krátke odrážky (jeden či dva riadky) namiesto odsekov.',
+        'Najnovšie a najrelevantnejšie informácie na začiatok.',
+        'Pozície staršie ako 10–15 rokov vynechajte, pokiaľ nie sú pre túto prácu dôležité.',
+        'Prázdne miesto nie je premárnené miesto — vedie oko.',
+      ],
+    },
+    {
+      id: 'tailor',
+      title: 'Prispôsobte životopis pozícii',
+      body: 'Všeobecný životopis prehrá s tými, ktoré sú šité na mieru. Prečítajte si inzerát, poznačte si zručnosti a výsledky, ktoré požaduje, a postarajte sa, aby boli viditeľné — v titule, v zhrnutí a v prvých odrážkach.',
+      points: [
+        'Použite rovnaký názov pozície ako inzerát, ak k vám naozaj sedí.',
+        'Prevezmite kľúčové slová z inzerátu („stakeholder management“, „Spring Boot“) tam, kde na vás platia.',
+        'Zoraďte odrážky tak, aby pri každej pozícii bol prvý najrelevantnejší úspech.',
+        'Majte hlavný životopis so všetkým a pre každú žiadosť z neho vytvorte skrátenú kópiu.',
+      ],
+    },
+    {
+      id: 'summary',
+      title: 'Začnite silným profesijným zhrnutím',
+      body: 'Tri či štyri vety na začiatku, ktoré odpovedajú: kto ste, v čom ste najlepší a čo prinesiete na túto pozíciu? Práve túto časť si niekto s najväčšou pravdepodobnosťou prečíta celú.',
+      examples: [
+        {
+          weak: 'Pracovitý, motivovaný tímový hráč, ktorý hľadá nové výzvy v dynamickej spoločnosti.',
+          strong:
+            'Frontend vývojár so 7 rokmi skúseností s tvorbou dátovo náročných aplikácií v Reacte pre bankových klientov. Viedol som prestavbu zákazníckeho rozhrania, ktoré používa 40 000 ľudí, a znížil počet tiketov na podporu o 30 %. Rád by som tento dôraz na použiteľnosť priniesol do produktového tímu.',
+          why: 'Pomenúva rolu, skúsenosti, konkrétny výsledok a ďalší cieľ uchádzača — namiesto prívlastkov, ktoré si môže pripísať ktokoľvek.',
+        },
+      ],
+    },
+    {
+      id: 'achievements',
+      title: 'Opisujte úspechy, nielen povinnosti',
+      body: 'Zoznam povinností čitateľovi povie, aká bola pracovná náplň. Úspechy ukážu, čo ste s ňou urobili. Osvedčený vzorec: akčné sloveso + čo ste urobili + výsledok.',
+      examples: [
+        {
+          weak: 'Zodpovedný za firemný web.',
+          strong: 'Prestaval som firemný web na moderný CMS, čím za šesť mesiacov vzrástla organická návštevnosť o 60 % a čas načítania sa skrátil na polovicu.',
+          why: 'Začína činom, ukazuje rozsah práce a dopad dokazuje číslami.',
+        },
+        {
+          weak: 'Venoval som sa tiketom zákazníckej podpory.',
+          strong: 'Vyriešil som 40+ zákazníckych tiketov týždenne s 96 % spokojnosťou; napísal som 25 článkov nápovedy, ktoré znížili opakované otázky o 20 %.',
+          why: 'Objem, kvalita a trvalé zlepšenie — čitateľ si váš prínos vie predstaviť.',
+        },
+        {
+          weak: 'Pomáhal som s migráciou do cloudu.',
+          strong: 'Migroval som 12 interných služieb do AWS bez výpadku a znížil náklady na hosting o 18 000 € ročne.',
+          why: '„Pomáhal som“ zakrýva vašu rolu. Silná verzia presne hovorí, čo ste dodali.',
+        },
+      ],
+    },
+    {
+      id: 'numbers',
+      title: 'Kde sa dá, uvádzajte merateľné výsledky',
+      body: 'Čísla robia tvrdenia uveriteľnými a zapamätateľnými. Uvažujte v peniazoch, čase, objeme, kvalite a ľuďoch. Ak nemáte presné údaje, aj opatrný odhad („približne 30 %“) je lepší ako nič — pokiaľ ho na pohovore viete vysvetliť.',
+      points: [
+        'Peniaze: získané tržby, ušetrené náklady, spravovaný rozpočet.',
+        'Čas: rýchlejšie procesy, dodržané termíny, ušetrené hodiny týždenne.',
+        'Objem: používatelia, klienti, transakcie, tikety, projekty.',
+        'Ľudia: veľkosť vedeného tímu, zaškolení alebo mentorovaní kolegovia.',
+      ],
+    },
+    {
+      id: 'relevance',
+      title: 'Uprednostnite relevantné zručnosti a skúsenosti',
+      body: 'Nie všetko, čo ste kedy robili, patrí do každého životopisu. Najviac priestoru dajte tomu, na čom pri tejto pozícii záleží, a zvyšok skráťte alebo vynechajte.',
+      points: [
+        'Skúsení odborníci: najprv prax, vzdelanie stručne.',
+        'Absolventi a ľudia meniaci kariéru: najprv vzdelanie, projekty a prenositeľné zručnosti.',
+        'Zručnosti, ktoré pozícia požaduje, uveďte pred ostatnými.',
+        'Vynechajte samozrejmé či zastarané zručnosti (základy Wordu, Windows XP).',
+      ],
+    },
+    {
+      id: 'consistency',
+      title: 'Jasné nadpisy a jednotné formátovanie',
+      body: 'Štandardné nadpisy (Pracovné skúsenosti, Vzdelanie, Zručnosti) umožnia čitateľovi aj softvéru okamžite nájsť informácie. Jednotnosť svedčí o starostlivosti: ak je jeden dátum „03/2021“, všetky dátumy by mali mať rovnaký formát.',
+      points: [
+        'Jeden formát dátumu, jeden štýl odrážok, jedna rodina písma v celom dokumente.',
+        'V každej sekcii obrátené chronologické poradie.',
+        'Rovnaká štruktúra pri každej pozícii: názov, firma, dátumy, úspechy.',
+        'Jazykové úrovne na jednej stupnici — napríklad SERR A1–C2.',
+      ],
+    },
+    {
+      id: 'personal',
+      title: 'Vynechajte zbytočné osobné údaje',
+      body: 'Životopis má hovoriť o vašej profesijnej hodnote. Mnohé údaje, ktoré boli kedysi bežné, sú dnes zbytočné — a niektoré môžu vyvolať predsudky.',
+      points: [
+        'Netreba: celú adresu, dátum narodenia, rodinný stav, deti, čísla dokladov, vierovyznanie.',
+        'Ako lokalita stačí mesto a krajina.',
+        'Fotografia: v strednej Európe bežná, vo Veľkej Británii a USA sa neodporúča — riaďte sa miestnymi zvyklosťami.',
+        'Používajte profesionálnu e-mailovú adresu — najlepšie funguje meno.priezvisko.',
+      ],
+    },
+    {
+      id: 'proofread',
+      title: 'Vyhnite sa pravopisným a gramatickým chybám',
+      body: 'Aj jeden preklep môže stačiť na to, aby životopis skončil na kôpke „nie“, najmä pri pozíciách, kde záleží na presnosti. Skontrolujte ho viacerými spôsobmi.',
+      points: [
+        'Spustite kontrolu pravopisu a potom si životopis prečítajte nahlas.',
+        'Prečítajte si ho na papieri alebo v PDF — chyby tam vyzerajú inak.',
+        'Skontrolujte názvy firiem, nástrojov a technológií („JavaScript“, nie „Javascript“).',
+        'Požiadajte niekoho iného, aby si ho prečítal; čerstvé oči zachytia, čo tie vaše prehliadnu.',
+      ],
+    },
+    {
+      id: 'design',
+      title: 'Profesionálny a čitateľný dizajn',
+      body: 'Dizajn má obsahu pomáhať, nie mu konkurovať. Čisté rozloženie s jednou farbou zvýraznenia pôsobí profesionálnejšie ako grafika, ikony a grafy zručností.',
+      points: [
+        'Základný text okolo 10–11 bodov; nadpisy zreteľne väčšie.',
+        'Jedno či dve písma, jedna farba zvýraznenia.',
+        'Vyhnite sa bezvýznamným „pruhom“ zručností — „Excel ●●●●○“ povie málo; „Excel (kontingenčné tabuľky, Power Query)“ povie viac.',
+        'Vždy posielajte PDF, aby rozloženie vyzeralo všade rovnako.',
+      ],
+    },
+    {
+      id: 'ats',
+      title: 'Kde je to potrebné, prispôsobte ho systémom ATS',
+      body: 'Väčší zamestnávatelia často používajú systémy na spracovanie uchádzačov (ATS), ktoré čítajú životopis skôr než človek. Najlepšie fungujú s jednoduchým textovým rozložením.',
+      points: [
+        'Používajte štandardné nadpisy sekcií a jeden stĺpec (rozloženie „ATS plain“).',
+        'Žiadny text v obrázkoch, hlavičkách ani pätách; žiadne tabuľky na rozloženie.',
+        'Kľúčové slová z inzerátu uveďte v prirodzených vetách.',
+        'Uložte ho ako textové PDF (ako to robí tento nástroj) alebo ako .docx, ak to portál vyžaduje.',
+      ],
+    },
+  ],
+  mistakesTitle: 'Časté chyby v životopise a ako sa im vyhnúť',
+  mistakesIntro: 'Väčšina odmietnutých životopisov nie je zlá — sú len nejasné. Toto sú chyby, ktoré personalisti spomínajú najčastejšie.',
+  mistakeLabel: 'Chyba',
+  fixLabel: 'Riešenie',
+  mistakes: [
+    { mistake: 'Ten istý životopis na každú pozíciu.', fix: 'Pri každej žiadosti upravte titul, zhrnutie a prvé odrážky.' },
+    { mistake: 'Zoznam povinností namiesto výsledkov.', fix: 'Pri každej pozícii sa opýtajte: čo sa zmenilo vďaka tomu, že som tam bol? A to napíšte.' },
+    { mistake: 'Frázy ako „tímový hráč“ alebo „orientovaný na výsledky“.', fix: 'Namiesto tvrdenia danú vlastnosť ukážte na príklade.' },
+    { mistake: 'Tri a viac strán.', fix: 'Vyškrtnite staré pozície, zlúčte podobné odrážky a vynechajte samozrejmé zručnosti.' },
+    { mistake: 'Medzery alebo nejasné dátumy.', fix: 'Používajte jednotné dátumy vo formáte mesiac/rok; krátky úprimný riadok o prestávke v kariére je úplne v poriadku.' },
+    { mistake: 'Neprofesionálna e-mailová adresa.', fix: 'Na žiadosti si vytvorte jednoduchú adresu v tvare meno.priezvisko.' },
+    { mistake: 'Efektné rozloženia, ktoré ATS nedokáže prečítať.', fix: 'Použite čistú šablónu a na online portály jednoduché rozloženie.' },
+    { mistake: 'Klamstvo alebo zveličovanie.', fix: 'Čokoľvek zo životopisu môže prísť na pohovore na pretras — buďte pripravení to doložiť.' },
+  ],
+  cta: 'Začnite tvoriť svoj životopis',
+};
+
+export const guides: Record<Lang, Guide> = { en, hu, sk };

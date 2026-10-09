@@ -580,8 +580,8 @@ export default function Navigation({ onOpenPalette }: { onOpenPalette: () => voi
             onClick={() => setOpen(false)}
             className="flex items-baseline justify-between border-b border-line py-4 font-display text-2xl font-extrabold uppercase tracking-tight"
           >
-            {lang === 'hu' ? 'Weboldal-ellenőrzés' : 'Website check'}
-            <span className="font-mono text-2xs tracking-tech text-accent">{lang === 'hu' ? 'INGYENES' : 'FREE'}</span>
+            {{ en: 'Website check', hu: 'Weboldal-ellenőrzés', sk: 'Kontrola webu' }[lang]}
+            <span className="font-mono text-2xs tracking-tech text-accent">{{ en: 'FREE', hu: 'INGYENES', sk: 'ZADARMO' }[lang]}</span>
           </Link>
           {items.map((item, i) => (
             <a

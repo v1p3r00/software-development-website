@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useI18n } from '../i18n';
+import { LOCALE } from '../data/articles';
 import { usePrefersReducedMotion } from '../hooks/useMisc';
 import { useVisitorCount } from '../hooks/useVisitorCount';
 import { cx } from './ui';
@@ -43,7 +44,7 @@ export default function VisitorCounter({ className = '' }: { className?: string 
   const digits = loading ? '–'.repeat(DIGITS) : String(shown).padStart(DIGITS, '0');
   const label = loading
     ? t.hero.visitors
-    : `${count.toLocaleString(lang === 'hu' ? 'hu-HU' : 'en-GB')} ${t.hero.visitors.toLowerCase()}`;
+    : `${count.toLocaleString(LOCALE[lang])} ${t.hero.visitors.toLowerCase()}`;
 
   return (
     <div className={className} title={t.hero.visitorsTitle} role="status" aria-live="polite" aria-label={label}>

@@ -13,7 +13,7 @@ if (typeof window !== 'undefined') void loadSections();
 export default function Home() {
   const { t } = useI18n();
   useSeo({ title: t.seo.homeTitle, description: t.seo.homeDescription, path: '/' });
-  // a link like /hu/#contact (from another page or shared) lands on that section
+  // a link like /hu/#contact or /sk/#contact (from another page or shared) lands on that section
   useEffect(() => {
     const id = decodeURIComponent(window.location.hash.slice(1));
     if (id && id !== 'home') scrollToSection(id, false);

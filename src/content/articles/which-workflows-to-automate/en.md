@@ -28,7 +28,7 @@ A report needs to be prepared.
 
 An invoice needs to be issued.
 
-**These predictable, repetitive workflows are where automation can often create the most value.** Microsoft and IBM both identify frequent, repetitive, time-consuming and error-prone processes as strong candidates for automation. :contentReference[oaicite:11]{index=11}
+**These predictable, repetitive workflows are where automation can often create the most value.** Microsoft and IBM both identify frequent, repetitive, time-consuming and error-prone processes as strong candidates for automation.
 
 ---
 
@@ -68,7 +68,7 @@ You may not need to automate one individual task.
 
 You may need to simplify the whole workflow.
 
-Mapping the process first helps reveal unnecessary steps, delays, errors and manual data transfers. :contentReference[oaicite:12]{index=12}
+Mapping the process first helps reveal unnecessary steps, delays, errors and manual data transfers.
 
 ---
 
@@ -106,7 +106,7 @@ That requires considerably more human judgement.
 
 ### 4. How often do mistakes happen?
 
-Manual data entry creates opportunities for typos, incorrect values and missed steps. One potential benefit of automation is that clearly defined, rule-based tasks can be performed more consistently. :contentReference[oaicite:13]{index=13}
+Manual data entry creates opportunities for typos, incorrect values and missed steps. One potential benefit of automation is that clearly defined, rule-based tasks can be performed more consistently.
 
 ### 5. What happens if it is not done on time?
 
@@ -134,7 +134,7 @@ Then look at the total.
 
 **This is not a mathematical law. It is simply a prioritisation tool.**
 
-Microsoft's automation guidance similarly recommends evaluating factors such as frequency, complexity, accuracy, effort and expected return when deciding which workflows to automate. :contentReference[oaicite:14]{index=14}
+Microsoft's automation guidance similarly recommends evaluating factors such as frequency, complexity, accuracy, effort and expected return when deciding which workflows to automate.
 
 ---
 
@@ -199,7 +199,7 @@ Automatic confirmation
 Follow-up task
 ```
 
-These workflows are strong candidates because they are triggered by an event, contain rule-based steps and often happen repeatedly. IBM lists email notifications, data handling and invoicing among common business automation examples. :contentReference[oaicite:15]{index=15}
+These workflows are strong candidates because they are triggered by an event, contain rule-based steps and often happen repeatedly. IBM lists email notifications, data handling and invoicing among common business automation examples.
 
 ---
 
@@ -225,9 +225,9 @@ Send
 Accounting system
 ```
 
-Microsoft's documentation describes automated invoicing as something that can be fully automated, partially automated or kept manual depending on the complexity of the contracts and process. :contentReference[oaicite:16]{index=16}
+Microsoft's documentation describes automated invoicing as something that can be fully automated, partially automated or kept manual depending on the complexity of the contracts and process.
 
-In Hungary, invoicing processes also connect to the NAV Online Invoice system, so automation needs to take tax and compliance requirements into account as well. :contentReference[oaicite:17]{index=17}
+In Hungary, invoicing processes also connect to the NAV Online Invoice system, so automation needs to take tax and compliance requirements into account as well.
 
 **The goal should not simply be to automate invoicing so nobody has to think about it. The process should remain controllable, traceable and compliant.**
 
@@ -264,7 +264,7 @@ Report
 Weekly email
 ```
 
-Modern workflow systems can not only automate tasks but also help measure process performance and identify bottlenecks. :contentReference[oaicite:18]{index=18}
+Modern workflow systems can not only automate tasks but also help measure process performance and identify bottlenecks.
 
 **If you build the same report every week from the same five systems, it is a very strong automation candidate.**
 
@@ -298,7 +298,7 @@ You do not always need custom software.
 
 For simpler workflows, an automation platform may be enough.
 
-These tools typically start with a trigger and then perform a predefined series of actions. :contentReference[oaicite:19]{index=19}
+These tools typically start with a trigger and then perform a predefined series of actions.
 
 ---
 
@@ -331,7 +331,7 @@ Real-world calculations are more complicated. You also need to consider maintena
 
 **The goal is not that every automation must pay back within five months. The goal is to establish a sensible relationship between the investment and the business value it could create.**
 
-Microsoft recommends measuring outcomes such as time saved, error rates, cost per transaction and cycle time when assessing automation results. :contentReference[oaicite:20]{index=20}
+Microsoft recommends measuring outcomes such as time saved, error rates, cost per transaction and cycle time when assessing automation results.
 
 ---
 
@@ -361,7 +361,7 @@ If a workflow contains three unnecessary steps, remove them first.
 
 Then automate what remains.
 
-Microsoft similarly recommends identifying redundant or unnecessary steps and bottlenecks before automating a process. :contentReference[oaicite:21]{index=21}
+Microsoft similarly recommends identifying redundant or unnecessary steps and bottlenecks before automating a process.
 
 ---
 

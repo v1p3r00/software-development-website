@@ -28,7 +28,7 @@ El kell készíteni egy riportot.
 
 Ki kell állítani egy számlát.
 
-**Az automatizálás elsősorban ezeknél a kiszámítható, ismétlődő folyamatoknál tud igazán értéket teremteni.** A Microsoft és az IBM útmutatói is a gyakori, ismétlődő, időigényes és hibára hajlamos folyamatokat emelik ki jó automatizálási jelöltként. :contentReference[oaicite:0]{index=0}
+**Az automatizálás elsősorban ezeknél a kiszámítható, ismétlődő folyamatoknál tud igazán értéket teremteni.** A Microsoft és az IBM útmutatói is a gyakori, ismétlődő, időigényes és hibára hajlamos folyamatokat emelik ki jó automatizálási jelöltként.
 
 ---
 
@@ -68,7 +68,7 @@ Lehet, hogy itt nem egyetlen feladatot kell automatizálni.
 
 Lehet, hogy az egész folyamatot kell egyszerűsíteni.
 
-A folyamat feltérképezése ezért fontos első lépés: megmutatja, hol vannak a felesleges lépések, késések, hibák és kézi adatmozgatások. :contentReference[oaicite:1]{index=1}
+A folyamat feltérképezése ezért fontos első lépés: megmutatja, hol vannak a felesleges lépések, késések, hibák és kézi adatmozgatások.
 
 ---
 
@@ -106,7 +106,7 @@ már sokkal több emberi döntést igényel.
 
 ### 4. Mennyire gyakoriak a hibák?
 
-A manuális adatbevitel különösen hajlamos az elgépelésekre, rossz adatokra és kihagyott lépésekre. Az automatizálás egyik lehetséges előnye éppen az, hogy a szabályalapú feladatokat következetesen hajtja végre. :contentReference[oaicite:2]{index=2}
+A manuális adatbevitel különösen hajlamos az elgépelésekre, rossz adatokra és kihagyott lépésekre. Az automatizálás egyik lehetséges előnye éppen az, hogy a szabályalapú feladatokat következetesen hajtja végre.
 
 ### 5. Mi történik, ha nem készül el időben?
 
@@ -134,7 +134,7 @@ Ezután nézd meg az eredményt.
 
 **Nem matematikai törvény, csak egy egyszerű priorizálási eszköz.**
 
-A Microsoft automatizálási útmutatói hasonló logika mentén javasolják a folyamatok értékelését: többek között a gyakoriságot, komplexitást, pontosságot, időigényt és várható megtérülést érdemes figyelembe venni. :contentReference[oaicite:3]{index=3}
+A Microsoft automatizálási útmutatói hasonló logika mentén javasolják a folyamatok értékelését: többek között a gyakoriságot, komplexitást, pontosságot, időigényt és várható megtérülést érdemes figyelembe venni.
 
 ---
 
@@ -199,7 +199,7 @@ Automatikus visszaigazolás
 Follow-up feladat
 ```
 
-Az ilyen folyamatok különösen jó jelöltek, mert eseményre indulnak, szabályalapú lépéseket tartalmaznak, és gyakran ismétlődnek. Az IBM többek között az e-mail-értesítéseket, adatkezelést és számlázást is tipikus automatizálási példaként említi. :contentReference[oaicite:4]{index=4}
+Az ilyen folyamatok különösen jó jelöltek, mert eseményre indulnak, szabályalapú lépéseket tartalmaznak, és gyakran ismétlődnek. Az IBM többek között az e-mail-értesítéseket, adatkezelést és számlázást is tipikus automatizálási példaként említi.
 
 ---
 
@@ -225,9 +225,9 @@ Kiküldés
 Könyvelési rendszer
 ```
 
-A Microsoft dokumentációja szerint az automatizált számlázásnál a folyamat lehet teljesen automatizált, részben automatizált vagy manuális is, a szerződés és a folyamat összetettségétől függően. :contentReference[oaicite:5]{index=5}
+A Microsoft dokumentációja szerint az automatizált számlázásnál a folyamat lehet teljesen automatizált, részben automatizált vagy manuális is, a szerződés és a folyamat összetettségétől függően.
 
-Magyarországon ráadásul a számlázási folyamatokhoz kapcsolódik a NAV Online Számla rendszere is, ezért a technikai automatizálás mellett a jogszabályi és adózási megfelelésre is figyelni kell. :contentReference[oaicite:6]{index=6}
+Magyarországon ráadásul a számlázási folyamatokhoz kapcsolódik a NAV Online Számla rendszere is, ezért a technikai automatizálás mellett a jogszabályi és adózási megfelelésre is figyelni kell.
 
 **A számlázást nem érdemes pusztán azért automatizálni, hogy „ne kelljen vele foglalkozni”. A folyamatnak ellenőrizhetőnek és megfelelően kontrollálhatónak is kell lennie.**
 
@@ -264,7 +264,7 @@ Riport
 Heti e-mail
 ```
 
-A modern workflow-rendszerek nem csak a feladatokat tudják automatizálni, hanem a folyamat teljesítményének mérését és a szűk keresztmetszetek felismerését is támogathatják. :contentReference[oaicite:7]{index=7}
+A modern workflow-rendszerek nem csak a feladatokat tudják automatizálni, hanem a folyamat teljesítményének mérését és a szűk keresztmetszetek felismerését is támogathatják.
 
 **Ha ugyanazt a riportot minden héten ugyanabból az öt rendszerből állítod össze, az nagyon erős automatizálási jelölt.**
 
@@ -298,7 +298,7 @@ Nem mindig kell ehhez egyedi szoftvert fejleszteni.
 
 Egyszerűbb esetben egy workflow-automatizáló platform is elég lehet.
 
-Az ilyen eszközök tipikusan egy eseményből indulnak, majd előre meghatározott műveleteket hajtanak végre. :contentReference[oaicite:8]{index=8}
+Az ilyen eszközök tipikusan egy eseményből indulnak, majd előre meghatározott műveleteket hajtanak végre.
 
 ---
 
@@ -335,7 +335,7 @@ A valóság ennél összetettebb lehet, mert számolni kell a fenntartással, hi
 
 **A cél nem az, hogy minden automatizálásnak öt hónap alatt meg kell térülnie. A cél az, hogy legyen egy ésszerű kapcsolat a beruházás és az elérhető üzleti érték között.**
 
-A Microsoft is a megtakarított idő, hibaarány, tranzakciós költség és ciklusidő mérését javasolja az automatizálás eredményének értékelésére. :contentReference[oaicite:9]{index=9}
+A Microsoft is a megtakarított idő, hibaarány, tranzakciós költség és ciklusidő mérését javasolja az automatizálás eredményének értékelésére.
 
 ---
 
@@ -365,7 +365,7 @@ Ha egy folyamatban három fölösleges lépés van, előbb érdemes ezeket megsz
 
 Utána automatizálni a maradékot.
 
-A Microsoft is azt javasolja, hogy az automatizálás előtt azonosítsuk a redundáns vagy szükségtelen lépéseket és keressük meg a szűk keresztmetszeteket. :contentReference[oaicite:10]{index=10}
+A Microsoft is azt javasolja, hogy az automatizálás előtt azonosítsuk a redundáns vagy szükségtelen lépéseket és keressük meg a szűk keresztmetszeteket.
 
 ---
 

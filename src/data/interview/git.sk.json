@@ -1,0 +1,3219 @@
+[
+ {
+  "id": 1,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Ktoré tvrdenie správne opisuje, ako Git ukladá obsah patriaci ku commitom?",
+  "options": [
+   "Commit priamo obsahuje úplný obsah všetkých súborov a neodkazuje na žiadne iné objekty.",
+   "Commit odkazuje na tree objekt, ako aj na svoj rodičovský commit (commity) a metadáta.",
+   "Commit ukladá iba diff zmenených súborov a nereprezentuje úplný stav súborového systému.",
+   "Commit ukladá iba názov branche a časovú pečiatku."
+  ],
+  "answer": 1,
+  "explanation": "Commit okrem iného obsahuje odkaz na tree objekt, ktorý opisuje štruktúru snímky súborového systému reprezentovanej daným commitom, ako aj odkazy na rodičovský commit (commity) a metadáta autora a committera. Objektový model Gitu preto nie je jednoducho postupnosťou diffov uložených pre každý commit. Najčastejšia nesprávna odpoveď láka preto, lebo pri príkazoch ako `log` a `diff` sa Git môže javiť ako založený na diffoch."
+ },
+ {
+  "id": 2,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "output",
+  "question": "Čo bude commit obsahovať po nasledujúcich operáciách?",
+  "code": "echo \"one\" > file.txt\ngit add file.txt\necho \"two\" >> file.txt\ngit commit -m \"Add file\"",
+  "options": [
+   "Commit bude obsahovať `file.txt` s dvoma riadkami, „one“ a „two“.",
+   "Commit zlyhá, pretože súbor sa po `git add` nedá meniť.",
+   "Commit bude obsahovať iba riadok „two“.",
+   "Commit bude obsahovať verziu `file.txt`, ktorá bola v stagingu, teda iba jeden riadok „one“."
+  ],
+  "answer": 3,
+  "explanation": "`git add` pridá do stagingu obsah súboru taký, aký je v danom okamihu. Neskoršia zmena prebehne vo working tree a do staging area sa automaticky nepridá. Commit preto zaznamená jednoriadkovú verziu s `one`. Najčastejšia nesprávna odpoveď láka preto, lebo staging si ľudia často predstavujú ako trvalý stav naviazaný na súbor, a nie ako snímku jeho obsahu v konkrétnom okamihu."
+ },
+ {
+  "id": 3,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "behavior",
+  "question": "V Git repozitári ukazuje branch `main` momentálne na koniec reťazca commitov `A-B-C`. Na commite `C` vytvoríš branch `feature` a potom na ňom vytvoríš nový commit. Čo sa stane s branchom `main`?",
+  "options": [
+   "`main` sa automaticky posunie na nový commit vo feature branchi.",
+   "`main` a `feature` sa automaticky zmergujú.",
+   "`main` naďalej ukazuje na commit `C`.",
+   "Git vytvorí pre oba branche nový spoločný commit."
+  ],
+  "answer": 2,
+  "explanation": "Branch je v Gite v podstate posúvateľný odkaz na commit. Po vytvorení `feature` sa jeho odkaz môže posunúť na nový commit, odkaz `main` sa však v dôsledku toho nezmení. Najčastejšia nesprávna odpoveď láka preto, lebo branch si ľudia často predstavujú ako samostatnú kópiu, a nie ako odkaz ukazujúci na commit."
+ },
+ {
+  "id": 4,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "scenario",
+  "question": "Branche `main` aj `feature` vychádzajú z toho istého commitu `C`. Každý z nich má presne jeden ďalší commit a menia rôzne súbory. Čo predvolene urobí `git merge feature`, keď si na branchi `main`?",
+  "options": [
+   "Vždy nastane merge konflikt, pretože oba branche obsahujú nové commity.",
+   "Git zmaže feature commit a ponechá iba stav `main`.",
+   "Git automaticky spojí (squash) oba commity do jedného.",
+   "Git vytvorí merge commit s dvoma rodičmi."
+  ],
+  "answer": 3,
+  "explanation": "Keďže sa oba branche od spoločného predka rozišli a ani jeden nie je predkom druhého, fast-forward nie je možný. Git preto predvolene vytvorí merge commit, ak nevzniknú konflikty a merge nie je nakonfigurovaný inak. Merge commit má dvoch rodičov. Najčastejšia nesprávna odpoveď láka preto, lebo ľudia často predpokladajú, že každé rozídenie branchov nevyhnutne spôsobí konflikt."
+ },
+ {
+  "id": 5,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "theory",
+  "question": "Aký je za bežných okolností najdôležitejší rozdiel medzi `git fetch origin` a `git pull origin main`?",
+  "options": [
+   "Fetch aktualizuje remote-tracking referencie bez toho, aby zmeny automaticky integroval do aktuálneho branche, kým pull po fetchi vykoná aj integračný krok.",
+   "Fetch stiahne iba tagy, kým pull stiahne iba branche.",
+   "Fetch mení working tree, kým pull ho nikdy nemení.",
+   "Oba príkazy sú úplne rovnaké, ide len o rôzne názvy tej istej operácie."
+  ],
+  "answer": 0,
+  "explanation": "`git fetch` stiahne nové objekty zo vzdialeného repozitára a aktualizuje remote-tracking referencie ako `origin/main`, aktuálny branch však automaticky nemerguje ani nerebasuje. `git pull` je v podstate fetch nasledovaný integračným krokom, ktorým môže byť merge alebo rebase podľa konfigurácie a prepínačov. Najčastejšia nesprávna odpoveď láka preto, lebo pri bežnom používaní Gitu oba príkazy komunikujú cez sieť."
+ },
+ {
+  "id": 6,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "trap",
+  "question": "Na branchi `main` máš publikovaný commit s chybnou zmenou. Ostatní vývojári si ho už stiahli. Aký postup je vo všeobecnosti najvhodnejší, ak sa chceš vyhnúť prepisovaniu zdieľanej histórie?",
+  "options": [
+   "`git reset --hard HEAD~1` a potom force push",
+   "`git restore --source HEAD~1 --staged --worktree .`",
+   "`git revert HEAD`",
+   "Zmazať adresár `.git` a inicializovať nový repozitár"
+  ],
+  "answer": 2,
+  "explanation": "`git revert HEAD` vytvorí nový commit, ktorý vráti zmeny zavedené vybraným commitom, a publikovaná história zostane zachovaná. Naproti tomu `reset --hard` môže posunúť referenciu branche aj working tree späť, čo pri následnom force pushi vedie k prepísaniu histórie na zdieľanom branchi. Najčastejšia nesprávna odpoveď láka preto, lebo reset viditeľne vráti branch do skoršieho stavu."
+ },
+ {
+  "id": 7,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "behavior",
+  "question": "Čo predvolene urobí `git stash`, keď working tree obsahuje necommitnuté zmeny?",
+  "options": [
+   "Vytvorí commit so zmenami na dočasnom branchi.",
+   "Uloží zmeny do stashu a potom vráti working tree do stavu HEAD.",
+   "Natrvalo zmaže zmeny z objektovej databázy Gitu.",
+   "Automaticky presunie zmeny do staging area pre ďalší commit."
+  ],
+  "answer": 1,
+  "explanation": "`git stash` uloží príslušné zmeny sledovaných súborov vo working tree do stashu a následne vytvorí čistejší working tree. Stash sa dá neskôr obnoviť príkazmi ako `git stash pop` alebo `git stash apply`. Najčastejšia nesprávna odpoveď láka preto, lebo stash slúži ako dočasné úložisko a ľahko sa zamieňa s dočasným commitom alebo branchom."
+ },
+ {
+  "id": 8,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "output",
+  "question": "Jeden commit na jednom branchi mení `config.txt`. Si na inom branchi a úspešne, bez konfliktov, spustíš `git cherry-pick <commit>`. Čo sa stane?",
+  "options": [
+   "Git presunie pôvodný commit na aktuálny branch, takže ho pôvodný branch stratí.",
+   "Git skopíruje iba commit message, nie zmeny v súboroch.",
+   "Git upraví pôvodný commit objekt tak, aby mal nového rodiča.",
+   "Git aplikuje zmeny zavedené commitom na aktuálny branch a vytvorí nový commit."
+  ],
+  "answer": 3,
+  "explanation": "Cherry-pick pôvodný commit nepresúva. Aplikuje zmeny zavedené vybraným commitom na aktuálny HEAD a bežne vytvorí nový commit, ktorý môže mať iného rodiča, a teda aj iné commit ID. Najčastejšia nesprávna odpoveď láka preto, lebo názov príkazu znie, akoby existujúci commit preniesol z jedného branche na druhý."
+ },
+ {
+  "id": 9,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "output",
+  "question": "Čo znamená dekorácia `HEAD -> main` v nasledujúcom výstupe?",
+  "code": "$ git log --oneline --decorate -3\n8f12abc (HEAD -> main) Fix login bug\n4ab56de Add validation\n1c23aaa Initial commit",
+  "options": [
+   "Branch `main` ukazuje na commit `8f12abc` a HEAD je momentálne pripojený k tomuto branchu.",
+   "Commit `8f12abc` je prvý commit v repozitári.",
+   "Branch `main` obsahuje tri commity a HEAD ukazuje na detached commit.",
+   "Branch `main` je vzdialený branch, ktorý HEAD automaticky sťahuje."
+  ],
+  "answer": 0,
+  "explanation": "`HEAD -> main` znamená, že HEAD momentálne ukazuje na branch `main`, ktorého aktuálny commit je `8f12abc`. Ostatné riadky zobrazujú staršie commity. Najčastejšia nesprávna odpoveď láka preto, lebo dekorácie v logu sa dajú ľahko vyložiť ako ďalšie commity alebo vzdialené referencie."
+ },
+ {
+  "id": 10,
+  "level": "junior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "theory",
+  "question": "Čo sa stane, keď vytvoríš lightweight tag príkazom `git tag v1.0` bez určenia iného commitu?",
+  "options": [
+   "Git vytvorí nový commit s názvom `v1.0`.",
+   "Git vytvorí nový branch s názvom `v1.0`.",
+   "Git vytvorí referenciu s názvom `v1.0`, ktorá ukazuje na aktuálny commit.",
+   "Git pushne tag na všetky nakonfigurované remoty."
+  ],
+  "answer": 2,
+  "explanation": "Lightweight tag je jednoducho pomenovaná referencia ukazujúca na commit. Jeho vytvorením nevznikne nový commit a tag sa na remote automaticky nepushne. Najčastejšia nesprávna odpoveď láka preto, lebo tagy aj branche sú referencie na commity, a začiatočníci preto ľahko predpokladajú, že sa správajú rovnako."
+ },
+ {
+  "id": 11,
+  "level": "junior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "scenario",
+  "question": "Tvoj súbor `.gitignore` obsahuje riadok `*.log`. Súbor `app.log`, ktorý už bol do repozitára commitnutý, sa zmení. Čo sa stane?",
+  "options": [
+   "Git automaticky odstráni `app.log` z repozitára.",
+   "Zmena sa v Gite neprejaví, pretože `.gitignore` vylučuje každý zodpovedajúci súbor.",
+   "Súbor sa začne ignorovať, až keď repozitár najprv znova inicializuješ.",
+   "`.gitignore` sa na už sledovaný súbor automaticky nevzťahuje, takže jeho zmena zostáva sledovaná."
+  ],
+  "answer": 3,
+  "explanation": "`.gitignore` slúži predovšetkým na ignorovanie nesledovaných súborov a ciest, ktoré zodpovedajú jeho vzorom. Už sledovaný súbor `app.log` zostáva sledovaný, takže Git jeho zmeny naďalej vidí. Najčastejšia nesprávna odpoveď láka preto, lebo názov `.gitignore` naznačuje, že každý zodpovedajúci súbor je pred Gitom úplne skrytý."
+ },
+ {
+  "id": 12,
+  "level": "junior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "theory",
+  "question": "Git repozitár používa submodule na vloženie iného repozitára. Čo o obsahu submodulu zaznamená commit v rodičovskom repozitári?",
+  "options": [
+   "Úplný obsah každého súboru v repozitári submodulu.",
+   "Git object ID, ktoré identifikuje konkrétny commit v submodule.",
+   "Iba názov aktuálneho branche submodulu.",
+   "Aktuálny HEAD každého branche v submodule."
+  ],
+  "answer": 1,
+  "explanation": "Superprojekt zaznamenáva konkrétny commit submodulu prostredníctvom položky gitlink. Vďaka tomu konkrétny commit superprojektu deterministicky určuje, ktorý commit submodulu k nemu patrí. Najčastejšia nesprávna odpoveď láka preto, lebo submodule sa v súborovom systéme javí ako adresár a ľahko si ho predstaviť ako bežný sledovaný adresár."
+ },
+ {
+  "id": 13,
+  "level": "junior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "edgecase",
+  "question": "Omylom spustíš `git reset --hard HEAD~2` a chceš nájsť predchádzajúcu pozíciu HEAD branche. Ktorý nástroj ti pomôže najpriamejšie?",
+  "options": [
+   "`git reflog`",
+   "`gitignore`",
+   "`git clean`",
+   "`git archive`"
+  ],
+  "answer": 0,
+  "explanation": "Reflog zaznamenáva lokálne pohyby referencií, napríklad HEAD. Vďaka tomu sa často dá nájsť a obnoviť commit po nechcenom resete, rebase alebo inom prepise referencie. Najčastejšia nesprávna odpoveď láka preto, lebo históriu zobrazuje aj `git log`, no nemusí ukázať predchádzajúce, už opustené pozície referencií branchov."
+ },
+ {
+  "id": 14,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "Čo vypíše `git status` po nasledujúcich operáciách?",
+  "code": "echo \"hello\" > a.txt\ngit add a.txt\ngit status",
+  "options": [
+   "Súbor existuje iba vo working tree a nie je v stagingu.",
+   "Súbor sa automaticky commitne.",
+   "Súbor sa v indexe zobrazí ako nový súbor v stagingu a zatiaľ nie je súčasťou žiadneho commitu.",
+   "Git súbor zmaže, pretože ešte nebol commitnutý."
+  ],
+  "answer": 2,
+  "explanation": "`git add` vloží obsah nového súboru do indexu, teda do staging area. V tejto chvíli je súbor v stagingu, ale žiadny commit ešte nevznikol. Najčastejšia nesprávna odpoveď láka preto, lebo názov `git add` môže pôsobiť, akoby bol súbor už pridaný do histórie repozitára."
+ },
+ {
+  "id": 15,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "debug",
+  "question": "Vývojár spustí:\nPo commite zistí, že predtým zmenený súbor v ňom nie je. Aké je najpravdepodobnejšie vysvetlenie?",
+  "code": "git add .\ngit commit -m \"Feature\"",
+  "options": [
+   "Git povoľuje v commite najviac 10 súborov.",
+   "Súbor bol v stave, ktorý `git add .` nepridal do stagingu, napríklad išlo o nesledovaný súbor vylúčený platným pravidlom ignorovania.",
+   "`git commit` náhodne vyberá, ktoré súbory zo stagingu zahrnie.",
+   "Git pridáva do stagingu iba zmenené Java súbory."
+  ],
+  "answer": 1,
+  "explanation": "`git add .` pridáva súbory do stagingu podľa rozsahu cesty a platných pravidiel Gitu; napríklad nesledovaný súbor vylúčený pravidlom ignorovania sa do stagingu automaticky nepridá. Pri už sledovaných súboroch môžu zohrávať úlohu aj ďalšie faktory, napríklad aktuálny pracovný adresár a rozsah cesty. Najčastejšia nesprávna odpoveď láka preto, lebo krátky príkaz `add .` môže pôsobiť ako „pridaj úplne všetky súbory“ bez obmedzení."
+ },
+ {
+  "id": 16,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "output",
+  "question": "Čo sa zobrazí vo výstupe `git branch` po nasledujúcich operáciách?",
+  "code": "git switch -c feature\ngit switch main\ngit branch",
+  "options": [
+   "Zobrazí sa iba branch `feature`.",
+   "Zobrazia sa `feature` aj `main`, pričom `*` je pri `main`.",
+   "Zobrazí sa iba branch `main`, pretože si sa z feature branche prepol späť.",
+   "Git automaticky zmaže branch `feature`, keď sa z neho prepneš preč."
+  ],
+  "answer": 1,
+  "explanation": "`git switch -c feature` vytvorí feature branch a prepnutie z neho na `main` ho nezmaže. `git branch` vypíše oba lokálne branche, pričom `*` označuje aktuálne checkoutnutý `main`. Najčastejšia nesprávna odpoveď láka preto, lebo pojmy vytvorenie branche a práve byť na danom branchi sa ľahko zamieňajú."
+ },
+ {
+  "id": 17,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "Narazíš na merge konflikt. Odstránil si konfliktné značky a súbor správne upravil. Ktorá postupnosť krokov správne dokončí konfliktný merge?",
+  "options": [
+   "Vo všetkých prípadoch spustiť priamo `git commit` bez pridania do stagingu.",
+   "Spustiť `git reset --hard` a potom `git push`.",
+   "Spustiť `git add <resolved-file>` a potom `git commit`.",
+   "Spustiť `git branch --delete <resolved-file>` a potom `git merge --continue`."
+  ],
+  "answer": 2,
+  "explanation": "Po vyriešení konfliktu treba Gitu oznámiť, že dotknutý súbor je vyriešený; `git add` to urobí tak, že vyriešenú verziu pridá do stagingu. Merge commit potom vytvoríš cez `git commit`, prípadne v niektorých workflowoch cez `git merge --continue`. Najčastejšia nesprávna odpoveď láka preto, lebo súbor po úprave vyzerá správne, Git však stále potrebuje výslovný signál, že konflikt je vyriešený."
+ },
+ {
+  "id": 18,
+  "level": "junior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "behavior",
+  "question": "Čo sa stane pri jednoduchom `git rebase main`, keď si na branchi `feature` a jeho dva commity vychádzali zo staršieho HEAD branche `main`?",
+  "options": [
+   "Git znova aplikuje feature commity na aktuálny `main`, pričom vzniknú nové commit ID.",
+   "Git vždy vytvorí merge commit medzi branchmi feature a main.",
+   "Git zmaže feature commity a ponechá iba históriu main.",
+   "Rebase mení iba working tree a commity znova nevytvára."
+  ],
+  "answer": 0,
+  "explanation": "Rebase odpojí feature commity od ich starej základne a znova ich aplikuje za zadanú novú základňu, v tomto prípade za aktuálny vrchol `main`. Znova vytvorené commity bežne dostanú nové commit ID. Najčastejšia nesprávna odpoveď láka preto, lebo výsledkom rebase je lineárna história, ktorá môže na prvý pohľad pripomínať výsledok merge."
+ },
+ {
+  "id": 19,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "scenario",
+  "question": "Tvoj lokálny branch `main` je o jeden commit pred `origin/main` a inak sa nerozchádzajú. Čo urobí úspešný `git push origin main`?",
+  "options": [
+   "Stiahne zmeny z `origin/main`, ale lokálny commit nenahrá.",
+   "Zmaže lokálny commit, pretože stav na remote má prednosť.",
+   "Pri každom pushi vytvorí nový merge commit.",
+   "Nahrá potrebné objekty a posunie referenciu `origin/main` na lokálny commit `main`."
+  ],
+  "answer": 3,
+  "explanation": "Ak sa vzdialený branch dá aktualizovať fast-forwardom, push nahrá chýbajúce Git objekty a potom aktualizuje referenciu vzdialeného branche na lokálny commit. Merge commit nie je potrebný. Najčastejšia nesprávna odpoveď láka preto, lebo začiatočníci často zamieňajú smer toku dát pri push a fetch."
+ },
+ {
+  "id": 20,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "output",
+  "question": "Čo sa stane po nasledujúcom príkaze, ak zmena v `file.txt` nebola pridaná do stagingu?",
+  "code": "git restore file.txt",
+  "options": [
+   "Zmena sa pridá do staging area.",
+   "Zmena vo working tree sa vráti na verziu, ktorá je momentálne uložená v indexe.",
+   "Zmaže sa celá história Git repozitára.",
+   "Vytvorí sa nový commit, ktorý zaznamená vrátenie zmeny."
+  ],
+  "answer": 1,
+  "explanation": "`git restore file.txt` predvolene obnoví súbor vo working tree z verzie v indexe. Zmenu, ktorá nie je v stagingu, tak môžeš zahodiť. Príkaz nevytvára commit ani neposúva referenciu branche. Najčastejšia nesprávna odpoveď láka preto, lebo slovo „restore“ môže naznačovať všeobecnú operáciu obnovy obsahu z histórie Gitu."
+ },
+ {
+  "id": 21,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "edgecase",
+  "question": "Máš zmenený sledovaný súbor a nový nesledovaný súbor. Čo predvolene urobí samotný `git stash`?",
+  "options": [
+   "Uloží do stashu oba súbory.",
+   "Uloží do stashu iba nový nesledovaný súbor.",
+   "Uloží do stashu zmenu sledovaného súboru, nesledovaný súbor však predvolene nie.",
+   "Zlyhá, pretože vo working tree existuje nesledovaný súbor."
+  ],
+  "answer": 2,
+  "explanation": "Samotný `git stash` predvolene ukladá zmeny sledovaných súborov vo working tree, nesledované súbory však nezahŕňa. Tie môžeš zahrnúť napríklad pomocou `git stash -u`. Najčastejšia nesprávna odpoveď láka preto, lebo stash sa často chápe ako úplná snímka celého pracovného adresára."
+ },
+ {
+  "id": 22,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "scenario",
+  "question": "Chceš preniesť commit s opravou chyby na release branch, no release branch nemá dostať ostatné vývojové commity z feature branche. Ktorá Git operácia tomuto cieľu najlepšie zodpovedá?",
+  "options": [
+   "`git cherry-pick <bugfix-commit>`",
+   "`git reset --hard <bugfix-commit>`",
+   "`git stash push <bugfix-commit>`",
+   "`git branch --move <bugfix-commit>`"
+  ],
+  "answer": 0,
+  "explanation": "Cherry-pick je užitočný práve na aplikovanie zmien zavedených existujúcim commitom na inú líniu histórie bez mergovania celého feature branche. Ak nastane konflikt, cherry-pick treba vyriešiť alebo prerušiť. Najčastejšia nesprávna odpoveď láka preto, lebo aj reset dokáže nasmerovať branch na iný commit, slúži však na úplne iný účel."
+ },
+ {
+  "id": 23,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "Niekde v posledných 40 commitoch vznikla regresia a každý commit sa dá deterministicky otestovať. Ktorý Git nástroj dokáže efektívne nájsť problematický commit?",
+  "options": [
+   "`git blame`",
+   "`git bisect`",
+   "`git archive`",
+   "`git tag`"
+  ],
+  "answer": 1,
+  "explanation": "`git bisect` robí binárne vyhľadávanie medzi známym dobrým a známym zlým commitom a v každom kroku ťa požiada otestovať commit medzi nimi. Regresiu tak zúži približne v logaritmickom čase. Najčastejšia nesprávna odpoveď láka preto, lebo aj `git blame` dokáže určiť commit spojený s konkrétnym riadkom, no nie je určený na binárne vyhľadávanie regresií."
+ },
+ {
+  "id": 24,
+  "level": "junior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Tím používa workflow, v ktorom sa každá zmena vyvíja na samostatnom krátkodobom branchi a po code review sa zmerguje do zdieľaného branche `main`. Aký je najdôležitejší prínos tohto prístupu?",
+  "options": [
+   "Feature branche automaticky zabránia všetkým merge konfliktom.",
+   "Git už na feature branchoch nevytvára commity.",
+   "Code review zaručuje, že v produkcii nevzniknú žiadne chyby.",
+   "Zmeny sa dajú vyvíjať a reviewovať izolovane ešte pred integráciou do zdieľaného hlavného branche."
+  ],
+  "answer": 3,
+  "explanation": "Krátkodobé feature branche izolujú prácu, takže vývoj aj code review prebiehajú oddelene a zdieľaný branch `main` má kontrolovanejší proces zmien. Nezaručuje to však merge bez konfliktov ani nasadenia do produkcie bez chýb. Najčastejšia nesprávna odpoveď láka preto, lebo izoláciu branchov si možno pomýliť s oveľa silnejšou bezpečnostnou zárukou, než akú v skutočnosti poskytuje."
+ },
+ {
+  "id": 25,
+  "level": "junior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "Pull request obsahuje 2-riadkovú opravu chyby, no branch obsahuje aj 35 úplne nesúvisiacich commitov. Ktorý prístup najviac zlepší kvalitu review, ak ho workflow tímu podporuje?",
+  "options": [
+   "Zmazať celú históriu branche a znova inicializovať repozitár.",
+   "Automaticky zmazať celý branch bez použitia force pushu.",
+   "Usporiadať zmeny do logicky zameraných commitov vhodných na review alebo históriu branche inak primerane pripraviť.",
+   "Premenovať každú commit message na `fix`."
+  ],
+  "answer": 2,
+  "explanation": "Code review je výrazne efektívnejšie, keď PR obsahuje relevantné zmeny a história je zrozumiteľná. Podľa workflowu tímu sa to dá dosiahnuť technikami ako interaktívny rebase, squash alebo iná vhodná príprava histórie branche. Históriu prepisuj iba v súlade s pravidlami tímu pre zdieľanie branchov a review. Najčastejšia nesprávna odpoveď láka preto, lebo samotné premenovanie commit messages môže históriu zjednotiť navonok, no samotné zmeny tým nijako nesústredí."
+ },
+ {
+  "id": 26,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Ktorý typ Git objektu uchováva štruktúru obsahu adresára, teda ktoré súbory a podadresáre odkazujú na ktoré bloby a tree objekty?",
+  "options": [
+   "tree",
+   "commit",
+   "blob",
+   "tag"
+  ],
+  "answer": 0,
+  "explanation": "Objekt `tree` opisuje štruktúru snímky adresára: obsahuje odkazy na blob a tree objekty spolu s názvami súborov a ich režimami. `blob` ukladá obsah súboru, kým `commit` okrem iných metadát odkazuje na tree a rodičovské commity. Najčastejšia nesprávna odpoveď láka preto, lebo commit reprezentuje úplný stav repozitára, a tak sa ľahko predpokladá, že štruktúru adresára obsahuje priamo commit."
+ },
+ {
+  "id": 27,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "output",
+  "question": "Čo vypíše `git status` po nasledujúcich operáciách?",
+  "code": "echo \"hello\" > app.txt\ngit add app.txt\necho \"world\" >> app.txt\ngit status",
+  "options": [
+   "Nevypíše žiadne zmeny, pretože `app.txt` je už v stagingu.",
+   "`app.txt` môže mať súčasne zmeny v stagingu aj mimo neho.",
+   "`app.txt` sa zobrazí iba ako zmena mimo stagingu.",
+   "`app.txt` sa automaticky commitne."
+  ],
+  "answer": 1,
+  "explanation": "`git add` vložil do indexu prvý stav s `hello`. Neskorší riadok `world` existuje iba vo working tree, takže ten istý súbor môže mať zároveň zmeny v stagingu aj mimo neho. Najčastejšia nesprávna odpoveď láka preto, lebo ľudia často predpokladajú, že keď je súbor raz v stagingu, všetky jeho ďalšie zmeny sa do stagingu pridávajú automaticky."
+ },
+ {
+  "id": 28,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "output",
+  "question": "Čo sa stane po vykonaní nasledujúcich príkazov, ak branch `feature` už existuje?",
+  "code": "git switch main\ngit switch feature",
+  "options": [
+   "Branch `feature` sa znova vytvorí z `main`.",
+   "Branch `feature` sa zmaže a potom znova vytvorí.",
+   "Git sa prepne na branch `feature` a pokračuje od jeho aktuálneho commitu.",
+   "Git automaticky zmerguje branch `feature` do `main`."
+  ],
+  "answer": 2,
+  "explanation": "`git switch feature` sa prepne na existujúci lokálny branch. Samotná referencia branche sa nemení a žiadny merge neprebehne. Najčastejšia nesprávna odpoveď láka preto, lebo `switch` sa ľahko zamieňa s variantom `switch -c`, ktorý vytvára nový branch."
+ },
+ {
+  "id": 29,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "scenario",
+  "question": "Branch `feature` je celý pred `main`, teda aktuálny commit `main` je predkom vrcholu `feature`. Si na `main` a spustíš `git merge feature`. Čo sa stane, ak nevzniknú konflikty?",
+  "options": [
+   "Git vždy vytvorí merge commit s dvoma rodičmi.",
+   "Git zmaže branch `feature`.",
+   "Git vytvorí nový commit, ktorého jediným rodičom je `feature`.",
+   "Git posunie referenciu `main` fast-forwardom na aktuálny commit `feature`."
+  ],
+  "answer": 3,
+  "explanation": "Ak je aktuálny commit `main` predkom vrcholu feature branche, samostatný merge commit netreba. Git jednoducho posunie referenciu `main` na feature commit; tomu sa hovorí fast-forward merge. Najčastejšia nesprávna odpoveď láka preto, lebo ľudia si príkaz `merge` často automaticky spájajú s vytvorením merge commitu."
+ },
+ {
+  "id": 30,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "Čo v typickom Git repozitári predstavuje `origin/main`?",
+  "options": [
+   "Lokálny branch, ktorý sa vždy automaticky zmerguje do `main`.",
+   "Remote-tracking referenciu, ktorá predstavuje stav branche `main` na remote `origin` tak, ako ho lokálny repozitár naposledy poznal.",
+   "Špeciálny tag, ktorý predstavuje produkčnú verziu.",
+   "Lokálny commit, ktorý Git vytvára iba počas pushu."
+  ],
+  "answer": 1,
+  "explanation": "`origin/main` je remote-tracking referencia, ktorá predstavuje stav branche `main` na remote `origin` tak, ako je známy lokálne. Po `git fetch` sa táto referencia môže aktualizovať, lokálny branch `main` sa však v dôsledku toho automaticky nezmení. Najčastejšia nesprávna odpoveď láka preto, lebo názov `origin/main` sa veľmi podobá na názov bežného lokálneho branche."
+ },
+ {
+  "id": 31,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "trap",
+  "question": "Aký je zásadný rozdiel medzi `git reset HEAD~1` a `git revert HEAD`, keď chceš vrátiť posledný commit?",
+  "options": [
+   "Reset vždy zmaže všetky súbory, kým revert zmení iba commit message.",
+   "Oba príkazy vždy dajú presne rovnaký výsledok.",
+   "Reset môže zmeniť históriu branche posunutím referencie na skorší commit, kým revert vytvorí nový commit, ktorý zmeny vráti.",
+   "Revert funguje iba na nesledovaných súboroch."
+  ],
+  "answer": 2,
+  "explanation": "`git reset HEAD~1` posunie referenciu aktuálneho branche na skorší commit a podľa režimu resetu sa môže zmeniť aj stav indexu a working tree. `git revert HEAD` naopak pôvodný commit v histórii ponechá a vytvorí nový commit, ktorý jeho zmeny vráti. Najčastejšia nesprávna odpoveď láka preto, lebo oba príkazy môžu zanechať podobný obsah súborov, hoci na históriu majú výrazne odlišný vplyv."
+ },
+ {
+  "id": 32,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "output",
+  "question": "Čo urobí nasledujúci príkaz s najnovšou položkou stashu?",
+  "code": "git stash apply",
+  "options": [
+   "Aplikuje zmeny z najnovšieho stashu, no položku stashu predvolene neodstráni.",
+   "Aplikuje zmeny zo stashu a potom položku stashu automaticky zmaže.",
+   "Natrvalo zmaže zmeny z najnovšieho stashu.",
+   "Vytvorí zo stashu nový branch a pôvodnú položku stashu zmaže."
+  ],
+  "answer": 0,
+  "explanation": "`git stash apply` znova aplikuje zmeny z najnovšieho stashu na aktuálny working tree, položku stashu však predvolene ponechá. `git stash pop` naopak po úspešnom aplikovaní stash odstráni. Najčastejšia nesprávna odpoveď láka preto, lebo ľudia často predpokladajú, že obnovenie stashu ho automaticky spotrebuje a zmaže."
+ },
+ {
+  "id": 33,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "debug",
+  "question": "Pri operácii `git cherry-pick abc1234` nastane konflikt. Chceš operáciu prerušiť a vrátiť sa do stavu pred cherry-pickom. Ktorý príkaz použiješ?",
+  "options": [
+   "`git cherry-pick --continue`",
+   "`git merge --abort`",
+   "`git reset --soft HEAD~1`",
+   "`git cherry-pick --abort`"
+  ],
+  "answer": 3,
+  "explanation": "`git cherry-pick --abort` preruší prebiehajúci cherry-pick a pokúsi sa vrátiť repozitár do stavu pred operáciou. `--continue` naopak v cherry-picku pokračuje po vyriešení konfliktu. Najčastejšia nesprávna odpoveď láka preto, lebo `git merge --abort` je podobne pomenovaný príkaz na zotavenie, prerušuje však inú Git operáciu."
+ },
+ {
+  "id": 34,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "output",
+  "question": "Ktorý príkaz je vhodný na prezretie predchádzajúcich zmien konkrétneho súboru a commitov s nimi spojených?",
+  "options": [
+   "`git log -- <file>`",
+   "`git clean -- <file>`",
+   "`git branch -- <file>`",
+   "`git stash -- <file>`"
+  ],
+  "answer": 0,
+  "explanation": "`git log -- <file>` vyfiltruje históriu commitov na commity spojené so zadaným súborom. `--` jednoznačne oddeľuje revízie od cesty k súboru. Najčastejšia nesprávna odpoveď láka preto, lebo cesty k súborom prijíma viacero Git príkazov, no nie všetky sú určené na dopytovanie histórie."
+ },
+ {
+  "id": 35,
+  "level": "junior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "scenario",
+  "question": "Vytvoríš annotated tag príkazom `git tag -a v2.0 -m \"Release 2.0\"`. Aký je hlavný rozdiel oproti lightweight tagu?",
+  "options": [
+   "Annotated tag vždy vytvorí nový branch.",
+   "Annotated tag môže existovať iba lokálne.",
+   "Annotated tag je samostatný Git objekt, ktorý uchováva metadáta, napríklad správu a údaje o autorovi tagu, a odkazuje na iný objekt.",
+   "Annotated tag nemôže ukazovať na commit."
+  ],
+  "answer": 2,
+  "explanation": "Annotated tag je samostatný tag objekt, ktorý uchováva informácie ako správu, identitu autora tagu a časovú pečiatku, a odkazuje na iný Git objekt, typicky commit. Lightweight tag je jednoducho priama referencia. Najčastejšia nesprávna odpoveď láka preto, lebo v bežných workflowoch sa na označenie release dajú použiť oba typy tagov."
+ },
+ {
+  "id": 36,
+  "level": "junior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "output",
+  "question": "Súbor `.gitignore` obsahuje:\nČo sa stane v adresári, kde existujú oba súbory?",
+  "code": "*.tmp\n!important.tmp",
+  "options": [
+   "Git ignoruje oba súbory.",
+   "Neignoruje sa ani jeden súbor.",
+   "Sledovať sa bude iba `important.tmp`, ale len ak bol predtým commitnutý.",
+   "Súbory zodpovedajúce `*.tmp` sa ignorujú, no `important.tmp` je povolený ako výnimka."
+  ],
+  "answer": 3,
+  "explanation": "Vzor `*.tmp` ignoruje zodpovedajúce súbory `.tmp`, kým nasledujúci vzor `!important.tmp` vytvára výnimku pre tento konkrétny súbor. Na poradí vzorov záleží, takže neskorší negatívny vzor môže pre zodpovedajúcu cestu prebiť skoršie všeobecné pravidlo ignorovania. Najčastejšia nesprávna odpoveď láka preto, lebo pravidlo `*.tmp` sa ľahko berie ako absolútne a negačný vzor sa prehliadne."
+ },
+ {
+  "id": 37,
+  "level": "junior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "scenario",
+  "question": "Naklonoval si repozitár, ktorý používa submoduly. Po bežnom `git clone` adresár submodulu existuje, no neobsahuje očakávaný obsah. Ktorý príkaz inicializuje submoduly a checkoutne ich na commitoch zaznamenaných superprojektom?",
+  "options": [
+   "`git submodule update --init --recursive`",
+   "`git branch --submodule`",
+   "`git fetch --submodule-only`",
+   "`git restore --submodules`"
+  ],
+  "answer": 0,
+  "explanation": "`git submodule update --init --recursive` inicializuje potrebnú konfiguráciu submodulov, stiahne a checkoutne commity, na ktoré odkazuje superprojekt, a rekurzívne spracuje aj vnorené submoduly. Najčastejšia nesprávna odpoveď láka preto, lebo adresárová štruktúra môže byť po bežnom clone už viditeľná, hoci samotný obsah repozitára submodulu ešte nie je inicializovaný."
+ },
+ {
+  "id": 38,
+  "level": "junior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "scenario",
+  "question": "Vývojár spustil `git reset --hard HEAD~1`, no neskôr zistil, že potrebuje commit, o ktorom si myslel, že ho stratil. Aký postup obnovy je najrealistickejší?",
+  "options": [
+   "`git status` automaticky obnoví predchádzajúci HEAD.",
+   "Pomocou `git reflog` nájsť predchádzajúci HEAD a potom vytvoriť nový branch alebo inú referenciu, ktorá naň ukazuje.",
+   "Obnoviť commit pomocou `.gitignore`.",
+   "`git clean -fd` obnoví predchádzajúci commit."
+  ],
+  "answer": 1,
+  "explanation": "Reflog zvyčajne obsahuje predchádzajúcu pozíciu HEAD, napríklad ako `HEAD@{1}` alebo cez príslušné commit ID. Daný objekt potom môžeš znova sprístupniť vytvorením nového branche alebo inej referencie, ktorá naň ukazuje. Najčastejšia nesprávna odpoveď láka preto, lebo aj `git status` informuje o stave repozitára, históriu predchádzajúcich pozícií referencií však neuchováva."
+ },
+ {
+  "id": 39,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "Čo robí `git cat-file -t <object-id>`?",
+  "options": [
+   "Vypíše úplný diff commitu.",
+   "Ukáže, ktorý branch objekt obsahuje.",
+   "Vypíše typ zadaného Git objektu, napríklad `commit`, `tree` alebo `blob`.",
+   "Zmaže objekt, ak naň neukazuje žiadny branch."
+  ],
+  "answer": 2,
+  "explanation": "`git cat-file -t` vypíše typ Git objektu. Hodí sa to pri nízkoúrovňovej diagnostike, keď potrebuješ zistiť, či object ID odkazuje na commit, tree, blob alebo iný typ objektu. Najčastejšia nesprávna odpoveď láka preto, lebo `cat-file` je univerzálny nástroj na skúmanie objektov a ľahko sa predpokladá, že automaticky zobrazí celý obsah objektu alebo diff."
+ },
+ {
+  "id": 40,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "scenario",
+  "question": "Máš v stagingu zmeny súboru, no pred commitom zistíš, že časť úpravy commitnúť nechceš. Ktorý Git nástroj je najvhodnejší na interaktívny výber častí zmien, ktoré sa majú pridať do stagingu?",
+  "options": [
+   "`git commit --amend`",
+   "`git reset --hard`",
+   "`git clean -fd`",
+   "`git add -p`"
+  ],
+  "answer": 3,
+  "explanation": "`git add -p` poskytuje interaktívny staging po jednotlivých patchoch, takže do stagingu môžeš vybrať iba niektoré časti zmien súboru. Je to užitočné najmä vtedy, keď súbor obsahuje viacero logicky oddelených úprav. Najčastejšia nesprávna odpoveď láka preto, lebo reset dokáže meniť stav súvisiaci so stagingom, neposkytuje však rovnaký interaktívny výber na úrovni hunkov."
+ },
+ {
+  "id": 41,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "edgecase",
+  "question": "Čo sa stane, ak sa pokúsiš zmazať branch príkazom `git branch -d feature`, kým branch `feature` obsahuje commity, ktoré ešte neboli zmergované do dostupnej histórie?",
+  "options": [
+   "Git ťa upozorní a branch predvolene odmietne zmazať.",
+   "Git branch automaticky zmerguje a potom ho zmaže.",
+   "Git branch vždy zmaže a okamžite zničí aj jeho commity.",
+   "Git skopíruje commity na branch `main`."
+  ],
+  "answer": 0,
+  "explanation": "`git branch -d` je určený na bezpečné mazanie branchov, takže Git zmazanie odmietne, keď zistí, že branch obsahuje commity, ktoré neboli riadne zmergované. Vynútené zmazanie urobíš cez `git branch -D`, tým však môžeš prísť o ľahko dostupnú referenciu na tieto commity. Najčastejšia nesprávna odpoveď láka preto, lebo zmazanie branche môže pôsobiť ako obyčajné odstránenie názvu, Git však zámerne chráni prácu, ktorá ešte nebola integrovaná."
+ },
+ {
+  "id": 42,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "output",
+  "question": "Po merge vidíš nasledujúci stav:\nČo predstavujú tieto značky?",
+  "code": "<<<<<<< HEAD\ntimeout = 30\n=======\ntimeout = 60\n>>>>>>> feature",
+  "options": [
+   "Binárny rozdiel medzi súbormi s názvami `HEAD` a `feature`.",
+   "Dve strany konfliktu: verziu aktuálneho branche a verziu z branche, ktorý sa merguje.",
+   "Dva po sebe idúce commity, ktoré Git automaticky znova prehrá.",
+   "Konflikt medzi dvoma vzdialenými repozitármi."
+  ],
+  "answer": 1,
+  "explanation": "Konfliktné značky oddeľujú dve verzie, ktorých sa konflikt týka: časť medzi `<<<<<<< HEAD` a `=======` predstavuje stranu aktuálneho checkoutu, kým časť medzi `=======` a `>>>>>>> feature` predstavuje verziu z branche, ktorý sa merguje. Vývojár musí zostaviť požadovaný výsledný obsah a potom súbor pridať do stagingu, čím konflikt označí ako vyriešený. Najčastejšia nesprávna odpoveď láka preto, lebo názvy v značkách môžu na prvý pohľad pôsobiť ako názvy súborov alebo remotov."
+ },
+ {
+  "id": 43,
+  "level": "junior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "trap",
+  "question": "Prečo je potenciálne nebezpečné meniť históriu branche, ktorý už používajú a pushli ďalší vývojári, napríklad pomocou `git rebase`?",
+  "options": [
+   "Pretože rebase vždy zmaže working tree.",
+   "Pretože rebase nedokáže pracovať so vzdialenými branchmi.",
+   "Pretože rebase môže vytvoriť nové commity so zmenenými ID, čím sa zdieľaná história môže rozísť s lokálnymi históriami ostatných vývojárov.",
+   "Pretože rebase automaticky považuje každý súbor za binárny."
+  ],
+  "answer": 2,
+  "explanation": "Rebase znova aplikuje commity na inú základňu, takže výsledné commity môžu mať iné ID. Ak ostatní vývojári už na starej histórii postavili svoju prácu, zosúladenie prepísanej histórie si vyžaduje ďalšiu prácu a často aj force push. Najčastejšia nesprávna odpoveď láka preto, lebo rebase pôsobí ako lokálna operácia, a tak nie je hneď zrejmé, že môže zmeniť štruktúru publikovanej histórie."
+ },
+ {
+  "id": 44,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "debug",
+  "question": "Vývojár sa pokúsi o push:\nAký je najpravdepodobnejší dôvod?",
+  "code": "$ git push origin main\nTo github.example.com:team/app.git\n ! [rejected]        main -> main (non-fast-forward)\nerror: failed to push some refs",
+  "options": [
+   "Vzdialený branch `main` obsahuje commity, ktoré v lokálnej histórii `main` nie sú.",
+   "V repozitári je príliš veľa súborov.",
+   "Názov branche `main` je príliš krátky.",
+   "Príkaz push funguje iba s annotated tagmi."
+  ],
+  "answer": 0,
+  "explanation": "Odmietnutie pushu typu non-fast-forward zvyčajne znamená, že vzdialený branch obsahuje históriu, ktorú lokálny branch nemá, takže lokálny branch nemôže vzdialenú referenciu jednoducho posunúť dopredu. Vhodným riešením je zvyčajne stiahnuť vzdialené zmeny a vedome ich integrovať, až potom skúsiť push znova. Najčastejšia nesprávna odpoveď láka preto, lebo chybová správa priamo neuvádza, ktorý chýbajúci commit rozídenie spôsobil."
+ },
+ {
+  "id": 45,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "output",
+  "question": "Čo sa stane po nasledujúcom príkaze?",
+  "code": "git restore --staged file.txt",
+  "options": [
+   "Zmeny súboru sa natrvalo zmažú z working tree.",
+   "Zmaže sa posledný commit súboru.",
+   "Súbor sa automaticky obnoví do stavu vzdialeného branche.",
+   "Súbor sa odstráni zo staging area, pričom zmena vo working tree predvolene zostane."
+  ],
+  "answer": 3,
+  "explanation": "`--staged` hovorí Gitu, aby obnovil stav indexu, teda staging area. Obsah working tree sa predvolene nemení, takže úprava môže zostať ako zmena mimo stagingu. Najčastejšia nesprávna odpoveď láka preto, lebo pri slove `restore` sa ľahko predpokladá, že sa obnovuje samotný obsah súboru."
+ },
+ {
+  "id": 46,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "scenario",
+  "question": "Vývojár má niekoľko nezávislých rozpracovaných vecí a chce ich uchovať ako samostatné položky stashu. Ktoré tvrdenie je správne?",
+  "options": [
+   "Git repozitár môže obsahovať najviac jeden stash.",
+   "Dá sa vytvoriť viacero stashov a `git stash list` ich zobrazí.",
+   "Každý nový stash automaticky zmaže ten predchádzajúci.",
+   "Stash sa dá použiť iba pre jeden súbor."
+  ],
+  "answer": 1,
+  "explanation": "Git stash poskytuje úložisko fungujúce ako zásobník, ktoré môže obsahovať viacero položiek, napríklad `stash@{0}`, `stash@{1}` a ďalšie. `git stash list` ich zobrazí a konkrétnu položku môžeš neskôr samostatne aplikovať alebo zahodiť. Najčastejšia nesprávna odpoveď láka preto, lebo mnohé jednoduché workflowy používajú iba najnovší stash."
+ },
+ {
+  "id": 47,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "edgecase",
+  "question": "Cherry-pickneš commit na iný branch, no zmena, ktorú commit zavádza, už na cieľovom branchi čiastočne alebo úplne existuje. Čo sa môže stať?",
+  "options": [
+   "Git automaticky zmaže pôvodný commit.",
+   "Cherry-pick vždy úspešne vytvorí identický commit.",
+   "Cherry-pick môže skončiť konfliktmi alebo dokonca prázdnou zmenou podľa toho, koľko z pôvodnej zmeny už existuje.",
+   "Git automaticky zmerguje celý pôvodný branch."
+  ],
+  "answer": 2,
+  "explanation": "Cherry-pick sa pokúša aplikovať patch zavedený commitom na aktuálny stav. Ak tieto zmeny už existujú, operácia môže naraziť na konflikty alebo nemusí zostať nič, čo by sa reálne aplikovalo, a výsledkom je prázdny cherry-pick. Najčastejšia nesprávna odpoveď láka preto, lebo cherry-pick sa často chápe ako jednoduché kopírovanie commitu, hoci v skutočnosti aplikuje zmeny voči inej základni."
+ },
+ {
+  "id": 48,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "output",
+  "question": "Na čo je predovšetkým užitočný `git blame file.txt`?",
+  "options": [
+   "Na zistenie, ktoré commity a autori súvisia s aktuálnymi riadkami súboru.",
+   "Na binárne vyhľadávanie v celej histórii súboru.",
+   "Na automatické obnovenie všetkých predchádzajúcich verzií súboru.",
+   "Na automatické vyriešenie všetkých merge konfliktov v súbore."
+  ],
+  "answer": 0,
+  "explanation": "`git blame` po riadkoch ukazuje, ktorý commit a autor súvisia s aktuálnym obsahom súboru. Hodí sa to pri skúmaní, kedy a v ktorom commite sa konkrétny riadok zmenil. Najčastejšia nesprávna odpoveď láka preto, lebo blame zobrazuje historické informácie, nie je však určený na binárne vyhľadávanie v celej histórii."
+ },
+ {
+  "id": 49,
+  "level": "junior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "scenario",
+  "question": "Release tag už lokálne existuje a chceš ho pushnúť na remote `origin`. Ktorý príkaz to urobí?",
+  "options": [
+   "`git push origin --branch v1.0`",
+   "`git push origin v1.0`",
+   "`git fetch origin v1.0`",
+   "`git pull origin v1.0`"
+  ],
+  "answer": 1,
+  "explanation": "Tag `v1.0` môžeš pushnúť na remote príkazom `git push origin v1.0`. Lokálnym vytvorením sa tag vo vzdialenom repozitári automaticky nesprístupní. Najčastejšia nesprávna odpoveď láka preto, lebo syntax pushu branche je podobná a tag sa ľahko zamení s branchom."
+ },
+ {
+  "id": 50,
+  "level": "junior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "production",
+  "question": "Tím chce, aby branch `main` zostal nasaditeľný aj počas niekoľkodňového vývoja väčších funkcií. Ktorý workflow tento cieľ podporuje najpriamejšie?",
+  "options": [
+   "Každý vývojár commituje priamo do `main` bez review.",
+   "Väčšie funkcie sa musia do `main` pridať ako jeden obrovský commit.",
+   "Každá funkcia sa vyvíja na samostatnom branchi a do `main` sa integruje až po príslušných kontrolách.",
+   "Branch `main` sa musí každý deň zmazať a znova vytvoriť."
+  ],
+  "answer": 2,
+  "explanation": "Samostatné feature branche umožňujú, aby rozpracovaná práca zostala izolovaná od stabilnejšieho branche `main` a integrovala sa až po príslušných kontrolách. Nezaručuje to, že `main` bude vždy bez chýb, podporuje to však kontrolovanú integráciu. Najčastejšia nesprávna odpoveď láka preto, lebo jeden veľký commit môže vytvoriť jednoduchšie vyzerajúcu históriu, problém izolácie zmien vyvíjaných niekoľko dní však nerieši."
+ },
+ {
+  "id": 51,
+  "level": "junior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "Čo zobrazí `git rev-parse HEAD` v bežnom stave, keď HEAD nie je detached?",
+  "options": [
+   "Úplný SHA identifikátor aktuálneho commitu.",
+   "Názov aktuálneho branche.",
+   "URL aktuálneho remote.",
+   "Správu posledného commitu."
+  ],
+  "answer": 0,
+  "explanation": "`git rev-parse HEAD` vyhodnotí referenciu `HEAD` a vypíše úplné object ID aktuálneho commitu. Často sa to hodí v skriptoch a pri diagnostike, keď potrebuješ presný identifikátor commitu. Najčastejšia nesprávna odpoveď láka preto, lebo `HEAD` sa často spája s branchom, referencia sa však nakoniec vyhodnotí na commit."
+ },
+ {
+  "id": 52,
+  "level": "junior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "trap",
+  "question": "Pridal si súbor do stagingu, potom ho upravil a následne spustíš `git commit -a -m \"Update\"`. Čo sa stane?",
+  "options": [
+   "Git commitne iba stav, ktorý bol predtým v stagingu, a všetko ostatné ignoruje.",
+   "Git automaticky pridá do stagingu úpravy a zmazania sledovaných súborov a potom commitne výsledný obsah indexu.",
+   "Git automaticky pridá aj všetky nesledované súbory.",
+   "Git vyprázdni existujúcu staging area a znova do nej pridá každý súbor."
+  ],
+  "answer": 1,
+  "explanation": "`git commit -a` pred vytvorením commitu automaticky pridá do stagingu úpravy a zmazania už sledovaných súborov, nové nesledované súbory však nepridá. Do commitu sa tak môže dostať aj neskoršia úprava súboru, ktorý bol predtým v stagingu. Najčastejšia nesprávna odpoveď láka preto, lebo samotný `git commit` commitne iba obsah indexu, kým `-a` toto správanie rozširuje na sledované súbory."
+ },
+ {
+  "id": 53,
+  "level": "junior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "scenario",
+  "question": "Aký je rozdiel medzi `git branch feature` a `git switch -c feature`, keď branch `feature` ešte neexistuje?",
+  "options": [
+   "Oba branch vytvoria, no ani jeden sa naň neprepne.",
+   "Prvý zmaže aktuálny branch, druhý ho premenuje.",
+   "Prvý branch vytvorí, druhý ho vytvorí a hneď sa naň prepne.",
+   "Prvý vytvorí vzdialený branch, druhý lokálny branch."
+  ],
+  "answer": 2,
+  "explanation": "`git branch feature` vytvorí referenciu `feature`, aktuálny branch však ponechá bez zmeny. `git switch -c feature` nový branch vytvorí a zároveň sa naň prepne. Najčastejšia nesprávna odpoveď láka preto, lebo oba príkazy vytvárajú nový názov branche, takže implicitné prepnutie pri druhom z nich sa ľahko prehliadne."
+ },
+ {
+  "id": 54,
+  "level": "junior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "Počas merge dostaneš:\nKtoré tvrdenie je správne?",
+  "code": "$ git merge feature\nAuto-merging app.txt\nCONFLICT (content): Merge conflict in app.txt\nAutomatic merge failed; fix conflicts and then commit the result.",
+  "options": [
+   "Git merge commit automaticky vytvoril, len ešte nebol pushnutý.",
+   "Konflikt existuje iba vo vzdialenom repozitári.",
+   "`app.txt` bol zmazaný, takže ho treba vytvoriť znova.",
+   "Merge nie je dokončený a pred jeho dokončením treba vyriešiť konflikt v `app.txt`."
+  ],
+  "answer": 3,
+  "explanation": "Merge sa nedokončil, pretože Git nedokázal automaticky skombinovať zmeny v `app.txt`. Konflikt treba vyriešiť, súbor pridať do stagingu a potom proces merge dokončiť. Najčastejšia nesprávna odpoveď láka preto, lebo správa o automatickom merge môže vyvolať dojem, že chýba už len krok push."
+ },
+ {
+  "id": 55,
+  "level": "junior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "output",
+  "question": "Čo robí nasledujúci príkaz?",
+  "code": "git fetch origin main",
+  "options": [
+   "Stiahne potrebné objekty z branche `main` na remote `origin` a aktualizuje príslušnú remote-tracking referenciu bez automatickej zmeny lokálneho branche `main`.",
+   "Automaticky zmerguje lokálny branch `main` so stavom `origin/main`.",
+   "Pushne lokálny branch `main` na remote `origin`.",
+   "Zmaže remote-tracking referenciu `origin/main`."
+  ],
+  "answer": 0,
+  "explanation": "`fetch` stiahne dostupné objekty z remote a aktualizuje remote-tracking stav. Lokálny branch `main` sa v dôsledku toho automaticky neposunie. Najčastejšia nesprávna odpoveď láka preto, lebo rozdiel medzi `pull` a `fetch` sa pri bežnom používaní Gitu často stiera."
+ },
+ {
+  "id": 56,
+  "level": "junior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "behavior",
+  "question": "Aký je typický účinok `git reset --soft HEAD~1` v repozitári, kde chceš posledný commit „vrátiť“, no jeho zmeny ponechať pripravené na opätovný commit?",
+  "options": [
+   "Commit sa odstráni z histórie aktuálneho branche, pričom jeho zmeny zostanú v stagingu.",
+   "Commit aj všetky jeho zmeny sa natrvalo zmažú.",
+   "Working tree zostane nezmenený, no index sa úplne vyprázdni.",
+   "Git vytvorí nový revert commit."
+  ],
+  "answer": 0,
+  "explanation": "Reset `--soft` posunie referenciu branche dozadu, index aj working tree však ponechá nezmenené. Zmeny zavedené predchádzajúcim commitom tak zostanú v stagingu voči novému HEAD. Najčastejšia nesprávna odpoveď láka preto, lebo mnohí si slovo `reset` spájajú s automatickým mazaním obsahu súborov."
+ },
+ {
+  "id": 57,
+  "level": "junior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "output",
+  "question": "Čo sa stane, keď po vytvorení stashu spustíš nasledujúci príkaz?",
+  "code": "git stash list",
+  "options": [
+   "Znova pridá do stagingu všetky súbory vo working tree.",
+   "Vypíše položky stashu v repozitári.",
+   "Zmaže najnovšiu položku stashu.",
+   "Zobrazí všetky predchádzajúce commity v repozitári."
+  ],
+  "answer": 1,
+  "explanation": "`git stash list` zobrazí položky v zásobníku stashu, typicky s identifikátormi ako `stash@{0}`, `stash@{1}` a ďalšími. Príkaz nemení working tree ani nemaže položky stashu. Najčastejšia nesprávna odpoveď láka preto, lebo položky stashu aj história commitov sa môžu zobrazovať ako chronologické zoznamy."
+ },
+ {
+  "id": 58,
+  "level": "junior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "scenario",
+  "question": "Z branche `feature` chceš na branch `release/1.0` preniesť iba jeden commit s opravou chyby. Tento commit nezávisí od žiadnych ďalších commitov z feature branche. Aký postup je vhodný?",
+  "options": [
+   "Vždy treba zmergovať celý branch `feature`.",
+   "Branch `release/1.0` treba premenovať na `feature`.",
+   "Commit s opravou sa dá cherry-picknúť na `release/1.0`.",
+   "Release branch treba resetovať na commit s opravou."
+  ],
+  "answer": 2,
+  "explanation": "Cherry-pick umožňuje aplikovať zmeny zavedené konkrétnym commitom na iný branch bez integrácie celého feature branche. Skutočné závislosti commitu si však treba vždy overiť. Najčastejšia nesprávna odpoveď láka preto, lebo merge je univerzálny mechanizmus integrácie branchov, tu však treba integrovať iba jednu jasne vymedzenú zmenu."
+ },
+ {
+  "id": 59,
+  "level": "junior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "output",
+  "question": "Ktorý príkaz zobrazí zmeny zavedené commitom vo forme patchu?",
+  "options": [
+   "`git show <commit>`",
+   "`git branch <commit>`",
+   "`git remote <commit>`",
+   "`git clean <commit>`"
+  ],
+  "answer": 0,
+  "explanation": "`git show <commit>` zobrazí metadáta commitu a predvolene aj patch, ktorý daný commit zavádza. Je to rýchly spôsob, ako presne zistiť, čo sa v konkrétnom commite zmenilo. Najčastejšia nesprávna odpoveď láka preto, lebo commity zobrazuje aj `git log`, obsah patchu však predvolene neukazuje v rovnakej miere detailov."
+ },
+ {
+  "id": 60,
+  "level": "junior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "edgecase",
+  "question": "Aké je najdôležitejšie obmedzenie obnovy pomocou reflogu?",
+  "options": [
+   "Reflog existuje iba vo vzdialených repozitároch.",
+   "Reflog zaznamenáva iba tagy.",
+   "Reflog vždy uchováva objekty natrvalo.",
+   "Reflog je lokálny a nedostupné objekty môže garbage collection nakoniec odstrániť."
+  ],
+  "answer": 3,
+  "explanation": "Reflog zaznamenáva predovšetkým lokálne pohyby referencií; nie je to centralizovaná zdieľaná história dostupná všetkým. Git môže objekty pri garbage collection nakoniec odstrániť, keď už nie sú dostupné cez príslušné referencie a uplynula ich doba uchovávania. Najčastejšia nesprávna odpoveď láka preto, lebo reflog je veľmi účinný mechanizmus obnovy a ľahko sa predpokladá, že sa každý predchádzajúci stav dá obnoviť navždy."
+ },
+ {
+  "id": 61,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Commit objekt odkazuje na tree a jeden alebo viac rodičovských commitov. Čo z toho vyplýva pre štruktúru histórie v Gite?",
+  "options": [
+   "Commity majú vždy presne jedného rodiča.",
+   "Vzťahy medzi commitmi tvoria orientovaný graf, v ktorom môžu mať merge commity viacerých rodičov.",
+   "Git identifikuje každý commit jedným globálnym poradovým číslom.",
+   "Tree objekty priamo predstavujú branche."
+  ],
+  "answer": 1,
+  "explanation": "Históriu v Gite najlepšie pochopíš ako graf, nie ako jednoduchý lineárny zoznam. Bežný commit má typicky jedného rodiča, kým merge commit môže mať dvoch alebo viac rodičov. Najčastejšia nesprávna odpoveď láka preto, lebo mnohé histórie funkcií vyzerajú lineárne, objektový model Gitu však podporuje všeobecnejšiu grafovú štruktúru."
+ },
+ {
+  "id": 62,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "performance",
+  "question": "Vývojár chce vo veľkom repozitári pred commitom rýchlo prezrieť všetky zmeny súborov od posledného commitu. Ktorý postup priamo porovná working tree s HEAD?",
+  "options": [
+   "`git diff HEAD`",
+   "`git log --all`",
+   "`git branch -vv`",
+   "`git clean -n`"
+  ],
+  "answer": 0,
+  "explanation": "`git diff HEAD` porovná aktuálny stav working tree so stavom zaznamenaným v commite, na ktorý odkazuje HEAD, takže do porovnania sa zahrnú rozdiely v stagingu aj mimo neho. Priamo tak vyjadruje požadované porovnanie aj vo veľkom repozitári. Najčastejšia nesprávna odpoveď láka preto, lebo aj `git status` hlási zmenené súbory, skutočné rozdiely v obsahu však nezobrazí."
+ },
+ {
+  "id": 63,
+  "level": "medior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "edgecase",
+  "question": "Pred prepnutím branche si upravil working tree. Príkaz `git switch other-branch` zlyhá. Aký je najpravdepodobnejší dôvod?",
+  "options": [
+   "Git nikdy nepovolí prepnúť branch, keď working tree obsahuje úpravy.",
+   "`other-branch` je vzdialený branch, takže sa nedá checkoutnúť.",
+   "Lokálne úpravy by kolidovali so súbormi, ktoré by checkout cieľového branche zmenil, a mohli by sa prepísať alebo stratiť.",
+   "Prepínanie branchov funguje iba v repozitári, ktorý obsahuje commity."
+  ],
+  "answer": 2,
+  "explanation": "Git v niektorých situáciách povolí prepnúť branch aj s necommitnutými úpravami. Ak by však checkout cieľového branche zmenil súbory, ktoré sú zároveň lokálne upravené, Git sa zastaví, aby tieto zmeny neprepísal. Najčastejšia nesprávna odpoveď láka preto, lebo ľudia často predpokladajú, že akákoľvek úprava mimo stagingu z bezpečnostných dôvodov automaticky bráni prepnutiu branche."
+ },
+ {
+  "id": 64,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "trap",
+  "question": "Prečo pri riešení merge konfliktu nestačí iba odstrániť značky `<<<<<<<`, `=======` a `>>>>>>>`?",
+  "options": [
+   "Pretože Git automaticky rozhodne, ktorý obsah je správny, iba na základe odstránenia značiek.",
+   "Pretože z konfliktných strán musíš zostaviť správny výsledný obsah a potom Gitu oznámiť, že súbor je vyriešený, tým, že ho pridáš do stagingu.",
+   "Pretože konfliktné značky musia v commite vždy zostať.",
+   "Pretože súbory zapojené do merge konfliktu treba vždy zmazať."
+  ],
+  "answer": 1,
+  "explanation": "Konfliktné značky iba ukazujú obsah, ktorý Git nedokázal automaticky zlúčiť. Vývojár musí zostaviť správny výsledný obsah a potom pomocou `git add` Gitu oznámiť, že konflikt v súbore je vyriešený. Najčastejšia nesprávna odpoveď láka preto, lebo po odstránení značiek súbor vizuálne vyzerá čisto, samotné rozhodnutie o obsahu a krok pridania do stagingu však ešte treba urobiť."
+ },
+ {
+  "id": 65,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "output",
+  "question": "Branch `feature` obsahuje dva commity, kým `main` medzitým dostal tri nové commity. Na feature branchi spustíš `git rebase main` bez konfliktov. Ktoré tvrdenie je správne?",
+  "options": [
+   "Dva feature commity sa znova aplikujú na aktuálny vrchol `main`, takže história feature branche bude lineárna.",
+   "Tri nové commity na `main` sa zmažú.",
+   "Git zo šiestich commitov vždy vytvorí jeden merge commit.",
+   "Feature branch sa automaticky zmaže."
+  ],
+  "answer": 0,
+  "explanation": "Rebase znova aplikuje feature commity na aktuálny vrchol `main`. Výsledkom je typicky lineárna história, v ktorej po troch commitoch z main nasledujú dva znova vytvorené feature commity. Najčastejšia nesprávna odpoveď láka preto, lebo výsledný stav môže vyzerať podobne ako po zmergovaní feature branche, hoci štruktúra histórie je iná."
+ },
+ {
+  "id": 66,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "scenario",
+  "question": "Pracuješ na `main` a chceš si prezrieť nové commity, ktoré sa objavili na `origin/main`, bez zmeny lokálneho branche `main`. Ktorý postup je najvhodnejší?",
+  "options": [
+   "`git pull origin main` a potom `git reset --hard HEAD~1`",
+   "`git push origin main` a potom `git log`",
+   "`git fetch origin` a potom napríklad `git log HEAD..origin/main`",
+   "`git merge origin/main` a potom `git fetch origin`"
+  ],
+  "answer": 2,
+  "explanation": "`git fetch origin` aktualizuje remote-tracking referenciu `origin/main` bez jej integrácie do lokálneho branche `main`. `git log HEAD..origin/main` potom ukáže commity dostupné z remote-tracking branche, ktoré aktuálny HEAD neobsahuje. Najčastejšia nesprávna odpoveď láka preto, lebo aj `pull` sťahuje vzdialené zmeny, navyše však spúšťa integračný krok."
+ },
+ {
+  "id": 67,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "output",
+  "question": "Chceš odstrániť commit z vrcholu lokálneho branche a jeho zmeny ponechať vo working tree, ale nie v stagingu. Ktorý príkaz tomuto cieľu zodpovedá?",
+  "options": [
+   "`git reset --hard HEAD~1`",
+   "`git reset --mixed HEAD~1`",
+   "`git revert HEAD`",
+   "`git restore --source HEAD~1 --staged --worktree .`"
+  ],
+  "answer": 1,
+  "explanation": "Reset `--mixed` posunie referenciu branche na predchádzajúci commit a nastaví index podľa nového HEAD, pričom zmeny vo working tree ponechá. Zmeny z predchádzajúceho commitu sa tak zobrazia ako úpravy vo working tree mimo stagingu. Najčastejšia nesprávna odpoveď láka preto, lebo aj `--hard` vráti branch späť, môže však zahodiť aj zmeny vo working tree."
+ },
+ {
+  "id": 68,
+  "level": "medior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "edgecase",
+  "question": "Chceš vytvoriť stash, ktorý zahŕňa nesledované súbory, no ignorované súbory stále vynecháva. Ktorý príkaz to urobí?",
+  "options": [
+   "`git stash -u`",
+   "`git stash -a`",
+   "`git stash --ignored`",
+   "`git stash --tracked-only`"
+  ],
+  "answer": 0,
+  "explanation": "`git stash -u`, teda `--include-untracked`, zahrnie nesledované súbory, ignorované však nie. `-a` zahrnie aj ignorované súbory, takže je širší, než tu treba. Najčastejšia nesprávna odpoveď láka preto, lebo nesledované aj ignorované súbory nie sú sledované, Git však tieto dve kategórie spracúva rozdielne."
+ },
+ {
+  "id": 69,
+  "level": "medior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "debug",
+  "question": "Cherry-pick narazí na konflikt. Konflikt správne vyriešiš a súbor pridáš do stagingu. Aký je ďalší krok, ak chceš v operácii pokračovať?",
+  "options": [
+   "`git cherry-pick --continue`",
+   "`git cherry-pick --abort`",
+   "`git merge --continue`",
+   "`git rebase --continue`"
+  ],
+  "answer": 0,
+  "explanation": "Po vyriešení konfliktu a pridaní do stagingu `git cherry-pick --continue` v operácii pokračuje a podľa potreby vytvorí cherry-picknutý commit. `--abort` naopak operáciu zruší. Najčastejšia nesprávna odpoveď láka preto, lebo aj merge a rebase poskytujú podobne pomenované mechanizmy `--continue`."
+ },
+ {
+  "id": 70,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "performance",
+  "question": "Vo veľkom repozitári chceš prezrieť históriu commitov tak, aby boli jasne viditeľné vzťahy medzi branchmi vrátane merge commitov. Ktorý príkaz je najvhodnejší?",
+  "options": [
+   "`git status --branches`",
+   "`git log --all --oneline --graph`",
+   "`git blame --graph`",
+   "`git show --branches`"
+  ],
+  "answer": 1,
+  "explanation": "`git log --all --oneline --graph` dokáže zahrnúť históriu všetkých dostupných refov, používa kompaktný formát commitov a štruktúru branchov a merge zobrazí ako ASCII graf. Najčastejšia nesprávna odpoveď láka preto, lebo aj `git status` a `git branch` poskytujú informácie o branchoch, graf histórie commitov však nezobrazujú."
+ },
+ {
+  "id": 71,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "trap",
+  "question": "Annotated tag už lokálne existuje, no chceš zmeniť release commit, a tak plánuješ presunúť rovnaký názov tagu na iný commit. Prečo to môže byť pri už publikovanom release problém?",
+  "options": [
+   "Git nepovoľuje, aby tagy ukazovali na commity.",
+   "Annotated tagy sa nedajú pushnúť na remote.",
+   "Tag predstavuje iba stav working tree, takže na históriu nemá vplyv.",
+   "Presunutím už publikovaného tagu sa zmení objekt, ktorý tag identifikuje, čo môže spôsobiť nekonzistencie pre používateľov a release artefakty."
+  ],
+  "answer": 3,
+  "explanation": "Publikovaný release tag vo všeobecnosti slúži ako stabilný názov identifikujúci konkrétny Git objekt. Ak sa ten istý tag neskôr presunie na iný commit alebo tagovaný objekt, rôzni klienti a artefakty môžu s rovnakým názvom verzie spájať rôzny obsah. Najčastejšia nesprávna odpoveď láka preto, lebo tag je technicky iba referencia, a tak sa ľahko prehliadne jeho úloha stabilného identifikátora v release procese."
+ },
+ {
+  "id": 72,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "scenario",
+  "question": "Repozitár má zdieľané pravidlo ignorovania pre určitý typ súborov, no ty chceš ignorovať ešte jeden lokálny súbor bez úpravy `.gitignore` v repozitári. Aký postup je vhodný?",
+  "options": [
+   "Zmazať adresár `.git/`.",
+   "Použiť `.git/info/exclude`.",
+   "Vytvoriť nový remote.",
+   "Premenovať súbor na `HEAD`."
+  ],
+  "answer": 1,
+  "explanation": "`.git/info/exclude` môže obsahovať lokálne pravidlá ignorovania pre daný repozitár bez ich verzovania v repozitári. Hodí sa to pre lokálne súbory IDE alebo súbory špecifické pre prostredie, ktoré nemajú ovplyvniť ostatných vývojárov. Najčastejšia nesprávna odpoveď láka preto, lebo `.gitignore` je najznámejší mechanizmus ignorovania, nie je však jedinou možnosťou."
+ },
+ {
+  "id": 73,
+  "level": "medior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "production",
+  "question": "Počas produkčného buildu odkazuje commit superprojektu na konkrétny commit submodulu. Prečo je dôležité, aby build prostredie checkoutlo práve tento commit submodulu?",
+  "options": [
+   "Pretože submodule vždy používa najnovší commit na svojom vlastnom branchi `main`.",
+   "Pretože commit superprojektu ukladá iba názov adresára submodulu.",
+   "Pretože pripnutý commit submodulu zaručuje, že s rovnakým commitom superprojektu je spojená rovnaká verzia submodulu.",
+   "Pretože commit submodulu automaticky ovplyvňuje všetky branche superprojektu."
+  ],
+  "answer": 2,
+  "explanation": "Superprojekt zaznamenáva konkrétny commit submodulu, vďaka čomu môže build deterministicky použiť rovnaký stav submodulu. Neskoršie zmeny na vlastnom branchi submodulu samy osebe nemenia commit zaznamenaný superprojektom. Najčastejšia nesprávna odpoveď láka preto, lebo vývojári často pristupujú k submodulu, akoby automaticky sledoval najnovší stav svojho vzdialeného branche."
+ },
+ {
+  "id": 74,
+  "level": "medior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "scenario",
+  "question": "Po dlhom rebase si vývojár uvedomí, že sa chce vrátiť do pôvodného stavu branche. Referencia branche už ukazuje na prepísanú históriu. Ktorý postup je najvhodnejší?",
+  "options": [
+   "Nájsť v reflogu pozíciu branche/HEAD pred rebase a obnoviť na ňu príslušnú referenciu.",
+   "Obnoviť staré commity pomocou `git clean -fd`.",
+   "Spustiť `git fetch --all`, ktorý automaticky obnoví predchádzajúcu históriu lokálneho branche.",
+   "Upraviť `.gitignore`, aby boli commity opäť dostupné."
+  ],
+  "answer": 0,
+  "explanation": "Pohyby referencií pred rebase a po ňom sa typicky zaznamenávajú v lokálnom reflogu. Keď nájdeš príslušné predchádzajúce commit ID, môžeš vytvoriť záchranný branch alebo na neho obnoviť referenciu branche. Najčastejšia nesprávna odpoveď láka preto, lebo `fetch --all` aktualizuje dáta z remotov, predchádzajúci stav lokálnej histórie však neobnoví."
+ },
+ {
+  "id": 75,
+  "level": "medior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Osemčlenný tím zažíva veľké a ťažké merge konflikty pri integrácii feature branchov, ktoré žijú niekoľko týždňov. Ktorá zmena môže najpriamejšie obmedziť hromadenie takýchto konfliktov?",
+  "options": [
+   "Držať každý feature branch úplne izolovaný od zmien v `main`, kým sa vývoj nedokončí.",
+   "Skrátiť životnosť feature branchov a podľa workflowu tímu do nich pravidelne integrovať najnovšie zmeny z `main`.",
+   "Každý merge konflikt riešiť force pushom.",
+   "Pravidelne mazať branch `main`, aby sa mohla začať nová história."
+  ],
+  "answer": 1,
+  "explanation": "Kratšie žijúce branche a častejšia integrácia skracujú čas, počas ktorého sa paralelné zmeny môžu rozchádzať, takže konflikty sa objavujú v menších a zvládnuteľnejších dávkach. Konflikty to automaticky neodstráni, znižuje to však riziko veľkého nahromadeného rozídenia. Najčastejšia nesprávna odpoveď láka preto, lebo dlhá izolácia spočiatku znamená menej práce s merge, neskôr však môže priniesť oveľa vyššie náklady na integráciu."
+ },
+ {
+  "id": 76,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "behavior",
+  "question": "Čo sa stane, ak majú dva rôzne súbory bajt po bajte identický obsah a oba sa pridajú do Git repozitára?",
+  "options": [
+   "Git vždy vytvorí dva samostatné blob objekty, pretože názvy súborov sú rôzne",
+   "Git uloží iba prvý súbor a druhý sa v tree nezobrazí",
+   "Pre oba súbory sa môže použiť ten istý blob objekt, pričom tree im priradí samostatné názvy",
+   "Git automaticky vytvorí medzi oboma súbormi vo working tree hard link"
+  ],
+  "answer": 2,
+  "explanation": "Blob je identifikovaný svojím obsahom, takže súbory s identickým obsahom môžu odkazovať na ten istý blob objekt. Názvy súborov a adresárovú štruktúru reprezentujú tree objekty. Predpoklad, že každý súbor musí mať vlastný samostatný objekt, môže zavádzať, pretože Git používa úložisko objektov adresované obsahom."
+ },
+ {
+  "id": 77,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "output",
+  "question": "Máš upravený sledovaný súbor `app.java`. Najprv spustíš `git add app.java` a potom ten istý súbor ešte raz upravíš. Čo ukáže `git diff --cached`?",
+  "options": [
+   "Všetky úpravy od stavu pred prvým `git add`",
+   "Rozdiel medzi verziou v staging area a aktuálnym HEAD",
+   "Rozdiel medzi working tree a staging area",
+   "Rozdiel medzi posledným commitom a working tree"
+  ],
+  "answer": 1,
+  "explanation": "`git diff --cached` porovnáva obsah staging area s HEAD, takže ukáže prvú úpravu, ktorá už je v stagingu. Neskoršia úprava existuje iba vo working tree, preto sa zobrazí v `git diff`. Predpoklad, že `--cached` skúma aktuálny stav working tree, môže zavádzať, pretože v skutočnosti pracuje s indexom."
+ },
+ {
+  "id": 78,
+  "level": "medior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "behavior",
+  "question": "Existuje remote-tracking branch `origin/feature` a ty z neho chceš vytvoriť nový lokálny branch `feature` tak, aby automaticky sledoval upstream branch. Ktorý príkaz je vhodný?",
+  "options": [
+   "`git switch -c feature --track origin/feature`",
+   "`git branch --remote feature origin/feature`",
+   "`git switch origin/feature -c feature`",
+   "`git checkout origin/feature --track`"
+  ],
+  "answer": 0,
+  "explanation": "`--track` nastaví nový lokálny branch tak, aby sledoval remote-tracking branch `origin/feature`. Tým sa zároveň vytvorí predvolený upstream vzťah, ktorý používajú príkazy ako push a pull. Samotné prepnutie na remote-tracking branch bežný lokálny branch nevytvorí."
+ },
+ {
+  "id": 79,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "behavior",
+  "question": "Medzi `main` a `feature` nie je žiadne skutočné rozídenie, takže `git merge feature` by mohol urobiť fast-forward merge. Čo sa stane pri `git merge --no-ff feature`?",
+  "options": [
+   "Git merge odmietne, pretože nie sú žiadne konflikty",
+   "Git vytvorí nový merge commit a commity feature branche zachová",
+   "Git prepíše všetky feature commity pomocou rebase",
+   "Git automaticky spojí (squash) zmeny z feature do jedného commitu"
+  ],
+  "answer": 1,
+  "explanation": "`--no-ff` zabráni aktualizácii typu fast-forward, takže Git vytvorí samostatný merge commit. Hodí sa to, keď chceš, aby integrácia branche zostala v histórii viditeľná ako samostatná udalosť. Squash môže tiež znížiť počet commitov viditeľných v histórii, preto môže pôsobiť vierohodne, `--no-ff` však squash nerobí."
+ },
+ {
+  "id": 80,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "scenario",
+  "question": "Branch `feature` obsahuje dva vlastné commity. Medzitým `main` dostal tri nové commity. Chceš feature commity presunúť na najnovší stav `main` tak, aby sa na novej základni vytvorili znova. Ktorú operáciu použiješ?",
+  "options": [
+   "`git merge main`",
+   "`git reset --hard main`",
+   "`git cherry-pick main`",
+   "`git rebase main`"
+  ],
+  "answer": 3,
+  "explanation": "`git rebase main` presunie vlastné commity feature branche na novú základňu a vytvorí nové commit objekty za aktuálnym vrcholom `main`. Výsledkom môže byť lineárnejšia história. Merge naopak rozídenie oboch vrcholov branchov zachová a existujúce feature commity na novú základňu nepresúva."
+ },
+ {
+  "id": 81,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "production",
+  "question": "Iný vývojár zmenil históriu zdieľaného vzdialeného branche. Aj ty si prepísal históriu svojho lokálneho branche a chceš prepísanú históriu pushnúť, ale iba ak sa vzdialený branch od tvojho posledného fetchu ďalej nezmenil. Ktorý postup je na to určený?",
+  "options": [
+   "`git push --force`",
+   "`git push --force-with-lease`",
+   "`git push --delete`",
+   "`git push --mirror`"
+  ],
+  "answer": 1,
+  "explanation": "`--force-with-lease` je podmienený force push: predvolene povolí aktualizáciu iba vtedy, ak je vzdialený ref stále v stave, ktorý očakávaš na základe svojich lokálnych remote-tracking informácií. Znižuje sa tak riziko, že prepíšeš novšiu prácu niekoho iného. Obyčajný `--force` sa môže zdať jednoduchší, pretože tiež povolí non-fast-forward push, rovnakú ochranu však neposkytuje."
+ },
+ {
+  "id": 82,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "behavior",
+  "question": "Ktorý príkaz ti umožní obnoviť jeden súbor vo working tree zo staršieho commitu bez posunutia ukazovateľa branche?",
+  "options": [
+   "`git reset --hard <commit>`",
+   "`git revert <commit>`",
+   "`git restore --source=<commit> -- file.txt`",
+   "`git branch --force <commit>`"
+  ],
+  "answer": 2,
+  "explanation": "`git restore --source=<commit> -- file.txt` obnoví zadaný súbor zo zadaného zdrojového commitu bez posunutia ukazovateľa branche. `reset --hard` má oveľa širší účinok, pretože môže posunúť HEAD a zmeniť working tree."
+ },
+ {
+  "id": 83,
+  "level": "medior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "behavior",
+  "question": "Čo urobí `git stash branch my-feature`, keď máš položku v stashi?",
+  "options": [
+   "Vytvorí nový branch z commitu, na ktorom bol stash vytvorený, a potom naň aplikuje uložené zmeny",
+   "Natrvalo integruje všetky stash commity do aktuálneho branche",
+   "Pushne obsah stashu ako vzdialený branch",
+   "Premenuje aktuálny branch na názov stashu"
+  ],
+  "answer": 0,
+  "explanation": "`git stash branch my-feature` vytvorí nový branch z commitu, na ktorom bol stash vytvorený, a potom sa pokúsi aplikovať uložené zmeny. Ak sa aplikovanie podarí, položka stashu sa odstráni. Bežný `stash pop` môže pôsobiť podobne, pretože tiež aplikuje zmeny, samostatný branch však nevytvorí."
+ },
+ {
+  "id": 84,
+  "level": "medior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "edgecase",
+  "question": "Čo znamená typické použitie `git cherry-pick A^..B`, ak sú `A` a `B` po sebe idúce commity na tom istom branchi?",
+  "options": [
+   "Aplikuje iba rodiča commitu `A`",
+   "Zmerguje celú históriu repozitára medzi `A` a `B`",
+   "Skopíruje iba súbory z commitu `B` so zachovaním pôvodných metadát commitu",
+   "Vyberie na aplikovanie commity od `A` po `B` vrátane `A` aj `B`"
+  ],
+  "answer": 3,
+  "explanation": "Rozsah revízií `A^..B` začína pri rodičovi `A`, takže výsledný rozsah zahŕňa `A` aj `B`. Cherry-pick aplikuje zmeny zavedené týmito commitmi ako nové commity na aktuálny HEAD. Znak `^` tu môže zavádzať, pretože neznamená vylúčenie commitu `A`; posúva dolnú hranicu rozsahu na jeho rodiča."
+ },
+ {
+  "id": 85,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "behavior",
+  "question": "Chceš prezrieť históriu branche `main`, ktorý obsahuje viacero merge commitov, a sledovať predovšetkým commity vytvorené na hlavnej línii `main` bez úplného rozbalenia vnútornej histórie každého feature branche. Ktorá voľba ti v tom pomôže?",
+  "options": [
+   "`git log --all`",
+   "`git log --first-parent`",
+   "`git log --no-merges`",
+   "`git log --reverse`"
+  ],
+  "answer": 1,
+  "explanation": "`--first-parent` sleduje prvého rodiča merge commitov, takže si zachováš pohľad hlavnej línie bez automatického rozbalenia vnútornej histórie topic branchov. Je to užitočné najmä pri prezeraní histórie integrácií alebo releasov. `--no-merges` naopak merge commity úplne skryje, takže odstraňuje inú informáciu."
+ },
+ {
+  "id": 86,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "output",
+  "question": "Čo je vhodné, ak chceš, aby skript zistil, ktorý blízky Git tag súvisí s commitom, a zároveň zobrazil vzdialenosť od tohto tagu?",
+  "options": [
+   "`git branch --contains`",
+   "`git tag --points-at`",
+   "`git describe --tags`",
+   "`git log --decorate-only`"
+  ],
+  "answer": 2,
+  "explanation": "`git describe --tags` dokáže vytvoriť čitateľný popis na základe blízkeho vhodného tagu vrátane vzdialenosti medzi commitom a tagom a identifikátora aktuálneho commitu. `git tag --points-at` nájde iba tagy, ktoré ukazujú priamo na zadaný objekt."
+ },
+ {
+  "id": 87,
+  "level": "medior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Tím často nasadzuje, zmeny sú malé a chce, aby branch `main` bol neustále čo najbližšie k stavu pripravenému na release. Ktorá stratégia sa na to hodí najlepšie?",
+  "options": [
+   "Dlhodobé feature branche s občasnou integráciou",
+   "Samostatný integračný branch pre každého vývojára na niekoľko mesiacov",
+   "Používanie iba release branchov s neustále narastajúcim rozídením",
+   "Krátkodobé branche a častá integrácia do hlavného branche"
+  ],
+  "answer": 3,
+  "explanation": "Krátkodobé branche a častá integrácia znižujú nahromadené rozídenie a podporujú priebežne integrovaný hlavný branch pripravený na release. Ide o bežný vzor pri trunk-based developmente. Dlhodobé branche sa môžu zdať bezpečnejšie, pretože prácu izolujú, zvyšujú však náklady na integráciu."
+ },
+ {
+  "id": 88,
+  "level": "medior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "Pull request obsahuje 15 commitov, z ktorých viaceré obsahujú iba zmeny reagujúce na pripomienky z review. Tím chce, aby sa celková zmena dala ľahko reviewovať. Čo je najdôležitejšie zvážiť?",
+  "options": [
+   "Názov branche má byť krátky",
+   "Počet commitov má byť vždy presne päť",
+   "Reviewer má skontrolovať celý diff, ktorý PR zavádza, ako aj relevantnú históriu commitov",
+   "Stačí skontrolovať iba posledný commit"
+  ],
+  "answer": 2,
+  "explanation": "Hlavným cieľom review je overiť, že celá zmena zavedená branchom spĺňa požiadavky, preto je dôležitý úplný diff PR. História commitov môže poskytnúť ďalší kontext, najmä pri zložitých zmenách. Kontrola iba posledného commitu môže zavádzať, pretože nemusí obsahovať všetky predchádzajúce zmeny."
+ },
+ {
+  "id": 89,
+  "level": "medior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "theory",
+  "question": "Ktoré tvrdenie správne opisuje typickú úlohu klientskeho Git hooku `pre-commit`?",
+  "options": [
+   "Spúšťa sa pred vytvorením commitu a môže vykonať linting alebo validáciu",
+   "Spúšťa sa iba na vzdialenom serveri po pushi",
+   "Slúži výhradne na automatické riešenie merge konfliktov",
+   "Vykonáva garbage collection objektovej databázy Gitu"
+  ],
+  "answer": 0,
+  "explanation": "Hook `pre-commit` sa spúšťa pred vytvorením commitu, takže je vhodný na formátovanie, linting alebo inú lokálnu validáciu. Hooky nie sú univerzálnym mechanizmom pre merge a samotné klientske hooky nezaručujú, že rovnaké kontroly spustí každý vývojár alebo každé CI prostredie."
+ },
+ {
+  "id": 90,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "behavior",
+  "question": "Čo robí nasledujúca konfigurácia `.gitattributes`?",
+  "code": "*.sh text eol=lf",
+  "options": [
+   "Všetky súbory `.sh` považuje za binárne, takže normalizácia koncov riadkov neprebehne",
+   "Požaduje, aby sa súbory `.sh` v repozitári považovali za text a pri checkoute používali konce riadkov LF",
+   "Automaticky označí všetky súbory `.sh` ako spustiteľné",
+   "Automaticky vylúči súbory `.sh` z repozitára"
+  ],
+  "answer": 1,
+  "explanation": "Atribút `text` označí súbory ako textové, kým `eol=lf` určuje konce riadkov LF pre ich checkoutnuté kópie vo working tree. Nenastavuje to unixový bit spustiteľnosti a nenahrádza to pravidlá `.gitignore`. Práva na spúšťanie sa riešia samostatne cez file mode v Gite."
+ },
+ {
+  "id": 91,
+  "level": "medior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "behavior",
+  "question": "Superprojekt odkazuje na submodule, no adresár submodulu ešte nebol inicializovaný. Ktorý príkaz stiahne a inicializuje potrebný submodule v stave zaznamenanom superprojektom?",
+  "options": [
+   "`git clone --submodule-only`",
+   "`git submodule fetch --all`",
+   "`git submodule update --init`",
+   "`git checkout --submodule`"
+  ],
+  "answer": 2,
+  "explanation": "`git submodule update --init` inicializuje submodule, ktorý ešte nebol inicializovaný, a checkoutne ho na commite zaznamenanom superprojektom. Pri vnorených submoduloch môže byť potrebná aj voľba `--recursive`. Obyčajný fetch sa môže zdať vierohodný, pretože tiež sťahuje Git objekty, sám osebe však working tree na požadovanom commite neinicializuje."
+ },
+ {
+  "id": 92,
+  "level": "medior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "recovery",
+  "question": "Máš lokálny branch `feature`, ktorý si omylom posunul na starší commit pomocou `git reset --hard`. Chceš nájsť predchádzajúci vrchol branche. Ktorý príkaz reflogu je najrelevantnejší?",
+  "options": [
+   "`git reflog show feature`",
+   "`git log origin/feature`",
+   "Iba `git fsck --lost-found`",
+   "`git remote show feature`"
+  ],
+  "answer": 0,
+  "explanation": "Reflog lokálneho branche zaznamenáva predchádzajúce hodnoty refu branche, takže pomocou `git reflog show feature` nájdeš vrchol pred resetom. Keď identifikuješ správny commit, branch môžeš obnoviť napríklad príkazom `git reset --hard <recovered-commit>`. Vzdialená história pomôže iba vtedy, ak bol predchádzajúci stav skutočne pushnutý."
+ },
+ {
+  "id": 93,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "trap",
+  "question": "Čo v tomto kontexte znamená v Gite úložisko adresované obsahom (content-addressed storage)?",
+  "options": [
+   "Objekty sú identifikované výhradne názvami súborov",
+   "Objekty sú identifikované adresárom, v ktorom sú v repozitári uložené",
+   "Identifikátor objektu je odvodený z hashu, ktorý súvisí s obsahom a typom objektu",
+   "Identifikátor každého commit objektu sa generuje náhodne"
+  ],
+  "answer": 2,
+  "explanation": "Identifikátory Git objektov sú založené na hashi a typ, veľkosť aj obsah objektu sú súčasťou dát, z ktorých sa identifikátor odvodzuje. Vďaka tomu môže identický obsah pri rovnakom hashovacom algoritme viesť k rovnakému identifikátoru objektu. Predpoklad, že hash vychádza iba z obsahu súboru, môže zavádzať, pretože formát objektov v Gite zahŕňa aj ďalšie informácie."
+ },
+ {
+  "id": 94,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "debug",
+  "question": "Počas `git pull` vznikne merge commit, hoci vývojár čakal, že sa jeho lokálne commity objavia lineárne za vzdialenými zmenami. Ktorá voľba zabezpečí, že pull použije rebase?",
+  "options": [
+   "`git pull --no-edit`",
+   "`git pull --rebase`",
+   "`git pull --force`",
+   "`git pull --tags`"
+  ],
+  "answer": 1,
+  "explanation": "`git pull --rebase` najprv stiahne vzdialené zmeny a potom rebasne lokálne, ešte nepushnuté commity na aktualizovanú vzdialenú základňu. Vo všeobecnosti sa tak vyhneš vzniku samostatného merge commitu v dôsledku pullu. `--no-edit` ovplyvňuje iba spracovanie správy merge commitu; operáciu merge rebaseom nenahrádza."
+ },
+ {
+  "id": 95,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "edgecase",
+  "question": "Súbor je v stagingu, no ty ho chceš zo staging area odstrániť a úpravu vo working tree ponechať. Ktorý príkaz je vhodný?",
+  "options": [
+   "`git restore --staged file.txt`",
+   "`git restore --worktree file.txt`",
+   "`git reset --hard HEAD file.txt`",
+   "`git revert --no-commit HEAD`"
+  ],
+  "answer": 0,
+  "explanation": "`git restore --staged file.txt` obnoví položku v indexe do stavu zodpovedajúceho HEAD a úpravu vo working tree ponechá. Presne to potrebuješ na odstránenie súboru zo stagingu. Hard reset naopak môže zahodiť aj zmeny vo working tree."
+ },
+ {
+  "id": 96,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "Vieš, že regresia vznikla niekde medzi commitom `good` a `bad`, no medzi nimi sú stovky commitov. Ktorá funkcia Gitu je vhodná na zúženie chybného commitu binárnym vyhľadávaním?",
+  "options": [
+   "`git blame`",
+   "`git log --stat`",
+   "`git bisect`",
+   "`git reflog`"
+  ],
+  "answer": 2,
+  "explanation": "`git bisect` robí binárne vyhľadávanie medzi zadaným dobrým a zlým stavom a v každom kroku ťa požiada otestovať commit medzi nimi. Priestor hľadania sa tak zmenšuje približne logaritmicky aj pri rozsiahlej histórii. `git blame` ukazuje, ktorý commit naposledy zmenil daný riadok, regresie však nevyhľadáva."
+ },
+ {
+  "id": 97,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "behavior",
+  "question": "Aký je hlavný rozdiel medzi lightweight a annotated tagom?",
+  "options": [
+   "Lightweight tag je vždy objekt existujúci iba na remote",
+   "Annotated tag môže mať samostatný tag objekt a metadáta, kým lightweight tag je jednoducho ref",
+   "Lightweight tag nemôže ukazovať na commit",
+   "Annotated tag sa dá použiť iba pre merge commity"
+  ],
+  "answer": 1,
+  "explanation": "Lightweight tag je v podstate ref ukazujúci na objekt, kým annotated tag vytvorí samostatný tag objekt, ktorý môže obsahovať informácie ako autora tagu, dátum a správu a dá sa aj podpísať. Preto sú annotated tagy užitočné najmä pri releasoch. Predpoklad, že lightweight tag nemôže ukazovať na commit, je nesprávny; práve to je jedno z jeho typických použití."
+ },
+ {
+  "id": 98,
+  "level": "medior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "scenario",
+  "question": "Pull request obsahuje viacero nezávislých zmien a reviewer ťažko určuje, či všetky úpravy patria k rovnakému cieľu. Ktorý prístup najlepšie zlepší zameranie review?",
+  "options": [
+   "Pridať ďalšie nesúvisiace zmeny",
+   "Spojiť celý PR do jedného obrovského commitu bez ďalšieho vysvetlenia",
+   "Zmenšiť veľkosť a rozsah PR a nezávislé zmeny riešiť ako samostatné review",
+   "Zmazať celú históriu branche"
+  ],
+  "answer": 2,
+  "explanation": "PR s menším a súdržným rozsahom sa reviewujú ľahšie, pretože reviewer sa môže sústrediť na jasne vymedzený problém. Samotný squash príliš široký rozsah nevyrieši. Zmazanie histórie spôsobí stratu informácií a logické oddelenie zmien nerieši."
+ },
+ {
+  "id": 99,
+  "level": "medior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "debug",
+  "question": "Tím používa hook `pre-commit`, ktorý lokálne spúšťa linting. Na počítači jedného vývojára sa hook nespustí, no commit sa úspešne vytvorí. Ktoré vysvetlenie je technicky správne?",
+  "options": [
+   "Git automaticky vypne všetky hooky, keď má repozitár viacero branchov",
+   "Hook `pre-commit` funguje iba na Linuxe",
+   "Git spúšťa hooky iba pri vytváraní annotated tagov",
+   "Klientske hooky sú lokálne pre repozitár, takže v samostatnom clone môže byť potrebné hooky nainštalovať alebo nakonfigurovať zvlášť"
+  ],
+  "answer": 3,
+  "explanation": "Klientske hooky sú v podstate lokálne pre repozitár a nie sú automaticky verzované len preto, že zvyšok repozitára spravuje Git. Nový clone preto nemusí hook obsahovať alebo môže vyžadovať samostatný inštalačný krok. Hooky môžu obsahovať detaily špecifické pre platformu, nie sú však obmedzené na Linux."
+ },
+ {
+  "id": 100,
+  "level": "medior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "performance",
+  "question": "Vývojár vo veľmi veľkom monorepe pracuje iba v malom adresári a chce sa vyhnúť checkoutu celej štruktúry working tree repozitára. Ktorú funkciu Gitu na to môže použiť?",
+  "options": [
+   "`git sparse-checkout`",
+   "`git clean -fd`",
+   "`git archive --delete`",
+   "`git gc --partial`"
+  ],
+  "answer": 0,
+  "explanation": "`git sparse-checkout` umožňuje, aby sa vo working tree objavili iba vybrané časti repozitára, pričom história a objekty repozitára zostávajú súčasťou dátového modelu Gitu. Vo veľkých monorepách to môže znížiť réžiu working tree aj lokálneho vývoja. `git clean` iba odstraňuje nesledované súbory, takže na nastavenie čiastočného checkoutu sa nehodí."
+ },
+ {
+  "id": 101,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Ktoré tvrdenie správne opisuje, čo uchováva commit objekt?",
+  "options": [
+   "Iba úplný obsah zmenených súborov",
+   "Odkaz na tree, odkazy na rodičovské commity a metadáta commitu",
+   "Aktuálny stav všetkých branchov v repozitári",
+   "Iba diff medzi working tree a indexom"
+  ],
+  "answer": 1,
+  "explanation": "Commit odkazuje na tree objekt, ktorý predstavuje štruktúru súborov zaznamenanú commitom, ako aj na rodičovské commity a metadáta ako autor, committer a správa. Úplný obsah všetkých súborov priamo neuchováva. Predpoklad, že commit sám obsahuje celý obsah súborov, môže zavádzať, pretože tieto informácie poskytujú tree a blob objekty v grafe objektov."
+ },
+ {
+  "id": 102,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "behavior",
+  "question": "Upravil si sledovaný súbor, no úprava ešte nie je v stagingu. Čo v tejto situácii urobí `git commit --amend`, ak nezmeníš commit message?",
+  "options": [
+   "Automaticky pridá úpravu k častiam predchádzajúceho commitu, ktoré nie sú v stagingu",
+   "Vytvorí nový commit na vrchole aktuálneho branche",
+   "Prepíše predchádzajúci commit pomocou aktuálneho obsahu indexu, úpravu mimo stagingu však nezahrnie",
+   "Pridá do upraveného commitu celý obsah working tree"
+  ],
+  "answer": 2,
+  "explanation": "`git commit --amend` použije obsah indexu, ktorý je v stagingu, na vytvorenie novej verzie predchádzajúceho commitu. Úpravy, ktoré existujú iba vo working tree, sa automaticky nezahrnú. Predpoklad, že amend commitne celý aktuálny stav súborového systému, môže zavádzať, pretože obsah commitu stále pochádza z indexu."
+ },
+ {
+  "id": 103,
+  "level": "medior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "edgecase",
+  "question": "Máš branch `feature`, ktorý už bol úplne zmergovaný do branche `main`. Čo predvolene urobí `git branch -d feature`?",
+  "options": [
+   "Bezpečne zmaže ref branche, pretože jeho commity sú už dostupné z histórie `main`",
+   "Zmaže aj všetky commit objekty patriace k branchu",
+   "Automaticky zmaže vzdialený branch `origin/feature`",
+   "Vždy odmietne branch zmazať, pretože po merge sa dá použiť iba `-D`"
+  ],
+  "answer": 0,
+  "explanation": "`git branch -d` bezpečne zmaže ref lokálneho branche, keď Git dokáže určiť, že commity branche už boli integrované do príslušnej upstream alebo dostupnej histórie. Samotné commit objekty sa okamžite nemažú, pretože na ne môžu stále ukazovať iné refy. Predpoklad, že zmazanie branche automaticky zmaže aj jeho commity, je nesprávny."
+ },
+ {
+  "id": 104,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "Pri riešení konfliktu chceš ponechať celú verziu súboru z druhého branche, ktorý sa merguje. Ktorý príkaz môžeš počas merge použiť?",
+  "options": [
+   "`git restore --theirs file.txt`",
+   "`git restore --source=HEAD~1 file.txt`",
+   "`git revert --theirs file.txt`",
+   "`git reset --merge-theirs file.txt`"
+  ],
+  "answer": 0,
+  "explanation": "Počas konfliktného merge `git restore --theirs file.txt` obnoví verziu z branche, ktorý sa merguje, kým `--ours` vyberie verziu z aktuálneho branche. Po výbere požadovanej verzie treba súbor pridať do stagingu, aby bol konflikt označený ako vyriešený. Rozlíšenie ours a theirs môže mýliť, pretože označenia sú relatívne k branchu, na ktorom sa merge vykonáva."
+ },
+ {
+  "id": 105,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "scenario",
+  "question": "Branch `feature` sa oddelil od commitu `old-base`, no ty chceš jeho zmeny presadiť na nový commit `new-base` bez toho, aby sa pôvodný základný commit znova dostal do histórie branche. Ktorý príkaz je vhodný?",
+  "options": [
+   "`git rebase --onto new-base old-base feature`",
+   "`git rebase new-base old-base feature`",
+   "`git merge --onto new-base old-base feature`",
+   "`git reset --onto new-base old-base feature`"
+  ],
+  "answer": 0,
+  "explanation": "`git rebase --onto new-base old-base feature` vyberie commity na `feature`, ktoré nasledujú po `old-base`, a umiestni ich na `new-base`. Základňu tak môžeš cielene vymeniť. Jednoduchý `rebase new-base` môže tiež presunúť commity na novú základňu, preto môže pôsobiť vierohodne, presný rozsah commitov však neurčuje rovnakým spôsobom."
+ },
+ {
+  "id": 106,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "Branch bol zo vzdialeného repozitára zmazaný, no lokálny remote-tracking ref `origin/feature` stále existuje. Ktorá operácia pomôže zastaraný remote-tracking ref odstrániť?",
+  "options": [
+   "`git pull --force`",
+   "`git fetch --prune`",
+   "`git push --prune origin`",
+   "`git remote delete origin`"
+  ],
+  "answer": 1,
+  "explanation": "`git fetch --prune` počas fetchu odstráni remote-tracking refy, ktorých zodpovedajúce branche už na remote neexistujú. Čistí iba lokálne remote-tracking refy; branche vo vzdialenom repozitári nemaže. `git push --prune` pracuje opačným smerom, takže tento problém nerieši."
+ },
+ {
+  "id": 107,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "production",
+  "question": "Chceš vrátiť commit, ktorý už bol nasadený do produkcie, pričom pôvodný commit má v histórii repozitára zostať a má vzniknúť nový commit, ktorý jeho zmeny vráti. Ktorý postup tejto požiadavke zodpovedá?",
+  "options": [
+   "`git reset --hard HEAD~1`",
+   "`git restore --source=HEAD~1 -- .`",
+   "`git revert <commit>`",
+   "`git branch -D main`"
+  ],
+  "answer": 2,
+  "explanation": "`git revert` vytvorí nový commit, ktorý vráti zmeny zavedené zadaným commitom. Pre zdieľanú alebo produkčnú históriu je to obzvlášť vhodné, pretože existujúci reťazec commitov neprepisuje. Reset naopak posúva refy a môže zmeniť aj working tree, čo môže byť pri zdieľanej histórii problém."
+ },
+ {
+  "id": 108,
+  "level": "medior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "edgecase",
+  "question": "Upravil si niekoľko súborov, no jeden súbor chceš ponechať v stagingu a ostatné úpravy uložiť do stashu. Ktorá voľba ti v tom pomôže?",
+  "options": [
+   "`git stash --include-untracked`",
+   "`git stash --keep-index`",
+   "`git stash --all`",
+   "`git stash --patch-only`"
+  ],
+  "answer": 1,
+  "explanation": "`--keep-index` zachová aktuálny stav staging area a ostatné úpravy vo working tree uloží do stashu. Hodí sa to, keď máš hotovú časť pripravenú na commit a ostatné nedokončené zmeny chceš dočasne odložiť. `--include-untracked` rieši iný problém: zahrnutie nesledovaných súborov do stashu."
+ },
+ {
+  "id": 109,
+  "level": "medior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "behavior",
+  "question": "Cherry-pickuješ commit na iný branch a chceš, aby správa nového commitu ukazovala, z ktorého pôvodného commitu pochádza. Ktorá voľba to urobí?",
+  "options": [
+   "`git cherry-pick --signoff`",
+   "`git cherry-pick --edit`",
+   "`git cherry-pick --no-commit`",
+   "`git cherry-pick -x`"
+  ],
+  "answer": 3,
+  "explanation": "`git cherry-pick -x` pridá do správy nového commitu riadok, ktorý identifikuje pôvodný commit. Hodí sa to, keď záleží na sledovateľnosti pôvodu zmeny naprieč branchmi. `--no-commit` naopak zmeny aplikuje bez okamžitého vytvorenia commitu."
+ },
+ {
+  "id": 110,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "behavior",
+  "question": "Premenoval si súbor z `old-name.java` na `new-name.java` a chceš sledovať jeho históriu aj pod predchádzajúcim názvom. Ktorý príkaz je najvhodnejší?",
+  "options": [
+   "`git log --follow -- new-name.java`",
+   "`git log --rename-only -- new-name.java`",
+   "`git blame --history new-name.java`",
+   "`git show --follow new-name.java`"
+  ],
+  "answer": 0,
+  "explanation": "`git log --follow -- new-name.java` umožňuje sledovať históriu jedného súboru aj cez premenovanie. Je to užitočné najmä po refaktoringu dlhodobo existujúcich súborov. Git premenovania pri analýze histórie zisťuje na základe podobnosti, takže sledovanie premenovania nezávisí jednoducho od existencie samostatného explicitného objektu premenovania."
+ },
+ {
+  "id": 111,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "production",
+  "question": "V release procese chceš na aktuálnom commite vytvoriť annotated tag, aby sa dal jednoznačne identifikovať podľa release správy a metadát. Ktorý príkaz je vhodný?",
+  "options": [
+   "`git tag release-2.0`",
+   "`git tag -a release-2.0 -m \"Release 2.0\"`",
+   "`git branch release-2.0`",
+   "`git tag --delete release-2.0`"
+  ],
+  "answer": 1,
+  "explanation": "`git tag -a` vytvorí annotated tag, ktorý môže obsahovať správu a ďalšie metadáta tagu. Hodí sa pre release tagy, pri ktorých tag predstavuje viac než len názov ukazujúci na commit. Obyčajný `git tag` vytvorí lightweight tag bez samostatného annotated tag objektu."
+ },
+ {
+  "id": 112,
+  "level": "medior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Tím používa workflow podobný Git Flow, v ktorom vývoj a produkčné releasy prebiehajú v rôznych cykloch. Aký je jeden z typických účelov release branche?",
+  "options": [
+   "Zmazanie celej histórie repozitára pred releasom",
+   "Oddelenie vývojovej práce od stabilizácie a prípravy releasu",
+   "Automatický squash všetkých feature branchov",
+   "Vypnutie prístupu k vzdialenému repozitáru počas releasu"
+  ],
+  "answer": 1,
+  "explanation": "Release branch typicky umožňuje, aby stabilizácia konkrétneho releasu prebiehala oddelene, kým nový vývoj pokračuje na vývojovom branchi. Slúži organizačným a integračným účelom a nie je technickou požiadavkou Gitu. Použitie release branche samo osebe neznamená automatický squash ani prepisovanie histórie."
+ },
+ {
+  "id": 113,
+  "level": "medior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "Reviewer skúma zmenu API, ktorá mení niekoľko stoviek riadkov kódu, no popis PR obsahuje iba „refactor“. Čo je najdôležitejšie na to, aby bolo review sústredené?",
+  "options": [
+   "SHA-256 hash branche PR",
+   "Úplná lokálna Git konfigurácia reviewera",
+   "Jasný popis cieľa zmeny, jej rozsahu a očakávaného správania",
+   "Vytvorenie nového vzdialeného repozitára"
+  ],
+  "answer": 2,
+  "explanation": "Dobrý popis PR poskytuje kontext, prečo zmena vznikla, aký problém rieši a aké správanie sa očakáva. Reviewer tak môže porovnať technický diff so zamýšľaným biznisovým alebo funkčným cieľom. Diff ukazuje, čo sa zmenilo, no nemusí vysvetľovať prečo."
+ },
+ {
+  "id": 114,
+  "level": "medior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "theory",
+  "question": "Ktoré tvrdenie o serverovom hooku `pre-receive` je pravdivé?",
+  "options": [
+   "Spúšťa sa pred vytvorením lokálneho commitu u klienta",
+   "Spúšťa sa pri checkoute Git working tree",
+   "Môže sa spustiť predtým, ako vzdialený repozitár prijme aktualizácie refov z prichádzajúceho pushu",
+   "Spúšťa sa iba pri vytvorení lokálneho stashu"
+  ],
+  "answer": 2,
+  "explanation": "Hook `pre-receive` sa spúšťa na serveri, keď príde push, a môže vykonať kontroly ešte pred prijatím aktualizácií refov. Dá sa použiť na politiky, autorizačné pravidlá alebo kontroly prichádzajúcich commitov. Klientske hooky sa naopak spúšťajú v lokálnom repozitári vývojára."
+ },
+ {
+  "id": 115,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "edgecase",
+  "question": "Súbor je uvedený v `.gitignore`, no predtým si ho commitol a je už sledovaný. Čo sa stane, keď sa znova zmení?",
+  "options": [
+   "`.gitignore` z neho automaticky urobí nesledovaný súbor",
+   "Git sleduje úpravy súboru ďalej, kým ho zo sledovania výslovne neodstrániš",
+   "Git súbor pri ďalšom `git pull` zmaže",
+   "Súbor sa stane sledovaným iba počas merge konfliktu"
+  ],
+  "answer": 1,
+  "explanation": "`.gitignore` riadi predovšetkým nesledované súbory, ktoré má Git ignorovať. Už sledovaný súbor automaticky nesledovaným neurobí, takže Git ďalšie úpravy naďalej sleduje. Na odstránenie takého súboru zo sledovania potrebuješ samostatnú operáciu, napríklad `git rm --cached`."
+ },
+ {
+  "id": 116,
+  "level": "medior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "scenario",
+  "question": "V monorepe pracuje vývojár iba s podadresárom veľkého projektu a zvyšok repozitára mení len zriedka. Prečo môže byť sparse-checkout užitočný?",
+  "options": [
+   "Automaticky rozdelí monorepo na viacero samostatných Git repozitárov",
+   "Môže znížiť počet súborov vo working tree a zároveň zachovať zdieľanú históriu repozitára",
+   "Automaticky spojí (squash) každý commit",
+   "Zmaže celú históriu zo vzdialeného repozitára"
+  ],
+  "answer": 1,
+  "explanation": "Sparse-checkout obmedzuje, ktoré cesty sa objavia vo working tree, takže vo veľkých monorepách môže znížiť počet lokálne spravovaných súborov. Repozitár nerozdeľuje na samostatné Git repozitáre a históriu commitov automaticky nemení. Rozdelenie repozitára sa môže zdať podobné, pretože sparse-checkout zjednodušuje vývojové prostredie, technicky však ide o odlišné riešenia."
+ },
+ {
+  "id": 117,
+  "level": "medior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "behavior",
+  "question": "Prečo môže byť predtým stratený commit niekedy ešte nejaký čas obnoviteľný, aj keď naň už neukazuje žiadny branch ani tag?",
+  "options": [
+   "Pretože Git uchováva každý commit navždy",
+   "Pretože remote automaticky obnoví každý stratený commit",
+   "Pretože reflog a ďalšie mechanizmy dostupnosti môžu dočasne uchovávať odkazy na predchádzajúce objekty",
+   "Pretože working tree ukladá každý predchádzajúci commit do samostatného súboru"
+  ],
+  "answer": 2,
+  "explanation": "Lokálny reflog uchováva predchádzajúce hodnoty niektorých refov, takže commit, ktorý vypadol z branche, môže byť stále dostupný cez reflog. Takéto objekty sa nemusia uchovávať navždy; po expirácii reflogu a garbage collection sa nakoniec môžu odstrániť. Predpoklad, že Git zaručuje trvalé uchovanie každého vytvoreného commitu, je nesprávny."
+ },
+ {
+  "id": 118,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "Čo typicky zobrazí `git cat-file -p <object>` pre commit objekt?",
+  "options": [
+   "Čitateľný obsah commit objektu, napríklad tree, rodičov, údaje o autorovi/committerovi a správu",
+   "Úplnú binárnu snímku working tree v jednom súbore",
+   "Iba SHA commitu",
+   "Úplný zoznam refov vo vzdialenom repozitári"
+  ],
+  "answer": 0,
+  "explanation": "`git cat-file -p` zobrazí obsah objektu v naformátovanej, čitateľnej podobe podľa jeho typu. Pri commite to zahŕňa odkazy na tree a rodičov, ako aj informácie o autorovi, committerovi a commit message. Samotný obsah blobov a tree objektov je uložený v samostatných objektoch."
+ },
+ {
+  "id": 119,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "scenario",
+  "question": "Máš rozsiahlu zmenu a chceš commitnúť iba niekoľko hunkov, kým zvyšné úpravy si necháš na neskôr. Ktorý príkaz najpriamejšie podporuje interaktívny staging?",
+  "options": [
+   "`git commit --only`",
+   "`git add -p`",
+   "`git stage --all`",
+   "`git commit --interactive-history`"
+  ],
+  "answer": 1,
+  "explanation": "`git add -p` ti umožní interaktívne vybrať, ktoré hunky sa vložia do indexu. Z väčšej sady zmien vo working tree tak vytvoríš logicky zameraný commit. Interaktívny staging je užitočný, pretože celú zmenu nemusíš najprv ručne rozdeliť do samostatných súborov alebo branchov."
+ },
+ {
+  "id": 120,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "V CI prostredí chceš zabezpečiť, aby `git pull` automaticky nevytvoril merge commit a namiesto toho zlyhal, ak sa lokálna a vzdialená história nedajú zosúladiť fast-forwardom. Ktorá voľba tejto požiadavke zodpovedá?",
+  "options": [
+   "`git pull --rebase`",
+   "`git pull --merge`",
+   "`git pull --ff-only`",
+   "`git pull --no-tags`"
+  ],
+  "answer": 2,
+  "explanation": "`--ff-only` vyžaduje, aby aktualizácia prebehla ako fast-forward; inak pull zlyhá. Hodí sa to v automatizovaných prostrediach, kde nechceš, aby vznikol implicitný merge commit. `--rebase` používa inú stratégiu: presúva lokálne commity na novú základňu."
+ },
+ {
+  "id": 121,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "trap",
+  "question": "Čo sa stane pri rebase branche, ktorý už používajú iní vývojári a ktorého commity už boli pushnuté?",
+  "options": [
+   "Vzdialená história automaticky zostane nezmenená",
+   "Existujúce commity si zachovajú rovnaké SHA, pretože rebase iba posúva ref",
+   "Commity branche sa môžu znova vytvoriť ako nové commit objekty, takže ich push často vyžaduje prepísanie vzdialenej histórie",
+   "Rebase automaticky vytvorí merge commit na vzdialenom branchi"
+  ],
+  "answer": 2,
+  "explanation": "Rebase presúva commity na novú základňu, takže commity môžu dostať nové identifikátory objektov. Ak sú tieto commity už súčasťou zdieľanej vzdialenej histórie, prepísaná história už nemusí byť fast-forwardovateľná, čo pri pushi spôsobí problémy v spolupráci. Predpoklad, že rebase iba posúva ukazovateľ branche, je nesprávny, pretože samotné commity sa môžu vytvoriť znova."
+ },
+ {
+  "id": 122,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "scenario",
+  "question": "Po vyriešení merge konfliktu a odstránení konfliktných značiek (`<<<<<<<`, `=======`, `>>>>>>>`) zo súboru: aký je ďalší nevyhnutný krok na pokračovanie v merge?",
+  "options": [
+   "Pridať vyriešený súbor do stagingu pomocou `git add`",
+   "Okamžite spustiť `git push --force`",
+   "Zmazať branch",
+   "Inicializovať nový repozitár"
+  ],
+  "answer": 0,
+  "explanation": "Po ručnom vyriešení konfliktu treba súbor pridať do stagingu, aby Git vedel, že konflikt v tomto súbore je vyriešený. Potom môžeš vytvoriť merge commit, napríklad cez `git commit`. Samotné odstránenie konfliktných značiek Gitu neoznámi, že konflikt je vyriešený."
+ },
+ {
+  "id": 123,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "performance",
+  "question": "Vo veľkom repozitári chceš prezrieť iba históriu dostupnú z aktuálneho branche a nechceš, aby výstup logu zahŕňal commity dostupné zo všetkých ostatných refov. Ktorý príkaz tomu najlepšie zodpovedá?",
+  "options": [
+   "`git log --all`",
+   "`git log --branches`",
+   "`git log --remotes`",
+   "`git log`"
+  ],
+  "answer": 3,
+  "explanation": "Samotný `git log` predvolene zobrazí históriu dostupnú z aktuálneho HEAD. `--all` naopak môže zahrnúť históriu dostupnú zo všetkých refov, čo môže viesť k oveľa väčšiemu výsledku. Na požadované správanie teda nie je potrebné výslovne zahŕňať každý ref."
+ },
+ {
+  "id": 124,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "behavior",
+  "question": "Tím chce, aby každý vývojár používal rovnaké pravidlá ignorovania špecifické pre repozitár a aby tieto pravidlá boli verzované. Kde ich má definovať?",
+  "options": [
+   "`.git/info/exclude`",
+   "V globálnej Git konfigurácii na počítači každého vývojára",
+   "Vo verzovanom súbore `.gitignore` v repozitári",
+   "V reflogu"
+  ],
+  "answer": 2,
+  "explanation": "Súbor `.gitignore` v repozitári môže byť verzovaný, takže jeho pravidlá sa s tímom zdieľajú spolu s repozitárom. `.git/info/exclude` sa hodí na lokálne vylúčenia špecifické pre repozitár, kým globálne pravidlá ignorovania platia pre prostredie jednotlivého vývojára. Globálna konfigurácia sa môže zdať pohodlná, konzistentné správanie na úrovni repozitára však neposkytuje."
+ },
+ {
+  "id": 125,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "production",
+  "question": "Release pipeline musí spoľahlivo identifikovať konkrétny commit a ty chceš, aby tag okrem názvu releasu niesol aj overiteľné metadáta. Ktorý postup tejto požiadavke zodpovedá?",
+  "options": [
+   "Použiť lightweight tag bez ďalších metadát",
+   "Použiť annotated, ideálne podpísaný tag",
+   "Vytvoriť dočasný stash s názvom releasu",
+   "Vytvoriť lokálny branch a hneď ho zmazať"
+  ],
+  "answer": 1,
+  "explanation": "Annotated tag poskytuje samostatný tag objekt s metadátami a pomocou vhodných nástrojov sa dá aj podpísať, čím sa posilní identifikácia releasu aj overenie jeho pôvodu. Nenahrádza to úplný proces zabezpečenia integrity releasu, na označenie release bodov sa však veľmi dobre hodí. Lightweight tag je jednoduchší ref, a preto nesie menej vstavaných metadát."
+ },
+ {
+  "id": 126,
+  "level": "medior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "output",
+  "question": "V repozitári chceš bez checkoutu zistiť, na ktoré súbory a podadresáre odkazuje tree konkrétneho commitu. Ktorý príkaz je vhodný?",
+  "options": [
+   "`git show-ref <commit>`",
+   "`git diff-tree --no-tree <commit>`",
+   "`git cat-file -t <commit>`",
+   "`git ls-tree <commit>`"
+  ],
+  "answer": 3,
+  "explanation": "`git ls-tree <commit>` priamo zobrazí obsah tree, na ktorý commit odkazuje, vrátane súborov, podadresárov, režimov a príslušných objektov. Štruktúru konkrétnej snímky tak môžeš preskúmať bez checkoutu. `git cat-file -t` by ukázal iba typ objektu, nie položky tree."
+ },
+ {
+  "id": 127,
+  "level": "medior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "behavior",
+  "question": "Chceš pridať do indexu nový, zatiaľ prázdny súbor tak, aby ho Git považoval za sledovaný, pričom skutočný obsah súboru sa do ďalšieho commitu ešte nezahrnie. Ktorý príkaz to urobí?",
+  "options": [
+   "`git add -N file.txt`",
+   "`git add --empty file.txt`",
+   "`git commit --intent-to-add file.txt`",
+   "`git stage --placeholder file.txt`"
+  ],
+  "answer": 0,
+  "explanation": "`git add -N` vytvorí v indexe položku intent-to-add, vďaka čomu sa stav súboru a následný diff spracúvajú ako pri sledovanom súbore bez toho, aby sa celý jeho obsah pridal do stagingu. Je to užitočné najmä na prezeranie diffov nových súborov ešte pred skutočným pridaním ich obsahu do stagingu. Intent-to-add neznamená, že celý obsah súboru je už v stagingu pre ďalší commit."
+ },
+ {
+  "id": 128,
+  "level": "medior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "behavior",
+  "question": "Chceš zistiť, ktoré lokálne branche obsahujú vo svojej histórii konkrétny commit. Ktorý príkaz je na to určený?",
+  "options": [
+   "`git branch --merged <commit>`",
+   "`git branch --contains <commit>`",
+   "`git branch --points-at <commit>`",
+   "`git branch --track <commit>`"
+  ],
+  "answer": 1,
+  "explanation": "`git branch --contains <commit>` vypíše branche, z ktorých histórie je zadaný commit dostupný. Naopak `--points-at` ukáže iba branche, ktorých vrchol ukazuje priamo na daný commit. Na tomto rozdiele záleží, pretože branch môže commit obsahovať, aj keď je jeho vrchol o mnoho commitov ďalej."
+ },
+ {
+  "id": 129,
+  "level": "medior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "scenario",
+  "question": "Chceš naraz zmergovať niekoľko nezávislých branchov do integračného branche. Medzi branchmi nie sú konflikty a integrácia všetkých v jednom merge commite je prijateľná. Ktorá funkcia Gitu to podporuje?",
+  "options": [
+   "`git merge --linear`",
+   "`git merge --squash-all`",
+   "`git merge --octopus`",
+   "`git merge --multi-parent`"
+  ],
+  "answer": 2,
+  "explanation": "Octopus merge je určený na súčasné zmergovanie viacerých headov, typicky keď branche obsahujú nezávislé zmeny. Ak treba riešiť skutočné obsahové konflikty, Git octopus merge vo všeobecnosti nepoužije. Octopus merge sa môže zamieňať s bežným merge, pretože oba môžu vytvoriť merge commit, octopus merge však integruje viacero headov naraz."
+ },
+ {
+  "id": 130,
+  "level": "medior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "behavior",
+  "question": "Pri rebase celého feature branche na novú základňu chceš v jeho histórii zachovať niekoľko merge commitov. Ktorá voľba je na to určená?",
+  "options": [
+   "`git rebase --flatten`",
+   "`git rebase --preserve`",
+   "`git rebase --keep-merges`",
+   "`git rebase --rebase-merges`"
+  ],
+  "answer": 3,
+  "explanation": "`git rebase --rebase-merges` umožňuje počas rebase znova vytvoriť merge štruktúry v histórii branche namiesto ich sploštenia do jednoduchej lineárnej postupnosti. Hodí sa to, keď záleží na zachovaní zložitejšej histórie feature branche. Starší prístup `--preserve-merges` je zastaraný a menej flexibilný."
+ },
+ {
+  "id": 131,
+  "level": "medior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "Lokálny branch `feature` má nastavený upstream branch a pri `git push` chceš, aby predvoleným cieľom bol presne tento nakonfigurovaný upstream branch. Ktorá hodnota `push.default` tomu zodpovedá?",
+  "options": [
+   "`matching`",
+   "`current`",
+   "`nothing`",
+   "`upstream`"
+  ],
+  "answer": 3,
+  "explanation": "`push.default=upstream` pushne aktuálny branch na jeho nakonfigurovaný upstream branch. Cieľ pushu je tak jednoznačne daný upstream konfiguráciou priradenou k lokálnemu branchu. `current` naopak cieli na vzdialený branch s rovnakým názvom ako lokálny branch, čo nemusí byť to isté."
+ },
+ {
+  "id": 132,
+  "level": "medior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "edgecase",
+  "question": "Chceš vrátiť merge commit pomocou `git revert`. Prečo zvyčajne musíš zadať voľbu `-m`?",
+  "options": [
+   "Pretože merge commit nemá commit message",
+   "Pretože revert funguje iba s annotated tagmi",
+   "Pretože merge commit má viacerých rodičov, takže musíš určiť, ktorý rodič sa má považovať za hlavnú líniu",
+   "Pretože revert vždy vykoná hard reset"
+  ],
+  "answer": 2,
+  "explanation": "Merge commit má viacerých rodičov, takže Git potrebuje vedieť, ktorého rodiča má použiť ako základ na určenie zmien, ktoré sa majú vrátiť. `-m <parent-number>` určuje tohto rodiča hlavnej línie. Voľba rodiča je kľúčová, pretože výberom iného rodiča sa zmení, ktorá časť výsledku merge sa považuje za zmenu na vrátenie."
+ },
+ {
+  "id": 133,
+  "level": "medior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "behavior",
+  "question": "Chceš vytvoriť položku stashu bez toho, aby sa hneď aplikovala alebo odstránila, a skript zároveň potrebuje object ID novovytvoreného stash objektu. Ktorý príkaz je vhodný?",
+  "options": [
+   "`git stash create`",
+   "`git stash object`",
+   "`git stash save-id`",
+   "`git stash hash`"
+  ],
+  "answer": 0,
+  "explanation": "`git stash create` vytvorí commit podobný stashu a vráti jeho object ID bez toho, aby nutne aktualizoval stash reflog rovnako ako bežný `git stash push`. Hodí sa to pri nízkoúrovňovom alebo skriptovom použití. `git stash push` naopak vytvorí bežnú položku stashu pod stash refom."
+ },
+ {
+  "id": 134,
+  "level": "medior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "edgecase",
+  "question": "Chceš cherry-picknúť merge commit na iný branch. Prečo môže byť potrebná voľba `-m`?",
+  "options": [
+   "Pretože cherry-pick dokáže aplikovať iba zmeny vo working tree",
+   "Pretože merge commit má viacerých rodičov, takže musíš určiť rodiča hlavnej línie",
+   "Pretože cherry-pick by inak automaticky rebasol celý branch",
+   "Pretože merge commity sa dajú cherry-picknúť iba ako tagy"
+  ],
+  "answer": 1,
+  "explanation": "Zmeny zavedené merge commitom sa nedajú jednoznačne určiť voči jedinému rodičovi, preto `git cherry-pick -m <parent-number> <merge-commit>` určuje, ktorý rodič sa má použiť na výpočet diffu na aplikovanie. Zvolený rodič určuje, voči ktorej strane merge sa zmeny posudzujú. Preto si cherry-pick merge commitu vyžaduje osobitnú pozornosť."
+ },
+ {
+  "id": 135,
+  "level": "medior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "behavior",
+  "question": "V rozsiahlej histórii chceš preskúmať vývoj jednej funkcie v konkrétnom súbore riadok po riadku namiesto celej histórie súboru. Ktorá funkcia Gitu to podporuje?",
+  "options": [
+   "`git log --function`",
+   "`git blame --commit`",
+   "`git log -L`",
+   "`git bisect --function`"
+  ],
+  "answer": 2,
+  "explanation": "`git log -L` dokáže sledovať históriu zadaného rozsahu riadkov alebo funkcie v rámci súboru. Hodí sa to pri skúmaní, ako sa funkcia vo veľkom repozitári postupne vyvíjala. `git blame` ukazuje commity, ktoré naposledy zmenili aktuálne riadky, rovnaké sledovanie historického rozsahu však neposkytuje."
+ },
+ {
+  "id": 136,
+  "level": "medior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "output",
+  "question": "V príkaze používaš názov annotated tagu, no chceš ho výslovne vyhodnotiť na commit za tag objektom, nie na samotný tag objekt. Ktorú syntax revízie môžeš použiť?",
+  "options": [
+   "`<tag>^{}`",
+   "`<tag>@@`",
+   "`<tag>..`",
+   "`<tag>:commit`"
+  ],
+  "answer": 0,
+  "explanation": "Dereferenčná syntax `<tag>^{}` prejde cez annotated tag k objektu, na ktorý ukazuje, a ak tag ukazuje na commit, výsledným objektom je commit. Je to užitočné najmä v skriptoch, keď nechceš zameniť annotated tag objekt s commitom za ním. Obyčajný `<tag>` sa môže vyhodnotiť na samotný annotated tag objekt."
+ },
+ {
+  "id": 137,
+  "level": "medior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Tím používa samostatný hotfix branch na urgentnú opravu verzie, ktorá práve beží v produkcii, kým vývoj nových funkcií pokračuje na inom branchi. Aký je strategický prínos?",
+  "options": [
+   "Hotfix branch automaticky zabráni všetkým merge konfliktom",
+   "Produkčnú opravu možno izolovať od zmien, ktoré ešte neboli vydané",
+   "Hotfix branch zaručuje, že každý commit je podpísaný",
+   "Hotfix branch odstraňuje potrebu release tagov"
+  ],
+  "answer": 1,
+  "explanation": "Samostatný hotfix branch umožňuje izolovať urgentnú produkčnú opravu od zmien, ktoré sú stále vo vývoji. Opravu potom môžeš podľa potreby zmergovať alebo inak aplikovať na ďalšie aktívne branche. Použitie branche nezaručuje integráciu bez konfliktov ani podpísané commity."
+ },
+ {
+  "id": 138,
+  "level": "medior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "scenario",
+  "question": "Pri review branche `feature` chceš vidieť celú zmenu, ktorú branch zavádza voči spoločnému predkovi `main` a `feature`, nie iba diff posledného commitu. Ktorý príkaz je vhodný?",
+  "options": [
+   "`git diff feature~1 feature`",
+   "`git diff main..feature`",
+   "`git diff main...feature`",
+   "`git show feature`"
+  ],
+  "answer": 2,
+  "explanation": "Trojbodkový `git diff main...feature` ukazuje zmeny od spoločného predka `main` a `feature` po vrchol `feature`, čo typicky zodpovedá úplnému diffu pull requestu. Dvojbodkový tvar má inú sémantiku porovnávania revízií. Diff posledného commitu by ukázal iba zmeny zavedené najnovším commitom na branchi."
+ },
+ {
+  "id": 139,
+  "level": "medior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "production",
+  "question": "Tím chce, aby sa pred pushom lokálne spustil automatizovaný test a aby sa push zablokoval, ak test zlyhá. Ktorý hook tejto požiadavke zodpovedá?",
+  "options": [
+   "`post-commit`",
+   "`pre-receive`",
+   "`post-receive`",
+   "`pre-push`"
+  ],
+  "answer": 3,
+  "explanation": "Klientsky hook `pre-push` sa spúšťa pred vykonaním pushu, takže je vhodný na lokálne kontroly, ako sú testy alebo validácia. Ak hook skončí s nenulovým stavom, push sa preruší. Hook `pre-receive` sa dá použiť na podobné kontroly politík, beží však na vzdialenom serveri."
+ },
+ {
+  "id": 140,
+  "level": "medior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "behavior",
+  "question": "V repozitári chceš pre konkrétny typ súborov použiť špeciálne pravidlo pre merge, nastavené cez `.gitattributes` a uplatňované pri merge v Gite. Ktorý mechanizmus atribútov s tým súvisí?",
+  "options": [
+   "`merge`",
+   "`ignore`",
+   "`checkout`",
+   "`remote`"
+  ],
+  "answer": 0,
+  "explanation": "Atribút `merge` v `.gitattributes` dokáže priradiť merge driver ku konkrétnym typom súborov alebo cestám. Vďaka tomu môžeš uplatniť špecializované správanie pri merge, napríklad pre generované alebo štruktúrované súbory. `.gitignore` slúži na iný účel: určuje, ktoré nesledované súbory má Git ignorovať."
+ },
+ {
+  "id": 141,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "edgecase",
+  "question": "Chceš nastaviť submodule tak, aby sledoval vzdialený branch, aby si ho neskôr mohol aktualizovať na novší commit. Na čo by si mal myslieť?",
+  "options": [
+   "Superprojekt automaticky vždy používa najnovší commit zo vzdialeného branche",
+   "Konfigurácia branche submodulu môže určiť, ktorý vzdialený branch sa použije pri aktualizácii, superprojekt však stále zaznamenáva konkrétny commit submodulu",
+   "Submodule nikdy nemôže sledovať vzdialený branch",
+   "`git submodule update --remote` vždy automaticky commitne zmenu v superprojekte"
+  ],
+  "answer": 1,
+  "explanation": "Konfigurácia submodulu môže určiť, ktorý vzdialený branch má `git submodule update --remote` sledovať. Superprojekt však aj tak zaznamenáva konkrétny commit submodulu cez gitlink, takže po aktualizácii treba výslednú zmenu gitlinku v superprojekte commitnúť samostatne. Automatické sledovanie branche a reprodukovateľný, pripnutý stav superprojektu sú preto dva rozdielne koncepty."
+ },
+ {
+  "id": 142,
+  "level": "senior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "trap",
+  "question": "Vývojár chce z reflogu obnoviť predchádzajúci stav remote-tracking refu `origin/main`. Ktoré tvrdenie je najpresnejšie?",
+  "options": [
+   "Remote-tracking refy musia mať v každom repozitári reflogy s neobmedzeným uchovávaním",
+   "`git reflog origin/main` vždy zobrazí úplný reflog zo vzdialeného servera",
+   "Lokálny reflog pre remote-tracking ref môže existovať a môže byť užitočný, jeho existencia a doba uchovávania však závisia od konfigurácie repozitára a okolností",
+   "Predchádzajúce stavy remote-tracking refu sa dajú nájsť iba v adresári `.git/objects`"
+  ],
+  "answer": 2,
+  "explanation": "Remote-tracking refy môžu mať lokálne reflogy, ich existenciu a uchovávanie však nemožno považovať za povinné ani neobmedzené. Reflog je vždy lokálna informácia a nepredstavuje reflog vzdialeného servera. Pri obnove si preto najprv over, či pre daný ref príslušný záznam v reflogu skutočne existuje."
+ },
+ {
+  "id": 143,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "performance",
+  "question": "Vo veľkom repozitári potrebuje Git často efektívne prechádzať dostupnosť commitov a graf histórie. Ktorý mechanizmus Gitu dokáže urýchliť výpočty súvisiace s grafom commitov?",
+  "options": [
+   "Commit-graph",
+   "`.gitignore`",
+   "Stash reflog",
+   "Merge driver"
+  ],
+  "answer": 0,
+  "explanation": "Commit-graph je samostatná metadátová štruktúra, ktorá v efektívnom formáte uchováva predpočítané informácie o grafe commitov. Vo veľkých repozitároch dokáže urýchliť rôzne operácie s históriou a dostupnosťou. Commit objekty nenahrádza; funguje ako pomocný indexovací mechanizmus."
+ },
+ {
+  "id": 144,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "scenario",
+  "question": "Vo veľkom monorepe sa naraz mení veľa súborov a tím chce znížiť pamäťovú a I/O réžiu Git indexu pri zachovaní bežného staging workflowu. Ktorá funkcia Gitu s tým môže pomôcť?",
+  "options": [
+   "`git clean`",
+   "`git archive`",
+   "Split index",
+   "`git revert`"
+  ],
+  "answer": 2,
+  "explanation": "Split index umožňuje Gitu uložiť nemennú časť indexu do samostatného zdieľaného indexu, kým meniaca sa časť zostáva v menšej štruktúre indexu. Vo veľkých repozitároch to môže znížiť náklady na aktualizáciu indexu. Sémantiku commitov to nemení a nie je to určené na odstraňovanie súborov z working tree."
+ },
+ {
+  "id": 145,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "behavior",
+  "question": "Tím opakovane naráža na rovnaké merge konflikty v rovnakých súboroch. Ktorá funkcia Gitu môže pomôcť, aby Git znova použil predtým ručne vykonané vyriešenie konfliktu?",
+  "options": [
+   "`git rerere`",
+   "`git reflog`",
+   "`git replace`",
+   "`git notes`"
+  ],
+  "answer": 0,
+  "explanation": "`rerere` znamená „reuse recorded resolution“: Git si dokáže zaznamenať, ako bol konflikt vyriešený, a keď neskôr nastane podobný konflikt, pokúsi sa použiť rovnaké riešenie. Je to užitočné najmä pri opakovaných operáciách merge alebo rebase s dlhodobými branchmi. Reflog a notes slúžia na iné účely a ako cache riešení konfliktov nefungujú."
+ },
+ {
+  "id": 146,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "production",
+  "question": "Vytvoril si commit s prefixom `fixup!` a chceš, aby neskorší interaktívny rebase automaticky rozpoznal príslušný skorší commit a spojil ho s ním (squash). Ktorá voľba to podporuje?",
+  "options": [
+   "`git rebase --merge`",
+   "`git rebase --autostash`",
+   "`git rebase --exec`",
+   "`git rebase --autosquash`"
+  ],
+  "answer": 3,
+  "explanation": "`--autosquash` rozpozná commity s prefixmi `fixup!` a `squash!` a v todo zozname interaktívneho rebase ich umiestni vedľa príslušného commitu. Výrazne to môže zjednodušiť usporiadanie fixup commitov nahromadených počas review. `--autostash` naopak rieši dočasné odloženie zmien vo working tree do stashu, nie automatické usporiadanie fixup commitov."
+ },
+ {
+  "id": 147,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "behavior",
+  "question": "V konfigurácii remote chceš, aby jedna operácia fetch namapovala viacero vzdialených refov v danom mennom priestore na lokálne remote-tracking refy. Ktorý mechanizmus to definuje?",
+  "options": [
+   "`branch.*.merge`",
+   "`remote.<name>.fetch` refspec",
+   "`push.default`",
+   "`merge.conflictStyle`"
+  ],
+  "answer": 1,
+  "explanation": "Refspec `remote.<name>.fetch` definuje, ktoré refy sa z remote stiahnu a ako sa namapujú na lokálne refy. Refspec môže obsahovať zástupné znaky, takže jedno pravidlo dokáže obslúžiť viacero branchov. `branch.*.merge` opisuje predovšetkým upstream konfiguráciu konkrétneho lokálneho branche, nie celkové mapovanie pri fetchi."
+ },
+ {
+  "id": 148,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "recovery",
+  "question": "Po zložitej operácii, napríklad merge alebo rebase, chceš zistiť, na čo ukazoval HEAD predtým, ako ho operácia zmenila. Ktorý mechanizmus na to poskytuje priamy odkaz?",
+  "options": [
+   "`ORIG_HEAD`",
+   "`.gitignore`",
+   "`FETCH_HEAD`",
+   "`MERGE_MSG`"
+  ],
+  "answer": 0,
+  "explanation": "Pri niektorých operáciách, ktoré prepisujú históriu alebo výrazne posúvajú refy, si Git môže zaznamenať predchádzajúci HEAD pod názvom `ORIG_HEAD`. Hodí sa to na prezretie stavu pred merge alebo rebase a pri niektorých operáciách obnovy. `ORIG_HEAD` nie je trvalý záznam histórie, takže pri dlhodobejšej obnove zostáva dôležitý reflog."
+ },
+ {
+  "id": 149,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "V histórii medzi dvoma commitmi chceš preskúmať iba commity, ktoré ležia na konkrétnej ceste predkov, napríklad medzi branchom a jedným z jeho spoločných predkov. Ktorá voľba revízií ti to pomôže zúžiť?",
+  "options": [
+   "`--decorate`",
+   "`--ancestry-path`",
+   "`--author`",
+   "`--reverse`"
+  ],
+  "answer": 1,
+  "explanation": "`--ancestry-path` dokáže obmedziť históriu na commity, ktoré ležia na ceste predkov medzi zadanými commitmi. Hodí sa to v zložitých históriách s mnohými paralelnými branchmi, keď je relevantná iba konkrétna línia pôvodu. `--author` napríklad filtruje podľa autora, nie podľa topológie grafu."
+ },
+ {
+  "id": 150,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "performance",
+  "question": "V CI prostredí chceš naklonovať niekoľkogigabajtové monorepo bez úvodného stiahnutia celej histórie objektov a ďalšie objekty sťahovať zo servera až vtedy, keď sú potrebné. Ktorá schopnosť Gitu tejto požiadavke zodpovedá?",
+  "options": [
+   "`git sparse-checkout`",
+   "`git archive`",
+   "Partial clone",
+   "`git clean`"
+  ],
+  "answer": 2,
+  "explanation": "Partial clone umožňuje klientovi na začiatku nesťahovať všetky objekty repozitára a niektoré objekty stiahnuť neskôr, keď sú potrebné. Môže to znížiť úvodný sieťový prenos aj nároky na úložisko, najmä pri veľkých monorepách a v CI prostrediach. Sparse-checkout riadi predovšetkým, ktoré súbory sa objavia vo working tree, kým partial clone ovplyvňuje, ktoré objekty repozitára sa stiahnu."
+ },
+ {
+  "id": 151,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "behavior",
+  "question": "Zmažeš branch, ktorý ukazuje na commit, no na ten istý commit stále ukazuje annotated tag. Čo sa stane s commitom?",
+  "options": [
+   "Commit sa okamžite zmaže, pretože naň už neukazuje žiadny branch.",
+   "Commit sa stane nedostupným a pri ďalšom garbage collection sa vždy odstráni.",
+   "Commit zostane dostupný cez tag.",
+   "Git automaticky presunie tag na najbližší rodičovský commit."
+  ],
+  "answer": 2,
+  "explanation": "Commit nemusí mať odkaz z branche, aby zostal dostupný. Kým naň tag stále odkazuje, commit zostáva dostupný a garbage collection ho nepovažuje za nedostupný. Lákavý je predpoklad, že commity udržiavajú pri živote iba branche, no objekty môžu udržiavať dostupné aj tagy a iné refy."
+ },
+ {
+  "id": 152,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "edgecase",
+  "question": "Spustíš `git commit --amend` bez zmeny obsahu súborov. Aký je hlavný dôsledok?",
+  "options": [
+   "Git znova použije existujúci commit objekt, pretože tree sa nezmenil.",
+   "Git vytvorí nový commit objekt s novým commit ID.",
+   "Git zmení iba názov branche, nie commit objekt.",
+   "Git premení commit na lightweight tag."
+  ],
+  "answer": 1,
+  "explanation": "`git commit --amend` nahradí aktuálny commit novým commit objektom. Aj keď obsah tree zostane identický, metadáta commitu, napríklad časová pečiatka committera, sa môžu líšiť, takže commit ID sa zmení. Lákavý je predpoklad, že nezmenený strom súborov znamená, že sa dá znova použiť aj samotný commit, commit objekt však obsahuje aj metadáta a informácie o rodičoch."
+ },
+ {
+  "id": 153,
+  "level": "senior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "scenario",
+  "question": "Potrebuješ vytvoriť nový branch `hotfix` z konkrétneho historického commitu, nie z aktuálneho `HEAD`. Ktorý príkaz to urobí priamo?",
+  "options": [
+   "`git switch -c hotfix <commit>`",
+   "`git branch hotfix --merge <commit>`",
+   "`git switch hotfix <commit>`",
+   "`git checkout --detach hotfix <commit>`"
+  ],
+  "answer": 0,
+  "explanation": "`git switch -c hotfix <commit>` vytvorí nový branch, nasmeruje ho na zadaný commit a potom sa naň prepne. Hodí sa to, keď musí oprava vychádzať zo staršieho release bodu. Lákavou alternatívou je najprv vytvoriť branch a neskôr ho presunúť, to však pridáva zbytočné kroky."
+ },
+ {
+  "id": 154,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "trap",
+  "question": "Dva branche menia ten istý súbor. Znamená to nevyhnutne, že ich merge spôsobí konflikt?",
+  "options": [
+   "Áno, Git nedokáže automaticky zlúčiť zmeny v tom istom súbore.",
+   "Áno, pokiaľ sa jeden z branchov najprv nerebasne.",
+   "Nie, ale iba ak je súbor binárny.",
+   "Nie, zmeny v rôznych častiach toho istého súboru sa často dajú zlúčiť automaticky."
+  ],
+  "answer": 3,
+  "explanation": "Git dokáže zmeny v tom istom súbore často zlúčiť, ak sa zmenené oblasti neprekrývajú a zmeny sa dajú jednoznačne skombinovať. Konflikt nastane, keď Git nedokáže bezpečný výsledok určiť automaticky. Lákavý je predpoklad, že na konflikt stačí spoločný názov súboru, Git však posudzuje skutočne zmenené oblasti."
+ },
+ {
+  "id": 155,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "production",
+  "question": "Počas rebase sa Git zastaví na commite, ktorého zmeny už nie sú potrebné, pretože už existujú v novej základni. Ktorým príkazom aktuálny commit preskočíš a v rebase budeš pokračovať?",
+  "options": [
+   "`git rebase --abort`",
+   "`git rebase --skip`",
+   "`git rebase --continue`",
+   "`git rebase --quit`"
+  ],
+  "answer": 1,
+  "explanation": "`git rebase --skip` povie Gitu, aby aktuálny commit vynechal z rebasnutej histórie a pokračoval so zvyšnými commitmi. Je to vhodné, keď je commit prázdny alebo jeho zmeny už obsahuje nová základňa. Lákavou voľbou je `git rebase --continue`, ten sa však používa po vyriešení aktuálneho kroku rebase, nie na zámerné vynechanie commitu."
+ },
+ {
+  "id": 156,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "production",
+  "question": "Prečo môže byť `git push --mirror` nebezpečný, keď ho použiješ voči bežnému zdieľanému remote?",
+  "options": [
+   "Pushne iba aktuálne checkoutnutý branch a nikdy nemení ostatné refy.",
+   "Pred každým pushom automaticky vytvorí záložný branch.",
+   "Premení všetky remote-tracking branche na lokálne branche.",
+   "Zrkadlí všetky refy a môže zmazať cieľové refy, ktoré lokálne neexistujú."
+  ],
+  "answer": 3,
+  "explanation": "`git push --mirror` zrkadlí všetky refy v príslušnom mennom priestore refov a môže odstrániť vzdialené refy, ktoré lokálne chýbajú. Preto je užitočný na zrkadlenie repozitárov, no pri použití voči bežnému remote na spoluprácu môže byť deštruktívny. Lákavý je predpoklad, že príkazy push iba pridávajú alebo aktualizujú branch, na ktorom sa pracuje, `--mirror` má však oveľa širší rozsah."
+ },
+ {
+  "id": 157,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "scenario",
+  "question": "Produkčný branch obsahuje starý commit, ktorý zaviedol chybu, no potom pribudlo niekoľko platných commitov. Chceš vrátiť iba chybnú zmenu a neskoršiu históriu zachovať. Čo použiješ?",
+  "options": [
+   "`git reset --hard <commit>`",
+   "`git restore --source=<commit> .`",
+   "`git reset --soft <commit>`",
+   "`git revert <commit>`"
+  ],
+  "answer": 3,
+  "explanation": "`git revert <commit>` vytvorí nový commit, ktorý vráti zmeny zavedené vybraným commitom, a existujúcu históriu zachová. Vo všeobecnosti je to vhodný spôsob, ako vrátiť už publikovanú zmenu bez prepisovania branche. Lákavé alternatívy posúvajú alebo menia aktuálny stav branche namiesto toho, aby zaznamenali novú opačnú zmenu."
+ },
+ {
+  "id": 158,
+  "level": "senior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "scenario",
+  "question": "Ktorý opis najlepšie vystihuje, ako Git interne reprezentuje stash?",
+  "options": [
+   "Je to iba dočasná kópia súborov mimo objektovej databázy Gitu.",
+   "Je uložený iba ako položka v indexe a nemá reprezentáciu v podobe commitu.",
+   "Je reprezentovaný pomocou commit objektov s ďalšími rodičovskými vzťahmi, ktoré opisujú relevantné stavy.",
+   "Je implementovaný ako dočasný branch, ktorý sa automaticky zmaže."
+  ],
+  "answer": 2,
+  "explanation": "Stash je reprezentovaný pomocou Git commit objektov, nie je to iba externá kópia pracovného adresára. Jeho štruktúra commitov môže odkazovať na stav `HEAD` a stav indexu, pričom ďalšia štruktúra sa použije, keď sa zahrnú nesledované alebo ignorované súbory. Lákavý je predpoklad, že stash je len snímka súborov uložená mimo bežnej histórie Gitu, Git ho však ukladá vo svojej objektovej databáze."
+ },
+ {
+  "id": 159,
+  "level": "senior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "production",
+  "question": "Chyba bola opravená v hlavnom vývojovom branchi a rovnakú opravu potrebuješ na release branchi bez mergovania nesúvisiacich zmien. Aký je najpriamejší postup?",
+  "options": [
+   "`git merge --no-ff main`",
+   "`git cherry-pick <bugfix-commit>`",
+   "`git rebase main`",
+   "`git reset --hard <bugfix-commit>`"
+  ],
+  "answer": 1,
+  "explanation": "`git cherry-pick <bugfix-commit>` aplikuje zmeny zavedené konkrétnym commitom na aktuálny branch a vytvorí tam nový commit. Hodí sa to na cielené backporty, napríklad produkčných opráv. Lákavou alternatívou je zmergovať vývojový branch, to však môže priniesť aj nesúvisiace zmeny."
+ },
+ {
+  "id": 160,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "scenario",
+  "question": "Chceš preskúmať konkrétny commit vrátane jeho metadát a patchu, ktorý zaviedol. Ktorý príkaz je najvhodnejší?",
+  "options": [
+   "`git show <commit>`",
+   "`git log --follow <commit>`",
+   "`git blame <commit>`",
+   "`git diff --cached <commit>`"
+  ],
+  "answer": 0,
+  "explanation": "`git show <commit>` zobrazí informácie o vybranom commite a pri commit objekte bežne zahŕňa aj jeho patch. Je preto praktický na prezretie metadát aj zavedených zmien. Lákavé alternatívy sú príkazy zamerané na históriu alebo porovnávanie, ktoré neposkytujú rovnako sústredený pohľad na commit."
+ },
+ {
+  "id": 161,
+  "level": "senior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "security",
+  "question": "Pri vydaní softvéru chceš kryptografické overenie samotného tagu. Ktorý postup je vhodný?",
+  "options": [
+   "Vytvoriť lightweight tag a release notes uložiť do `.gitignore`.",
+   "Vytvoriť nepodpísaný annotated tag a spoliehať sa iba na jeho názov.",
+   "Vytvoriť podpísaný annotated tag.",
+   "Vytvoriť branch s verziou releasu ako názvom."
+  ],
+  "answer": 2,
+  "explanation": "Podpísaný annotated tag obsahuje metadáta tagu a kryptografický podpis, ktorý sa dá overiť voči nakonfigurovanému podpisovému kľúču. Poskytuje tak overenie pôvodu samotného tag objektu; nedokazuje však, že je release softvéru bezpečný, bez chýb alebo dôveryhodný vo všetkých ostatných ohľadoch. Lákavý je predpoklad, že pravosť zaručuje samotné označenie verzie, nepodpísaný ref však kryptografické overenie neposkytuje."
+ },
+ {
+  "id": 162,
+  "level": "senior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Ktorý vývojový prístup najlepšie podporuje častú integráciu a zároveň udržiava jednotlivé feature branche relatívne malé?",
+  "options": [
+   "Udržiavať dlhodobé feature branche izolované až do konca projektu.",
+   "Používať krátkodobé branche, často integrovať a v prípade potreby používať feature flagy.",
+   "Vyžadovať, aby mala každá funkcia vlastný trvalý release branch.",
+   "Nemergovať, kým nie sú hotové všetky súvisiace funkcie."
+  ],
+  "answer": 1,
+  "explanation": "Krátkodobé branche a častá integrácia znižujú množstvo rozchádzajúcej sa práce, ktorá sa medzi branchmi nahromadí. Feature flagy dokážu oddeliť nasadenie kódu od aktivácie funkcie, keď treba nedokončenú funkcionalitu už integrovať. Lákavý prístup s dlhodobými branchmi môže pôsobiť bezpečnejšie, pretože prácu izoluje, zvyčajne však zvyšuje zložitosť integrácie."
+ },
+ {
+  "id": 163,
+  "level": "senior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "Pull request bol zmergovaný. Znamená to, že commit objekty, ktoré boli súčasťou PR, by sa mali okamžite zmazať?",
+  "options": [
+   "Áno, pretože commity zmergovaného PR sú vždy nedostupné.",
+   "Áno, pretože Git po merge automaticky zmaže všetky commity.",
+   "Áno, pokiaľ repozitár nepoužíva annotated tagy.",
+   "Nie, commity môžu zostať dostupné cez výslednú históriu alebo iné referencie."
+  ],
+  "answer": 3,
+  "explanation": "Zmergovanie pull requestu samo osebe nespôsobí, že jeho commit objekty budú nedostupné. Podľa stratégie merge môžu pôvodné commity zostať vo výslednej histórii a môžu na ne odkazovať aj iné branche, tagy alebo reflogy. Lákavý je predpoklad, že dostupnosť objektov riadi životný cyklus PR, dostupnosť v Gite však určujú refy a graf commitov."
+ },
+ {
+  "id": 164,
+  "level": "senior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "edgecase",
+  "question": "Ktorý Git hook je určený práve na validáciu alebo úpravu commit message pred dokončením commitu?",
+  "options": [
+   "`commit-msg`",
+   "`pre-push`",
+   "`post-checkout`",
+   "`pre-rebase`"
+  ],
+  "answer": 0,
+  "explanation": "Hook `commit-msg` dostane cestu k navrhovanej commit message a môže ju validovať alebo upraviť ešte predtým, ako Git commit vytvorí. Bežne sa používa na vynucovanie konvencií správ alebo identifikátorov ticketov. Lákavou alternatívou je `pre-commit`, ten však validuje predovšetkým obsah v stagingu, nie samotnú commit message."
+ },
+ {
+  "id": 165,
+  "level": "senior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "behavior",
+  "question": "Aký účinok má nasledujúce pravidlo `.gitattributes`?\n`* text eol=lf`",
+  "options": [
+   "Označí všetky súbory ako binárne.",
+   "Zapne normalizáciu textu a určí LF ako koniec riadku vo working tree.",
+   "Ignoruje všetky súbory, ktoré obsahujú konce riadkov LF.",
+   "V repozitári skonvertuje všetky súbory na CRLF."
+  ],
+  "answer": 1,
+  "explanation": "Atribút `text` zapne pre zodpovedajúce súbory textové spracovanie v Gite, kým `eol=lf` určuje konce riadkov LF vo working tree. Bežne sa to používa na zjednotenie správania koncov riadkov naprieč platformami. Lákavý je predpoklad, že `eol=lf` mení repozitár na binárne bezpečný formát, týka sa však výlučne spracovania koncov riadkov v textových súboroch."
+ },
+ {
+  "id": 166,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "scenario",
+  "question": "Veľké monorepo obsahuje mnoho komponentov, no CI job potrebuje iba jeden malý adresár a chce minimalizovať stiahnuté objekty aj checkoutnuté súbory. Ktorá kombinácia môže pomôcť?",
+  "options": [
+   "Použiť sparse-checkout spolu s partial clone.",
+   "Použiť iba `git clean -fd`.",
+   "Použiť iba `git tag --contains`.",
+   "Použiť samostatný stash pre každý adresár."
+  ],
+  "answer": 0,
+  "explanation": "Sparse-checkout obmedzuje, ktoré cesty sa vo working tree skutočne vytvoria, kým partial clone dokáže odložiť stiahnutie niektorých objektov, kým nie sú potrebné. Spolu môžu pri vhodných monorepo workflowoch výrazne znížiť úvodné náklady na working tree aj prenos objektov. Lákavý je predpoklad, že rovnaký prínos má zmazanie nepotrebných súborov po klonovaní, `git clean` však už stiahnuté objekty nezmenší."
+ },
+ {
+  "id": 167,
+  "level": "senior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "recovery",
+  "question": "Omylom spustíš deštruktívny reset a v reflogu nájdeš predchádzajúci vrchol branche. Aký je dobrý spôsob, ako pred ďalšou prácou vytvoriť stabilnú záchrannú referenciu?",
+  "options": [
+   "`git gc --prune=now`",
+   "`git branch recovery <commit>`",
+   "`git clean -fd`",
+   "`git remote prune origin`"
+  ],
+  "answer": 1,
+  "explanation": "Vytvorením branche, napríklad `git branch recovery <commit>`, dostane obnovený commit stabilný ref, takže ho neskôr ľahšie preskúmaš alebo obnovíš a zároveň ho ochrániš pred tým, aby sa stal nedostupným len preto, že reflog nakoniec expiruje. Lákavé čistiace príkazy robia opak: môžu odstrániť nesledované súbory alebo vyčistiť nedostupné objekty namiesto zachovania obnoveného stavu."
+ },
+ {
+  "id": 168,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Aký je hlavný účel infraštruktúry commit-graph v Gite?",
+  "options": [
+   "Nahradiť commit objekty relačnou databázou.",
+   "Ukladať súbory working tree oddelene od objektovej databázy.",
+   "Predpočítať informácie o grafe, ktoré môžu urýchliť operácie s históriou a dostupnosťou.",
+   "Zabrániť tomu, aby commity odstránil garbage collection."
+  ],
+  "answer": 2,
+  "explanation": "Commit-graph uchováva predpočítané informácie o grafe commitov, vďaka čomu Git dokáže efektívnejšie odpovedať na otázky súvisiace s predkami a dostupnosťou. Bežnú objektovú databázu dopĺňa, nenahrádza ju. Lákavý je predpoklad, že commit-graph existuje hlavne na zachovanie commitov, jeho hlavným účelom je však výkon."
+ },
+ {
+  "id": 169,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "performance",
+  "question": "Aký problém rieši predovšetkým funkcia split index v Gite?",
+  "options": [
+   "Znižuje počet commitov uložených v repozitári.",
+   "Môže znížiť náklady na prepisovanie veľkého indexu oddelením relatívne nemenných dát indexu od rozdelenej časti.",
+   "Skomprimuje všetky Git objekty do jedného súboru.",
+   "Zabraňuje pridávaniu súborov do indexu."
+  ],
+  "answer": 1,
+  "explanation": "Split index umožňuje Gitu udržiavať zdieľaný základný index s relatívne nemennými položkami a v menšom rozdelenom indexe ukladať iba zmeny. V repozitároch s veľmi veľkým počtom sledovaných súborov to môže znížiť prácu súvisiacu s indexom. Lákavý je predpoklad, že split index zmenšuje úložisko objektov repozitára, jeho hlavným cieľom je však výkon indexu."
+ },
+ {
+  "id": 170,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "Prebieha merge a ty chceš preskúmať nezmergované položky v indexe vrátane rôznych stage konfliktných súborov. Ktorý príkaz je užitočný?",
+  "options": [
+   "`git ls-files -u`",
+   "`git branch --merged`",
+   "`git log --merges`",
+   "`git diff --stat`"
+  ],
+  "answer": 0,
+  "explanation": "`git ls-files -u` zobrazí nezmergované položky indexu vrátane rôznych stage, ktoré predstavujú spoločného predka a konkurenčné verzie zapojené do konfliktu. Hodí sa to pri nízkoúrovňovom ladení konfliktov. Lákavé alternatívy ukazujú vzťahy medzi branchmi, históriu merge alebo súhrnné štatistiky, nie nezmergované stage v indexe."
+ },
+ {
+  "id": 171,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "edgecase",
+  "question": "Čo sa môže stať počas rebase, keď zmeny commitu už existujú v novej základni?",
+  "options": [
+   "Git musí zmeny vždy zduplikovať a vytvoriť druhý identický patch.",
+   "Git automaticky premení commit na tag.",
+   "Git presunie commit do reflogu a rebase zastaví.",
+   "Commit sa môže stať prázdnym a počas rebase sa dá preskočiť."
+  ],
+  "answer": 3,
+  "explanation": "Ak sú zmeny zavedené commitom už zahrnuté v novej základni, aplikovanie tohto commitu počas rebase môže viesť k prázdnej zmene. Podľa situácie a správania Gitu sa takýto commit môže vynechať alebo preskočiť namiesto duplikovania. Lákavý je predpoklad, že rebase slepo prehrá každý commit, Git však dokáže rozpoznať commity, ktorých zmeny sú už zahrnuté."
+ },
+ {
+  "id": 172,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "production",
+  "question": "Po prepísaní lokálnej histórie potrebuješ aktualizovať zdieľaný branch, no chceš, aby Git push odmietol, ak sa vzdialený branch od tvojho posledného fetchu neočakávane zmenil. Ktorý príkaz je na to určený?",
+  "options": [
+   "`git push --force`",
+   "`git push --force-with-lease`",
+   "`git push --delete`",
+   "`git push --mirror`"
+  ],
+  "answer": 1,
+  "explanation": "`git push --force-with-lease` povolí push prepisujúci históriu a zároveň skontroluje, či má vzdialený ref stále očakávanú hodnotu. V porovnaní s bezpodmienečným force pushom to znižuje riziko prepísania práce iného prispievateľa. Lákavou alternatívou je `git push --force`, ktorý vzdialený ref prepíše bez rovnakej lease ochrany."
+ },
+ {
+  "id": 173,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "recovery",
+  "question": "Práve si dokončil rebase a zistíš, že sa potrebuješ vrátiť do stavu pred ním. Ak `ORIG_HEAD` stále ukazuje na tento predchádzajúci stav, ktorý príkaz ho obnoví?",
+  "options": [
+   "`git reset --hard ORIG_HEAD`",
+   "`git revert ORIG_HEAD`",
+   "`git restore --staged ORIG_HEAD`",
+   "`git branch --delete ORIG_HEAD`"
+  ],
+  "answer": 0,
+  "explanation": "`ORIG_HEAD` môže zaznamenať predchádzajúci vrchol pred operáciami ako rebase. Ak stále odkazuje na požadovaný stav pred rebase, `git reset --hard ORIG_HEAD` posunie aktuálny branch späť na tento commit a working tree mu prispôsobí. Lákavou alternatívou je `git revert`, ten však vytvára nové opačné commity namiesto priameho obnovenia ukazovateľa branche. Pozor: `--hard` môže zahodiť necommitnuté zmeny vo working tree."
+ },
+ {
+  "id": 174,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "Máš skript, ktorý pri skúmaní regresie dokáže určiť, či je aktuálna revízia dobrá alebo zlá. Ktorý príkaz pomocou tohto skriptu zautomatizuje proces binárneho vyhľadávania?",
+  "options": [
+   "`git bisect run <script>`",
+   "`git log --run <script>`",
+   "`git blame --script <script>`",
+   "`git diff --bisect <script>`"
+  ],
+  "answer": 0,
+  "explanation": "`git bisect run <script>` automatizuje spustenie testovacieho alebo diagnostického skriptu v každom kroku bisectu. Návratový kód skriptu povie Gitu, či sa má testovaná revízia považovať za dobrú alebo zlú, takže Git dokáže vyhľadávanie automaticky zužovať. Lákavé alternatívy sú príkazy na prácu s históriou alebo porovnávanie a automatizovaný bisect neimplementujú."
+ },
+ {
+  "id": 175,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "production",
+  "question": "Superprojekt používa Git submodule. Čo zabezpečuje, že superprojekt zaznamená deterministický stav submodulu?",
+  "options": [
+   "Submodule pri každom checkoute superprojektu automaticky sleduje svoj predvolený branch.",
+   "Najnovší vzdialený commit submodulu sa vždy vloží do superprojektu.",
+   "Superprojekt zaznamenáva gitlink, ktorý ukazuje na konkrétny commit submodulu.",
+   "Superprojekt ukladá celý repozitár submodulu do každého commitu."
+  ],
+  "answer": 2,
+  "explanation": "Superprojekt zaznamenáva gitlink, ktorý identifikuje presný commit submodulu, ktorý sa má použiť. Checkout superprojektu preto nasmeruje submodule na tento zaznamenaný commit a automaticky nesleduje najnovší stav vzdialeného branche. Lákavý je predpoklad, že sa submodule správa ako bežný vnorený adresár, jeho stav je však pripnutý gitlinkom superprojektu."
+ },
+ {
+  "id": 176,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "edgecase",
+  "question": "V Git repozitári odkazujú dva rôzne commity na ten istý blob objekt, pretože obsah súboru je bajt po bajte identický. Čo sa deje z pohľadu ukladania objektov?",
+  "options": [
+   "Git môže pre oba súbory uložiť jeden spoločný blob objekt.",
+   "Git vytvorí samostatný blob pre každý názov súboru.",
+   "Blob sa dá zdieľať iba vtedy, ak sú zhodné aj názvy súborov.",
+   "Git dokáže zdieľať blob iba medzi commitmi, nie medzi súbormi."
+  ],
+  "answer": 0,
+  "explanation": "Git blob objekt identifikuje obsah súboru, nie jeho názov ani cestu. Ak majú dva súbory identický obsah, môžu odkazovať na ten istý blob objekt, takže obsah sa nemusí ukladať viackrát. Lákavý je predpoklad, že každý súbor má vlastný samostatný objekt, pričom názvy súborov a obsah objektov sú reprezentované na rôznych vrstvách."
+ },
+ {
+  "id": 177,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "behavior",
+  "question": "Upravíš súbor, spustíš `git add` a potom ten istý súbor znova upravíš. Čo bude obsahovať nasledujúci `git commit`, ak `git add` znova nespustíš?",
+  "options": [
+   "Obe úpravy, pretože Git vždy commitne aktuálny stav working tree.",
+   "Iba prvú úpravu, ktorá už bola v stagingu.",
+   "Iba druhú úpravu, pretože tá vždy prepíše staging area.",
+   "Žiadnu úpravu, pretože súbor bol upravený dvakrát."
+  ],
+  "answer": 1,
+  "explanation": "Commit vychádza predovšetkým z obsahu staging area. Zmena zahrnutá prvým `git add` zostáva v stagingu, kým neskoršia úprava existuje iba vo working tree, takže novšiu zmenu treba pridať do stagingu samostatne. Lákavý je predpoklad, že commit vždy použije najnovší úplný stav súboru, Git však commitne snímku zo stagingu."
+ },
+ {
+  "id": 178,
+  "level": "senior",
+  "area": "Branching",
+  "topic": "Branching",
+  "type": "scenario",
+  "question": "Chceš vytvoriť nový branch zo starého commitu a pritom ponechať aktuálny branch aj working tree bez zmeny. Ktorý postup je vhodný?",
+  "options": [
+   "`git reset --hard <commit>`",
+   "`git switch --detach <commit>`",
+   "`git branch recovery <commit>`",
+   "`git merge <commit>`"
+  ],
+  "answer": 2,
+  "explanation": "`git branch recovery <commit>` vytvorí nový branch ukazujúci na zadaný commit bez prepnutia naň a bez zmeny aktuálneho stavu working tree. Je to užitočné najmä na vytvorenie bezpečného východiskového bodu z historického stavu. Lákavou alternatívou je stav detached HEAD, ktorý síce commit sprístupní, no stabilnú referenciu branche automaticky nevytvorí."
+ },
+ {
+  "id": 179,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "debug",
+  "question": "Počas merge Git ohlási konflikt, no ty si už výsledný obsah konfliktného súboru ručne zostavil. Čo je potrebné, aby Git považoval konflikt za vyriešený?",
+  "options": [
+   "`git commit --amend`",
+   "`git merge --continue`",
+   "`git reset --hard HEAD`",
+   "Konfliktný súbor musíš pridať do staging area, napríklad pomocou `git add file.txt`."
+  ],
+  "answer": 3,
+  "explanation": "Po vyriešení konfliktu treba výslednú verziu súboru pridať do stagingu, napríklad pomocou `git add file.txt`. Tým sa v indexe zaznamená, že súbor považuješ za vyriešený, a merge môže pokračovať. Lákavý je predpoklad, že stačí ručne odstrániť konfliktné značky, Git však potrebuje aj stav indexu, ktorý signalizuje, že konflikt je vyriešený."
+ },
+ {
+  "id": 180,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "production",
+  "question": "Chceš rebasnúť feature branch na aktuálny stav `main`, no predtým sa chceš vyhnúť problémom spôsobeným náhodnými necommitnutými zmenami vo working tree. Aký je najbezpečnejší postup?",
+  "options": [
+   "Necommitnuté zmeny najprv commitnúť alebo uložiť do stashu a až potom spustiť rebase.",
+   "`git rebase --hard main`",
+   "`git reset --merge main`",
+   "Rebase automaticky a bezpečne zachová všetky necommitnuté zmeny."
+  ],
+  "answer": 0,
+  "explanation": "Pred rebase je dobrou praxou dostať working tree do čistého stavu, napríklad commitnutím zmien alebo ich uložením do stashu. Zabrániš tak konfliktom rebase s lokálnymi úpravami a znížiš riziko náhodnej straty dát. Lákavý je predpoklad, že rebase automaticky zachová každú zmenu vo working tree, necommitnuté zmeny však môžu v niektorých situáciách operáciu zablokovať."
+ },
+ {
+  "id": 181,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "output",
+  "question": "Predtým si robil fetch z remote a neskôr bol na remote zmazaný branch. Ktorý príkaz pomôže lokálne odstrániť remote-tracking refy pre branche, ktoré už na remote neexistujú?",
+  "options": [
+   "`git fetch --all`",
+   "`git fetch --prune`",
+   "`git pull --delete`",
+   "`git remote reset`"
+  ],
+  "answer": 1,
+  "explanation": "`git fetch --prune` počas fetchu odstráni remote-tracking refy, ktoré už vo vzdialenom repozitári nemajú zodpovedajúce refy. Pomáha to zabrániť tomu, aby sa lokálne hromadili zastarané branche `origin/*`. Lákavý je predpoklad, že bežný fetch automaticky zmaže každý zastaraný remote-tracking ref, pruning je však samostatné správanie."
+ },
+ {
+  "id": 182,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "edgecase",
+  "question": "Chceš vrátiť už publikovaný commit a pritom ponechať pôvodný commit viditeľný v histórii branche. Ktoré riešenie to urobí?",
+  "options": [
+   "`git reset --hard HEAD~1`",
+   "`git restore --source=HEAD~1 .`",
+   "`git revert <commit>`",
+   "`git branch --delete <commit>`"
+  ],
+  "answer": 2,
+  "explanation": "`git revert <commit>` vytvorí nový commit, ktorý zruší účinok vybraného commitu, pričom pôvodný commit v histórii zostane. Je preto vhodný na bezpečné vrátenie publikovanej zmeny. Lákavé alternatívy buď posúvajú ukazovateľ branche, alebo menia stav súborov namiesto vytvorenia nového historického commitu, ktorý zmenu vráti."
+ },
+ {
+  "id": 183,
+  "level": "senior",
+  "area": "Stash",
+  "topic": "Stash",
+  "type": "behavior",
+  "question": "Aký je rozdiel medzi `git stash apply` a `git stash pop`, keď sa aplikovanie podarí?",
+  "options": [
+   "`apply` stash aplikuje a odstráni, kým `pop` ho iba zobrazí.",
+   "`apply` aplikuje iba zmeny zo stagingu, kým `pop` aplikuje všetky zmeny.",
+   "`apply` vytvorí nový stash, kým `pop` vytvorí branch.",
+   "`apply` stash aplikuje, no položku stashu ponechá; `pop` položku stashu po úspešnom aplikovaní odstráni."
+  ],
+  "answer": 3,
+  "explanation": "`git stash apply` obnoví zmeny uložené v stashi, položku stashu však ponechá. `git stash pop` zmeny tiež aplikuje a po úspešnom aplikovaní položku stashu odstráni. Lákavý je predpoklad, že sa oba príkazy líšia iba syntaxou, líšia sa však v tom, čo sa s položkou stashu stane potom."
+ },
+ {
+  "id": 184,
+  "level": "senior",
+  "area": "Cherry-pick",
+  "topic": "Cherry-pick",
+  "type": "debug",
+  "question": "Operácia `git cherry-pick <commit>` sa zastaví kvôli konfliktu. Konflikty vyriešiš a súbory pridáš do stagingu. Aký je vhodný ďalší krok?",
+  "options": [
+   "`git cherry-pick --continue`",
+   "`git cherry-pick --abort`",
+   "`git cherry-pick --skip`",
+   "`git commit --amend --no-edit`"
+  ],
+  "answer": 0,
+  "explanation": "Pri konfliktnom cherry-picku po vyriešení konfliktov a pridaní dotknutých súborov do stagingu `git cherry-pick --continue` obnoví prerušenú operáciu. Abort zruší celý cherry-pick, kým skip vynechá aktuálny commit. Lákavou alternatívou je vytvoriť commit ručne, čo technicky commit vytvoriť môže, na dokončenie aktívnej operácie cherry-pick je však určený práve `--continue`."
+ },
+ {
+  "id": 185,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "performance",
+  "question": "Vo veľmi veľkom repozitári často potrebuješ rýchlo zistiť, či je jeden commit predkom iného. Ktorý mechanizmus Gitu dokáže práve takéto grafové dopyty urýchliť?",
+  "options": [
+   "`.gitignore`",
+   "Commit-graph",
+   "Stash index",
+   "Lightweight tag"
+  ],
+  "answer": 1,
+  "explanation": "Commit-graph uchováva predpočítané informácie o grafe commitov, napríklad generačné údaje, ktoré dokážu urýchliť niektoré operácie s predkami a dostupnosťou. Vo veľkých repozitároch to môže priniesť výrazný prínos pre výkon. Lákavý je predpoklad, že kontroly predkov urýchľujú samotné štruktúry branchov alebo tagov, kým commit-graph je navrhnutý práve ako podporná infraštruktúra na tento účel."
+ },
+ {
+  "id": 186,
+  "level": "senior",
+  "area": "Tags & releases",
+  "topic": "Tags & releases",
+  "type": "scenario",
+  "question": "Chceš priradiť release k presne identifikovateľnému Git objektu a k releasu zároveň uložiť názov, správu a ďalšie metadáta. Ktorý prístup tejto požiadavke zodpovedá?",
+  "options": [
+   "Lightweight tag",
+   "Remote-tracking branch",
+   "Annotated tag",
+   "Stash entry"
+  ],
+  "answer": 2,
+  "explanation": "Annotated tag sa ukladá ako samostatný Git objekt a obsahuje názov tagu, cieľový objekt, správu a ďalšie metadáta, napríklad údaje o autorovi tagu. Preto je vhodný na trvalé a jednoznačné označovanie releasov. Lákavý lightweight tag funguje ako jednoduchý ref, a preto rovnaké metadáta na úrovni tag objektu neposkytuje."
+ },
+ {
+  "id": 187,
+  "level": "senior",
+  "area": "Branching strategies",
+  "topic": "Branching strategies",
+  "type": "scenario",
+  "question": "Tím chce, aby branch `main` zostal čo najkonzistentnejšie integrovateľný a nasaditeľný, kým vývoj väčších funkcií trvá niekoľko týždňov. Ktorá technika tomu môže pomôcť?",
+  "options": [
+   "Udržiavať dlhodobé feature branche a zmergovať ich až na konci vývoja.",
+   "Ponechať celý kód funkcie iba lokálne aj po merge.",
+   "Commitovať každú zmenu priamo do produkčného branche.",
+   "Integrovať postupne a často s využitím feature flagov."
+  ],
+  "answer": 3,
+  "explanation": "Feature flagy umožňujú integrovať kód do hlavného branche skôr bez toho, aby bola nedokončená funkcia aktívna pre všetkých používateľov. Časté menšie integrácie znižujú integračné riziko spojené s dlhodobým rozchádzaním branchov. Lákavá stratégia dlhodobých branchov môže spočiatku pôsobiť bezpečnejšie, pretože prácu izoluje, môžu sa v nej však nahromadiť väčšie integračné rozdiely."
+ },
+ {
+  "id": 188,
+  "level": "senior",
+  "area": "Pull requests & code review",
+  "topic": "Pull requests & code review",
+  "type": "production",
+  "question": "Počas review pull requestu si reviewer všimne zmenu, ktorá s cieľom PR nesúvisí a ťažko sa overuje, či je potrebná. Ktorá prax najviac zlepší efektivitu review?",
+  "options": [
+   "Zúžiť rozsah PR a nesúvisiace zmeny riešiť samostatne.",
+   "Spojiť všetky zmeny do jedného veľkého PR.",
+   "Skryť pred reviewerom celú históriu commitov.",
+   "Review úplne vynechať, ak sa kód skompiluje."
+  ],
+  "answer": 0,
+  "explanation": "Zameraný PR uľahčuje overenie, či zmeny skutočne súvisia so zamýšľaným cieľom, a znižuje množstvo informácií, ktoré musia revieweri spracovať. Nesúvisiaci refaktoring alebo opravy je vhodné, ak je to praktické, riešiť ako samostatné zmeny. Lákavý prístup s veľkým PR sa môže zdať efektívnejší, pretože znamená menej review, môže však výrazne zvýšiť ich zložitosť."
+ },
+ {
+  "id": 189,
+  "level": "senior",
+  "area": "Hooks",
+  "topic": "Hooks",
+  "type": "production",
+  "question": "Chceš zabrániť tomu, aby centrálny Git server prijímal pushe, ktoré porušujú určité pravidlá. Ktorý hook je na to na strane servera vhodný?",
+  "options": [
+   "`post-commit`",
+   "`pre-commit`",
+   "`pre-receive`",
+   "`post-checkout`"
+  ],
+  "answer": 2,
+  "explanation": "Serverový hook `pre-receive` sa spúšťa pred prijatím pushu a môže preskúmať prichádzajúce zmeny refov a v prípade potreby ich odmietnuť. Preto je vhodný na vynucovanie centralizovaných politík repozitára. Klientske hooky, napríklad pre-commit, samy osebe nemožno považovať za spoľahlivé centrálne mechanizmy vynucovania, pretože vývojár ich môže lokálne obísť."
+ },
+ {
+  "id": 190,
+  "level": "senior",
+  "area": ".gitignore & attributes",
+  "topic": ".gitignore & attributes",
+  "type": "edgecase",
+  "question": "Súbor je už sledovaný a ty ho potom pridáš do `.gitignore`. Čo sa predvolene stane?",
+  "options": [
+   "Git súbor automaticky odstráni zo sledovania.",
+   "Súbor zostane sledovaný a `.gitignore` ho zo sledovania automaticky neodstráni.",
+   "Ďalší commit súbor z repozitára automaticky zmaže.",
+   "Súbor sa okamžite presunie do stashu."
+  ],
+  "answer": 1,
+  "explanation": "`.gitignore` hovorí Gitu predovšetkým to, aby ignoroval nesledované súbory. Súbor z indexu repozitára automaticky neodstráni len preto, že bol neskôr pridaný do pravidla ignorovania. Lákavý je predpoklad, že pravidlo ignorovania vylúči súbor zo všetkých ďalších Git operácií bez ohľadu na to, či už bol sledovaný."
+ },
+ {
+  "id": 191,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "edgecase",
+  "question": "Commit superprojektu odkazuje na konkrétny commit v submodule. Čo sa stane, ak na vzdialený branch submodulu neskôr pribudnú nové commity?",
+  "options": [
+   "Superprojekt sa automaticky prepne na nové commity.",
+   "Bez nového commitu superprojektu použije každý checkout nový head branche.",
+   "Gitlink zaznamenaný superprojektom naďalej ukazuje na pôvodný konkrétny commit.",
+   "Submodule sa automaticky zmerguje do histórie superprojektu."
+  ],
+  "answer": 2,
+  "explanation": "Superprojekt zaznamenáva konkrétny commit submodulu prostredníctvom gitlinku. Neskoršie zmeny vzdialeného branche túto referenciu samy osebe nemenia, takže rovnaký commit superprojektu naďalej identifikuje rovnaký stav submodulu. Lákavý je predpoklad, že submodule automaticky sleduje najnovší stav svojho vzdialeného branche, commit superprojektu však gitlink zaznamenáva explicitne."
+ },
+ {
+  "id": 192,
+  "level": "senior",
+  "area": "Reflog & recovery",
+  "topic": "Reflog & recovery",
+  "type": "recovery",
+  "question": "Po posunutí ukazovateľa branche chceš nájsť jeho predchádzajúci stav. Ktorým príkazom zobrazíš predchádzajúce hodnoty refu tohto branche?",
+  "options": [
+   "`git reflog show <branch>`",
+   "`git remote show <branch>`",
+   "`git branch --history <branch>`",
+   "`git log --refs-only <branch>`"
+  ],
+  "answer": 0,
+  "explanation": "`git reflog show <branch>` zobrazí predchádzajúce hodnoty refu zadaného branche, pomocou ktorých môžeš obnoviť napríklad stav pred resetom alebo rebase. Reflog je lokálny mechanizmus a uchovávanie záznamov závisí od konfigurácie a garbage collection. Lákavý je predpoklad, že bežný `git log` uchováva každý predchádzajúci ukazovateľ branche, ten však zobrazuje predovšetkým históriu grafu commitov."
+ },
+ {
+  "id": 193,
+  "level": "senior",
+  "area": "Object model & internals",
+  "topic": "Object model & internals",
+  "type": "theory",
+  "question": "Ktoré tvrdenie správne opisuje základný princíp identifikácie objektov v Gite?",
+  "options": [
+   "Identifikátor objektu závisí výlučne od názvu súboru.",
+   "SHA commitu je odvodené iba z commit message.",
+   "Git generuje pre každý objekt náhodný trvalý identifikátor.",
+   "Identifikátor objektu je odvodený z hashu, ktorý súvisí s typom, veľkosťou a obsahom objektu."
+  ],
+  "answer": 3,
+  "explanation": "Git používa úložisko objektov adresované obsahom: identifikátor objektu je odvodený z hashu založeného na príslušnom type objektu, jeho veľkosti a obsahu. Vďaka tomu môže identický obsah rovnakého typu objektu viesť k rovnakému identifikátoru. Lákavý je predpoklad, že Git prideľuje náhodné ID ako tradičná databáza, identifikácia objektov v Gite je však založená na obsahu."
+ },
+ {
+  "id": 194,
+  "level": "senior",
+  "area": "Staging & commits",
+  "topic": "Staging & commits",
+  "type": "production",
+  "question": "Vo veľmi veľkom repozitári prináša správa Git indexu výraznú výkonovú réžiu. Ktorá funkcia Gitu sa zameriava práve na zníženie nákladov na prepisovanie indexu?",
+  "options": [
+   "Shallow clone",
+   "Split index",
+   "Annotated tag",
+   "Reflog expiration"
+  ],
+  "answer": 1,
+  "explanation": "Split index umožňuje, aby relatívne nemenné časti indexu zostali v zdieľanom základnom indexe, kým zmeny sa ukladajú do menšieho rozdeleného indexu. Môže to znížiť náklady na správu indexu, najmä v repozitároch s veľmi veľkým počtom sledovaných súborov. Lákavý shallow clone zmenšuje hĺbku histórie repozitára, na náklady prepisovania indexu sa však nezameriava."
+ },
+ {
+  "id": 195,
+  "level": "senior",
+  "area": "Merging & conflicts",
+  "topic": "Merging & conflicts",
+  "type": "edgecase",
+  "question": "Ten istý merge konflikt si už niekoľkokrát riešil ručne. Ktorá funkcia Gitu dokáže zaznamenať niektoré predchádzajúce riešenia konfliktov a neskôr ich znova použiť?",
+  "options": [
+   "`git rerere`",
+   "`git reflog`",
+   "`git bisect`",
+   "`git clean`"
+  ],
+  "answer": 0,
+  "explanation": "`git rerere` dokáže zaznamenať výsledky predtým vyriešených konfliktov a keď neskôr nastane rovnaký alebo veľmi podobný konflikt, pokúsi sa predchádzajúce riešenie aplikovať automaticky. Je to užitočné najmä pri opakovaných operáciách merge alebo rebase. Lákavý reflog sleduje predchádzajúce stavy refov branchov, riešenia konfliktov neukladá."
+ },
+ {
+  "id": 196,
+  "level": "senior",
+  "area": "Rebase",
+  "topic": "Rebase",
+  "type": "production",
+  "question": "Feature branch obsahuje niekoľko „fixup“ commitov, ktoré chceš počas rebase automaticky zlúčiť do príslušných skorších commitov. Ktorý postup to podporuje?",
+  "options": [
+   "`git rebase --autosquash`",
+   "`git merge --squash-only`",
+   "`git reset --fixup`",
+   "`git cherry-pick --autosquash`"
+  ],
+  "answer": 0,
+  "explanation": "`git rebase --autosquash` rozpozná zodpovedajúce commity `fixup!` a `squash!` a zoradí ich k ich cieľovým commitom, aby sa počas rebase vhodne zlúčili. Je to pohodlný spôsob, ako upratať opravné commity vzniknuté počas vývoja. Lákavá alternatíva sa môže zdať vhodná, pretože squash slúži podobnému účelu, autosquash je však integrovaný priamo do workflowu rebase."
+ },
+ {
+  "id": 197,
+  "level": "senior",
+  "area": "Remotes, fetch, pull & push",
+  "topic": "Remotes, fetch, pull & push",
+  "type": "algorithm",
+  "question": "Ktoré nastavenie v konfigurácii Git remote určuje, ktoré vzdialené refy `fetch` namapuje na ktoré lokálne refy?",
+  "options": [
+   "`remote.<name>.url`",
+   "`branch.<name>.merge`",
+   "`remote.<name>.fetch`",
+   "`push.default`"
+  ],
+  "answer": 2,
+  "explanation": "Konfiguračné nastavenie `remote.<name>.fetch` obsahuje refspecy, ktoré určujú, ako sa refy stiahnuté z remote mapujú na lokálne remote-tracking refy. `remote.<name>.url` určuje predovšetkým URL remote, kým nastavenia branchov a pushu slúžia na iné účely. Lákavý je predpoklad, že mapovanie určuje samotná URL remote, URL a refspec sú však samostatné koncepty."
+ },
+ {
+  "id": 198,
+  "level": "senior",
+  "area": "Undoing changes (reset, revert, restore)",
+  "topic": "Undoing changes (reset, revert, restore)",
+  "type": "scenario",
+  "question": "Po spustení `git reset --hard` zistíš, že potrebuješ vrchol branche spred resetu, a správny commit si našiel v reflogu. Aký je bezpečnejší prvý krok na zachovanie obnoveného stavu?",
+  "options": [
+   "Okamžite spustiť `git gc --prune=now`.",
+   "Vytvoriť nový stabilný ref, napríklad pomocou `git branch recovery <commit>`.",
+   "Zmazať reflog, aby už neexistovali žiadne staré stavy.",
+   "Spustiť ďalší `git reset --hard` na ľubovoľný commit."
+  ],
+  "answer": 1,
+  "explanation": "Vytvorením záchranného branche získa nájdený commit stabilný ref, takže stav, ktorý chceš obnoviť, už nezávisí iba od záznamu v reflogu, ktorý môže nakoniec expirovať. Potom môžeš požadovaný stav bezpečne preskúmať alebo obnoviť. Lákavé čistiace postupy sa môžu zdať užitočné, pretože súvisia so správou Git objektov, okamžitým cieľom je tu však zachovať obnovený commit."
+ },
+ {
+  "id": 199,
+  "level": "senior",
+  "area": "History, log, blame & bisect",
+  "topic": "History, log, blame & bisect",
+  "type": "algorithm",
+  "question": "Skúmaš regresiu v histórii s tisíckami commitov. Prečo je základný prístup, ktorý používa `git bisect`, efektívny?",
+  "options": [
+   "Testuje každý commit postupne v chronologickom poradí.",
+   "Skúma iba merge commity.",
+   "Opakovane zmenšuje rozsah hľadania približne na polovicu na základe známeho dobrého a známeho zlého stavu.",
+   "Hľadá v commit messages kľúčové slová súvisiace s chybou."
+  ],
+  "answer": 2,
+  "explanation": "`git bisect` používa stratégiu binárneho vyhľadávania: testuje commity medzi známou dobrou a známou zlou revíziou a podľa výsledku zahodí jednu polovicu rozsahu hľadania. Pri veľkom počte commitov to znamená oveľa menej testov než pri lineárnom hľadaní. Lákavý je predpoklad, že bisect analyzuje commit messages, vyhľadávanie však riadi správanie revízií."
+ },
+ {
+  "id": 200,
+  "level": "senior",
+  "area": "Submodules & monorepos",
+  "topic": "Submodules & monorepos",
+  "type": "production",
+  "question": "CI pipeline chce z veľkého monorepa stiahnuť a checkoutnúť čo najmenej, pretože potrebuje iba súbory patriace jednému komponentu. Ktorá kombinácia tomu môže pomôcť?",
+  "options": [
+   "Použiť `git sparse-checkout` spolu s partial clone.",
+   "Použiť iba `git clean -fd` po úplnom clone.",
+   "Použiť iba annotated tagy.",
+   "Vytvoriť samostatný stash pre každý komponent."
+  ],
+  "answer": 0,
+  "explanation": "Sparse-checkout obmedzuje, ktoré cesty sa vo working tree skutočne vytvoria, kým partial clone dokáže odložiť stiahnutie niektorých Git objektov, kým nie sú potrebné. Spolu môžu výrazne znížiť úvodné náklady vhodného CI workflowu pre monorepo. Lákavý prístup s `git clean` sa môže zdať užitočný, pretože odstraňuje súbory z working tree, Git objekty, ktoré už boli stiahnuté, však nezmenší."
+ }
+]

@@ -5,7 +5,7 @@ import type { Lang } from './projects';
  * The section stays hidden while this list is empty — add only genuine feedback
  * that the client agreed to publish.
  *
- *   { quote: { en: '…', hu: '…' }, name: 'Jane Doe', role: { en: 'CTO, Example Ltd', hu: 'CTO, Example Kft.' } }
+ *   { quote: { en: '…', hu: '…', sk: '…' }, name: 'Jane Doe', role: { en: 'CTO, Example Ltd', hu: 'CTO, Example Kft.', sk: 'CTO, Example s.r.o.' } }
  */
 export interface Testimonial {
   quote: Record<Lang, string>;

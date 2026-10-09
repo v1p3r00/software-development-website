@@ -15,7 +15,7 @@ const readName = () => {
 export default function Certificate({ finishedOn }: { finishedOn: Date }) {
   const { t, lang } = useI18n();
   const [name, setName] = useState(readName);
-  const date = finishedOn.toLocaleDateString(lang === 'hu' ? 'hu-HU' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+  const date = finishedOn.toLocaleDateString({ en: 'en-GB', hu: 'hu-HU', sk: 'sk-SK' }[lang], { year: 'numeric', month: 'long', day: 'numeric' });
   const print = () => {
     document.documentElement.classList.add('print-cert');
     const done = () => {

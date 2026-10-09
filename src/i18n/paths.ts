@@ -1,19 +1,19 @@
 // kept free of other imports: the build-time SEO step (scripts/seo.ts) uses it too
-type Lang = 'en' | 'hu';
+type Lang = 'en' | 'hu' | 'sk';
 
 /**
- * Hungarian pages live under /hu (/hu/, /hu/articles/<slug>/ …); English, the
- * default, keeps the bare paths. Shared by the app and the build-time SEO step.
+ * Hungarian pages live under /hu and Slovak ones under /sk (/hu/, /sk/articles/<slug>/ …);
+ * English, the default, keeps the bare paths. Shared by the app and the build-time SEO step.
  */
-const HU_PREFIX = /^\/hu(?=\/|$)/;
+const PREFIX = /^\/(hu|sk)(?=\/|$)/;
 
-export const langOfPath = (pathname: string): Lang => (HU_PREFIX.test(pathname) ? 'hu' : 'en');
+export const langOfPath = (pathname: string): Lang => (PREFIX.exec(pathname)?.[1] as Lang | undefined) ?? 'en';
 
-/** `/hu/articles/x/` → `/articles/x/`, `/hu` → `/` */
-export const stripLang = (pathname: string) => pathname.replace(HU_PREFIX, '') || '/';
+/** `/hu/articles/x/` → `/articles/x/`, `/sk` → `/` */
+export const stripLang = (pathname: string) => pathname.replace(PREFIX, '') || '/';
 
-/** `/articles/x/` → `/hu/articles/x/` for Hungarian, unchanged for English */
+/** `/articles/x/` → `/hu/articles/x/` (or `/sk/…`), unchanged for English */
 export const localePath = (path: string, lang: Lang) => {
   const bare = stripLang(path);
-  return lang === 'hu' ? `/hu${bare}` : bare;
+  return lang === 'en' ? bare : `/${lang}${bare}`;
 };

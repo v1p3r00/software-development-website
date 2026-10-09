@@ -1,0 +1,103 @@
+{
+  "title": "Hodnoty, premenné a typy",
+  "intro": "Programy v JavaScripte pracujú s hodnotami: textom, číslami, hodnotami pravda/nepravda a zložitejšími objektmi. V tejto lekcii sa naučíš tieto hodnoty uchovávať, rozumieť ich typom, prevádzať ich medzi sebou a vyhnúť sa niektorým z najčastejších prekvapení JavaScriptu.",
+  "body": "## S čím JavaScript v skutočnosti pracuje\n\nSkôr než postavíš React aplikáciu alebo prepojíš frontend so Spring Bootom, musíš pochopiť jednu základnú myšlienku: programy v JavaScripte pracujú s **hodnotami**.\n\nHodnotou môže byť kúsok textu, číslo, boolean, objekt alebo iný druh dát. Druh hodnoty je jej **typ**.\n\nTask manager môže mať napríklad názov úlohy, stav dokončenia a počet zostávajúcich úloh.\n\n~~~js\nconst title = \"Buy groceries\";\nconst completed = false;\nconst remainingTasks = 4;\n~~~\n\nKaždá z týchto premenných obsahuje hodnotu. Druh hodnoty je jej **typ**.\n\nPochopenie typov je dôležité, pretože JavaScript sa správa rôzne podľa toho, s akými hodnotami pracuješ. Napríklad `\"5\"` je text, kým `5` je číslo.\n\n## Spúšťanie JavaScriptu\n\nPočas učenia máš niekoľko jednoduchých spôsobov, ako spúšťať JavaScript.\n\n### Konzola prehliadača\n\nOtvor vývojárske nástroje prehliadača a nájdi kartu **Console**. JavaScript tam môžeš písať priamo.\n\n~~~js\n2 + 3\n~~~\n\nKonzola výraz vyhodnotí a zobrazí `5`.\n\nMôžeš si vytvoriť aj premenné:\n\n~~~js\nconst name = \"Anna\";\nconsole.log(name);\n~~~\n\n`console.log()` vypíše hodnotu do konzoly. Je to jeden z najjednoduchších nástrojov, ako zistiť, čo tvoj program robí.\n\n### Značka script\n\nJavaScript môžeš vložiť aj do HTML stránky pomocou elementu `<script>`.\n\n~~~html\n<!DOCTYPE html>\n<html>\n  <body>\n    <h1>My page</h1>\n\n    <script>\n      const message = \"Hello!\";\n      console.log(message);\n    </script>\n  </body>\n</html>\n~~~\n\nVo väčších aplikáciách je JavaScript zvyčajne v samostatných súboroch `.js`, ale základná myšlienka je rovnaká.\n\n### IntelliJ IDEA\n\nPredvoleným IDE v tomto kurze je **IntelliJ IDEA Community Edition**. Môžeš si vytvoriť JavaScriptový súbor, napríklad `app.js`, písať doň kód a pri práci na projekte využívať vývojárske nástroje IntelliJ.\n\nPri kóde pre prehliadač zostáva konzola prehliadača obzvlášť užitočná, pretože v nej môžeš okamžite skúmať hodnoty a experimentovať s výrazmi.\n\n## Premenné: let a const\n\n**Premenná** je pomenované miesto, kde si uchovávaš hodnotu, aby si ju mohol neskôr použiť.\n\nModerný JavaScript ti dáva dve hlavné deklarácie: `const` a `let`.\n\n`const` použi, keď sa premenná nemá znovu priraďovať.\n\n~~~js\nconst productName = \"Keyboard\";\nconst price = 49.99;\n~~~\n\n`let` použi, keď premenná bude neskôr potrebovať inú hodnotu.\n\n~~~js\nlet cartItems = 0;\ncartItems = cartItems + 1;\n~~~\n\nUžitočné predvolené pravidlo:\n\n> Začni s `const`. `let` použi iba vtedy, keď je opätovné priradenie naozaj potrebné.\n\nRezervačná aplikácia si môže napríklad držať vybraný dátum v premennej, ktorá sa môže meniť:\n\n~~~js\nlet selectedDate = \"Monday\";\nselectedDate = \"Tuesday\";\n~~~\n\nPevný názov aplikácie však môže zostať konštantou:\n\n~~~js\nconst applicationName = \"BookEasy\";\n~~~\n\n### Prečo nie var?\n\nStarší JavaScriptový kód často používa `var`. V existujúcich projektoch sa s ním ešte stretneš, ale moderný kód namiesto neho zvyčajne používa `let` a `const`.\n\nJedným dôležitým dôvodom je **scope** (rozsah platnosti). Scope opisuje, kde v programe je premenná dostupná. `let` a `const` majú blokový scope, čo znamená, že rešpektujú bloky ako príkazy `if` a cykly.\n\n`var` má staršie správanie scope, pri ktorom sa o kóde ťažšie uvažuje. Pokiaľ neudržiavaš legacy JavaScript, uprednostni `const` a `let`.\n\n## Primitívne typy\n\nJavaScript má niekoľko **primitívnych typov**. Primitív je jednoduchá hodnota, ktorá nie je objektom.\n\n~~~diagram\n{\"type\": \"tree\", \"title\": \"Typy v JavaScripte na prvý pohľad\", \"root\": {\"label\": \"Hodnoty\", \"children\": [{\"label\": \"Primitívy\", \"sub\": \"kopírujú sa hodnotou\", \"highlight\": true, \"children\": [{\"label\": \"string\"}, {\"label\": \"number\"}, {\"label\": \"boolean\"}, {\"label\": \"null\"}, {\"label\": \"undefined\"}, {\"label\": \"bigint · symbol\"}]}, {\"label\": \"Objekty\", \"sub\": \"zdieľajú sa referenciou\", \"children\": [{\"label\": \"{ } object\"}, {\"label\": \"[ ] array\"}, {\"label\": \"function\"}]}]}}\n~~~\n\nPre každodenný vývoj aplikácií sú najdôležitejšie tieto:\n\n- `string` — text\n- `number` — číselné hodnoty\n- `boolean` — `true` alebo `false`\n- `null` — zámerne prázdna hodnota\n- `undefined` — hodnota, ktorá nebola priradená\n\nNapríklad:\n\n~~~js\nconst username = \"David\";       // string\nconst age = 31;                  // number\nconst isLoggedIn = true;         // boolean\nconst selectedProduct = null;    // null\nlet result;                      // undefined\n~~~\n\nJavaScript má aj `bigint` pre veľmi veľké celé čísla a `symbol`, ktorý vytvára jedinečné symbolové hodnoty. Na začiatku vývoja frontendu ich budeš potrebovať len zriedka, takže stačí vedieť, že existujú.\n\n### Objekty\n\n**Objekt** zoskupuje súvisiace hodnoty.\n\nProdukt v e-shope môže vyzerať takto:\n\n~~~js\nconst product = {\n  name: \"Keyboard\",\n  price: 49.99,\n  inStock: true\n};\n~~~\n\nAj polia sú v JavaScripte objekty. Pole uchováva usporiadanú kolekciu hodnôt.\n\n~~~js\nconst cart = [\"Keyboard\", \"Mouse\", \"Monitor\"];\n~~~\n\nTento rozdiel je veľmi dôležitý pri práci s odpoveďami z API a so stavom v Reacte.\n\n## Zistenie typu pomocou typeof\n\nOperátor `typeof` ti povie typ hodnoty.\n\n~~~js\ntypeof \"hello\";       // \"string\"\ntypeof 42;             // \"number\"\ntypeof true;           // \"boolean\"\ntypeof undefined;      // \"undefined\"\n~~~\n\nVäčšinou funguje dobre, ale JavaScript má pár známych zvláštností.\n\n~~~js\ntypeof null;     // \"object\"\ntypeof [];       // \"object\"\ntypeof {};       // \"object\"\n~~~\n\nTo, že `typeof null` vracia `\"object\"`, je stará zvláštnosť jazyka JavaScript. **Neznamená** to, že `null` je v skutočnosti objekt.\n\nAj polia sú objekty, ale ak chceš konkrétne zistiť, či je niečo pole, použi `Array.isArray()`.\n\n~~~js\nArray.isArray([1, 2, 3]); // true\nArray.isArray({});        // false\n~~~\n\nExistuje ešte jedno dôležité špeciálne číslo: `NaN`.\n\n`NaN` znamená **Not-a-Number** (nie je číslo). Je to špeciálna hodnota typu `number`.\n\n~~~js\ntypeof NaN; // \"number\"\n~~~\n\nRozpoznáš ho pomocou `Number.isNaN()`.\n\n## Template literály\n\n**Template literál** je reťazec zapísaný medzi spätné apostrofy namiesto úvodzoviek. Umožňuje vložiť výrazy priamo do reťazca.\n\n~~~js\nconst name = \"Anna\";\nconst age = 28;\n\nconst message = `Hello ${name}, you are ${age} years old.`;\n~~~\n\nSyntax `${...}` vyhodnotí výraz, ktorý je v nej.\n\nJe to užitočné najmä pri vytváraní správ pre task manager:\n\n~~~js\nconst completed = 7;\nconst total = 10;\n\nconst status = `${completed} of ${total} tasks completed`;\n~~~\n\nTemplate literály môžu mať aj viac riadkov, čo sa hodí pri dlhších textoch.\n\n## Čísla s pohyblivou desatinnou čiarkou ťa môžu prekvapiť\n\nTyp `number` v JavaScripte používa aritmetiku s pohyblivou desatinnou čiarkou (floating-point). To znamená, že niektoré desatinné výpočty sa v dvojkovej sústave nedajú vyjadriť úplne presne.\n\nPreto sa môžeš stretnúť s týmto známym výsledkom:\n\n~~~js\n0.1 + 0.2;\n// 0.30000000000000004\n~~~\n\nNeznamená to, že JavaScript nevie počítať. Znamená to, že vnútorná binárna reprezentácia týchto desatinných hodnôt nie je vždy presná.\n\nV mnohých aplikáciách to vyriešiš zaokrúhlením pri zobrazovaní hodnôt.\n\n~~~js\nconst total = 0.1 + 0.2;\nconsole.log(total.toFixed(2));\n// \"0.30\"\n~~~\n\nFinančné aplikácie často potrebujú starostlivejšiu prácu s desatinnými číslami než jednoduchú aritmetiku s pohyblivou desatinnou čiarkou. Pamätaj na toto obmedzenie, keď budeš neskôr pracovať s cenami, faktúrami alebo platbami.\n\n## Typová konverzia (coercion)\n\n**Type coercion** znamená, že JavaScript v niektorých situáciách automaticky prevedie hodnotu z jedného typu na iný.\n\nNapríklad:\n\n~~~js\n\"5\" + 2;\n// \"52\"\n~~~\n\nKeďže `+` dokáže spájať reťazce, JavaScript prevedie číslo na text.\n\nIné operátory sa môžu správať inak:\n\n~~~js\n\"5\" - 2;\n// 3\n~~~\n\nTu JavaScript prevedie reťazec na číslo.\n\nTáto automatická konverzia môže byť pohodlná, ale kód môže zároveň zneprehľadniť. Explicitné konverzie sa často chápu ľahšie.\n\n## == verzus ===\n\nJavaScript má dva často spomínané operátory rovnosti.\n\n~~~compare\n{\"left\": {\"title\": \"== najprv prevádza\", \"lang\": \"js\", \"code\": \"0 == ''          // true\\n'1' == 1         // true\\nnull == undefined // true\", \"note\": \"Skrytá typová konverzia spôsobuje ťažko odhaliteľné chyby.\"}, \"right\": {\"title\": \"=== porovnáva tak, ako je\", \"lang\": \"js\", \"code\": \"0 === ''          // false\\n'1' === 1         // false\\nNumber('1') === 1 // true\", \"note\": \"Preveď explicitne, potom porovnávaj striktne.\"}}\n~~~\n\n`==` je **voľná rovnosť** (loose equality). Pred porovnaním hodnôt môže vykonať typovú konverziu.\n\n~~~js\n5 == \"5\"; // true\n~~~\n\n`===` je **striktná rovnosť** (strict equality). Porovnáva hodnotu aj typ bez takejto automatickej konverzie.\n\n~~~js\n5 === \"5\"; // false\n~~~\n\nV modernom JavaScripte používaj predvolene `===` a `!==`. Porovnania sú vďaka nim predvídateľnejšie.\n\n~~~js\nconst quantity = 5;\n\nif (quantity === 5) {\n  console.log(\"Five items\");\n}\n~~~\n\n## Truthy a falsy hodnoty\n\nJavaScript umožňuje používať hodnoty priamo v podmienkach. Niektoré hodnoty sú **falsy**, teda JavaScript ich v booleovskom kontexte považuje za nepravdivé.\n\n~~~terms\n[{\"term\": \"falsy\", \"def\": \"`false`, `0`, `-0`, `0n`, `''`, `null`, `undefined`, `NaN` — všetko ostatné je truthy.\"}, {\"term\": \"truthy\", \"def\": \"Patria sem aj prekvapenia ako `'0'`, `'false'`, `[]` a `{}`.\"}]\n~~~\n\nMedzi bežné falsy hodnoty patria:\n\n- `false`\n- `0`\n- `-0`\n- `\"\"`\n- `null`\n- `undefined`\n- `NaN`\n\nVäčšina ostatných hodnôt je **truthy**, teda sa v podmienke správajú ako `true`.\n\n~~~js\nconst username = \"Anna\";\n\nif (username) {\n  console.log(\"A username was provided\");\n}\n~~~\n\nTo sa hodí pri kontrole voliteľných hodnôt, ale pamätaj, že aj `0` a prázdny reťazec sú falsy. Ak je nula v tvojej aplikácii platnou hodnotou, možno budeš potrebovať explicitné porovnanie.\n\n## Explicitné prevody hodnôt\n\nJavaScript poskytuje funkcie na prevod hodnôt.\n\n### Number()\n\n`Number()` použi, keď chceš hodnotu previesť na číslo.\n\n~~~js\nNumber(\"42\");\n// 42\n\nNumber(\"3.5\");\n// 3.5\n~~~\n\nNeplatný číselný text dá `NaN`.\n\n~~~js\nNumber(\"hello\");\n// NaN\n~~~\n\nPrázdny reťazec je špeciálny prípad:\n\n~~~js\nNumber(\"\");\n// 0\n~~~\n\nToto správanie je niekedy nežiaduce, preto pri prijímaní vstupu od používateľa vstup pred prevodom zvaliduj.\n\n### String()\n\n`String()` prevedie hodnotu na text.\n\n~~~js\nString(42);\n// \"42\"\n\nString(true);\n// \"true\"\n~~~\n\n### parseInt()\n\n`parseInt()` prečíta celé číslo zo začiatku reťazca.\n\n~~~js\nparseInt(\"42\", 10);\n// 42\n~~~\n\nVšimni si druhý argument, `10`. Určuje desiatkovú číselnú sústavu.\n\n`parseInt()` však nevyžaduje, aby bol celý reťazec číselný.\n\n~~~js\nparseInt(\"12px\", 10);\n// 12\n~~~\n\nV niektorých situáciách je to užitočné, ale nebezpečné, ak tvoja aplikácia vyžaduje, aby bol platným číselným textom **celý vstup**. Na striktnú validáciu vstupu je často lepšou voľbou `Number()` spolu s vhodnou kontrolou.\n\n## Jasné pomenovanie premenných\n\nDobré názvy uľahčujú pochopenie kódu aj bez ďalších komentárov.\n\nPre premenné a funkcie v JavaScripte používaj **camelCase**.\n\n~~~js\nconst firstName = \"Anna\";\nconst cartItemCount = 3;\nconst isPaymentComplete = false;\n~~~\n\nBooleovské premenné sa často dobre čítajú, keď začínajú na `is`, `has` alebo `can`.\n\n~~~js\nconst isAvailable = true;\nconst hasAccount = false;\nconst canCheckout = true;\n~~~\n\nVyhýbaj sa nejasným názvom:\n\n~~~js\nconst x = 42;\nconst data = \"something\";\n~~~\n\nUprednostni názvy, ktoré opisujú skutočný význam:\n\n~~~js\nconst remainingTasks = 42;\nconst customerEmail = \"anna@example.com\";\n~~~\n\n`UPPER_SNAKE_CASE` používaj len pre hodnoty, ktoré tvoj projekt podľa konvencie považuje za konštanty, napríklad konfiguračné hodnoty.\n\n~~~js\nconst MAX_CART_ITEMS = 50;\n~~~\n\n## Časté chyby\n\n### Zámena čísla za reťazec\n\n~~~js\nconst price = \"100\";\n~~~\n\nToto je text, nie číslo. Ak potrebuješ počítať, preveď ho zámerne.\n\n~~~js\nconst price = Number(\"100\");\n~~~\n\n### Používanie == bez pochopenia konverzie\n\n~~~js\nif (userInput == 10) {\n  // ...\n}\n~~~\n\nTo môže zakryť problémy s typmi. Uprednostni `===`, pokiaľ nemáš konkrétny dôvod použiť voľnú rovnosť.\n\n### Predpoklad, že typeof je dokonalý\n\n~~~js\ntypeof null; // \"object\"\ntypeof [];   // \"object\"\n~~~\n\nPre `null` použi `value === null` a pre polia `Array.isArray(value)`.\n\n### Používanie parseInt() na striktnú validáciu\n\n~~~js\nparseInt(\"12px\", 10);\n// 12\n~~~\n\nAk je požiadavkou, aby bol celý vstup číselný, tento výsledok je príliš benevolentný.\n\n### Opätovné priradenie const\n\n~~~js\nconst count = 1;\ncount = 2; // error\n~~~\n\nAk je potrebné samotnú premennú znovu priradiť, použi `let`.\n\n## Ako to do seba zapadá\n\nPredstav si malý task manager, ktorý dostáva text zo vstupného poľa. Prehliadač ti dá text, aj keď používateľ zadá číslo.\n\n~~~js\nconst input = \"  42 \";\nconst value = Number(input.trim());\n\nif (Number.isFinite(value)) {\n  console.log(`You entered ${value}`);\n}\n~~~\n\nTento kód spája niekoľko myšlienok z lekcie: reťazce, čísla, `const`, template literály, konverziu, orezanie medzier a validáciu.\n\nTieto detaily sa môžu zdať drobné, ale stanú sa dôležitými, keď tvoj React frontend začne prijímať vstup od používateľov a odpovede z API. Skôr než budeš môcť spoľahlivo spravovať stav aplikácie alebo posielať dáta do Spring Boot backendu, musíš vedieť, aké hodnoty v skutočnosti máš.",
+  "takeaways": [
+    "Predvolene používaj const a let vtedy, keď treba premennú znovu priradiť; v modernom JavaScripte sa vyhýbaj var.",
+    "JavaScript má primitívne hodnoty ako reťazce, čísla, booleany, null a undefined, kým objekty zoskupujú zložitejšie dáta.",
+    "Pri typeof buď opatrný: null sa hlási ako object, polia sú objekty a NaN je number.",
+    "Uprednostni === pred == a používaj explicitné prevody ako Number() a String(), keď chceš predvídateľné správanie.",
+    "Truthy a falsy hodnoty, aritmetika s pohyblivou desatinnou čiarkou a typová konverzia sú častým zdrojom chýb v JavaScripte."
+  ],
+  "quiz": [
+    {
+      "question": "Ktorú deklaráciu by si mal bežne použiť, keď sa premenná nebude znovu priraďovať?",
+      "options": [
+        "var",
+        "let",
+        "const",
+        "static"
+      ],
+      "answer": 2,
+      "explanation": "const použi, keď sa samotná premenná nebude znovu priraďovať. Jasne vyjadruje tvoj zámer a v modernom JavaScripte je to preferovaná predvolená voľba."
+    },
+    {
+      "question": "Na čo sa vyhodnotí tento výraz? `typeof null`",
+      "options": [
+        "\"null\"",
+        "\"object\"",
+        "\"undefined\"",
+        "\"boolean\""
+      ],
+      "answer": 1,
+      "explanation": "JavaScript má historickú zvláštnosť: typeof null vracia \"object\", hoci null predstavuje zámerne prázdnu hodnotu."
+    },
+    {
+      "question": "Čo vytvorí tento kód?",
+      "options": [
+        "Číslo 52",
+        "Chybu",
+        "Boolean false",
+        "Reťazec \"52\""
+      ],
+      "answer": 3,
+      "explanation": "Keďže jeden z operandov je reťazec, operátor + vykoná spojenie reťazcov a číslo 2 prevedie na text."
+    },
+    {
+      "question": "Ktoré porovnanie je striktné a nevykonáva typovú konverziu, ktorú používa voľná rovnosť?",
+      "options": [
+        "===",
+        "==",
+        "=",
+        "!="
+      ],
+      "answer": 0,
+      "explanation": "Operátor === kontroluje hodnotu aj typ. Napríklad 5 === \"5\" je false."
+    },
+    {
+      "question": "Aký je výsledok `parseInt(\"12px\", 10)`?",
+      "options": [
+        "NaN",
+        "12",
+        "\"12px\"",
+        "null"
+      ],
+      "answer": 1,
+      "explanation": "parseInt prečíta celé číslo zo začiatku reťazca a zastaví sa na znakoch, ktoré nie sú súčasťou čísla, takže výsledok je 12."
+    }
+  ],
+  "exercise": {
+    "title": "Opíš a bezpečne preveď hodnoty",
+    "task": "Implementuj presne dve funkcie: `describeValue(value)` a `toNumberOrNull(text)`. `describeValue(value)` musí vrátiť `\"null\"` pre `null`, `\"array\"` pre polia, `\"NaN\"` pre `NaN` a inak vrátiť reťazec, ktorý vytvorí `typeof value`. `toNumberOrNull(text)` musí vstup orezať a vrátiť konečné číslo, keď je celý orezaný text číselný, napríklad `\" 42 \"` → `42` a `\"3.5\"` → `3.5`. Pre prázdny reťazec alebo reťazec iba z medzier a pre všetko, čo nie je úplne číselné, vrátane `\"12px\"`, musí vrátiť `null`; testy volajú presne tieto názvy funkcií.",
+    "kind": "js",
+    "starter": "function describeValue(value) {\n  // TODO: implement\n}\n\nfunction toNumberOrNull(text) {\n  // TODO: implement\n}",
+    "solution": "function describeValue(value) {\n  if (value === null) {\n    return \"null\";\n  }\n\n  if (Array.isArray(value)) {\n    return \"array\";\n  }\n\n  if (Number.isNaN(value)) {\n    return \"NaN\";\n  }\n\n  return typeof value;\n}\n\nfunction toNumberOrNull(text) {\n  const trimmed = text.trim();\n\n  if (trimmed === \"\") {\n    return null;\n  }\n\n  const value = Number(trimmed);\n\n  return Number.isFinite(value) ? value : null;\n}",
+    "hint": "V `describeValue` ošetri špeciálne prípady skôr, než sa vrátiš k `typeof`. Pri číselnom vstupe text najprv oreži, odmietni prázdny výsledok, preveď ho cez Number() a použi Number.isFinite(), aby sa neprijali hodnoty ako NaN a Infinity.",
+    "tests": [
+      {
+        "name": "Opisuje primitívne hodnoty",
+        "code": "return describeValue(\"hello\") === \"string\" && describeValue(42) === \"number\" && describeValue(true) === \"boolean\" && describeValue(undefined) === \"undefined\";"
+      },
+      {
+        "name": "Opisuje null a polia",
+        "code": "return describeValue(null) === \"null\" && describeValue([]) === \"array\" && describeValue([1, 2, 3]) === \"array\";"
+      },
+      {
+        "name": "Rozpozná NaN",
+        "code": "return describeValue(NaN) === \"NaN\" && describeValue(0 / 0) === \"NaN\";"
+      },
+      {
+        "name": "Prevádza platný číselný text",
+        "code": "return toNumberOrNull(\" 42 \") === 42 && toNumberOrNull(\"3.5\") === 3.5 && toNumberOrNull(\"-7\") === -7;"
+      },
+      {
+        "name": "Odmieta prázdny a len čiastočne číselný text",
+        "code": "return toNumberOrNull(\"\") === null && toNumberOrNull(\"   \") === null && toNumberOrNull(\"12px\") === null && toNumberOrNull(\"hello\") === null;"
+      },
+      {
+        "name": "Odmieta nekonečné čísla",
+        "code": "return toNumberOrNull(\"Infinity\") === null && toNumberOrNull(\"-Infinity\") === null;"
+      }
+    ]
+  }
+}

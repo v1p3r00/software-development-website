@@ -174,7 +174,7 @@ export function normalize(raw: unknown, lang: Lang): Cv | null {
       ...base.design,
       ...(r.design ?? {}),
       template: templateIds.includes(r.design?.template as TemplateId) ? (r.design!.template as TemplateId) : 'modern',
-      lang: r.design?.lang === 'hu' || r.design?.lang === 'en' ? r.design.lang : lang,
+      lang: r.design?.lang === 'hu' || r.design?.lang === 'en' || r.design?.lang === 'sk' ? r.design.lang : lang,
     },
   };
 }

@@ -240,7 +240,7 @@ Vállalkozás:
 
 A kommunikáció így közvetlenül kapcsolódhat az adott projekthez, rendeléshez vagy ügyhöz.
 
-A Zendesk ügyfélportálja például lehetővé teszi, hogy az ügyfelek beküldjék, megtekintsék és kövessék a támogatási kéréseiket, valamint kommenteket is hozzáadhassanak. :contentReference[oaicite:0]{index=0}
+A Zendesk ügyfélportálja például lehetővé teszi, hogy az ügyfelek beküldjék, megtekintsék és kövessék a támogatási kéréseiket, valamint kommenteket is hozzáadhassanak.
 
 Ez azért fontos, mert a kommunikáció nem feltétlenül marad különálló e-mailekben.
 
@@ -266,7 +266,7 @@ Ugyanez igaz lehet:
 - korábbi kommunikációra,
 - fizetési információkra.
 
-A Salesforce például a customer portal egyik céljaként az önkiszolgálást és a támogatási megkeresések csökkentését emeli ki. :contentReference[oaicite:1]{index=1}
+A Salesforce például a customer portal egyik céljaként az önkiszolgálást és a támogatási megkeresések csökkentését emeli ki.
 
 **A jó ügyfélportál nem több munkát ad az ügyfélszolgálatnak. A gyakran ismétlődő kérdéseket próbálja kivonni a folyamatból.**
 
@@ -307,7 +307,7 @@ Nem biztos, hogy saját fejlesztésre van szükség.
 
 Sok üzleti szoftver már tartalmaz ügyféloldali felületet.
 
-Például egy support rendszer ügyfélportálja megmutathatja a hibajegyeket és azok állapotát. A Zendesk esetében az ügyfél a saját kéréseit megtekintheti, szűrheti, keresheti és követheti. :contentReference[oaicite:2]{index=2}
+Például egy support rendszer ügyfélportálja megmutathatja a hibajegyeket és azok állapotát. A Zendesk esetében az ügyfél a saját kéréseit megtekintheti, szűrheti, keresheti és követheti.
 
 **Előnyei:**
 
@@ -397,9 +397,9 @@ Lehet benne:
 
 Ezért a biztonságot már a tervezésnél figyelembe kell venni.
 
-Az Európai Bizottság szerint a GDPR alapján megfelelő technikai és szervezési intézkedéseket kell alkalmazni a személyes adatok védelmére, többek között a jogosulatlan hozzáférés és az adatvesztés ellen. :contentReference[oaicite:3]{index=3}
+Az Európai Bizottság szerint a GDPR alapján megfelelő technikai és szervezési intézkedéseket kell alkalmazni a személyes adatok védelmére, többek között a jogosulatlan hozzáférés és az adatvesztés ellen.
 
-Az EDPB külön kiemeli a biztonság, a hozzáférés-kezelés, a titkosítás, a mentések és a rendszeres biztonsági ellenőrzések fontosságát. :contentReference[oaicite:4]{index=4}
+Az EDPB külön kiemeli a biztonság, a hozzáférés-kezelés, a titkosítás, a mentések és a rendszeres biztonsági ellenőrzések fontosságát.
 
 ---
 
@@ -417,7 +417,7 @@ Két külön fogalomról beszélünk:
 
 **Authorisation:** mit szabad látnod és csinálnod?
 
-Az OWASP szerint a jogosultságkezelésnek minden olyan erőforrásnál érvényesülnie kell, amely nem nyilvános, és alapelvként érdemes a minimálisan szükséges jogosultságokat alkalmazni. :contentReference[oaicite:5]{index=5}
+Az OWASP szerint a jogosultságkezelésnek minden olyan erőforrásnál érvényesülnie kell, amely nem nyilvános, és alapelvként érdemes a minimálisan szükséges jogosultságokat alkalmazni.
 
 Például:
 
@@ -452,7 +452,7 @@ Egy ügyfélportál esetében érdemes már a tervezés elején tisztázni:
 - hogyan kezeljük a törlési vagy hozzáférési kérelmeket?
 - mi történik adatvédelmi incidens esetén?
 
-A GDPR egyik alapelve az adatminimalizálás: csak olyan személyes adatot érdemes kezelni, amely az adott célhoz szükséges. Az EDPB ugyanezt hangsúlyozza a kisvállalkozásoknak szóló útmutatójában. :contentReference[oaicite:6]{index=6}
+A GDPR egyik alapelve az adatminimalizálás: csak olyan személyes adatot érdemes kezelni, amely az adott célhoz szükséges. Az EDPB ugyanezt hangsúlyozza a kisvállalkozásoknak szóló útmutatójában.
 
 **Nem kell minden információt begyűjteni csak azért, mert technikailag meg lehet oldani.**
 
@@ -474,7 +474,7 @@ https://pelda.hu/uploads/szerzodes-123.pdf
 
 A rendszernek ellenőriznie kell, hogy az adott felhasználónak valóban joga van-e hozzáférni a dokumentumhoz.
 
-A hozzáférési szabályokat a backendnek is ellenőriznie kell, nem csak a frontendnek. Az OWASP hozzáférés-kezelési ajánlásai is a jogosultságok következetes szerveroldali érvényesítését és a legkisebb szükséges jogosultság elvét hangsúlyozzák. :contentReference[oaicite:7]{index=7}
+A hozzáférési szabályokat a backendnek is ellenőriznie kell, nem csak a frontendnek. Az OWASP hozzáférés-kezelési ajánlásai is a jogosultságok következetes szerveroldali érvényesítését és a legkisebb szükséges jogosultság elvét hangsúlyozzák.
 
 ---
 

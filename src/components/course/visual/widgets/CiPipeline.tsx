@@ -61,12 +61,12 @@ export default function CiPipeline({ lang }: WidgetProps) {
   };
   const done = Object.values(st).every((s) => s === 'passed' || s === 'failed' || s === 'skipped');
   return (
-    <Frame lang={lang} title={t('A CI/CD pipeline run', 'Egy CI/CD pipeline futása')} hint={t('Jobs run in parallel when they can; a failing job stops everything that needs it.', 'A jobok párhuzamosan futnak, ha lehet; egy hibás job leállít mindent, ami tőle függ.')}>
+    <Frame lang={lang} title={t('A CI/CD pipeline run', 'Egy CI/CD pipeline futása', 'Beh CI/CD pipeline')} hint={t('Jobs run in parallel when they can; a failing job stops everything that needs it.', 'A jobok párhuzamosan futnak, ha lehet; egy hibás job leállít mindent, ami tőle függ.', 'Joby bežia paralelne, keď sa dá; job, ktorý zlyhá, zastaví všetko, čo od neho závisí.')}>
       <div className="flex flex-wrap items-center gap-2">
         <Seg label="branch" options={['feature/login', 'main'] as const} value={branch} onChange={setBranch} />
         <label className="flex items-center gap-2 text-[14.5px] text-muted">
           <input type="checkbox" checked={broken} onChange={(e) => setBroken(e.target.checked)} className="accent-[rgb(var(--c-accent))]" />
-          {t('break a backend test', 'egy backend teszt eltörése')}
+          {t('break a backend test', 'egy backend teszt eltörése', 'rozbiť backendový test')}
         </label>
         <button type="button" className="vw-btn on ml-auto" onClick={run}>
           ▶ git push
@@ -86,12 +86,12 @@ export default function CiPipeline({ lang }: WidgetProps) {
       </div>
       <p className="mt-4 min-h-[2.5rem] text-[15px] leading-relaxed text-muted">
         {!done
-          ? t('backend and frontend only need checkout, so they run at the same time.', 'A backend és a frontend csak a checkouttól függ, ezért egyszerre futnak.')
+          ? t('backend and frontend only need checkout, so they run at the same time.', 'A backend és a frontend csak a checkouttól függ, ezért egyszerre futnak.', 'backend a frontend potrebujú len checkout, takže bežia súčasne.')
           : st.backend === 'failed'
-            ? t('The red check blocks the pull request: no image is built and nothing is deployed.', 'A piros jelzés blokkolja a pull requestet: nem épül image, és semmi sem kerül élesbe.')
+            ? t('The red check blocks the pull request: no image is built and nothing is deployed.', 'A piros jelzés blokkolja a pull requestet: nem épül image, és semmi sem kerül élesbe.', 'Červený check zablokuje pull request: nezbuilduje sa žiadny image a nič sa nenasadí.')
             : st.deploy === 'passed'
-              ? t('Green on main: the new image is deployed automatically.', 'Zöld a mainen: az új image automatikusan élesbe kerül.')
-              : t('Green on a feature branch: safe to merge. Deploy only runs on main.', 'Zöld egy feature ágon: nyugodtan merge-elhető. A deploy csak a mainen fut.')}
+              ? t('Green on main: the new image is deployed automatically.', 'Zöld a mainen: az új image automatikusan élesbe kerül.', 'Zelená na main: nový image sa automaticky nasadí.')
+              : t('Green on a feature branch: safe to merge. Deploy only runs on main.', 'Zöld egy feature ágon: nyugodtan merge-elhető. A deploy csak a mainen fut.', 'Zelená na feature vetve: môžeš pokojne mergnúť. Deploy beží len na main.')}
       </p>
     </Frame>
   );

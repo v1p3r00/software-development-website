@@ -307,7 +307,7 @@ Yes.
 
 This is particularly important in 2026.
 
-The transparency rules connected to Article 50 of the EU AI Act apply from 2 August 2026. The European Commission's guidance says that people must be informed when they directly interact with an AI system, unless it is obvious from the circumstances that they are interacting with AI. :contentReference[oaicite:2]{index=2}
+The transparency rules connected to Article 50 of the EU AI Act apply from 2 August 2026. The European Commission's guidance says that people must be informed when they directly interact with an AI system, unless it is obvious from the circumstances that they are interacting with AI.
 
 That means a website AI assistant should not pretend to be a human member of staff.
 
@@ -317,7 +317,7 @@ For example:
 
 That is simple, clear and transparent.
 
-Where the obligation applies, the AI Act requires the disclosure to be clear and distinguishable from the beginning of the first interaction. :contentReference[oaicite:3]{index=3}
+Where the obligation applies, the AI Act requires the disclosure to be clear and distinguishable from the beginning of the first interaction.
 
 ---
 

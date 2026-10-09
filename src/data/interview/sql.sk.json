@@ -1,0 +1,3294 @@
+[
+ {
+  "id": 1,
+  "level": "junior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "output",
+  "question": "Čo vráti nasledujúci dopyt v PostgreSQL?",
+  "code": "SELECT name\nFROM employees\nWHERE salary > 1000000;",
+  "options": [
+   "Iba mená zamestnancov, ktorých plat je vyšší ako 1 000 000",
+   "Mená zamestnancov, ktorých plat je aspoň 1 000 000",
+   "Mená všetkých zamestnancov, potom filtruje podľa platu",
+   "Chybu, pretože WHERE sa nedá použiť s číselnou hodnotou"
+  ],
+  "answer": 0,
+  "explanation": "`>` znamená ostro väčší, takže sa vrátia iba zamestnanci s platom nad 1 000 000. `>=` by zahrnul aj plat presne 1 000 000. Častá nesprávna odpoveď láka preto, lebo na pohovore sa `>` a `>=` ľahko zamenia."
+ },
+ {
+  "id": 2,
+  "level": "junior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "output",
+  "question": "Čo vráti nasledujúci dopyt v PostgreSQL?",
+  "code": "SELECT name\nFROM employees\nORDER BY salary DESC\nLIMIT 3;",
+  "options": [
+   "Mená troch najhoršie platených zamestnancov",
+   "Mená troch najlepšie platených zamestnancov",
+   "Mená všetkých zamestnancov zoradené podľa platu zostupne",
+   "Prvých troch zamestnancov zoradených podľa mena"
+  ],
+  "answer": 1,
+  "explanation": "`DESC` zoradí platy zostupne, takže najvyššie hodnoty sú na začiatku, a `LIMIT 3` ponechá iba prvé tri riadky. Častá nesprávna odpoveď láka preto, lebo `LIMIT` sám osebe naozaj iba obmedzuje počet riadkov, no neurčuje, ktoré riadky sa vyberú."
+ },
+ {
+  "id": 3,
+  "level": "junior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "trap",
+  "question": "Čo je zlé na nasledujúcom dopyte, ak je cieľom vybrať zamestnancov vo veku od 18 do 30 rokov?",
+  "code": "SELECT *\nFROM employees\nWHERE age >= 18 OR age <= 30;",
+  "options": [
+   "`OR` treba nahradiť za `AND`",
+   "Stĺpec `age` sa nedá použiť v podmienke WHERE",
+   "Podmienka musí byť zapísaná ako `BETWEEN 18 AND 30`",
+   "Dopyt vráti iba zamestnancov mladších ako 18 a starších ako 30 rokov"
+  ],
+  "answer": 0,
+  "explanation": "`age >= 18 OR age <= 30` prepustí prakticky každý vek, ktorý nie je NULL, pretože každé číslo je buď aspoň 18, alebo najviac 30. Požadovaný rozsah vyžaduje `age >= 18 AND age <= 30`, prípadne jednoduchšie `age BETWEEN 18 AND 30`. Častá nesprávna odpoveď láka preto, lebo pri slovnom opise rozsahu sa ľahko pomýliš, či treba `OR` alebo `AND`."
+ },
+ {
+  "id": 4,
+  "level": "junior",
+  "area": "JOINs",
+  "topic": "JOINs",
+  "type": "output",
+  "question": "Koľko riadkov vráti INNER JOIN pre nasledujúce tabuľky?",
+  "code": "employees\nid | name | department_id\n1  | Anna | 10\n2  | Bela | 20\n3  | Csilla | 30\n\ndepartments\nid | name\n10 | IT\n20 | HR\n\nSELECT e.name, d.name\nFROM employees e\nJOIN departments d ON d.id = e.department_id;",
+  "options": [
+   "1",
+   "2",
+   "3",
+   "0"
+  ],
+  "answer": 1,
+  "explanation": "INNER JOIN ponechá iba tie riadky zamestnancov, ku ktorým existuje zodpovedajúci riadok v `departments`. Anna má department_id 10 a Bela 20, k obom existuje oddelenie; Csilla má 30, ku ktorému nie. Častá nesprávna odpoveď láka preto, lebo tabuľka zamestnancov má tri riadky, no INNER JOIN riadky bez zhody automaticky nezachováva."
+ },
+ {
+  "id": 5,
+  "level": "junior",
+  "area": "NULL handling",
+  "topic": "NULL handling",
+  "type": "trap",
+  "question": "Ktorá podmienka správne vyberie zamestnancov, ktorí nemajú zadané telefónne číslo?",
+  "code": "SELECT *\nFROM employees\nWHERE phone_number IS NULL;",
+  "options": [
+   "`phone_number = NULL`",
+   "`phone_number == NULL`",
+   "`phone_number IS NULL`",
+   "`phone_number <> NULL`"
+  ],
+  "answer": 2,
+  "explanation": "V SQL nie je NULL konkrétna hodnota, ale označuje neznámu alebo chýbajúcu hodnotu, preto sa nedá testovať bežnými porovnávacími operátormi. `IS NULL` výslovne overuje, či je hodnota NULL. Častá nesprávna odpoveď láka preto, lebo mnohé programovacie jazyky umožňujú priame porovnanie s hodnotou null."
+ },
+ {
+  "id": 6,
+  "level": "junior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "output",
+  "question": "Čo vráti nasledujúci dopyt?",
+  "code": "SELECT department_id, COUNT(*)\nFROM employees\nGROUP BY department_id;",
+  "options": [
+   "Jeden riadok s celkovým počtom zamestnancov",
+   "Samostatnú hodnotu COUNT pre každého zamestnanca",
+   "Iba oddelenie s najväčším počtom zamestnancov",
+   "Jeden riadok na oddelenie s počtom zamestnancov v danom oddelení"
+  ],
+  "answer": 3,
+  "explanation": "`GROUP BY department_id` zoskupí riadky s rovnakým oddelením a `COUNT(*)` spočíta riadky v každej skupine. Výsledok preto obsahuje jeden riadok pre každé oddelenie. Častá nesprávna odpoveď láka preto, lebo `COUNT(*)` naozaj vráti jedinú hodnotu, ak ho použiješ na celú tabuľku bez zoskupenia."
+ },
+ {
+  "id": 7,
+  "level": "junior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "behavior",
+  "question": "Ktoré tvrdenie správne opisuje, ako funguje DISTINCT?",
+  "code": "SELECT DISTINCT department_id\nFROM employees;",
+  "options": [
+   "Ponechá iba prvé department_id",
+   "Zredukuje duplicitné hodnoty department_id na jeden výskyt",
+   "Automaticky zoradí výsledok abecedne",
+   "Odstráni iba hodnoty NULL"
+  ],
+  "answer": 1,
+  "explanation": "`DISTINCT` odstráni z výsledku duplicitné riadky. Pri výbere jediného stĺpca to znamená, že každé department_id sa objaví iba raz, aj keď do oddelenia patrí viac zamestnancov. Častá nesprávna odpoveď láka preto, lebo odstraňovanie duplicít sa ľahko zamení so zoraďovaním."
+ },
+ {
+  "id": 8,
+  "level": "junior",
+  "area": "JOINs",
+  "topic": "JOINs",
+  "type": "behavior",
+  "question": "Čo sa stane pri LEFT JOIN, keď k riadku z ľavej tabuľky neexistuje zodpovedajúci riadok v pravej tabuľke?",
+  "code": "SELECT e.name, d.name\nFROM employees e\nLEFT JOIN departments d ON d.id = e.department_id;",
+  "options": [
+   "Riadok z ľavej tabuľky sa úplne odstráni",
+   "Celý dopyt skončí chybou",
+   "Riadok z ľavej tabuľky sa zachová a stĺpce z pravej strany dostanú hodnoty NULL",
+   "Databáza automaticky prepne na INNER JOIN"
+  ],
+  "answer": 2,
+  "explanation": "LEFT JOIN zachová každý riadok z ľavej tabuľky bez ohľadu na to, či vpravo existuje zodpovedajúci riadok. Ak zhoda neexistuje, stĺpce z pravej strany obsahujú NULL. Častá nesprávna odpoveď láka preto, lebo INNER JOIN sa správa inak a riadky bez zhody odstráni."
+ },
+ {
+  "id": 9,
+  "level": "junior",
+  "area": "NULL handling",
+  "topic": "NULL handling",
+  "type": "output",
+  "question": "Aký je výsledok pre nasledujúce dáta?",
+  "code": "employees\nname  | bonus\nAnna  | 100\nBela  | NULL\nCsilla| 200\n\nSELECT COUNT(bonus)\nFROM employees;",
+  "options": [
+   "3",
+   "2",
+   "1",
+   "NULL"
+  ],
+  "answer": 1,
+  "explanation": "`COUNT(column)` počíta iba hodnoty, ktoré nie sú NULL. Anna a Csilla majú známy bonus, Belov je NULL, takže výsledok je 2. `COUNT(*)` by pre tie isté dáta vrátil 3. Častá nesprávna odpoveď láka preto, lebo tabuľka má tri riadky, no COUNT nad stĺpcom hodnoty NULL ignoruje."
+ },
+ {
+  "id": 10,
+  "level": "junior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "trap",
+  "question": "Prečo je nasledujúci dopyt v PostgreSQL neplatný alebo problematický?",
+  "code": "SELECT department_id, name, COUNT(*)\nFROM employees\nGROUP BY department_id;",
+  "options": [
+   "COUNT sa nedá použiť spolu s GROUP BY",
+   "Stĺpec `name` nie je ani agregovaný, ani uvedený v GROUP BY",
+   "department_id sa nedá použiť v GROUP BY",
+   "PostgreSQL vyžaduje, aby každý SELECT mal ORDER BY"
+  ],
+  "answer": 1,
+  "explanation": "V zoskupenom dopyte musí byť každý vybraný stĺpec buď súčasťou klauzuly GROUP BY, alebo použitý v agregačnom výraze. Do jedného oddelenia môže patriť viac zamestnancov, takže `name` sa pre skupinu oddelenia nedá jednoznačne určiť. Častá nesprávna odpoveď láka preto, lebo COUNT spolu s GROUP BY je úplne platný SQL vzor."
+ },
+ {
+  "id": 11,
+  "level": "junior",
+  "area": "Subqueries & CTEs",
+  "topic": "Subqueries & CTEs",
+  "type": "scenario",
+  "question": "Cieľom je vybrať zamestnancov, ktorých plat je vyšší ako priemerný plat všetkých zamestnancov. Ktorý dopyt je správny?",
+  "code": "SELECT *\nFROM employees\nWHERE salary > (\n    SELECT AVG(salary)\n    FROM employees\n);",
+  "options": [
+   "Dopyt uvedený vyššie",
+   "`WHERE salary > AVG(salary)`",
+   "`WHERE salary > MAX(AVG(salary))`",
+   "`WHERE salary > GROUP BY AVG(salary)`"
+  ],
+  "answer": 0,
+  "explanation": "Poddopyt vytvorí jedinú agregovanú hodnotu – priemerný plat –, s ktorou môže vonkajší dopyt porovnať plat každého zamestnanca. Agregačnú funkciu nemožno v tejto podobe použiť priamo vo WHERE. Častá nesprávna odpoveď láka preto, lebo priame použitie AVG v podmienke WHERE pôsobí logicky jednoducho."
+ },
+ {
+  "id": 12,
+  "level": "junior",
+  "area": "Data types & dates",
+  "topic": "Data types & dates",
+  "type": "behavior",
+  "question": "Čo v PostgreSQL vytvorí nasledujúci výraz, ak je `birth_date` typu DATE?",
+  "code": "SELECT birth_date + INTERVAL '1 year'\nFROM employees;",
+  "options": [
+   "Celé číslo predstavujúce rok narodenia plus jeden",
+   "Prevod dátumu na text",
+   "Hodnotu birth_date posunutú o jednoročný interval",
+   "Syntaktickú chybu SQL, pretože INTERVAL sa nedá pripočítať k DATE"
+  ],
+  "answer": 2,
+  "explanation": "V PostgreSQL môžeš k DATE alebo TIMESTAMP pripočítať INTERVAL a dostaneš dátum/čas posunutý o zadaný interval. To sa líši od jednoduchého pripočítania celého čísla k dátumu. Častá nesprávna odpoveď láka preto, lebo aritmetika s dátumami sa medzi SQL dialektmi líši."
+ },
+ {
+  "id": 13,
+  "level": "junior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "behavior",
+  "question": "Na čo sa dá v PostgreSQL použiť `ON CONFLICT DO NOTHING` na konci príkazu INSERT?",
+  "code": "INSERT INTO users (email, name)\nVALUES ('anna@example.com', 'Anna')\nON CONFLICT (email) DO NOTHING;",
+  "options": [
+   "Pri konflikte aktualizuje existujúci riadok",
+   "Pri konflikte vymaže existujúci riadok",
+   "Pri konflikte vyhodí chybu a vždy vykoná rollback",
+   "Pri konflikte preskočí vloženie daného riadku"
+  ],
+  "answer": 3,
+  "explanation": "`ON CONFLICT (email) DO NOTHING` povie PostgreSQL, aby pri konflikte na zadanom unikátnom obmedzení alebo indexe preskočil INSERT daného riadku. Existujúci riadok zostane nezmenený. Častá nesprávna odpoveď láka preto, lebo `ON CONFLICT` sa často spája s operáciami UPSERT, no `DO NOTHING` žiadnu aktualizáciu nevykoná."
+ },
+ {
+  "id": 14,
+  "level": "junior",
+  "area": "Constraints & keys",
+  "topic": "Constraints & keys",
+  "type": "scenario",
+  "question": "V tabuľke `users` musí byť e-mailová adresa každého používateľa jedinečná. Ktoré databázové obmedzenie je najvhodnejšie?",
+  "code": "CREATE TABLE users (\n    id BIGSERIAL PRIMARY KEY,\n    email TEXT NOT NULL,\n    name TEXT\n);",
+  "options": [
+   "`UNIQUE(email)`",
+   "`CHECK(email <> '')`",
+   "`FOREIGN KEY(email)`",
+   "`DEFAULT(email)`"
+  ],
+  "answer": 0,
+  "explanation": "Obmedzenie UNIQUE na úrovni databázy zaručí, že sa rovnaká hodnota e-mailu nemôže objaviť viackrát. `NOT NULL` iba zabraňuje chýbajúcim hodnotám, jedinečnosť nevynucuje. Častá nesprávna odpoveď láka preto, lebo obmedzenia CHECK dokážu vynútiť jednoduché pravidlá, no na vynútenie jedinečnosti nie sú vhodným mechanizmom."
+ },
+ {
+  "id": 15,
+  "level": "junior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "edgecase",
+  "question": "Čo vráti nasledujúci dopyt, ak stĺpec `age` obsahuje hodnoty NULL?",
+  "code": "SELECT *\nFROM employees\nWHERE age <> 30;",
+  "options": [
+   "Každý riadok okrem tých, kde je vek presne 30",
+   "Zamestnancov starších aj mladších ako 30 rokov vrátane tých s hodnotou NULL",
+   "Zamestnancov so známym vekom iným ako 30; riadky s hodnotou NULL sa nevrátia",
+   "Iba riadky s hodnotou NULL"
+  ],
+  "answer": 2,
+  "explanation": "Porovnanie s NULL dáva v trojhodnotovej logike SQL výsledok UNKNOWN, nie TRUE. WHERE ponechá iba riadky, pre ktoré je podmienka TRUE, takže `age <> 30` nevyberie riadky, kde je vek NULL. Častá nesprávna odpoveď láka preto, lebo NULL sa často mylne považuje za konkrétnu hodnotu, ktorá sa jednoducho líši od všetkých ostatných."
+ },
+ {
+  "id": 16,
+  "level": "junior",
+  "area": "SQL injection & security",
+  "topic": "SQL injection & security",
+  "type": "production",
+  "question": "Webová aplikácia vyhľadáva v databáze podľa mena zadaného používateľom. Ktorý prístup správne znižuje riziko SQL injection?",
+  "code": "String sql = \"SELECT * FROM users WHERE name = ?\";",
+  "options": [
+   "Odstrániť z používateľského vstupu každý znak `'`",
+   "Použiť parametrizovaný dopyt s prepared statementom",
+   "Previesť používateľský vstup na veľké písmená",
+   "Pridať komentár na koniec SQL dopytu"
+  ],
+  "answer": 1,
+  "explanation": "Pri parametrizovanom dopyte sa hodnota od používateľa odovzdá ako dáta a nestane sa súčasťou syntaxe SQL príkazu. Jednoduché nahrádzanie znakov nedokáže spoľahlivo pokryť všetky možné prípady syntaxe SQL a kódovania. Častá nesprávna odpoveď láka preto, lebo filtrovanie znakov dokáže zablokovať niektoré jednoduché príklady útokov, no nie je to všeobecné bezpečnostné riešenie."
+ },
+ {
+  "id": 17,
+  "level": "junior",
+  "area": "SQL vs NoSQL",
+  "topic": "SQL vs NoSQL",
+  "type": "scenario",
+  "question": "Aplikácia má vysoko štruktúrované dáta, vykonáva transakcie, ktoré menia viac tabuliek, a vyžaduje silnú referenčnú integritu. Ktorý prístup týmto požiadavkám prirodzene zodpovedá?",
+  "code": "System requirements:\n- complex JOINs\n- foreign key relationships\n- ACID transactions\n- consistent, structured data",
+  "options": [
+   "Relačná SQL databáza",
+   "Iba key-value databáza",
+   "Iba dokumentová databáza",
+   "JSON súbory uložené v súborovom systéme"
+  ],
+  "answer": 0,
+  "explanation": "Relačné databázy prirodzene podporujú vzťahy medzi tabuľkami, cudzie kľúče, JOINy a transakčnú integritu. To neznamená, že by sa NoSQL systém nedal navrhnúť tak, aby podobné požiadavky splnil; tieto požiadavky však priamo zodpovedajú silným stránkam relačného modelu. Častá nesprávna odpoveď láka preto, lebo flexibilná schéma NoSQL systémov môže byť pre mnohé moderné aplikácie výhodou."
+ },
+ {
+  "id": 18,
+  "level": "junior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "performance",
+  "question": "Máš veľkú tabuľku `orders` a dopyty často používajú nasledujúcu podmienku:\nKtorý index by mohol byť pre túto podmienku priamo užitočný?",
+  "code": "SELECT *\nFROM orders\nWHERE customer_id = 12345;",
+  "options": [
+   "Index na `created_at`",
+   "Index na `status`",
+   "Index na `customer_id`",
+   "Index na úplne inej tabuľke"
+  ],
+  "answer": 2,
+  "explanation": "Index na `customer_id` umožní databáze efektívnejšie nájsť riadky konkrétneho zákazníka, najmä vo veľkej tabuľke. O tom, či index použije, aj tak rozhodne optimalizátor na základe štatistík a odhadovanej ceny dopytu. Častá nesprávna odpoveď láka preto, lebo akýkoľvek index môže znieť ako optimalizácia výkonu, no index musí súvisieť s vyhľadávacou podmienkou."
+ },
+ {
+  "id": 19,
+  "level": "junior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "behavior",
+  "question": "Čo sa vo všeobecnosti deje pri dopyte na VIEW v PostgreSQL?",
+  "code": "CREATE VIEW active_users AS\nSELECT id, name\nFROM users\nWHERE active = true;",
+  "options": [
+   "VIEW pri každom vytvorení automaticky skopíruje všetky riadky do novej fyzickej tabuľky",
+   "VIEW iba vytvorí index na tabuľke users",
+   "VIEW zabráni úpravám tabuľky users",
+   "VIEW poskytuje pomenovanú definíciu dopytu, cez ktorú sa dá dopytovať na aktívnych používateľov"
+  ],
+  "answer": 3,
+  "explanation": "Klasický VIEW je logicky uložená definícia dopytu, na ktorú sa neskôr môžeš dopytovať podobne ako na tabuľku. Nie je automaticky ekvivalentom materializovaného pohľadu, ktorý výsledky dopytu ukladá fyzicky a dokáže ich udržiavať samostatne. Častá nesprávna odpoveď láka preto, lebo VIEW sa z pohľadu používateľa, ktorý sa naň dopytuje, často správa ako tabuľka."
+ },
+ {
+  "id": 20,
+  "level": "junior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "scenario",
+  "question": "Aký je základný účel transakcie v nasledujúcej postupnosti?",
+  "code": "BEGIN;\n\nUPDATE accounts\nSET balance = balance - 100\nWHERE id = 1;\n\nUPDATE accounts\nSET balance = balance + 100\nWHERE id = 2;\n\nCOMMIT;",
+  "options": [
+   "Zabezpečiť, aby sa obe zmeny potvrdili ako jeden logický celok",
+   "Automaticky previesť operácie UPDATE na operácie SELECT",
+   "Automaticky zaindexovať dáta",
+   "Odstrániť vzťah medzi oboma operáciami UPDATE"
+  ],
+  "answer": 0,
+  "explanation": "Transakcia umožňuje spracovať obe zmeny ako jeden logický celok práce a potvrdiť ich spoločne. Ak sa transakcia pred COMMIT vráti späť, zmeny sa dajú zrušiť. Častá nesprávna odpoveď láka preto, lebo pojem transakcie sa niekedy zamieňa s konkrétnymi SQL operáciami, ktoré sa v nej vykonávajú."
+ },
+ {
+  "id": 21,
+  "level": "junior",
+  "area": "Normalization & schema design",
+  "topic": "Normalization & schema design",
+  "type": "scenario",
+  "question": "V tabuľke `orders` sa pri každej objednávke opakuje meno, e-mailová adresa a telefónne číslo zákazníka. Zákazník môže mať veľa objednávok. Ktorý prístup túto redundanciu najlepšie zníži?",
+  "code": "orders:\norder_id | customer_name | customer_email | customer_phone | total\n\nA customer can create multiple orders.",
+  "options": [
+   "Zmeniť každý stĺpec na VARCHAR(1000)",
+   "Presunúť údaje o zákazníkoch do samostatnej tabuľky customers a v tabuľke orders ukladať customer_id",
+   "Previesť tabuľku orders na jediný JSON stĺpec",
+   "Naďalej ukladať meno zákazníka pri každej objednávke, ale vytvoriť naň index"
+  ],
+  "answer": 1,
+  "explanation": "Oddelenie údajov o zákazníkoch a objednávkach odstráni zbytočnú duplicitu, pričom cudzí kľúč customer_id zachová vzťah. Znižuje to aj riziko anomálií pri aktualizácii a mazaní. Častá nesprávna odpoveď láka preto, lebo index môže zrýchliť niektoré dopyty, no redundanciu dát neodstráni."
+ },
+ {
+  "id": 22,
+  "level": "junior",
+  "area": "Constraints & keys",
+  "topic": "Constraints & keys",
+  "type": "theory",
+  "question": "Aká je hlavná úloha obmedzenia PRIMARY KEY?",
+  "options": [
+   "Zabezpečuje, že kľúč každého riadku je jedinečný a jeho hodnota nemôže byť NULL",
+   "Automaticky urobí jedinečnými všetky ostatné stĺpce",
+   "Zabráni všetkým operáciám DELETE",
+   "Nevyhnutne vytvorí inkrementálne celé číslo"
+  ],
+  "answer": 0,
+  "explanation": "PRIMARY KEY jednoznačne identifikuje riadky v tabuľke, preto jeho hodnoty musia byť jedinečné a nesmú byť NULL. Nemusí to byť celé číslo a automatické zvyšovanie je samostatný mechanizmus, napríklad identity stĺpec alebo sekvencia. Častá nesprávna odpoveď láka preto, lebo databázy ako primárny kľúč často používajú automaticky zvyšované celočíselné `id`."
+ },
+ {
+  "id": 23,
+  "level": "junior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "debug",
+  "question": "Prečo nasledujúci príkaz v PostgreSQL nevykoná očakávaný UPSERT, ak má stĺpec `users.email` obmedzenie UNIQUE?",
+  "code": "INSERT INTO users (email, name)\nVALUES ('anna@example.com', 'Anna')\nON CONFLICT (email)\nDO UPDATE SET name = name;",
+  "options": [
+   "ON CONFLICT sa dá použiť iba s DELETE",
+   "Stĺpec email nemôže byť UNIQUE",
+   "Výraz `name = name` jednoznačne neodkazuje na požadovanú novú hodnotu; na vkladanú hodnotu sa zvyčajne odkazuje cez `EXCLUDED.name`",
+   "PostgreSQL nepodporuje operácie UPSERT"
+  ],
+  "answer": 2,
+  "explanation": "V klauzule `ON CONFLICT DO UPDATE` majú existujúci cieľový riadok a riadok navrhnutý na vloženie rozdielne úlohy. Na navrhované vkladané hodnoty sa odkazuješ cez pseudotabuľku `EXCLUDED`, napríklad `SET name = EXCLUDED.name`. Častá nesprávna odpoveď láka preto, lebo `name = name` na prvý pohľad vyzerá, že by mal existujúcemu stĺpcu priradiť novo vkladanú hodnotu."
+ },
+ {
+  "id": 24,
+  "level": "junior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "performance",
+  "question": "Ktorý nástroj v PostgreSQL poskytne podrobné informácie o tom, ako databáza plánuje a vykonáva dopyt?",
+  "code": "EXPLAIN (ANALYZE, BUFFERS)\nSELECT *\nFROM orders\nWHERE customer_id = 12345;",
+  "options": [
+   "`DESCRIBE ONLY`",
+   "`SHOW EXECUTION`",
+   "`TRACE QUERY`",
+   "`EXPLAIN (ANALYZE, BUFFERS)`"
+  ],
+  "answer": 3,
+  "explanation": "`EXPLAIN` zobrazí plán vykonania dopytu, `ANALYZE` spôsobí, že sa dopyt naozaj vykoná, a poskytne merania z behu; `BUFFERS` pridá informácie o využití bufferov. Keďže ANALYZE dopyt vykoná, pri príkazoch meniacich dáta ho v produkcii používaj opatrne. Častá nesprávna odpoveď láka preto, lebo iné databázové systémy či nástroje môžu mať podobne pomenované diagnostické príkazy."
+ },
+ {
+  "id": 25,
+  "level": "junior",
+  "area": "JOINs",
+  "topic": "JOINs",
+  "type": "trap",
+  "question": "Aký je výsledok, keď sa podmienka na stĺpec tabuľky z pravej strany umiestni po LEFT JOIN do klauzuly WHERE?",
+  "code": "SELECT e.name, d.name\nFROM employees e\nLEFT JOIN departments d\n    ON d.id = e.department_id\nWHERE d.name = 'IT';",
+  "options": [
+   "Všetci zamestnanci zostanú a oddelenia iné ako IT dostanú hodnoty NULL",
+   "V skutočnosti zostanú iba riadky s existujúcim oddelením s názvom IT",
+   "Dopyt vždy skončí syntaktickou chybou",
+   "LEFT JOIN automaticky zduplikuje každé oddelenie"
+  ],
+  "answer": 1,
+  "explanation": "LEFT JOIN najprv zachová všetky riadky z ľavej tabuľky, no podmienka WHERE potom ponechá iba riadky, pre ktoré je `d.name = 'IT'` TRUE. Riadky bez zodpovedajúceho oddelenia majú `d.name = NULL`, takže podmienku WHERE nesplnia. Dopyt sa preto pri tejto podmienke správa podobne ako INNER JOIN. Častá nesprávna odpoveď láka preto, lebo kľúčové slovo LEFT JOIN ťa môže zviesť k predpokladu, že riadky z ľavej strany sa zachovajú pri všetkých ďalších podmienkach."
+ },
+ {
+  "id": 26,
+  "level": "junior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "output",
+  "question": "Aký je výsledok nasledujúceho dopytu v PostgreSQL?",
+  "code": "SELECT name\nFROM employees\nWHERE salary BETWEEN 800000 AND 1000000;",
+  "options": [
+   "Mená zamestnancov s platom od 800 000 do 1 000 000 vrátane",
+   "Mená zamestnancov s platom presne 800 000 alebo 1 000 000",
+   "Mená zamestnancov s platom medzi 800 000 a 1 000 000 bez hraničných hodnôt",
+   "Mená zamestnancov s platom pod 800 000 alebo nad 1 000 000"
+  ],
+  "answer": 0,
+  "explanation": "`BETWEEN` je v SQL inkluzívny, čo znamená, že dolná aj horná hranica sú zahrnuté. Výraz je logicky ekvivalentný `salary >= 800000 AND salary <= 1000000`. Častá nesprávna odpoveď láka preto, lebo iné programovacie jazyky a konvencie rozsahov často používajú hornú hranicu bez zahrnutia."
+ },
+ {
+  "id": 27,
+  "level": "junior",
+  "area": "JOINs",
+  "topic": "JOINs",
+  "type": "output",
+  "question": "Čo sa stane, ak má zamestnanec v druhej tabuľke viac zodpovedajúcich riadkov?",
+  "code": "SELECT e.id, p.project_id\nFROM employees e\nJOIN project_assignments p\n    ON p.employee_id = e.id;",
+  "options": [
+   "Každý zamestnanec sa objaví presne raz",
+   "Zamestnanec sa môže objaviť toľkokrát, koľko má zodpovedajúcich riadkov v project_assignments",
+   "Vrátia sa iba zamestnanci s presne jedným priradením",
+   "JOIN priradenia automaticky agreguje"
+  ],
+  "answer": 1,
+  "explanation": "JOIN zodpovedajúce riadky automaticky nezlučuje. Ak má zamestnanec tri zodpovedajúce priradenia, môže sa objaviť v troch riadkoch výsledku, každý s príslušným `project_id`. Častá nesprávna odpoveď láka preto, lebo ID zamestnanca zostáva rovnaké, takže ľahko predpokladáš, že databáza riadky automaticky spojí do jedného."
+ },
+ {
+  "id": 28,
+  "level": "junior",
+  "area": "NULL handling",
+  "topic": "NULL handling",
+  "type": "output",
+  "question": "Aký je výsledok nasledujúceho dopytu v PostgreSQL, ak sú hodnoty `department_id` v tabuľke `employees` `10`, `NULL` a `20`?",
+  "code": "SELECT COUNT(DISTINCT department_id)\nFROM employees;",
+  "options": [
+   "3",
+   "1",
+   "2",
+   "NULL"
+  ],
+  "answer": 2,
+  "explanation": "`COUNT(DISTINCT department_id)` počíta rôzne hodnoty, ktoré nie sú NULL. Hodnoty 10 a 20 sú dve rôzne hodnoty, zatiaľ čo NULL sa do hodnôt počítaných pomocou COUNT nad stĺpcom nezahŕňa. Častá nesprávna odpoveď láka preto, lebo samotný DISTINCT môže hodnotu NULL vo výsledku ponechať, no `COUNT(column)` hodnoty NULL nepočíta."
+ },
+ {
+  "id": 29,
+  "level": "junior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "output",
+  "question": "Ktoré oddelenia sa objavia vo výsledku nasledujúceho dopytu?",
+  "code": "SELECT department_id, COUNT(*)\nFROM employees\nGROUP BY department_id\nHAVING COUNT(*) >= 3;",
+  "options": [
+   "Každé oddelenie s aspoň jedným zamestnancom",
+   "Iba oddelenia s presne tromi zamestnancami",
+   "Každé oddelenie s najviac tromi zamestnancami",
+   "Oddelenia s aspoň tromi zamestnancami"
+  ],
+  "answer": 3,
+  "explanation": "`GROUP BY` vytvorí skupinu pre každé oddelenie a `HAVING` tieto skupiny filtruje. `COUNT(*) >= 3` preto ponechá oddelenia s aspoň tromi riadkami. Častá nesprávna odpoveď láka preto, lebo podmienku `HAVING` si ľahko vyložíš tak, že vyberá iba skupiny s presne tromi prvkami."
+ },
+ {
+  "id": 30,
+  "level": "junior",
+  "area": "Subqueries & CTEs",
+  "topic": "Subqueries & CTEs",
+  "type": "behavior",
+  "question": "Aký je hlavný rozdiel medzi nasledujúcimi dvoma dopytmi?",
+  "code": "SELECT *\nFROM employees\nWHERE department_id IN (\n    SELECT id\n    FROM departments\n    WHERE location = 'Budapest'\n);\n\nSELECT e.*\nFROM employees e\nJOIN departments d\n    ON d.id = e.department_id\nWHERE d.location = 'Budapest';",
+  "options": [
+   "Prvý je vždy rýchlejší a druhý vždy pomalší",
+   "Prvý nemôže použiť index",
+   "Prvý aj druhý môžu dať rovnaký logický výsledok, hoci ich plány vykonania sa môžu líšiť",
+   "Druhý môže vrátiť iba jedného zamestnanca"
+  ],
+  "answer": 2,
+  "explanation": "Oba dopyty vyjadrujú rovnaký logický cieľ: vybrať zamestnancov z oddelení so sídlom v Budapešti. Optimalizátor PostgreSQL ich môže vo vhodných prípadoch transformovať na podobné plány vykonania, takže použitie poddopytu samo osebe neznamená, že dopyt bude pomalší. Častá nesprávna odpoveď láka preto, lebo syntax SQL je odlišná, a preto sa môže zdať, že obe formy majú zásadne odlišný výkon."
+ },
+ {
+  "id": 31,
+  "level": "junior",
+  "area": "Data types & dates",
+  "topic": "Data types & dates",
+  "type": "output",
+  "question": "Aký je v PostgreSQL výsledok nasledujúceho výrazu?",
+  "code": "SELECT DATE '2026-01-15' + 10;",
+  "options": [
+   "`2026-01-25`",
+   "`2026-01-15 10:00:00`",
+   "`2026-01-05`",
+   "Chyba, pretože k DATE sa nedá pripočítať celé číslo"
+  ],
+  "answer": 0,
+  "explanation": "V PostgreSQL znamená pripočítanie celého čísla k DATE pripočítanie daného počtu dní. Pripočítaním desiatich dní k 15. januáru 2026 dostaneš 25. január 2026. Častá nesprávna odpoveď láka preto, lebo význam pripočítania čísla k dátumu sa medzi SQL dialektmi líši a iné prostredia môžu vyžadovať inú syntax."
+ },
+ {
+  "id": 32,
+  "level": "junior",
+  "area": "Constraints & keys",
+  "topic": "Constraints & keys",
+  "type": "scenario",
+  "question": "Každá objednávka v tabuľke `orders` musí patriť existujúcemu zákazníkovi. Ktoré obmedzenie to vynúti na úrovni databázy?",
+  "code": "CREATE TABLE orders (\n    id BIGINT PRIMARY KEY,\n    customer_id BIGINT\n);",
+  "options": [
+   "`CHECK(customer_id > 0)`",
+   "`FOREIGN KEY(customer_id) REFERENCES customers(id)`",
+   "`UNIQUE(customer_id)`",
+   "`DEFAULT customer_id`"
+  ],
+  "answer": 1,
+  "explanation": "Cudzí kľúč zabezpečí, aby hodnota `customer_id` zodpovedala platnému kľúču v odkazovanej tabuľke `customers`, podľa pravidiel definovaných obmedzením. CHECK dokáže overiť podmienku na samotnej hodnote a UNIQUE vynucuje jedinečnosť. Častá nesprávna odpoveď láka preto, lebo kontrola, že customer_id je kladné, môže byť užitočnou validáciou, no nedokazuje, že zákazník naozaj existuje."
+ },
+ {
+  "id": 33,
+  "level": "junior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "trap",
+  "question": "Vytvoríš index na stĺpci veľkej tabuľky, v ktorej takmer každý riadok obsahuje rovnakú hodnotu. Ktoré tvrdenie je najpresnejšie?",
+  "code": "CREATE INDEX idx_orders_status\nON orders(status);",
+  "options": [
+   "Index automaticky výrazne zrýchli každý dopyt",
+   "Index automaticky urobí stĺpec status jedinečným (UNIQUE)",
+   "Index zaručene spomalí každý dopyt SELECT",
+   "Index môže mať obmedzený úžitok, pretože pre nízku selektivitu môže optimalizátor zvoliť inú prístupovú cestu"
+  ],
+  "answer": 3,
+  "explanation": "Keď má stĺpec veľmi málo rôznych hodnôt, jednoduchý index nemusí efektívne odlíšiť malú podmnožinu riadkov od zvyšku. PostgreSQL preto môže na základe rozloženia dát a odhadovanej ceny zvoliť sekvenčný sken. Častá nesprávna odpoveď láka preto, lebo indexy sa zvyčajne učia ako nástroj na zvýšenie výkonu, no každý index má réžiu na údržbu a nie je prínosom pre každú vyhľadávaciu podmienku."
+ },
+ {
+  "id": 34,
+  "level": "junior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "debug",
+  "question": "Čo sa stane pri nasledujúcom príkaze v PostgreSQL, ak neexistuje riadok, ktorého `id` zodpovedá podmienke WHERE?",
+  "code": "UPDATE employees\nSET salary = salary * 1.1\nWHERE id = 999999;",
+  "options": [
+   "Plat každého zamestnanca sa zvýši o 10 %",
+   "Dopyt automaticky vykoná INSERT",
+   "Upraví sa 0 riadkov",
+   "Databáza vždy vyhodí chybu"
+  ],
+  "answer": 2,
+  "explanation": "UPDATE upravuje iba riadky, ktoré spĺňajú podmienku WHERE. Ak taký riadok neexistuje, príkaz môže úspešne skončiť a upraviť nula riadkov. Častá nesprávna odpoveď láka preto, lebo úspešné vykonanie UPDATE sa ľahko zamení s predpokladom, že sa musel upraviť aspoň jeden riadok."
+ },
+ {
+  "id": 35,
+  "level": "junior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "output",
+  "question": "Čo vráti nasledujúci dopyt, ak sú niektoré hodnoty `name` NULL?",
+  "code": "SELECT name\nFROM employees\nWHERE name IS NOT NULL\nORDER BY name ASC;",
+  "options": [
+   "Iba mená s hodnotou NULL",
+   "Všetky mená vrátane hodnôt NULL",
+   "Iba mená, ktoré nie sú NULL, vzostupne",
+   "Iba mená, ktoré nie sú NULL, zostupne"
+  ],
+  "answer": 2,
+  "explanation": "`IS NOT NULL` odstráni riadky, kde je `name` NULL. `ORDER BY name ASC` potom zvyšné hodnoty zoradí vzostupne. Častá nesprávna odpoveď láka preto, lebo smer ASC a DESC sa ľahko zamení, najmä pri rýchlej otázke na pohovore."
+ },
+ {
+  "id": 36,
+  "level": "junior",
+  "area": "JOINs",
+  "topic": "JOINs",
+  "type": "scenario",
+  "question": "Chceš vidieť všetky priradenia zamestnancov vrátane zamestnancov, ktorí zatiaľ nemajú žiadne priradenie. Ktorý JOIN použiješ?",
+  "code": "SELECT e.id, a.project_id\nFROM employees e\nLEFT JOIN project_assignments a\n    ON a.employee_id = e.id;",
+  "options": [
+   "LEFT JOIN",
+   "INNER JOIN",
+   "CROSS JOIN",
+   "SELF JOIN"
+  ],
+  "answer": 0,
+  "explanation": "LEFT JOIN zachová každý riadok zamestnanca a pri zamestnancoch bez priradenia obsahujú stĺpce priradenia hodnoty NULL. INNER JOIN by vylúčil zamestnancov, ktorí nemajú zodpovedajúce priradenie. Častá nesprávna odpoveď láka preto, lebo INNER JOIN je najčastejšie používaný typ JOINu, no riadky z ľavej strany bez zhody nezachováva."
+ },
+ {
+  "id": 37,
+  "level": "junior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "output",
+  "question": "Ktorý výsledok správne udáva priemerný plat pre každé oddelenie?",
+  "code": "SELECT department_id, AVG(salary)\nFROM employees\nGROUP BY department_id;",
+  "options": [
+   "Jeden globálny priemerný plat bez ID oddelení",
+   "Jeden priemerný plat na oddelenie",
+   "Plat každého zamestnanca vynásobený tromi",
+   "Iba oddelenie s najvyšším priemerným platom"
+  ],
+  "answer": 1,
+  "explanation": "`GROUP BY department_id` vytvorí samostatnú skupinu pre každé oddelenie a `AVG(salary)` vypočíta priemerný plat v každej skupine. Výsledok preto obsahuje jednu agregovanú hodnotu na oddelenie. Častá nesprávna odpoveď láka preto, lebo AVG bez zoskupenia naozaj vráti jeden globálny priemer."
+ },
+ {
+  "id": 38,
+  "level": "junior",
+  "area": "Subqueries & CTEs",
+  "topic": "Subqueries & CTEs",
+  "type": "output",
+  "question": "Čo vráti nasledujúci dopyt?",
+  "code": "SELECT name\nFROM employees\nWHERE department_id IN (\n    SELECT id\n    FROM departments\n    WHERE location = 'Budapest'\n);",
+  "options": [
+   "Iba názvy oddelení so sídlom v Budapešti",
+   "Mená všetkých zamestnancov bez ohľadu na oddelenie",
+   "Mená zamestnancov, ktorí patria do oddelenia so sídlom v Budapešti",
+   "Iba zamestnancov, ktorí nemajú oddelenie"
+  ],
+  "answer": 2,
+  "explanation": "Vnútorný dopyt najprv vráti ID oddelení so sídlom v Budapešti. Vonkajší dopyt potom vyberie zamestnancov, ktorých `department_id` je v tejto množine. Častá nesprávna odpoveď láka preto, lebo `id` vrátené poddopytom sa ľahko zamení s ID zamestnanca."
+ },
+ {
+  "id": 39,
+  "level": "junior",
+  "area": "SQL injection & security",
+  "topic": "SQL injection & security",
+  "type": "production",
+  "question": "Aplikácia dynamicky skladá SQL takto:\nAký je najväčší problém tohto prístupu?",
+  "code": "String sql = \"SELECT * FROM users WHERE name = '\" + userInput + \"'\";",
+  "options": [
+   "Dopyt nemôže použiť stĺpec typu reťazec",
+   "Dopyt funguje iba v PostgreSQL",
+   "Zreťazené SQL je vždy pomalšie ako akýkoľvek prepared statement",
+   "Používateľský vstup sa môže stať súčasťou syntaxe SQL, čo vytvára zraniteľnosť SQL injection"
+  ],
+  "answer": 3,
+  "explanation": "Používateľský vstup sa vkladá priamo do textu SQL, takže špeciálne upravený vstup môže zmeniť význam dopytu. Vhodným riešením je parametrizovaný dopyt. Častá nesprávna odpoveď láka preto, lebo zreťazenie reťazcov dáva pri bežnom vstupe platné SQL, no to ešte neznamená, že je bezpečné."
+ },
+ {
+  "id": 40,
+  "level": "junior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "theory",
+  "question": "Aký je najdôležitejší rozdiel medzi bežným VIEW a materializovaným pohľadom v PostgreSQL?",
+  "options": [
+   "Bežný VIEW nemôže obsahovať podmienku WHERE",
+   "Na materializovaný pohľad sa nedá dopytovať pomocou SELECT",
+   "Materializovaný pohľad fyzicky ukladá výsledok dopytu, ktorý sa dá samostatne obnoviť",
+   "Bežný VIEW je vždy rýchlejší ako materializovaný pohľad"
+  ],
+  "answer": 2,
+  "explanation": "Bežný VIEW predstavuje definíciu dopytu, kým materializovaný pohľad navyše fyzicky ukladá výsledok tohto dopytu. Obsah materializovaného pohľadu môže zastarať, a preto ho treba samostatne obnovovať. Častá nesprávna odpoveď láka preto, lebo vďaka fyzickému uloženiu sa materializovaný pohľad môže zdať rovnocenný bežnej tabuľke."
+ },
+ {
+  "id": 41,
+  "level": "junior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "behavior",
+  "question": "Čo sa stane v transakcii PostgreSQL po nasledujúcich príkazoch?",
+  "code": "BEGIN;\n\nUPDATE accounts\nSET balance = balance - 100\nWHERE id = 1;\n\nROLLBACK;",
+  "options": [
+   "Zmena zostane natrvalo",
+   "Zmena sa vráti späť",
+   "UPDATE automaticky začne novú transakciu",
+   "ROLLBACK vracia späť iba operácie SELECT"
+  ],
+  "answer": 1,
+  "explanation": "ROLLBACK zruší zmeny vykonané v aktuálnej transakcii, ktoré ešte neboli potvrdené. Zostatok na účte sa preto vráti do stavu pred transakciou. Častá nesprávna odpoveď láka preto, lebo UPDATE sa už vykonal, takže sa najprv zdá, že databáza bola natrvalo zmenená."
+ },
+ {
+  "id": 42,
+  "level": "junior",
+  "area": "Data types & dates",
+  "topic": "Data types & dates",
+  "type": "edgecase",
+  "question": "Čo sa stane s nasledujúcim výrazom v PostgreSQL?",
+  "code": "SELECT DATE '2024-02-29' + INTERVAL '1 year';",
+  "options": [
+   "Výsledok je vždy `2025-02-29`",
+   "Nastane syntaktická chyba, pretože rok 2024 je priestupný",
+   "Výsledok automaticky bude NULL",
+   "Vznikne platná hodnota dátumu/času v roku 2025; kalendárna aritmetika zohľadní, že rok 2025 nie je priestupný"
+  ],
+  "answer": 3,
+  "explanation": "Aritmetika dátumov založená na intervaloch sa riadi kalendárnymi pravidlami, takže pripočítanie jedného roka k 29. februáru 2024 dá platný výsledok, a nie neexistujúci 29. február 2025. Je to dobrý príklad toho, prečo sa aritmetika dátumov nemá vždy brať ako jednoduché počítanie dní. Častá nesprávna odpoveď láka preto, lebo obyčajná výmena roka by naozaj dala neexistujúci dátum."
+ },
+ {
+  "id": 43,
+  "level": "junior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "performance",
+  "question": "Prečo by si nemal automaticky vytvárať index na každom stĺpci veľkej tabuľky?",
+  "options": [
+   "Indexy sa dajú použiť iba v dopytoch SELECT",
+   "Indexy zaberajú úložisko a pridávajú réžiu na údržbu pri operáciách INSERT/UPDATE/DELETE",
+   "PostgreSQL povoľuje iba jeden index na tabuľku",
+   "Indexy dopyty SELECT vždy spomaľujú"
+  ],
+  "answer": 1,
+  "explanation": "Každý index potrebuje vlastnú štruktúru a úložisko a pri zmenách dát ho treba aj udržiavať. Príliš veľa alebo zle zvolených indexov preto môže znížiť výkon zápisov a zvýšiť nároky na úložisko. Častá nesprávna odpoveď láka preto, lebo indexy sa učia hlavne ako nástroj na optimalizáciu SELECT, kým ich priamy vplyv na zápisové operácie sa často prehliada."
+ },
+ {
+  "id": 44,
+  "level": "junior",
+  "area": "Normalization & schema design",
+  "topic": "Normalization & schema design",
+  "type": "scenario",
+  "question": "V nasledujúcej štruktúre môže mať zamestnanec viac telefónnych čísel. Ktorý model lepšie zodpovedá relačnej normalizácii?",
+  "code": "employees\nid | name | phone1 | phone2 | phone3",
+  "options": [
+   "Použiť samostatnú tabuľku employee_phones so stĺpcami employee_id a phone_number",
+   "Zvýšiť počet stĺpcov s telefónom na 100",
+   "Uložiť všetky telefónne čísla do jedného poľa TEXT oddeleného čiarkami",
+   "Uložiť každé telefónne číslo ako samostatný záznam zamestnanca"
+  ],
+  "answer": 0,
+  "explanation": "Presun viachodnotového atribútu do samostatnej súvisiacej tabuľky je prirodzený relačný model: zamestnanec môže mať ľubovoľný počet záznamov s telefónom. Vyhneš sa tak pevnému počtu stĺpcov s telefónom a dáta sa ľahšie dopytujú a spravujú. Častá nesprávna odpoveď láka preto, lebo niekoľko pevných polí sa môže zdať jednoduché, no takýto návrh sa rýchlo ťažko škáluje aj dopytuje."
+ },
+ {
+  "id": 45,
+  "level": "junior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "algorithm",
+  "question": "Chceš dopyt, ktorý vráti iba aktívnych zamestnancov s platom od 1 000 000 do 2 000 000. Ktorá podmienka je správna?",
+  "options": [
+   "`WHERE salary >= 1000000 AND salary <= 2000000 AND active = true`",
+   "`WHERE salary >= 1000000 OR salary <= 2000000 AND active = true`",
+   "`WHERE salary BETWEEN 1000000 OR 2000000 AND active = true`",
+   "`WHERE salary > 1000000 AND salary < 2000000 OR active = true`"
+  ],
+  "answer": 0,
+  "explanation": "Podmienka spája tri požiadavky pomocou AND: dolnú a hornú hranicu platu a aktívny stav. Vrátia sa preto iba riadky, ktoré spĺňajú všetky tri podmienky. Častá nesprávna odpoveď láka preto, lebo kombinovanie AND a OR môže kvôli prednosti operátorov v SQL dať úplne iný výsledok."
+ },
+ {
+  "id": 46,
+  "level": "junior",
+  "area": "JOINs",
+  "topic": "JOINs",
+  "type": "output",
+  "question": "Čo sa stane pri nasledujúcom CROSS JOIN, ak prvá tabuľka obsahuje 3 riadky a druhá 4 riadky?",
+  "code": "SELECT *\nFROM employees e\nCROSS JOIN departments d;",
+  "options": [
+   "Vznikne 7 riadkov",
+   "Vznikne 12 riadkov",
+   "Vzniknú 4 riadky",
+   "Vzniknú 3 riadky"
+  ],
+  "answer": 1,
+  "explanation": "CROSS JOIN vytvorí karteziánsky súčin: každý riadok prvej tabuľky sa spáruje s každým riadkom druhej tabuľky. Traja zamestnanci a štyri oddelenia preto dajú 3 × 4 = 12 riadkov výsledku. Častá nesprávna odpoveď láka preto, lebo slovo JOIN ťa môže zviesť k predpokladu, že riadky vznikajú iba na základe zodpovedajúcich vzťahov."
+ },
+ {
+  "id": 47,
+  "level": "junior",
+  "area": "NULL handling",
+  "topic": "NULL handling",
+  "type": "trap",
+  "question": "Ktorá podmienka správne vyberie riadky, kde je `bonus` buď 100, alebo NULL?",
+  "options": [
+   "`WHERE bonus = 100 OR bonus = NULL`",
+   "`WHERE bonus IN (100, NULL)`",
+   "`WHERE bonus = 100 OR bonus IS NULL`",
+   "`WHERE bonus BETWEEN 100 AND NULL`"
+  ],
+  "answer": 2,
+  "explanation": "NULL treba kontrolovať pomocou `IS NULL`, kým konkrétnu hodnotu 100 môžeš porovnať pomocou `=`. Obe podmienky preto treba spojiť cez OR. Častá nesprávna odpoveď láka preto, lebo `IN` intuitívne vyzerá ako zoznam, v ktorom by sa s NULL dalo zaobchádzať ako s bežnou porovnateľnou hodnotou."
+ },
+ {
+  "id": 48,
+  "level": "junior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "scenario",
+  "question": "Chceš zvýšiť plat každého zamestnanca v oddelení 20 o 10 %. Ktorý príkaz to urobí?",
+  "options": [
+   "`UPDATE employees SET salary = 1.10 WHERE department_id = 20;`",
+   "`UPDATE employees SET salary = salary * 0.10 WHERE department_id = 20;`",
+   "`UPDATE employees SET salary = salary + 10 WHERE department_id = 20;`",
+   "`UPDATE employees SET salary = salary * 1.10 WHERE department_id = 20;`"
+  ],
+  "answer": 3,
+  "explanation": "Existujúci plat treba zmeniť na 110 % aktuálnej hodnoty, takže vhodný výraz je `salary * 1.10`. `salary * 0.10` by ponechal iba 10 % pôvodného platu. Častá nesprávna odpoveď láka preto, lebo spojenie „zvýšenie o 10 %“ ľahko zvedie k vynásobeniu pôvodnej hodnoty iba číslom 0.10."
+ },
+ {
+  "id": 49,
+  "level": "junior",
+  "area": "Constraints & keys",
+  "topic": "Constraints & keys",
+  "type": "edgecase",
+  "question": "Tabuľka obsahuje nasledujúce obmedzenie. Ktoré vloženie je s ním v konflikte?",
+  "code": "CREATE TABLE products (\n    id BIGSERIAL PRIMARY KEY,\n    sku TEXT UNIQUE\n);",
+  "options": [
+   "Nový riadok so `sku = 'ABC-123'`, ak v databáze už existuje iný riadok s rovnakou hodnotou `sku`",
+   "Nový riadok s hodnotou sku NULL",
+   "Nový riadok s inou hodnotou sku",
+   "Nový riadok s rovnakým názvom produktu, ale iným sku"
+  ],
+  "answer": 0,
+  "explanation": "Obmedzenie UNIQUE zabraňuje tomu, aby sa rovnaká hodnota, ktorá nie je NULL, objavila v danom stĺpci viackrát. V PostgreSQL môže štandardné obmedzenie UNIQUE povoliť viac hodnôt NULL, pretože hodnoty NULL sa navzájom nepovažujú za rovnaké. Častá nesprávna odpoveď láka preto, lebo jedinečnosť sa ľahko zamení s požiadavkou NOT NULL."
+ },
+ {
+  "id": 50,
+  "level": "junior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "production",
+  "question": "Často spúšťaný dopyt SELECT v produkčnej databáze sa náhle výrazne spomalil. Čo by bolo jedným z najlepších prvých krokov pri skúmaní problému?",
+  "options": [
+   "Okamžite zmazať všetky indexy",
+   "Okamžite zvýšiť RAM databázového servera",
+   "Preskúmať aktuálny plán vykonania dopytu, napríklad pomocou EXPLAIN, a porovnať odhadované a skutočné náklady",
+   "Nahradiť relačnú databázu NoSQL databázou"
+  ],
+  "answer": 2,
+  "explanation": "Zhoršenie výkonu treba najprv zmerať a diagnostikovať. Plán vykonania ukáže, aké skeny, stratégie spájania a indexy optimalizátor používa a kde vznikajú významné náklady. Častá nesprávna odpoveď láka preto, lebo zmeny hardvéru alebo architektúry sa môžu zdať ako zjavné riešenia výkonu, no bez dôkazov môžu riešiť nesprávny problém."
+ },
+ {
+  "id": 51,
+  "level": "junior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "output",
+  "question": "Čo vráti nasledujúci dopyt v PostgreSQL?",
+  "code": "SELECT name\nFROM employees\nORDER BY salary DESC, name ASC\nLIMIT 5;",
+  "options": [
+   "Mená piatich najlepšie platených zamestnancov; zamestnanci s rovnakým platom sú zoradení podľa mena vzostupne",
+   "Mená piatich najhoršie platených zamestnancov",
+   "Všetkých zamestnancov zoradených podľa mena a z nich prvých päť",
+   "Piatich najlepšie platených zamestnancov, pričom zamestnanci s rovnakým platom sú zoradení podľa mena zostupne"
+  ],
+  "answer": 0,
+  "explanation": "Prvým kľúčom zoradenia je `salary DESC`, takže najvyššie platy sú na začiatku. Ak majú dva riadky rovnaký plat, ich poradie určí druhý kľúč `name ASC`. Potom `LIMIT 5` ponechá iba prvých päť riadkov. Častá nesprávna odpoveď láka preto, lebo sa ľahko sústredíš iba na prvý výraz v `ORDER BY` a prehliadneš sekundárne zoradenie."
+ },
+ {
+  "id": 52,
+  "level": "junior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "behavior",
+  "question": "Čo sa v PostgreSQL stane s nasledujúcim dopytom, ak stĺpec `name` obsahuje textové hodnoty?",
+  "code": "SELECT name\nFROM employees\nWHERE name LIKE 'Ann%';",
+  "options": [
+   "Vyberie iba zamestnancov, ktorých meno je presne `Ann`",
+   "Vyberie mená, ktoré sa začínajú reťazcom `Ann`",
+   "Vyberie mená, ktoré sa končia reťazcom `Ann`",
+   "Vyberie mená dlhé presne tri znaky"
+  ],
+  "answer": 1,
+  "explanation": "Zástupný znak SQL `%` predstavuje ľubovoľný počet znakov vrátane nuly. `Ann%` preto zodpovedá každému reťazcu, ktorý sa začína na `Ann`. Častá nesprávna odpoveď láka preto, lebo význam `%` sa ľahko zamení so zástupným znakom pre jeden alebo pevný počet znakov."
+ },
+ {
+  "id": 53,
+  "level": "junior",
+  "area": "JOINs",
+  "topic": "JOINs",
+  "type": "trap",
+  "question": "V nasledujúcom dopyte môže mať zamestnanec viac priradení k projektom. Aký je jeden dôležitý možný dôsledok?",
+  "code": "SELECT e.id, e.name\nFROM employees e\nJOIN project_assignments p\n    ON p.employee_id = e.id\nWHERE p.project_id IN (10, 20);",
+  "options": [
+   "Každý zamestnanec sa môže objaviť najviac raz",
+   "JOIN sa automaticky zmení na dopyt s DISTINCT",
+   "Ten istý zamestnanec sa môže objaviť viackrát, ak má viac zodpovedajúcich priradení",
+   "Vráti sa iba prvý riadok tabuľky employees"
+  ],
+  "answer": 2,
+  "explanation": "Ak má zamestnanec priradenie k projektu 10 aj k projektu 20, JOIN môže preň vytvoriť dva zodpovedajúce riadky. JOIN duplicitné riadky výsledku automaticky neodstraňuje. Častá nesprávna odpoveď láka preto, lebo vo výsledku sú iba stĺpce zamestnanca, takže sa môže zdať, že JOIN automaticky vytvorí zoznam jedinečných zamestnancov."
+ },
+ {
+  "id": 54,
+  "level": "junior",
+  "area": "NULL handling",
+  "topic": "NULL handling",
+  "type": "edgecase",
+  "question": "Aký je výsledok nasledujúceho výrazu v PostgreSQL?",
+  "code": "SELECT COALESCE(NULL, NULL, 42, 100);",
+  "options": [
+   "NULL",
+   "100",
+   "Chyba, pretože viac hodnôt NULL nie je povolených",
+   "42"
+  ],
+  "answer": 3,
+  "explanation": "`COALESCE` vyhodnocuje argumenty zľava doprava a vráti prvú hodnotu, ktorá nie je NULL. Prvé dve hodnoty sú NULL, takže sa vráti 42 a 100 sa nevyberie. Častá nesprávna odpoveď láka preto, lebo posledný argument COALESCE si ľahko vyložíš ako predvolenú hodnotu, no skutočné pravidlo je vrátiť prvú hodnotu, ktorá nie je NULL."
+ },
+ {
+  "id": 55,
+  "level": "junior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "trap",
+  "question": "Aký je rozdiel medzi použitím `WHERE` a `HAVING` v nasledujúcom dopyte?",
+  "code": "SELECT department_id, COUNT(*)\nFROM employees\nWHERE active = true\nGROUP BY department_id\nHAVING COUNT(*) >= 5;",
+  "options": [
+   "WHERE sa vykoná po zoskupení, HAVING pred zoskupením",
+   "WHERE filtruje jednotlivé riadky pred zoskupením, HAVING filtruje výsledné skupiny",
+   "WHERE a HAVING sú v tomto prípade vždy úplne ekvivalentné",
+   "HAVING sa dá použiť iba spolu s ORDER BY"
+  ],
+  "answer": 1,
+  "explanation": "`WHERE active = true` najprv odfiltruje neaktívnych zamestnancov. Potom prebehne zoskupenie a `HAVING COUNT(*) >= 5` ponechá iba oddelenia, v ktorých zostalo aspoň päť aktívnych zamestnancov. Častá nesprávna odpoveď láka preto, lebo obe klauzuly slúžia na filtrovanie, no pôsobia v rôznych fázach a na rôznych úrovniach."
+ },
+ {
+  "id": 56,
+  "level": "junior",
+  "area": "Subqueries & CTEs",
+  "topic": "Subqueries & CTEs",
+  "type": "behavior",
+  "question": "Čo znamená `EXISTS` v nasledujúcom dopyte?",
+  "code": "SELECT e.id, e.name\nFROM employees e\nWHERE EXISTS (\n    SELECT 1\n    FROM project_assignments p\n    WHERE p.employee_id = e.id\n);",
+  "options": [
+   "Iba overí, či poddopyt nájde pre aktuálneho zamestnanca aspoň jeden riadok",
+   "Pridá všetky riadky vrátené poddopytom k výsledku zamestnancov",
+   "Spočíta priradenia a povolí presne jedno",
+   "Vloží hodnotu 1 vrátenú poddopytom do tabuľky employees"
+  ],
+  "answer": 0,
+  "explanation": "`EXISTS` overuje, či poddopyt pre aktuálny vonkajší riadok vráti aspoň jeden riadok. Na konkrétnej hodnote, ktorú poddopyt vyberie, nezáleží, preto je `SELECT 1` bežnou formou. Častá nesprávna odpoveď láka preto, lebo `1` v poddopyte môže vyzerať, akoby sa jeho skutočná hodnota dostala do výsledku."
+ },
+ {
+  "id": 57,
+  "level": "junior",
+  "area": "Data types & dates",
+  "topic": "Data types & dates",
+  "type": "output",
+  "question": "Aký je výsledok nasledujúceho dopytu v PostgreSQL?",
+  "code": "SELECT DATE '2026-03-31' - DATE '2026-03-01';",
+  "options": [
+   "`30`",
+   "`31`",
+   "`29`",
+   "Hodnota typu INTERVAL"
+  ],
+  "answer": 0,
+  "explanation": "V PostgreSQL dáva odčítanie jedného DATE od druhého celé číslo predstavujúce počet dní medzi dátumami. Medzi 1. a 31. marcom je 30 dní. Častá nesprávna odpoveď láka preto, lebo odčítanie hodnôt TIMESTAMP dáva INTERVAL, kým odčítanie hodnôt DATE dáva celé číslo – počet dní."
+ },
+ {
+  "id": 58,
+  "level": "junior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "behavior",
+  "question": "Čo urobí nasledujúci príkaz DELETE?",
+  "code": "DELETE FROM employees\nWHERE active = false;",
+  "options": [
+   "Vymaže sa iba prvý neaktívny zamestnanec",
+   "Vymaže sa každý zamestnanec",
+   "Vymaže sa každý zamestnanec, ktorého hodnota `active` je false",
+   "Neaktívnym zamestnancom sa hodnoty iba zmenia na NULL"
+  ],
+  "answer": 2,
+  "explanation": "DELETE odstráni všetky riadky, ktoré spĺňajú podmienku WHERE, nielen jeden záznam. `WHERE active = false` sa preto vzťahuje na každý zodpovedajúci riadok. Častá nesprávna odpoveď láka preto, lebo mazanie jedného objektu je bežnou operáciou v niektorých ORM API, kým SQL DELETE štandardne zasiahne každý zodpovedajúci riadok."
+ },
+ {
+  "id": 59,
+  "level": "junior",
+  "area": "Constraints & keys",
+  "topic": "Constraints & keys",
+  "type": "scenario",
+  "question": "V tabuľke `employee_projects` nesmie byť ten istý zamestnanec priradený k tomu istému projektu viackrát. Ktoré obmedzenie toto pravidlo priamo vyjadruje?",
+  "code": "CREATE TABLE employee_projects (\n    employee_id BIGINT,\n    project_id BIGINT\n);",
+  "options": [
+   "`PRIMARY KEY(employee_id)`",
+   "`UNIQUE(employee_id, project_id)`",
+   "`CHECK(employee_id <> project_id)`",
+   "`FOREIGN KEY(employee_id, project_id)`"
+  ],
+  "answer": 1,
+  "explanation": "Obmedzenie UNIQUE na kombinácii oboch stĺpcov zaručí, že rovnaká dvojica zamestnanec – projekt sa nemôže objaviť viackrát. Primárny kľúč iba na employee_id by naopak zabránil tomu, aby zamestnanec patril k viacerým rôznym projektom. Častá nesprávna odpoveď láka preto, lebo employee_id môže vyzerať ako jedinečný identifikátor, no v tomto modeli vzťah identifikuje až kombinácia oboch hodnôt."
+ },
+ {
+  "id": 60,
+  "level": "junior",
+  "area": "SQL vs NoSQL",
+  "topic": "SQL vs NoSQL",
+  "type": "scenario",
+  "question": "Aplikácia má produkty s rôznymi, často sa meniacimi atribútmi a zvyčajne číta alebo zapisuje celý dokument produktu naraz. Ktorý model môže byť prirodzenou voľbou?",
+  "options": [
+   "Dokumentová NoSQL databáza",
+   "Prísne normalizovaná relačná schéma so samostatnou tabuľkou pre každý atribút",
+   "Používať iba CSV súbory",
+   "Používať iba key-value úložisko bez štruktúrovanej hodnoty"
+  ],
+  "answer": 0,
+  "explanation": "Dokumentové databázy prirodzene podporujú záznamy s rôznou alebo vyvíjajúcou sa štruktúrou a umožňujú čítať či zapisovať celý dokument ako celok. Neznamená to, že každý takýto systém vyžaduje NoSQL; dôležité zostávajú konkrétne požiadavky na dopytovanie, konzistenciu a transakcie. Častá nesprávna odpoveď láka preto, lebo relačná normalizácia je často dobrou predvolenou voľbou, no nie je optimálna pre každý dátový model."
+ },
+ {
+  "id": 61,
+  "level": "medior",
+  "area": "Window functions",
+  "topic": "Window functions",
+  "type": "output",
+  "question": "Čo vráti nasledujúci dopyt v PostgreSQL?",
+  "code": "SELECT\n    name,\n    salary,\n    RANK() OVER (ORDER BY salary DESC) AS salary_rank\nFROM employees;",
+  "options": [
+   "Jedinečné poradové číslo bez medzier pre každého zamestnanca",
+   "Iba najlepšie plateného zamestnanca",
+   "Zamestnanci sú zoradení podľa platu, zamestnanci s rovnakým platom dostanú rovnaké poradie, čo môže viesť k preskočeným poradovým číslam",
+   "Zamestnanci sú zoradení samostatne v rámci každého oddelenia"
+  ],
+  "answer": 2,
+  "explanation": "`RANK()` priradí riadkom s rovnakými hodnotami ORDER BY rovnaké poradie a v nasledujúcich číslach poradia môžu vzniknúť medzery. Napríklad pri platoch 100, 100 a 90 sú poradia 1, 1 a 3. `ROW_NUMBER()` by naopak priradil každému riadku jedinečné číslo. Častá nesprávna odpoveď láka preto, lebo funkcie na určovanie poradia sa ľahko navzájom zamenia."
+ },
+ {
+  "id": 62,
+  "level": "medior",
+  "area": "Window functions",
+  "topic": "Window functions",
+  "type": "scenario",
+  "question": "Chceš vybrať najlepšie plateného zamestnanca v každom oddelení a vo výsledku ponechať celý riadok zamestnanca. Ktorý prístup je v PostgreSQL vhodný?",
+  "code": "SELECT *\nFROM (\n    SELECT\n        e.*,\n        ROW_NUMBER() OVER (\n            PARTITION BY department_id\n            ORDER BY salary DESC\n        ) AS rn\n    FROM employees e\n) ranked\nWHERE rn = 1;",
+  "options": [
+   "Samotné `GROUP BY department_id`",
+   "Použiť `ROW_NUMBER()` s `PARTITION BY department_id` a potom filtrovať pomocou `rn = 1`",
+   "Použiť `COUNT(*)` zoradený podľa platu",
+   "`ORDER BY salary DESC LIMIT 1` bez ďalšej logiky"
+  ],
+  "answer": 1,
+  "explanation": "`PARTITION BY department_id` vytvorí samostatné okno pre každé oddelenie a `ORDER BY salary DESC` umiestni v každej partícii najlepšie plateného zamestnanca na prvé miesto. Pomocou `ROW_NUMBER()` potom môžeš vybrať prvý riadok z každej partície. Častá nesprávna odpoveď láka preto, lebo GROUP BY dokáže agregovať dáta podľa oddelenia, no automaticky nezachová celý vybraný riadok zamestnanca."
+ },
+ {
+  "id": 63,
+  "level": "medior",
+  "area": "Window functions",
+  "topic": "Window functions",
+  "type": "behavior",
+  "question": "Aký je rozdiel medzi `ROW_NUMBER()` a `RANK()`, keď má viac zamestnancov rovnaký plat?",
+  "options": [
+   "`ROW_NUMBER()` priradí jedinečné čísla riadkov aj rovnakým hodnotám, kým `RANK()` môže priradiť rovnaké poradie",
+   "`RANK()` vždy priradí jedinečné čísla riadkov, kým `ROW_NUMBER()` priradí rovnaké poradia",
+   "Obe vždy vrátia presne rovnaké hodnoty",
+   "`ROW_NUMBER()` sa dá použiť iba s agregáciou"
+  ],
+  "answer": 0,
+  "explanation": "`ROW_NUMBER()` priradí každému riadku výsledku samostatné číslo podľa zoradenia v rámci okna. `RANK()` priradí riadkom s rovnakými hodnotami ORDER BY rovnaké poradie, čo môže viesť k preskočeným číslam poradia. Častá nesprávna odpoveď láka preto, lebo obe funkcie sa používajú na úlohy podobné určovaniu poradia, no majú odlišnú sémantiku."
+ },
+ {
+  "id": 64,
+  "level": "medior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "performance",
+  "question": "Dopyt používa `WHERE customer_id = 123`, no PostgreSQL aj tak na veľkej tabuľke zvolí sekvenčný sken. Ktoré vysvetlenie môže byť úplne rozumné?",
+  "code": "SELECT *\nFROM orders\nWHERE customer_id = 123;",
+  "options": [
+   "PostgreSQL nikdy nepoužíva indexy pre podmienky WHERE",
+   "Indexy fungujú iba pri operáciách JOIN",
+   "Plánovač sa mýli, preto by si mal použitie indexu vždy vynútiť",
+   "Podmienka môže vybrať veľa riadkov, takže sekvenčný sken je lacnejší ako použitie indexu"
+  ],
+  "answer": 3,
+  "explanation": "Optimalizátor rozhoduje na základe ceny. Ak `customer_id = 123` zodpovedá veľkej časti tabuľky, použitie indexu s množstvom náhodných prístupov do heapu môže byť drahšie ako sekvenčné prečítanie tabuľky. Častá nesprávna odpoveď láka preto, lebo index sa na veľkej tabuľke intuitívne javí ako rýchlejšia možnosť, no záleží aj na selektivite indexu a podiele vrátených riadkov."
+ },
+ {
+  "id": 65,
+  "level": "medior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "performance",
+  "question": "Dopyt v PostgreSQL často používa nasledujúcu podmienku:\nKtoré riešenie môže byť priamo užitočné na indexovanie tejto podmienky?",
+  "code": "SELECT *\nFROM users\nWHERE lower(email) = 'anna@example.com';",
+  "options": [
+   "Index na stĺpci `name`",
+   "Výrazový index na `lower(email)`",
+   "Index na stĺpci `created_at`",
+   "Obmedzenie UNIQUE na stĺpci `name`"
+  ],
+  "answer": 1,
+  "explanation": "Dopyt neporovnáva priamo stĺpec `email`, ale výsledok výrazu `lower(email)`. V PostgreSQL môžeš na tento výraz vytvoriť výrazový index, ktorý potom optimalizátor za vhodných podmienok použije. Častá nesprávna odpoveď láka preto, lebo indexovanie stĺpca email vyzerá ako súvisiace riešenie, no indexovaný výraz musí zodpovedať vyhľadávacej podmienke."
+ },
+ {
+  "id": 66,
+  "level": "medior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "scenario",
+  "question": "Dve súbežné transakcie prečítajú ten istý riadok a potom sa ho obe pokúsia upraviť. Aké správanie PostgreSQL je pri jednoduchom UPDATE pod READ COMMITTED typické?",
+  "options": [
+   "Oba príkazy UPDATE sa vždy potichu navzájom prepíšu",
+   "Žiadna transakcia nečaká, pretože príkazy UPDATE sú vždy optimistické",
+   "Jeden UPDATE môže riadok zamknúť, kým druhý čaká, kým sa prvá transakcia dokončí",
+   "READ COMMITTED automaticky poskytuje správanie SERIALIZABLE"
+  ],
+  "answer": 2,
+  "explanation": "V PostgreSQL používa UPDATE pri úprave riadku mechanizmy zamykania na úrovni riadkov, takže súbežná úprava môže spôsobiť, že iná transakcia čaká na výsledok prvej. Presné správanie závisí od operácií a časovania transakcií. Častá nesprávna odpoveď láka preto, lebo READ COMMITTED je nižšia úroveň izolácie, no to neznamená, že zamykanie chýba."
+ },
+ {
+  "id": 67,
+  "level": "medior",
+  "area": "Locking & deadlocks",
+  "topic": "Locking & deadlocks",
+  "type": "scenario",
+  "question": "Dve transakcie upravujú dva rôzne riadky v nasledujúcom poradí. Prečo môže vzniknúť deadlock?",
+  "code": "-- Transaction 1\nBEGIN;\nUPDATE accounts SET balance = balance - 10 WHERE id = 1;\nUPDATE accounts SET balance = balance + 10 WHERE id = 2;\n\n-- Transaction 2\nBEGIN;\nUPDATE accounts SET balance = balance - 20 WHERE id = 2;\nUPDATE accounts SET balance = balance + 20 WHERE id = 1;",
+  "options": [
+   "Pretože každý UPDATE automaticky spôsobí deadlock",
+   "Pretože obe transakcie môžu čakať na zámky, ktoré drží tá druhá: jedna drží zámok na riadku 1 a druhá na riadku 2",
+   "Pretože príkaz BEGIN zabráni druhému UPDATE",
+   "Pretože PostgreSQL nepodporuje viac transakcií"
+  ],
+  "answer": 1,
+  "explanation": "Prvá transakcia môže získať zámok na riadku 1, kým druhá získa zámok na riadku 2. Ak potom každá čaká na riadok, ktorý drží tá druhá, vznikne cyklická závislosť, a tým deadlock. PostgreSQL ho dokáže odhaliť a jednu z transakcií zruší. Častá nesprávna odpoveď láka preto, lebo deadlock sa ľahko zamení s predstavou, že jediný UPDATE je sám osebe nebezpečný."
+ },
+ {
+  "id": 68,
+  "level": "medior",
+  "area": "Subqueries & CTEs",
+  "topic": "Subqueries & CTEs",
+  "type": "algorithm",
+  "question": "V dopyte chceš použiť ten istý zložitý poddopyt na viacerých miestach. Ktorý prístup vo všeobecnosti sprehľadní logickú štruktúru dopytu?",
+  "options": [
+   "Dať celú logiku do jednej veľmi dlhej podmienky WHERE",
+   "Skopírovať poddopyt na každé miesto, kde je potrebný",
+   "Skryť celý dopyt do uloženej procedúry",
+   "Použiť CTE (`WITH`) a zložitý poddopyt pomenovať"
+  ],
+  "answer": 3,
+  "explanation": "CTE ti umožní definovať poddopyt s názvom a potom sa naň odkazovať z hlavného dopytu, čo často výrazne zlepší čitateľnosť a udržiavateľnosť. Použitie CTE samo osebe nezaručuje lepší výkon, takže štrukturálny prínos si nezamieňaj s optimalizáciou. Častá nesprávna odpoveď láka preto, lebo presun logiky do procedúry tiež skryje detaily implementácie, no štruktúru dopytu tým nemusí sprehľadniť."
+ },
+ {
+  "id": 69,
+  "level": "medior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "trap",
+  "question": "Čo sa stane v nasledujúcom dopyte, ak má každý zamestnanec oddelenia `salary = NULL`?",
+  "code": "SELECT department_id, AVG(salary)\nFROM employees\nGROUP BY department_id;",
+  "options": [
+   "AVG bude 0",
+   "Oddelenie z výsledku úplne zmizne",
+   "AVG vráti pre toto oddelenie NULL",
+   "PostgreSQL vyhodí chybu"
+  ],
+  "answer": 2,
+  "explanation": "AVG ignoruje hodnoty NULL. Ak skupina neobsahuje žiadny plat, ktorý nie je NULL, nie je z čoho počítať priemer, takže výsledok agregácie je NULL. Častá nesprávna odpoveď láka preto, lebo biznis logika často nahrádza chýbajúce číselné hodnoty nulou, no agregácia v SQL to automaticky nerobí."
+ },
+ {
+  "id": 70,
+  "level": "medior",
+  "area": "JOINs",
+  "topic": "JOINs",
+  "type": "debug",
+  "question": "Cieľom nasledujúceho dopytu je vrátiť všetkých zamestnancov a ak je to možné, pripojiť údaje o oddelení IT. Prečo tento cieľ nedosiahne?",
+  "code": "SELECT e.name, d.name\nFROM employees e\nLEFT JOIN departments d\n    ON d.id = e.department_id\nWHERE d.name = 'IT';",
+  "options": [
+   "LEFT JOIN sa nedá použiť s tabuľkou departments",
+   "Podmienka WHERE vylúči riadky, kde je oddelenie NULL, čím výsledok v skutočnosti obmedzí na zodpovedajúce riadky IT",
+   "Podmienka ON sa pri LEFT JOIN vždy ignoruje",
+   "Podmienka WHERE zduplikuje každého zamestnanca"
+  ],
+  "answer": 1,
+  "explanation": "Hoci LEFT JOIN najprv zachová riadky zamestnancov bez zhody, podmienka WHERE potom prepustí iba riadky, kde je `d.name = 'IT'` TRUE. Ak oddelenie neexistuje, `d.name` je NULL, takže sa riadok odstráni. Ak chceš uplatniť podmienku zhody s IT a zároveň zachovať riadky z ľavej strany, podmienku zvyčajne treba dať do klauzuly ON. Častá nesprávna odpoveď láka preto, lebo samotné kľúčové slovo LEFT JOIN môže naznačovať, že riadky z ľavej strany sa zachovajú bez ohľadu na ďalšie podmienky."
+ },
+ {
+  "id": 71,
+  "level": "medior",
+  "area": "Window functions",
+  "topic": "Window functions",
+  "type": "output",
+  "question": "Čo vráti nasledujúci dopyt pre hodnoty `salary` 100, 100 a 80?",
+  "code": "SELECT\n    salary,\n    DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk\nFROM employees;",
+  "options": [
+   "1, 1, 2",
+   "1, 2, 3",
+   "1, 1, 3",
+   "3, 3, 1"
+  ],
+  "answer": 0,
+  "explanation": "`DENSE_RANK()` priradí rovnakým hodnotám rovnaké poradie a pri ďalšej odlišnej hodnote číslo poradia nepreskočí. Obe hodnoty 100 preto dostanú poradie 1 a 80 dostane poradie 2. Častá nesprávna odpoveď láka preto, lebo `RANK()` by pre tie isté dáta dal 1, 1, 3, takže sa obe funkcie ľahko zamenia."
+ },
+ {
+  "id": 72,
+  "level": "medior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "production",
+  "question": "Dopyt je v produkcii niekedy rýchly a niekedy veľmi pomalý, hoci SQL je rovnaké. Ktoré skúmanie môže byť obzvlášť užitočné na pochopenie, prečo plánovač môže voliť rôzne alebo nevhodné plány?",
+  "options": [
+   "Vymazať a znovu vytvoriť každú tabuľku v databáze",
+   "Zmazať všetky indexy a dopyt spustiť znova",
+   "Preskúmať plán vykonania, štatistiky a rozloženie dát",
+   "Nahradiť SELECT príkazom DELETE"
+  ],
+  "answer": 2,
+  "explanation": "Rozhodnutia plánovača môžu závisieť od veľkosti tabuľky, štatistík, rozloženia dát a parametrov dopytu. `EXPLAIN (ANALYZE, BUFFERS)` spolu so štatistikami databázy ti pomôže zistiť, či premenlivý výkon spôsobujú chyby v odhadoch, rozloženie dát alebo iný faktor. Častá nesprávna odpoveď láka preto, lebo zmazanie indexov je viditeľný experiment, no bez diagnostického základu skôr poškodí systém, ako by odhalilo príčinu."
+ },
+ {
+  "id": 73,
+  "level": "medior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "scenario",
+  "question": "V tej istej transakcii s izoláciou READ COMMITTED bežia dva po sebe idúce príkazy SELECT. Medzi nimi iná transakcia potvrdí zmenu. Čo sa môže stať?",
+  "options": [
+   "Druhý SELECT môže použiť nový snapshot príkazu, a preto uvidí zmenu potvrdenú inou transakciou",
+   "Pre celú transakciu je zaručený ten istý snapshot",
+   "Druhý SELECT zmenu vždy uvidí, aj keď ju iná transakcia nepotvrdila",
+   "READ COMMITTED úplne zabraňuje súbežným transakciám"
+  ],
+  "answer": 0,
+  "explanation": "Pri izolácii READ COMMITTED v PostgreSQL môže každý príkaz použiť vlastný snapshot. Neskorší SELECT preto môže vidieť dáta, ktoré medzitým potvrdila iná transakcia, kým skorší SELECT túto zmenu vidieť nemohol. Častá nesprávna odpoveď láka preto, lebo mnohí si transakciu automaticky spájajú s jediným snapshotom, ktorý sa počas celej transakcie nemení."
+ },
+ {
+  "id": 74,
+  "level": "medior",
+  "area": "Normalization & schema design",
+  "topic": "Normalization & schema design",
+  "type": "scenario",
+  "question": "Tabuľka `orders` ukladá `customer_id` aj `customer_email`, hoci e-mailová adresa je už uložená v tabuľke customers. Aký závažný problém to môže spôsobiť?",
+  "options": [
+   "customer_id sa nikdy nebude dať použiť ako cudzí kľúč",
+   "Databáza automaticky vymaže duplicitné e-mailové adresy",
+   "Tabuľka orders nemôže používať indexy",
+   "Ak sa e-mail zmení a neaktualizujú sa všetky duplicitné kópie, môže vzniknúť anomália pri aktualizácii"
+  ],
+  "answer": 3,
+  "explanation": "Ukladanie tej istej informácie na viacerých miestach môže viesť k nekonzistencii. Ak sa e-mail zákazníka zmení, no v niektorých záznamoch objednávok zostane stará hodnota, databáza obsahuje pre e-mail toho istého zákazníka dve rôzne hodnoty. Častá nesprávna odpoveď láka preto, lebo redundantný stĺpec môže niektoré dopyty zjednodušiť, no dlhodobo spôsobuje problémy s údržbou a konzistenciou."
+ },
+ {
+  "id": 75,
+  "level": "medior",
+  "area": "SQL injection & security",
+  "topic": "SQL injection & security",
+  "type": "production",
+  "question": "Endpoint API dynamicky umožňuje klientovi zvoliť stĺpec, podľa ktorého sa zoraďuje. Hodnotu `sortColumn` možno vložiť priamo do SQL reťazca. Aký je vhodný bezpečný prístup?",
+  "options": [
+   "Hodnotu sortColumn jednoducho dať do úvodzoviek",
+   "Previesť hodnotu sortColumn na SQL komentár",
+   "Overiť hodnotu voči zoznamu povolených názvov stĺpcov (allowlist) na serveri a použiť iba overený identifikátor",
+   "Previesť hodnotu sortColumn na malé písmená"
+  ],
+  "answer": 2,
+  "explanation": "S názvom stĺpca alebo iným identifikátorom SQL nemôžeš zaobchádzať rovnako ako s dátovou hodnotou odovzdanou cez parameter prepared statementu. Hodnotu od klienta preto treba namapovať na vopred definovaný allowlist povolených názvov stĺpcov a do štruktúry SQL zapracovať iba overený identifikátor. Častá nesprávna odpoveď láka preto, lebo úvodzovky alebo transformácia vstupu môžu pôsobiť ako jeho ošetrenie, no tieto techniky spoľahlivú validáciu identifikátora neposkytujú."
+ },
+ {
+  "id": 76,
+  "level": "medior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "output",
+  "question": "Čo vráti nasledujúci dopyt v PostgreSQL, ak sú hodnoty `salary` 500, 700 a 900?",
+  "code": "SELECT name\nFROM employees\nWHERE salary > 500\n  AND salary < 900;",
+  "options": [
+   "Zamestnancov s platmi 500, 700 a 900",
+   "Iba zamestnancov s platmi 500 a 900",
+   "Iba zamestnanca s platom 700",
+   "Zamestnancov s platmi 700 a 900"
+  ],
+  "answer": 2,
+  "explanation": "Obe podmienky musia platiť a obe porovnania sú ostré. Hodnoty 500 a 900 sa preto vylúčia, kým 700 spĺňa obe podmienky. Častá nesprávna odpoveď láka preto, lebo ľahko zabudneš, že `>` a `<` hraničné hodnoty nezahŕňajú."
+ },
+ {
+  "id": 77,
+  "level": "medior",
+  "area": "JOINs",
+  "topic": "JOINs",
+  "type": "behavior",
+  "question": "Čo sa stane, keď podmienku na pravú stranu LEFT JOIN umiestniš do klauzuly `ON` a táto podmienka nie je splnená?",
+  "code": "SELECT e.id, d.name\nFROM employees e\nLEFT JOIN departments d\n    ON d.id = e.department_id\n   AND d.location = 'Budapest';",
+  "options": [
+   "Riadok zamestnanca sa odstráni",
+   "Riadok zamestnanca zostane, no stĺpce oddelenia môžu obsahovať hodnoty NULL",
+   "LEFT JOIN sa automaticky prevedie na INNER JOIN",
+   "Celý dopyt skončí chybou"
+  ],
+  "answer": 1,
+  "explanation": "LEFT JOIN zachová každý riadok z ľavej strany. Ak ID oddelenia sedí, no podmienka `location = 'Budapest'` nie je splnená, zodpovedajúci riadok na pravej strane neexistuje, takže stĺpce oddelenia dostanú hodnoty NULL. Častá nesprávna odpoveď láka preto, lebo nesplnenie podmienky spojenia sa ľahko zamení s odstránením riadku z ľavej strany."
+ },
+ {
+  "id": 78,
+  "level": "medior",
+  "area": "NULL handling",
+  "topic": "NULL handling",
+  "type": "edgecase",
+  "question": "Aký je výsledok nasledujúceho výrazu v PostgreSQL?",
+  "code": "SELECT NULLIF(10, 10);",
+  "options": [
+   "10",
+   "0",
+   "FALSE",
+   "NULL"
+  ],
+  "answer": 3,
+  "explanation": "`NULLIF(a, b)` vráti NULL, ak sa `a` a `b` rovnajú. Ak sa nerovnajú, vráti prvú hodnotu. Tu sú obe hodnoty 10 rovnaké, takže výsledok je NULL. Častá nesprávna odpoveď láka preto, lebo názov NULLIF si ľahko vyložíš, akoby išlo iba o zvláštne logické porovnanie."
+ },
+ {
+  "id": 79,
+  "level": "medior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "output",
+  "question": "Čo vráti nasledujúci dopyt?",
+  "code": "SELECT department_id, SUM(salary)\nFROM employees\nGROUP BY department_id\nORDER BY SUM(salary) DESC\nLIMIT 1;",
+  "options": [
+   "Oddelenie s najvyšším súčtom platov a tento súčet",
+   "Oddelenie zamestnanca s najvyšším individuálnym platom",
+   "Každé oddelenie so súčtom platov",
+   "Oddelenie s najnižším súčtom platov"
+  ],
+  "answer": 0,
+  "explanation": "GROUP BY vypočíta súčet platov pre každé oddelenie a ORDER BY tieto súčty skupín zoradí zostupne. LIMIT 1 potom ponechá iba oddelenie s najvyšším súčtom. Častá nesprávna odpoveď láka preto, lebo najvyšší individuálny plat a najvyšší súčet platov na úrovni oddelenia sú dva rôzne pojmy."
+ },
+ {
+  "id": 80,
+  "level": "medior",
+  "area": "Subqueries & CTEs",
+  "topic": "Subqueries & CTEs",
+  "type": "debug",
+  "question": "Čo je zlé na nasledujúcom dopyte, ak je cieľom vybrať zamestnancov s platom nad priemerným platom?",
+  "code": "SELECT *\nFROM employees\nWHERE salary > (\n    SELECT department_id, AVG(salary)\n    FROM employees\n    GROUP BY department_id\n);",
+  "options": [
+   "AVG sa nedá použiť v poddopyte",
+   "GROUP BY je v poddopytoch vždy zakázané",
+   "Poddopyt môže vrátiť viac riadkov a viac stĺpcov, kým `>` v tejto podobe očakáva jedinú skalárnu hodnotu",
+   "Stĺpec salary sa nedá použiť v podmienke WHERE"
+  ],
+  "answer": 2,
+  "explanation": "Skalárny poddopyt za `>` musí vrátiť jedinú porovnateľnú hodnotu. Uvedený poddopyt môže vrátiť viac riadkov a dva stĺpce, takže túto požiadavku nespĺňa. Častá nesprávna odpoveď láka preto, lebo kombinácia AVG a GROUP BY je sama osebe úplne platné SQL."
+ },
+ {
+  "id": 81,
+  "level": "medior",
+  "area": "Window functions",
+  "topic": "Window functions",
+  "type": "output",
+  "question": "Čo vytvorí nasledujúci dopyt, ak sú platy zamestnancov v jednom oddelení 100, 80 a 60?",
+  "code": "SELECT\n    name,\n    salary,\n    SUM(salary) OVER (\n        PARTITION BY department_id\n    ) AS department_total\nFROM employees;",
+  "options": [
+   "Vráti sa individuálny plat každého zamestnanca",
+   "Pri každom zamestnancovi sa objaví rovnaký súčet platov za oddelenie",
+   "Vráti sa iba jeden zamestnanec na oddelenie",
+   "Platy sa agregujú v zostupnom poradí"
+  ],
+  "answer": 1,
+  "explanation": "`PARTITION BY department_id` definuje okno samostatne pre každé oddelenie. Okenný `SUM` priradí každému riadku v tejto partícii rovnaký súčet za oddelenie, takže v príklade sa pri každom zamestnancovi objaví 240. Častá nesprávna odpoveď láka preto, lebo SUM sa často spája výlučne s GROUP BY, kým okenná funkcia pôvodné riadky zachová."
+ },
+ {
+  "id": 82,
+  "level": "medior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "scenario",
+  "question": "Dopyt pravidelne používa nasledujúci vzor:\nKtorý index by mohol byť na podporu tohto dopytu obzvlášť vhodný?",
+  "code": "SELECT *\nFROM orders\nWHERE customer_id = 42\nORDER BY created_at DESC\nLIMIT 20;",
+  "options": [
+   "`CREATE INDEX ON orders(status);`",
+   "`CREATE INDEX ON orders(created_at);`",
+   "`CREATE INDEX ON orders(customer_id);`",
+   "`CREATE INDEX ON orders(customer_id, created_at DESC);`"
+  ],
+  "answer": 3,
+  "explanation": "Zložený index najprv filtruje podľa `customer_id` a potom podporuje aj zoradenie podľa `created_at DESC`. Vďaka LIMIT 20 to môže byť obzvlášť užitočné, pretože databáza nemusí spracovať všetky zodpovedajúce riadky. Častá nesprávna odpoveď láka preto, lebo jednostĺpcový index na customer_id môže byť naozaj užitočný, no filtrovanie a zoradenie spoločne tak priamo nepodporí."
+ },
+ {
+  "id": 83,
+  "level": "medior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "performance",
+  "question": "Prečo môže byť nasledujúci dopyt na veľkej tabuľke v PostgreSQL problematický, ak je `created_at` zaindexovaný?",
+  "code": "SELECT *\nFROM orders\nWHERE DATE(created_at) = DATE '2026-09-01';",
+  "options": [
+   "Použitie funkcie DATE vždy spôsobí syntaktickú chybu",
+   "Aplikovanie funkcie na indexovaný stĺpec môže zabrániť efektívnemu použitiu bežného indexu na `created_at`",
+   "Podmienka WHERE nemôže používať typ DATE",
+   "PostgreSQL index automaticky zmaže"
+  ],
+  "answer": 1,
+  "explanation": "Dopyt neporovnáva priamo `created_at`, ale výraz `DATE(created_at)`. Bežný index na `created_at` preto nemusí umožniť efektívny index scan. Často je vhodnejší primeraný rozsah dátumov, napríklad `created_at >= ... AND created_at < ...`. Častá nesprávna odpoveď láka preto, lebo samotná existencia indexu môže naznačovať, že sa automaticky dá použiť pri každej podmienke WHERE."
+ },
+ {
+  "id": 84,
+  "level": "medior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "scenario",
+  "question": "Ktorému javu v rámci transakcie zabraňuje izolácia REPEATABLE READ v PostgreSQL v porovnaní s READ COMMITTED?",
+  "options": [
+   "Existencii súbežných INSERTov za každých okolností",
+   "Používaniu všetkých typov zámkov",
+   "Tomu, aby neskoršie príkazy v tej istej transakcii videli novo potvrdené dáta namiesto toho, aby naďalej používali ten istý snapshot",
+   "Všetkým možnostiam deadlocku"
+  ],
+  "answer": 2,
+  "explanation": "V PostgreSQL používa REPEATABLE READ pre transakciu konzistentný snapshot, takže neskoršie dopyty v tej istej transakcii neprechádzajú na nový snapshot príkazu ako pri READ COMMITTED. Neznamená to, že sú všetky súbežné úpravy zablokované ani že deadlock je nemožný. Častá nesprávna odpoveď láka preto, lebo vyššiu úroveň izolácie si ľahko vyložíš, akoby úplne vypínala súbežnosť."
+ },
+ {
+  "id": 85,
+  "level": "medior",
+  "area": "Locking & deadlocks",
+  "topic": "Locking & deadlocks",
+  "type": "behavior",
+  "question": "Aký je typický dôvod, prečo databáza zistí deadlock?",
+  "options": [
+   "Transakcia číta príliš veľa riadkov",
+   "Jeden SELECT beží príliš pomaly",
+   "Index je príliš veľký",
+   "Dve alebo viac transakcií vytvoria cyklus zámkov, v ktorom každá čaká na zdroj držaný inou"
+  ],
+  "answer": 3,
+  "explanation": "Deadlock vznikne, keď transakcie čakajú na zdroje, ktoré držia navzájom, takže žiadna z nich nemôže pokračovať. Charakteristickým znakom je cyklické čakanie. PostgreSQL dokáže deadlock odhaliť a jednu z transakcií zrušiť. Častá nesprávna odpoveď láka preto, lebo pomalý alebo veľký dopyt naozaj môže spôsobiť čakanie na zámky, no samotné čakanie na zámok ešte nie je deadlock."
+ },
+ {
+  "id": 86,
+  "level": "medior",
+  "area": "Normalization & schema design",
+  "topic": "Normalization & schema design",
+  "type": "scenario",
+  "question": "Tabuľka `employees` ukladá v každom riadku zamestnanca názov oddelenia a meno vedúceho oddelenia. Prečo to môže byť z hľadiska normalizácie problematické?",
+  "options": [
+   "Opakovanie názvu oddelenia a vedúceho spôsobuje anomálie pri aktualizácii",
+   "Typ TEXT nedokáže ukladať mená",
+   "Meno vedúceho oddelenia nemôže byť NULL",
+   "Tabuľka employees nemôže obsahovať cudzie kľúče"
+  ],
+  "answer": 0,
+  "explanation": "Opakovanie údajov na úrovni oddelenia v každom zázname zamestnanca vytvára redundanciu. Ak sa vedúci oddelenia zmení, bolo by treba aktualizovať každý súvisiaci riadok zamestnanca, a vynechaná aktualizácia by mohla viesť k nekonzistentným dátam. Častá nesprávna odpoveď láka preto, lebo redundantné dáta môžu na začiatku niektoré dopyty zjednodušiť."
+ },
+ {
+  "id": 87,
+  "level": "medior",
+  "area": "Constraints & keys",
+  "topic": "Constraints & keys",
+  "type": "scenario",
+  "question": "V tabuľke `payments` musí byť hodnota `amount` vždy kladná. Ktoré obmedzenie túto požiadavku vyjadruje najpriamejšie?",
+  "code": "CREATE TABLE payments (\n    id BIGINT PRIMARY KEY,\n    amount NUMERIC(12,2)\n);",
+  "options": [
+   "`UNIQUE(amount)`",
+   "`FOREIGN KEY(amount)`",
+   "`CHECK(amount > 0)`",
+   "`DEFAULT(amount)`"
+  ],
+  "answer": 2,
+  "explanation": "Obmedzenie CHECK priamo vynucuje podmienku na hodnote `amount` každého riadku. UNIQUE zabraňuje duplicitným hodnotám, FOREIGN KEY vytvára vzťah k inej tabuľke a DEFAULT iba poskytuje predvolenú hodnotu. Častá nesprávna odpoveď láka preto, lebo obmedzenia sa vo všeobecnosti spájajú s validáciou dát, no rôzne typy obmedzení vynucujú rôzne pravidlá."
+ },
+ {
+  "id": 88,
+  "level": "medior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "scenario",
+  "question": "V PostgreSQL chceš aktualizovať existujúci záznam, ak e-mail už existuje, a inak vložiť nový záznam. Ktoré riešenie toto správanie implementuje?",
+  "code": "INSERT INTO users (email, name)\nVALUES ('anna@example.com', 'Anna')\nON CONFLICT (email)\nDO UPDATE SET name = EXCLUDED.name;",
+  "options": [
+   "UPSERT uvedený vyššie",
+   "`DELETE` a potom `SELECT`",
+   "Zakaždým `SELECT` a potom `INSERT`",
+   "Zakaždým `UPDATE` a potom `DELETE`"
+  ],
+  "answer": 0,
+  "explanation": "`ON CONFLICT (email)` rieši konflikt na zadanom unikátnom kľúči alebo indexe. Ak konflikt nastane, vykoná sa `DO UPDATE` a `EXCLUDED.name` predstavuje novú hodnotu navrhnutú príkazom INSERT. Ak konflikt nenastane, INSERT prebehne. Častá nesprávna odpoveď láka preto, lebo logika SELECT a potom INSERT na strane aplikácie pôsobí jednoducho, no pri súbežných transakciách môže spôsobiť race condition."
+ },
+ {
+  "id": 89,
+  "level": "medior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "scenario",
+  "question": "Chceš automaticky zaznamenávať do auditnej tabuľky, že sa záznam v `employees` zmenil. Ktorý databázový mechanizmus je vhodný na automatické naviazanie operácie na udalosť UPDATE?",
+  "options": [
+   "VIEW",
+   "TRIGGER",
+   "INDEX",
+   "FOREIGN KEY"
+  ],
+  "answer": 1,
+  "explanation": "Trigger umožňuje naviazať automatickú logiku na konkrétnu databázovú udalosť, napríklad INSERT, UPDATE alebo DELETE. Vďaka tomu môžeš po UPDATE vytvoriť auditný záznam. Častá nesprávna odpoveď láka preto, lebo aj VIEW poskytuje určitú formu abstrakcie nad dátami, no sám osebe nie je mechanizmom na spracovanie udalostí."
+ },
+ {
+  "id": 90,
+  "level": "medior",
+  "area": "Data types & dates",
+  "topic": "Data types & dates",
+  "type": "trap",
+  "question": "Ktorý typ je v PostgreSQL vhodnejší, keď chceš uložiť presný časový okamih a zaobchádzať s hodnotou ako s absolútnym okamihom, a nie ako s časom na hodinách nezávislým od časového pásma?",
+  "options": [
+   "`TEXT`",
+   "`DATE`",
+   "`TIMESTAMP WITHOUT TIME ZONE`",
+   "`TIMESTAMP WITH TIME ZONE`"
+  ],
+  "answer": 3,
+  "explanation": "V PostgreSQL predstavuje `timestamp with time zone`, skrátene `timestamptz`, absolútny časový okamih a dokáže ho zobraziť podľa časového pásma aktuálnej relácie. `timestamp without time zone` informáciu o časovom pásme neobsahuje a má inú sémantiku. Častá nesprávna odpoveď láka preto, lebo názov typu môže naznačovať, že `timestamptz` doslova ukladá názov časového pásma ako súčasť hodnoty."
+ },
+ {
+  "id": 91,
+  "level": "medior",
+  "area": "SQL injection & security",
+  "topic": "SQL injection & security",
+  "type": "production",
+  "question": "Prečo nestačí validovať používateľský vstup súvisiaci s SQL iba na frontende webovej aplikácie?",
+  "options": [
+   "Pretože validácia na frontende je vždy pomalšia",
+   "Pretože validáciu na strane klienta možno obísť, takže prístup k databáze na serveri musí byť bezpečný sám osebe",
+   "Pretože SQL injection sa vyskytuje iba v mobilných aplikáciách",
+   "Pretože backend nedokáže spracovať reťazce"
+  ],
+  "answer": 1,
+  "explanation": "Kód na strane klienta má pod kontrolou používateľ a môže ho upraviť alebo obísť, preto ho nemožno považovať za bezpečnostnú hranicu. Prístup k databáze na serveri by mal používať parametrizované dopyty, primeranú autorizáciu a ďalšie bezpečnostné kontroly. Častá nesprávna odpoveď láka preto, lebo validácia na frontende naozaj zlepšuje používateľský zážitok, no bezpečnostné kontroly na backende nenahrádza."
+ },
+ {
+  "id": 92,
+  "level": "medior",
+  "area": "SQL vs NoSQL",
+  "topic": "SQL vs NoSQL",
+  "type": "scenario",
+  "question": "Systém obsahuje veľa navzájom závislých finančných záznamov, ktoré sa musia meniť konzistentne v rámci transakcie, a vzťahy medzi dátami sa často analyzujú pomocou JOINov. Ktorý prístup týmto požiadavkám zodpovedá prirodzenejšie?",
+  "options": [
+   "Relačná SQL databáza",
+   "Výlučne dokumentová NoSQL databáza",
+   "Výlučne systém založený na cache",
+   "Jednoduché textové súbory"
+  ],
+  "answer": 0,
+  "explanation": "Relačné SQL databázy silno podporujú transakcie, referenčné vzťahy a dopyty založené na JOINoch. Aj iné databázové systémy môžu podporovať niektoré transakčné či relačné vzory, no tieto požiadavky priamo zodpovedajú silným stránkam relačného modelu. Častá nesprávna odpoveď láka preto, lebo výhody NoSQL systémov v škálovateľnosti sú v mnohých moderných systémoch dôležité, no automaticky ich nerobia vhodnejšími pre každú záťaž."
+ },
+ {
+  "id": 93,
+  "level": "medior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "debug",
+  "question": "V dopyte `EXPLAIN` odhaduje výrazne menej riadkov, než koľko ich `EXPLAIN ANALYZE` naozaj spracuje. Čo to môže naznačovať?",
+  "options": [
+   "SQL je určite syntakticky neplatné",
+   "Databáza nemôže použiť index",
+   "Odhady kardinality plánovača môžu byť nepresné, napríklad pre zastarané alebo nedostatočné štatistiky",
+   "Operácia UPDATE nebola potvrdená"
+  ],
+  "answer": 2,
+  "explanation": "Veľký rozdiel medzi odhadovaným a skutočným počtom riadkov môže naznačovať problém s odhadom kardinality. Možnými príčinami sú zastarané štatistiky, silne nerovnomerné rozloženie dát alebo zložité závislosti medzi stĺpcami. Takéto chyby v odhadoch môžu viesť aj k zlej voľbe stratégie spájania či skenovania. Častá nesprávna odpoveď láka preto, lebo výrazný rozdiel vo výkone ľahko vyzerá ako zásadný problém so samotným SQL."
+ },
+ {
+  "id": 94,
+  "level": "medior",
+  "area": "Window functions",
+  "topic": "Window functions",
+  "type": "algorithm",
+  "question": "Chceš porovnať aktuálny plat zamestnanca s predchádzajúcim záznamom o plate toho istého zamestnanca v časovo zoradenom rade. Ktorá okenná funkcia je priamo vhodná na prístup k hodnote z predchádzajúceho riadku?",
+  "options": [
+   "`LEAD()`",
+   "`LAG()`",
+   "`RANK()`",
+   "`NTILE()`"
+  ],
+  "answer": 1,
+  "explanation": "`LAG()` sprístupní predchádzajúci riadok vzhľadom na aktuálny riadok podľa zoradenia okna. Napríklad `LAG(salary) OVER (PARTITION BY employee_id ORDER BY effective_from)` ti vráti plat platný v predchádzajúcom časovom bode. `LEAD()` naopak pristupuje k neskoršiemu riadku. Častá nesprávna odpoveď láka preto, lebo LAG a LEAD sú názvom aj správaním symetrické, takže sa ľahko zamenia."
+ },
+ {
+  "id": 95,
+  "level": "medior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "scenario",
+  "question": "V reporte chceš vrátiť iba oddelenia, v ktorých priemerný plat zamestnancov presahuje 1 500 000. Ktorá štruktúra SQL je vhodná?",
+  "options": [
+   "`WHERE AVG(salary) > 1500000`",
+   "`GROUP BY AVG(salary) HAVING department_id`",
+   "`ORDER BY AVG(salary) > 1500000`",
+   "`GROUP BY department_id HAVING AVG(salary) > 1500000`"
+  ],
+  "answer": 3,
+  "explanation": "Priemerný plat je agregovaná hodnota, preto ju treba filtrovať pomocou HAVING po zoskupení. `GROUP BY department_id` vytvorí skupiny oddelení a `AVG(salary)` vypočíta priemer pre každú skupinu. Častá nesprávna odpoveď láka preto, lebo aj WHERE je filtrovacia klauzula, no v tejto podobe sa ňou agregované výsledky filtrovať nedajú."
+ },
+ {
+  "id": 96,
+  "level": "medior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "scenario",
+  "question": "Na tabuľku v PostgreSQL sa často dopytuje takto:\nKtorý index by bol vo všeobecnosti vhodný, ak sa toto kombinované vyhľadávanie používa často?",
+  "code": "SELECT *\nFROM users\nWHERE last_name = 'Smith'\n  AND first_name = 'John';",
+  "options": [
+   "`CREATE INDEX ON users(last_name, first_name);`",
+   "`CREATE INDEX ON users(first_name);`",
+   "`CREATE INDEX ON users(id);`",
+   "`CREATE INDEX ON users(created_at);`"
+  ],
+  "answer": 0,
+  "explanation": "Zložený index priamo podporuje obe vyhľadávacie podmienky. Na poradí stĺpcov v B-tree indexe záleží, takže `last_name, first_name` môže byť pre tieto dve podmienky rovnosti vhodným poradím. Jednostĺpcový index na first_name sa tiež môže dať použiť, no na toto konkrétne kombinované vyhľadávanie je menej cielený. Častá nesprávna odpoveď láka preto, lebo indexovanie jedného relevantného stĺpca môže niektoré prípady zlepšiť, no na vyhľadávanie podľa dvoch stĺpcov sa zložený index často hodí lepšie.",
+  "fixed": true
+ },
+ {
+  "id": 97,
+  "level": "medior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "edgecase",
+  "question": "Čo sa môže v PostgreSQL stať, ak transakcia bežiaca s izoláciou SERIALIZABLE narazí na súbežné úpravy, ktoré porušujú podmienky bezpečnej serializácie?",
+  "options": [
+   "PostgreSQL transakcie vždy automaticky zlúči",
+   "PostgreSQL súbežnú úpravu zaručene ignoruje",
+   "Transakcia môže byť zrušená s chybou serializácie (serialization failure) a aplikácia ju musí zopakovať",
+   "SERIALIZABLE vypne všetky zámky"
+  ],
+  "answer": 2,
+  "explanation": "Pri izolácii SERIALIZABLE PostgreSQL zabezpečí, že úspešne potvrdené transakcie dajú výsledok ekvivalentný nejakému sériovému vykonaniu. Ak sa to nedá zaručiť, transakcia môže byť zrušená s chybou serializácie. Aplikácia by pre takéto chyby mala mať zvyčajne implementovanú stratégiu opakovania. Častá nesprávna odpoveď láka preto, lebo názov SERIALIZABLE môže naznačovať, že databáza blokuje akúkoľvek súbežnosť, kým systém namiesto toho môže transakcie rušiť, keď sa serializácia nedá bezpečne zachovať."
+ },
+ {
+  "id": 98,
+  "level": "medior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "behavior",
+  "question": "Ktoré tvrdenie správne opisuje základný rozdiel medzi triggerom a uloženou procedúrou v PostgreSQL?",
+  "options": [
+   "Trigger je vždy ručne volaný SELECT",
+   "Trigger môže byť automaticky naviazaný na konkrétnu databázovú udalosť, kým procedúru treba zavolať explicitne",
+   "Procedúra môže obsahovať iba príkazy SELECT",
+   "Trigger nemôže meniť dáta"
+  ],
+  "answer": 1,
+  "explanation": "Trigger môže byť naviazaný na udalosť, ako je INSERT, UPDATE alebo DELETE, a pri jej výskyte sa vykoná automaticky. Procedúru explicitne volá aplikácia alebo iný SQL kód. Presnejšie povedané, funkcie a procedúry v PostgreSQL sa líšia aj spôsobom volania a transakčnou sémantikou. Častá nesprávna odpoveď láka preto, lebo oba mechanizmy dokážu vykonávať kód na strane servera."
+ },
+ {
+  "id": 99,
+  "level": "medior",
+  "area": "SQL injection & security",
+  "topic": "SQL injection & security",
+  "type": "production",
+  "question": "Backend pri práci s hodnotami používa prepared statementy na ochranu pred SQL injection. Prečo môže byť aj tak nebezpečné priamo zreťaziť do SQL reťazca názov stĺpca pre `ORDER BY` zadaný používateľom?",
+  "options": [
+   "Pretože ORDER BY je vždy pomalé",
+   "Pretože názvy stĺpcov sa v ORDER BY nikdy nedajú použiť",
+   "Pretože prepared statementy fungujú iba pre príkazy SELECT",
+   "Pretože identifikátor SQL sa nedá parametrizovať rovnako ako dátová hodnota, takže nevalidovaný vstup môže zmeniť štruktúru SQL"
+  ],
+  "answer": 3,
+  "explanation": "Parametre prepared statementu sú určené pre dátové hodnoty, nie pre ľubovoľné identifikátory či syntaktické prvky SQL. Stĺpec na zoradenie by sa preto mal vyberať napríklad zo zoznamu povolených hodnôt (allowlist) na serveri. Častá nesprávna odpoveď láka preto, lebo po zavedení prepared statementov ľahko predpokladáš, že celý SQL reťazec sa automaticky stal bezpečným."
+ },
+ {
+  "id": 100,
+  "level": "medior",
+  "area": "SQL vs NoSQL",
+  "topic": "SQL vs NoSQL",
+  "type": "production",
+  "question": "Vo webovej aplikácii majú používateľské profily flexibilnú štruktúru, kým fakturačné transakcie sa musia spracúvať samostatne so silnou konzistenciou, cudzími kľúčmi a zložitými JOINmi. Ktorý architektonický prístup sa dá obhájiť?",
+  "options": [
+   "Ukladať všetky dáta výlučne do tej istej NoSQL databázy",
+   "Ukladať všetky dáta výlučne do relačných tabuliek bez podpory JSON",
+   "Pre profilové a transakčné dáta použiť rôzne modely ukladania, ak to požiadavky opodstatňujú",
+   "Ukladať všetky dáta do pamäte namiesto databázy"
+  ],
+  "answer": 2,
+  "explanation": "Nie všetky dáta treba spracúvať rovnakým modelom perzistencie. Na flexibilné profilové dáta sa môže hodiť dokumentový model, kým na silne prepojené transakčné dáta môže byť vhodnejšia relačná databáza. Takýto prístup polyglot persistence však prináša aj dodatočnú prevádzkovú zložitosť a náročnejšie riadenie konzistencie. Častá nesprávna odpoveď láka preto, lebo jediná databázová technológia sa z prevádzkového hľadiska môže zdať jednoduchšia, no nemusí zodpovedať rozdielnym požiadavkám jednotlivých typov dát."
+ },
+ {
+  "id": 101,
+  "level": "medior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "edgecase",
+  "question": "Aký je výsledok nasledujúceho dopytu v PostgreSQL, ak hodnoty `age` zahŕňajú 18, 25 a NULL?",
+  "code": "SELECT COUNT(*)\nFROM employees\nWHERE age >= 18;",
+  "options": [
+   "3",
+   "2",
+   "1",
+   "NULL"
+  ],
+  "answer": 1,
+  "explanation": "Hodnoty 18 a 25 podmienku spĺňajú, kým NULL pri porovnaní nedáva TRUE, takže sa tento riadok vylúči. COUNT(*) spočíta zvyšné dva riadky. Častá nesprávna odpoveď láka preto, lebo s NULL sa ľahko zaobchádza, akoby to bola zvláštna číselná hodnota."
+ },
+ {
+  "id": 102,
+  "level": "medior",
+  "area": "JOINs",
+  "topic": "JOINs",
+  "type": "scenario",
+  "question": "Zamestnanec môže pracovať na viacerých projektoch. Ak spojíš zamestnancov s ich priradeniami k projektom pomocou INNER JOIN a jeden zamestnanec má tri zodpovedajúce projekty, koľko riadkov výsledku môže pre neho vzniknúť?",
+  "options": [
+   "Jeden",
+   "Žiadny",
+   "Dva",
+   "Tri"
+  ],
+  "answer": 3,
+  "explanation": "JOIN vytvára riadky výsledku zo zodpovedajúcich kombinácií. Ak má ten istý zamestnanec tri zodpovedajúce riadky priradení, jeho údaje sa môžu objaviť v troch riadkoch výsledku. Častá nesprávna odpoveď láka preto, lebo zamestnanec je jedna entita, kým JOIN kombinuje zodpovedajúce riadky uložené v databáze."
+ },
+ {
+  "id": 103,
+  "level": "medior",
+  "area": "NULL handling",
+  "topic": "NULL handling",
+  "type": "behavior",
+  "question": "Aký je základný rozdiel v správaní `COALESCE` a `NULLIF`?",
+  "options": [
+   "COALESCE vyberie z viacerých výrazov prvú hodnotu, ktorá nie je NULL, kým NULLIF vráti NULL, keď sa dva výrazy rovnajú",
+   "Obe vždy vrátia NULL, keď je prvý argument NULL",
+   "NULLIF vyberie z viacerých výrazov prvú hodnotu, ktorá nie je NULL",
+   "COALESCE funguje iba s číselnými hodnotami"
+  ],
+  "answer": 0,
+  "explanation": "COALESCE vráti prvú hodnotu, ktorá nie je NULL, z ľubovoľného počtu výrazov. NULLIF porovná dva výrazy a vráti NULL, ak sa rovnajú; inak vráti prvý výraz. Častá nesprávna odpoveď láka preto, lebo obe funkcie úzko súvisia so spracovaním NULL."
+ },
+ {
+  "id": 104,
+  "level": "medior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "trap",
+  "question": "Čo sa stane s nasledujúcim dopytom v PostgreSQL?",
+  "code": "SELECT department_id, name, COUNT(*)\nFROM employees\nGROUP BY department_id;",
+  "options": [
+   "Meno každého zamestnanca sa automaticky stane prvým zoskupeným menom",
+   "COUNT(*) stĺpec name ignoruje",
+   "Dopyt skončí chybou, pretože `name` nie je ani agregovaný, ani uvedený v GROUP BY",
+   "PostgreSQL automaticky pridá stĺpec name do GROUP BY"
+  ],
+  "answer": 2,
+  "explanation": "V dopyte s GROUP BY musí byť každý vybraný výraz buď súčasťou kritérií zoskupenia, alebo agregačným výrazom, s ohľadom na pravidlá funkčnej závislosti v PostgreSQL. V tomto dopyte `name` túto požiadavku nespĺňa, takže PostgreSQL ohlási chybu. Častá nesprávna odpoveď láka preto, lebo rôzne databázy sa môžu pri GROUP BY správať rôzne, čo môže miasť."
+ },
+ {
+  "id": 105,
+  "level": "medior",
+  "area": "Subqueries & CTEs",
+  "topic": "Subqueries & CTEs",
+  "type": "scenario",
+  "question": "Chceš pomocou CTE najprv vypočítať priemerný plat na oddelenie a potom nad týmto výsledkom postaviť ďalší dopyt. Ktorá štruktúra to implementuje?",
+  "options": [
+   "`WITH department_avg AS (...) SELECT ... FROM department_avg`",
+   "`CREATE INDEX department_avg AS (...)`",
+   "`GROUP BY department_avg WITH (...)`",
+   "`HAVING department_avg AS (...)`"
+  ],
+  "answer": 0,
+  "explanation": "CTE definovaný v klauzule WITH je pomenovaný výsledok dopytu, na ktorý sa môže odkazovať nasledujúci SQL príkaz. Je to užitočné na štruktúrovanie viackrokových dopytov. Častá nesprávna odpoveď láka preto, lebo syntax CTE môže pripomínať syntax iných SQL objektov, napríklad pohľadov alebo indexov."
+ },
+ {
+  "id": 106,
+  "level": "medior",
+  "area": "Window functions",
+  "topic": "Window functions",
+  "type": "algorithm",
+  "question": "V rámci každého oddelenia chceš vypočítať priebežný súčet platov zamestnancov zoradených podľa `hire_date`. Ktoré riešenie tejto požiadavke zodpovedá?",
+  "options": [
+   "`SUM(salary) GROUP BY department_id ORDER BY hire_date`",
+   "`SUM(salary) OVER (PARTITION BY department_id ORDER BY hire_date)`",
+   "`SUM(salary) HAVING department_id ORDER BY hire_date`",
+   "`SUM(salary) DISTINCT department_id`"
+  ],
+  "answer": 1,
+  "explanation": "Okenný SUM dokáže vytvoriť priebežnú agregáciu v rámci každého oddelenia podľa zoradenia `hire_date`. GROUP BY by naopak podrobné riadky zamestnancov zhrnul do jedného riadku na skupinu. Častá nesprávna odpoveď láka preto, lebo SUM v kombinácii s GROUP BY je bežný agregačný vzor, no tu treba zachovať aj pôvodné riadky zamestnancov."
+ },
+ {
+  "id": 107,
+  "level": "medior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "performance",
+  "question": "Tabuľka má stĺpec `status`, ktorého hodnota je v 99 % riadkov `ACTIVE` a iba v 1 % `INACTIVE`. Prečo sa plánovač PostgreSQL môže rozhodnúť nepoužiť index pre dopyt `WHERE status = 'ACTIVE'`?",
+  "options": [
+   "PostgreSQL nedokáže vytvárať indexy na stĺpcoch TEXT",
+   "Podmienka WHERE indexy automaticky vypína",
+   "Indexy sa dajú použiť iba pre stĺpce PRIMARY KEY",
+   "Pretože pri veľmi nízkej selektivite môže byť sekvenčný sken lacnejší"
+  ],
+  "answer": 3,
+  "explanation": "Ak dopyt vracia veľmi veľkú časť tabuľky, prístup k mnohým riadkom heapu cez index môže byť drahší ako sekvenčný sken. Optimalizátor sa preto na základe odhadu nákladov môže rozhodnúť, že sekvenčný sken je efektívnejší. Častá nesprávna odpoveď láka preto, lebo existencia indexu ľahko vyvolá očakávanie, že automaticky prinesie výhodu pri každej podmienke WHERE."
+ },
+ {
+  "id": 108,
+  "level": "medior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "scenario",
+  "question": "Dopyt s JOIN na veľkej tabuľke sa po niekoľkonásobnom náraste objemu dát výrazne spomalil. Čo by malo byť jedným z prvých krokov technického skúmania?",
+  "options": [
+   "Okamžite prejsť na NoSQL databázu",
+   "Zmazať všetky indexy",
+   "Preskúmať aktuálny plán vykonania a odhadované verzus skutočné počty riadkov",
+   "Úplne vypnúť JOINy"
+  ],
+  "answer": 2,
+  "explanation": "Plán vykonania ukáže, aké stratégie spájania a skenovania optimalizátor zvolil a aké presné sú jeho odhady kardinality. Rastúci objem dát môže zmeniť model nákladov aj najvhodnejší plán vykonania. Častá nesprávna odpoveď láka preto, lebo výrazné zhoršenie výkonu môže spôsobiť, že okamžitá zmena technológie sa zdá rozumná ešte predtým, ako sa odhalí skutočné úzke hrdlo."
+ },
+ {
+  "id": 109,
+  "level": "medior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "scenario",
+  "question": "V tej istej transakcii sa úspešne vykonajú dva príkazy UPDATE a potom transakcia vykoná ROLLBACK. Čo sa stane pri bežných transakčných tabuľkách?",
+  "options": [
+   "Vráti sa späť iba druhý UPDATE",
+   "Zmeny oboch príkazov UPDATE sa vrátia späť",
+   "Ani jeden UPDATE dáta neovplyvnil",
+   "Prvý UPDATE sa automaticky potvrdí"
+  ],
+  "answer": 1,
+  "explanation": "Transakcia zoskupuje svoje databázové operácie do jedného atomického celku. Keď sa vykoná ROLLBACK, nepotvrdené zmeny vykonané v transakcii sa zrušia. Častá nesprávna odpoveď láka preto, lebo príkazy UPDATE sa vykonávajú samostatne, no z pohľadu transakcie patria do toho istého atomického celku."
+ },
+ {
+  "id": 110,
+  "level": "medior",
+  "area": "Locking & deadlocks",
+  "topic": "Locking & deadlocks",
+  "type": "production",
+  "question": "Dve transakcie menia tie isté dva riadky, ale zámky získavajú v opačnom poradí: jedna zamkne riadok 1 a potom riadok 2, druhá riadok 2 a potom riadok 1. Ktorý prístup znižuje riziko deadlocku?",
+  "options": [
+   "Používať v oboch transakciách rovnaké, konzistentné poradie získavania zámkov",
+   "Nechať každú transakciu otvorenú dlhšie",
+   "Zvoliť náhodné poradie",
+   "Zvýšiť čakanie medzi transakciami"
+  ],
+  "answer": 0,
+  "explanation": "Konzistentné poradie získavania zámkov odstraňuje jednu zo základných príčin tohto typu cyklického čakania. Ak každá transakcia získava potrebné zámky v rovnakom poradí, znižuje sa pravdepodobnosť, že vznikne cyklus vzájomného čakania. Častá nesprávna odpoveď láka preto, lebo riadenie čakania môže zamykanie ovplyvniť, no cyklus spôsobený nekonzistentným poradím zámkov nevyrieši."
+ },
+ {
+  "id": 111,
+  "level": "medior",
+  "area": "Normalization & schema design",
+  "topic": "Normalization & schema design",
+  "type": "scenario",
+  "question": "V tabuľke `orders` ukladáš ID produktov každej objednávky ako zoznam oddelený čiarkami v jedinom stĺpci `product_ids`. Aký je hlavný problém tohto prístupu v relačnom modeli?",
+  "options": [
+   "Typ VARCHAR sa nedá použiť pre objednávky",
+   "Stĺpec môže obsahovať príliš málo znakov",
+   "Zoznam prirodzene nepredstavuje samostatné relačné riadky, čo sťažuje obmedzenia, JOINy a efektívne dopyty na jednotlivé produkty",
+   "PRIMARY KEY sa automaticky zmaže"
+  ],
+  "answer": 2,
+  "explanation": "Zoznam oddelený čiarkami vtesná viac hodnôt do jedného poľa, čo je v rozpore s tým, že relačný model pracuje s atomickými hodnotami. Samostatná prepojovacia tabuľka položiek objednávky prirodzenejšie vyjadruje vzťah medzi objednávkami a produktmi a umožňuje použiť vhodné cudzie kľúče. Častá nesprávna odpoveď láka preto, lebo zoznam sa v malom systéme môže zdať jednoduchý, no neskôr spôsobuje výrazné problémy s dopytovaním a integritou."
+ },
+ {
+  "id": 112,
+  "level": "medior",
+  "area": "Constraints & keys",
+  "topic": "Constraints & keys",
+  "type": "edgecase",
+  "question": "Aký je v PostgreSQL dôležitý rozdiel medzi PRIMARY KEY a bežným obmedzením UNIQUE?",
+  "options": [
+   "PRIMARY KEY povoľuje hodnoty NULL, UNIQUE nikdy",
+   "PRIMARY KEY sa nedá indexovať",
+   "UNIQUE vždy povoľuje iba jediný riadok",
+   "Tabuľka môže mať najviac jeden PRIMARY KEY a jeho hodnoty kľúča nemôžu byť NULL"
+  ],
+  "answer": 3,
+  "explanation": "PRIMARY KEY je primárny identifikátor tabuľky a stĺpce, ktoré tvoria kľúč, nemôžu obsahovať hodnoty NULL. Tabuľka môže mať iba jedno obmedzenie primárneho kľúča, kým obmedzení UNIQUE môžeš definovať viac. Častá nesprávna odpoveď láka preto, lebo obe obmedzenia vynucujú jedinečnosť, no PRIMARY KEY má navyše aj sémantickú úlohu."
+ },
+ {
+  "id": 113,
+  "level": "medior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "debug",
+  "question": "Aké riziko má nasledujúca aplikačná logika v súbežnom prostredí, ak je `email` UNIQUE?",
+  "code": "SELECT id\nFROM users\nWHERE email = 'anna@example.com';\n\n-- If no result is found, INSERT follows.",
+  "options": [
+   "Žiadne riziko, pretože SELECT automaticky zamkne neexistujúci riadok",
+   "Môže vzniknúť race condition, pretože dve transakcie môžu obe zistiť, že záznam neexistuje, a potom sa obe pokúsiť o INSERT",
+   "SELECT vždy spôsobí deadlock",
+   "Obmedzenie UNIQUE automaticky skryje jednu z transakcií"
+  ],
+  "answer": 1,
+  "explanation": "SELECT a následný INSERT sú samostatné kroky, takže dve súbežné transakcie môžu obe vidieť rovnaký stav „taký záznam neexistuje“. Obmedzenie UNIQUE duplicitu napokon zabráni, no jeden INSERT môže zlyhať alebo naraziť na konflikt. V PostgreSQL sa pre tento vzor zvyčajne používa `INSERT ... ON CONFLICT` alebo vhodné transakčné spracovanie. Častá nesprávna odpoveď láka preto, lebo obmedzenie UNIQUE naozaj chráni integritu dát, no aplikačnú logiku automaticky nezbaví race conditions."
+ },
+ {
+  "id": 114,
+  "level": "medior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "scenario",
+  "question": "Kedy môže byť materializovaný pohľad výhodnejší ako bežný pohľad?",
+  "options": [
+   "Keď je výpočet výsledku drahý, mení sa zriedka a rýchlosť dopytu je dôležitejšia ako okamžitá aktuálnosť",
+   "Keď chceš, aby sa každý SELECT automaticky stal transakciou",
+   "Keď chceš zabrániť všetkým operáciám INSERT",
+   "Keď výsledok vôbec nepotrebuješ ukladať"
+  ],
+  "answer": 0,
+  "explanation": "Materializovaný pohľad fyzicky ukladá výsledok dopytu, takže čítanie môže byť rýchlejšie ako zakaždým znova počítať drahý dopyt. Kompromisom je, že výsledok treba obnovovať, a preto nemusí okamžite odrážať podkladové dáta. Častá nesprávna odpoveď láka preto, lebo materializovaný aj bežný pohľad poskytujú abstrakciu dopytu, no majú odlišnú sémantiku ukladania a aktuálnosti."
+ },
+ {
+  "id": 115,
+  "level": "medior",
+  "area": "Data types & dates",
+  "topic": "Data types & dates",
+  "type": "output",
+  "question": "Aký je výsledok nasledujúceho výrazu v PostgreSQL?",
+  "code": "SELECT DATE '2026-03-31' - DATE '2026-03-01';",
+  "options": [
+   "`30`",
+   "`31`",
+   "`1 month`",
+   "`NULL`"
+  ],
+  "answer": 0,
+  "explanation": "V PostgreSQL vráti odčítanie dvoch hodnôt DATE rozdiel ako celé číslo – počet dní. Medzi 1. marcom 2026 a 31. marcom 2026 je 30 dní. Častá nesprávna odpoveď láka preto, lebo oba dátumy sú v tom istom mesiaci a počítanie kalendárnych dní sa ľahko zamení s časom, ktorý medzi dátumami uplynul."
+ },
+ {
+  "id": 116,
+  "level": "medior",
+  "area": "SQL injection & security",
+  "topic": "SQL injection & security",
+  "type": "production",
+  "question": "Aplikácia sa pripája k databáze s rovnakými plnými databázovými oprávneniami pre každého používateľa. Aký je hlavný bezpečnostný problém tohto prístupu?",
+  "options": [
+   "Dopyty SELECT sa spomalia",
+   "Indexy nebudú fungovať správne",
+   "Pri SQL injection alebo kompromitácii aplikácie môže útočník získať zbytočne široký prístup k databáze",
+   "Transakcie sa automaticky prepnú na izoláciu SERIALIZABLE"
+  ],
+  "answer": 2,
+  "explanation": "Princíp najmenších oprávnení znamená, že databázový používateľ aplikácie má mať iba tie oprávnenia, ktoré naozaj potrebuje. Ak má kompromitované pripojenie aplikácie plný prístup k databáze, možný dopad útoku môže byť výrazne väčší. Častá nesprávna odpoveď láka preto, lebo oprávnenia sa môžu javiť najmä ako administratívna záležitosť, hoci priamo obmedzujú, čo môže kompromitované pripojenie urobiť."
+ },
+ {
+  "id": 117,
+  "level": "medior",
+  "area": "SQL vs NoSQL",
+  "topic": "SQL vs NoSQL",
+  "type": "scenario",
+  "question": "Záťaž je prevažne typu key-value: potrebuješ veľmi rýchlo získať jednoduchú hodnotu podľa známeho kľúča a nepotrebuješ zložité JOINy. Ktorý model môže byť prirodzenou voľbou?",
+  "options": [
+   "Key-value NoSQL databáza",
+   "Prísne normalizovaná relačná schéma s viacerými JOINmi",
+   "Textové CSV súbory",
+   "Ukladanie v pamäti bez akejkoľvek perzistencie"
+  ],
+  "answer": 0,
+  "explanation": "Model key-value priamo podporuje jednoduchý prístup podľa známeho kľúča a pri určitých záťažiach dokáže efektívne škálovať. Aj relačná databáza zvládne prístup v štýle key-value, no požiadavky tu výslovne opisujú málo vzťahov a jednoduché čítanie podľa kľúča. Častá nesprávna odpoveď láka preto, lebo relačné databázy sú univerzálne a hodia sa na mnohé záťaže, no nie každá záťaž vyžaduje rovnaký dátový model."
+ },
+ {
+  "id": 118,
+  "level": "medior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "performance",
+  "question": "Parametrizovaný dopyt s podmienkou WHERE na indexovanom stĺpci má pri rôznych hodnotách parametra niekedy rozdielny výkon. Čo môže byť jedným z dôvodov?",
+  "options": [
+   "SQL nepodporuje parametre",
+   "Každá hodnota parametra automaticky dostane rovnaký plán vykonania",
+   "Hodnoty v indexovanom stĺpci sú vždy rozložené rovnomerne",
+   "Rôzne hodnoty môžu vrátiť rôzny počet riadkov, takže aj optimálny plán vykonania sa môže líšiť"
+  ],
+  "answer": 3,
+  "explanation": "Kvôli rozloženiu dát môžu dve rôzne hodnoty parametra viesť k veľmi rozdielnej kardinalite. Pri zriedkavej hodnote môže byť vhodnejší index scan, kým pri veľmi častej hodnote môže byť efektívnejší sekvenčný sken. Použitie prepared statementu neznamená, že rovnaký plán vykonania je rovnako optimálny pre každú hodnotu parametra. Častá nesprávna odpoveď láka preto, lebo štruktúra SQL je rovnaká, no podkladové rozloženie dát sa môže výrazne líšiť."
+ },
+ {
+  "id": 119,
+  "level": "medior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "scenario",
+  "question": "Aký je hlavný rozdiel medzi COMMIT a ROLLBACK na konci transakcie?",
+  "options": [
+   "COMMIT urobí zmeny transakcie trvalými, kým ROLLBACK zruší zmeny, ktoré neboli potvrdené",
+   "Robia presne to isté",
+   "COMMIT sa dá použiť iba so SELECT",
+   "ROLLBACK v každej databáze automaticky začne novú transakciu"
+  ],
+  "answer": 0,
+  "explanation": "COMMIT úspešne ukončí transakciu a jej zmeny urobí trvalými. ROLLBACK naopak zahodí zmeny, ktoré v transakcii neboli potvrdené. Častá nesprávna odpoveď láka preto, lebo oba príkazy ukončujú transakciu, no majú opačný účinok."
+ },
+ {
+  "id": 120,
+  "level": "medior",
+  "area": "Locking & deadlocks",
+  "topic": "Locking & deadlocks",
+  "type": "edgecase",
+  "question": "Čo sa môže stať, ak transakcia zostane dlho otvorená a drží zámky na riadkoch, ktoré upravila?",
+  "options": [
+   "Zámky sa vždy uvoľnia hneď po každom UPDATE",
+   "Iné transakcie môžu byť zablokované, ak chcú upraviť tie isté zdroje",
+   "PostgreSQL transakciu automaticky potvrdí",
+   "Zámky existujú iba pre príkazy SELECT"
+  ],
+  "answer": 1,
+  "explanation": "Zámky spojené s transakčnými úpravami zostávajú vo všeobecnosti držané až do konca transakcie. Dlho bežiaca transakcia preto môže spôsobiť, že iné transakcie čakajú na zámky, a znížiť priepustnosť. Častá nesprávna odpoveď láka preto, lebo samotný príkaz UPDATE už skončil, no zámky spojené s transakciou môžu zostať držané aj potom."
+ },
+ {
+  "id": 121,
+  "level": "medior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "scenario",
+  "question": "Dopyt vyhľadáva používateľa pomocou `WHERE email = '...'` a hodnoty e-mailu sú jedinečné. Ktorý index je najprirodzenejšou voľbou?",
+  "options": [
+   "Index na stĺpci `id`",
+   "Index na stĺpci `created_at`",
+   "B-tree index na stĺpci `email`",
+   "Index na úplne nesúvisiacom, nepoužívanom stĺpci"
+  ],
+  "answer": 2,
+  "explanation": "B-tree index je pre vyhľadávanie podľa rovnosti prirodzenou a vo všeobecnosti efektívnou voľbou. Keďže sú hodnoty e-mailu jedinečné, očakáva sa vysoko selektívne vyhľadávanie. Častá nesprávna odpoveď láka preto, lebo index primárneho kľúča zvyčajne už existuje, no pri vyhľadávaní podľa e-mailu priamo nepomôže.",
+  "fixed": true
+ },
+ {
+  "id": 122,
+  "level": "medior",
+  "area": "Subqueries & CTEs",
+  "topic": "Subqueries & CTEs",
+  "type": "behavior",
+  "question": "Aký je dôležitý rozdiel medzi `EXISTS` a `IN` vo vzoroch, ako je nasledujúci?",
+  "code": "SELECT *\nFROM employees e\nWHERE EXISTS (\n    SELECT 1\n    FROM assignments a\n    WHERE a.employee_id = e.id\n);",
+  "options": [
+   "EXISTS funguje iba s číselnými stĺpcami",
+   "EXISTS overuje, či existuje aspoň jeden zodpovedajúci riadok; dopyt nemusí vracať samotné zodpovedajúce hodnoty",
+   "EXISTS je vždy pomalší ako IN",
+   "EXISTS automaticky prevedie dopyt na JOIN"
+  ],
+  "answer": 1,
+  "explanation": "EXISTS vykonáva logickú kontrolu existencie: overuje, či korelovaný poddopyt nájde aspoň jeden riadok. Optimalizátor môže dopyt implementovať rôznymi stratégiami vykonania, takže nie je správne tvrdiť, že EXISTS je vždy pomalší alebo rýchlejší ako IN. Častá nesprávna odpoveď láka preto, lebo EXISTS sa syntakticky spája s poddopytom, kým skutočná stratégia vykonania závisí od optimalizátora."
+ },
+ {
+  "id": 123,
+  "level": "medior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "production",
+  "question": "Potrebuješ vymazať niekoľko miliónov záznamov z veľkej tabuľky. Prečo môže byť jedna obrovská transakcia DELETE problematická?",
+  "options": [
+   "DELETE nikdy nemôže použiť podmienku WHERE",
+   "DELETE automaticky vymaže celú databázu",
+   "Podmienka WHERE sa vždy ignoruje",
+   "Môže trvať dlho, spotrebovať veľa zdrojov a WAL, držať zámky dlhšie a zvýšiť transakčnú záťaž"
+  ],
+  "answer": 3,
+  "explanation": "Veľmi veľký DELETE môže vytvoriť výraznú réžiu I/O, WAL a transakcií a jeho dokončenie môže trvať dlho. Vhodná stratégia závisí od záťaže; vhodné môže byť aj mazanie po dávkach, particionovanie alebo iná stratégia správy dát. Častá nesprávna odpoveď láka preto, lebo jediný SQL príkaz pôsobí jednoduchšie, no veľkosť operácie môže mať výrazné prevádzkové dôsledky."
+ },
+ {
+  "id": 124,
+  "level": "medior",
+  "area": "Data types & dates",
+  "topic": "Data types & dates",
+  "type": "edgecase",
+  "question": "Ktorým výrazom môžeš v PostgreSQL z hodnoty timestamp vybrať iba dátumovú časť?",
+  "options": [
+   "`CAST(created_at AS DATE)`",
+   "`CAST(created_at AS BOOLEAN)`",
+   "`CAST(created_at AS JSON)`",
+   "`CAST(created_at AS ARRAY)`"
+  ],
+  "answer": 0,
+  "explanation": "Pretypovanie timestampu na DATE odstráni časovú zložku a ponechá iba kalendárny dátum. To sa líši od operácií, ktoré pracujú s časovými pásmami alebo formátovaním timestampu. Častá nesprávna odpoveď láka preto, lebo PostgreSQL podporuje viacero foriem CAST, no cieľový typ musí zodpovedať zamýšľanej biznis požiadavke."
+ },
+ {
+  "id": 125,
+  "level": "medior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "production",
+  "question": "V produkčnom dopyte spôsobuje `EXPLAIN ANALYZE` výraznú réžiu pri príkaze, ktorý zároveň mení dáta. Prečo s tým treba zaobchádzať opatrne?",
+  "options": [
+   "EXPLAIN ANALYZE vždy vypne indexy",
+   "EXPLAIN ANALYZE existuje iba pre príkazy SELECT",
+   "Voľba ANALYZE príkaz naozaj vykoná, takže dopyt meniaci dáta môže dáta zmeniť",
+   "EXPLAIN vždy automaticky vykoná ROLLBACK"
+  ],
+  "answer": 2,
+  "explanation": "Samotný EXPLAIN zobrazí plán vykonania, kým EXPLAIN ANALYZE príkaz naozaj vykoná, aby zozbieral štatistiky z behu. Pri príkazoch INSERT, UPDATE alebo DELETE to môže viesť k skutočným zmenám v databáze, preto ho v produkčnom prostredí používaj obzvlášť opatrne. Častá nesprávna odpoveď láka preto, lebo EXPLAIN vyzerá ako čisto analytický nástroj, no ANALYZE zahŕňa skutočné vykonanie."
+ },
+ {
+  "id": 126,
+  "level": "medior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "behavior",
+  "question": "Čo sa stane v nasledujúcom dopyte, ak stĺpec `salary` obsahuje hodnoty NULL?",
+  "code": "SELECT name\nFROM employees\nWHERE salary = NULL;",
+  "options": [
+   "Vráti zamestnancov, ktorých plat je NULL",
+   "Vráti všetkých zamestnancov",
+   "Skončí syntaktickou chybou",
+   "Nevráti žiadneho zamestnanca, ktorého plat je NULL"
+  ],
+  "answer": 3,
+  "explanation": "V SQL sa NULL nedá porovnávať operátorom `=`. Výraz `salary = NULL` sa vyhodnotí ako UNKNOWN, takže klauzula WHERE riadok nepovažuje za zhodu. Na test NULL použi `IS NULL`. Častá nesprávna odpoveď láka preto, lebo porovnávanie hodnôt null sa v iných programovacích jazykoch môže zdať prirodzené."
+ },
+ {
+  "id": 127,
+  "level": "medior",
+  "area": "JOINs",
+  "topic": "JOINs",
+  "type": "edgecase",
+  "question": "Čo sa stane, ak v podmienke INNER JOIN porovnávaš stĺpce s hodnotou NULL operátorom `=`?",
+  "code": "SELECT *\nFROM employees e\nJOIN assignments a\n  ON e.id = a.employee_id\n AND e.manager_id = a.manager_id;",
+  "options": [
+   "Dvojice NULL = NULL sa automaticky považujú za zhodu",
+   "Porovnanie s NULL sa nevyhodnotí ako TRUE, takže takéto dvojice sa pri bežnom porovnaní `=` nespárujú",
+   "INNER JOIN automaticky použije porovnanie bezpečné voči NULL",
+   "JOIN automaticky prevedie všetky hodnoty NULL na 0"
+  ],
+  "answer": 1,
+  "explanation": "Porovnanie `=` s NULL sa vyhodnotí ako UNKNOWN, nie TRUE, takže jedno manager_id s hodnotou NULL sa pri bežnej sémantike rovnosti nespáruje s iným manager_id s hodnotou NULL. V PostgreSQL môžeš na porovnanie bezpečné voči NULL použiť `IS NOT DISTINCT FROM`. Častá nesprávna odpoveď láka preto, lebo dve chýbajúce hodnoty sa intuitívne môžu zdať rovnocenné."
+ },
+ {
+  "id": 128,
+  "level": "medior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "output",
+  "question": "Aký je výsledok nasledujúceho dopytu, ak sú hodnoty `salary` 100, 200 a NULL?",
+  "code": "SELECT SUM(salary), COUNT(salary), COUNT(*)\nFROM employees;",
+  "options": [
+   "`300, 3, 3`",
+   "`300, 2, 3`",
+   "`300, 3, 2`",
+   "`NULL, 2, 3`"
+  ],
+  "answer": 1,
+  "explanation": "SUM ignoruje hodnoty NULL, takže vráti 300. COUNT(salary) počíta iba platy, ktoré nie sú NULL, takže výsledok je 2, kým COUNT(*) počíta každý riadok, takže výsledok je 3. Častá nesprávna odpoveď láka preto, lebo rozdiel medzi COUNT(*) a COUNT(column) sa ľahko prehliadne."
+ },
+ {
+  "id": 129,
+  "level": "medior",
+  "area": "Subqueries & CTEs",
+  "topic": "Subqueries & CTEs",
+  "type": "scenario",
+  "question": "V dopyte chceš vybrať každého zamestnanca, ktorého plat je vyšší ako priemerný plat v jeho vlastnom oddelení. Ktorý prístup je vhodný?",
+  "options": [
+   "Korelovaný poddopyt, ktorý vypočíta priemer pre oddelenie aktuálneho zamestnanca",
+   "Jediný globálny AVG(salary) bez filtrovania podľa oddelenia",
+   "Použiť DISTINCT salary",
+   "Použiť ORDER BY salary DESC"
+  ],
+  "answer": 0,
+  "explanation": "Táto požiadavka potrebuje priemer oddelenia priradený ku každému zamestnancovi, takže výpočet priemeru musí byť korelovaný s department_id aktuálneho zamestnanca. Globálny priemer nevyjadruje rovnakú biznis podmienku. Častá nesprávna odpoveď láka preto, lebo použitie AVG je v princípe správne, no musí byť priradené k správnej skupine."
+ },
+ {
+  "id": 130,
+  "level": "medior",
+  "area": "Window functions",
+  "topic": "Window functions",
+  "type": "output",
+  "question": "Čo sa stane s nasledujúcim dopytom, ak majú traja zamestnanci v jednom oddelení platy 100, 200 a 300?",
+  "code": "SELECT\n    salary,\n    AVG(salary) OVER (PARTITION BY department_id) AS department_avg\nFROM employees;",
+  "options": [
+   "Objaví sa iba jeden riadok s priemerom 200",
+   "Objavia sa tri riadky a pri každom bude 100, 200 alebo 300",
+   "Objavia sa tri riadky a každý bude mať priemer oddelenia 200",
+   "Nastane syntaktická chyba, pretože chýba GROUP BY"
+  ],
+  "answer": 2,
+  "explanation": "Okenná funkcia riadky nezlučuje. PARTITION BY definuje okno pre každé oddelenie a AVG priradí každému riadku v tejto partícii rovnaký priemer oddelenia. Priemer troch hodnôt je 200, takže 200 sa objaví pri všetkých troch riadkoch. Častá nesprávna odpoveď láka preto, lebo AVG sa často používa s GROUP BY, kde sa podrobné riadky zlučujú."
+ },
+ {
+  "id": 131,
+  "level": "medior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "scenario",
+  "question": "Na tabuľku v PostgreSQL sa často dopytuje takto:\nKtorý index priamo zodpovedá tomuto vzoru vyhľadávania?",
+  "code": "SELECT *\nFROM users\nWHERE lower(email) = lower('Anna@Example.com');",
+  "options": [
+   "`CREATE INDEX ON users(email);`",
+   "`CREATE INDEX ON users(lower(email));`",
+   "`CREATE INDEX ON users(id);`",
+   "`CREATE INDEX ON users(created_at);`"
+  ],
+  "answer": 1,
+  "explanation": "Dopyt porovnáva výsledok výrazu `lower(email)`, takže výrazový index dokáže tento výraz priamo indexovať. Bežný index na email nemusí túto podobu dopytu efektívne podporovať. Častá nesprávna odpoveď láka preto, lebo samotný stĺpec email je zjavne relevantný, no indexovaný výraz musí zodpovedať vzoru dopytu."
+ },
+ {
+  "id": 132,
+  "level": "medior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "debug",
+  "question": "Plán vykonania dopytu ukazuje Nested Loop Join, ktorý vykonáva milióny vyhľadávaní vnútorných riadkov, a dopyt je pomalý. Čo by si mal preskúmať ako jedno z prvých?",
+  "options": [
+   "SQL neobsahuje SELECT",
+   "Podmienka WHERE je vždy nesprávna",
+   "Databáza nepodporuje JOINy",
+   "Kardinalita spojenia alebo prístupová stratégia pre vnútornú stranu môže spôsobovať, že Nested Loop robí nadmernú prácu"
+  ],
+  "answer": 3,
+  "explanation": "Nested Loop nie je sám osebe zlou stratégiou spájania; pri malej vnútornej strane alebo vhodnom indexe môže byť veľmi efektívny. Ak sa však vykonávajú milióny vnútorných vyhľadávaní, oplatí sa preskúmať odhady kardinality, indexovanie a to, či by iná stratégia spájania nebola lacnejšia. Častá nesprávna odpoveď láka preto, lebo veľký počet vyhľadávaní môže vyvolať dojem, že problémom je samotný typ JOINu."
+ },
+ {
+  "id": 133,
+  "level": "medior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "edgecase",
+  "question": "Pri izolácii READ COMMITTED iná transakcia potvrdí zmenu medzi dvoma príkazmi SELECT v tej istej transakcii. Čo môže druhý SELECT vidieť?",
+  "options": [
+   "Vždy vidí presne ten istý snapshot ako prvý SELECT",
+   "Zmenu inej transakcie nikdy nemôže vidieť",
+   "Druhý SELECT môže vidieť potvrdenú zmenu, pretože používa nový snapshot príkazu",
+   "Druhý SELECT sa automaticky prepne na izoláciu SERIALIZABLE"
+  ],
+  "answer": 2,
+  "explanation": "V režime READ COMMITTED v PostgreSQL dostane každý príkaz vlastný snapshot. Neskorší SELECT preto môže vidieť zmeny, ktoré boli potvrdené pred začiatkom tohto príkazu. Častá nesprávna odpoveď láka preto, lebo mnohí predpokladajú, že transakcia používa počas celej svojej existencie jeden nemenný snapshot."
+ },
+ {
+  "id": 134,
+  "level": "medior",
+  "area": "Locking & deadlocks",
+  "topic": "Locking & deadlocks",
+  "type": "production",
+  "question": "Endpoint API začne databázovú transakciu a pred potvrdením vykoná dlhé externé HTTP volanie. Prečo to môže byť problematické?",
+  "options": [
+   "HTTP volanie automaticky vráti späť všetky zmeny v SQL",
+   "Transakcia môže dlho držať zámky, čo zvyšuje riziko čakania na zámky a súperenia o zdroje",
+   "PostgreSQL nepovoľuje HTTP volania v transakciách",
+   "Commit sa vždy vykoná tesne pred HTTP volaním"
+  ],
+  "answer": 1,
+  "explanation": "Dlho bežiaca transakcia môže držať zámky na úpravy dlhšie a potenciálne blokovať iné transakcie. Môže tiež dlhšie zamestnávať snapshot transakcie, databázové pripojenie a ďalšie zdroje. Častá nesprávna odpoveď láka preto, lebo biznis operácia môže vyzerať ako jeden logický proces, no na externé sieťové volania by sa vo všeobecnosti nemalo čakať pod databázovými zámkami."
+ },
+ {
+  "id": 135,
+  "level": "medior",
+  "area": "Normalization & schema design",
+  "topic": "Normalization & schema design",
+  "type": "scenario",
+  "question": "Tabuľka `customer` ukladá tú istú adresu vo viacerých stĺpcoch: `street`, `city`, `zip` a navyše v textovom poli `full_address`. Aký je hlavný problém?",
+  "options": [
+   "Ukladanie redundantných dát môže viesť k tomu, že rôzne reprezentácie sa stanú nekonzistentnými",
+   "PostgreSQL nepodporuje viac stĺpcov VARCHAR",
+   "Stĺpec city nemôže byť TEXT",
+   "PSČ sa musí použiť ako PRIMARY KEY"
+  ],
+  "answer": 0,
+  "explanation": "Viacero reprezentácií tej istej informácie môže viesť k anomáliám pri aktualizácii a nekonzistenciám. Napríklad štruktúrované polia sa aktualizujú, kým full_address zostane zastarané. Častá nesprávna odpoveď láka preto, lebo redundantné, denormalizované dáta môžu niekedy čítanie zjednodušiť."
+ },
+ {
+  "id": 136,
+  "level": "medior",
+  "area": "Constraints & keys",
+  "topic": "Constraints & keys",
+  "type": "scenario",
+  "question": "V tabuľke `order_items` sa ten istý produkt môže pri danej objednávke objaviť iba raz. Ktoré obmedzenie túto požiadavku priamo vyjadruje?",
+  "code": "CREATE TABLE order_items (\n    order_id BIGINT,\n    product_id BIGINT\n);",
+  "options": [
+   "`CHECK(order_id <> product_id)`",
+   "`UNIQUE(order_id, product_id)`",
+   "`DEFAULT(order_id, product_id)`",
+   "`FOREIGN KEY(order_id, product_id)`"
+  ],
+  "answer": 1,
+  "explanation": "Viacstĺpcové obmedzenie UNIQUE zabezpečí, že rovnaká kombinácia order_id a product_id sa nemôže vyskytnúť viackrát. Priamo tak vyjadruje jedinečnosť kombinácie. Častá nesprávna odpoveď láka preto, lebo aj cudzí kľúč môže byť v tomto modeli dôležitý, no zabezpečuje referenčnú integritu, nie jedinečnosť kombinácie."
+ },
+ {
+  "id": 137,
+  "level": "medior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "scenario",
+  "question": "Čo predstavuje odkaz `EXCLUDED` v klauzule `DO UPDATE` pri UPSERT v PostgreSQL?",
+  "code": "INSERT INTO products (id, price)\nVALUES (10, 1500)\nON CONFLICT (id)\nDO UPDATE SET price = EXCLUDED.price;",
+  "options": [
+   "Celý obsah riadku, ktorý už v tabuľke existuje",
+   "Predtým vymazaný riadok z transakcie",
+   "Metadáta indexu, ktorý spôsobil konflikt",
+   "Nový riadok navrhnutý príkazom INSERT, ktorý sa pre konflikt nevložil"
+  ],
+  "answer": 3,
+  "explanation": "`EXCLUDED` sprístupňuje hodnoty, ktoré INSERT navrhol pre riadok zapojený do konfliktu. Vďaka tomu môže UPDATE napríklad použiť novú cenu. Častá nesprávna odpoveď láka preto, lebo UPDATE upravuje existujúci záznam, no `EXCLUDED` nepredstavuje jeho aktuálne hodnoty."
+ },
+ {
+  "id": 138,
+  "level": "medior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "behavior",
+  "question": "Čo sa stane, keď do tabuľky, nad ktorou je postavený bežný VIEW v PostgreSQL, pribudne nový riadok?",
+  "options": [
+   "VIEW nový riadok automaticky zahrnie, ak spĺňa dopyt VIEW",
+   "VIEW vždy zachová výsledok, ktorý existoval pri jeho vytvorení",
+   "VIEW uvidí nové dáta až po opätovnom vytvorení",
+   "VIEW sa automaticky stane materializovaným pohľadom"
+  ],
+  "answer": 0,
+  "explanation": "Bežný VIEW predstavuje svoj definičný dopyt a neukladá statickú množinu výsledkov. Nový riadok v podkladovej tabuľke sa preto môže objaviť vo výsledku ďalšieho dopytu na VIEW, ak spĺňa definíciu VIEW. Častá nesprávna odpoveď láka preto, lebo VIEW je trvalý databázový objekt, no to neznamená, že jeho výsledok sa ukladá staticky."
+ },
+ {
+  "id": 139,
+  "level": "medior",
+  "area": "Data types & dates",
+  "topic": "Data types & dates",
+  "type": "edgecase",
+  "question": "Aký je dôležitý rozdiel medzi `DATE` a `TIMESTAMP` v PostgreSQL?",
+  "options": [
+   "DATE ukladá čas a časové pásmo, kým TIMESTAMP ukladá iba rok",
+   "DATE ukladá iba mesiac, kým TIMESTAMP iba deň",
+   "DATE predstavuje kalendárny dátum bez časovej zložky, kým TIMESTAMP predstavuje dátum aj čas",
+   "Medzi nimi nie je žiadny sémantický rozdiel"
+  ],
+  "answer": 2,
+  "explanation": "DATE predstavuje kalendárny dátum, napríklad 2026-10-01, bez časovej zložky. TIMESTAMP obsahuje dátum aj čas. Pre sémantiku timestampu so zohľadnením časového pásma poskytuje PostgreSQL samostatný typ timestamp with time zone. Častá nesprávna odpoveď láka preto, lebo oba typy pracujú s dátumami, no poskytujú rozdielnu presnosť a sémantiku."
+ },
+ {
+  "id": 140,
+  "level": "medior",
+  "area": "SQL injection & security",
+  "topic": "SQL injection & security",
+  "type": "production",
+  "question": "Prečo je okrem databázových oprávnení dôležitá aj autorizácia na úrovni aplikácie?",
+  "options": [
+   "Pretože databáza nevie, ku ktorému biznis zdroju má konkrétny používateľ prístup",
+   "Pretože autorizáciu implementujú PRIMARY KEY",
+   "Pretože SQL injection sa dá vyriešiť iba autorizáciou",
+   "Pretože databázové oprávnenia sú vždy úplne zbytočné"
+  ],
+  "answer": 0,
+  "explanation": "Databázové oprávnenia zvyčajne riadia technické úrovne prístupu, kým aplikácia rozumie biznis kontextu, napríklad tomu, objednávku alebo projekt ktorého používateľa si konkrétny používateľ smie pozrieť. Obe vrstvy sa môžu dopĺňať. Častá nesprávna odpoveď láka preto, lebo databázové oprávnenia sú naozaj dôležitou bezpečnostnou kontrolou, no nemusia vedieť vyjadriť každé autorizačné pravidlo na biznis úrovni."
+ },
+ {
+  "id": 141,
+  "level": "senior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "production",
+  "question": "Produkčné API podporuje dynamické filtre na viacerých voliteľných poliach. Vývojár generuje pre každú možnú kombináciu filtrov samostatný SQL reťazec a v niektorých prípadoch sa podmienky pridávajú v nesprávnom poradí alebo duplicitne. Aký by bol robustnejší prístup?",
+  "options": [
+   "Urobiť každý filter povinným",
+   "Vytvoriť pre každý dopyt samostatnú tabuľku",
+   "Skladať z filtrov štruktúrované predikáty s parametrizovanými hodnotami a povolené identifikátory SQL vyberať zo zoznamu povolených hodnôt (allowlist)",
+   "Zreťaziť používateľský vstup priamo do SQL reťazca"
+  ],
+  "answer": 2,
+  "explanation": "Pri dynamických dopytoch je užitočné spracúvať štrukturálne prvky SQL a dátové hodnoty oddelene. Hodnoty by mali byť parametrizované, kým dynamické názvy stĺpcov či polia na zoradenie by sa mali vyberať iba z overeného allowlistu. Znižuje to riziko injection a generovanie dopytov je predvídateľnejšie. Častá nesprávna odpoveď láka preto, lebo priame skladanie reťazcov pôsobí jednoducho, no pri zložitom filtrovaní rýchlo začne byť náchylné na chyby a nebezpečné."
+ },
+ {
+  "id": 142,
+  "level": "senior",
+  "area": "JOINs",
+  "topic": "JOINs",
+  "type": "performance",
+  "question": "Dopyt s JOINom troch tabuliek vracia oveľa viac riadkov, než biznis logika očakáva. Jeden zo vzťahov je typu one-to-many. Čo je jednou z najdôležitejších vecí na preskúmanie?",
+  "options": [
+   "Dĺžka kľúčového slova SELECT",
+   "Veľkosť loga aplikácie",
+   "Úroveň izolácie transakcie v každom prípade",
+   "Kardinalita JOINu a to, či násobenie riadkov spôsobené vzťahom one-to-many zodpovedá zamýšľanému výsledku"
+  ],
+  "answer": 3,
+  "explanation": "Vzťahy one-to-many prirodzene môžu pre tú istú entitu na ľavej strane vytvoriť viac riadkov výsledku. Pri každom kroku JOINu treba skontrolovať kardinalitu a to, či biznis výsledok takúto úroveň detailu naozaj vyžaduje. Častá nesprávna odpoveď láka preto, lebo nadbytočné riadky výsledku môžu vyzerať ako duplicitné dáta, hoci sémantika JOINu môže byť správna."
+ },
+ {
+  "id": 143,
+  "level": "senior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "edgecase",
+  "question": "Report má ukázať celkové mzdové náklady na oddelenie a aj to, koľko percent z celkových mzdových nákladov firmy tvorí každé oddelenie. Ktorý prístup to dosiahne v jedinom SQL dopyte?",
+  "options": [
+   "Vykonať agregáciu na úrovni oddelení a potom nad agregovaným výsledkom použiť okenný SUM",
+   "Použiť iba DISTINCT",
+   "Použiť iba ORDER BY",
+   "Odstrániť department_id z GROUP BY"
+  ],
+  "answer": 0,
+  "explanation": "Najprv vypočítaj SUM mzdových nákladov na oddelenie a potom nad týmito agregovanými riadkami použi okenný SUM na určenie celkových mzdových nákladov firmy. Vďaka tomu sa súčet za oddelenie aj globálny súčet objavia v tej istej množine výsledkov. Častá nesprávna odpoveď láka preto, lebo samotné GROUP BY dokáže vytvoriť súčty za oddelenia, no na celkový súčet treba ďalšiu úroveň výpočtu."
+ },
+ {
+  "id": 144,
+  "level": "senior",
+  "area": "Subqueries & CTEs",
+  "topic": "Subqueries & CTEs",
+  "type": "production",
+  "question": "Zložitý dopyt v PostgreSQL obsahuje viac CTE a produkčný plán vykonania ukazuje, že jeden CTE vytvára veľké množstvo dát, z ktorých sa neskôr použije iba niekoľko riadkov. Prečo by si nemal automaticky predpokladať, že CTE sa vždy materializuje?",
+  "options": [
+   "Pretože syntax CTE v PostgreSQL neexistuje",
+   "Pretože moderné verzie PostgreSQL dokážu niektoré CTE inlinovať, čo plánovaču umožní vykonanie optimalizovať",
+   "Pretože každý CTE vždy vytvorí samostatnú fyzickú tabuľku",
+   "Pretože v CTE sa nedá použiť WHERE"
+  ],
+  "answer": 1,
+  "explanation": "V moderných verziách PostgreSQL môžu byť CTE v určitých prípadoch inlinované, takže ich plánovač nemusí brať ako povinné hranice materializácie. Ak je to vhodné, explicitnú kontrolu poskytujú aj `MATERIALIZED` a `NOT MATERIALIZED`. Častá nesprávna odpoveď láka preto, lebo CTE si ľudia často predstavujú ako dočasné, fyzicky uložené množiny výsledkov."
+ },
+ {
+  "id": 145,
+  "level": "senior",
+  "area": "Window functions",
+  "topic": "Window functions",
+  "type": "algorithm",
+  "question": "Chceš zoradiť zamestnancov v rámci oddelenia podľa platu tak, aby zamestnanci s rovnakým platom dostali rovnaké poradie a žiadne číslo poradia sa nepreskočilo. Ktorá okenná funkcia poskytuje toto správanie?",
+  "options": [
+   "ROW_NUMBER()",
+   "RANK()",
+   "LAG()",
+   "DENSE_RANK()"
+  ],
+  "answer": 3,
+  "explanation": "DENSE_RANK priradí rovnakým hodnotám rovnaké poradie a po zhode čísla poradia nepreskakuje. Napríklad pri 100, 100 a 80 sú poradia 1, 1 a 2. Častá nesprávna odpoveď láka preto, lebo aj RANK rieši zhody, no v nasledujúcich číslach poradia môže nechať medzery."
+ },
+ {
+  "id": 146,
+  "level": "senior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "performance",
+  "question": "Na veľkej tabuľke v PostgreSQL sa často vykonáva nasledujúci dopyt:\nKtorá ďalšia technika môže pri vhodnom indexe znížiť potrebu prístupu do heapu, ak PostgreSQL dokáže použiť index-only scan?",
+  "code": "SELECT id, customer_id, created_at\nFROM orders\nWHERE customer_id = 42\nORDER BY created_at DESC\nLIMIT 50;",
+  "options": [
+   "Zmazať všetky indexy",
+   "Odstrániť iba podmienku WHERE",
+   "Použiť covering index, ktorý obsahuje aj ďalšie stĺpce potrebné pre výsledok",
+   "Odstrániť LIMIT"
+  ],
+  "answer": 2,
+  "explanation": "Vhodný index, napríklad `(customer_id, created_at DESC) INCLUDE (id)`, môže dopytu umožniť získať potrebné dáta priamo z indexu. Pri index-only scane sa dá prístup do heapu obmedziť, hoci skutočné použitie závisí aj od visibility map a rozhodnutia plánovača. Častá nesprávna odpoveď láka preto, lebo optimalizácia WHERE a ORDER BY je dôležitá sama osebe, no pokrytie stĺpcov zo zoznamu SELECT môže priniesť ďalší prínos."
+ },
+ {
+  "id": 147,
+  "level": "senior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "production",
+  "question": "V pláne vykonania dopytu plánovač odhaduje pre JOIN 10 riadkov, kým hodnota `actual rows` je 5 000 000. Prečo je tento rozdiel obzvlášť dôležitý?",
+  "options": [
+   "Pretože štandard SQL zakazuje JOINy",
+   "Pretože takýto nesúlad kardinality môže viesť k tomu, že plánovač zvolí veľmi zlú stratégiu spájania alebo skenovania",
+   "Pretože `actual rows` je vždy nesprávna hodnota",
+   "Pretože indexy sa automaticky stanú nepoužiteľnými"
+  ],
+  "answer": 1,
+  "explanation": "Rozhodnutia optimalizátora silno závisia od odhadov kardinality. Ak je odhad 10 riadkov, no v skutočnosti ide o 5 miliónov, plánovač môže zvoliť stratégiu optimálnu pre malú množinu dát, ktorá je pri skutočnej záťaži mimoriadne drahá. V takých prípadoch sa oplatí preskúmať štatistiky, rozloženie dát a korelácie. Častá nesprávna odpoveď láka preto, lebo veľký rozdiel môže jednoducho vyzerať ako „zlý plán vykonania“, kým koreňová príčina môže byť v modeli odhadu."
+ },
+ {
+  "id": 148,
+  "level": "senior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "scenario",
+  "question": "Vo finančnom systéme chcú dve súbežné transakcie vybrať peniaze z toho istého zostatku na účte. Prečo môže byť potrebné explicitné zamykanie alebo vhodná stratégia izolácie?",
+  "options": [
+   "Aby SELECT automaticky vytvoril index",
+   "Aby transakcie nemohli použiť COMMIT",
+   "Aby sa JOINy vykonávali rýchlejšie",
+   "Aby sa zabránilo stratenej aktualizácii (lost update) alebo race condition, ktoré by mohli viesť k nekonzistentnému zostatku na účte"
+  ],
+  "answer": 3,
+  "explanation": "Ak dve transakcie prečítajú ten istý aktuálny zostatok a obe z neho potom vypočítajú novú hodnotu, bez vhodného riadenia súbežnosti sa jedna aktualizácia môže stratiť. Finančné operácie preto vyžadujú stratégiu zamykania alebo izolácie, ktorá zodpovedá dátovému modelu a biznis invariantom. Častá nesprávna odpoveď láka preto, lebo transakcie samy osebe poskytujú vlastnosti ACID, no aplikácia aj tak musí súbežný prístup spracovať správne."
+ },
+ {
+  "id": 149,
+  "level": "senior",
+  "area": "Locking & deadlocks",
+  "topic": "Locking & deadlocks",
+  "type": "production",
+  "question": "V produkčnom systéme občas vznikajú deadlocky medzi transakciami z dvoch rôznych služieb. Transakcie upravujú tie isté zdroje v rôznom poradí. Čo by bolo dôležitým dlhodobým riešením?",
+  "options": [
+   "Výnimky deadlocku úplne ignorovať",
+   "Zaviesť naprieč transakciami konzistentné poradie zamykania zdrojov a podľa potreby použiť riadenú stratégiu opakovania",
+   "Odstrániť všetky databázové indexy",
+   "Neobmedzene zvyšovať timeouty transakcií"
+  ],
+  "answer": 1,
+  "explanation": "Konzistentné poradie zámkov znižuje pravdepodobnosť cyklického čakania. Keďže deadlock môže za určitých okolností nastať aj tak, súčasťou robustného spracovania môže byť aj opakovanie na strane klienta, ak je operáciu bezpečné zopakovať. Častá nesprávna odpoveď láka preto, lebo opakovanie sa môže zdať ako jednoduché obídenie problému, no samo osebe koreňovú príčinu deadlocku neodstráni."
+ },
+ {
+  "id": 150,
+  "level": "senior",
+  "area": "Normalization & schema design",
+  "topic": "Normalization & schema design",
+  "type": "architecture",
+  "question": "Vo veľkom multi-tenant systéme väčšina tenantov používa rovnakú schému, no niekoľko tenantov vyžaduje výrazne odlišné, špecializované atribúty. Ktorý prístup sa dá v závislosti od požiadaviek technicky obhájiť?",
+  "options": [
+   "V každom prípade vytvoriť pre každého tenanta úplne samostatnú databázu",
+   "Pridať nový stĺpec pre každý špecializovaný atribút bez ohľadu na to, koľko tenantov ho používa",
+   "Serializovať všetky dáta do jediného poľa TEXT bez akejkoľvek validácie",
+   "Stabilné, spoločné polia ponechať ako relačné stĺpce a pre naozaj premenlivé atribúty špecifické pre tenanta použiť riadený model rozšírení, napríklad JSONB alebo samostatnú tabuľku rozšírení"
+  ],
+  "answer": 3,
+  "explanation": "Bežná relačná štruktúra sa dobre hodí pre stabilné, často dopytované polia kritické z hľadiska integrity. Pri veľmi premenlivých a zriedkavých atribútoch špecifických pre tenanta môže riadený model s JSONB alebo tabuľkou rozšírení zabrániť nadmernej fragmentácii schémy. Voľba by sa mala opierať o vzory dopytov, požiadavky na validáciu, indexovanie, uchovávanie dát a izoláciu tenantov. Častá nesprávna odpoveď láka preto, lebo jediná jednotná schéma pôsobí jednoducho, no príliš veľa zriedka používaných stĺpcov sa časom ťažko spravuje."
+ },
+ {
+  "id": 151,
+  "level": "senior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "performance",
+  "question": "Dopyt v PostgreSQL beží nad veľmi veľkou tabuľkou udalostí, ktorej riadky sú zoradené vzostupne podľa času. Dopyt získava úzky časový interval a používa iba niekoľko stĺpcov:\nTabuľka `events` je navyše fyzicky silno korelovaná s hodnotami `created_at`. Ktoré riešenie môže byť pre tento vzor prístupu obzvlášť úsporné na miesto?",
+  "code": "SELECT created_at, event_type\nFROM events\nWHERE created_at >= TIMESTAMP '2026-09-01 00:00:00'\n  AND created_at < TIMESTAMP '2026-09-02 00:00:00';",
+  "options": [
+   "BRIN index na stĺpci `created_at`",
+   "Hash index na stĺpci `created_at`",
+   "UNIQUE index na stĺpci `created_at`",
+   "Fulltextový index na stĺpci `event_type`"
+  ],
+  "answer": 0,
+  "explanation": "BRIN index ukladá súhrnné informácie na úrovni blokov, takže pri veľmi veľkých, fyzicky dobre zoradených tabuľkách dokáže filtrovať časové rozsahy s mimoriadne malou veľkosťou indexu. Silná fyzická korelácia je pre použitie BRIN obzvlášť výhodná. B-tree index môže byť zavádzajúci, pretože je všeobecnejší a presnejší, no pri tabuľke takejto veľkosti môže BRIN viesť k oveľa menšiemu indexu.",
+  "fixed": true
+ },
+ {
+  "id": 152,
+  "level": "senior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "algorithm",
+  "question": "V reporte predaja chceme agregované výsledky podľa regiónu, podľa krajiny v rámci každého regiónu a aj súčet za celú firmu. Ktorý mechanizmus PostgreSQL je vhodný na vytvorenie hierarchických úrovní agregácie?",
+  "options": [
+   "`DISTINCT ON`",
+   "`ROLLUP`",
+   "`LATERAL`",
+   "`FILTER`"
+  ],
+  "answer": 1,
+  "explanation": "`ROLLUP` vytvára hierarchické úrovne zoskupenia, napríklad `(region, country)`, za ktorými nasledujú medzisúčty za regióny a nakoniec riadok s celkovým súčtom. Rôzne úrovne dokáže vytvoriť v jedinom agregačnom dopyte. Zavádzajúce môže byť aj `GROUPING SETS`, pretože tiež dokáže určiť viac úrovní zoskupenia, no ROLLUP je prirodzený spôsob, ako vyjadriť hierarchické medzisúčty."
+ },
+ {
+  "id": 153,
+  "level": "senior",
+  "area": "Locking & deadlocks",
+  "topic": "Locking & deadlocks",
+  "type": "production",
+  "question": "V databázovej fronte úloh berie viac workerov úlohy na spracovanie z tej istej tabuľky `jobs`. Worker nesmie čakať na už zamknutý riadok, ale má namiesto toho vybrať inú dostupnú úlohu. Ktoré riešenie v PostgreSQL tejto požiadavke zodpovedá?",
+  "options": [
+   "`SELECT ... FOR UPDATE`",
+   "`SELECT ... FOR SHARE`",
+   "`SELECT ... FOR UPDATE SKIP LOCKED`",
+   "`LOCK TABLE jobs IN ACCESS EXCLUSIVE MODE`"
+  ],
+  "answer": 2,
+  "explanation": "`FOR UPDATE SKIP LOCKED` preskočí riadky, ktoré už zamkla iná transakcia, takže viac workerov môže súbežne získavať úlohy bez čakania na ten istý zamknutý riadok. Je to typický vzor fronty postavenej na databáze. Obyčajný FOR UPDATE môže byť zavádzajúci, pretože vybrané riadky naozaj zamkne, no súbežný worker môže pri narazení na zamknutý riadok čakať."
+ },
+ {
+  "id": 154,
+  "level": "senior",
+  "area": "Constraints & keys",
+  "topic": "Constraints & keys",
+  "type": "edgecase",
+  "question": "V systéme na PostgreSQL nesmie tabuľka `reservations` pre to isté `room_id` povoliť prekrývajúce sa časové intervaly rezervácií. Intervaly sú uložené v type `tsrange`. Ktoré obmedzenie je priamo vhodné na vynútenie tohto biznis pravidla?",
+  "options": [
+   "`CHECK`",
+   "`UNIQUE`",
+   "`FOREIGN KEY`",
+   "`EXCLUDE`"
+  ],
+  "answer": 3,
+  "explanation": "Exclusion constraint v PostgreSQL dokáže vyjadriť, že dve hodnoty `tsrange` pre to isté `room_id` sa nesmú prekrývať. Zvyčajne sa na to používa `EXCLUDE USING gist` a operátor `&&`. Obmedzenie UNIQUE môže byť zavádzajúce, pretože dobre rieši jedinečné kombinácie, no samo osebe nedokáže zabrániť dvom rôznym, čiastočne sa prekrývajúcim intervalom."
+ },
+ {
+  "id": 155,
+  "level": "senior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "behavior",
+  "question": "V triggerovej funkcii v PostgreSQL chceme pred operáciou `UPDATE` upraviť pole nového riadku a potom nechať úpravu pokračovať. Ktoré riešenie zodpovedá triggeru `BEFORE ROW`?",
+  "options": [
+   "Upraviť záznam `OLD` a `RETURN OLD`",
+   "Upraviť záznam `NEW` a `RETURN NEW`",
+   "`RETURN NULL` a nechať UPDATE automaticky pokračovať",
+   "Zavolať `COMMIT` z triggerovej funkcie"
+  ],
+  "answer": 1,
+  "explanation": "V triggeri BEFORE ROW môžeš záznam `NEW` upraviť a vrátením upraveného `NEW` umožníš, aby operácia pokračovala s novými hodnotami. Naopak `RETURN NULL` v triggeri BEFORE na úrovni riadku môže spôsobiť, že operácia pre daný riadok sa preskočí. Použitie `OLD` môže byť zavádzajúce, pretože je v triggeri UPDATE tiež dostupné, no predstavuje stav pred úpravou, nie nový ukladaný riadok."
+ },
+ {
+  "id": 156,
+  "level": "senior",
+  "area": "SQL injection & security",
+  "topic": "SQL injection & security",
+  "type": "production",
+  "question": "Webová aplikácia používa hodnotu z vyhľadávacieho poľa v SQL podmienke `LIKE`. Dopyt je parametrizovaný, takže je chránený pred SQL injection, no aplikácia musí zároveň zabrániť tomu, aby používateľ zmenil význam vyhľadávania zadaním ľubovoľných zástupných znakov `%` a `_`. Čo je potrebné?",
+  "options": [
+   "Parameter treba zakódovať do HTML",
+   "Parameter treba previesť do Base64",
+   "Špeciálne znaky vo vzore LIKE treba vhodne escapovať a v dopyte použiť `ESCAPE`",
+   "Parametrizáciu treba odstrániť"
+  ],
+  "answer": 2,
+  "explanation": "Bind parameter zabráni tomu, aby sa vstup stal SQL kódom, no neodstráni sémantiku zástupných znakov špecifickú pre LIKE. Ak treba vyhľadávať doslovné znaky `%` alebo `_`, musíš ich spracovať pomocou zvoleného escape znaku s vhodným pravidlom `ESCAPE` pre vzor. Považovať parametrizáciu za úplnú ochranu môže byť zavádzajúce, pretože SQL injection a sémantika vzorov LIKE sú dve samostatné veci."
+ },
+ {
+  "id": 157,
+  "level": "senior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "production",
+  "question": "Trigger v PostgreSQL musí vytvoriť auditný záznam pre každý upravený riadok v tabuľke `orders`. Ktorý typ triggera je vhodný, ak chceme každý zasiahnutý riadok spracovať samostatne?",
+  "options": [
+   "Statement-level trigger",
+   "Database-level trigger",
+   "Row-level trigger",
+   "Session-level trigger"
+  ],
+  "answer": 2,
+  "explanation": "Trigger na úrovni riadku sa vykoná samostatne pre každý zasiahnutý riadok, takže je vhodný napríklad na vytvorenie individuálneho auditného záznamu z hodnôt `OLD` a `NEW` pri každom UPDATE. Trigger na úrovni príkazu sa naopak vykoná raz pre celý SQL príkaz. Trigger na úrovni príkazu môže byť zavádzajúci, pretože tiež dokáže reagovať na ten istý UPDATE, no nevykoná sa samostatne pre každý zasiahnutý riadok."
+ },
+ {
+  "id": 158,
+  "level": "senior",
+  "area": "SQL vs NoSQL",
+  "topic": "SQL vs NoSQL",
+  "type": "scenario",
+  "question": "V systéme sa štruktúry používateľských profilov často menia a k rôznym profilom môžu patriť úplne odlišné množiny atribútov. Aplikácia zvyčajne načíta celý profil podľa jediného identifikátora a JOINy medzi viacerými poľami profilu potrebuje len málo. Ktorý model sa sem môže prirodzene hodiť?",
+  "options": [
+   "Dokumentový NoSQL model",
+   "Povinne plne normalizovaný relačný model s desiatkami tabuliek pre každý atribút",
+   "Výlučne model key-value, ktorý stratí všetky štruktúrované dáta",
+   "Samostatná databáza pre každý atribút"
+  ],
+  "answer": 0,
+  "explanation": "Dokumentový model prirodzene zvláda premenlivé štruktúry profilov a celý profil sa dá načítať ako jeden dokument podľa identifikátora. Neznamená to, že každý takýto systém vyžaduje NoSQL; v závislosti od požiadaviek na transakcie, konzistenciu a dopyty môže byť vhodný aj relačný model. Plne normalizovaná schéma môže byť zavádzajúca, pretože hoci je v relačnom prostredí dobre štruktúrovaná, pri veľmi premenlivých atribútoch, na ktoré sa relačne dopytuje zriedka, môže priniesť väčšiu zložitosť schémy."
+ },
+ {
+  "id": 159,
+  "level": "senior",
+  "area": "Data types & dates",
+  "topic": "Data types & dates",
+  "type": "edgecase",
+  "question": "V PostgreSQL chceme zo stĺpca `timestamp` vybrať iba kalendárny dátum tak, aby mal výsledok typ `date`. Ktorý výraz je na to vhodný?",
+  "options": [
+   "`CAST(created_at AS DATE)`",
+   "`created_at AS DATE`",
+   "`DATE(created_at, 'UTC')` v každom prípade",
+   "`created_at::TIMESTAMP WITHOUT TIME ZONE`"
+  ],
+  "answer": 0,
+  "explanation": "`CAST(created_at AS DATE)` explicitne prevedie timestamp na typ `date`, čím odstráni časovú zložku. V PostgreSQL to isté môžeš zapísať stručnejšie ako `created_at::date`. Pretypovanie na iný typ timestampu môže byť zavádzajúce, pretože môže zmeniť typ alebo sémantiku časového pásma, no časovú zložku z hodnoty neodstráni."
+ },
+ {
+  "id": 160,
+  "level": "senior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "edgecase",
+  "question": "Dopyt v PostgreSQL hľadá iba záznamy, kde `deleted_at IS NULL`. Prevažná väčšina záznamov v tabuľke je už označená ako vymazaná. Ktorý index môže byť obzvlášť vhodný, ak aplikácia pravidelne vyhľadáva aktívne záznamy?",
+  "options": [
+   "`CREATE INDEX idx_items_deleted_at ON items (deleted_at);`",
+   "`CREATE INDEX idx_items_active ON items (id) WHERE deleted_at IS NULL;`",
+   "`CREATE UNIQUE INDEX idx_items_active ON items (deleted_at);`",
+   "`CREATE INDEX idx_items_deleted ON items (deleted_at) WHERE deleted_at IS NOT NULL;`"
+  ],
+  "answer": 1,
+  "explanation": "Čiastočný index obsahuje iba aktívne riadky, kde `deleted_at IS NULL`, takže index môže byť výrazne menší a priamo podporovať bežný vzor prístupu aplikácie. Indexovanú hodnotu `id` sprevádza čiastočný predikát, ktorý určuje, ktoré riadky sa do indexu zahrnú. Úplný index na `deleted_at` môže byť zavádzajúci, pretože vyhľadávanie podľa stĺpca naozaj podporuje, no kvôli veľkému počtu vymazaných záznamov môže byť oveľa väčší a menej cielený."
+ },
+ {
+  "id": 161,
+  "level": "senior",
+  "area": "SQL vs NoSQL",
+  "topic": "SQL vs NoSQL",
+  "type": "scenario",
+  "question": "Aplikácia ukladá milióny produktových profilov s výrazne odlišnou štruktúrou. Väčšina čítaní načíta celý profil produktu podľa identifikátora a atribúty sa často líšia podľa typu produktu. Ktorý dátový model môže byť prirodzenou voľbou, ak aplikácia nevyžaduje zložité relačné spájanie medzi atribútmi?",
+  "options": [
+   "Dokumentová NoSQL databáza",
+   "Jediná SQL tabuľka so stovkami stĺpcov povoľujúcich NULL",
+   "Samostatná databáza pre každý atribút",
+   "Jediné dlhé pole TEXT s vlastným, neštruktúrovaným formátom"
+  ],
+  "answer": 0,
+  "explanation": "Dokumentový model sa môže prirodzene hodiť na profily, ktorých štruktúra sa líši podľa typu produktu, pričom sa celý dokument načíta podľa identifikátora. O presnej voľbe rozhodujú aj požiadavky na konzistenciu, dopyty, indexovanie a transakcie. Jediná široká SQL tabuľka môže byť zavádzajúca, pretože hoci sa v relačnej databáze na začiatku môže zdať jednoduchá, pri mnohých voliteľných atribútoch špecifických pre typ môže viesť k ťažko spravovateľnej schéme."
+ },
+ {
+  "id": 162,
+  "level": "senior",
+  "area": "SQL injection & security",
+  "topic": "SQL injection & security",
+  "type": "production",
+  "question": "V aplikácii si používateľ môže zvoliť, či sa má report zoradiť podľa `name`, `created_at` alebo `total`. Stĺpec na zoradenie je identifikátor SQL, takže sa s ním nedá zaobchádzať ako s jednoduchým parametrom hodnoty. Aká je vhodná ochrana?",
+  "options": [
+   "Zakódovať celý používateľský vstup do Base64",
+   "Na názov stĺpca použiť HTML escaping",
+   "Vložiť hodnotu od používateľa do SQL bez zmeny",
+   "Namapovať povolené hodnoty zo zoznamu povolených hodnôt (allowlist) na serveri na vopred definované identifikátory SQL"
+  ],
+  "answer": 3,
+  "explanation": "S identifikátormi SQL, ako sú názvy stĺpcov, sa nedá zaobchádzať ako s bind parametrami rovnako ako s dátovými hodnotami. Vstup by sa preto mal cez allowlist na serveri namapovať na známy, bezpečný identifikátor SQL. HTML escaping môže byť zavádzajúci, pretože vo webovom prostredí môže byť užitočný proti iným typom útokov, no nie je vhodnou obranou proti SQL injection."
+ },
+ {
+  "id": 163,
+  "level": "senior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "behavior",
+  "question": "Čo v PostgreSQL umožňuje klauzula `RETURNING` v príkaze `INSERT ... RETURNING id`?",
+  "options": [
+   "Po vložení automaticky vykoná COMMIT transakcie",
+   "Vráti aplikácii dáta z vložených riadkov, napríklad vygenerovanú hodnotu `id`",
+   "Pred vložením začne výlučne transakciu iba na čítanie",
+   "Automaticky vytvorí index na vrátených stĺpcoch"
+  ],
+  "answer": 1,
+  "explanation": "`RETURNING` umožňuje vrátiť hodnoty z riadkov zasiahnutých operáciou DML, napríklad identifikátor vygenerovaný identity stĺpcom alebo sekvenciou. Môže tak odpadnúť potreba samostatného SELECT. Predpoklad, že vykoná automatický COMMIT, môže byť zavádzajúci, pretože výsledok vloženia sa dá vrátiť okamžite, no ukončenie transakcie zostáva samostatnou operáciou."
+ },
+ {
+  "id": 164,
+  "level": "senior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "edgecase",
+  "question": "Počas transakcie v PostgreSQL, ktorá zostáva dlho otvorená, mnoho iných transakcií upravuje tú istú tabuľku. Ktorý dôsledok môže byť v produkčnom prostredí relevantný?",
+  "options": [
+   "Dlho bežiaca transakcia automaticky vypne MVCC",
+   "Dlho bežiaca transakcia môže ovplyvniť určité zdroje a na dlhší čas oddialiť upratovanie starých verzií",
+   "PostgreSQL sa automaticky prepne na izoláciu SERIALIZABLE",
+   "Transakcia automaticky uvoľní zámky držané inými transakciami"
+  ],
+  "answer": 1,
+  "explanation": "Dlho bežiace transakcie môžu držať zámky a iné zdroje a pri MVCC v PostgreSQL môže starý snapshot oddialiť aj upratovanie určitých starých verzií n-tíc. To môže zvýšiť využitie úložiska a problémy so súperením o zdroje. Predstava automatickej zmeny úrovne izolácie môže byť zavádzajúca, pretože dlho bežiaca transakcia môže ovplyvniť správanie systému, no úroveň izolácie automaticky nezmení."
+ },
+ {
+  "id": 165,
+  "level": "senior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "behavior",
+  "question": "Pri izolácii `READ COMMITTED` v PostgreSQL vykoná transakcia dva príkazy SELECT. Medzi nimi iná transakcia potvrdí zmenu. Prečo môže druhý SELECT vidieť zmenenú hodnotu?",
+  "options": [
+   "Pretože READ COMMITTED vypína MVCC",
+   "Pretože každý príkaz používa vlastný snapshot",
+   "Pretože každý SELECT automaticky vykoná COMMIT",
+   "Pretože READ COMMITTED je v skutočnosti SERIALIZABLE"
+  ],
+  "answer": 1,
+  "explanation": "Pri READ COMMITTED v PostgreSQL používa každý príkaz snapshot platný na začiatku tohto príkazu. Druhý SELECT preto môže použiť snapshot, ktorý zahŕňa medzitým potvrdenú zmenu. Predpoklad, že jeden snapshot zostáva pevný počas celej transakcie, môže byť zavádzajúci, pretože iné úrovne izolácie môžu používať snapshot platný dlhšie."
+ },
+ {
+  "id": 166,
+  "level": "senior",
+  "area": "SQL vs NoSQL",
+  "topic": "SQL vs NoSQL",
+  "type": "scenario",
+  "question": "V službe je dominantnou operáciou získanie alebo aktualizácia celej hodnoty podľa stabilného kľúča. Nie sú potrebné JOINy, ad hoc agregácie ani zložité vzťahy. Ktorý NoSQL model tomuto vzoru prístupu prirodzene zodpovedá?",
+  "options": [
+   "Key-value databáza",
+   "Grafová databáza",
+   "Relačná databáza používajúca iba normalizované JOINy",
+   "Stĺpcovo orientované analytické úložisko dát"
+  ],
+  "answer": 0,
+  "explanation": "Model key-value je postavený priamo na získavaní a úprave hodnôt podľa kľúča, takže sa dobre hodí na jednoduché operácie vyhľadania/aktualizácie. Tento vzor dokážu implementovať aj iné typy databáz, no opísaný vzor prístupu prirodzene zodpovedá modelu key-value. Dokumentová databáza môže byť ako alternatíva zavádzajúca, pretože tiež dokáže získať dokument podľa kľúča, no cieli na zložitejšie štruktúry dokumentov."
+ },
+ {
+  "id": 167,
+  "level": "senior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "performance",
+  "question": "V tabuľke `orders` dopyt žiada iba objednávky jedného zákazníka a potrebuje prvých 20 záznamov zoradených podľa `created_at`. Index je:\nPrečo môže byť tento index pre dopyt obzvlášť efektívny?",
+  "code": "CREATE INDEX idx_orders_customer_created\nON orders (customer_id, created_at DESC);",
+  "options": [
+   "Pretože index sa v každej databáze automaticky stane materializovaným pohľadom",
+   "Pretože `customer_id` a `created_at` spoločne podporujú filtrovanie aj zoradenie, takže vďaka LIMIT sa vyhľadávanie môže skončiť skôr",
+   "Pretože zložený index automaticky zvládne každú možnú podmienku WHERE",
+   "Pretože index DESC ukladá iba prvých 20 záznamov"
+  ],
+  "answer": 1,
+  "explanation": "Prvý stĺpec `customer_id` podporuje filter rovnosti, kým druhý stĺpec `created_at DESC` poskytuje požadované zoradenie záznamov daného zákazníka. Za vhodných podmienok preto môže plánovač začať priamo na relevantnom mieste indexu a vďaka LIMIT skončiť po malom počte záznamov. Predpoklad, že zložený index podporuje každú podmienku WHERE, môže byť zavádzajúci, pretože efektivita indexu závisí od poradia stĺpcov a konkrétneho vzoru prístupu."
+ },
+ {
+  "id": 168,
+  "level": "senior",
+  "area": "Normalization & schema design",
+  "topic": "Normalization & schema design",
+  "type": "edgecase",
+  "question": "V dátovom modeli treba pri objednávke ukladať viac telefónnych čísel, a tak aplikácia zavedie stĺpce `phone1`, `phone2` a `phone3`. Aký je najväčší problém tohto prístupu z hľadiska relačného modelovania?",
+  "options": [
+   "Stĺpce sa automaticky stanú cudzími kľúčmi",
+   "Telefónne čísla sa nedajú ukladať ako hodnoty TEXT",
+   "Riešenie bude nevyhnutne rýchlejšie pre každý dopyt",
+   "Vytvára opakujúcu sa skupinu a pevne určuje maximálny počet telefónnych čísel"
+  ],
+  "answer": 3,
+  "explanation": "Štruktúra `phone1`, `phone2`, `phone3` predstavuje opakujúcu sa skupinu a schéma implicitne určuje, že sa dajú spracovať najviac tri telefónne čísla. Samostatná súvisiaca tabuľka by vzťah one-to-many vyjadrila flexibilnejšie a normalizovane. Viacstĺpcové riešenie môže byť zavádzajúce, pretože pri malom množstve dát sa môže zdať jednoduché a pohodlné, no spracovanie premenlivého počtu hodnôt sa rýchlo skomplikuje."
+ },
+ {
+  "id": 169,
+  "level": "senior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "edgecase",
+  "question": "V PostgreSQL sa nasledujúci UPSERT spolieha na obmedzenie UNIQUE na `email`:\nČo predstavuje `EXCLUDED.name` vo vetve UPDATE?",
+  "code": "INSERT INTO users (email, name)\nVALUES ('alice@example.com', 'Alice')\nON CONFLICT (email)\nDO UPDATE\nSET name = EXCLUDED.name;",
+  "options": [
+   "Predchádzajúcu hodnotu `name` existujúceho záznamu",
+   "Hodnotu `name` záznamu, ktorý sa vymaže",
+   "Hodnotu `name` prvého záznamu v tabuľke users",
+   "Hodnotu `name` z nového riadku navrhnutého konfliktným príkazom INSERT"
+  ],
+  "answer": 3,
+  "explanation": "Pseudotabuľka `EXCLUDED` sprístupňuje vo vetve `ON CONFLICT ... DO UPDATE` hodnoty z riadku navrhnutého príkazom INSERT. V príklade je teda hodnota `name` navrhnutá konfliktným vložením `Alice`. Považovať ju za hodnotu existujúceho riadku môže byť zavádzajúce, pretože UPDATE upravuje existujúci záznam, no `EXCLUDED` nepredstavuje jeho aktuálny stav."
+ },
+ {
+  "id": 170,
+  "level": "senior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "behavior",
+  "question": "Materializovaný pohľad v PostgreSQL ukladá výsledok drahej agregácie. Podkladové tabuľky sa zmenia, no `REFRESH MATERIALIZED VIEW` sa nevykoná. Čo vráti nasledujúci SELECT?",
+  "options": [
+   "Materializovaný pohľad okamžite odráža podkladové dáta",
+   "Materializovaný pohľad sa pred prvým SELECT automaticky obnoví",
+   "Materializovaný pohľad sa vymaže",
+   "Uložený výsledok zostane nezmenený až do obnovenia"
+  ],
+  "answer": 3,
+  "explanation": "Materializovaný pohľad fyzicky ukladá výsledok dopytu, takže zmeny v podkladových tabuľkách sa v ňom automaticky neprejavia. Výsledok treba aktualizovať explicitnou operáciou obnovenia. Zámena s bežným pohľadom môže byť zavádzajúca, pretože bežný pohľad odvodzuje svoj výsledok pri dopyte z aktuálnych podkladových dát."
+ },
+ {
+  "id": 171,
+  "level": "senior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "behavior",
+  "question": "Bežný pohľad v PostgreSQL je postavený na nasledujúcom dopyte:\nHodnota `active` jedného produktu sa neskôr zmení na `false`. Čo sa stane pri novom `SELECT * FROM active_products`?",
+  "code": "CREATE VIEW active_products AS\nSELECT id, name, price\nFROM products\nWHERE active = true;",
+  "options": [
+   "Produkt bude stále zahrnutý, pretože pohľad uložil výsledok pri svojom vytvorení",
+   "Produkt zmizne až po reštarte databázy",
+   "Produkt v novom výsledku nebude",
+   "Pohľad sa automaticky stane materializovaným pohľadom"
+  ],
+  "answer": 2,
+  "explanation": "Bežný pohľad samostatne neukladá množinu výsledkov; namiesto toho poskytuje aktuálne podkladové dáta podľa definovanej logiky dopytu. Záznam s `active = false` preto v novom dopyte už podmienku pohľadu nespĺňa. Očakávanie predchádzajúceho výsledku môže byť zavádzajúce, pretože materializovaný pohľad naozaj môže predchádzajúci výsledok uchovať až do ďalšieho obnovenia."
+ },
+ {
+  "id": 172,
+  "level": "senior",
+  "area": "Normalization & schema design",
+  "topic": "Normalization & schema design",
+  "type": "scenario",
+  "question": "V systéme má každá objednávka jedinú hodnotu `shipping_country` a názov krajiny je zatiaľ uložený ako text v každom zázname objednávky. Neskôr treba pri krajinách spravovať aj ďalšie štruktúrované údaje, napríklad ISO kód a daňové nastavenia. Ktorý model najviac zníži redundanciu?",
+  "options": [
+   "Opakovať názov krajiny a každý nový atribút v každej objednávke",
+   "Ukladať údaje o krajinách do samostatnej tabuľky `countries`, na ktorú objednávka odkazuje cez cudzí kľúč `country_id`",
+   "Ukladať každú krajinu do samostatného stĺpca v tabuľke `orders`",
+   "Ukladať všetky údaje o krajinách do jediného poľa TEXT oddeleného čiarkami"
+  ],
+  "answer": 1,
+  "explanation": "Krajina je samostatná, opakovane použiteľná entita, preto je vhodné ukladať ISO kód a ďalšie atribúty do samostatnej tabuľky a odkazovať na ňu z tabuľky objednávok cez cudzí kľúč. Znižuje to redundanciu a umožňuje centralizované pravidlá integrity. Priame ukladanie názvu môže byť zavádzajúce, pretože je pohodlné pri jednoduchých dopytoch, no každú zmenu údajov o krajine by bolo treba premietnuť do mnohých objednávok."
+ },
+ {
+  "id": 173,
+  "level": "senior",
+  "area": "Constraints & keys",
+  "topic": "Constraints & keys",
+  "type": "production",
+  "question": "V tabuľke `reservations` chceme zabezpečiť, aby dve rezervácie tej istej izby nemohli pokrývať prekrývajúce sa časové intervaly. Ktorý prístup to v PostgreSQL dokáže vynútiť priamo na úrovni databázy?",
+  "options": [
+   "CHECK(room_id IS NOT NULL)",
+   "Jednoduché UNIQUE(room_id, start_time)",
+   "Obmedzenie EXCLUDE na kombinácii identifikátora izby a časového intervalu",
+   "FOREIGN KEY(room_id, start_time, end_time)"
+  ],
+  "answer": 2,
+  "explanation": "V PostgreSQL je exclusion constraint vhodné na vynútenie pravidiel, pri ktorých určité hodnoty alebo rozsahy nesmú byť navzájom v konflikte. Pre izbu a časový interval dokáže priamo vyjadriť zákaz prekrývajúcich sa rezervácií. UNIQUE môže byť zavádzajúce, pretože duplicitným kombináciám naozaj zabráni, no vo všeobecnosti nedokáže odhaliť intervaly, ktoré sú rôzne, a predsa sa prekrývajú."
+ },
+ {
+  "id": 174,
+  "level": "senior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "scenario",
+  "question": "V systéme na správu skladu sa dve súbežné transakcie pokúšajú rezervovať ten istý produkt. Ani jedna transakcia nesmie dopustiť, aby sa stav skladu stal záporným. Ktoré riešenie poskytuje silnú ochranu na úrovni databázy proti jednoduchej race condition typu read-modify-write?",
+  "options": [
+   "Prečítať stav skladu pomocou SELECT a neskôr ho v aplikácii aktualizovať cez UPDATE",
+   "Vykonávať kontrolu stavu skladu výlučne v JavaScripte",
+   "Pridať medzi obe transakcie pevné oneskorenie `sleep(1)`",
+   "Riadne zamknúť riadok so stavom skladu v transakcii, napríklad pomocou `SELECT ... FOR UPDATE`, a potom vykonať kontrolu aj úpravu v tej istej transakcii"
+  ],
+  "answer": 3,
+  "explanation": "`SELECT ... FOR UPDATE` chráni vybraný riadok transakčným zámkom, takže súbežná transakcia, ktorá sa ho pokúša upraviť, musí čakať, kým sa zámok uvoľní. Kontrola aj úprava prebiehajú v tej istej transakcii, takže biznis rozhodnutie a zmenu dát možno spracovať konzistentne. Validácia na strane klienta môže byť zavádzajúca, pretože pri bežnej prevádzke môže chyby odhaliť rýchlo a správne, no sama osebe neposkytuje ochranu na úrovni databázy proti súbežným transakciám."
+ },
+ {
+  "id": 175,
+  "level": "senior",
+  "area": "Normalization & schema design",
+  "topic": "Normalization & schema design",
+  "type": "architecture",
+  "question": "V multi-tenant SaaS systéme používa každý tenant rovnaké základné biznis entity, no niektorí tenanti vyžadujú ďalšie, premenlivé atribúty. Ktoré riešenie najlepšie zachová integritu relačného modelu a zároveň poskytne obmedzenú flexibilitu?",
+  "options": [
+   "Vytvoriť pre každého tenanta úplne samostatnú databázovú schému, aj keď na to nie je prevádzkový dôvod",
+   "Dať každý atribút do jediného voľného poľa TEXT",
+   "Ukladať všetky biznis vzťahy ako JSON reťazce",
+   "Stabilné, spoločné atribúty ponechať v bežných relačných stĺpcoch a naozaj premenlivé polia špecifické pre tenanta riešiť riadeným JSONB alebo samostatnou tabuľkou rozšírení"
+  ],
+  "answer": 3,
+  "explanation": "Stabilnú biznis štruktúru možno dobre vynútiť relačnými stĺpcami, kľúčmi a obmedzeniami, kým naozaj premenlivým atribútom špecifickým pre tenanta možno dať obmedzenú flexibilitu. JSONB alebo tabuľku rozšírení by si mal obmedziť na dáta, ktoré sú skutočne dynamické. Úplne samostatná schéma môže byť zavádzajúca, pretože môže poskytnúť silnú izoláciu, no výrazne zvyšuje zložitosť migrácií, prevádzky a údržby."
+ },
+ {
+  "id": 176,
+  "level": "senior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "behavior",
+  "question": "V PostgreSQL 15+ príkaz `MERGE` spáruje s tým istým cieľovým riadkom viac ako jeden zdrojový riadok a vetva `WHEN MATCHED` by vykonala UPDATE. Čo sa stane?",
+  "options": [
+   "Cieľový riadok sa aktualizuje raz pre každý zodpovedajúci zdrojový riadok.",
+   "PostgreSQL zodpovedajúce zdrojové riadky automaticky zlúči.",
+   "Operácia môže skončiť chybou, pretože cieľový riadok nemôže byť počas toho istého vykonania `MERGE` aktualizovaný viac ako jedným zodpovedajúcim zdrojovým riadkom.",
+   "Spracuje sa iba prvý zdrojový riadok v deterministickom poradí."
+  ],
+  "answer": 2,
+  "explanation": "Počas vykonávania `MERGE` v PostgreSQL nemožno cieľový riadok v rámci toho istého príkazu `MERGE` spracovať viackrát. Ak s tým istým cieľovým riadkom zodpovedá viac zdrojových riadkov a akciou by bol UPDATE alebo DELETE, vykonanie môže skončiť chybou. V produkcii je preto dôležité zabezpečiť, aby podmienka `JOIN` poskytovala očakávanú kardinalitu. Predpoklad, že sa jednoducho uplatní viac aktualizácií, láka preto, lebo bežný JOIN naozaj môže vytvoriť viac zodpovedajúcich riadkov."
+ },
+ {
+  "id": 177,
+  "level": "senior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "performance",
+  "question": "Tabuľka v PostgreSQL dostáva veľa operácií UPDATE, no väčšina z nich mení stĺpce, ktoré nie sú zahrnuté v žiadnom indexe. Prečo to môže byť z hľadiska výkonu výhodné?",
+  "options": [
+   "Databáza v tomto prípade záznam v heape vôbec nezmení.",
+   "PostgreSQL môže za určitých podmienok vykonať HOT (Heap-Only Tuple) update, čím sa vyhne potrebe vytvárať nové položky v indexoch.",
+   "UPDATE sa automaticky prevedie na SELECT.",
+   "Indexy sa pri každom UPDATE automaticky vymažú a znovu vytvoria."
+  ],
+  "answer": 1,
+  "explanation": "V modeli MVCC v PostgreSQL vytvorí UPDATE novú verziu n-tice. Ak upravené stĺpce neovplyvňujú žiadne indexy a na tej istej stránke heapu je dosť miesta, môže sa vykonať HOT update, čo znižuje náklady na údržbu indexov. HOT nie je zaručený pri každom UPDATE, pretože musia byť splnené aj ďalšie fyzické podmienky. Predpoklad, že každý UPDATE je automaticky HOT, láka preto, lebo nezmenené indexované stĺpce sú dôležitým predpokladom."
+ },
+ {
+  "id": 178,
+  "level": "senior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "behavior",
+  "question": "Pohľad v PostgreSQL je definovaný s `WITH CHECK OPTION`. Aký je jeho hlavný účel?",
+  "options": [
+   "Zabezpečuje, aby riadky vložené alebo aktualizované cez pohľad naďalej spĺňali filtrovaciu podmienku pohľadu.",
+   "Automaticky materializuje výsledok pohľadu.",
+   "Zabráni čítaniu pohľadu.",
+   "Automaticky premení každú úpravu na transakciu bez triggerov."
+  ],
+  "answer": 0,
+  "explanation": "`WITH CHECK OPTION` zabraňuje tomu, aby nové alebo upravené riadky zapísané cez pohľad vypadli mimo definície pohľadu. Je to obzvlášť užitočné, keď pohľad predstavuje autorizačný alebo biznis filter. Zámena s materializovaným pohľadom láka preto, lebo obe sú špecializované funkcie pohľadov, no riešia úplne odlišné problémy."
+ },
+ {
+  "id": 179,
+  "level": "senior",
+  "area": "SQL injection & security",
+  "topic": "SQL injection & security",
+  "type": "production",
+  "question": "V multi-tenant aplikácii na PostgreSQL chceš, aby samotná databáza vynucovala, že každý tenant vidí iba svoje riadky. Ktorá funkcia PostgreSQL je na to priamo vhodná?",
+  "options": [
+   "`CHECK` constraint",
+   "Hodnota `DEFAULT`",
+   "Row-Level Security (RLS)",
+   "`VIEW` bez `ORDER BY`"
+  ],
+  "answer": 2,
+  "explanation": "Row-Level Security umožňuje PostgreSQL riadiť po jednotlivých riadkoch, ktoré záznamy môže konkrétny databázový používateľ alebo rola vidieť či upravovať. Poskytuje tak silnú ochrannú vrstvu na úrovni databázy pre izoláciu tenantov, hoci politiky treba starostlivo navrhnúť a otestovať. Použitie jednoduchého obmedzenia CHECK láka preto, lebo aj to je pravidlo na úrovni databázy, no prístup dopytov neriadi."
+ },
+ {
+  "id": 180,
+  "level": "senior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "performance",
+  "question": "Na tabuľke v PostgreSQL už existuje veľký B-tree index, ktorý produkčný systém nepretržite používa. Chceš index znovu vytvoriť a čo najmenej pritom blokovať bežnú čítaciu a zápisovú prevádzku. Ktorý prístup je na to určený?",
+  "options": [
+   "`DROP INDEX` a potom `CREATE INDEX` výlučne v jednej transakcii",
+   "`VACUUM FULL`",
+   "`CLUSTER`",
+   "`REINDEX CONCURRENTLY`"
+  ],
+  "answer": 3,
+  "explanation": "`REINDEX CONCURRENTLY` umožňuje znovu vytvoriť index s podstatne menším blokovaním bežnej čítacej a zápisovej prevádzky ako pri konvenčnom prebudovaní indexu. Daňou môže byť vyššia spotreba zdrojov a dlhší čas operácie. Jednoduchý DROP a CREATE láka preto, lebo vytvorí funkčne rovnaký index, no správanie zámkov je v produkčnom systéme kľúčovým rozdielom."
+ },
+ {
+  "id": 181,
+  "level": "senior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "performance",
+  "question": "Dopyt v PostgreSQL agreguje veľké množstvo dát a plán EXPLAIN ukazuje popri `HashAggregate` alebo `Hash Join` výrazné využitie dočasného disku. Ktoré nastavenie je priamo relevantné pri skúmaní, či má hashovacia operácia dosť dostupnej pamäte?",
+  "options": [
+   "`work_mem`",
+   "`statement_timeout`",
+   "`search_path`",
+   "`timezone`"
+  ],
+  "answer": 0,
+  "explanation": "`work_mem` ovplyvňuje, koľko pamäte môžu určité operácie v rámci dopytu, napríklad zoraďovanie a hashovacie operácie, použiť, kým musia presunúť dáta na dočasný disk. Jeho zvýšenie môže niektoré dopyty zlepšiť, no príliš vysoká hodnota môže spôsobiť výraznú spotrebu pamäte, keď súbežne beží veľa operácií alebo relácií. Zmena statement_timeout láka preto, lebo tiež súvisí s výkonom dopytov, no pamäť dostupnú na vykonanie nezvyšuje."
+ },
+ {
+  "id": 182,
+  "level": "senior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "performance",
+  "question": "V dopyte možno namiesto `UNION` použiť `UNION ALL`, pretože aplikácia nevyžaduje odstránenie duplicít. Prečo to môže byť výhodné pre výkon?",
+  "options": [
+   "`UNION ALL` automaticky vytvorí index.",
+   "`UNION` vždy vykoná iba prvý SELECT.",
+   "`UNION ALL` nemusí z kombinovaného výsledku odstraňovať duplicity, takže sa môže vyhnúť určitým nákladom na deduplikáciu založenú na zoraďovaní alebo hashovaní.",
+   "`UNION ALL` vždy vráti menej riadkov."
+  ],
+  "answer": 2,
+  "explanation": "`UNION` je množinová operácia, ktorá odstraňuje duplicity, čo môže vyžadovať dodatočné spracovanie. `UNION ALL` jednoducho vráti výsledky vstupných dopytov bez deduplikácie, takže keď odstránenie duplicít nie je potrebné, týmto dodatočným nákladom sa dá vyhnúť. Vždy používať `UNION` láka preto, lebo náklady na odstránenie duplicít nie sú pre vývojára hneď viditeľné."
+ },
+ {
+  "id": 183,
+  "level": "senior",
+  "area": "Data types & dates",
+  "topic": "Data types & dates",
+  "type": "edgecase",
+  "question": "K hodnote `date` v PostgreSQL pripočítaš jeden mesiac. Prečo je nebezpečné predpokladať ako všeobecné pravidlo, že vždy dostaneš rovnaké číslo dňa v nasledujúcom mesiaci?",
+  "options": [
+   "PostgreSQL vždy považuje mesiace za 30-dňové.",
+   "Pretože mesiace majú rôznu dĺžku a dátumy na konci mesiaca majú špeciálne prípady, výsledok nemusí zodpovedať jednoduchej predstave „rovnaký deň v nasledujúcom mesiaci“.",
+   "Typ `date` nepodporuje intervaly.",
+   "PostgreSQL posunie každé pripočítanie mesiaca presne o jeden rok do budúcnosti."
+  ],
+  "answer": 1,
+  "explanation": "Dĺžky mesiacov nie sú rovnaké, takže aritmetiku s mesiacmi nemožno brať ako jednoduchý pevný počet dní, najmä pri dátumoch blízko konca mesiaca. V závislosti od biznis pravidla musíš výslovne rozhodnúť, ako sa majú pri posune do nasledujúceho mesiaca spracovať dátumy ako 31. január. Nahradiť mesiac 30 dňami láka preto, lebo pri jednoduchých výpočtoch s dátumami to istý čas zdanlivo funguje."
+ },
+ {
+  "id": 184,
+  "level": "senior",
+  "area": "Normalization & schema design",
+  "topic": "Normalization & schema design",
+  "type": "production",
+  "question": "V systéme objednávok ukladáš aktuálny názov produktu aj priamo do tabuľky `orders`, pričom názov produktu sa v tabuľke `products` môže meniť. Ktorú biznis otázku treba pri návrhu schémy vyjasniť ako prvú?",
+  "options": [
+   "Či má riadok objednávky zachovať aktuálny názov produktu, alebo historický názov platný v čase zadania objednávky.",
+   "Či sa má pre každý produkt vytvoriť samostatná databáza.",
+   "Či sa má názov produktu hashovať.",
+   "Či sa má pre každú objednávku vytvoriť nová tabuľka products."
+  ],
+  "answer": 0,
+  "explanation": "Redundantné dáta nemusia byť problémom, ak je biznis požiadavkou zachovať historický snapshot. Faktúra napríklad môže musieť uchovať názov produktu platný v čase fakturácie, nie názov po neskoršej aktualizácii produktu. Automaticky normalizovať každú duplicitnú hodnotu láka preto, lebo redundancia často spôsobuje anomálie pri aktualizácii, no zachovanie historických dát môže byť legitímnym dôvodom na denormalizáciu."
+ },
+ {
+  "id": 185,
+  "level": "senior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "security",
+  "question": "V PostgreSQL beží funkcia `SECURITY DEFINER` s vyššími oprávneniami ako volajúci používateľ. Prečo je v tomto prípade obzvlášť dôležité bezpečne narábať so `search_path`?",
+  "options": [
+   "Pretože `search_path` automaticky vypína transakcie.",
+   "Pretože `search_path` ovplyvňuje iba číselné typy.",
+   "Pretože funkcia nedokáže vykonať SQL bez použitia `search_path`.",
+   "Pretože nedostatočne kontrolovaný `search_path` môže spôsobiť, že funkcia nájde neočakávaný objekt, a kontext vykonávania s vyššími oprávneniami tak môže byť zneužitý."
+  ],
+  "answer": 3,
+  "explanation": "Funkcia SECURITY DEFINER beží s oprávneniami vlastníka, takže rozpoznávanie názvov je obzvlášť citlivé na bezpečnosť. Ak `search_path` nie je správne kontrolovaný, útočník môže umiestniť objekty do schémy, ktorú ovláda, a ovplyvniť, ktorý objekt funkcia použije. Bezpečný prístup zahŕňa primerane obmedzený `search_path` a explicitné uvádzanie schémy pri potrebných objektoch. Ignorovať search_path láka preto, lebo vývojári aplikácií sa s ním často stretávajú iba ako s pohodlným mechanizmom na rozpoznávanie názvov."
+ },
+ {
+  "id": 186,
+  "level": "senior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "performance",
+  "question": "V aplikácii na PostgreSQL často spúšťaš dopyty na obsiahnutie (containment) nad dátami v stĺpci JSONB, napríklad `data @> '{\"status\": \"active\"}'`. Ktorý index je na to zvyčajne vhodný?",
+  "options": [
+   "GIN index na stĺpci JSONB",
+   "B-tree index iba na celej textovej reprezentácii hodnoty JSONB",
+   "Hash index na primárnom kľúči tabuľky",
+   "BRIN index na úplne nesúvisiacom dátumovom stĺpci"
+  ],
+  "answer": 0,
+  "explanation": "GIN index v PostgreSQL sa dobre hodí na mnohé operátory JSONB vrátane dopytov na obsiahnutie, pretože ukladá indexovateľné informácie o prvkoch v zložitých hodnotách. V závislosti od záťaže a použitých operátorov môže záležať aj na vhodnej triede operátorov. Použiť B-tree láka preto, lebo je to bežný univerzálny index, no B-tree index na celej hodnote JSONB nie je optimalizovaný pre tento typ dopytu na obsiahnutie.",
+  "fixed": true
+ },
+ {
+  "id": 187,
+  "level": "senior",
+  "area": "SQL injection & security",
+  "topic": "SQL injection & security",
+  "type": "behavior",
+  "question": "Prečo nestačí overovať iba v aplikácii, či má používateľ prístup k záznamu patriacemu konkrétnemu tenantovi, keď k databáze môže priamo pristupovať aj viac komponentov?",
+  "options": [
+   "Pretože autorizáciu nikdy nemožno overovať v aplikácii.",
+   "Pretože databáza vždy ignoruje podmienky poslané aplikáciou.",
+   "Pretože iný komponent, chybný dopyt alebo kompromitované prihlasovacie údaje môžu obísť predpoklady aplikácie; kontroly na úrovni databázy, ako je RLS, môžu poskytnúť ďalšiu vrstvu ochrany.",
+   "Pretože stĺpec tenant_id sa nedá uložiť v PostgreSQL."
+  ],
+  "answer": 2,
+  "explanation": "Autorizácia na úrovni aplikácie je dôležitá, no sama osebe funguje iba vtedy, ak každý prístup vždy prechádza tou istou dôveryhodnou cestou v kóde. Keď sú v hre viaceré komponenty, administrátorské nástroje alebo kompromitované prihlasovacie údaje, kontroly na úrovni databázy môžu poskytnúť ďalšiu bezpečnostnú hranicu. Riešiť autorizáciu výlučne v aplikácii láka preto, lebo práve tam je k dispozícii väčšina biznis kontextu."
+ },
+ {
+  "id": 188,
+  "level": "senior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "edgecase",
+  "question": "V PostgreSQL môže dlho bežiaca transakcia spôsobovať problémy, aj keď práve nedrží aktívny zámok na riadku. Prečo?",
+  "options": [
+   "PostgreSQL ju automaticky prepne na izoláciu SERIALIZABLE.",
+   "Jej starý snapshot môže zabrániť odstráneniu určitých starých verzií n-tíc, čo spôsobuje MVCC bloat a problémy súvisiace s VACUUM.",
+   "Každý SELECT automaticky drží exkluzívny zámok na tabuľke.",
+   "PostgreSQL automaticky vráti späť každú otvorenú transakciu."
+  ],
+  "answer": 1,
+  "explanation": "Kvôli MVCC nemožno jednoducho odstrániť staré verzie n-tíc, ktoré môžu byť pre aktívnu transakciu ešte viditeľné. Dlho žijúci snapshot preto môže zabrániť upratovaniu, čo vedie k bloatu tabuliek alebo indexov a ťažkostiam s VACUUM. Sledovať iba zámky láka preto, lebo blokovanie je priamo viditeľné, kým účinky MVCC spôsobené životnosťou snapshotu sú nepriamejšie."
+ },
+ {
+  "id": 189,
+  "level": "senior",
+  "area": "DML & upserts",
+  "topic": "DML & upserts",
+  "type": "behavior",
+  "question": "Aký je v PostgreSQL dôležitý rozdiel medzi `DELETE` a `TRUNCATE` pri úplnom vyprázdnení veľkej tabuľky?",
+  "options": [
+   "`DELETE` je vždy rýchlejší.",
+   "`TRUNCATE` vykoná tie isté operácie DELETE riadok po riadku.",
+   "`DELETE` sa nedá použiť v transakcii.",
+   "`DELETE` je operácia orientovaná na riadky, kým `TRUNCATE` vyprázdni tabuľku iným mechanizmom na úrovni tabuľky, takže má vo všeobecnosti odlišné správanie zámkov a triggerov."
+  ],
+  "answer": 3,
+  "explanation": "DELETE odstraňuje riadky podľa transakčného modelu, kým TRUNCATE vyprázdňuje tabuľku podstatne odlišným mechanizmom na úrovni tabuľky. TRUNCATE je pri úplnom vyprázdnení tabuľky vo všeobecnosti rýchlejší, no vyžaduje silnejšie zamykanie a nespúšťa tie isté triggery DELETE na úrovni riadkov. Považovať obe operácie za úplne rovnocenné láka preto, lebo výsledkom oboch môže byť tabuľka bez akýchkoľvek predchádzajúcich riadkov."
+ },
+ {
+  "id": 190,
+  "level": "senior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "performance",
+  "question": "Dopyt v PostgreSQL používa paralelné vykonávanie. Po pridaní volania vlastnej SQL alebo PL/pgSQL funkcie však paralelný plán zmizne. Čo môže byť jedným z dôvodov?",
+  "options": [
+   "Funkcia sa považuje za nebezpečnú pre paralelné vykonávanie.",
+   "Každá funkcia automaticky vypína paralelné dopyty.",
+   "PostgreSQL nepodporuje funkcie v príkazoch SELECT.",
+   "Paralelné vykonávanie funguje iba na tabuľkách bez indexov."
+  ],
+  "answer": 0,
+  "explanation": "V PostgreSQL môže klasifikácia funkcie z hľadiska paralelnej bezpečnosti ovplyvniť, či plánovač môže pre dopyt použiť paralelné vykonávanie. Prítomnosť funkcie `PARALLEL UNSAFE` môže paralelný plán obmedziť alebo mu zabrániť. Funkcie teda paralelné dopyty automaticky nevypínajú; záleží na ich skutočnom správaní a deklarovaných vlastnostiach. Považovať každú funkciu za paralelne nebezpečnú láka preto, lebo plánovač takéto prípady rieši konzervatívne."
+ },
+ {
+  "id": 191,
+  "level": "senior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "behavior",
+  "question": "Prečo môže byť uložená procedúra alebo funkcia užitočná, keď viac aplikácií vykonáva zložitú databázovú operáciu podľa toho istého pravidla na úrovni databázy?",
+  "options": [
+   "Pretože procedúra automaticky prevedie tabuľky na NoSQL databázu.",
+   "Pretože spoločnú logiku na strane databázy možno centralizovať na jednom mieste, takže viacerí klienti môžu používať to isté transakčné alebo biznis pravidlo na prácu s dátami.",
+   "Pretože procedúra automaticky zaindexuje každý SQL dopyt.",
+   "Pretože použitie procedúry je vždy rýchlejšie ako akákoľvek logika na strane aplikácie."
+  ],
+  "answer": 1,
+  "explanation": "Vo vhodných prípadoch môže procedúra alebo funkcia na strane databázy centralizovať transakčnú logiku a logiku práce s dátami, ktorú musí viac klientov uplatňovať konzistentne. Môže to znížiť duplicitu, no zároveň zvýšiť zložitosť databázovej vrstvy a vyžadovať koordináciu pri nasadzovaní. Predpoklad, že sa vždy vykoná rýchlejšie, láka preto, lebo logika je bližšie k dátam, no to samo osebe lepší výkon nezaručuje."
+ },
+ {
+  "id": 192,
+  "level": "senior",
+  "area": "Indexes",
+  "topic": "Indexes",
+  "type": "behavior",
+  "question": "Aká je v PostgreSQL dôležitá vlastnosť `CLUSTER` pri fyzickom zoradení tabuľky podľa indexu?",
+  "options": [
+   "Po každom INSERT automaticky znovu vytvorí index.",
+   "Dokáže fyzicky preusporiadať tabuľku podľa poradia indexu, no neskoršie úpravy toto fyzické zoradenie automaticky nezachovávajú.",
+   "Vymaže všetky nepoužívané indexy.",
+   "Vynúti, aby každý dopyt používal výlučne index scan."
+  ],
+  "answer": 1,
+  "explanation": "`CLUSTER` dokáže fyzicky preusporiadať riadky tabuľky podľa indexu, čo môže zlepšiť lokalitu pri určitých korelovaných dopytoch na rozsahy. Toto zoradenie sa priebežne neudržiava: neskoršie operácie INSERT a UPDATE fyzické zoradenie postupne narúšajú. Považovať ho za ekvivalent fungovania indexu láka preto, lebo oba sa spájajú so zoradenou štruktúrou kľúčov, no CLUSTER mení fyzické usporiadanie heapu."
+ },
+ {
+  "id": 193,
+  "level": "senior",
+  "area": "Aggregation & GROUP BY",
+  "topic": "Aggregation & GROUP BY",
+  "type": "algorithm",
+  "question": "V dopyte chceš vypočítať počet aktívnych a neaktívnych záznamov ako samostatné stĺpce v tej istej množine výsledkov `GROUP BY`. Ktorý prístup to v PostgreSQL vyjadruje priamo?",
+  "options": [
+   "Dve vnorené klauzuly `ORDER BY`",
+   "`COUNT(*) FILTER (WHERE status = 'active')` a `COUNT(*) FILTER (WHERE status = 'inactive')`",
+   "Dve samostatné klauzuly `DISTINCT` na tých istých stĺpcoch",
+   "Výlučne `ROW_NUMBER()` bez `PARTITION BY`"
+  ],
+  "answer": 1,
+  "explanation": "`FILTER` umožňuje vypočítať viac podmienených agregácií nad tým istým výsledkom zoskupenia. Vďaka tomu môžeš vrátiť počty aktívnych a neaktívnych záznamov ako samostatné stĺpce bez toho, aby si zoskupoval aj podľa stĺpca status. Vytvoriť samostatné skupiny GROUP BY láka preto, lebo aj tak sa dá počítať podľa stavu, no vznikne iná štruktúra výsledku."
+ },
+ {
+  "id": 194,
+  "level": "senior",
+  "area": "Constraints & keys",
+  "topic": "Constraints & keys",
+  "type": "edgecase",
+  "question": "V databáze chceš, aby vždy platilo biznis pravidlo medzi hodnotami dvoch stĺpcov, napríklad aby `end_at` nebol skorší ani rovný `start_at`. Ktorý mechanizmus na úrovni databázy je na to najvhodnejší?",
+  "options": [
+   "CHECK constraint",
+   "INDEX iba na `start_at`",
+   "VIEW s `ORDER BY`",
+   "`ANALYZE`"
+  ],
+  "answer": 0,
+  "explanation": "Obmedzenie CHECK dokáže priamo vyjadriť biznis invariant na úrovni riadku medzi hodnotami stĺpcov, napríklad `CHECK (end_at > start_at)`. Zabezpečí tak, že pravidlo vynúti databáza pri každom INSERT aj UPDATE. Overovať podmienku iba v aplikácii láka preto, lebo biznis logika je tam ľahko dostupná, no iné cesty vkladania dát môžu túto validáciu obísť."
+ },
+ {
+  "id": 195,
+  "level": "senior",
+  "area": "Transactions & isolation levels",
+  "topic": "Transactions & isolation levels",
+  "type": "behavior",
+  "question": "V transakcii PostgreSQL vytvoríš `SAVEPOINT sp1`, vykonáš operáciu, ktorá zlyhá, a potom zadáš `ROLLBACK TO SAVEPOINT sp1`. Čo sa stane?",
+  "options": [
+   "Celá transakcia sa potvrdí.",
+   "Celá transakcia sa automaticky vráti späť.",
+   "Stav databázy spred savepointu sa natrvalo potvrdí.",
+   "Zmeny vykonané po savepointe sa vrátia späť, kým práca transakcie vykonaná pred savepointom zostane zachovaná."
+  ],
+  "answer": 3,
+  "explanation": "SAVEPOINT poskytuje bod čiastočného návratu v rámci transakcie. `ROLLBACK TO SAVEPOINT` zruší operácie vykonané po vytvorení savepointu a transakcia môže pokračovať. Predpoklad, že sa vráti späť celá transakcia, láka preto, lebo bežný ROLLBACK naozaj zruší všetky nepotvrdené zmeny."
+ },
+ {
+  "id": 196,
+  "level": "senior",
+  "area": "Data types & dates",
+  "topic": "Data types & dates",
+  "type": "edgecase",
+  "question": "Aplikácia ukladá časové údaje do PostgreSQL a potrebuje ich zobrazovať v miestnom časovom pásme každého používateľa. Aký je vhodný prístup?",
+  "options": [
+   "Ukladať každý časový údaj ako VARCHAR, aby sa zachoval názov časového pásma.",
+   "Vždy ukladať každý časový údaj ako miestnu hodnotu `time` bez dátumu.",
+   "Ukladať absolútny časový okamih vo vhodnom type timestamp a časové pásmo na zobrazenie riešiť podľa kontextu dopytu alebo relácie.",
+   "PostgreSQL automaticky zvolí pre každého používateľa rovnaké miestne časové pásmo."
+  ],
+  "answer": 2,
+  "explanation": "Keď treba vyjadriť skutočný okamih udalosti, je vhodné uložiť ho ako absolútny časový okamih a na zobrazenie ho previesť do časového pásma, ktoré používateľ chce. Oddeľuje to časový údaj udalosti od miestneho kontextu zobrazenia, čo je obzvlášť dôležité v systémoch fungujúcich vo viacerých časových pásmach. Ukladať naformátovaný text láka preto, lebo sa zdá, že obsahuje časový údaj aj informáciu o časovom pásme, no ťažšie sa nad ním dopytuje a počíta."
+ },
+ {
+  "id": 197,
+  "level": "senior",
+  "area": "SELECT & filtering",
+  "topic": "SELECT & filtering",
+  "type": "edgecase",
+  "question": "V dopyte v PostgreSQL chceš vylúčiť riadky, ktorých hodnota sa objavuje vo výsledku iného dopytu. Ktorá konštrukcia je vo všeobecnosti robustnejšia, keď stĺpec poddopytu môže obsahovať hodnoty NULL?",
+  "options": [
+   "`NOT IN` v každom prípade",
+   "`NOT EXISTS`",
+   "`<> ALL` bez akejkoľvek ďalšej úvahy",
+   "`LEFT JOIN` vždy bez akejkoľvek ďalšej podmienky"
+  ],
+  "answer": 1,
+  "explanation": "`NOT EXISTS` prirodzene overuje, či existuje zodpovedajúci súvisiaci riadok, a netrpí problémom trojhodnotovej logiky, ktorý môže NULL spôsobiť pri `NOT IN`. Pri podmienkach vylúčenia je preto často robustnejšou voľbou, najmä keď nie je zaručené, že výsledok poddopytu neobsahuje NULL. Použiť NOT IN láka preto, lebo myšlienku „nie je obsiahnuté v“ vyjadruje jednoducho a intuitívne."
+ },
+ {
+  "id": 198,
+  "level": "senior",
+  "area": "Views, procedures & triggers",
+  "topic": "Views, procedures & triggers",
+  "type": "behavior",
+  "question": "V auditnom triggeri v PostgreSQL chceš pred UPDATE uložiť aktuálne hodnoty záznamu. Ktorý záznam špecifický pre triggery zvyčajne použiješ?",
+  "options": [
+   "`OLD`",
+   "`NEW`",
+   "`CURRENT`",
+   "`TARGET`"
+  ],
+  "answer": 0,
+  "explanation": "V triggeri UPDATE predstavuje `OLD` hodnoty záznamu pred úpravou, kým `NEW` obsahuje hodnoty po úprave. Na zaznamenanie predchádzajúceho stavu do auditného logu preto môžeš použiť `OLD`. Použiť NEW láka preto, lebo tiež predstavuje celý záznam súvisiaci s UPDATE, no predstavuje stav po aktualizácii."
+ },
+ {
+  "id": 199,
+  "level": "senior",
+  "area": "Query plans & optimization",
+  "topic": "Query plans & optimization",
+  "type": "performance",
+  "question": "Na veľmi veľkej append-only tabuľke v PostgreSQL sa pravidelne mažú alebo aktualizujú staré dáta, kým nepretržite zostáva otvorená dlho bežiaca transakcia. Aký účinok to môže mať?",
+  "options": [
+   "Dlho bežiaca transakcia vždy automaticky spustí VACUUM.",
+   "Dlho bežiaca transakcia môže zabrániť upratovaniu starých verzií n-tíc, čo vedie k zvýšenému bloatu.",
+   "PostgreSQL automaticky vymaže všetky indexy.",
+   "Transakcia spôsobí zablokovanie každého nového INSERT."
+  ],
+  "answer": 1,
+  "explanation": "Kvôli dlho žijúcemu snapshotu sa niektoré staré verzie n-tíc MVCC môžu stále javiť ako potrebné, takže ich VACUUM nemôže hneď odstrániť. Časom to môže spôsobiť bloat a zvýšenú réžiu úložiska, I/O a výkonu. Hľadať iba súperenie o zámky láka preto, lebo dlho bežiace transakcie môžu spôsobiť aj blokovanie, no životnosť snapshotu je samostatný problém MVCC."
+ },
+ {
+  "id": 200,
+  "level": "senior",
+  "area": "SQL vs NoSQL",
+  "topic": "SQL vs NoSQL",
+  "type": "scenario",
+  "question": "Systém má silno relačný a transakčný základný dátový model, no niektoré dopyty často žiadajú kompletné, vopred poskladané dokumenty pre konkrétneho zákazníka a ich generovanie vyžaduje drahé JOINy. Ktorý prístup sa dá pri vysokej záťaži obhájiť?",
+  "options": [
+   "Okamžite nahradiť celý relačný dátový model dokumentovým NoSQL modelom.",
+   "Odstrániť z databázy všetky JOINy.",
+   "Ukladať všetky dokumenty výlučne do pamäte aplikácie.",
+   "Ponechať transakčný relačný model a v prípade potreby zaviesť pre častý vzor čítania samostatný čítací model alebo denormalizovanú reprezentáciu vhodnú na cachovanie."
+  ],
+  "answer": 3,
+  "explanation": "Oddelenie transakčného modelu od čítacieho modelu umožňuje, aby dáta kritické z hľadiska konzistencie zostali v relačnom modeli, kým veľkoobjemové, opakované čítania sa obsluhujú z optimalizovanej reprezentácie. V závislosti od požiadaviek na aktuálnosť to môže byť materializovaný čítací model, cache alebo iná denormalizovaná úložná vrstva. Migrovať celý systém na NoSQL láka preto, lebo dokumentový vzor čítania sa sem prirodzene hodí, no nahradenie celého transakčného modelu kvôli jedinej záťaži môže priniesť výraznú dodatočnú zložitosť."
+ }
+]

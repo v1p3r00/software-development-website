@@ -34,14 +34,14 @@ export default function SqlJoin({ lang }: WidgetProps) {
   const leftOn = j === 'LEFT' || j === 'FULL';
   const rightOn = j === 'RIGHT' || j === 'FULL';
   const nul = <span className="text-dim italic">NULL</span>;
-  const desc: Record<J, [string, string]> = {
-    INNER: ['Only rows that match on both sides. Bence (no orders) and order 13 (unknown customer) disappear.', 'Csak a mindkét oldalon egyező sorok. Bence (nincs rendelése) és a 13-as rendelés (ismeretlen vevő) kiesik.'],
-    LEFT: ['Every customer, plus their orders if any. Bence stays with NULL order columns.', 'Minden vevő, és a rendelései, ha vannak. Bence NULL rendelésoszlopokkal marad.'],
-    RIGHT: ['Every order, plus its customer if found. Order 13 stays with a NULL customer.', 'Minden rendelés, és a vevője, ha megvan. A 13-as rendelés NULL vevővel marad.'],
-    FULL: ['Everything from both sides, matched where possible (PostgreSQL supports it; MySQL does not).', 'Mindkét oldal minden sora, ahol lehet, párosítva (PostgreSQL-ben van, MySQL-ben nincs).'],
+  const desc: Record<J, [string, string, string]> = {
+    INNER: ['Only rows that match on both sides. Bence (no orders) and order 13 (unknown customer) disappear.', 'Csak a mindkét oldalon egyező sorok. Bence (nincs rendelése) és a 13-as rendelés (ismeretlen vevő) kiesik.', 'Len riadky, ktoré sa zhodujú na oboch stranách. Bence (bez objednávok) a objednávka 13 (neznámy zákazník) zmiznú.'],
+    LEFT: ['Every customer, plus their orders if any. Bence stays with NULL order columns.', 'Minden vevő, és a rendelései, ha vannak. Bence NULL rendelésoszlopokkal marad.', 'Každý zákazník plus jeho objednávky, ak nejaké má. Bence ostane s NULL v stĺpcoch objednávky.'],
+    RIGHT: ['Every order, plus its customer if found. Order 13 stays with a NULL customer.', 'Minden rendelés, és a vevője, ha megvan. A 13-as rendelés NULL vevővel marad.', 'Každá objednávka plus jej zákazník, ak sa nájde. Objednávka 13 ostane s NULL zákazníkom.'],
+    FULL: ['Everything from both sides, matched where possible (PostgreSQL supports it; MySQL does not).', 'Mindkét oldal minden sora, ahol lehet, párosítva (PostgreSQL-ben van, MySQL-ben nincs).', 'Všetko z oboch strán, spárované, kde sa dá (PostgreSQL to podporuje, MySQL nie).'],
   };
   return (
-    <Frame lang={lang} title={t('SQL joins, visualised', 'SQL joinok szemléltetve')} hint={t('Same two tables, four kinds of join.', 'Ugyanaz a két tábla, négyféle join.')}>
+    <Frame lang={lang} title={t('SQL joins, visualised', 'SQL joinok szemléltetve', 'SQL joiny vizuálne')} hint={t('Same two tables, four kinds of join.', 'Ugyanaz a két tábla, négyféle join.', 'Tie isté dve tabuľky, štyri druhy joinu.')}>
       <Seg label="join" options={['INNER', 'LEFT', 'RIGHT', 'FULL'] as const} value={j} onChange={setJ} />
       <div className="mt-4 grid items-center gap-4 md:grid-cols-[13rem_1fr]">
         <svg viewBox="0 0 200 120" className="mx-auto w-full max-w-[13rem]" role="img" aria-label={`${j} JOIN`}>
@@ -58,7 +58,7 @@ export default function SqlJoin({ lang }: WidgetProps) {
         </svg>
         <div className="min-w-0">
           <pre className="vw-code">{`SELECT c.name, o.id, o.total\nFROM customers c\n${j === 'INNER' ? 'JOIN' : j + ' JOIN'} orders o ON o.customer_id = c.id;`}</pre>
-          <p className="mt-2 text-[15px] leading-relaxed text-muted">{desc[j][lang === 'hu' ? 1 : 0]}</p>
+          <p className="mt-2 text-[15px] leading-relaxed text-muted">{desc[j][{ en: 0, hu: 1, sk: 2 }[lang]]}</p>
         </div>
       </div>
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -73,7 +73,7 @@ export default function SqlJoin({ lang }: WidgetProps) {
           </table>
         ))}
         <table className="w-full border border-accent/60 font-mono text-[13.5px]">
-          <caption className="label-a pb-1 text-left">{t('result', 'eredmény')} · {rows.length} {t('rows', 'sor')}</caption>
+          <caption className="label-a pb-1 text-left">{t('result', 'eredmény', 'výsledok')} · {rows.length} {t('rows', 'sor', rows.length === 1 ? 'riadok' : rows.length >= 2 && rows.length <= 4 ? 'riadky' : 'riadkov')}</caption>
           <thead><tr>{['name', 'o.id', 'total'].map((h) => <th key={h} className="border-b border-line px-2 py-1 text-left font-normal text-dim">{h}</th>)}</tr></thead>
           <tbody>
             {rows.map((r, k) => (

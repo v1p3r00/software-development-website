@@ -1,0 +1,131 @@
+{
+  "title": "Testovacia pyramída",
+  "intro": "Automatizované testy ti dávajú istotu meniť kód bez neustáleho premýšľania, čo si pokazil. V tejto lekcii sa naučíš, ako do seba zapadajú rôzne typy testov a prečo sa dobré testy sústreďujú na správanie, nie na implementačné detaily.",
+  "body": "## Prečo písať automatizované testy?\n\nKeď tvoj task manager rastie, zmena jednej časti aplikácie môže nečakane pokaziť inú časť. Automatizované testy ti dávajú opakovateľný spôsob, ako takéto regresie odhaliť.\n\n**Regresia** je problém, ktorý vznikne, keď zmena pokazí správanie, ktoré predtým fungovalo.\n\nTesty ti dávajú istotu pri zmenách kódu. Slúžia aj ako spustiteľná dokumentácia: dobrý test ukazuje, čo má aplikácia robiť.\n\nBez automatizovaných testov možno budeš musieť po každej zmene ručne preklikať celú aplikáciu. To je pomalé a nespoľahlivé.\n\nS testami môžeš urobiť zmenu a spustiť príkaz ako:\n\n~~~shell\nmvn test\n~~~\n\nalebo:\n\n~~~shell\nnpm test\n~~~\n\nUžitočná sada testov dokáže zachytiť problémy skôr ako používatelia. To znamená menej nočných chýb v produkcii a menej času stráveného ručným overovaním toho istého správania znova a znova.\n\nTesty nie sú zárukou, že je tvoj softvér správny. Sú nástrojom, ktorý zvyšuje dôveru v správanie, ktoré si sa rozhodol overovať.\n\n## Testovacia pyramída\n\nBežný spôsob, ako premýšľať o automatizovaných testoch, je **testovacia pyramída**. Základná myšlienka je, že dole by si mal mať veľa rýchlych, zameraných testov a hore menej nákladných testov.\n\n~~~diagram\n{\"type\": \"layers\", \"pyramid\": true, \"title\": \"Testovacia pyramída\", \"layers\": [{\"label\": \"E2E\", \"sub\": \"málo · pomalé · celá aplikácia\"}, {\"label\": \"Integračné\", \"sub\": \"niekoľko · DB, HTTP, Spring\"}, {\"label\": \"Unit\", \"sub\": \"veľa · milisekundy · jedna trieda\", \"highlight\": true}]}\n~~~\n\n~~~widget test-pyramid\n~~~\n\n~~~text\n             /\\\\\n            /  \\\\\n           / E2E \\\\\n          /------\\\\\n         /Integration\\\\\n        /--------------\\\\\n       /   Unit tests   \\\\\n      /__________________\\\\\n~~~\n\nPresné pomery nie sú zákon. Pyramída je užitočný mentálny model.\n\n### Unit testy\n\n**Unit test** overuje malý kúsok kódu izolovane. Môže to byť metóda v Jave, funkcia v TypeScripte alebo logika React komponentu.\n\nUnit testy sú zvyčajne rýchle, pretože sa vyhýbajú zbytočnej infraštruktúre, ako sú databázy a prehliadače.\n\nTask manager môže mať napríklad funkciu, ktorá vypočíta, či je úloha po termíne:\n\n~~~ts\nfunction isOverdue(dueDate, today) {\n  return dueDate < today;\n}\n~~~\n\nTúto logiku môžeš otestovať s niekoľkými malými vstupmi bez spúšťania Spring Bootu alebo PostgreSQL.\n\nKeďže sú unit testy rýchle, môžeš ich mať veľa.\n\n### Integračné testy\n\n**Integračný test** overuje, že viacero častí aplikácie spolu funguje.\n\nIntegračný test v Spring Boote môže napríklad overiť:\n\n~~~text\nHTTP požiadavka\n    ↓\nController\n    ↓\nService\n    ↓\nRepository\n    ↓\nDatabáza\n~~~\n\nIntegračné testy dávajú istotu, že komponenty spolu správne komunikujú. Vo všeobecnosti sú pomalšie a vyžadujú viac prípravy ako unit testy, preto ich zvyčajne máš menej.\n\nPri integračných testoch s databázou dokáže Testcontainers počas testovania spustiť v kontajneroch skutočné závislosti, napríklad PostgreSQL. Získaš tak realistickejšie správanie, než keby si databázu nahradil kopou mockov.\n\n### End-to-end testy\n\n**End-to-end test**, často nazývaný E2E test, overuje kompletný používateľský tok v bežiacej aplikácii.\n\nNapríklad:\n\n~~~text\nOtvorenie task managera\n    ↓\nPrihlásenie\n    ↓\nVytvorenie úlohy\n    ↓\nZobrazenie úlohy v zozname\n    ↓\nÚprava úlohy\n    ↓\nOdstránenie úlohy\n~~~\n\nTakýto test dokáže vykonať nástroj na automatizáciu prehliadača, napríklad Playwright.\n\nE2E testy sú cenné, pretože testujú systém z pohľadu používateľa. Zároveň sú pomalšie a môžu zlyhať z dôvodov, ktoré nesúvisia s logikou aplikácie, napríklad pre problémy s časovaním alebo prostredím.\n\nPreto má bežný projekt menej E2E testov ako unit testov.\n\n## Testovacia trofej pre frontendy\n\nTestovacia pyramída je užitočná, no testovanie frontendu sa niekedy namiesto nej opisuje pomocou **testovacej trofeje** (testing trophy).\n\nTrofej kladie dôraz na silnú strednú vrstvu integračných testov alebo testov na úrovni komponentov, ktoré preverujú realistické správanie používateľa, namiesto veľkého spoliehania sa na unit testy zamerané na implementáciu.\n\nPri React aplikáciách to často znamená testovať to, čo používatelia vidia a robia:\n\n~~~text\nvykreslenie komponentu\n    ↓\nnájdenie tlačidla podľa viditeľného názvu\n    ↓\nkliknutie na tlačidlo\n    ↓\nkontrola viditeľného výsledku\n~~~\n\nNamiesto testovania, že sa konkrétna interná stavová premenná zmení z `false` na `true`, napríklad otestuj, že po kliknutí na „Complete“ sa úloha zobrazí ako dokončená.\n\nDôležité nie je, či doslova používaš pyramídu alebo trofej. Cieľom je umiestniť testy tam, kde poskytujú užitočnú istotu, bez vytvárania zbytočne pomalej alebo krehkej sady testov.\n\n## Čo testovať?\n\nTestuj **správanie**, na ktorom záleží používateľom a biznisu.\n\nPri task manageri sú užitočné napríklad tieto testy:\n\n- Používateľ môže vytvoriť úlohu.\n- Používateľ nemôže upraviť súkromnú úlohu iného používateľa.\n- Úloha po termíne sa správne identifikuje.\n- Neplatnú úlohu nie je možné uložiť.\n- Administrátor môže spravovať používateľov.\n- Odhlásenie odoberie prístup k chráneným funkciám.\n\nTieto testy opisujú, čo má aplikácia robiť.\n\nVo všeobecnosti by si nemal testovať implementačné detaily, ktoré používatelia nevidia.\n\nPredstav si napríklad, že sa React komponent zmení z:\n\n~~~tsx\nconst [open, setOpen] = useState(false);\n~~~\n\nna implementáciu založenú na reduceri.\n\nDobrý test správania by mal stále prejsť, ak sa viditeľné správanie nezmenilo.\n\n### Správanie pred implementáciou\n\nZober si editor úloh s tlačidlom Save.\n\nKrehký test môže overovať:\n\n~~~text\nstate.isSaving === true\nsetIsSaving bola zavolaná raz\nhandleSave bola zavolaná presne s týmito internými argumentmi\n~~~\n\nTest zameraný na správanie môže namiesto toho overovať:\n\n~~~text\nKliknutie na Save\n    ↓\nÚloha sa uloží\n    ↓\nPoužívateľ vidí „Task saved“\n~~~\n\nDruhý test je odolnejší, pretože opisuje výsledok, nie vnútorný mechanizmus.\n\n## Arrange, Act, Assert\n\nTesty sa ľahšie čítajú, keď majú jednoduchú štruktúru. Nazýva sa **Arrange–Act–Assert**, skrátene AAA (priprav – vykonaj – over).\n\n~~~compare\n{\"left\": {\"title\": \"Všetko pomiešané\", \"lang\": \"java\", \"code\": \"@Test void test1() {\\n  var c = new Cart();\\n  assertEquals(0, c.total());\\n  c.add(new Item(\\\"A\\\", 10));\\n  assertEquals(10, c.total());\\n  c.clear(); assertTrue(c.isEmpty());\\n}\", \"note\": \"Tri správania, jeden nejasný názov.\"}, \"right\": {\"title\": \"Arrange · Act · Assert\", \"lang\": \"java\", \"code\": \"@Test void addingAnItemIncreasesTheTotal() {\\n  var cart = new Cart();              // Arrange\\n  cart.add(new Item(\\\"A\\\", 10));        // Act\\n  assertThat(cart.total()).isEqualTo(10); // Assert\\n}\", \"note\": \"Jeden dôvod na zlyhanie, číta sa ako veta.\"}}\n~~~\n\n### Arrange\n\nPriprav údaje a podmienky, ktoré test potrebuje.\n\n~~~ts\nconst task = { completed: false };\n~~~\n\n### Act\n\nVykonaj akciu, ktorú testuješ.\n\n~~~ts\ntask.completed = true;\n~~~\n\n### Assert\n\nOver očakávaný výsledok.\n\n~~~ts\nexpect(task.completed).toBe(true);\n~~~\n\nKompletný test môže vyzerať takto:\n\n~~~ts\ntest(\"completes a task\", () => {\n  const task = { completed: false };\n\n  task.completed = true;\n\n  expect(task.completed).toBe(true);\n});\n~~~\n\nAAA neznamená, že každý test musí mať presne tri viditeľne oddelené bloky. Je to užitočný spôsob, ako udržať účel testu jasný.\n\n## Jeden dôvod na zlyhanie\n\nTest by mal mať jasný účel.\n\nPorovnaj:\n\n~~~text\ntest(\"task page works\", ...)\n~~~\n\ns:\n\n~~~text\ntest(\"shows the task title after loading it\", ...)\n~~~\n\nDruhý názov ti presne povie, ktoré správanie zlyhalo.\n\nKeď test zlyhá, mal by si rýchlo pochopiť, čo mala aplikácia robiť.\n\nTest, ktorý overuje desať nesúvisiacich správaní, sa môže ťažko diagnostikovať. Uprednostni zamerané testy s jasnými názvami.\n\nDobré názvy často opisujú podmienku a očakávaný výsledok:\n\n~~~text\nreturns 403 when a user edits another user's task\nshows validation error when the title is empty\ncreates a task when valid data is submitted\n~~~\n\n## Testovacie dvojníky (test doubles)\n\nNiekedy test potrebuje náhradu za skutočnú závislosť. Takéto náhrady sa nazývajú **testovacie dvojníky** (test doubles).\n\n~~~terms\n[{\"term\": \"Stub\", \"def\": \"Vracia vopred pripravené odpovede: `when(repo.findById(1)).thenReturn(task)`.\"}, {\"term\": \"Mock\", \"def\": \"Zaznamenáva volania, aby si ich mohol overiť: `verify(mailer).send(…)`.\"}, {\"term\": \"Fake\", \"def\": \"Odľahčená funkčná verzia, napr. repository v pamäti.\"}, {\"term\": \"Spy\", \"def\": \"Skutočný objekt, ktorý zároveň zaznamenáva, ako bol použitý.\"}]\n~~~\n\n**Stub** poskytuje vopred definované odpovede. Falošná služba počasia môže napríklad vždy vrátiť známu teplotu.\n\n**Mock** je testovací dvojník, ktorý ti navyše umožňuje overovať interakcie, napríklad či bola zavolaná konkrétna metóda.\n\n**Fake** je odľahčená funkčná implementácia, ktorá sa používa namiesto skutočnej závislosti. Bežným príkladom je repository v pamäti.\n\nJednoducho povedané:\n\n~~~text\nStub  -> „Tu je odpoveď, ktorú potrebuješ.“\nMock  -> „Tu je odpoveď a zaznamenám si, ako si ma použil.“\nFake  -> „Správam sa zhruba ako skutočná vec, len jednoduchšie.“\n~~~\n\nTestovacie dvojníky sú užitočné, ale nadmerné mockovanie môže viesť k testom, ktoré iba overujú, že tvoj kód zavolal iný kód očakávaným spôsobom.\n\nUnit test s piatimi mockmi môže napríklad prejsť, hoci skutočné komponenty spolu správne komunikovať nedokážu. Integračné testy sú v tomto užitočnou protiváhou.\n\n## Nestabilné testy (flaky tests)\n\n**Nestabilný test** (flaky test) niekedy prejde a niekedy zlyhá, hoci sa kód nezmenil.\n\nNestabilné testy ničia dôveru, pretože vývojári začnú zlyhania ignorovať.\n\nBežné príčiny:\n\n- Spoliehanie sa na presné časovanie.\n- Testy závislé od poradia vykonávania.\n- Zdieľaný meniteľný stav.\n- Skutočné externé služby.\n- Náhodné dáta bez kontrolovaného seedu.\n- Race conditions.\n- Predpoklad konkrétneho poradia z databázy bez `ORDER BY`.\n\n### Zlý príklad\n\n~~~ts\nawait new Promise(resolve => setTimeout(resolve, 100));\nexpect(screen.getByText(\"Saved\")).toBeTruthy();\n~~~\n\nPevné oneskorenie nezaručuje, že operácia sa v tomto čase dokončí.\n\n### Lepší prístup\n\nČakaj na skutočnú podmienku alebo udalosť, ktorú potrebuješ. Testovacie knižnice na to poskytujú mechanizmy asynchrónneho čakania.\n\nTesty tiež urob nezávislými. Každý test by si mal vytvoriť stav, ktorý potrebuje, a nespoliehať sa na to, že ho pripraví predchádzajúci test.\n\n## Spúšťanie testov v CI\n\nTesty sú oveľa cennejšie, keď sa spúšťajú automaticky.\n\n**CI**, teda Continuous Integration (priebežná integrácia), je automatizovaný proces, ktorý zostaví a otestuje kód, keď sa zmeny pushnú alebo odošlú na review.\n\nTypický postup vyzerá takto:\n\n~~~text\nVývojár zmení kód\n        ↓\nGit push\n        ↓\nSpustí sa CI\n        ↓\nInštalácia závislostí\n        ↓\nBuild aplikácie\n        ↓\nSpustenie testov\n        ↓\nÚspech -> pokračovanie\nZlyhanie -> nahlásenie chyby\n~~~\n\nSpúšťanie testov pri každom pushi znamená, že pokazenú zmenu odhalíš skôr, ako sa dostane do produkcie.\n\nTvoj Spring Boot projekt môže spúšťať:\n\n~~~shell\nmvn test\n~~~\n\nFrontendový projekt môže spúšťať napríklad:\n\n~~~shell\nnpm test\n~~~\n\nKonkrétna CI platforma je menej dôležitá ako princíp: pri zmenách od každého vývojára by sa mali konzistentne spúšťať tie isté automatizované kontroly.\n\n## Pokrytie je náznak, nie cieľ\n\n**Pokrytie kódu** (code coverage) meria, aká časť kódu sa vykonala počas behu testov. Bežnou metrikou je pokrytie riadkov: koľko percent spustiteľných riadkov testy dosiahli?\n\nPokrytie môže byť užitočné. Ak má kritická služba takmer nulové pokrytie, je to signál, ktorý stojí za preskúmanie.\n\nAle 100 % pokrytie neznamená 100 % bezpečnosť ani správnosť.\n\nTento kód by mohol mať veľmi vysoké pokrytie:\n\n~~~ts\nfunction deleteTask() {\n  database.deleteEverything();\n}\n~~~\n\nTest by mohol riadok vykonať bez toho, aby overil, že sa odstránili správne záznamy.\n\nPokrytie ti povie, kde testy vykonali kód. Nepovie ti, či testy overujú zmysluplné správanie.\n\nLepším cieľom je **užitočné pokrytie dôležitého správania**.\n\n## Časté chyby\n\n### Testovanie implementačných detailov\n\nTesty naviazané na názvy interných premenných, stav komponentu alebo privátne metódy sa môžu pokaziť pri neškodnom refaktoringu. Uprednostni pozorovateľné správanie.\n\n### Všetky testy ako E2E\n\nE2E testy sú cenné, ale pomalšie a často krehkejšie. Na väčšinu pokrytia používaj rýchle unit testy a integračné testy a E2E testy pridaj pre dôležité kompletné cesty používateľa.\n\n### Ignorovanie nestabilných testov\n\nTest, ktorý náhodne zlyháva, nie je neškodný. Oprav príčinu, napríklad časovanie, zdieľaný stav, poradie alebo nekontrolované externé závislosti.\n\n### Závislosť od poradia testov\n\nKaždý test by si mal vytvoriť stav, ktorý potrebuje, a po sebe upratať. Test by nemal prechádzať len preto, že sa náhodou ako prvý spustil iný test.\n\n### Naháňanie 100 % pokrytia\n\nPokrytie je meranie, ktoré môže odhaliť medzery. Nie je to účel testovania. Menšia sada so silnými overeniami správania môže byť cennejšia ako obrovská sada, ktorá vykonáva kód bez kontroly zmysluplných výsledkov.\n\n## Praktická stratégia testovania\n\nPri task manageri môže vyvážená stratégia vyzerať takto:\n\n~~~text\nVeľa unit testov\n- validačné pravidlá\n- výpočty s dátumami\n- pomocné funkcie pre autorizáciu\n- biznis logika\n\nMenej integračných testov\n- controller + service + databáza\n- autentifikačné toky\n- správanie repository\n\nNiekoľko E2E testov\n- prihlásenie\n- vytvorenie úlohy\n- dokončenie úlohy\n- dôležitý administrátorský tok\n~~~\n\nPri React frontende pridaj testy komponentov a testy v integračnom štýle okolo dôležitých interakcií používateľa a pre kritické cesty si ponechaj menší počet úplných testov v prehliadači.\n\nCieľom nie je vytvoriť čo najviac testov. Cieľom je vytvoriť sadu testov, ktorá ti pri zmenách kódu dáva užitočnú istotu.\n\nDobrá sada testov by ťa mala povzbudiť do refaktoringu, nie vystrašiť z toho, aby si sa kódu dotkol.",
+  "takeaways": [
+    "Automatizované testy dávajú istotu pri zmenách kódu a slúžia ako spustiteľná dokumentácia očakávaného správania.",
+    "Testovacia pyramída uprednostňuje veľa rýchlych unit testov, menej integračných testov a malý počet end-to-end testov.",
+    "Dobré testy overujú pozorovateľné správanie, nie krehké implementačné detaily.",
+    "Nestabilné testy a nadmerné mockovanie znižujú dôveru, preto by testy mali byť nezávislé, deterministické a zamerané.",
+    "Pokrytie pomáha nájsť medzery, ale zmysluplné overenia správania sú dôležitejšie ako dosiahnutie konkrétneho percenta."
+  ],
+  "quiz": [
+    {
+      "question": "Prečo sa unit testy zvyčajne nachádzajú na spodku testovacej pyramídy?",
+      "options": [
+        "Vyžadujú skutočný produkčný prehliadač",
+        "Zvyčajne sú rýchle a zamerané, takže ich projekt môže mať veľa",
+        "Vždy testujú celú aplikáciu",
+        "Dajú sa napísať až po E2E testoch"
+      ],
+      "answer": 1,
+      "explanation": "Unit testy zvyčajne testujú malé kúsky logiky izolovane, a preto bežia rýchlo. Vďaka nízkym nákladom je praktické mať ich veľa."
+    },
+    {
+      "question": "Čo by mal dobrý test zameraný na správanie predovšetkým overovať?",
+      "options": [
+        "Presné názvy interných premenných",
+        "Počet privátnych pomocných metód",
+        "Čo aplikácia robí z pohľadu používateľa alebo biznisu",
+        "Presné poradie každého interného volania funkcie"
+      ],
+      "answer": 2,
+      "explanation": "Testy zamerané na správanie overujú zmysluplné výsledky, nie implementačné detaily. Vďaka tomu sú odolnejšie, keď sa interná implementácia zmení."
+    },
+    {
+      "question": "Čo opisuje Arrange–Act–Assert?",
+      "options": [
+        "Bežnú štruktúru na prípravu testu, vykonanie akcie a kontrolu výsledku",
+        "Proces správy závislostí v Mavene",
+        "Bezpečnostný mechanizmus prehliadača",
+        "Stratégiu indexovania databázy"
+      ],
+      "answer": 0,
+      "explanation": "Arrange–Act–Assert je jednoduchá štruktúra, ktorá oddeľuje prípravu testu, testovanú akciu a očakávaný výsledok."
+    },
+    {
+      "question": "Čo je nestabilný (flaky) test?",
+      "options": [
+        "Test, ktorý vždy zlyhá, pretože implementácia nie je dokončená",
+        "Test, ktorý kontroluje iba pokrytie kódu",
+        "Test, ktorý vyžaduje TypeScript",
+        "Test, ktorý niekedy prejde a niekedy zlyhá bez relevantnej zmeny kódu"
+      ],
+      "answer": 3,
+      "explanation": "Nestabilné testy sú nedeterministické. Časovanie, zdieľaný stav, race conditions, externé služby a ďalšie faktory prostredia môžu spôsobiť, že nepredvídateľne prejdú alebo zlyhajú."
+    },
+    {
+      "question": "Prečo 100 % pokrytie kódu nie je dostatočným cieľom testovania?",
+      "options": [
+        "Nástroje na meranie pokrytia nedokážu vykonávať JavaScript",
+        "Testy môžu kód vykonať bez toho, aby naozaj overili zmysluplné správanie",
+        "Pokrytie vždy robí testy pomalšími ako E2E testy",
+        "Pokrytie znemožňuje integračné testovanie"
+      ],
+      "answer": 1,
+      "explanation": "Pokrytie meria, ktorý kód sa vykonal, nie to, či testy obsahovali užitočné overenia správania aplikácie."
+    }
+  ],
+  "exercise": {
+    "title": "Vytvor malý testovací framework",
+    "task": "Vytvor malý testovací framework, aby si pochopil, čo nástroje ako Jest, Vitest a JUnit robia pod kapotou. Napíš `test(name, fn)` na registráciu testu. Napíš `expect(actual)`, ktorá vráti objekt s tromi matchermi: `toBe(expected)`, ktorý porovnáva hodnoty pomocou `Object.is`; `toEqual(expected)`, ktorý vykonáva hĺbkové porovnanie pre obyčajné objekty, polia a primitívne hodnoty; a `toThrow()`, ktorý očakáva, že `actual` je funkcia, ktorá pri zavolaní vyhodí výnimku. Každý neúspešný matcher musí vyhodiť `Error` s užitočnou správou. Napíš `run()` ako asynchrónnu funkciu, ktorá spustí všetky zaregistrované testy v poradí registrácie. Každá testovacia funkcia môže byť synchrónna aj asynchrónna. Runner musí pre každý test zaznamenať `{ name, passed: boolean, error?: string }`, po zlyhaní pokračovať, po behu vyčistiť register testov a vrátiť (resolve) kompletné pole s reportom. Testy tohto cvičenia registrujú vlastné testy cez tvoje API a potom skúmajú výsledok, ktorý vráti `run()`.",
+    "kind": "js",
+    "starter": "const tests = [];\n\nfunction test(name, fn) {\n  // TODO\n}\n\nfunction expect(actual) {\n  // TODO\n}\n\nasync function run() {\n  // TODO\n  return [];\n}",
+    "solution": "const tests = [];\n\nfunction test(name, fn) {\n  tests.push({ name, fn });\n}\n\nfunction deepEqual(a, b) {\n  if (Object.is(a, b)) {\n    return true;\n  }\n\n  if (typeof a !== \"object\" || a === null || typeof b !== \"object\" || b === null) {\n    return false;\n  }\n\n  if (Array.isArray(a) !== Array.isArray(b)) {\n    return false;\n  }\n\n  const aKeys = Object.keys(a);\n  const bKeys = Object.keys(b);\n\n  if (aKeys.length !== bKeys.length) {\n    return false;\n  }\n\n  for (const key of aKeys) {\n    if (!Object.prototype.hasOwnProperty.call(b, key)) {\n      return false;\n    }\n\n    if (!deepEqual(a[key], b[key])) {\n      return false;\n    }\n  }\n\n  return true;\n}\n\nfunction expect(actual) {\n  return {\n    toBe(expected) {\n      if (!Object.is(actual, expected)) {\n        throw new Error(`Expected ${JSON.stringify(actual)} to be ${JSON.stringify(expected)}`);\n      }\n    },\n\n    toEqual(expected) {\n      if (!deepEqual(actual, expected)) {\n        throw new Error(`Expected ${JSON.stringify(actual)} to equal ${JSON.stringify(expected)}`);\n      }\n    },\n\n    toThrow() {\n      if (typeof actual !== \"function\") {\n        throw new Error(\"Expected a function to throw\");\n      }\n\n      let threw = false;\n\n      try {\n        actual();\n      } catch {\n        threw = true;\n      }\n\n      if (!threw) {\n        throw new Error(\"Expected function to throw\");\n      }\n    }\n  };\n}\n\nasync function run() {\n  const registered = tests.splice(0, tests.length);\n  const results = [];\n\n  for (const current of registered) {\n    try {\n      await current.fn();\n      results.push({ name: current.name, passed: true });\n    } catch (error) {\n      results.push({\n        name: current.name,\n        passed: false,\n        error: error instanceof Error ? error.message : String(error)\n      });\n    }\n  }\n\n  return results;\n}",
+    "hint": "Zaregistrované testy drž v poli. Runner môže na začiatku odstrániť všetky zaregistrované testy pomocou `splice` a potom v poradí čakať (await) na každú testovaciu funkciu vnútri try/catch. Pri `toEqual` rekurzívne porovnávaj polia a obyčajné objekty a primitívne hodnoty rieš pomocou `Object.is`.",
+    "tests": [
+      {
+        "name": "Zaregistruje a spustí úspešný test",
+        "code": "test(\"addition works\", () => { expect(2 + 2).toBe(4); }); const report = await run(); return report.length === 1 && report[0].name === \"addition works\" && report[0].passed === true && !Object.prototype.hasOwnProperty.call(report[0], \"error\");"
+      },
+      {
+        "name": "Nahlási neúspešný matcher",
+        "code": "test(\"wrong value\", () => { expect(2).toBe(3); }); const report = await run(); return report.length === 1 && report[0].passed === false && typeof report[0].error === \"string\" && report[0].error.length > 0;"
+      },
+      {
+        "name": "Spúšťa testy v poradí registrácie",
+        "code": "const order = []; test(\"first\", () => { order.push(\"first\"); }); test(\"second\", () => { order.push(\"second\"); }); test(\"third\", () => { order.push(\"third\"); }); const report = await run(); return order.join(\",\") === \"first,second,third\" && report.map(item => item.name).join(\",\") === \"first,second,third\";"
+      },
+      {
+        "name": "Pokračuje po neúspešnom teste",
+        "code": "test(\"fails\", () => { throw new Error(\"boom\"); }); test(\"still runs\", () => { expect(true).toBe(true); }); const report = await run(); return report.length === 2 && report[0].passed === false && report[1].passed === true;"
+      },
+      {
+        "name": "Podporuje asynchrónne testy",
+        "code": "test(\"async test\", async () => { await new Promise(resolve => setTimeout(resolve, 5)); expect(\"done\").toBe(\"done\"); }); const report = await run(); return report.length === 1 && report[0].passed === true;"
+      },
+      {
+        "name": "Pre toBe používa Object.is",
+        "code": "test(\"object identity\", () => { const value = {}; expect(value).toBe(value); }); const report = await run(); return report[0].passed === true;"
+      },
+      {
+        "name": "Vykonáva hĺbkové porovnanie objektov",
+        "code": "test(\"objects are deeply equal\", () => { expect({ name: \"Anna\", task: { done: false } }).toEqual({ name: \"Anna\", task: { done: false } }); }); const report = await run(); return report[0].passed === true;"
+      },
+      {
+        "name": "Vykonáva hĺbkové porovnanie polí",
+        "code": "test(\"arrays are deeply equal\", () => { expect([1, { done: true }, 3]).toEqual([1, { done: true }, 3]); }); const report = await run(); return report[0].passed === true;"
+      },
+      {
+        "name": "Odhalí neúspešné hĺbkové porovnanie",
+        "code": "test(\"objects differ\", () => { expect({ id: 1 }).toEqual({ id: 2 }); }); const report = await run(); return report[0].passed === false && typeof report[0].error === \"string\";"
+      },
+      {
+        "name": "Odhalí funkciu, ktorá vyhodí výnimku",
+        "code": "test(\"function throws\", () => { expect(() => { throw new Error(\"bad input\"); }).toThrow(); }); const report = await run(); return report[0].passed === true;"
+      },
+      {
+        "name": "toThrow zlyhá, keď funkcia výnimku nevyhodí",
+        "code": "test(\"function does not throw\", () => { expect(() => 123).toThrow(); }); const report = await run(); return report[0].passed === false && typeof report[0].error === \"string\";"
+      },
+      {
+        "name": "toThrow odmietne hodnotu, ktorá nie je funkcia",
+        "code": "test(\"value is not a function\", () => { expect(123).toThrow(); }); const report = await run(); return report[0].passed === false && typeof report[0].error === \"string\";"
+      },
+      {
+        "name": "Po behu vyčistí register",
+        "code": "test(\"temporary test\", () => {}); const first = await run(); const second = await run(); return first.length === 1 && second.length === 0;"
+      }
+    ]
+  }
+}

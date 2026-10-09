@@ -19,6 +19,9 @@ import { useRouteCommitSignal } from './lib/pageTransition';
 import { countVisit } from './hooks/useVisitorCount';
 import { pauseOffscreenAnimations } from './lib/pauseOffscreen';
 
+/** '' is English (bare paths); the others are the language prefixes */
+const LANG_PREFIXES = ['', '/hu', '/sk'];
+
 // the command palette is only fetched once it is first opened (or on idle, below)
 const loadPalette = () => import('./components/CommandPalette');
 const CommandPalette = lazy(loadPalette);
@@ -85,25 +88,27 @@ export default function App() {
       <main id="main" tabIndex={-1} className="outline-none">
         <Suspense fallback={<div className="min-h-screen" />}>
           <Routes>
-            {/* every route also exists under /hu for the Hungarian version */}
-            <Route path="/hu?" element={<Home />} />
-            <Route path="/hu?/project/:id" element={<ProjectDetailPage />} />
-            <Route path="/hu?/articles" element={<ArticlesPage />} />
-            <Route path="/hu?/articles/:slug" element={<ArticlePage />} />
-            <Route path="/hu?/interview" element={<InterviewPage />} />
-            <Route path="/hu?/interview/:id" element={<InterviewTrackPage />} />
-            <Route path="/hu?/cv-maker" element={<CvMakerPage />} />
-            <Route path="/hu?/course" element={<CoursePage />} />
-            <Route path="/hu?/course/:slug" element={<CourseLessonPage />} />
-            <Route path="/hu?/modernization" element={<ModernizationPage />} />
-            <Route path="/hu?/landing-pages" element={<LandingPagesPage />} />
-            <Route path="/hu?/landing-pages/:slug" element={<LandingStagePage />} />
-            <Route path="/hu?/garage-designer" element={<GarageDesignerPage />} />
-            <Route path="/hu?/shirt-designer" element={<ShirtDesignerPage />} />
-            <Route path="/hu?/camera-study" element={<CameraStudyPage />} />
-            <Route path="/hu?/website-check" element={<WebsiteCheckPage />} />
-            <Route path="/hu?/industries" element={<IndustryPage />} />
-            <Route path="/hu?/industries/:slug" element={<IndustryPage />} />
+            {/* every route also exists under /hu and /sk for the Hungarian and Slovak versions */}
+            {LANG_PREFIXES.flatMap((pre) => [
+              <Route key={pre || '/'} path={pre || '/'} element={<Home />} />,
+              <Route key={`${pre}/project/:id`} path={`${pre}/project/:id`} element={<ProjectDetailPage />} />,
+              <Route key={`${pre}/articles`} path={`${pre}/articles`} element={<ArticlesPage />} />,
+              <Route key={`${pre}/articles/:slug`} path={`${pre}/articles/:slug`} element={<ArticlePage />} />,
+              <Route key={`${pre}/interview`} path={`${pre}/interview`} element={<InterviewPage />} />,
+              <Route key={`${pre}/interview/:id`} path={`${pre}/interview/:id`} element={<InterviewTrackPage />} />,
+              <Route key={`${pre}/cv-maker`} path={`${pre}/cv-maker`} element={<CvMakerPage />} />,
+              <Route key={`${pre}/course`} path={`${pre}/course`} element={<CoursePage />} />,
+              <Route key={`${pre}/course/:slug`} path={`${pre}/course/:slug`} element={<CourseLessonPage />} />,
+              <Route key={`${pre}/modernization`} path={`${pre}/modernization`} element={<ModernizationPage />} />,
+              <Route key={`${pre}/landing-pages`} path={`${pre}/landing-pages`} element={<LandingPagesPage />} />,
+              <Route key={`${pre}/landing-pages/:slug`} path={`${pre}/landing-pages/:slug`} element={<LandingStagePage />} />,
+              <Route key={`${pre}/garage-designer`} path={`${pre}/garage-designer`} element={<GarageDesignerPage />} />,
+              <Route key={`${pre}/shirt-designer`} path={`${pre}/shirt-designer`} element={<ShirtDesignerPage />} />,
+              <Route key={`${pre}/camera-study`} path={`${pre}/camera-study`} element={<CameraStudyPage />} />,
+              <Route key={`${pre}/website-check`} path={`${pre}/website-check`} element={<WebsiteCheckPage />} />,
+              <Route key={`${pre}/industries`} path={`${pre}/industries`} element={<IndustryPage />} />,
+              <Route key={`${pre}/industries/:slug`} path={`${pre}/industries/:slug`} element={<IndustryPage />} />,
+            ])}
             <Route path="*" element={<NotFound onSearch={() => setPaletteOpen(true)} />} />
           </Routes>
         </Suspense>

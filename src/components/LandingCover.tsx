@@ -12,7 +12,7 @@ export default function LandingCover({ l, className = '' }: { l: Landing; classN
       aria-hidden
     >
       {l.poster ? (
-        <img src={l.poster} srcSet={`${l.poster.replace('.webp', '-640.webp')} 640w, ${l.poster} 1600w`} sizes="(min-width: 1024px) 40vw, 80vw" width={1600} height={1000} alt={`${l.name} — ${l.sector[lang]}, ${lang === 'hu' ? 'bemutató oldal' : 'landing page'}`} loading="lazy" decoding="async" className="landing-cover-img" />
+        <img src={l.poster} srcSet={`${l.poster.replace('.webp', '-640.webp')} 640w, ${l.poster} 1600w`} sizes="(min-width: 1024px) 40vw, 80vw" width={1600} height={1000} alt={`${l.name} — ${l.sector[lang]}, ${{ en: 'landing page', hu: 'bemutató oldal', sk: 'landing page' }[lang]}`} loading="lazy" decoding="async" className="landing-cover-img" />
       ) : (
         <span className="landing-cover-glow" />
       )}

@@ -1,0 +1,123 @@
+{
+  "title": "Autentifikácia a autorizácia",
+  "intro": "Autentifikácia odpovedá na otázku „Kto si?“, kým autorizácia na otázku „Čo smieš robiť?“. V tejto lekcii prepojíš tieto dve myšlienky s task managerom a zistíš, prečo musia bezpečnostné kontroly v konečnom dôsledku prebiehať na backende.",
+  "body": "## Autentifikácia a autorizácia sú dva rôzne problémy\n\nKeď sa prihlásiš do task managera, hneď vzniknú dve bezpečnostné otázky. Po prvé: **kto je tento človek?** Po druhé: **čo môže tento človek robiť?**\n\n~~~diagram\n{\"type\": \"flow\", \"title\": \"Dve samostatné otázky\", \"nodes\": [{\"id\": \"r\", \"label\": \"Požiadavka\", \"sub\": \"DELETE /api/tickets/7\", \"kind\": \"client\"}, {\"id\": \"an\", \"label\": \"Autentifikácia\", \"sub\": \"Kto si?\", \"highlight\": true}, {\"id\": \"az\", \"label\": \"Autorizácia\", \"sub\": \"Smieš to urobiť?\", \"highlight\": true}, {\"id\": \"ok\", \"label\": \"Spustí sa handler\", \"kind\": \"server\"}, {\"id\": \"e401\", \"label\": \"401 Unauthorized\", \"sub\": \"chýbajúce / zlé prihlasovacie údaje\"}, {\"id\": \"e403\", \"label\": \"403 Forbidden\", \"sub\": \"známy, ale bez oprávnenia\"}], \"edges\": [{\"from\": \"r\", \"to\": \"an\"}, {\"from\": \"an\", \"to\": \"az\", \"label\": \"identita\"}, {\"from\": \"az\", \"to\": \"ok\", \"label\": \"povolené\"}, {\"from\": \"an\", \"to\": \"e401\", \"dashed\": true}, {\"from\": \"az\", \"to\": \"e403\", \"dashed\": true}]}\n~~~\n\nAutentifikácia (anglicky authentication), často skracovaná ako **authn**, je proces overenia identity. Prihlásenie e-mailovou adresou a heslom je autentifikačný mechanizmus: server overí, že daný človek pozná správne prihlasovacie údaje.\n\nAutorizácia (anglicky authorization), často skracovaná ako **authz**, prichádza až potom. Rozhoduje o tom, k čomu má autentifikovaný používateľ prístup a čo môže meniť.\n\nPredstav si napríklad dvoch používateľov:\n\n~~~text\nAlice logs in successfully.\nAuthentication: Alice is user 42.\nAuthorization: Alice may update her own tasks, but not Bob's private tasks.\n~~~\n\nUžitočné pravidlo, ktoré si oplatí zapamätať:\n\n> Autentifikácia ti povie, kto niekto je. Autorizácia rozhoduje, čo táto identita smie robiť.\n\nTieto pojmy spolu súvisia, ale nemali by sa zamieňať. To, že sa používateľ úspešne prihlásil, ešte neznamená, že smie vykonať akúkoľvek operáciu.\n\n## Heslá správne\n\nTvoja aplikácia by **nikdy nemala ukladať heslá ako čistý text**. Ak databáza obsahuje heslá ako `secret123`, ktokoľvek, kto získa zálohu databázy alebo sa k databáze dostane, ich môže okamžite použiť.\n\n~~~compare\n{\"left\": {\"title\": \"Nikdy\", \"lang\": \"text\", \"code\": \"password      → stored as is\\nsha256(pass)  → fast to brute-force\", \"note\": \"Uniknutá tabuľka dá útočníkom všetky heslá.\"}, \"right\": {\"title\": \"Vždy\", \"lang\": \"text\", \"code\": \"BCrypt / Argon2id\\n$2a$12$Wq…  (salt + slow hash)\", \"note\": \"Jedinečná soľ pre každého používateľa a zámerne pomalý algoritmus.\"}}\n~~~\n\nAplikácie namiesto toho ukladajú **hash hesla**. Hashovanie premení heslo na hodnotu, ktorú je zámerne ťažké spätne odvodiť.\n\nNa ukladanie hesiel sú určené algoritmy ako **BCrypt** a **Argon2**, navrhnuté presne na tento účel. Ich výpočet je zámerne náročný, čo sťažuje hromadné hádanie hesiel.\n\n**Salt** (soľ) je ďalšia náhodná hodnota, ktorá sa použije pri vytváraní hashu hesla. Vďaka soli vzniknú aj z rovnakých hesiel rôzne uložené hashe. Útočník tak nedokáže ľahko rozpoznať, že dva účty používajú rovnaké heslo.\n\nSamotný algoritmus zvyčajne nemusíš implementovať sám. Spring Security poskytuje podporu hashovania hesiel, ktorú si tvoja aplikácia môže nakonfigurovať a používať.\n\nZjednodušený tok vyzerá takto:\n\n~~~text\nRegistration:\npassword + random salt -> password hash -> database\n\nLogin:\nsubmitted password + stored salt -> calculated hash\ncalculated hash == stored hash -> authentication succeeds\n~~~\n\nV databáze by teda malo byť niečo, čo pripomína hash hesla, nie pôvodné heslo.\n\nHashovanie hesiel nie je to isté ako šifrovanie. Šifrovanie je navrhnuté tak, aby oprávnený softvér dokázal pôvodné dáta dešifrovať. Hashovanie hesiel má naopak zabezpečiť, aby bolo získanie pôvodného hesla prakticky nemožné.\n\n## Sessions, cookies a tokeny\n\nPo úspešnej autentifikácii potrebuje tvoja aplikácia spôsob, ako rozpoznať ďalšie požiadavky.\n\n~~~compare\n{\"left\": {\"title\": \"Session cookie\", \"lang\": \"text\", \"code\": \"Set-Cookie: SESSION=8f2c…;\\n  HttpOnly; Secure; SameSite=Lax\", \"note\": \"Stav drží server; ľahko sa odvoláva; treba dávať pozor na CSRF.\"}, \"right\": {\"title\": \"Bearer token (JWT)\", \"lang\": \"text\", \"code\": \"Authorization: Bearer eyJhbGciOi…\", \"note\": \"Bezstavový a pohodlný pre API; ťažšie sa odvoláva, preto nech má krátku platnosť.\"}}\n~~~\n\nJedným bežným prístupom je **session** (relácia). Server vytvorí session priradenú k autentifikovanému používateľovi. Prehliadač dostane identifikátor session, zvyčajne uložený v cookie, a túto cookie posiela s ďalšími požiadavkami.\n\n~~~text\nBrowser -> POST /login -> Server\nBrowser <- session cookie <- Server\n\nBrowser -> GET /api/tasks + cookie -> Server\nServer -> identifies the session -> knows the user\n~~~\n\n**Cookie** sú dáta spravované prehliadačom, ktoré sa môžu automaticky posielať s požiadavkami na príslušný server. Cookies samy osebe nie sú autentifikácia; sú len jedným mechanizmom, ako prenášať informácie, napríklad identifikátor session.\n\nĎalším prístupom je **token**. Server dá klientovi token, ktorý reprezentuje autentifikovanú identitu. Klient potom tento token posiela s ďalšími požiadavkami, často v HTTP hlavičke `Authorization`.\n\nBežným formátom tokenu je JWT, teda JSON Web Token. S JWT autentifikáciou budeš pracovať v lekcii 7.2.\n\nAni jeden prístup nie je automaticky „bezpečnejší“. Bezpečnosť závisí od toho, ako sa prihlasovacie údaje vytvárajú, ukladajú, prenášajú, ako im končí platnosť, ako sa odvolávajú a overujú.\n\nV prehliadačových aplikáciách možno cookies nastaviť s bezpečnostnými vlastnosťami ako `HttpOnly`, `Secure` a vhodnou politikou `SameSite`. Cookie s príznakom `HttpOnly` nedokáže bežný JavaScript prečítať, čo môže zmierniť dopad niektorých útokov typu cross-site scripting.\n\n## Roly verzus oprávnenia\n\n**Rola** je široká kategória priradená používateľovi. Náš task manager môže mať napríklad:\n\n~~~text\nUSER\nADMIN\n~~~\n\nRola sa hodí na hrubšie pravidlá. Administrátor môže mať napríklad povolené vymazať ľubovoľnú úlohu.\n\n**Oprávnenie** (permission) je konkrétnejšia schopnosť, napríklad `TASK_DELETE` alebo `USER_MANAGE`.\n\nRoly a oprávnenia si nekonkurujú. Rola môže predstavovať súbor oprávnení:\n\n~~~text\nADMIN\n  -> TASK_READ\n  -> TASK_UPDATE\n  -> TASK_DELETE\n  -> USER_MANAGE\n\nUSER\n  -> TASK_READ\n  -> TASK_UPDATE_OWN\n  -> TASK_DELETE_OWN\n~~~\n\nPre malú aplikáciu môžu jednoduché roly stačiť. Ako aplikácia rastie, explicitné oprávnenia môžu zjednodušiť správu autorizačných pravidiel.\n\n## Pravidlá vlastníctva\n\nNie každé autorizačné pravidlo sa dá vyjadriť rolou.\n\nPredpokladajme, že Alice aj Bob sú bežní používatelia s rolou `USER`. Alice by mala môcť upravovať svoju vlastnú úlohu, ale nie Bobovu.\n\nToto je **pravidlo vlastníctva**. Server porovná ID autentifikovaného používateľa s ID vlastníka úlohy.\n\n~~~text\nuser.id == task.ownerId\n~~~\n\nTask manager preto môže používať pravidlá ako:\n\n- Administrátor môže čítať, upravovať alebo mazať ľubovoľnú úlohu.\n- Bežný používateľ môže čítať, upravovať alebo mazať svoju vlastnú úlohu.\n- Bežný používateľ môže čítať úlohu iného používateľa, ak je zdieľaná.\n- Bežný používateľ nesmie upravovať ani mazať úlohu iného používateľa len preto, že je zdieľaná.\n\nToto rozlíšenie je dôležité, pretože autorizácia často nie je len o otázke „má tento používateľ rolu USER?“. Môžeš potrebovať autentifikovanú identitu, požadovanú operáciu aj zdroj, ku ktorému sa pristupuje.\n\n## Princíp najnižších oprávnení\n\n**Princíp najnižších oprávnení** (principle of least privilege) znamená, že používateľ, služba alebo komponent dostane len taký prístup, aký potrebuje na svoju prácu.\n\nBežný používateľ task managera napríklad nepotrebuje oprávnenie vymazať všetky účty v systéme. Reportingová služba môže potrebovať len prístup na čítanie vybraných dát. Administrátor môže potrebovať širší prístup, no aj administrátorský prístup by mal byť udelený zámerne.\n\nPrincíp najnižších oprávnení obmedzuje škody spôsobené chybami, kompromitovanými účtami a zraniteľnými komponentmi.\n\nPri návrhu autorizačného pravidla sa pýtaj:\n\n~~~text\nWhat does this user actually need to do?\nWhat is the smallest permission that allows it?\n~~~\n\n## Kam patria bezpečnostné kontroly\n\nNajdôležitejšie implementačné pravidlo znie: **autorizáciu musí vynucovať backend**.\n\nV našej Spring Boot aplikácii musí server skontrolovať každú chránenú požiadavku. Frontend môže pomôcť vytvoriť dobrý používateľský zážitok, ale nemožno sa naň spoliehať ako na bezpečnostnú hranicu.\n\nReact môže napríklad bežným používateľom skryť tlačidlo „Delete task“:\n\n~~~tsx\n{user.roles.includes(\"ADMIN\") && <button>Delete</button>}\n~~~\n\nPre rozhranie je to užitočné, ale **nie je to bezpečnosť**.\n\nPoužívateľ so zlými úmyslami si môže otvoriť vývojárske nástroje prehliadača a poslať vlastnú HTTP požiadavku na:\n\n~~~text\nDELETE /api/tasks/123\n~~~\n\nBackend musí nezávisle určiť, či je táto požiadavka povolená. Server musí pri každej chránenej požiadavke overiť autentifikovaného používateľa, požadovanú operáciu a všetky pravidlá vlastníctva či oprávnení.\n\nNikdy sa nespoliehaj na to, že „tlačidlo je skryté“ alebo že „React route nie je dostupná“. Klienta ovláda používateľ.\n\nDobrá architektúra vyzerá takto:\n\n~~~text\nReact\n  -> sends request\nSpring Security / backend authorization\n  -> verifies identity and permissions\nApplication service\n  -> checks resource-specific rules\nDatabase\n  -> stores data\n~~~\n\nPri REST API je to obzvlášť dôležité, pretože klientov možno úplne nahradiť. Tvoje API musí zostať bezpečné, aj keď si niekto namiesto tvojej React aplikácie napíše vlastného klienta.\n\n## 401 vs 403\n\nHTTP poskytuje užitočné stavové kódy pre zlyhania autentifikácie a autorizácie.\n\n**401 Unauthorized** znamená, že požiadavka nemá platné autentifikačné údaje. V praxi si to predstav ako: „Úspešne si sa neautentifikoval.“\n\n**403 Forbidden** znamená, že server vie, kto je používateľ, ale tento používateľ nemá povolené vykonať požadovanú operáciu.\n\nNapríklad:\n\n~~~text\nNo login/session/token -> 401\nLogged in as USER, trying to delete someone else's task -> 403\nLogged in as ADMIN, allowed to delete it -> 200 or another successful response\n~~~\n\nToto rozlíšenie pomáha klientom primerane reagovať. Frontend môže po `401` presmerovať neautentifikovaného používateľa na prihlasovaciu stránku, kým pri `403` zobrazí hlásenie o odmietnutom prístupe.\n\n## MFA a obnovenie hesla\n\nHeslo je len jeden autentifikačný faktor. **Viacfaktorová autentifikácia (MFA)** vyžaduje ďalší faktor, napríklad časovo obmedzený kód z autentifikačnej aplikácie alebo hardvérový bezpečnostný kľúč.\n\nMyšlienka je jednoduchá: aj keď útočník získa tvoje heslo, stále potrebuje ďalší faktor.\n\nMFA je obzvlášť cenná pri administrátorských účtoch a iných citlivých operáciách.\n\nObnovenie hesla je ďalší bezpečnostne citlivý proces. Dobrý proces obnovy by nemal používateľovi posielať e-mailom jeho existujúce heslo. Server namiesto toho vygeneruje krátkodobý, jednorazový token na obnovenie a pošle odkaz na obnovenie na adresu, ktorá je už s účtom prepojená.\n\nServer by tiež nemal prezrádzať, či daná e-mailová adresa existuje. Inak by útočníci mohli formulár na obnovenie hesla zneužiť na zisťovanie existujúcich účtov.\n\nPo úspešnom obnovení hesla by aplikácia mala zvážiť, či treba zneplatniť existujúce sessions alebo tokeny. Konkrétna stratégia závisí od autentifikačnej architektúry.\n\n## Časté chyby\n\n### Ukladanie hesiel ako čistého textu\n\nNikdy neukladaj heslá priamo do databázy. Použi algoritmus na hashovanie hesiel, napríklad BCrypt alebo Argon2, prostredníctvom osvedčených bezpečnostných knižníc.\n\n### Dôvera vo frontend\n\nSkrytie tlačidla, ochrana React route alebo zakázanie vstupného poľa nezabráni používateľovi poslať vlastnú HTTP požiadavku. Autorizácia patrí na backend.\n\n### Kontrola iba roly\n\nTo, že má používateľ rolu `USER`, ešte automaticky neznamená, že môže upravovať každý zdroj. Často záleží na vlastníctve zdroja a ďalších biznis pravidlách.\n\n### Vrátenie nesprávneho stavového kódu\n\nPouži `401`, keď autentifikácia chýba alebo je neplatná, a `403`, keď je používateľ autentifikovaný, ale nemá oprávnenie.\n\n### Príliš veľký prístup pre všetkých\n\nZačni s najmenšou potrebnou množinou oprávnení. Zámerné rozširovanie prístupu je bezpečnejšie ako neskoršie pokusy odobrať nepotrebný prístup.\n\n## Ako to do seba zapadá\n\nV task manageri autentifikácia určí, ktorý používateľ posiela požiadavku. Autorizácia potom rozhodne, či tento používateľ môže vykonať požadovanú akciu na požadovanej úlohe.\n\nUžitočný mentálny model:\n\n~~~text\n1. Who is making the request?\n2. Is that identity authenticated?\n3. What action are they requesting?\n4. What roles or permissions do they have?\n5. Does ownership or another business rule allow the action?\n6. If not authenticated -> 401\n7. If authenticated but forbidden -> 403\n8. Otherwise -> continue\n~~~\n\nV ďalšej bezpečnostnej lekcii uvidíš, ako môže Spring Security tieto myšlienky implementovať pomocou autentifikácie založenej na JWT v skutočnom Spring Boot API.",
+  "takeaways": [
+    "Autentifikácia určuje, kto je používateľ; autorizácia rozhoduje, čo tento používateľ smie robiť.",
+    "Heslá sa nikdy nesmú ukladať ako čistý text; použi špecializovaný algoritmus na hashovanie hesiel, napríklad BCrypt alebo Argon2.",
+    "Roly poskytujú široké kategórie prístupu, kým oprávnenia a pravidlá vlastníctva riešia konkrétnejšie rozhodnutia.",
+    "Backend musí vynucovať autorizáciu pri každej chránenej požiadavke, pretože kontroly na frontende sa dajú obísť.",
+    "Chýbajúca alebo neplatná autentifikácia zvyčajne vedie k 401, kým autentifikovaný používateľ bez oprávnenia dostane 403."
+  ],
+  "quiz": [
+    {
+      "question": "Za čo zodpovedá autentifikácia?",
+      "options": [
+        "Za rozhodnutie, ktoré riadky v databáze môže používateľ vymazať",
+        "Za určenie identity používateľa",
+        "Za skrývanie tlačidiel v React aplikácii",
+        "Za priradenie HTTP stavového kódu 403"
+      ],
+      "answer": 1,
+      "explanation": "Autentifikácia určuje, kto je používateľ. Autorizácia zodpovedá za rozhodnutie, čo tento autentifikovaný používateľ smie robiť."
+    },
+    {
+      "question": "Prečo by sa heslá mali hashovať algoritmami ako BCrypt alebo Argon2?",
+      "options": [
+        "Aby ich frontend mohol pred každou požiadavkou dekódovať",
+        "Aby administrátori mohli ľahko získať pôvodné heslo",
+        "Aby databáza nikdy nemusela ukladať pôvodné heslo",
+        "Aby každý používateľ automaticky dostal rolu ADMIN"
+      ],
+      "answer": 2,
+      "explanation": "Hashovanie hesiel ukladá odvodenú hodnotu namiesto pôvodného hesla. BCrypt a Argon2 sú navrhnuté tak, aby sťažili hádanie hesiel."
+    },
+    {
+      "question": "Prihlásený USER sa pokúsi vymazať súkromnú úlohu iného používateľa. Čo by sa malo bežne stať?",
+      "options": [
+        "Backend vráti 403, pretože používateľ je autentifikovaný, ale nemá povolenie",
+        "Backend vráti 401, pretože každé zlyhanie autorizácie je 401",
+        "React aplikácia musí úlohu potichu vymazať",
+        "Backend musí používateľa povýšiť na ADMIN"
+      ],
+      "answer": 0,
+      "explanation": "Používateľ je už autentifikovaný, takže ide o zlyhanie autorizácie. Zakázaná požiadavka autentifikovaného používateľa bežne dostane HTTP 403."
+    },
+    {
+      "question": "Prečo skrytie tlačidla určeného len pre ADMIN nie je bezpečnostná kontrola?",
+      "options": [
+        "React nedokáže vykresľovať tlačidlá",
+        "CSS vždy zviditeľní skryté tlačidlá",
+        "Používatelia nemôžu skúmať kód frontendu",
+        "Používateľ môže rozhranie obísť a poslať HTTP požiadavku priamo"
+      ],
+      "answer": 3,
+      "explanation": "Frontend beží v prostredí, ktoré ovláda používateľ. Používateľ dokáže zostaviť požiadavky aj bez viditeľného rozhrania, preto musí autorizáciu vynucovať backend."
+    },
+    {
+      "question": "Čo znamená princíp najnižších oprávnení?",
+      "options": [
+        "Každý používateľ by mal dočasne dostať administrátorský prístup",
+        "Každý používateľ alebo komponent by mal dostať len taký prístup, aký potrebuje",
+        "Autentifikáciu by mali používať iba administrátori",
+        "Všetky API endpointy by mali byť verejne prístupné"
+      ],
+      "answer": 1,
+      "explanation": "Princíp najnižších oprávnení obmedzuje prístup na to, čo je skutočne potrebné. Tým sa znižuje možný dopad chýb, kompromitovaných účtov a zraniteľných komponentov."
+    }
+  ],
+  "exercise": {
+    "title": "Implementuj autorizáciu úloh",
+    "task": "Implementuj TypeScript funkcie `can(user, action, task)` a `statusFor(user, allowed)` pre task manager. `user` je buď `{ id: string, roles: string[] }`, alebo `null`, keď používateľ nie je prihlásený. `action` je `\"read\"`, `\"update\"` alebo `\"delete\"`. `task` je `{ id: string, ownerId: string, shared: boolean }`. Pravidlá sú tieto: neprihlásený používateľ nemôže vykonať žiadnu akciu; `ADMIN` môže vykonať každú akciu; vlastník môže svoju úlohu čítať, upravovať aj mazať; iný `USER` môže úlohu čítať len vtedy, keď je `shared` `true`; zdieľanie neumožňuje inému používateľovi USER úlohu upraviť ani vymazať. `statusFor` musí vrátiť `401`, keď je `user` `null`, `403`, keď používateľ existuje, ale `allowed` je false, a inak `200`. Vzorový projekt modulu obsahuje skutočnú Java/Spring verziu týchto autorizačných myšlienok.",
+    "kind": "ts",
+    "starter": "function can(user: { id: string; roles: string[] } | null, action: \"read\" | \"update\" | \"delete\", task: { id: string; ownerId: string; shared: boolean }): boolean {\n  return false;\n}\n\nfunction statusFor(user: { id: string; roles: string[] } | null, allowed: boolean): number {\n  return 0;\n}",
+    "solution": "function can(user: { id: string; roles: string[] } | null, action: \"read\" | \"update\" | \"delete\", task: { id: string; ownerId: string; shared: boolean }): boolean {\n  if (user === null) {\n    return false;\n  }\n\n  if (user.roles.includes(\"ADMIN\")) {\n    return true;\n  }\n\n  const isOwner = user.id === task.ownerId;\n\n  if (isOwner) {\n    return true;\n  }\n\n  return action === \"read\" && task.shared;\n}\n\nfunction statusFor(user: { id: string; roles: string[] } | null, allowed: boolean): number {\n  if (user === null) {\n    return 401;\n  }\n\n  return allowed ? 200 : 403;\n}",
+    "hint": "Kontroluj pravidlá v tomto poradí: najprv odmietni chýbajúceho používateľa, potom povoľ ADMIN, potom skontroluj, či je používateľ vlastníkom úlohy. K záverečnému pravidlu o čítaní zdieľanej úlohy sa dostane len používateľ, ktorý nie je vlastník.",
+    "tests": [
+      {
+        "name": "Anonymní používatelia nemôžu čítať úlohy",
+        "code": "const task = { id: \"t1\", ownerId: \"u1\", shared: true }; return can(null, \"read\", task) === false;"
+      },
+      {
+        "name": "Administrátori môžu vymazať ľubovoľnú úlohu",
+        "code": "const user = { id: \"admin\", roles: [\"ADMIN\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: false }; return can(user, \"delete\", task) === true;"
+      },
+      {
+        "name": "Vlastníci môžu upraviť svoju vlastnú úlohu",
+        "code": "const user = { id: \"u1\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: false }; return can(user, \"update\", task) === true;"
+      },
+      {
+        "name": "Vlastníci môžu vymazať svoju vlastnú úlohu",
+        "code": "const user = { id: \"u1\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: false }; return can(user, \"delete\", task) === true;"
+      },
+      {
+        "name": "Iní používatelia môžu čítať zdieľané úlohy",
+        "code": "const user = { id: \"u2\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: true }; return can(user, \"read\", task) === true;"
+      },
+      {
+        "name": "Iní používatelia nemôžu upravovať zdieľané úlohy",
+        "code": "const user = { id: \"u2\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: true }; return can(user, \"update\", task) === false;"
+      },
+      {
+        "name": "Iní používatelia nemôžu mazať zdieľané úlohy",
+        "code": "const user = { id: \"u2\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: true }; return can(user, \"delete\", task) === false;"
+      },
+      {
+        "name": "Súkromné úlohy nemôžu čítať iní používatelia",
+        "code": "const user = { id: \"u2\", roles: [\"USER\"] }; const task = { id: \"t1\", ownerId: \"u1\", shared: false }; return can(user, \"read\", task) === false;"
+      },
+      {
+        "name": "Anonymní používatelia dostanú 401",
+        "code": "return statusFor(null, false) === 401;"
+      },
+      {
+        "name": "Používatelia bez oprávnenia dostanú 403",
+        "code": "const user = { id: \"u1\", roles: [\"USER\"] }; return statusFor(user, false) === 403;"
+      },
+      {
+        "name": "Povolení používatelia dostanú 200",
+        "code": "const user = { id: \"u1\", roles: [\"USER\"] }; return statusFor(user, true) === 200;"
+      }
+    ]
+  }
+}

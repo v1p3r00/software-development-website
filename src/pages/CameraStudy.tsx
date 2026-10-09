@@ -78,6 +78,36 @@ const COPY = {
     noGl: 'Ez a böngésző nem tudta elindítani a 3D nézetet.',
     note: 'Bemutató tartalom',
   },
+  sk: {
+    menu: { face: 'Iustitia', law: 'Váhy', about: 'Celý pohľad', contact: 'Kontakt' },
+    shots: {
+      face: {
+        kicker: 'Kamerová štúdia 3D modelu',
+        title: 'Iustitia',
+        body: 'Jedna socha, štyri pohľady. Menu tu neprepína stránky — posiela kameru na let okolo modelu.',
+      },
+      law: {
+        kicker: '01 / Právo',
+        title: 'Zvažovanie',
+        body: 'Každý prípad sa začína dvoma miskami váh. Fakty, riziká a možnosti sa najprv zvážia proti sebe, až potom padne rozhodnutie.',
+      },
+      about: {
+        kicker: '02 / O nás',
+        title: 'Celý obraz',
+        body: 'Keď cúvnete, detaily sa poskladajú do postavy. Dobrá rada funguje rovnako: jednotlivé časti dávajú zmysel, až keď vidíte, ako do seba zapadajú.',
+      },
+      contact: {
+        kicker: '03 / Kontakt',
+        title: 'Ozvite sa',
+        body: 'Chceli by ste podobný web — s vlastným modelom a vlastným príbehom, ktorý rozpráva kamera? Dohodnite si bezplatnú konzultáciu.',
+      },
+    },
+    cta: 'Bezplatná konzultácia',
+    hint: 'Posúvajte, potiahnite prstom alebo použite šípky',
+    loading: 'Načítava sa model',
+    noGl: 'Tento prehliadač nedokázal spustiť 3D zobrazenie.',
+    note: 'Ukážkový obsah',
+  },
 };
 
 type V3 = THREE.Vector3;
@@ -793,7 +823,7 @@ export default function CameraStudy() {
 
   return (
     <section id="camera-study" className="relative h-[100svh] w-full overflow-hidden bg-[#0a0a0c] text-[#f1ece4]">
-      <h1 className="sr-only">{lang === 'hu' ? '3D modell kameratanulmány' : '3D Model Camera Study'}</h1>
+      <h1 className="sr-only">{{ en: '3D Model Camera Study', hu: '3D modell kameratanulmány', sk: 'Kamerová štúdia 3D modelu' }[lang]}</h1>
       <div ref={host} className="absolute inset-0" aria-hidden />
 
       {/* vignette and film grain feel */}
@@ -849,7 +879,7 @@ export default function CameraStudy() {
 
       {/* menu */}
       <nav
-        aria-label={lang === 'hu' ? 'Kameraállások' : 'Camera positions'}
+        aria-label={{ en: 'Camera positions', hu: 'Kameraállások', sk: 'Pozície kamery' }[lang]}
         className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-[#0a0a0c]/85 via-[#0a0a0c]/40 to-transparent px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-20 sm:pb-8"
       >
         <div className="mx-auto w-fit">

@@ -49,14 +49,14 @@ export default function EventBubbling({ lang }: WidgetProps) {
   );
 
   return (
-    <Frame lang={lang} title={t('Event capturing & bubbling', 'Esemény-elkapás és buborékolás')} hint={t('Click any box. Every ancestor with a listener hears the click as it bubbles up.', 'Kattints bármelyik dobozra. Buborékolás közben minden figyelővel rendelkező ős megkapja a kattintást.')}>
+    <Frame lang={lang} title={t('Event capturing & bubbling', 'Esemény-elkapás és buborékolás', 'Capturing a bubbling udalostí')} hint={t('Click any box. Every ancestor with a listener hears the click as it bubbles up.', 'Kattints bármelyik dobozra. Buborékolás közben minden figyelővel rendelkező ős megkapja a kattintást.', 'Klikni na ľubovoľný box. Každý predok s listenerom zachytí klik, keď prebubláva nahor.')}>
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <label className="flex items-center gap-2 text-[15px] text-muted">
           <input type="checkbox" checked={capture} onChange={(e) => setCapture(e.target.checked)} className="accent-[rgb(var(--c-accent))]" />
-          {t('also listen in the capture phase', 'figyelés elkapási fázisban is')}
+          {t('also listen in the capture phase', 'figyelés elkapási fázisban is', 'počúvať aj vo fáze capture')}
         </label>
         <label className="flex items-center gap-2 text-[15px] text-muted">
-          stopPropagation() {t('in', 'itt:')}
+          stopPropagation() {t('in', 'itt:', 'v:')}
           <select value={stopAt ?? ''} onChange={(e) => setStopAt((e.target.value || null) as Id | null)} className="border border-line bg-bg px-2 py-1 font-mono text-[13.5px] text-text">
             <option value="">—</option>
             {PATH.slice(1).map((p) => (
@@ -85,13 +85,13 @@ export default function EventBubbling({ lang }: WidgetProps) {
                 }}
                 className={'vw-btn ' + (lit === 'button' ? 'on' : '')}
               >
-                {'<button>'} {t('Add to cart', 'Kosárba')}
+                {'<button>'} {t('Add to cart', 'Kosárba', 'Do košíka')}
               </button>,
             ),
           ),
         )}
         <ol className="min-h-[10rem] border border-line bg-bg p-3 font-mono text-[13.5px]">
-          <li className="label mb-2">{t('listeners fired, in order', 'lefutott figyelők, sorrendben')}</li>
+          <li className="label mb-2">{t('listeners fired, in order', 'lefutott figyelők, sorrendben', 'spustené listenery v poradí')}</li>
           {log.map((l, k) => (
             <li key={k} className="py-0.5 text-text">
               <span className="text-dim">{k + 1}.</span> {l.id} <span className={l.phase === 'capture' ? 'text-sand' : l.phase === 'target' ? 'text-accent' : 'text-muted'}>({l.phase})</span>

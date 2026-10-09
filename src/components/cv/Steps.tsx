@@ -307,6 +307,7 @@ export function DesignStep({ cv, t, setCv }: Props) {
         options={[
           { value: 'en', label: 'English' },
           { value: 'hu', label: 'Magyar' },
+          { value: 'sk', label: 'Slovenčina' },
         ]}
         onChange={(v) => setDesign(setCv, { lang: v })}
       />

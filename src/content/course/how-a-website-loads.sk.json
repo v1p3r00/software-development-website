@@ -1,0 +1,99 @@
+{
+  "title": "Čo sa deje, keď otvoríš web",
+  "intro": "Keď do prehliadača napíšeš adresu webu a stlačíš Enter, za zlomok sekundy prebehne prekvapivo dlhý reťazec udalostí. V tejto lekcii budeš sledovať túto cestu od URL, ktorú si napísal, až po hotovú stránku na tvojej obrazovke.",
+  "body": "## Cesta sa začína URL adresou\n\n**URL** (Uniform Resource Locator) je adresa zdroja na webe. URL adresy používaš každý deň, aj keď zvyčajne nepremýšľaš o ich jednotlivých častiach.\n\n~~~widget request-journey\n~~~\n\nNapríklad:\n\n~~~text\nhttps://example.com/products/shoes?size=42&colour=black\n~~~\n\nURL môže obsahovať viacero informácií:\n\n- `https` je **protokol**. Hovorí prehliadaču, aké pravidlá komunikácie má použiť.\n- `example.com` je **hostname**. Určuje adresu servera webu pomocou názvu.\n- `/products/shoes` je **cesta** (path). Určuje zdroj alebo miesto, ktoré chceš.\n- `?size=42&colour=black` je **query string**. Obsahuje ďalšie parametre odoslané spolu s požiadavkou.\n- URL môže obsahovať aj **fragment**, napríklad `#reviews`, ktorý prehliadaču zvyčajne povie, aby sa presunul na konkrétnu časť aktuálneho dokumentu.\n\nNemusíš si hneď pamätať každú časť. Dôležité je, že URL dáva prehliadaču dosť informácií na to, aby zistil, o čo žiadaš a ako má komunikovať so serverom.\n\n## Krok 1: Nájdenie servera pomocou DNS\n\nPočítače komunikujú pomocou **IP adries**, napríklad `203.0.113.10`. Ľudia vo všeobecnosti uprednostňujú názvy ako `example.com`, pretože sa ľahšie pamätajú.\n\nTu prichádza na rad **DNS** (Domain Name System). DNS je v podstate systém názvov, ktorý pomáha preložiť hostname na IP adresu.\n\nKeď navštíviš web, tvoj prehliadač sa možno bude musieť DNS servera opýtať niečo ako:\n\n> „Aká IP adresa patrí k example.com?“\n\nSystém DNS nájde správnu odpoveď a vráti IP adresu. Prehliadač potom môže túto adresu použiť na spojenie so serverom.\n\nDNS sa nemusí kontaktovať pri každom otvorení webu. Tvoj počítač, prehliadač, operačný systém, sieť alebo poskytovateľ DNS už môžu mať odpoveď uloženú v **cache**. Cache je dočasne uložená informácia, ktorú možno znova použiť namiesto toho, aby sa opäť získavala.\n\nToto je jedno z prvých miest, kde cache môže web zrýchliť.\n\n## Krok 2: Pripojenie k serveru\n\nPrehliadač už vie, kde server je. Teraz potrebuje nadviazať spojenie.\n\nPri typickom modernom HTTPS webe sa na tom podieľajú **TCP** a **TLS**.\n\n**TCP** (Transmission Control Protocol) je komunikačný protokol, ktorý pomáha dvom počítačom nadviazať spoľahlivé spojenie a vymieňať si dáta v správnom poradí. Môžeš si to predstaviť ako vytvorenie spoľahlivého komunikačného kanála medzi prehliadačom a serverom.\n\nPotom je tu **TLS** (Transport Layer Security). TLS šifruje komunikáciu medzi tvojím prehliadačom a serverom, aby iní ľudia v sieti nemohli vymieňané informácie jednoducho čítať.\n\nPreto na väčšine moderných webov vidíš `https://`, a nie len `http://`.\n\nHTTPS je komunikácia cez HTTP chránená pomocou TLS. Presný technický proces za TCP a TLS je zložitejší, no na tvorbu webových aplikácií nemusíš rozumieť každému paketu.\n\nUžitočný mentálny model je:\n\n~~~text\nDNS → nájde server\nTCP → nadviaže spoľahlivú komunikáciu\nTLS → chráni komunikáciu\nHTTP → vymieňa webové dáta\n~~~\n\n## Krok 3: Odoslanie HTTP požiadavky\n\nKeď je spojenie pripravené, prehliadač môže serveru poslať **HTTP požiadavku** (request).\n\nHTTP (Hypertext Transfer Protocol) je súbor pravidiel na výmenu požiadaviek a odpovedí na webe.\n\nZjednodušená požiadavka môže vyzerať takto:\n\n~~~http\nGET /products/shoes?size=42 HTTP/1.1\nHost: example.com\nAccept: text/html\n~~~\n\n`GET` je HTTP metóda. Hovorí serveru, že klient chce niečo získať.\n\nCesta hovorí serveru, aký zdroj bol vyžiadaný. Hlavičky (headers) poskytujú doplňujúce informácie o požiadavke.\n\n**Klient** je program, ktorý požiadavku posiela. V tomto príklade je klientom prehliadač.\n\n**Server** požiadavku prijme a rozhodne, čo s ňou urobí.\n\n## Krok 4: Backend odvedie svoju prácu\n\nTu môže do cesty vstúpiť **backend**.\n\nBackend je časť aplikácie, ktorá beží na serveri. Môže obsahovať biznis logiku, autentifikáciu, validáciu, prístup k databáze a ďalšie operácie, ktoré by sa nemali diať priamo v prehliadači používateľa.\n\nPredstav si, že otvoríš stránku produktu v e-shope. Prehliadač môže požiadať o:\n\n~~~text\nGET /products/123\n~~~\n\nBackend túto požiadavku prijme, nájde produkt `123` v databáze, overí, či je produkt dostupný, a vytvorí odpoveď.\n\nV tomto kurze budeme na backend používať **Spring Boot** a ako databázu **PostgreSQL**.\n\nBackend tak môže mať svoju vlastnú cestu:\n\n~~~text\nPrehliadač\n  ↓\nSpring Boot\n  ↓\nPostgreSQL\n  ↓\nSpring Boot\n  ↓\nPrehliadač\n~~~\n\nPrehliadač bežne nekomunikuje priamo s PostgreSQL. Backend poskytuje kontrolovanú vrstvu medzi prehliadačom a databázou.\n\n## Krok 5: Prijatie HTTP odpovede\n\nServer pošle prehliadaču späť **HTTP odpoveď** (response).\n\nZjednodušená odpoveď môže vyzerať takto:\n\n~~~http\nHTTP/1.1 200 OK\nContent-Type: text/html\n\n<html>\n  ...\n</html>\n~~~\n\nPrvý riadok obsahuje **stavový kód**. `200 OK` znamená, že požiadavka bola úspešne spracovaná.\n\nOdpoveď obsahuje aj hlavičky. Napríklad `Content-Type` hovorí prehliadaču, aký typ obsahu dostal.\n\nTelo odpovede obsahuje samotné dáta. Pri tradičnom webe to môže byť HTML.\n\nIné požiadavky môžu vracať CSS, JavaScript, obrázky, dáta vo formáte JSON alebo iné zdroje.\n\n## Krok 6: Prehliadač spracuje HTML\n\nPrijatím HTML sa cesta nekončí. Prehliadač musí zo súborov, ktoré dostal, vytvoriť stránku, s ktorou môžeš pracovať.\n\n~~~diagram\n{\"type\": \"flow\", \"title\": \"Od bajtov k pixelom\", \"caption\": \"Z HTML a CSS vzniknú dva stromy, tie sa spoja, rozložia a vykreslia. JavaScript môže kedykoľvek zmeniť oba stromy.\", \"nodes\": [{\"id\": \"html\", \"label\": \"HTML\", \"kind\": \"file\"}, {\"id\": \"js\", \"label\": \"JavaScript\", \"kind\": \"code\"}, {\"id\": \"css\", \"label\": \"CSS\", \"kind\": \"file\"}, {\"id\": \"dom\", \"label\": \"DOM\", \"sub\": \"strom elementov\", \"highlight\": true}, {\"id\": \"cssom\", \"label\": \"CSSOM\", \"sub\": \"pravidlá štýlov\"}, {\"id\": \"rt\", \"label\": \"Render strom\", \"sub\": \"viditeľné elementy + štýly\"}, {\"id\": \"layout\", \"label\": \"Layout\", \"sub\": \"veľkosti a pozície\"}, {\"id\": \"paint\", \"label\": \"Vykreslenie\", \"sub\": \"pixely na obrazovke\", \"highlight\": true}], \"edges\": [{\"from\": \"html\", \"to\": \"dom\", \"label\": \"parsovanie\"}, {\"from\": \"css\", \"to\": \"cssom\", \"label\": \"parsovanie\"}, {\"from\": \"dom\", \"to\": \"rt\"}, {\"from\": \"cssom\", \"to\": \"rt\"}, {\"from\": \"rt\", \"to\": \"layout\"}, {\"from\": \"layout\", \"to\": \"paint\"}, {\"from\": \"js\", \"to\": \"dom\", \"label\": \"mení\", \"dashed\": true}]}\n~~~\n\nHTML opisuje štruktúru a význam dokumentu.\n\nNapríklad:\n\n~~~html\n<h1>Products</h1>\n<p>Welcome to our shop.</p>\n~~~\n\nPrehliadač toto HTML sparsuje a v pamäti vytvorí štruktúru nazývanú **DOM** (Document Object Model).\n\nDOM reprezentuje elementy stránky ako stromovú štruktúru.\n\nMôžeš si to predstaviť takto:\n\n~~~text\nDokument\n├── h1\n│   └── „Products“\n└── p\n    └── „Welcome to our shop.“\n~~~\n\nJavaScript môže s touto štruktúrou pracovať. Aj preto je DOM pre frontendový vývoj taký dôležitý.\n\n## CSS mení vzhľad stránky\n\nHTML poskytuje štruktúru, no **CSS** (Cascading Style Sheets) opisuje vzhľad a rozloženie.\n\nNapríklad:\n\n~~~css\nh1 {\n  font-size: 32px;\n}\n~~~\n\nPrehliadač stiahne a spracuje súbory CSS, určí, ktoré pravidlá sa vzťahujú na ktoré HTML elementy, a vypočíta, ako sa tieto elementy majú zobraziť.\n\nPotom prehliadač vykoná prácu potrebnú na zobrazenie stránky. Tento celkový proces sa bežne nazýva **renderovanie**.\n\nRenderovanie zahŕňa určenie rozloženia elementov a nakoniec vykreslenie viditeľného výsledku na obrazovku.\n\nInterný renderovací proces prehliadača si zatiaľ nemusíš pamätať. Dôležité je, že HTML dáva prehliadaču štruktúru, CSS mu dáva pravidlá vzhľadu a prehliadač tieto informácie spojí do vizuálnej podoby stránky.\n\n## JavaScript robí stránku interaktívnou\n\nJavaScript môže stránke pridať správanie.\n\nMôže napríklad reagovať na kliknutie na tlačidlo, overiť formulár, aktualizovať časť stránky alebo vyžiadať ďalšie informácie z backendu.\n\nModerná aplikácia môže fungovať takto:\n\n~~~text\nHTML → štruktúra stránky\nCSS → vzhľad a rozloženie\nJavaScript → správanie a interakcia\nBackend → serverová logika a dáta\nDatabáza → trvalé dáta aplikácie\n~~~\n\nToto rozdelenie nie je absolútne. Moderné frameworky môžu niektoré hranice rozmazať, no ako mentálny model na začiatok tvojej full-stack cesty je výborné.\n\n## Kam patrí React\n\nV tomto kurze budeme na frontend používať **React**.\n\nReact je JavaScriptová knižnica na tvorbu používateľských rozhraní. Namiesto toho, aby si každú časť stránky menil ručne, opíšeš komponenty UI a to, ako majú vyzerať na základe stavu a dát aplikácie.\n\nReact aplikácia môže napríklad vyžiadať informácie o produkte zo Spring Boot backendu. Spring Boot ich môže získať z PostgreSQL a vrátiť ako JSON.\n\nTok môže vyzerať takto:\n\n~~~text\nReact v prehliadači\n       ↓\nHTTP požiadavka\n       ↓\nSpring Boot backend\n       ↓\nPostgreSQL databáza\n       ↓\nOdpoveď zo Spring Bootu\n       ↓\nReact aktualizuje rozhranie\n~~~\n\nTakúto komunikáciu budeme v kurze neskôr budovať krok za krokom.\n\n## Prečo niektoré súbory prichádzajú z cache\n\nMožno si si všimol, že web sa pri druhej návšteve niekedy načíta oveľa rýchlejšie. Jedným z dôvodov je **caching**.\n\n~~~callout tip Pozri sa, ako cache pracuje\nOtvor DevTools → **Network**, znova načítaj stránku a pozri sa na stĺpec *Size*: súbory označené „(memory cache)“ alebo „(disk cache)“ vôbec neopustili tvoj počítač. Počas vývoja zaškrtni **Disable cache**, aby si vždy videl najnovšie CSS a JavaScript.\n~~~\n\nCache ukladá predtým získané informácie, aby sa dali prípadne znova použiť.\n\nPredstav si napríklad, že web používa ten istý obrázok loga na mnohých stránkach. Sťahovať ho zakaždým by bolo plytvanie časom aj dátami. Prehliadač si môže uložiť lokálnu kópiu a vo vhodnej chvíli ju znova použiť.\n\nPrehliadač dokáže cachovať mnoho druhov zdrojov vrátane súborov CSS, JavaScriptu, obrázkov a ďalších odpovedí.\n\nCaching riadia hlavičky HTTP odpovede a ďalšie pravidlá prehliadača. Server môže prehliadaču povedať, ako dlho sa určité zdroje môžu považovať za aktuálne.\n\nTo vysvetľuje aj niečo, s čím sa ako vývojár raz stretneš: zmeníš súbor CSS alebo JavaScript, no prehliadač akoby zobrazoval starú verziu. Niekedy je kód naozaj starý, pretože sa znova používa zdroj z cache.\n\nVývojárske nástroje ti počas vývoja ponúkajú spôsoby, ako caching skúmať a ovládať.\n\n## Frontend a backend na celej ceste\n\nJe užitočné rozlišovať dve hlavné oblasti webovej aplikácie.\n\n**Frontend** je časť, ktorá beží v prehliadači používateľa. V našom kurze bude hlavnou frontendovou technológiou React. Stará sa o používateľské rozhranie a interakcie.\n\n**Backend** beží na serveri. Spring Boot bude zabezpečovať serverovú aplikačnú logiku a poskytovať API, ktoré môže frontend volať.\n\nDatabáza ukladá trvalé informácie. Našou databázovou technológiou bude PostgreSQL.\n\nZjednodušená celá cesta vyzerá takto:\n\n~~~text\nZadáš URL\n      ↓\nPrehliadač skontroluje informácie v cache\n      ↓\nDNS nájde IP adresu servera\n      ↓\nPrehliadač nadviaže zabezpečené spojenie\n      ↓\nPrehliadač pošle HTTP požiadavku\n      ↓\nSpring Boot prijme požiadavku\n      ↓\nSpring Boot môže položiť dopyt do PostgreSQL\n      ↓\nSpring Boot pošle HTTP odpoveď\n      ↓\nPrehliadač dostane HTML/CSS/JS alebo dáta aplikácie\n      ↓\nPrehliadač vytvorí DOM a vypočíta layout\n      ↓\nPrehliadač vyrenderuje stránku\n      ↓\nJavaScript ju urobí interaktívnou\n~~~\n\nNie každá požiadavka prebieha presne v tomto poradí. React aplikácia si napríklad najprv stiahne JavaScript a potom posiela ďalšie HTTP požiadavky na dáta aplikácie. Prehliadače tiež podľa možnosti znova využívajú existujúce spojenia a zdroje z cache.\n\nAj tak ti tento model dáva pevný základ na pochopenie toho, čo sa pod povrchom webu deje.\n\n## Celá cesta v niekoľkých krokoch\n\nKeď otvoríš web, začni o tom uvažovať ako o ceste, a nie ako o jednej akcii.\n\n1. **URL hovorí prehliadaču, čo chceš a ako má komunikovať.**\n2. **DNS pomáha premeniť hostname na IP adresu.**\n3. **TCP a TLS vytvárajú spoľahlivé a zabezpečené spojenie.**\n4. **HTTP prenáša požiadavky z prehliadača na server a odpovede späť.**\n5. **Backend môže spracovať požiadavky a komunikovať s databázou.**\n6. **Prehliadač spracuje HTML, CSS a JavaScript, vytvorí DOM, vypočíta layout a vyrenderuje výsledok.**\n7. **Cache umožňuje prehliadaču znova použiť zdroje namiesto toho, aby všetko sťahoval odznova.**\n\nKeď tejto ceste porozumieš, technológie ako React, Spring Boot a PostgreSQL ti prestanú pripadať ako izolované nástroje. Začneš vidieť, kam každá z nich patrí vo väčšom obraze webovej aplikácie.",
+  "takeaways": [
+    "URL obsahuje informácie ako protokol, hostname, cestu a query parametre.",
+    "DNS pomáha prehliadaču nájsť server priradený k hostname.",
+    "HTTP slúži na výmenu požiadaviek a odpovedí, zatiaľ čo HTTPS túto komunikáciu chráni pomocou TLS.",
+    "Prehliadač premení HTML na DOM, aplikuje CSS, spustí JavaScript a vyrenderuje výsledné rozhranie.",
+    "React beží najmä vo frontende, Spring Boot sa stará o backendovú logiku a PostgreSQL ukladá trvalé dáta."
+  ],
+  "quiz": [
+    {
+      "question": "Aká je hlavná úloha DNS pri otvorení webu?",
+      "options": [
+        "Prekladá hostname na IP adresu.",
+        "Konvertuje HTML na CSS.",
+        "Ukladá databázu webu.",
+        "Šifruje každý obrázok na stránke."
+      ],
+      "answer": 0,
+      "explanation": "DNS pomáha priradiť ľuďom zrozumiteľné hostnamy ako example.com k IP adresám, cez ktoré môžu počítače komunikovať."
+    },
+    {
+      "question": "Čo poskytuje TLS, keď používaš HTTPS?",
+      "options": [
+        "Databázu pre web.",
+        "Šifrovanie a ochranu komunikácie.",
+        "HTML štruktúru stránky.",
+        "JavaScriptový framework, ktorý web používa."
+      ],
+      "answer": 1,
+      "explanation": "TLS chráni dáta vymieňané medzi prehliadačom a serverom tým, že komunikáciu šifruje."
+    },
+    {
+      "question": "Čo je DOM?",
+      "options": [
+        "Typ databázového servera.",
+        "Konfiguračný súbor DNS.",
+        "Reprezentácia štruktúry dokumentu v pamäti.",
+        "Protokol na šifrovanie HTTP."
+      ],
+      "answer": 2,
+      "explanation": "Prehliadač sparsuje HTML a vytvorí DOM, ktorý reprezentuje elementy dokumentu v štruktúre, s ktorou môžu pracovať skripty."
+    },
+    {
+      "question": "Ktorá časť nášho stacku v kurze zodpovedá za serverovú aplikačnú logiku?",
+      "options": [
+        "PostgreSQL",
+        "CSS",
+        "React",
+        "Spring Boot"
+      ],
+      "answer": 3,
+      "explanation": "Spring Boot budeme používať na backend, kde môže bežať serverová aplikačná logika a API endpointy."
+    },
+    {
+      "question": "Prečo môže prehliadač načítať už navštívený zdroj bez toho, aby ho znova sťahoval?",
+      "options": [
+        "Prehliadač môže mať jeho kópiu v cache.",
+        "DNS natrvalo ukladá celý web.",
+        "TCP automaticky vytvorí novú HTML stránku.",
+        "Databáza sa zakaždým skopíruje do prehliadača."
+      ],
+      "answer": 0,
+      "explanation": "Prehliadače môžu cachovať zdroje ako obrázky, CSS a JavaScript, aby ich mohli vo vhodnej chvíli znova použiť."
+    }
+  ],
+  "exercise": {
+    "title": "Vytvor parser URL",
+    "task": "Vytvor funkciu s názvom `parseUrl(address)`, ktorá na parsovanie URL použije vstavanú triedu prehliadača `URL`. Musí vrátiť objekt presne s vlastnosťami `protocol`, `host`, `path` a `query`; `protocol` nesmie obsahovať koncovú dvojbodku, `host` musí obsahovať len hostname bez portu a `path` musí obsahovať pathname. Search parametre URL preveď na obyčajný objekt uložený v `query`, kde kľúčmi sú názvy parametrov a hodnotami ich hodnoty ako reťazce. Testy očakávajú, že funkcia bude dostupná ako funkcia na najvyššej úrovni s názvom `parseUrl`.",
+    "kind": "js",
+    "starter": "// Parse a URL and return the information needed by the tests.\n// Use the browser's built-in URL class.\nfunction parseUrl(address) {\n  const url = new URL(address);\n\n  // TODO: return an object with protocol, host, path, and query.\n  // Remember that protocol should not contain ':' and host should not contain a port.\n}",
+    "solution": "function parseUrl(address) {\n  const url = new URL(address);\n\n  return {\n    protocol: url.protocol.replace(':', ''),\n    host: url.hostname,\n    path: url.pathname,\n    query: Object.fromEntries(url.searchParams.entries())\n  };\n}",
+    "hint": "Objekt `URL` priamo poskytuje `protocol`, `hostname` a `pathname`. Pri query parametroch ti `url.searchParams.entries()` vráti dvojice kľúč–hodnota, ktoré môžeš pomocou `Object.fromEntries()` previesť na obyčajný objekt.",
+    "tests": [
+      {
+        "name": "Sparsuje jednoduchú URL",
+        "code": "const result = parseUrl('https://example.com/products/shoes');\nreturn result.protocol === 'https' && result.host === 'example.com' && result.path === '/products/shoes' && Object.keys(result.query).length === 0;"
+      },
+      {
+        "name": "Odstráni port z hostu",
+        "code": "const result = parseUrl('http://localhost:8080/api/products');\nreturn result.protocol === 'http' && result.host === 'localhost' && result.path === '/api/products';"
+      },
+      {
+        "name": "Sparsuje query parametre",
+        "code": "const result = parseUrl('https://example.com/search?q=shoes&page=2');\nreturn result.query.q === 'shoes' && result.query.page === '2' && Object.keys(result.query).length === 2;"
+      },
+      {
+        "name": "Spracuje zakódované hodnoty v query",
+        "code": "const result = parseUrl('https://example.com/search?q=red%20shoes&sort=price');\nreturn result.query.q === 'red shoes' && result.query.sort === 'price';"
+      },
+      {
+        "name": "Drží pathname oddelene od query",
+        "code": "const result = parseUrl('https://example.com/products/42?colour=black');\nreturn result.path === '/products/42' && result.query.colour === 'black' && !result.path.includes('?');"
+      }
+    ]
+  }
+}

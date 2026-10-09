@@ -3,6 +3,9 @@ import { articlePath, isoDate, isPublished } from '../content/frontmatter';
 import type { ArticleMeta } from '../content/frontmatter';
 import type { Lang } from './projects';
 
+/** Intl locale per site language (dates, numbers) */
+export const LOCALE: Record<Lang, string> = { en: 'en-GB', hu: 'hu-HU', sk: 'sk-SK' };
+
 export interface ArticleVersion extends ArticleMeta {
   minutes: number;
 }
@@ -35,13 +38,17 @@ for (const [path, { meta, minutes }] of Object.entries(metas)) {
   bySlug.set(where.slug, article);
 }
 
+/** the language actually shown: the reader's, else English, else whichever exists */
+const shownLang = (article: Article, lang: Lang): Lang =>
+  article.versions[lang] ? lang : article.versions.en ? 'en' : article.versions.hu ? 'hu' : 'sk';
+
 const loaded = new Map<string, string>();
 const loading = new Map<string, Promise<string>>();
 
 /** the Markdown text of one language version (without frontmatter); cached */
 export function loadBody(slug: string, lang: Lang): Promise<string> {
   const article = bySlug.get(slug);
-  const shown = article && (article.versions[lang] ? lang : article.versions.en ? 'en' : 'hu');
+  const shown = article && shownLang(article, lang);
   const key = `${slug}/${shown}`;
   const path = bodyPath.get(key);
   if (!path) return Promise.resolve('');
@@ -62,7 +69,7 @@ export function loadBody(slug: string, lang: Lang): Promise<string> {
 /** the article text if already loaded, else null (and it starts loading) */
 export function useArticleBody(slug: string | undefined, lang: Lang): string | null {
   const article = slug ? bySlug.get(slug) : undefined;
-  const shown = article && (article.versions[lang] ? lang : article.versions.en ? 'en' : 'hu');
+  const shown = article && shownLang(article, lang);
   const key = `${slug}/${shown}`;
   const [, rerender] = useState(0);
   useEffect(() => {
@@ -90,12 +97,12 @@ export const listedArticles = () => articles.filter((a) => isPublished(a.date));
 
 /** the version in the reader's language, falling back to whichever exists */
 export function inLang(article: Article, lang: Lang): ArticleVersion {
-  return (article.versions[lang] ?? article.versions.en ?? article.versions.hu)!;
+  return (article.versions[lang] ?? article.versions.en ?? article.versions.hu ?? article.versions.sk)!;
 }
 
 export function formatDate(iso: string, lang: Lang) {
   const d = new Date(`${iso.slice(0, 10)}T12:00:00`);
   return Number.isNaN(d.getTime())
     ? iso
-    : d.toLocaleDateString(lang === 'hu' ? 'hu-HU' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+    : d.toLocaleDateString(LOCALE[lang], { year: 'numeric', month: 'long', day: 'numeric' });
 }

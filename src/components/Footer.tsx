@@ -84,7 +84,7 @@ export default function Footer() {
               data-cursor="follow"
               className="font-mono text-2xs uppercase tracking-tech text-accent transition-colors hover:text-text"
             >
-              {lang === 'hu' ? 'Ingyenes weboldal-ellenőrzés' : 'Free website check'}
+              {{ en: 'Free website check', hu: 'Ingyenes weboldal-ellenőrzés', sk: 'Bezplatná kontrola webu' }[lang]}
             </Link>
             {featuredIndustries.map((ind) => (
               <Link
@@ -101,7 +101,7 @@ export default function Footer() {
               data-cursor="follow"
               className="font-mono text-2xs uppercase tracking-tech text-text transition-colors hover:text-accent"
             >
-              {lang === 'hu' ? 'Összes iparág' : 'All industries'} →
+              {{ en: 'All industries', hu: 'Összes iparág', sk: 'Všetky odvetvia' }[lang]} →
             </Link>
           </nav>
 
@@ -138,7 +138,7 @@ export default function Footer() {
             >
               {t.ux.cursorFx}: <span className={cursorFx ? 'text-accent' : ''}>{cursorFx ? t.ux.cursorOn : t.ux.cursorOff}</span>
             </button>
-            <a href={lp('/') === '/' ? '/feed.xml' : '/hu/feed.xml'} className="transition-colors hover:text-accent">
+            <a href={lp('/feed.xml')} className="transition-colors hover:text-accent">
               RSS
             </a>
             <span>

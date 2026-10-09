@@ -238,7 +238,7 @@ Customer:
 
 The communication can be linked directly to a project, order or case.
 
-Zendesk's customer portal, for example, allows customers to submit, view and track support requests and add comments to them. :contentReference[oaicite:8]{index=8}
+Zendesk's customer portal, for example, allows customers to submit, view and track support requests and add comments to them.
 
 That matters because communication no longer has to exist as a collection of unrelated emails.
 
@@ -264,7 +264,7 @@ The same applies to:
 - previous communication,
 - payment information.
 
-Salesforce describes self-service and reducing support requests as key purposes of customer portals. :contentReference[oaicite:9]{index=9}
+Salesforce describes self-service and reducing support requests as key purposes of customer portals.
 
 **A good customer portal should not create more work for support. It should remove repetitive questions from the process.**
 
@@ -305,7 +305,7 @@ You do not necessarily need custom development.
 
 Many business platforms already provide customer-facing areas.
 
-For example, a support platform may provide a customer portal where users can see their tickets and their current status. Zendesk allows customers to view, search, filter and track their own requests. :contentReference[oaicite:10]{index=10}
+For example, a support platform may provide a customer portal where users can see their tickets and their current status. Zendesk allows customers to view, search, filter and track their own requests.
 
 **Advantages:**
 
@@ -395,9 +395,9 @@ It might contain:
 
 Security therefore needs to be considered from the beginning.
 
-The European Commission explains that GDPR requires appropriate technical and organisational measures to protect personal data, including protection against unauthorised access and accidental loss. :contentReference[oaicite:11]{index=11}
+The European Commission explains that GDPR requires appropriate technical and organisational measures to protect personal data, including protection against unauthorised access and accidental loss.
 
-The EDPB also highlights access control, encryption, backups and regular security reviews as important safeguards. :contentReference[oaicite:12]{index=12}
+The EDPB also highlights access control, encryption, backups and regular security reviews as important safeguards.
 
 ---
 
@@ -415,7 +415,7 @@ There are two separate concepts:
 
 **Authorisation:** what are you allowed to see and do?
 
-OWASP recommends enforcing authorisation consistently for non-public resources and applying the principle of least privilege. :contentReference[oaicite:13]{index=13}
+OWASP recommends enforcing authorisation consistently for non-public resources and applying the principle of least privilege.
 
 For example:
 
@@ -450,7 +450,7 @@ For a customer portal, clarify these questions during the design stage:
 - How do we handle access or deletion requests?
 - What happens if there is a data breach?
 
-One of the GDPR's principles is data minimisation: only personal data necessary for the relevant purpose should be processed. The EDPB makes the same point in its small-business guidance. :contentReference[oaicite:14]{index=14}
+One of the GDPR's principles is data minimisation: only personal data necessary for the relevant purpose should be processed. The EDPB makes the same point in its small-business guidance.
 
 **Do not collect information simply because the system technically allows you to.**
 
@@ -472,7 +472,7 @@ and then simply assuming that only someone who knows the URL can access it.
 
 The application needs to verify that the current user is actually authorised to access the document.
 
-Access rules must also be enforced by the backend, not only by the frontend. OWASP's access-control guidance recommends consistently enforcing authorisation and applying least privilege. :contentReference[oaicite:15]{index=15}
+Access rules must also be enforced by the backend, not only by the frontend. OWASP's access-control guidance recommends consistently enforcing authorisation and applying least privilege.
 
 ---
 

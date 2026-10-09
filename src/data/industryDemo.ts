@@ -1,7 +1,7 @@
 import { landingBySlug } from './landings.ts';
 import type { Industry } from './industries.ts';
 
-type L10n = { en: string; hu: string };
+type L10n = { en: string; hu: string; sk: string };
 
 /** what an industry page shows as its demo, whether a landing page or a modernization case */
 export interface IndustryDemo {
@@ -16,9 +16,9 @@ export interface IndustryDemo {
 
 /** the modernization cases (brands are fictional), kept here so the SEO step can read them */
 const CASES: Record<string, { name: string; sector: L10n }> = {
-  bakery: { name: 'Málnavirág', sector: { en: 'Confectionery — redesign', hu: 'Cukrászda — megújítás' } },
-  law: { name: 'Halmos & Rét', sector: { en: 'Law firm — redesign', hu: 'Ügyvédi iroda — megújítás' } },
-  shop: { name: 'Kőmáz', sector: { en: 'Ceramics webshop — redesign', hu: 'Kerámia webshop — megújítás' } },
+  bakery: { name: 'Málnavirág', sector: { en: 'Confectionery — redesign', hu: 'Cukrászda — megújítás', sk: 'Cukráreň — redizajn' } },
+  law: { name: 'Halmos & Rét', sector: { en: 'Law firm — redesign', hu: 'Ügyvédi iroda — megújítás', sk: 'Advokátska kancelária — redizajn' } },
+  shop: { name: 'Kőmáz', sector: { en: 'Ceramics webshop — redesign', hu: 'Kerámia webshop — megújítás', sk: 'E-shop s keramikou — redizajn' } },
 };
 
 export function industryDemo(ind: Pick<Industry, 'demo'>): IndustryDemo | undefined {

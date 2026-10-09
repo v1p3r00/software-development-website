@@ -3,7 +3,9 @@ import type { ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { en } from './en';
 import { hu } from './hu';
+import { sk } from './sk';
 import type { Dict } from './en';
+import { LANGS } from '../data/projects';
 import type { L10n, Lang } from '../data/projects';
 import { langOfPath, localePath } from './paths';
 
@@ -14,7 +16,7 @@ let morph: Morph | null = null;
 let morphLoading: Promise<Morph> | null = null;
 const loadMorph = () => (morphLoading ??= import('../lib/morph/engine').then((m) => (morph = m)));
 
-const dicts: Record<Lang, Dict> = { en, hu };
+const dicts: Record<Lang, Dict> = { en, hu, sk };
 const STORAGE_KEY = 'dm.lang';
 
 interface Ctx {
@@ -23,14 +25,14 @@ interface Ctx {
   setLang: (l: Lang) => void;
   toggle: () => void;
   pick: (value: L10n) => string;
-  /** an in-app path in the current language: lp('/articles/') → '/hu/articles/' in Hungarian */
+  /** an in-app path in the current language: lp('/articles/') → '/hu/articles/' in Hungarian, '/sk/articles/' in Slovak */
   lp: (path: string) => string;
 }
 
 const LanguageContext = createContext<Ctx | null>(null);
 
 /**
- * The address is the source of truth: /hu/… is Hungarian, everything else English.
+ * The address is the source of truth: /hu/… is Hungarian, /sk/… Slovak, everything else English.
  * That way every page has a real URL per language, which link previews and search
  * engines can read (they never see a ?query or localStorage). Old ?lang= links and
  * a remembered choice are handled before the first render (initialUrl.ts).
@@ -76,7 +78,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     },
     [lang, pathname, search, hash, navigate],
   );
-  const toggle = useCallback(() => setLang(lang === 'en' ? 'hu' : 'en'), [lang, setLang]);
+  // cycles through the languages in switcher order
+  const toggle = useCallback(() => setLang(LANGS[(LANGS.indexOf(lang) + 1) % LANGS.length]), [lang, setLang]);
   const pick = useCallback((value: L10n) => value[lang], [lang]);
   const lp = useCallback((path: string) => localePath(path, lang), [lang]);
 

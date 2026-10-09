@@ -16,7 +16,7 @@ export default function LessonBody({ body, lang }: { body: string; lang: Lang })
           case 'md':
             return <div key={i} className="prose-article" dangerouslySetInnerHTML={{ __html: mdToHtml(s.text) }} />;
           case 'diagram':
-            return <Diagram key={i} spec={s.spec} kicker={lang === 'hu' ? 'Ábra' : 'Diagram'} />;
+            return <Diagram key={i} spec={s.spec} kicker={{ en: 'Diagram', hu: 'Ábra', sk: 'Diagram' }[lang]} />;
           case 'callout':
             return <Callout key={i} variant={s.variant} title={s.title} md={s.md} lang={lang} />;
           case 'compare':

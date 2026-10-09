@@ -1,0 +1,3270 @@
+[
+ {
+  "id": 1,
+  "level": "junior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "theory",
+  "question": "Na Linuxovom systéme chceš umiestniť celosystémový konfiguračný súbor, ktorý používa viacero aplikácií a administrátorských nástrojov. Ktorý adresár je najvhodnejším miestom pre všeobecnú systémovú konfiguráciu?",
+  "options": [
+   "/etc",
+   "/opt",
+   "/var",
+   "/srv"
+  ],
+  "answer": 0,
+  "explanation": "Adresár `/etc` je zaužívaným miestom pre celosystémové konfiguračné súbory. `/opt` slúži na voliteľne inštalovaný softvér, `/var` na premenlivé dáta a `/srv` na dáta, ktoré poskytujú systémové služby. `/opt` môže byť lákavý, pretože často obsahuje súbory súvisiace s aplikáciami, no nie je štandardným miestom pre všeobecnú systémovú konfiguráciu."
+ },
+ {
+  "id": 2,
+  "level": "junior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "output",
+  "question": "Aký bude výsledok nasledujúcich príkazov na bežnom Linuxovom systéme?",
+  "code": "touch report.txt\nchmod 640 report.txt\nls -l report.txt",
+  "options": [
+   "-rw-r----- 1 ... report.txt",
+   "-rwxr----- 1 ... report.txt",
+   "-rw-r--r-- 1 ... report.txt",
+   "-rw------- 1 ... report.txt"
+  ],
+  "answer": 0,
+  "explanation": "Režim oprávnení `640` dáva vlastníkovi `rw-`, skupine `r--` a ostatným `---`. Bity oprávnení sú teda `-rw-r-----`. Režim `640` je na pohovoroch obľúbenou pascou, pretože ľahko prehliadneš právo skupiny na čítanie."
+ },
+ {
+  "id": 3,
+  "level": "junior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "behavior",
+  "question": "Po vytvorení používateľa chceš, aby mal nový používateľ vlastnú primárnu skupinu s rovnakým názvom. Ktorý príkaz to na bežnom Linuxovom systéme zabezpečí?",
+  "options": [
+   "useradd -G alice alice",
+   "useradd -g users alice",
+   "useradd -m alice",
+   "useradd -U alice"
+  ],
+  "answer": 3,
+  "explanation": "`useradd -U alice` vytvorí pre nového používateľa skupinu a nastaví ju ako jeho primárnu skupinu. `-G` spravuje doplnkové skupiny, `-g users` by nastavilo existujúcu skupinu ako primárnu a `-m` riadi vytvorenie domovského adresára. `-m` môže byť lákavé, pretože pri vytváraní používateľa je bežne potrebný aj domovský adresár, no vytvorenie skupiny neovplyvňuje."
+ },
+ {
+  "id": 4,
+  "level": "junior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "behavior",
+  "question": "Bežiaci proces má PID 1234. Ktorý príkaz mu pošle bežný signál na ukončenie, ktorý procesu umožní korektne sa vypnúť?",
+  "options": [
+   "kill -9 1234",
+   "kill 1234",
+   "kill -STOP 1234",
+   "kill -KILL 1234"
+  ],
+  "answer": 1,
+  "explanation": "`kill 1234` predvolene posiela `SIGTERM`, takže proces môže požiadavku na ukončenie spracovať a upratať po sebe. `SIGKILL` spôsobí okamžité ukončenie a nedá sa zachytiť, kým `SIGSTOP` proces pozastaví. `kill -9` môže byť lákavé, pretože zaseknutý proces spoľahlivo ukončí, no v produkcii je vhodnou prvou voľbou spravidla `SIGTERM`."
+ },
+ {
+  "id": 5,
+  "level": "junior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "output",
+  "question": "Čo vypíše nasledujúci Bash skript?",
+  "code": "#!/usr/bin/env bash\nname=\"Linux\"\necho \"Hello $name\"",
+  "options": [
+   "Hello $name",
+   "Hello Linux",
+   "Hello \"Linux\"",
+   "name=Linux"
+  ],
+  "answer": 1,
+  "explanation": "V dvojitých úvodzovkách Bash vykonáva expanziu premenných, takže `$name` sa nahradí hodnotou `Linux`. Výsledkom je `Hello Linux`. Jednoduché úvodzovky by v podobnej situácii expanzii premenných zabránili, preto je typ úvodzoviek častou pascou pri shellových skriptoch."
+ },
+ {
+  "id": 6,
+  "level": "junior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "output",
+  "question": "Čo robí nasledujúci príkaz?",
+  "code": "grep \"ERROR\" application.log > errors.log",
+  "options": [
+   "Pripojí riadky s `ERROR` na koniec súboru `errors.log`.",
+   "Odstráni riadky s `ERROR` zo súboru `application.log`.",
+   "Zapíše riadky s `ERROR` do súboru `errors.log` a prepíše jeho predchádzajúci obsah.",
+   "Skopíruje celý obsah súboru `application.log` do `errors.log`."
+  ],
+  "answer": 2,
+  "explanation": "`>` presmeruje štandardný výstup a cieľový súbor prepíše, ak už existuje. `grep` zapíše na štandardný výstup iba riadky obsahujúce vzor `ERROR`. `>>` by obsah naopak pripájal, preto sa tieto dva operátory presmerovania ľahko zamieňajú."
+ },
+ {
+  "id": 7,
+  "level": "junior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "output",
+  "question": "Čo vypíše nasledujúci príkaz?",
+  "code": "printf 'alice\\nbob\\ncarol\\n' | grep '^a'",
+  "options": [
+   "alice",
+   "bob",
+   "alice\ncarol",
+   "Celý vstup"
+  ],
+  "answer": 0,
+  "explanation": "V regulárnom výraze `^` označuje začiatok riadka, takže vyhovujú iba riadky začínajúce na `a`. Z troch riadkov je to `alice`. Je lákavé myslieť si, že `grep '^a'` nájde každý riadok obsahujúci písmeno `a`, pretože pri rýchlom čítaní príkazu sa význam `^` ľahko prehliadne."
+ },
+ {
+  "id": 8,
+  "level": "junior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "theory",
+  "question": "Ktorým nástrojom môžeš na systéme Ubuntu alebo Debian nainštalovať balík a vyriešiť jeho závislosti z nakonfigurovaných APT repozitárov?",
+  "options": [
+   "rpm",
+   "tar",
+   "apt",
+   "systemctl"
+  ],
+  "answer": 2,
+  "explanation": "Na systémoch založených na Debiane zabezpečuje `apt` inštaláciu balíkov, aktualizácie a riešenie závislostí pomocou nakonfigurovaných repozitárov. `rpm` je nízkoúrovňový správca balíkov RPM, `tar` pracuje s archívmi a `systemctl` spravuje systemd jednotky. `rpm` môže byť lákavý, pretože tiež pracuje s Linuxovými balíkmi, no na Ubuntu/Debiane nie je hlavným vysokoúrovňovým nástrojom na správu balíkov."
+ },
+ {
+  "id": 9,
+  "level": "junior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "behavior",
+  "question": "Chceš spustiť službu `nginx.service` spravovanú systemd a zároveň nastaviť, aby sa pri ďalšom štarte systému spustila automaticky. Ktorá dvojica príkazov je vhodná?",
+  "options": [
+   "systemctl start nginx && systemctl enable nginx",
+   "systemctl enable nginx && systemctl reload nginx",
+   "systemctl start nginx && systemctl reload nginx",
+   "systemctl enable nginx && systemctl restart nginx"
+  ],
+  "answer": 0,
+  "explanation": "`systemctl start` spustí službu na aktuálne bežiacom systéme, kým `systemctl enable` nastaví jej automatické spúšťanie pri štarte systému. Samotné `enable` službu nemusí spustiť okamžite. `restart` môže byť lákavý, pretože sa často používa pri bežiacich službách, no automatické spúšťanie pri štarte nenastaví."
+ },
+ {
+  "id": 10,
+  "level": "junior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "output",
+  "question": "Čo primárne zobrazí nasledujúci príkaz?",
+  "code": "ip addr show",
+  "options": [
+   "Obsah DNS cache systému",
+   "Sieťové rozhrania a im priradené IP adresy",
+   "Aktuálny stav TCP spojení",
+   "Úplnú smerovaciu tabuľku"
+  ],
+  "answer": 1,
+  "explanation": "`ip addr show` zobrazí sieťové rozhrania, ich stav a priradené IPv4/IPv6 adresy. Na kontrolu TCP spojení môžeš použiť `ss`, smerovacie informácie zobrazí `ip route`. Príkaz `ip` je všeobecný sieťový nástroj, preto sa ľahko predpokladá, že ten istý podpríkaz zobrazí všetky druhy sieťových informácií."
+ },
+ {
+  "id": 11,
+  "level": "junior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "scenario",
+  "question": "Chceš sa cez SSH pripojiť na `server.example.com` ako používateľ `deploy` a SSH server počúva na porte 2222. Ktorý príkaz je správny?",
+  "options": [
+   "ssh deploy@server.example.com:2222",
+   "ssh -p 2222 deploy@server.example.com",
+   "ssh deploy@server.example.com 2222",
+   "ssh --port=22 deploy@server.example.com"
+  ],
+  "answer": 1,
+  "explanation": "Klient OpenSSH určuje cieľový port voľbou `-p`, takže správny tvar je `ssh -p 2222 deploy@server.example.com`. Syntax `host:port` je bežná v mnohých iných sieťových nástrojoch, no klient OpenSSH ju na zadanie portu nepoužíva. Ide o častú pascu na pohovoroch týkajúcu sa príkazového riadka SSH."
+ },
+ {
+  "id": 12,
+  "level": "junior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "output",
+  "question": "Čo primárne kontroluješ nasledujúcim príkazom?",
+  "code": "df -h",
+  "options": [
+   "Počet súborov v adresári",
+   "Aktuálne využitie pamäte a swapu",
+   "Voľné a obsadené miesto na súborových systémoch v ľahko čitateľnej podobe",
+   "Súbory, ktoré majú bežiace procesy práve otvorené"
+  ],
+  "answer": 2,
+  "explanation": "`df -h` ukazuje využitie miesta na súborových systémoch, napríklad celkovú, obsadenú a dostupnú kapacitu, v ľahko čitateľných jednotkách. Na zistenie, koľko miesta zaberajú jednotlivé adresáre a súbory, je vhodnejší `du`. `du` môže byť lákavý, pretože sa tiež často používa pri riešení problémov s miestom na disku, no odpovedá na inú otázku."
+ },
+ {
+  "id": 13,
+  "level": "junior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "output",
+  "question": "Ktorým príkazom môžeš vyhľadať záznamy v journale pre systemd službu, napríklad `nginx.service`?",
+  "options": [
+   "journalctl -u nginx.service",
+   "systemctl -l nginx.service",
+   "logctl --service nginx.service",
+   "systemd-log nginx.service"
+  ],
+  "answer": 0,
+  "explanation": "`journalctl -u nginx.service` filtruje záznamy journalu pre zadanú systemd jednotku. Je to obzvlášť užitočné pri skúmaní zlyhaní pri štarte služby a chýb za behu. `systemctl` slúži na kontrolu a ovládanie služieb, preto môže byť lákavé používať ho na všetku diagnostiku súvisiacu so systemd, no na dopytovanie journalu je určený `journalctl`."
+ },
+ {
+  "id": 14,
+  "level": "junior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "behavior",
+  "question": "Chceš, aby sa cron úloha spúšťala každý deň o 02:30. Ktorý záznam to zabezpečí?",
+  "options": [
+   "30 2 * * * /usr/local/bin/backup.sh",
+   "2 30 * * * /usr/local/bin/backup.sh",
+   "* 30 2 * * /usr/local/bin/backup.sh",
+   "30 * 2 * * /usr/local/bin/backup.sh"
+  ],
+  "answer": 0,
+  "explanation": "Päť polí cronu je v poradí: minúta, hodina, deň v mesiaci, mesiac a deň v týždni. `30 2 * * *` sa teda spustí každý deň o 02:30. `2 30 * * *` by 02:30 nepredstavovalo, pretože polia nie sú v poradí hodina–minúta, čo je častý zdroj omylov."
+ },
+ {
+  "id": 15,
+  "level": "junior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "output",
+  "question": "Aký je výsledok nasledujúcich Bash príkazov?",
+  "code": "export APP_ENV=production\nbash -c 'echo \"$APP_ENV\"'",
+  "options": [
+   "production",
+   "APP_ENV",
+   "Prázdny riadok",
+   "bash: APP_ENV: command not found"
+  ],
+  "answer": 0,
+  "explanation": "`export` označí `APP_ENV` ako exportovanú premennú prostredia, takže ju zdedí podproces spustený z aktuálneho shellu, v tomto prípade nový proces Bash. Podriadený shell preto vypíše `production`. Mylná predstava, že shellové premenné sa nikdy nededia, je lákavá, pretože neexportované premenné sa podprocesom naozaj automaticky neodovzdávajú."
+ },
+ {
+  "id": 16,
+  "level": "junior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "output",
+  "question": "Na serveri pozoruješ nečakane vysoké využitie CPU. Ktorý príkaz poskytne rýchly interaktívny prehľad bežiacich procesov a ich využitia CPU a pamäte?",
+  "options": [
+   "df -h",
+   "top",
+   "ip addr",
+   "free -d"
+  ],
+  "answer": 1,
+  "explanation": "`top` poskytuje priebežne aktualizovaný pohľad na procesy vrátane využitia CPU a pamäte. `df` ukazuje kapacitu súborových systémov, `ip addr` sieťové adresy a `free` využitie pamäte. `free` môže byť lákavý, pretože pamäť je dôležitou súčasťou riešenia výkonnostných problémov, no neukáže, ktoré procesy spotrebúvajú CPU."
+ },
+ {
+  "id": 17,
+  "level": "junior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "theory",
+  "question": "Ktorým príkazom môžeš rýchlo zobraziť verziu aktuálne bežiaceho jadra Linuxu?",
+  "options": [
+   "uname -r",
+   "kernelctl --version",
+   "systemctl kernel-version",
+   "lsmod -r"
+  ],
+  "answer": 0,
+  "explanation": "`uname -r` zobrazí verziu (release) aktuálne bežiaceho jadra. `lsmod` vypíše načítané moduly jadra a `systemctl` spravuje systemd jednotky. Informácie o jadre poskytne aj `uname -a`, no na zistenie verzie jadra je `uname -r` cielenejší príkaz."
+ },
+ {
+  "id": 18,
+  "level": "junior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "trap",
+  "question": "Na SSH serveri chceš zabrániť používateľovi root, aby sa prihlasoval priamo cez SSH. Ktoré nastavenie v `sshd_config` sa na to používa?",
+  "options": [
+   "RootLogin disabled",
+   "PermitRootLogin no",
+   "DisableRootSSH yes",
+   "AllowRootLogin false"
+  ],
+  "answer": 1,
+  "explanation": "V konfigurácii OpenSSH `PermitRootLogin no` zakáže priame prihlásenie roota cez SSH. Po zmene nastavenia treba konfiguráciu overiť a službu SSH podľa potreby znovu načítať alebo reštartovať. `RootLogin disabled` môže byť lákavé, pretože znie ako prirodzená angličtina, no nie je to platná direktíva konfigurácie OpenSSH."
+ },
+ {
+  "id": 19,
+  "level": "junior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "scenario",
+  "question": "Aplikácia nepretržite generuje logy a dočasné stavové dáta za behu, ktorých veľkosť sa môže časom meniť. Ktorý adresár je najvhodnejší pre premenlivé systémové dáta?",
+  "options": [
+   "/bin",
+   "/usr",
+   "/var",
+   "/boot"
+  ],
+  "answer": 2,
+  "explanation": "`/var` obsahuje premenlivé dáta, ako sú logy, spool súbory, cache a ďalšie dáta za behu. `/usr` obsahuje predovšetkým nainštalované používateľské a systémové programy a ich relatívne statické súčasti, `/boot` súbory potrebné na štart systému a `/bin` základné spustiteľné programy. `/tmp` môže byť lákavý, pretože sa doň dajú ukladať dočasné súbory, no pre všeobecné premenlivé systémové dáta je vhodnejší `/var`."
+ },
+ {
+  "id": 20,
+  "level": "junior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "output",
+  "question": "Súbor má oprávnenia `-rwxr-x---`. Ktoré tvrdenie je správne?",
+  "options": [
+   "Vlastník môže súbor čítať a zapisovať doň, ale nemôže ho spustiť.",
+   "Vlastník má všetky oprávnenia, skupina môže súbor čítať a spúšťať a ostatní nemajú žiadne oprávnenia.",
+   "Vlastník aj všetci ostatní môžu súbor čítať a spúšťať.",
+   "Skupina môže do súboru aj zapisovať, ale nemôže ho spustiť."
+  ],
+  "answer": 1,
+  "explanation": "`rwx` dáva vlastníkovi právo na čítanie, zápis a spustenie, `r-x` dáva skupine právo na čítanie a spustenie a `---` nedáva ostatným žiadne oprávnenia. Je lákavé myslieť si, že skupina môže do súboru aj zapisovať, pretože znaky oprávnení sa pri rýchlom prezeraní ľahko prečítajú nesprávne."
+ },
+ {
+  "id": 21,
+  "level": "junior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "edgecase",
+  "question": "Čo vypíše nasledujúci skript?",
+  "code": "#!/usr/bin/env bash\nvalue=\"\"\nif [ -n \"$value\" ]; then\n    echo \"set\"\nelse\n    echo \"empty\"\nfi",
+  "options": [
+   "set",
+   "empty",
+   "0",
+   "Skript skončí so syntaktickou chybou"
+  ],
+  "answer": 1,
+  "explanation": "Test `-n` je pravdivý, keď má reťazec nenulovú dĺžku. Keďže `value` je prázdny reťazec, podmienka je nepravdivá a vypíše sa `empty`. Na test prázdneho reťazca sa používa `-z`. Je lákavé predpokladať, že definovaná premenná je automaticky neprázdna, no premenná môže existovať a mať prázdnu hodnotu."
+ },
+ {
+  "id": 22,
+  "level": "junior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "output",
+  "question": "Čo vypíše nasledujúci príkaz?",
+  "code": "printf 'one\\ntwo\\nthree\\n' | wc -l",
+  "options": [
+   "0",
+   "2",
+   "3",
+   "4"
+  ],
+  "answer": 2,
+  "explanation": "`printf` vytvorí tri riadky, každý ukončený znakom nového riadka. `wc -l` počíta znaky nového riadka, takže výsledok je 3. Môže byť lákavé napočítať tri riadky s obsahom plus ďalší prázdny riadok, no v tomto vstupe štvrtý znak nového riadka nie je."
+ },
+ {
+  "id": 23,
+  "level": "junior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "debug",
+  "question": "Aplikácia je dostupná z localhostu, ale nie z iného počítača. Ktorá kontrola ti priamo pomôže zistiť, na ktorých TCP portoch lokálny systém počúva?",
+  "options": [
+   "ss -lnt",
+   "df -h",
+   "ip neigh flush all",
+   "uname -a"
+  ],
+  "answer": 0,
+  "explanation": "`ss -lnt` zobrazí počúvajúce TCP sockety v číselnej podobe, takže zistíš napríklad, na ktorom porte aplikácia počúva. Ak je aplikácia naviazaná iba na `127.0.0.1`, zo vzdialeného počítača nebude priamo dostupná. Aj `ip addr` je užitočný pri diagnostike siete, no neukáže, na ktorých TCP portoch sú počúvajúce sockety."
+ },
+ {
+  "id": 24,
+  "level": "junior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "scenario",
+  "question": "Systemd služba sa spustí a hneď sa zastaví. Aký je najvhodnejší prvý krok pri skúmaní stavu služby a jej posledných logov?",
+  "options": [
+   "rm -rf /var/log/*",
+   "systemctl status service-name, potom journalctl -u service-name",
+   "reboot a potom ju znova spustiť",
+   "chmod 777 /etc/systemd/system/service-name.service"
+  ],
+  "answer": 1,
+  "explanation": "`systemctl status` ukazuje aktuálny stav jednotky a často obsahuje aj posledné logové správy, kým `journalctl -u` poskytne podrobnejšie záznamy journalu. Ostatné prístupy buď riskujú stratu dát, alebo robia neopodstatnené zmeny v systéme bez zmysluplnej diagnostiky problému. Reštart niekedy prechodné problémy vyrieši, no pri riešení problémov v produkcii je spravidla dôležitejšie najprv zozbierať dôkazy."
+ },
+ {
+  "id": 25,
+  "level": "junior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "output",
+  "question": "V shelli Bash spustíš nasledujúce príkazy. Čo sa stane?",
+  "code": "sleep 100 &\necho $!",
+  "options": [
+   "`echo` vždy vypíše návratový kód príkazu `sleep`.",
+   "`echo` vypíše PID aktuálneho shellu.",
+   "`echo` vypíše PID naposledy spusteného procesu na pozadí.",
+   "`echo` vypíše počet sekúnd, ktoré `sleep` ešte zostávajú."
+  ],
+  "answer": 2,
+  "explanation": "`&` spustí `sleep` na pozadí a `$!` obsahuje PID naposledy spustenej pipeline alebo procesu na pozadí v aktuálnom shelli. Túto hodnotu môžeš neskôr použiť napríklad v `kill $!` na ukončenie procesu na pozadí. `$?` obsahuje návratový kód predchádzajúceho príkazu, preto je zámena `$?` a `$!` častou pascou na pohovoroch o shelli."
+ },
+ {
+  "id": 26,
+  "level": "junior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "theory",
+  "question": "Na Linuxovom systéme chceš nainštalovať aplikáciu tretej strany, ktorá používa vlastnú adresárovú štruktúru, a nechceš jej súbory miešať so súbormi spravovanými operačným systémom. Ktorý adresár je na to najvhodnejší?",
+  "options": [
+   "/opt",
+   "/etc",
+   "/run",
+   "/proc"
+  ],
+  "answer": 0,
+  "explanation": "Adresár `/opt` je určený pre voliteľné softvérové balíky, typicky aplikácie tretích strán s vlastnou adresárovou štruktúrou. `/etc` slúži na konfiguráciu, `/run` na stav za behu a `/proc` je virtuálnou reprezentáciou informácií o jadre a procesoch. Aplikácie môže obsahovať aj `/usr`, no pre samostatné inštalácie softvéru tretích strán je typickejší `/opt`."
+ },
+ {
+  "id": 27,
+  "level": "junior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "output",
+  "question": "Adresár má nasledujúce oprávnenia:\nČo tieto oprávnenia znamenajú pre členov skupiny?",
+  "code": "drwxr-x---",
+  "options": [
+   "Môžu čítať a mazať súbory v adresári.",
+   "Môžu vstúpiť do adresára a pristupovať k objektom v ňom, na ktoré majú inak oprávnenie, a môžu tiež vypísať jeho obsah.",
+   "Majú k adresáru plný prístup.",
+   "K adresáru nemajú žiadny prístup."
+  ],
+  "answer": 1,
+  "explanation": "Pri adresároch dáva `x` právo prechodu (traversal), kým `r` dáva právo vypísať položky adresára. `r-x` teda členom skupiny umožňuje adresár vypísať aj ním prechádzať. Právo `x` na adresári je dôležitou pascou na pohovoroch, pretože neznamená „spustenie“ v rovnakom zmysle ako pri bežnom súbore; riadi prechod a prístup k položkám."
+ },
+ {
+  "id": 28,
+  "level": "junior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "scenario",
+  "question": "Chceš pridať existujúcu používateľku `alice` do skupiny `developers` a zachovať jej doterajšie členstvá v doplnkových skupinách. Ktorý príkaz je vhodný?",
+  "options": [
+   "usermod -G developers alice",
+   "groupadd developers alice",
+   "usermod -aG developers alice",
+   "useradd -G developers alice"
+  ],
+  "answer": 2,
+  "explanation": "`usermod -aG developers alice` pridá `developers` k doplnkovým skupinám používateľa. Voľba `-a` znamená append (pripojiť); bez nej môže `-G` nahradiť existujúci zoznam doplnkových skupín. Preto môže byť `usermod -G developers alice` v produkcii nebezpečný, pretože môže používateľovi omylom odobrať existujúce členstvá v skupinách."
+ },
+ {
+  "id": 29,
+  "level": "junior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "output",
+  "question": "Čo zobrazí nasledujúci príkaz?",
+  "code": "ps -ef",
+  "options": [
+   "Voľné miesto všetkých súborových systémov.",
+   "Podrobné informácie o procesoch spustených aktuálnym shellom.",
+   "Iba vlákna jadra.",
+   "Podrobný zoznam bežiacich procesov vrátane informácií, ako je používateľ a PID."
+  ],
+  "answer": 3,
+  "explanation": "`ps -ef` zobrazí bežiace procesy v úplnom formáte vrátane informácií, ako je používateľ, PID, PPID a celý príkazový riadok. Predvolené volanie `ps` môže zobraziť iný rozsah procesov, preto je dôležité rozumieť voľbám. `ps -ef` sa ľahko zamení s obyčajným `ps`, ktorý sa zameriava na procesy spojené s aktuálnym terminálom/reláciou."
+ },
+ {
+  "id": 30,
+  "level": "junior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "edgecase",
+  "question": "Aký je výstup nasledujúceho skriptu?",
+  "code": "#!/usr/bin/env bash\nfiles=\"one two three\"\nfor file in $files; do\n    echo \"[$file]\"\ndone",
+  "options": [
+   "[one]\n[two]\n[three]",
+   "[one two three]",
+   "[files]",
+   "Skript skončí s chybou"
+  ],
+  "answer": 0,
+  "explanation": "Keďže `$files` nie je v úvodzovkách, shell po expanzii parametra vykoná rozdelenie na slová (word splitting) a vzniknú tri samostatné slová: `one`, `two` a `three`. Vypíšu sa preto tri samostatné riadky. Premenná v úvodzovkách by sa správala inak, preto sú chýbajúce úvodzovky okolo shellových premenných častou a dôležitou pascou na pohovoroch o Bashi."
+ },
+ {
+  "id": 31,
+  "level": "junior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "behavior",
+  "question": "Čo robí nasledujúci príkaz?",
+  "code": "command 2>/dev/null",
+  "options": [
+   "Zahodí štandardný výstup.",
+   "Presmeruje štandardný vstup z `/dev/null`.",
+   "Presmeruje štandardný chybový výstup do `/dev/null`.",
+   "Presmeruje celý výstup príkazu do `/dev/null`."
+  ],
+  "answer": 2,
+  "explanation": "`2` je deskriptor súboru štandardného chybového výstupu, takže `2>/dev/null` presmeruje do `/dev/null` iba prúd štandardného chybového výstupu. Štandardný výstup zostáva nezmenený. Je lákavé predpokladať, že sa zahodí celý výstup, pretože `/dev/null` sa bežne používa na potlačenie výstupu, no o tom, ktorého prúdu sa to týka, rozhoduje deskriptor súboru."
+ },
+ {
+  "id": 32,
+  "level": "junior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "output",
+  "question": "Aký je výstup nasledujúceho príkazu?",
+  "code": "printf 'alice:1000\\nbob:1001\\n' | awk -F: '{print $2}'",
+  "options": [
+   "alice\nbob",
+   "1000\n1001",
+   "alice:1000\nbob:1001",
+   "2"
+  ],
+  "answer": 1,
+  "explanation": "`-F:` nastaví ako oddeľovač polí dvojbodku. Na prvom riadku je teda `$1` rovné `alice` a `$2` rovné `1000`; na druhom riadku je `$2` rovné `1001`. Rozlišovanie `$0`, ktoré predstavuje celý záznam, od `$1`, `$2` a ďalších polí je častou pascou na pohovoroch o `awk`."
+ },
+ {
+  "id": 33,
+  "level": "junior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "scenario",
+  "question": "Na Ubuntu serveri chceš obnoviť indexy balíkov z nakonfigurovaných repozitárov, no zatiaľ nechceš inštalovať ani aktualizovať žiadne balíky. Ktorý príkaz je vhodný?",
+  "options": [
+   "apt update",
+   "apt upgrade",
+   "apt install",
+   "apt refresh-packages"
+  ],
+  "answer": 0,
+  "explanation": "`apt update` stiahne a obnoví indexy balíkov z nakonfigurovaných repozitárov. `apt upgrade` aktualizuje nainštalované balíky a `apt install` nainštaluje zadaný balík. `apt refresh-packages` nie je štandardný príkaz APT. `apt upgrade` môže byť lákavý, pretože „update“ a „upgrade“ sa v bežnej reči často zamieňajú, no v APT vykonávajú rozdielne operácie."
+ },
+ {
+  "id": 34,
+  "level": "junior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "debug",
+  "question": "Upravil si súbor systemd jednotky a potom si spustil:\nSlužba sa reštartuje, no zdá sa, že systemd stále používa starú konfiguráciu jednotky. Aký je najpravdepodobnejší ďalší krok?",
+  "code": "sudo systemctl restart myapp",
+  "options": [
+   "systemctl enable myapp",
+   "systemctl daemon-reload",
+   "systemctl mask myapp",
+   "systemctl reset-failed myapp"
+  ],
+  "answer": 1,
+  "explanation": "Keď sa zmení samotný súbor jednotky, správca systemd musí príkazom `systemctl daemon-reload` znovu načítať definície jednotiek, aby sa použila nová konfigurácia. Samotný `restart` nemusí spôsobiť, že systemd znovu načíta zmenené definície jednotiek. `enable` môže byť lákavé, pretože tiež súvisí s jednotkami, no nastavuje správanie pri štarte, nie opätovné načítanie definícií."
+ },
+ {
+  "id": 35,
+  "level": "junior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "debug",
+  "question": "K serveru sa nevieš pripojiť cez jeho hostname, no priamo cez IP adresu áno. Ktorý príkaz je najpriamejšou voľbou na overenie, či sa hostname dá preložiť cez DNS?",
+  "options": [
+   "ss -tuln",
+   "ip route",
+   "ping -c 1 127.0.0.1",
+   "dig server.example.com"
+  ],
+  "answer": 3,
+  "explanation": "`dig` vykoná priamy DNS dopyt a poskytne podrobné informácie o výsledku prekladu a o použitom DNS serveri. `ss` skúma sockety, `ip route` smerovanie a ping na loopback iba overí základnú funkčnosť lokálneho TCP/IP stacku. `ping` môže byť lákavý, pretože vie hostname preložiť, no chýbajúca ICMP odpoveď a zlyhanie DNS sú dve rozdielne veci."
+ },
+ {
+  "id": 36,
+  "level": "junior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "scenario",
+  "question": "Často sa pripájaš na server cez SSH a chceš, aby klient automaticky použil používateľa `deploy`, port `2222` a konkrétny privátny kľúč. Kde to na klientovi nastavíš?",
+  "options": [
+   "/etc/hosts",
+   "~/.ssh/config",
+   "~/.ssh/authorized_keys",
+   "/etc/ssh/sshd_config"
+  ],
+  "answer": 1,
+  "explanation": "`~/.ssh/config` je konfiguračný súbor SSH klienta, v ktorom môžeš pre jednotlivé hosty nastaviť napríklad `User`, `Port` a `IdentityFile`. `authorized_keys` obsahuje verejné kľúče autorizované pre používateľa na serveri, kým `sshd_config` je konfigurácia SSH démona na strane servera. `/etc/hosts` môže byť lákavý, pretože tiež súvisí s hostnamami, no nastavenia SSH pripojenia neukladá."
+ },
+ {
+  "id": 37,
+  "level": "junior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "output",
+  "question": "Chceš zistiť veľkosť adresára vrátane súborov a podadresárov v ňom. Ktorý príkaz je najpriamejšou voľbou?",
+  "code": "du -sh /var/log",
+  "options": [
+   "Celkové miesto, ktoré zaberá `/var/log`, zhrnuté v ľahko čitateľnej podobe.",
+   "Voľné miesto celého súborového systému `/var`.",
+   "Voľby pripojenia súborového systému `/var/log`.",
+   "Počet súborov v adresári `/var/log`."
+  ],
+  "answer": 0,
+  "explanation": "`du` uvádza miesto na disku, ktoré zaberajú súbory a adresáre; `-s` vyžiada iba súhrn a `-h` ľahko čitateľné jednotky. `df` naopak ukazuje kapacitu a využitie celého súborového systému. `df` môže byť lákavý, pretože sa tiež bežne používa pri riešení problémov s miestom na disku, no veľkosť obsahu konkrétneho adresára nemeria."
+ },
+ {
+  "id": 38,
+  "level": "junior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "output",
+  "question": "Chceš v reálnom čase sledovať najnovšie záznamy v logu systemd služby, podobne ako pri `tail -f`. Ktorý príkaz je vhodný?",
+  "options": [
+   "journalctl -u nginx.service --boot",
+   "journalctl -u nginx.service --vacuum-time=1h",
+   "journalctl -u nginx.service -f",
+   "journalctl -u nginx.service --clear"
+  ],
+  "answer": 2,
+  "explanation": "`-f` hovorí príkazu `journalctl`, aby journal priebežne sledoval a zobrazoval nové záznamy hneď, ako pribudnú. `--boot` filtruje záznamy podľa štartu systému, `--vacuum-time` odstraňuje staré dáta journalu a `--clear` nie je vhodnou operáciou na sledovanie logov. Keďže `tail -f` je známy, môže byť lákavé hľadať voľbu `journalctl` so slovom `tail`, no rovnocenné sledovanie zabezpečí `-f`."
+ },
+ {
+  "id": 39,
+  "level": "junior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "trap",
+  "question": "Cron úloha má spúšťať skript umiestnený v `/opt/app`. Skript používa relatívne cesty a predpokladá konkrétny pracovný adresár. Aký je najbezpečnejší prístup?",
+  "options": [
+   "Predpokladať, že cron začína v rovnakom pracovnom adresári ako interaktívny shell administrátora.",
+   "Ponechať všetky relatívne cesty bez zmeny, pretože cron sa automaticky prepne do adresára skriptu.",
+   "Skript vždy spúšťať z `/tmp`.",
+   "Potrebné absolútne cesty a pracovný adresár explicitne určiť v skripte alebo v príkaze cronu."
+  ],
+  "answer": 3,
+  "explanation": "Prostredie, v ktorom beží cron úloha, nie je rovnaké ako shellové prostredie interaktívneho používateľa, preto je spoliehanie sa na implicitný pracovný adresár alebo relatívne cesty nespoľahlivé. Absolútne cesty a v prípade potreby explicitné `cd` robia spúšťanie deterministickejším. Predpoklad, že cron automaticky začína v adresári skriptu, je bežný, no nebezpečný."
+ },
+ {
+  "id": 40,
+  "level": "junior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "behavior",
+  "question": "Čo sa stane po vykonaní nasledujúcich príkazov?",
+  "code": "APP_ENV=production\nbash -c 'echo \"$APP_ENV\"'",
+  "options": [
+   "Druhý príkaz vypíše `production`.",
+   "Druhý príkaz vypíše prázdny riadok.",
+   "Druhý príkaz vždy skončí s chybou.",
+   "`bash` sa nespustí, pretože `APP_ENV` nie je exportovaná."
+  ],
+  "answer": 1,
+  "explanation": "`APP_ENV=production` vytvorí v aktuálnom shelli shellovú premennú, no neexportuje ju do prostredia. Podriadený proces Bash ju preto nedostane a expanzia vráti prázdny reťazec. S `export APP_ENV=production` by podriadený shell hodnotu dostal. `production` môže byť lákavé, pretože v aktuálnom shelli premenná naozaj existuje."
+ },
+ {
+  "id": 41,
+  "level": "junior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "scenario",
+  "question": "Aplikácia na serveri je občas veľmi pomalá a máš podozrenie na nedostatok pamäte alebo využívanie swapu. Ktorý príkaz poskytne rýchly prehľad využitia RAM a swapu?",
+  "options": [
+   "free -h",
+   "lsof -i",
+   "lsblk -f",
+   "uptime -p"
+  ],
+  "answer": 0,
+  "explanation": "`free -h` ukazuje celkovú, použitú a dostupnú pamäť aj využitie swapu v ľahko čitateľných jednotkách. `lsof -i` ukazuje otvorené súbory a sockety súvisiace so sieťou, `lsblk` zobrazuje blokové zariadenia a `uptime` dobu behu a informácie o záťaži. `uptime` môže byť lákavý, pretože load average je pri výkonnostných problémoch často relevantný, no priamy pohľad na využitie pamäte neposkytne."
+ },
+ {
+  "id": 42,
+  "level": "junior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "output",
+  "question": "Čo zobrazí nasledujúci príkaz?",
+  "code": "lsmod",
+  "options": [
+   "Zoznam aktuálne načítaných modulov jadra.",
+   "Všetky body pripojenia súborových systémov aktuálne prítomné v systéme.",
+   "Parametre jadra použité pri štarte.",
+   "Zdieľané knižnice používané bežiacimi procesmi."
+  ],
+  "answer": 0,
+  "explanation": "`lsmod` vypíše aktuálne načítané moduly jadra Linuxu vrátane informácií, ako je názov modulu, veľkosť a závislosti. Body pripojenia môžeš skontrolovať nástrojmi ako `findmnt`, parametre jadra cez iné rozhrania. Zdieľané knižnice sa dajú skúmať nástrojmi ako `ldd` alebo cez `/proc/<pid>/maps`."
+ },
+ {
+  "id": 43,
+  "level": "junior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "scenario",
+  "question": "Na Linuxovom serveri chceš bežnému používateľovi povoliť, aby s právami roota spúšťal iba jeden konkrétny administrátorský príkaz. Aké je vhodné všeobecné riešenie?",
+  "options": [
+   "Dať používateľovi na príkaz oprávnenia 777.",
+   "Pridať používateľa do skupiny root.",
+   "Vytvoriť cielené pravidlo v `sudoers` pre požadovaný príkaz.",
+   "Dať používateľovi heslo roota."
+  ],
+  "answer": 2,
+  "explanation": "Cielené pravidlo v `sudoers` umožní spúšťať požadovaný príkaz s právami roota bez toho, aby používateľ dostal plný root prístup. Uvoľnenie oprávnení súborov alebo pridanie používateľa do privilegovanej skupiny môže dať širší prístup, než je potrebné. Zdieľanie hesla roota je zlou praxou z hľadiska bezpečnosti aj auditovateľnosti, preto treba dodržať princíp najnižších oprávnení."
+ },
+ {
+  "id": 44,
+  "level": "junior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "behavior",
+  "question": "Súbor vlastní `alice`, jeho skupina je `developers` a má oprávnenia `640`. `bob` je členom skupiny `developers`. Čo môže `bob` so súborom robiť?",
+  "options": [
+   "Môže ho čítať, ale nemôže doň zapisovať ani ho spustiť.",
+   "Môže ho čítať aj doň zapisovať, ale nemôže ho spustiť.",
+   "Má k nemu plný prístup.",
+   "Nemá k nemu žiadny prístup."
+  ],
+  "answer": 0,
+  "explanation": "`640` znamená, že vlastník má `rw-`, skupina `r--` a ostatní `---`. Keďže `bob` je členom skupiny súboru, vzťahujú sa naňho oprávnenia skupiny, takže súbor môže čítať, ale nemôže doň zapisovať ani ho spustiť. Častou pascou je nesprávne uplatniť oprávnenia vlastníka na člena skupiny súboru."
+ },
+ {
+  "id": 45,
+  "level": "junior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "debug",
+  "question": "Aký problém má nasledujúci Bash kód, ak je cieľom skontrolovať prvý argument odovzdaný skriptu?",
+  "code": "#!/usr/bin/env bash\nif [ $1 = \"start\" ]; then\n    echo \"starting\"\nfi",
+  "options": [
+   "Príkaz `[` sa nedá použiť na porovnávanie reťazcov.",
+   "Kvôli chýbajúcim úvodzovkám môže skript zlyhať, ak je `$1` prázdne alebo obsahuje medzery; malo by sa písať `\"$1\"`.",
+   "`$1` je vždy prvá premenná prostredia.",
+   "`if` podporuje iba číselné porovnania."
+  ],
+  "answer": 1,
+  "explanation": "Ak sa nezadá prvý argument, výraz sa môže expandovať na niečo ako `[ = \"start\" ]`, čo vedie k syntaktickej chybe. `\"$1\"` v úvodzovkách zachová argument ako jedno shellové slovo, a je preto bezpečnejšie. Príkaz `[` porovnávanie reťazcov podporuje, takže skutočným problémom sú chýbajúce úvodzovky."
+ },
+ {
+  "id": 46,
+  "level": "junior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "algorithm",
+  "question": "Chceš vypísať iba tie riadky súboru, ktorých celý obsah je presne `ERROR`, bez akýchkoľvek ďalších znakov pred ním alebo za ním. Ktorý príkaz to urobí?",
+  "options": [
+   "grep \"ERROR\" application.log",
+   "grep \"^ERROR\" application.log",
+   "grep \"ERROR$\" application.log",
+   "grep \"^ERROR$\" application.log"
+  ],
+  "answer": 3,
+  "explanation": "`^` ukotví zhodu na začiatok riadka a `$` na jeho koniec. `^ERROR$` teda vyhovuje iba riadkom, ktorých celý obsah je presne `ERROR`. Obyčajný vzor `ERROR` by vyhovoval aj dlhším reťazcom obsahujúcim `ERROR`. Ukotvenie iba jednej strany vzoru sa ľahko zamení so zhodou celého riadka."
+ },
+ {
+  "id": 47,
+  "level": "junior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "debug",
+  "question": "Na pripojenie k SSH serveru používaš autentifikáciu kľúčom. Klient privátny kľúč nájde, no server autentifikáciu odmietne. Ktorý súbor na strane servera zvyčajne obsahuje verejné kľúče autorizované pre používateľa?",
+  "options": [
+   "~/.ssh/known_hosts",
+   "/etc/ssh/ssh_config",
+   "~/.ssh/authorized_keys",
+   "~/.ssh/id_rsa.pub"
+  ],
+  "answer": 2,
+  "explanation": "`~/.ssh/authorized_keys` obsahuje verejné SSH kľúče autorizované pre používateľa na serveri. `known_hosts` uchováva kľúče hostov serverov, ktoré klient pozná, kým `id_rsa.pub` je zvyčajne vlastný verejný kľúč klienta. `known_hosts` môže byť lákavý, pretože tiež obsahuje SSH kľúče, no slúži na iný účel."
+ },
+ {
+  "id": 48,
+  "level": "junior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "scenario",
+  "question": "K Linuxovému serveru si pripojil nové blokové zariadenie a chceš zistiť, ktoré disky a partície systém vidí a kam sú pripojené ich súborové systémy. Ktorý príkaz je najvhodnejším východiskovým bodom?",
+  "options": [
+   "lsblk",
+   "chmod",
+   "ps aux",
+   "journalctl -k"
+  ],
+  "answer": 0,
+  "explanation": "`lsblk` zobrazí blokové zariadenia a ich hierarchiu vrátane partícií a s vhodnými voľbami aj informácie o súborových systémoch a pripojení. `journalctl -k` ukazuje logy jadra, ktoré môžu byť po pripojení nového hardvéru tiež užitočné, no nie je to najpriamejší nástroj na prezeranie hierarchie zariadení. `ps aux` vypisuje procesy a `chmod` mení oprávnenia."
+ },
+ {
+  "id": 49,
+  "level": "junior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "scenario",
+  "question": "Na serveri chceš zistiť, ktoré správy jadra boli zaznamenané počas aktuálneho štartu systému. Ktorý príkaz je najvhodnejší?",
+  "options": [
+   "journalctl --user",
+   "journalctl -k -b",
+   "journalctl --disk-usage",
+   "journalctl --list-boots"
+  ],
+  "answer": 1,
+  "explanation": "`journalctl -k -b` vyfiltruje záznamy journalu na správy jadra z aktuálneho štartu. `--list-boots` vypíše dostupné štarty, `--disk-usage` uvádza, koľko miesta na disku zaberá journal, a `--user` sa zameriava na jednotky na úrovni používateľa. So správami jadra sa spája aj `dmesg`, no na systéme so systemd tento dopyt na journal cielene kombinuje filter jadra s aktuálnym štartom."
+ },
+ {
+  "id": 50,
+  "level": "junior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "output",
+  "question": "Na serveri vidíš nasledujúci výstup `uptime`:\nPočítač má 8 logických CPU. Ktorá interpretácia je najpresnejšia?",
+  "code": "15:42:10 up 12 days,  3:17,  2 users,  load average: 8.20, 7.90, 7.50",
+  "options": [
+   "Systém je určite 8,20-krát rýchlejší ako za bežných podmienok.",
+   "8.20 znamená, že CPU práve využíva presne 8 procesov.",
+   "Load average sa vždy rovná vyťaženiu CPU v percentách.",
+   "Krátkodobý load average je 8.20, čo na počítači s 8 logickými CPU môže naznačovať výraznú záťaž, no samo osebe to nedokazuje saturáciu CPU."
+  ],
+  "answer": 3,
+  "explanation": "Load average odráža úlohy pripravené na beh a na Linuxe aj úlohy v určitých neprerušiteľných stavoch, uvádzané za 1-, 5- a 15-minútové intervaly. Na systéme s 8 logickými CPU sa záťaž okolo 8 dá zhruba porovnať s kapacitou CPU systému, no load average nie je to isté ako percentuálne vyťaženie CPU. Predpoklad, že 8.20 jednoducho znamená 820 % vyťaženie CPU, je častou pascou na pohovoroch."
+ },
+ {
+  "id": 51,
+  "level": "junior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "scenario",
+  "question": "Aplikácia potrebuje ukladať dáta, ktoré prežijú reštart, no často sa menia, napríklad stav spracovania alebo lokálnu cache. Ktorý z nasledujúcich adresárov najlepšie zodpovedá tomuto použitiu podľa hierarchie súborového systému Linuxu?",
+  "options": [
+   "/run",
+   "/proc",
+   "/var",
+   "/dev"
+  ],
+  "answer": 2,
+  "explanation": "`/var` obsahuje premenlivé dáta, ktoré sa počas behu systému menia, a jeho časti môžu pretrvať aj po reštarte. `/run` zvyčajne obsahuje stav za behu vytváraný pri každom štarte, `/proc` poskytuje virtuálny pohľad na informácie o jadre a procesoch a `/dev` obsahuje súbory zariadení. `/run` môže byť lákavý, pretože tiež obsahuje dáta súvisiace s behom, no jeho obsah reštart spravidla neprežije."
+ },
+ {
+  "id": 52,
+  "level": "junior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "output",
+  "question": "Aký je výsledok nasledujúcich príkazov na súbore?",
+  "code": "touch script.sh\nchmod u+x,g+r,o-rwx script.sh\nls -l script.sh",
+  "options": [
+   "-rwxr----- 1 ... script.sh",
+   "-rwxr--r-- 1 ... script.sh",
+   "-rw-r----- 1 ... script.sh",
+   "-rwxrw---- 1 ... script.sh"
+  ],
+  "answer": 0,
+  "explanation": "Novo vytvorený bežný súbor sa zvyčajne vytvára s režimom `666` predtým, než sa uplatní umask procesu. Symbolické operácie `chmod` potom pridajú vlastníkovi právo na spustenie (`u+x`), zabezpečia skupine právo na čítanie (`g+r`) a ostatným odoberú právo na čítanie, zápis aj spustenie (`o-rwx`). Keďže však výsledný režim závisí aj od počiatočných oprávnení súboru a umask, presný výsledok sa bez znalosti počiatočného režimu nedá určiť len z týchto príkazov. Pri typickom výsledku `touch` s bežnou umask, napríklad `022`, súbor začína ako `644`, `u+x` vytvorí `744` a odobratím všetkých oprávnení ostatným vznikne `740`, teda `-rwxr-----`."
+ },
+ {
+  "id": 53,
+  "level": "junior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "scenario",
+  "question": "Chceš existujúcemu používateľovi nastaviť ako primárnu skupinu `developers` a jeho ostatné členstvá v doplnkových skupinách ponechať bez zmeny. Ktorý príkaz je vhodný?",
+  "options": [
+   "usermod -g developers alice",
+   "usermod -G developers alice",
+   "groupmod -g developers alice",
+   "useradd -g developers alice"
+  ],
+  "answer": 0,
+  "explanation": "`usermod -g developers alice` zmení primárnu skupinu používateľa na zadanú skupinu. Primárna skupina je oddelená od doplnkových skupín, takže táto operácia sama osebe nenahradí členstvá používateľa v doplnkových skupinách. Doplnkové skupiny spravuje `-G`, preto sa tieto dve voľby ľahko zamieňajú."
+ },
+ {
+  "id": 54,
+  "level": "junior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "behavior",
+  "question": "Chceš proces dočasne pozastaviť, aby si ho mohol neskôr znova spustiť. Ktorý signál sa na to dá použiť?",
+  "options": [
+   "SIGTERM",
+   "SIGSTOP",
+   "SIGINT",
+   "SIGHUP"
+  ],
+  "answer": 1,
+  "explanation": "`SIGSTOP` proces pozastaví a proces tento signál nemôže zachytiť ani ignorovať. Na neskoršie pokračovanie v behu sa dá použiť `SIGCONT`. `SIGTERM` žiada o korektné ukončenie, `SIGINT` zvyčajne signalizuje prerušenie a `SIGHUP` má inú sémantiku. `SIGTERM` môže byť lákavý, pretože sa tiež bežne používa na riadenie procesov, no žiada o ukončenie, nie o pozastavenie."
+ },
+ {
+  "id": 55,
+  "level": "junior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "output",
+  "question": "Aký je výstup nasledujúceho skriptu?",
+  "code": "#!/usr/bin/env bash\ncount=5\nif (( count > 3 )); then\n    echo \"high\"\nelse\n    echo \"low\"\nfi",
+  "options": [
+   "low",
+   "5",
+   "high",
+   "Skript skončí so syntaktickou chybou"
+  ],
+  "answer": 2,
+  "explanation": "Aritmetickú podmienkovú syntax Bashu `(( ... ))` môžeš použiť na číselné porovnania. Keďže `count` je 5, podmienka `count > 3` je pravdivá, a vypíše sa preto `high`. Zamieňanie syntaxe na porovnávanie reťazcov s aritmetickým porovnaním je bežnou chybou v Bashi."
+ },
+ {
+  "id": 56,
+  "level": "junior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "behavior",
+  "question": "Čo sa stane po vykonaní nasledujúceho príkazu?",
+  "code": "cat missing.txt > output.txt",
+  "options": [
+   "`output.txt` sa nevytvorí, pretože `cat` ohlási chybu.",
+   "`output.txt` sa môže vytvoriť alebo vyprázdniť, kým chyba z `cat` sa zapíše do prúdu štandardného chybového výstupu.",
+   "`missing.txt` sa automaticky vytvorí.",
+   "`output.txt` bude obsahovať chybovú správu."
+  ],
+  "answer": 1,
+  "explanation": "Shell nastaví presmerovanie ešte pred vykonaním príkazu, takže `output.txt` sa môže vytvoriť alebo, ak už existuje, vyprázdniť. `cat` sa potom pokúsi otvoriť neexistujúci `missing.txt` a chybovú správu zapíše na štandardný chybový výstup, ktorý `>` nepresmeruje. Je lákavé myslieť si, že chyba skončí vo výstupnom súbore, pretože celý výstup príkazu si ľudia v duchu často predstavujú ako jeden prúd, no štandardný výstup a štandardný chybový výstup sú oddelené prúdy."
+ },
+ {
+  "id": 57,
+  "level": "junior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "output",
+  "question": "Aký je výstup nasledujúceho príkazu?",
+  "code": "printf 'error\\nERROR\\nwarning\\n' | grep -i '^error$'",
+  "options": [
+   "error",
+   "ERROR",
+   "error\nERROR",
+   "error\nERROR\nwarning"
+  ],
+  "answer": 2,
+  "explanation": "`-i` spôsobí, že vyhľadávanie `grep` nerozlišuje veľké a malé písmená. Vzor `^error$` vyhovuje celému riadku, takže vyhovuje `error` aj `ERROR`, no `warning` nie. Je lákavé vybrať iba jeden riadok, pretože regulárny výraz obsahuje `error` malými písmenami, no `-i` mení citlivosť zhody na veľkosť písmen."
+ },
+ {
+  "id": 58,
+  "level": "junior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "debug",
+  "question": "Na serveri založenom na Debiane chceš zistiť, ktoré súbory nainštaloval konkrétny nainštalovaný balík. Ktorý príkaz je vhodný?",
+  "options": [
+   "dpkg -L package-name",
+   "apt list-files package-name",
+   "rpm -ql package-name",
+   "apt show-files package-name"
+  ],
+  "answer": 0,
+  "explanation": "Na systémoch založených na Debiane `dpkg -L package-name` vypíše súbory nainštalované zadaným balíkom. `rpm -ql` sa používa na systémoch založených na RPM a ostatné uvedené príkazy nie sú na tento účel štandardné. `apt` môže byť lákavý, pretože je to vysokoúrovňový správca balíkov používaný na inštaláciu, no na zistenie zoznamu nainštalovaných súborov je vhodným nástrojom `dpkg`."
+ },
+ {
+  "id": 59,
+  "level": "junior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "output",
+  "question": "Čo primárne kontroluje nasledujúci príkaz?",
+  "code": "systemctl is-active nginx",
+  "options": [
+   "Či je `nginx` povolený na spustenie pri štarte systému.",
+   "Či je konfiguračný súbor `nginx` syntakticky správny.",
+   "Či je jednotka `nginx` práve v aktívnom stave.",
+   "Na ktorých portoch `nginx` počúva."
+  ],
+  "answer": 2,
+  "explanation": "`systemctl is-active nginx` skontroluje, či je zadaná jednotka práve aktívna, a vráti aj zodpovedajúci stavový kód. Či je jednotka nastavená na automatické spúšťanie pri štarte, môžeš overiť cez `is-enabled`. `is-enabled` môže byť lákavé, pretože aj to je pri bežiacej službe dôležitá otázka, no opisuje povolenie pri štarte, nie aktuálny stav za behu."
+ },
+ {
+  "id": 60,
+  "level": "junior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "scenario",
+  "question": "Aplikácia je dostupná iba z localhostu a jej konfigurácia obsahuje nasledujúcu adresu naviazania:\nChceš sa k nej pripojiť z iného počítača. Aký je najpravdepodobnejší problém?",
+  "code": "127.0.0.1:8080",
+  "options": [
+   "DNS servera je určite pokazené.",
+   "Port 8080 podporuje iba UDP.",
+   "Aplikácia nemôže komunikovať cez IPv4.",
+   "Aplikácia počúva iba na loopback rozhraní, a preto nie je dostupná cez vzdialené rozhranie."
+  ],
+  "answer": 3,
+  "explanation": "`127.0.0.1` označuje loopback rozhranie, takže aplikácia je cez tento socket dostupná iba z lokálneho počítača. Pre vzdialených klientov sa musí aplikácia naviazať na vhodnú sieťovú adresu alebo napríklad na `0.0.0.0`, spolu s vhodnou konfiguráciou firewallu a siete. DNS môže byť lákavé, pretože pri problémoch so vzdialeným pripojením často zohráva úlohu, no priamy test cez IP adresu odlíši problémy s DNS od problémov s naviazaním."
+ },
+ {
+  "id": 61,
+  "level": "medior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "debug",
+  "question": "Riešiš problém so SSH pripojením a chceš podrobné informácie na strane klienta o tom, ktoré metódy autentifikácie SSH klient skúša. Ktorý príkaz je najpriamejšou voľbou?",
+  "options": [
+   "ssh -q user@host",
+   "ssh -v user@host",
+   "ssh -n user@host",
+   "ssh -f user@host"
+  ],
+  "answer": 1,
+  "explanation": "`ssh -v` zapne podrobný diagnostický výstup na strane klienta, ktorý je užitočný pri riešení problémov s nadväzovaním spojenia a autentifikáciou. Viacero volieb `-v` poskytne ešte viac podrobností, napríklad `-vvv`. `-q` diagnostický výstup potláča, preto je jeho výber pri riešení problémov častou pascou na pohovoroch."
+ },
+ {
+  "id": 62,
+  "level": "medior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "scenario",
+  "question": "Na serveri `df -h` ukazuje na súborovom systéme desiatky gigabajtov voľného miesta, a predsa nemôžeš vytvoriť nový súbor. Ktorá ďalšia kontrola môže byť obzvlášť dôležitá?",
+  "options": [
+   "Skontrolovať počet voľných inódov, napríklad cez `df -i`.",
+   "Skontrolovať teplotu CPU cez `top`.",
+   "Skontrolovať DNS záznamy cez `dig`.",
+   "Skontrolovať verziu jadra cez `uname -r`."
+  ],
+  "answer": 0,
+  "explanation": "Súborovému systému sa môžu minúť inódy, aj keď v bajtoch zostáva k dispozícii veľa miesta. V takej situácii môže vytváranie nových súborov zlyhávať, najmä na súborových systémoch s veľmi veľkým počtom malých súborov. `df -i` ukazuje kapacitu a využitie inódov. `df -h` uvádza iba úložnú kapacitu, a preto vyčerpanie inódov nevylučuje."
+ },
+ {
+  "id": 63,
+  "level": "medior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "behavior",
+  "question": "Rodičovský proces spustí podproces a podproces skončí. Rodič nevykoná príslušnú operáciu wait. Čo sa môže stať s podprocesom?",
+  "options": [
+   "Podproces sa automaticky stane démonom.",
+   "Podproces sa vždy znova spustí.",
+   "Podproces môže zostať v stave zombie, kým jeho návratový kód nevyzdvihne rodič alebo príslušný reaper proces.",
+   "Podproces okamžite stratí svoj PID a nezanechá žiadnu stopu."
+  ],
+  "answer": 2,
+  "explanation": "Podproces, ktorý skončil, no ešte nebol vyzdvihnutý (reaped), môže zostať v stave zombie, aby jeho rodič mohol získať stav jeho ukončenia. Toto vyzdvihnutie vykoná `wait()` alebo niektorý z jeho variantov. Zombie sa už nevykonáva, takže nespotrebúva CPU ako bežný aktívny proces. Je lákavé predpokladať, že skončený proces okamžite úplne zmizne, pretože už nevykonáva žiadny kód, no jeho záznam v tabuľke procesov môže zostať, kým nie je vyzdvihnutý."
+ },
+ {
+  "id": 64,
+  "level": "medior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "output",
+  "question": "Čo vypíše nasledujúci Bash skript?",
+  "code": "#!/usr/bin/env bash\nset -e\nfalse\necho \"after\"",
+  "options": [
+   "after",
+   "false",
+   "Nič, pretože shell po `false` skončí.",
+   "`false after`"
+  ],
+  "answer": 2,
+  "explanation": "`set -e` spôsobí, že shell skončí, keď príkaz vráti nenulový stav v kontextoch, kde platí pravidlo errexit. Tu `false` vráti stav 1 a vykoná sa ako jednoduchý príkaz, takže shell skončí a `echo \"after\"` nevykoná. Presné správanie `set -e` je v konštrukciách ako `if`, `while`, `&&`, `||` a v pipelines zložitejšie, preto ho netreba brať ako univerzálny prepínač „skonči pri každom nenulovom stave“."
+ },
+ {
+  "id": 65,
+  "level": "medior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "trap",
+  "question": "Aký je návratový kód nasledujúcej pipeline v predvolenom shelli Bash?",
+  "code": "false | true\necho $?",
+  "options": [
+   "0",
+   "1",
+   "2",
+   "Pipeline vždy spôsobí syntaktickú chybu."
+  ],
+  "answer": 0,
+  "explanation": "Návratový kód pipeline v Bashi je predvolene návratovým kódom jej posledného príkazu, čo je tu `true`. Keďže `true` vráti 0, `echo $?` vypíše 0, hoci prvý príkaz `false` vrátil nenulový stav. `set -o pipefail` toto správanie mení, preto je pochopenie tohto rozdielu dôležité pri riešení problémov s pipelines."
+ },
+ {
+  "id": 66,
+  "level": "medior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "algorithm",
+  "question": "Pomocou `awk` chceš vypočítať priemernú hodnotu tretieho poľa oddeleného bielymi znakmi v logovom súbore. Ktoré riešenie je správne?",
+  "options": [
+   "awk '{sum += $3} END {print sum}' application.log",
+   "awk '{sum += $3} END {print sum/NR}' application.log",
+   "awk '{sum = $3} END {print sum/NR}' application.log",
+   "awk '{sum += $3/NR} END {print sum}' application.log"
+  ],
+  "answer": 1,
+  "explanation": "`sum += $3` pripočíta tretie pole z každého záznamu k súčtu a blok `END` vydelí súčet počtom záznamov (`NR`). Tak vznikne priemer. Samotný výpočet súčtu priemer nedá, kým `sum = $3` by na každom riadku prepísalo predchádzajúcu hodnotu."
+ },
+ {
+  "id": 67,
+  "level": "medior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "scenario",
+  "question": "Na produkčnom serveri založenom na Debiane chceš zabrániť, aby `apt upgrade` automaticky aktualizoval konkrétny balík. Ktorý mechanizmus je na to určený?",
+  "options": [
+   "apt lock package-name",
+   "dpkg --disable package-name",
+   "apt-mark hold package-name",
+   "apt freeze package-name"
+  ],
+  "answer": 2,
+  "explanation": "`apt-mark hold package-name` dá balík do stavu hold, čím zabráni, aby ho bežné aktualizačné operácie APT automaticky aktualizovali. Neskôr sa dá hold zrušiť napríklad cez `apt-mark unhold`. „Lock“ môže znieť ako prirodzený názov tejto operácie, no na systémoch založených na Debiane je vhodným mechanizmom stav hold v APT."
+ },
+ {
+  "id": 68,
+  "level": "medior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "production",
+  "question": "Zmenil si konfiguráciu produkčnej služby a zmena sa prejaví až vtedy, keď služba znovu načíta svoju konfiguráciu. Úplné zastavenie služby by spôsobilo krátky výpadok, preto chceš najprv zistiť, či podporuje opätovné načítanie konfigurácie. Ktorá operácia systemd je najvhodnejšia?",
+  "options": [
+   "systemctl reload myapp",
+   "systemctl disable myapp",
+   "systemctl isolate myapp",
+   "systemctl kill myapp"
+  ],
+  "answer": 0,
+  "explanation": "`systemctl reload` požiada službu, aby znovu načítala svoju konfiguráciu bez úplného zastavenia a opätovného spustenia, ak služba operáciu reload podporuje. Nie každá služba reload podporuje, preto treba skontrolovať definíciu jednotky a dokumentáciu služby. `restart` sa na aplikovanie zmien konfigurácie často používa, no znamená úplný reštart služby, a teda potenciálne prerušenie."
+ },
+ {
+  "id": 69,
+  "level": "medior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "output",
+  "question": "Na serveri vidíš nasledujúci výstup:\nKtoré tvrdenie o pakete určenom pre `8.8.8.8` je správne?",
+  "code": "ip route\ndefault via 192.168.1.1 dev eth0\n192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.20",
+  "options": [
+   "Doručí sa priamo hostovi `192.168.1.20`.",
+   "Prepošle sa cez rozhranie `eth0` smerom k predvolenej bráne `192.168.1.1`.",
+   "Systém automaticky použije loopback rozhranie.",
+   "Jadro prepošle paket cez DNS."
+  ],
+  "answer": 1,
+  "explanation": "`8.8.8.8` nepatrí do priamo pripojenej siete `192.168.1.0/24`, takže zodpovedajúcou cestou je predvolená cesta (default route). Paket sa odošle cez `eth0` smerom k bráne `192.168.1.1`. Rozhodnutia o smerovaní sa zakladajú na IP adresách a prefixoch, nie na DNS."
+ },
+ {
+  "id": 70,
+  "level": "medior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "production",
+  "question": "SSH spojenie sa pravidelne preruší po niekoľkých minútach nečinnosti, hoci samotné sieťové pripojenie inak funguje správne. Chceš, aby klient posielal keepalive správy. Ktoré konfiguračné nastavenie je na to určené?",
+  "options": [
+   "ServerAliveInterval",
+   "StrictHostKeyChecking",
+   "ForwardAgent",
+   "Compression"
+  ],
+  "answer": 0,
+  "explanation": "`ServerAliveInterval` určuje, ako často SSH klient pošle serveru keepalive správu na úrovni protokolu, keď od servera neprišli žiadne dáta. To môže pomôcť pri sieťových zariadeniach alebo firewalloch, ktoré nečinné spojenia ukončujú. `TCPKeepAlive` je samostatný mechanizmus, preto je dôležité rozlišovať keepalive na úrovni SSH od TCP keepalive."
+ },
+ {
+  "id": 71,
+  "level": "medior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "edgecase",
+  "question": "Na Linuxovom serveri si zmazal súbor, no `df -h` ukazuje, že očakávaných niekoľko gigabajtov sa neuvoľnilo. Súbor už v adresári nevidno. Aká je častá príčina?",
+  "options": [
+   "`df` je vždy oneskorený presne o hodinu.",
+   "Súbor sa automaticky presunul do `/tmp`.",
+   "Bežiaci proces má zmazaný súbor stále otvorený.",
+   "Linux po zmazaní súborov miesto neuvoľňuje."
+  ],
+  "answer": 2,
+  "explanation": "Na Linuxe sa miesto, ktoré súbor zaberá, skutočne uvoľní až vtedy, keď naň neodkazuje žiadna položka adresára ani žiadny otvorený deskriptor súboru. Ak má bežiaci proces zmazaný súbor stále otvorený, miesto môže zostať obsadené. Zmazané, no stále otvorené súbory pomôžu nájsť príkazy ako `lsof +L1`. Je lákavé myslieť si, že Linux miesto po zmazaných súboroch nikdy neuvoľní, pretože problém naozaj môže pretrvávať, kým proces súbor drží otvorený."
+ },
+ {
+  "id": 72,
+  "level": "medior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "performance",
+  "question": "Na serveri rýchlo rastie miesto na disku, ktoré zaberá systemd journal. Ktorý príkaz ti priamo pomôže zistiť, koľko miesta na disku journal momentálne zaberá?",
+  "options": [
+   "journalctl --vacuum-size=1G",
+   "journalctl --disk-usage",
+   "journalctl --rotate-now",
+   "journalctl --verify-size"
+  ],
+  "answer": 1,
+  "explanation": "`journalctl --disk-usage` uvádza, koľko miesta na disku momentálne zaberajú súbory journalu. `--vacuum-size` vykonáva upratovanie, nielen meranie využitia. V produkcii je dobrou praxou najprv posúdiť skutočné využitie a až potom mazať alebo meniť nastavenia uchovávania."
+ },
+ {
+  "id": 73,
+  "level": "medior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "scenario",
+  "question": "Cron úloha sa musí spúšťať každý pondelok o 03:15. Ktorý záznam je správny v tradičnej päťpoľovej syntaxi cronu?",
+  "options": [
+   "15 3 * * 1 /usr/local/bin/job.sh",
+   "3 15 * * 1 /usr/local/bin/job.sh",
+   "15 3 1 * * /usr/local/bin/job.sh",
+   "15 3 * 1 * /usr/local/bin/job.sh"
+  ],
+  "answer": 0,
+  "explanation": "Päť polí je minúta, hodina, deň v mesiaci, mesiac a deň v týždni. `15 3 * * 1` sa teda spustí každý pondelok o 03:15. `1` v piatom poli predstavuje deň v týždni, kým tretie pole predstavuje deň v mesiaci. Ide o častú pascu pri crone, pretože to isté číslo môže mať podľa poľa, v ktorom sa nachádza, rôzny význam."
+ },
+ {
+  "id": 74,
+  "level": "medior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "debug",
+  "question": "Skript funguje z interaktívneho shellu, no pri spustení z cronu zlyhá s chybou `java: command not found`. Príkaz `java` pri ručnom spustení funguje. Čo je jednou z najpravdepodobnejších príčin?",
+  "options": [
+   "Cron automaticky zakazuje spúšťanie Javy.",
+   "Javu môže spúšťať iba root.",
+   "Cron nepodporuje premennú prostredia `PATH`.",
+   "Prostredie cronu sa môže líšiť od interaktívneho shellu, takže potrebný `PATH` alebo iné nastavenia prostredia v ňom nemusia byť."
+  ],
+  "answer": 3,
+  "explanation": "Prostredie cron úlohy sa môže líšiť od prostredia interaktívneho prihlasovacieho shellu, takže môže platiť iný `PATH` a iné premenné prostredia. Často je vhodnejšie použiť absolútnu cestu k potrebnému spustiteľnému súboru alebo potrebné prostredie explicitne nastaviť v skripte. Predpoklad, že cron zdedí presne to isté shellové prostredie ako terminál administrátora, je častým zdrojom zlyhaní."
+ },
+ {
+  "id": 75,
+  "level": "medior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "scenario",
+  "question": "Na Linuxovom serveri sa výrazne predĺžili časy odozvy aplikácie. Vyťaženie CPU je iba 20 %, no I/O wait je vysoký a vzrástla aj latencia úložiska. Ktorý záver je najopodstatnenejší?",
+  "options": [
+   "CPU určite beží na 100 %; `top` sa musí mýliť.",
+   "Výkon systému pravdepodobne obmedzuje čakanie na úložisko/I/O subsystém.",
+   "Príčinou je určite DNS.",
+   "Nízke vyťaženie CPU dokazuje, že problém s výkonom neexistuje."
+  ],
+  "answer": 1,
+  "explanation": "Pri vysokom I/O wait a zvýšenej latencii úložiska môžu procesy tráviť veľa času zablokované čakaním na I/O operácie, kým celkové vyťaženie CPU zostáva relatívne nízke. Je to typický príklad toho, prečo samotné nízke vyťaženie CPU neznamená, že problém s výkonom neexistuje. Predpoklad, že každý problém s výkonom je viazaný na CPU, je častou pascou na pohovoroch."
+ },
+ {
+  "id": 76,
+  "level": "medior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "theory",
+  "question": "Ktoré tvrdenie najpresnejšie opisuje úlohu adresára `/run` na modernom Linuxovom systéme?\nCODE:\nENDCODE",
+  "options": [
+   "Obsahuje predovšetkým informácie o stave za behu a PID súbory vytvorené počas aktuálneho štartu.",
+   "Obsahuje iba binárne súbory modulov jadra, ktoré systém načítal.",
+   "Je centrálnym miestom pre osobné konfiguračné súbory používateľov.",
+   "Mali by sa sem ukladať všetky trvalé dáta aplikácií v systéme."
+  ],
+  "answer": 0,
+  "explanation": "`/run` je zvyčajne založený na tmpfs a obsahuje stavové dáta potrebné počas behu systému, napríklad PID a socket súbory. Jeho obsah spravidla reštart neprežije. Je lákavé zamieňať ho s adresármi používateľskej konfigurácie, pretože aj služby v ňom vytvárajú súbory, no ide o dáta za behu."
+ },
+ {
+  "id": 77,
+  "level": "medior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "output",
+  "question": "Aký je účinok príkazu `chmod 2755 shared`, ak je `shared` adresár?\nCODE:\nENDCODE",
+  "options": [
+   "Automaticky nastaví bit setuid na každom súbore v adresári.",
+   "Nastaví bit setgid, vďaka čomu novovytvorené súbory zdedia skupinu adresára.",
+   "Nastaví sticky bit, takže súbory môže mazať iba vlastník.",
+   "Iba udelí skupine právo na čítanie a nemení žiadne špeciálne bity."
+  ],
+  "answer": 1,
+  "explanation": "`2` predstavuje špeciálny bit setgid. Na adresári spôsobí, že novovytvorené súbory a podadresáre zdedia skupinu adresára. Sticky bit predstavuje `1`, preto sa tieto dva špeciálne bity ľahko zamieňajú."
+ },
+ {
+  "id": 78,
+  "level": "medior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "scenario",
+  "question": "Používateľ patrí do viacerých skupín a súbor patrí skupine `developers`. Ako spoľahlivo overíš, že `developers` patrí medzi efektívne skupiny používateľa?",
+  "code": "id alice",
+  "options": [
+   "`groups alice`",
+   "`whoami developers`",
+   "`id alice`",
+   "`passwd -S alice`"
+  ],
+  "answer": 2,
+  "explanation": "`id alice` zobrazí UID používateľa, jeho primárnu skupinu a členstvá v doplnkových skupinách. Členstvá v skupinách ukáže aj `groups`, takže je to lákavá alternatíva, no `id` poskytne podrobnejšiu a jednoznačnejšiu kontrolu."
+ },
+ {
+  "id": 79,
+  "level": "medior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "behavior",
+  "question": "Čo sa stane so súborom, ktorý má proces otvorený, ak počas behu procesu z iného shellu zmažeš položku adresára tohto súboru?\nCODE:\nENDCODE",
+  "options": [
+   "Proces okamžite dostane `SIGTERM`.",
+   "Obsah súboru sa okamžite skráti na nula bajtov.",
+   "Súbor sa automaticky presunie do `/tmp`.",
+   "Inóda a dáta súboru môžu zostať, kým sa nezatvoria všetky otvorené odkazy naň."
+  ],
+  "answer": 3,
+  "explanation": "`rm` odstráni položku adresára; otvorený deskriptor súboru, ktorý proces používa, priamo nezneplatní. Ak neexistujú ďalšie pevné odkazy, miesto sa uvoľní po zatvorení posledného otvoreného odkazu. Je lákavé predpokladať, že súbor sa zmaže okamžite, pretože jeho názov z adresára hneď zmizne."
+ },
+ {
+  "id": 80,
+  "level": "medior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "output",
+  "question": "Čo vypíše skript?",
+  "code": "x=5\n\nif (( x >= 5 )); then\n    echo \"yes\"\nelse\n    echo \"no\"\nfi",
+  "options": [
+   "`no`",
+   "`5`",
+   "`yes`",
+   "Nič."
+  ],
+  "answer": 2,
+  "explanation": "`(( ... ))` sa dá v Bashi použiť ako aritmetická podmienka. Výraz `x >= 5` je pravdivý, takže sa vykoná prvá vetva. Je lákavé očakávať na výstupe hodnotu premennej, pretože `x` je 5, no skript vypíše iba text zo zvolenej vetvy."
+ },
+ {
+  "id": 81,
+  "level": "medior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "debug",
+  "question": "V skripte nájdeš `command > output.log 2>&1`. Aká je správna interpretácia týchto presmerovaní?\nCODE:\nENDCODE",
+  "options": [
+   "Štandardný výstup aj štandardný chybový výstup sa zapíšu do `output.log`.",
+   "Do súboru sa zapíše iba štandardný chybový výstup, štandardný výstup zostane v termináli.",
+   "Štandardný výstup sa zapíše do súboru a štandardný chybový výstup sa zahodí.",
+   "Príkaz sa spustí, iba ak `output.log` už existuje."
+  ],
+  "answer": 0,
+  "explanation": "Najprv sa štandardný výstup presmeruje do `output.log` a potom `2>&1` presmeruje štandardný chybový výstup na aktuálny cieľ štandardného výstupu. Oba prúdy teda smerujú do toho istého súboru. Na poradí presmerovaní záleží, takže tieto dve operácie sa nedajú vždy vymeniť."
+ },
+ {
+  "id": 82,
+  "level": "medior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "algorithm",
+  "question": "Ktorý príkaz `awk` správne vypočíta súčet prvého stĺpca súboru oddeleného bielymi znakmi?",
+  "code": "awk '{ sum += $1 } END { print sum }' data.txt",
+  "options": [
+   "Sčíta iba prvý riadok súboru.",
+   "Pripočíta prvé pole každého záznamu k premennej `sum` a po skončení spracovania vypíše súčet.",
+   "Namiesto prvého stĺpca sčíta celkový počet znakov.",
+   "Funguje iba vtedy, ak je súbor oddelený čiarkami."
+  ],
+  "answer": 1,
+  "explanation": "Predvoleným oddeľovačom polí v `awk` sú biele znaky, takže `$1` predstavuje prvé pole. `sum += $1` zvýši súčet pri každom spracovanom riadku, kým blok `END` sa vykoná raz po spracovaní celého vstupu. Je lákavé predpokladať, že spracuje iba jeden riadok, pretože kód `awk` je krátky, no predvolene sa vykoná pre každý záznam."
+ },
+ {
+  "id": 83,
+  "level": "medior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "behavior",
+  "question": "Aký je na systéme založenom na Debiane kľúčový rozdiel medzi `apt remove package` a `apt purge package`?\nCODE:\nENDCODE",
+  "options": [
+   "`remove` odstráni balík, kým `purge` odstráni aj systémovú konfiguráciu spojenú s balíkom.",
+   "`remove` zmaže iba binárne súbory, kým `purge` odstráni balík aj z jadra.",
+   "`remove` vykoná aktualizáciu, kým `purge` iba zmaže index repozitára.",
+   "Oba príkazy vždy vykonajú presne tú istú operáciu."
+  ],
+  "answer": 0,
+  "explanation": "`apt remove` odstráni nainštalované súbory balíka, kým `purge` môže odstrániť aj systémové konfiguračné súbory spojené s balíkom. Dáta vytvorené používateľom alebo spravované samostatne neodstráni nevyhnutne ani jedna z operácií. Je lákavé považovať ich za rovnaké, pretože obe balík odstraňujú."
+ },
+ {
+  "id": 84,
+  "level": "medior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "scenario",
+  "question": "Systemd služba sa zastaví s chybou a krátko nato sa znova spustí. Ktoré nastavenie by si mal v súbore jednotky skontrolovať ako prvé?\nCODE:\nENDCODE",
+  "options": [
+   "`Description=`",
+   "`Documentation=`",
+   "`Restart=`",
+   "`After=`"
+  ],
+  "answer": 2,
+  "explanation": "`Restart=` určuje, kedy má systemd službu reštartovať, napríklad pri `on-failure`. `After=` riadi iba poradie spúšťania, takže samo osebe reštart po chybnom zastavení nevysvetľuje."
+ },
+ {
+  "id": 85,
+  "level": "medior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "output",
+  "question": "Dostaneš nasledujúci výstup. Čo znamená `state UNREACHABLE` pri smerovacom zázname?",
+  "code": "ip route\n10.10.0.0/16 dev eth0 proto kernel scope link src 10.10.1.20\n10.20.0.0/16 via 10.10.1.1 dev eth0\nunreachable 10.30.0.0/16",
+  "options": [
+   "Všetky pakety pre sieť `10.30.0.0/16` sa majú posielať na bránu `10.10.1.1`.",
+   "Jadro považuje túto cieľovú sieť za nedosiahnuteľnú a prevádzku smerujúcu do nej odmieta.",
+   "Sieť sa stane dosiahnuteľnou až po preklade cez DNS.",
+   "Sieťové rozhranie je fyzicky odpojené."
+  ],
+  "answer": 1,
+  "explanation": "Cesta typu `unreachable` jadru explicitne hovorí, že zadaná cieľová sieť nie je dosiahnuteľná, takže prevádzka do nej sa odmieta. Nie je to to isté ako všeobecný výpadok sieťového spojenia alebo rozhrania. Je lákavé predpokladať, že sa má použiť brána, pretože ostatné cesty určujú ďalší skok poľom `via`."
+ },
+ {
+  "id": 86,
+  "level": "medior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "production",
+  "question": "SSH spojenie necháš dlhší čas nečinné a sieťová infraštruktúra ho občas preruší. Ktoré nastavenie na strane klienta môže pomôcť posielaním SSH keepalive správ?\nCODE:\nENDCODE",
+  "options": [
+   "`Compression yes`",
+   "`ForwardAgent yes`",
+   "`ServerAliveInterval 60`",
+   "`StrictHostKeyChecking no`"
+  ],
+  "answer": 2,
+  "explanation": "`ServerAliveInterval 60` hovorí SSH klientovi, aby v zadanom intervale posielal keepalive správy na úrovni protokolu, keď je spojenie inak nečinné. To môže pomôcť pri niektorých časových limitoch nečinnosti. Je lákavé zvoliť `Compression`, pretože aj to je nastavenie spojenia, no nejde o keepalive mechanizmus."
+ },
+ {
+  "id": 87,
+  "level": "medior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "performance",
+  "question": "Na súborovom systéme ext4 vidíš veľa voľného miesta na disku, a predsa vytváranie nových súborov zlyháva. Ktorá kontrola môže byť obzvlášť relevantná?",
+  "code": "df -h\ndf -i",
+  "options": [
+   "`hostnamectl`",
+   "`df -i`",
+   "`uname -a`",
+   "`uptime`"
+  ],
+  "answer": 1,
+  "explanation": "Súborovému systému sa môžu minúť inódy, aj keď v bajtoch zostáva k dispozícii veľa miesta. `df -i` ukazuje využitie inódov. Keď súborový systém obsahuje veľa malých súborov, môže to byť skutočné obmedzenie, preto samotný `df -h` nestačí."
+ },
+ {
+  "id": 88,
+  "level": "medior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "output",
+  "question": "Čo pridáva voľba `-p warning` k dopytu `journalctl --since \"1 hour ago\" -p warning`?\nCODE:\nENDCODE",
+  "options": [
+   "Zobrazí iba logy jadra.",
+   "Obmedzí logy výlučne na aktuálny štart.",
+   "Filtruje záznamy logu podľa priority warning vrátane závažnejších priorít.",
+   "Zobrazí iba záznamy, ktorých text obsahuje slovo `warning`."
+  ],
+  "answer": 2,
+  "explanation": "Filtrovanie podľa priority v journald nie je jednoduché textové vyhľadávanie. Do dopytu sa zahrnie priorita `warning` aj závažnejšie úrovne. Voľba `--since` nezávisle obmedzí dopyt na poslednú hodinu."
+ },
+ {
+  "id": 89,
+  "level": "medior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "debug",
+  "question": "Skript spúšťaný z cronu dokáže spustiť `ls`, no volanie vlastného programu cez jeho absolútnu cestu zlyhá. Aký je najlepší prvý krok?\nCODE:\nENDCODE",
+  "options": [
+   "Skontrolovať hodnotu `PATH` v prostredí cronu a v prípade potreby použiť absolútnu cestu.",
+   "Reštartovať celý server.",
+   "Zmeniť vlastníka programu na root.",
+   "Zmeniť záznam cronu na spúšťanie každú minútu bez toho, aby si čokoľvek ďalšie otestoval."
+  ],
+  "answer": 0,
+  "explanation": "Prostredie cronu sa môže líšiť od prostredia interaktívneho shellu, najmä pokiaľ ide o `PATH`. Absolútne cesty k programom alebo explicitne nastavené potrebné premenné prostredia robia úlohy spoľahlivejšími. Je lákavé podozrievať oprávnenia, pretože spustenie programu naozaj môže zlyhať kvôli oprávneniam, no rozdiely v prostredí spúšťania patria medzi prvé veci, ktoré treba skontrolovať."
+ },
+ {
+  "id": 90,
+  "level": "medior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "edgecase",
+  "question": "Aký je výsledok nasledujúcich príkazov v shelli Bash?",
+  "code": "VAR=hello\nbash -c 'echo \"$VAR\"'",
+  "options": [
+   "`hello`",
+   "`VAR`",
+   "Prázdny riadok",
+   "`hello`, iba ak je `VAR` exportovaná."
+  ],
+  "answer": 3,
+  "explanation": "Bežnú shellovú premennú prostredie podprocesu automaticky nezdedí. Po `export VAR=hello` alebo `export VAR` ju proces `bash -c` dostane ako premennú prostredia. Je lákavé očakávať `hello`, pretože v rodičovskom shelli premenná naozaj existuje."
+ },
+ {
+  "id": 91,
+  "level": "medior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "scenario",
+  "question": "Webová aplikácia sa výrazne spomalila. Vyťaženie CPU je nízke, kým latencia disku a I/O wait sú vysoké. Ktorá hypotéza najlepšie zodpovedá týmto pozorovaniam?\nCODE:\nENDCODE",
+  "options": [
+   "Určite nastala porucha cache CPU.",
+   "Procesy pravdepodobne zdržiava úzke hrdlo v I/O subsystéme.",
+   "DNS určite prestalo fungovať.",
+   "Jadro určite vyčerpalo všetky dostupné PID."
+  ],
+  "answer": 1,
+  "explanation": "Vysoký I/O wait a latencia disku v kombinácii s nízkym vyťažením CPU môžu naznačovať, že procesy čakajú na I/O operácie. Je to silná hypotéza, ktorú treba overiť ďalšími I/O metrikami. Je lákavé podozrievať problém s CPU, pretože to býva prvý predpoklad, keď je aplikácia pomalá, no nízke vyťaženie CPU ho nepodporuje."
+ },
+ {
+  "id": 92,
+  "level": "medior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "theory",
+  "question": "Aká je hlavná úloha initramfs počas štartu Linuxu?\nCODE:\nENDCODE",
+  "options": [
+   "Nahrádza finálne konfiguračné súbory jadra.",
+   "Načítava nastavenia shellovej konfigurácie používateľov.",
+   "Môže poskytnúť prostredie raného userspace, ktoré jadro potrebuje, napríklad s ovládačmi a nástrojmi potrebnými na prístup ku koreňovému súborovému systému.",
+   "Obsahuje celú databázu správcu balíkov systému."
+  ],
+  "answer": 2,
+  "explanation": "initramfs je prostredie raného userspace, ktoré jadro môže počas štartu použiť na načítanie potrebných modulov, nájdenie zariadení a prípravu prístupu ku skutočnému koreňovému súborovému systému. Je lákavé stotožniť ho s konfiguráciou jadra, pretože úzko súvisí so štartom jadra, no slúži na iný účel."
+ },
+ {
+  "id": 93,
+  "level": "medior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "production",
+  "question": "Služba na Linuxovom serveri potrebuje iba jeden TCP port a nevyžaduje práva roota. Ktorý prístup najlepšie dodržiava princíp najnižších oprávnení?\nCODE:\nENDCODE",
+  "options": [
+   "Spúšťať službu ako root, aby mala istotne prístup ku všetkým potrebným zdrojom.",
+   "Povoliť všetky prichádzajúce porty, aby sa predišlo problémom so sieťovou kompatibilitou.",
+   "Dať službe plný prístup cez sudo.",
+   "Spúšťať ju pod vyhradeným používateľom s minimálnymi oprávneniami a povoliť iba potrebný sieťový prístup."
+  ],
+  "answer": 3,
+  "explanation": "Princíp najnižších oprávnení znamená, že proces má dostať iba tie oprávnenia a zdroje, ktoré na svoju činnosť potrebuje. Vyhradený používateľ a úzko vymedzené sieťové pravidlá zmenšujú dopad prípadného kompromitovania. Je lákavé spúšťať službu ako root, pretože to môže zjednodušiť správu oprávnení, no vytvára to väčšiu útočnú plochu."
+ },
+ {
+  "id": 94,
+  "level": "medior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "trap",
+  "question": "Aký je výstup?",
+  "code": "name=\"Alice Bob\"\nprintf '<%s>\\n' $name",
+  "options": [
+   "`<Alice Bob>`",
+   "`<Alice>`\n`<Bob>`",
+   "`<name>`",
+   "Skončí s chybou, pretože premenná obsahuje medzeru."
+  ],
+  "answer": 1,
+  "explanation": "Keďže premenná je použitá bez úvodzoviek, Bash vykoná rozdelenie na slová, a `name` sa tak stane dvoma samostatnými argumentmi. Formát `printf` sa uplatní na oba argumenty, takže vzniknú dva riadky. Je lákavé očakávať jeden riadok, pretože premennej bol pôvodne priradený jeden reťazec."
+ },
+ {
+  "id": 95,
+  "level": "medior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "behavior",
+  "question": "Čo sa stane v nasledujúcom príkaze?",
+  "code": "grep \"ERROR\" app.log | tee errors.log",
+  "options": [
+   "Výstup `grep` sa zapíše iba do `errors.log`, nie do terminálu.",
+   "`tee` zmaže súbor `app.log`.",
+   "Výstup `grep` sa zobrazí v termináli a zároveň sa zapíše do súboru `errors.log`.",
+   "`tee` kopíruje iba prúd štandardného chybového výstupu."
+  ],
+  "answer": 2,
+  "explanation": "`tee` posiela svoj vstup súčasne na štandardný výstup a do jedného alebo viacerých súborov. V tejto pipeline sa teda riadky z `grep` zobrazia v termináli a zapíšu sa do `errors.log`. Je lákavé vnímať to ako presmerovanie iba do súboru, pretože ukladanie logov je jedným z bežných použití `tee`."
+ },
+ {
+  "id": 96,
+  "level": "medior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "debug",
+  "question": "V konfiguračnom súbore chceš odstrániť prázdne riadky a komentáre začínajúce na `#`. Ktorý príkaz najlepšie zodpovedá tejto jednoduchej požiadavke?",
+  "code": "grep -Ev '^[[:space:]]*(#|$)' config.conf",
+  "options": [
+   "Zmaže iba prvý znak komentárov.",
+   "Odstráni iba prázdne riadky.",
+   "Obráti každý riadok v súbore.",
+   "Odfiltruje prázdne riadky a riadky začínajúce na `#` po prípadných bielych znakoch, čím ponechá zvyšné riadky."
+  ],
+  "answer": 3,
+  "explanation": "`-E` zapne rozšírené regulárne výrazy, kým `-v` obráti výber zhôd. Vzor identifikuje prázdne riadky a riadky začínajúce na `#` po ľubovoľnom počte bielych znakov, takže tieto riadky sa z výstupu vylúčia. Je lákavé myslieť iba na prázdne riadky, pretože `$` je súčasťou vzoru prázdneho riadka, no alternatíva s `#` rieši aj komentáre."
+ },
+ {
+  "id": 97,
+  "level": "medior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "output",
+  "question": "Čo znamená výsledok `enabled` z príkazu `systemctl is-enabled nginx`?\nCODE:\nENDCODE",
+  "options": [
+   "Proces nginx v tejto chvíli určite beží.",
+   "Konfigurácia nginx je určite syntakticky správna.",
+   "Služba nginx je povolená na automatické spúšťanie cez príslušný systemd target.",
+   "nginx sa po každom reštarte systému automaticky znovu načíta."
+  ],
+  "answer": 2,
+  "explanation": "`is-enabled` kontroluje, či je jednotka povolená pre proces štartu systému. To je iné ako jej aktuálny stav za behu, ktorý overíš cez `is-active`. Je lákavé stotožniť povolenú službu s bežiacou, pretože povolená služba sa zvyčajne spustí pri štarte, no potom ju môže niekto aj zastaviť."
+ },
+ {
+  "id": 98,
+  "level": "medior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "edgecase",
+  "question": "Serverová aplikácia počúva na `127.0.0.1:8080`. Z iného počítača nie je dostupná, kým `curl http://127.0.0.1:8080` na tom istom serveri funguje. Aké je najpravdepodobnejšie vysvetlenie?\nCODE:\nENDCODE",
+  "options": [
+   "Služba počúva iba na loopback rozhraní, takže nemôže prijímať spojenia z externých počítačov.",
+   "DNS vždy blokuje port 8080.",
+   "TCP nepodporuje lokálne rozhrania.",
+   "`curl` automaticky obchádza všetky bezpečnostné pravidlá v sieťovom stacku."
+  ],
+  "answer": 0,
+  "explanation": "`127.0.0.1` označuje loopback rozhranie, takže služba počúvajúca na tejto adrese prijíma spojenia iba z lokálneho počítača. Pre externý prístup musí počúvať na vhodnej dosiahnuteľnej adrese rozhrania, napríklad na `0.0.0.0` alebo na konkrétnej adrese servera, ak to služba podporuje. Je lákavé obviňovať firewall, pretože je častou príčinou problémov s externým pripojením, no toto správanie vysvetľuje už samotná adresa naviazania."
+ },
+ {
+  "id": 99,
+  "level": "medior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "scenario",
+  "question": "Služba sa reštartovala a chceš zistiť, prečo ju systemd zastavil alebo reštartoval. Ktorý prístup je najvhodnejší?",
+  "code": "journalctl -u myservice --since \"30 minutes ago\"",
+  "options": [
+   "Stačí skontrolovať iba `/etc/passwd`.",
+   "Prezrieť záznamy journald pre jednotku služby a obmedziť ich na relevantné časové okno.",
+   "Stačí skontrolovať iba výstup `df -h`.",
+   "Na zistenie dôvodu reštartu stačí história shellu."
+  ],
+  "answer": 1,
+  "explanation": "`journalctl -u myservice` vyfiltruje záznamy journald pre zadanú systemd jednotku, kým `--since` obmedzí dopyt na relevantné obdobie. Je to dobrý východiskový bod na skúmanie udalostí okolo zastavenia a reštartu. Je lákavé použiť históriu shellu, pretože môže odhaliť ručne zadané príkazy, no automaticky spustené udalosti služby v nej byť nemusia."
+ },
+ {
+  "id": 100,
+  "level": "medior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "production",
+  "question": "Služba podporuje korektné vypnutie pri SIGTERM a potrebuje čas na zatvorenie svojich spojení. Ktorý prístup je na kontrolované vypnutie najvhodnejší?",
+  "code": "kill -TERM 12345",
+  "options": [
+   "`kill -KILL 12345`",
+   "`kill -STOP 12345`",
+   "`kill -HUP 12345`",
+   "`kill -TERM 12345`, potom v prípade potreby skontrolovať stav procesu a silnejší signál použiť, iba ak je to odôvodnené."
+  ],
+  "answer": 3,
+  "explanation": "SIGTERM dáva procesu príležitosť vykonať logiku vypnutia, napríklad zatvoriť spojenia a uložiť stav. SIGKILL proces nemôže zachytiť, preto nie je prvou voľbou pre korektné vypnutie. Je lákavé použiť SIGKILL, pretože zaručí ukončenie procesu, no môže procesu zabrániť vykonať potrebné upratovanie."
+ },
+ {
+  "id": 101,
+  "level": "medior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "theory",
+  "question": "Ktoré tvrdenie najpresnejšie opisuje úlohu adresára `/dev` na modernom Linuxovom systéme?\nCODE:\nENDCODE",
+  "options": [
+   "Obsahuje súbory zariadení a špeciálne súbory spojené so zariadeniami, cez ktoré sa dá pristupovať k zariadeniam spravovaným jadrom.",
+   "Uchováva iba moduly jadra potrebné na štart systému.",
+   "Je štandardným miestom pre osobné dokumenty používateľov.",
+   "Obsahuje všetky trvalé systémové logy."
+  ],
+  "answer": 0,
+  "explanation": "`/dev` obsahuje súbory zariadení, napríklad reprezentácie diskov, terminálov a pseudozariadení. Na moderných systémoch ich zvyčajne dynamicky spravuje jadro a userspace, napríklad cez `udev`. Je lákavé spájať `/dev` s modulmi jadra, pretože zariadenia môžu na svoju činnosť potrebovať moduly, no ide o dva rozdielne pojmy."
+ },
+ {
+  "id": 102,
+  "level": "medior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "output",
+  "question": "Aký bude výsledok nasledujúcich príkazov, ak súbor `report.txt` vlastní `alice`, patrí skupine `developers` a má oprávnenia `640`?",
+  "code": "ls -l report.txt\nid bob",
+  "options": [
+   "Bob môže do súboru určite zapisovať, ak je členom skupiny `developers`.",
+   "Bob môže súbor čítať, ak je členom skupiny `developers`, no nemôže doň zapisovať.",
+   "Bob môže súbor čítať, iba ak je jeho vlastníkom.",
+   "Bob k súboru za žiadnych okolností nemá prístup."
+  ],
+  "answer": 1,
+  "explanation": "Režim `640` dáva vlastníkovi `rw-`, skupine `r--` a ostatným `---`. Ak je Bob členom skupiny `developers`, môže súbor čítať vďaka oprávneniam skupiny, no nemôže doň zapisovať. Je lákavé predpokladať právo na zápis, pretože vlastník do súboru zapisovať môže, no skupina má iba právo na čítanie."
+ },
+ {
+  "id": 103,
+  "level": "medior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "scenario",
+  "question": "Chceš zmeniť primárnu skupinu používateľa a zachovať jeho existujúce členstvá v doplnkových skupinách. Ktorý príkaz je vhodný?\nCODE:\nENDCODE",
+  "options": [
+   "`usermod -G developers alice`",
+   "`groupmod -g developers alice`",
+   "`usermod -g developers alice`",
+   "`passwd -g developers alice`"
+  ],
+  "answer": 2,
+  "explanation": "`usermod -g` zmení primárnu skupinu používateľa a sám osebe neodstráni členstvá v doplnkových skupinách. `-G` nastavuje zoznam doplnkových skupín a vyžaduje opatrnosť, pretože pri nesprávnom použití môže existujúci zoznam nahradiť. Je lákavé zvoliť `-G`, pretože súvisí s členstvom v skupinách, no na nastavenie primárnej skupiny sa nepoužíva."
+ },
+ {
+  "id": 104,
+  "level": "medior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "edgecase",
+  "question": "Aký je rozdiel medzi `SIGTERM` a `SIGKILL` pri ukončovaní procesu?\nCODE:\nENDCODE",
+  "options": [
+   "SIGTERM sa dá použiť iba pre procesy jadra, kým SIGKILL iba pre procesy v userspace.",
+   "SIGTERM a SIGKILL sú vo všetkých ohľadoch rovnaké.",
+   "SIGTERM vždy okamžite ukončí proces, kým SIGKILL procesu iba oznámi, že by mal skončiť.",
+   "SIGTERM sa dá zachytiť alebo ignorovať, kým SIGKILL sa nedá zachytiť, zablokovať ani ignorovať."
+  ],
+  "answer": 3,
+  "explanation": "SIGTERM je určený na korektné ukončenie a proces ho môže zachytiť a vykonať vlastnú logiku upratovania. SIGKILL používa jadro na vynútené ukončenie a proces ho nemôže zachytiť, zablokovať ani ignorovať. Je lákavé považovať tieto dva signály za rovnocenné, pretože oba sa dajú použiť na ukončenie procesu, no ich spracovanie sa zásadne líši."
+ },
+ {
+  "id": 105,
+  "level": "medior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "output",
+  "question": "Čo vypíše nasledujúci skript?",
+  "code": "for file in *.log; do\n    echo \"$file\"\ndone",
+  "options": [
+   "Vypíše obsah všetkých súborov v adresári.",
+   "Vypíše iba názov prvého súboru `.log`.",
+   "Shell expanduje vzor `*.log` na zodpovedajúce názvy súborov a cyklus vypíše názov každej zhody.",
+   "Cyklus vždy skončí so syntaktickou chybou."
+  ],
+  "answer": 2,
+  "explanation": "Pri expanzii ciest v Bashi sa vzor `*.log` rozvinie na názvy súborov v aktuálnom adresári, ktoré mu zodpovedajú, a cyklus `for` spracuje každé výsledné slovo. `\"$file\"` v úvodzovkách zachová biele znaky v jednotlivých názvoch súborov. Je lákavé očakávať obsah súborov, pretože cyklus pracuje so súbormi, no glob sa rozvinie na názvy, nie na obsah."
+ },
+ {
+  "id": 106,
+  "level": "medior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "debug",
+  "question": "Prečo sa správanie nasledujúcich dvoch príkazov líši?",
+  "code": "command 2>&1 | tee output.log\ncommand | tee output.log 2>&1",
+  "options": [
+   "Oba príkazy sú za všetkých okolností úplne rovnaké.",
+   "Prvý posiela štandardný chybový výstup z `command` do pipeline, kým v druhom sa presmerovanie vzťahuje na samotný `tee`.",
+   "Druhý príkaz nepoužíva pipeline.",
+   "Prvý príkaz zahodí štandardný výstup."
+  ],
+  "answer": 1,
+  "explanation": "V prvom príkaze `command` presmeruje svoj štandardný chybový výstup na svoj štandardný výstup ešte predtým, než tento výstup vstúpi do pipeline, takže oba prúdy putujú do `tee`. V druhom príkaze sa `2>&1` vzťahuje na proces `tee`, nie na predchádzajúci `command`. Je lákavé považovať ich za rovnaké, pretože obsahujú tie isté prvky presmerovania, no presmerovania patria k príkazu, ku ktorému sú pripojené."
+ },
+ {
+  "id": 107,
+  "level": "medior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "output",
+  "question": "Čo robí nasledujúci príkaz `sed`?",
+  "code": "sed 's/[[:space:]]\\+$//' file.txt",
+  "options": [
+   "Odstráni biele znaky zo začiatku každého riadka.",
+   "Nahradí každý biely znak pomlčkou.",
+   "Zmaže iba prázdne riadky.",
+   "Odstráni koncové biele znaky na konci každého riadka."
+  ],
+  "answer": 3,
+  "explanation": "Regulárny výraz `[[:space:]]\\+$` vyhovuje jednému alebo viacerým bielym znakom na konci riadka a náhradou je prázdny reťazec. Príkaz predvolene zapisuje upravené riadky na štandardný výstup bez úpravy pôvodného súboru. Je lákavé myslieť na úvodné biele znaky, pretože orezávanie bielych znakov býva potrebné na oboch koncoch, no `$` označuje koniec riadka."
+ },
+ {
+  "id": 108,
+  "level": "medior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "scenario",
+  "question": "Na systéme založenom na Debiane riešiš problém s inštaláciou balíka a chceš skontrolovať stav nainštalovaných balíkov a nájsť potenciálne problematické stavy balíkov. Ktorý nástroj poskytne relevantné informácie z databázy balíkov?\nCODE:\nENDCODE",
+  "options": [
+   "`dpkg -l`",
+   "`hostname`",
+   "`uname -m`",
+   "`lsmod`"
+  ],
+  "answer": 0,
+  "explanation": "`dpkg -l` vypíše stavy balíkov z databázy balíkov Debianu. Je to užitočný východiskový bod pri diagnostike problémov s inštaláciou balíkov alebo so závislosťami, hoci na riešenie závislostí sú dôležité aj vysokoúrovňové príkazy `apt`. Je lákavé zamerať sa iba na všeobecné informácie o systéme, pretože chyba nastala počas inštalácie, no stav databázy balíkov je priamo relevantný."
+ },
+ {
+  "id": 109,
+  "level": "medior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "behavior",
+  "question": "Čo sa stane so systemd jednotkou, ktorá má `Requires=database.service`, keď sa spustí jednotka aplikácie?\nCODE:\nENDCODE",
+  "options": [
+   "systemd zohľadní závislosť `database.service` a jej neúspešné spustenie môže ovplyvniť spustenie aplikácie.",
+   "`database.service` sa pri spustení aplikácie vždy zastaví.",
+   "`Requires=` kontroluje iba sieťovú konfiguráciu DNS.",
+   "`Requires=` slúži iba na dokumentačné účely."
+  ],
+  "answer": 0,
+  "explanation": "`Requires=` deklaruje silnú závislosť za behu: aktivuje sa aj zadaná jednotka a určité zlyhania tejto jednotky môžu ovplyvniť závislú jednotku. Samotné `Requires=` neurčuje poradie spúšťania; na to môže byť potrebné aj `After=`. Je lákavé zamieňať `Requires=` s `After=`, pretože sa často používajú spolu."
+ },
+ {
+  "id": 110,
+  "level": "medior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "output",
+  "question": "Čo v nasledujúcom výstupe znamená stav `LISTEN`?",
+  "code": "ss -lnt\nState   Recv-Q  Send-Q  Local Address:Port  Peer Address:Port\nLISTEN  0       128     0.0.0.0:443        0.0.0.0:*",
+  "options": [
+   "Počítač aktívne nadväzuje spojenie so vzdialeným HTTPS serverom.",
+   "UDP socket čaká na prichádzajúce pakety.",
+   "TCP socket čaká na prijatie prichádzajúcich spojení na porte 443.",
+   "Port 443 je určite blokovaný firewallom."
+  ],
+  "answer": 2,
+  "explanation": "`ss -lnt` zobrazí počúvajúce TCP sockety a `LISTEN` znamená, že socket čaká na prijatie prichádzajúcich TCP spojení. `0.0.0.0:443` znamená, že socket počúva na porte 443 na všetkých IPv4 rozhraniach. Je lákavé myslieť na UDP socket, pretože `ss` pracuje s viacerými typmi socketov, no `-t` vyberá TCP."
+ },
+ {
+  "id": 111,
+  "level": "medior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "production",
+  "question": "Automatizovaný proces sa potrebuje pripájať k serveru cez SSH s autentifikáciou bez hesla. Ktorý prístup je najvhodnejší?\nCODE:\nENDCODE",
+  "options": [
+   "Uložiť heslo priamo do shellového skriptu.",
+   "Použiť pár SSH kľúčov a verejný kľúč umiestniť do príslušného súboru `authorized_keys` na serveri.",
+   "Vypnúť `StrictHostKeyChecking`, aby sa vyriešil problém s autentifikáciou.",
+   "Exportovať heslo roota ako premennú prostredia."
+  ],
+  "answer": 1,
+  "explanation": "Autentifikácia SSH kľúčom umožňuje prihlásenie bez hesla bez toho, aby bolo v skripte uložené zdieľané heslo. Server overí verejný kľúč používateľa voči príslušnému súboru `authorized_keys`. Je lákavé vypnúť `StrictHostKeyChecking`, pretože sa často objavuje pri problémoch súvisiacich s automatizáciou, no riadi overovanie kľúča hosta, nie autentifikáciu používateľa."
+ },
+ {
+  "id": 112,
+  "level": "medior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "scenario",
+  "question": "Na LVM zväzku došlo voľné miesto, kým skupina zväzkov (volume group) má stále voľné extenty. Aký je vhodný ďalší krok?\nCODE:\nENDCODE",
+  "options": [
+   "Reštartovať sieťové rozhranie.",
+   "Prejsť na staršiu verziu jadra.",
+   "Zväčšiť logický zväzok s využitím voľného miesta zo skupiny zväzkov.",
+   "Zmeniť vlastníkov súborov."
+  ],
+  "answer": 2,
+  "explanation": "Ak má skupina zväzkov voľné miesto, logický zväzok sa dá rozšíriť, napríklad cez `lvextend`. Následne treba primerane zväčšiť aj súborový systém. Je lákavé zamerať sa na oprávnenia, pretože problém s nedostatkom miesta môže spôsobovať rôzne chyby, no voľné LVM extenty predstavujú kapacitu, ktorú možno priamo prideliť logickému zväzku."
+ },
+ {
+  "id": 113,
+  "level": "medior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "debug",
+  "question": "Po reštarte servera už logy z predchádzajúcich štartov nie sú cez `journalctl` dostupné. Aký je jeden z častých dôvodov?\nCODE:\nENDCODE",
+  "options": [
+   "journald dokáže ukladať iba chyby jadra.",
+   "Systém nikdy nemôže mať logy z viac ako jedného štartu.",
+   "`journalctl` pri reštarte vždy zmaže celú databázu journalu.",
+   "Journal uchováva logy naprieč štartmi, iba ak je nakonfigurované trvalé úložisko; inak môžu byť logy uložené len dočasne."
+  ],
+  "answer": 3,
+  "explanation": "Úložisko journald môže byť iba za behu, napríklad v `/run/log/journal`, alebo trvalé, napríklad v `/var/log/journal`. Bez trvalého úložiska journalu sa logy z predchádzajúcich štartov môžu pri reštarte stratiť. Je lákavé predpokladať, že databáza journalu sa pri každom reštarte automaticky zmaže, pretože staršie záznamy potom môžu chýbať, no toto správanie vysvetľuje režim úložiska."
+ },
+ {
+  "id": 114,
+  "level": "medior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "output",
+  "question": "Čo znamená nasledujúci cron výraz?",
+  "code": "0 0 1 * *",
+  "options": [
+   "Spustí sa o polnoci prvý deň každého mesiaca.",
+   "Spustí sa každý deň o polnoci.",
+   "Spustí sa každý pondelok o polnoci.",
+   "Spustí sa o polnoci posledný deň každého mesiaca."
+  ],
+  "answer": 0,
+  "explanation": "V tradičnom päťpoľovom formáte cronu sú polia minúta, hodina, deň v mesiaci, mesiac a deň v týždni. `0 0 1 * *` sa teda spustí o 00:00 prvý deň každého mesiaca. Je lákavé vnímať to ako dennú úlohu, pretože prvé dve polia sú nuly, no tretie pole obmedzuje spúšťanie na prvý deň v mesiaci."
+ },
+ {
+  "id": 115,
+  "level": "medior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "debug",
+  "question": "Prečo sa nasledujúca postupnosť príkazov nespráva tak, ako mnohí spočiatku očakávajú?",
+  "code": "PATH=/opt/tools:$PATH\n./run.sh",
+  "options": [
+   "Premennú `PATH` môže meniť iba root.",
+   "Úprava `PATH` vždy odstráni všetky predtým nastavené adresáre.",
+   "`./run.sh` nemôže používať premenné prostredia.",
+   "Upravený `PATH` je dostupný v aktuálnom shelli, no programy spustené cez `run.sh` ho zdedia, iba ak je `PATH` exportovaný ako premenná prostredia."
+  ],
+  "answer": 3,
+  "explanation": "`PATH=/opt/tools:$PATH` priradí shellovú premennú, no sama osebe ju neexportuje do podprocesov. Ak má upravený PATH vidieť aj skript alebo programy, ktoré spúšťa, môžeš použiť napríklad `export PATH=/opt/tools:$PATH`. Je lákavé predpokladať, že každý podproces ho dostane automaticky, pretože hodnota premennej sa v rodičovskom shelli zmenila."
+ },
+ {
+  "id": 116,
+  "level": "medior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "performance",
+  "question": "Server má vysoký load average, no vyťaženie CPU nie je nijako zvlášť vysoké. Ktoré ďalšie skúmanie je obzvlášť dôležité?\nCODE:\nENDCODE",
+  "options": [
+   "Skontrolovať iba obsah `/etc/hostname`.",
+   "Preskúmať I/O wait a procesy zablokované v neprerušiteľných stavoch.",
+   "Skontrolovať farbu shellového promptu.",
+   "Zmeniť heslá všetkých používateľov."
+  ],
+  "answer": 1,
+  "explanation": "Load average na Linuxe neodráža iba vyťaženie CPU; prispievajú doň aj úlohy pripravené na beh a určité úlohy čakajúce v neprerušiteľných stavoch. Vysoký load average pri nízkom vyťažení CPU preto môže naznačovať problém s I/O alebo iné blokovanie. Je lákavé hľadať iba problém s CPU, pretože load average sa často prezentuje ako metrika záťaže CPU, no jeho význam je širší."
+ },
+ {
+  "id": 117,
+  "level": "medior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "output",
+  "question": "Čo sa dozvieš z nasledujúceho príkazu?",
+  "code": "cat /proc/cmdline",
+  "options": [
+   "Štartovacie parametre odovzdané aktuálne bežiacemu jadru.",
+   "Všetky nainštalované verzie jadra.",
+   "Stav všetkých systemd jednotiek.",
+   "Všetky inštrukčné sady, ktoré CPU podporuje."
+  ],
+  "answer": 0,
+  "explanation": "`/proc/cmdline` obsahuje parametre príkazového riadka jadra odovzdané aktuálne bežiacemu jadru. Môžu to byť napríklad štartovacie parametre súvisiace s koreňovým súborovým systémom alebo správaním jadra. Je lákavé vnímať to ako informáciu o všetkých nainštalovaných jadrách, pretože opisuje jadro zvolené pri štarte, no ukazuje iba príkazový riadok aktuálneho jadra."
+ },
+ {
+  "id": 118,
+  "level": "medior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "scenario",
+  "question": "Služba na Linuxovom serveri nevyžaduje priamy prístup k shellu. Ktoré riešenie môže obmedziť zbytočné možnosti prihlásenia?\nCODE:\nENDCODE",
+  "options": [
+   "Dať servisnému účtu práva roota.",
+   "Používať rovnakého používateľa pre každú službu.",
+   "Nastaviť pre servisný účet primerane obmedzený alebo vypnutý prihlasovací shell.",
+   "Vypnúť overovanie kľúča hosta SSH."
+  ],
+  "answer": 2,
+  "explanation": "Pri vyhradenom servisnom účte môže vypnutie alebo obmedzenie prístupu k shellu zmenšiť plochu pre interaktívne prihlásenie, keď nie je potrebné. Presné riešenie by malo zodpovedať tomu, ako služba funguje. Je lákavé nechať každému používateľovi interaktívny shell, pretože to môže zjednodušiť správu, no vytvára to zbytočnú prístupovú plochu."
+ },
+ {
+  "id": 119,
+  "level": "medior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "edgecase",
+  "question": "Chceš ukladať dočasné súbory programu, ktoré po reštarte nie sú potrebné. Ktorý adresár je na to na tradičnom Linuxovom systéme najvhodnejší?\nCODE:\nENDCODE",
+  "options": [
+   "`/boot`",
+   "`/tmp`",
+   "`/etc`",
+   "`/usr`"
+  ],
+  "answer": 1,
+  "explanation": "`/tmp` je určený pre dočasné súbory a životnosť jeho obsahu sa líši podľa systému a konfigurácie, takže aplikácie by sa naň nemali spoliehať ako na trvalé úložisko. `/etc` slúži na konfiguráciu, `/boot` na súbory súvisiace so štartom a `/usr` predovšetkým na nainštalované programy a súvisiace statické dáta. Je lákavé zvoliť `/var`, pretože tiež obsahuje premenlivé dáta, no pre výslovne dočasné dáta je vhodnejší `/tmp`."
+ },
+ {
+  "id": 120,
+  "level": "medior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "trap",
+  "question": "Adresár má oprávnenia `drwx--x--x`. Ktoré tvrdenie je správne?\nCODE:\nENDCODE",
+  "options": [
+   "Obsah adresára môže vypísať ktokoľvek.",
+   "Do adresára môže vstúpiť iba vlastník.",
+   "Skupina a ostatní nemajú k adresáru prístup.",
+   "Skupina a ostatní môžu adresárom prechádzať, no ich oprávnenia samy osebe neumožňujú vypísať jeho obsah."
+  ],
+  "answer": 3,
+  "explanation": "Na adresári `x` umožňuje prechod a prístup k objektom, ak poznáš ich názvy, kým `r` umožňuje vypísať položky adresára. `--x` teda samo osebe neumožňuje vypísať názvy v adresári, no k známym názvom súborov sa dá stále dostať, ak sú prítomné potrebné ďalšie oprávnenia. Je lákavé stotožniť `x` s prístupom na čítanie, pretože pri bežných súboroch `x` znamená spustenie, no na adresároch má inú úlohu."
+ },
+ {
+  "id": 121,
+  "level": "medior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "behavior",
+  "question": "Čo sa stane, ak Linuxového používateľa odoberieš z doplnkovej skupiny, kým je už prihlásený?\nCODE:\nENDCODE",
+  "options": [
+   "Bežiaci shell vždy okamžite stratí všetky členstvá v skupinách.",
+   "Skupinové poverenia už bežiacich procesov sa spravidla automaticky nezmenia; aby sa aktualizované členstvo prejavilo, môže byť potrebná nová prihlasovacia relácia.",
+   "Používateľ sa automaticky zmaže.",
+   "Vlastníctvo súborov sa automaticky zmení."
+  ],
+  "answer": 1,
+  "explanation": "Poverenia procesov a členstvá v skupinách sa určujú pri vytváraní procesov a relácií, takže neskoršia zmena v databáze skupín nemusí aktualizovať už bežiace procesy. Aby sa upravený zoznam skupín prejavil, je často potrebná nová prihlasovacia relácia. Je lákavé očakávať okamžitú zmenu, pretože úprava sa môže v systémovej databáze používateľov a skupín prejaviť hneď."
+ },
+ {
+  "id": 122,
+  "level": "medior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "output",
+  "question": "Čo znamená stav `Z` v nasledujúcom výstupe `ps`?",
+  "code": "ps -eo pid,ppid,state,comm",
+  "options": [
+   "Proces je v stave zombie.",
+   "Proces práve načítava modul jadra.",
+   "Proces určite využíva CPU.",
+   "Proces čaká na sieťové spojenie."
+  ],
+  "answer": 0,
+  "explanation": "`Z` označuje zombie proces: proces dokončil vykonávanie, no jeho rodič ešte nevyzdvihol jeho návratový kód, takže jadro si uchováva niektoré informácie o procese. Je lákavé považovať ho za bežiaci proces, pretože sa stále zobrazuje vo výpise `ps`, no kód už nevykonáva."
+ },
+ {
+  "id": 123,
+  "level": "medior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "algorithm",
+  "question": "Ktoré riešenie bezpečne číta súbor riadok po riadku bez nechceného rozdelenia na slová alebo spracovania spätných lomiek?",
+  "code": "while IFS= read -r line; do\n    printf '%s\\n' \"$line\"\ndone < input.txt",
+  "options": [
+   "`for line in $(cat input.txt); do echo \"$line\"; done`",
+   "`while read line; do echo $line; done < input.txt`",
+   "`while IFS= read -r line; do printf '%s\\n' \"$line\"; done < input.txt`",
+   "`cat input.txt | for line in $line; do echo \"$line\"; done`"
+  ],
+  "answer": 2,
+  "explanation": "`IFS=` zabráni nechcenému spracovaniu bielych znakov príkazom `read`, kým `-r` zabráni tomu, aby sa spätné lomky interpretovali ako escape znaky. Premenná v úvodzovkách v `printf` zachová obsah každého riadka. Je lákavé použiť substitúciu príkazu s cyklom `for`, pretože vyzerá kratšie, no rozdelenie na slová a expanzia ciest ju pri všeobecnom čítaní po riadkoch robia nespoľahlivou."
+ },
+ {
+  "id": 124,
+  "level": "medior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "edgecase",
+  "question": "Čo sa stane v nasledujúcom príkaze?",
+  "code": "cmd 2>&1 >/tmp/output.log",
+  "options": [
+   "Štandardný výstup aj štandardný chybový výstup sa zapíšu do `/tmp/output.log`.",
+   "Do súboru sa zapíše iba štandardný výstup a štandardný chybový výstup sa zahodí.",
+   "Shell skončí so syntaktickou chybou, pretože tieto dve presmerovania sa nedajú kombinovať.",
+   "Štandardný chybový výstup zostane nasmerovaný na pôvodný štandardný výstup, kým štandardný výstup sa presmeruje do `/tmp/output.log`."
+  ],
+  "answer": 3,
+  "explanation": "Presmerovania sa spracúvajú zľava doprava. `2>&1` najprv presmeruje štandardný chybový výstup na aktuálny štandardný výstup, ktorým je v tej chvíli zvyčajne terminál. Potom `>/tmp/output.log` presmeruje do súboru iba štandardný výstup; predtým nastavený cieľ štandardného chybového výstupu túto zmenu automaticky nenasleduje. Je lákavé očakávať v súbore oba prúdy, pretože rovnaké prvky presmerovania sa objavujú v bežnom tvare `>file 2>&1`."
+ },
+ {
+  "id": 125,
+  "level": "medior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "scenario",
+  "question": "Z veľkého logového súboru chceš vypísať iba riadky začínajúce na `ERROR` a každý celý zodpovedajúci riadok odovzdať nezmenený ďalšiemu príkazu. Ktoré riešenie spĺňa túto požiadavku?",
+  "code": "grep '^ERROR' application.log | next_command",
+  "options": [
+   "`grep 'ERROR$' application.log | next_command`",
+   "`grep '^ERROR' application.log | next_command`",
+   "`grep '$ERROR' application.log | next_command`",
+   "`grep '[ERROR]' application.log | next_command`"
+  ],
+  "answer": 1,
+  "explanation": "`^` označuje začiatok riadka, takže `^ERROR` vyberie každý riadok, ktorý začína textom `ERROR`. `grep` odovzdá na výstup celý zodpovedajúci riadok, nielen zhodný text. Je lákavé použiť `ERROR$`, pretože aj to je regulárny výraz ukotvujúci zhodu na konkrétnu pozíciu, no vyžaduje `ERROR` na konci riadka, nie na začiatku."
+ },
+ {
+  "id": 126,
+  "level": "medior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "theory",
+  "question": "Aký je hlavný rozdiel medzi tradičnými úlohami adresárov `/usr/bin` a `/usr/sbin`?\nCODE:\nENDCODE",
+  "options": [
+   "`/usr/bin` obsahuje iba moduly jadra, kým `/usr/sbin` iba konfiguračné súbory.",
+   "`/usr/bin` zvyčajne obsahuje všeobecné používateľské príkazy, kým `/usr/sbin` hlavne programy na správu systému.",
+   "`/usr/sbin` je vyhradený výlučne pre dočasné súbory.",
+   "Medzi týmito dvoma adresármi nie je žiadny funkčný rozdiel."
+  ],
+  "answer": 1,
+  "explanation": "`/usr/bin` tradične obsahuje všeobecné programy príkazového riadka, kým `/usr/sbin` hlavne nástroje súvisiace so správou systému. Na moderných distribúciách sa presné rozloženie a umiestnenie binárok môže líšiť, najmä na systémoch s merged-usr. Je lákavé považovať ich za úplne rovnaké, pretože oba obsahujú spustiteľné programy."
+ },
+ {
+  "id": 127,
+  "level": "medior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "behavior",
+  "question": "Súbor má oprávnenia `-rw-r-----`, vlastní ho `alice` a patrí skupine `developers`. Bob je členom skupiny `developers`. Čo sa stane, keď sa Bob pokúsi súbor upraviť?\nCODE:\nENDCODE",
+  "options": [
+   "Úspešne doň zapíše, pretože je členom skupiny.",
+   "Úspešne doň zapíše, pretože každý člen skupiny sa automaticky považuje za vlastníka.",
+   "Operácia zlyhá s chybou oprávnení, pretože skupina nemá právo na zápis.",
+   "Jadro mu automaticky udelí oprávnenia vlastníka."
+  ],
+  "answer": 2,
+  "explanation": "Pri režime `rw-r-----` môže vlastník čítať a zapisovať, skupina môže iba čítať a ostatní nemajú prístup. Keďže Bob je členom skupiny súboru, uplatňujú sa naňho oprávnenia skupiny, ktoré právo na zápis nezahŕňajú. Je lákavé zápis povoliť, pretože Bob naozaj je členom skupiny súboru, no samotné členstvo v skupine ďalšie oprávnenia nedáva."
+ },
+ {
+  "id": 128,
+  "level": "medior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "output",
+  "question": "Čo znamená shell `nologin` vo výstupe pre servisný účet?",
+  "code": "getent passwd appuser",
+  "options": [
+   "Heslo používateľa určite vypršalo.",
+   "Používateľ má automaticky práva roota.",
+   "Používateľ v systéme neexistuje.",
+   "Interaktívny prístup k shellu môže byť pre účet zámerne obmedzený, napríklad pri servisnom účte."
+  ],
+  "answer": 3,
+  "explanation": "Použitie `/usr/sbin/nologin` alebo podobného prihlasovacieho shellu môže zabrániť interaktívnemu prihláseniu do shellu, pričom účet sa stále dá použiť na spúšťanie služieb. Samo osebe to neznamená, že účet je vypnutý alebo neexistuje. Je lákavé predpokladať problém s heslom, pretože sa používateľ nemôže interaktívne prihlásiť, no zodpovedá za to nastavenie prihlasovacieho shellu."
+ },
+ {
+  "id": 129,
+  "level": "medior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "debug",
+  "question": "Proces si pozastavil cez `kill -STOP`, no ani po odoslaní `kill -TERM` nepokračuje v behu. Čo to vysvetľuje?\nCODE:\nENDCODE",
+  "options": [
+   "SIGTERM sa automaticky premení na SIGCONT.",
+   "Proces nemôže sám pokračovať v behu zo stavu SIGSTOP; najprv je potrebný SIGCONT.",
+   "SIGTERM je vždy silnejší ako SIGSTOP, takže proces by mal okamžite pokračovať.",
+   "SIGSTOP sa vzťahuje iba na sieťové procesy."
+  ],
+  "answer": 1,
+  "explanation": "SIGSTOP proces pozastaví a samotný proces ho nemôže zachytiť. SIGTERM žiada o ukončenie procesu, no proces v zastavenom stave nezačne znova bežať len preto, že mu bol doručený SIGTERM. Na pokračovanie v behu je potrebný SIGCONT, napríklad cez `kill -CONT PID`."
+ },
+ {
+  "id": 130,
+  "level": "medior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "output",
+  "question": "Čo vypíše nasledujúci kód?",
+  "code": "count=0\n\nwhile (( count < 3 )); do\n    ((count++))\ndone\n\necho \"$count\"",
+  "options": [
+   "`0`",
+   "`2`",
+   "`3`",
+   "Cyklus beží donekonečna."
+  ],
+  "answer": 2,
+  "explanation": "Cyklus beží, kým je `count` menšie ako 3. Počas troch iterácií sa hodnota zmení z 0 na 1, potom na 2 a nakoniec na 3, po čom sa podmienka stane nepravdivou. Je lákavé očakávať `2`, pretože to je hodnota pri poslednom úspešnom porovnaní, no telo cyklu ju potom zvýši na 3."
+ },
+ {
+  "id": 131,
+  "level": "medior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "scenario",
+  "question": "Chceš zapísať výstup príkazu do súboru a zároveň ho vidieť v termináli bez straty existujúceho obsahu súboru. Ktoré riešenie je vhodné?\nCODE:\nENDCODE",
+  "options": [
+   "`command | tee -a output.log`",
+   "`command > output.log`",
+   "`command | cat > output.log`",
+   "`command 2> output.log`"
+  ],
+  "answer": 0,
+  "explanation": "`tee -a` zobrazí štandardný výstup v termináli a pripojí ho k zadanému súboru. Voľba `-a` zabezpečí, že existujúci obsah sa neprepíše. Je lákavé použiť obyčajný `tee`, pretože tiež zapisuje do súboru aj do terminálu, no cieľový súbor predvolene prepisuje."
+ },
+ {
+  "id": 132,
+  "level": "medior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "algorithm",
+  "question": "Zo súboru oddeleného bielymi znakmi chceš vybrať riadky, ktorých druhé pole je presne `ERROR`. Ktoré riešenie je najpriamejšie?",
+  "code": "awk '$2 == \"ERROR\" { print }' application.log",
+  "options": [
+   "Vypíše každý riadok súboru.",
+   "Skúma iba prvé pole.",
+   "Vypíše iba riadky, ktorých druhé pole je presne `ERROR`.",
+   "Vypíše iba riadky, ktoré kdekoľvek obsahujú text `ERROR`."
+  ],
+  "answer": 2,
+  "explanation": "V `awk` predstavuje `$2` druhé pole a `==` vykoná porovnanie na presnú zhodu. Vypíšu sa teda iba záznamy, ktorých druhé pole je presne `ERROR`. Je lákavé uvažovať v zmysle textového vyhľadávania, pretože hľadáme reťazec `ERROR`, no ide o podmienku založenú na poliach."
+ },
+ {
+  "id": 133,
+  "level": "medior",
+  "area": "Package management",
+  "topic": "Package management",
+  "type": "behavior",
+  "question": "Čo na systéme založenom na Debiane znamená stav balíka `rc` vo výstupe `dpkg -l`?\nCODE:\nENDCODE",
+  "options": [
+   "Balík je nainštalovaný a beží.",
+   "Balík nie je nainštalovaný, no jeho konfiguračné súbory môžu stále zostávať.",
+   "Balík sa práve sťahuje.",
+   "Balík obsahuje pokazený modul jadra."
+  ],
+  "answer": 1,
+  "explanation": "V zápise stavov `dpkg` znamená `r`, že balík je odstránený, kým `c`, že zostali konfiguračné súbory. Zvyčajne sa to stane, keď bol balík odstránený bez purge. Je lákavé vnímať to ako nainštalovaný stav, pretože balík sa stále zobrazuje v databáze dpkg."
+ },
+ {
+  "id": 134,
+  "level": "medior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "debug",
+  "question": "Po úprave súboru jednotky sa `systemctl restart myservice` nespráva podľa upravenej definície jednotky. Čo môže chýbať?\nCODE:\nENDCODE",
+  "options": [
+   "`systemctl daemon-reload`",
+   "`systemctl enable myservice`",
+   "`systemctl is-active myservice`",
+   "`systemctl mask myservice`"
+  ],
+  "answer": 0,
+  "explanation": "Po úprave súborov systemd jednotiek musí správca systemd znovu načítať svoju konfiguráciu príkazom `systemctl daemon-reload`, aby spracoval nové definície. To je oddelené od reštartu služby. Je lákavé použiť iba `restart`, pretože proces naozaj reštartuje, no upravené súbory jednotiek nemusí znovu načítať."
+ },
+ {
+  "id": 135,
+  "level": "medior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "scenario",
+  "question": "Server má dve sieťové rozhrania a pre konkrétnu cieľovú sieť existuje viacero ciest. Ktorý faktor určuje najšpecifickejšiu cestu, ktorú zvolí smerovací subsystém Linuxu?\nCODE:\nENDCODE",
+  "options": [
+   "Vždy zvolí cestu, ktorá bola v konfigurácii vytvorená najnovšie.",
+   "Vždy zvolí rozhranie s abecedne najnižším názvom.",
+   "Uprednostní najdlhší prefix zodpovedajúci cieľu; medzi cestami s rovnakou dĺžkou prefixu môžu rozhodnúť ďalšie metriky ciest.",
+   "Vyberá náhodne spomedzi dostupných ciest."
+  ],
+  "answer": 2,
+  "explanation": "Jedným zo základných princípov smerovania je zhoda najdlhšieho prefixu (longest prefix match): špecifickejší sieťový prefix má prednosť pred všeobecnejším. Ak zostane viac ciest s rovnakou dĺžkou prefixu, výber môžu ovplyvniť ďalšie atribúty, napríklad metrika cesty. Je lákavé zvažovať poradie vytvorenia, pretože pri riešení problémov býva vidno najnovšiu zmenu konfigurácie, no nie je to základné pravidlo výberu."
+ },
+ {
+  "id": 136,
+  "level": "medior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "edgecase",
+  "question": "SSH klientom sa pripájaš k viacerým serverom a nechceš pre každé spojenie používať ten istý kľúč. Ktorá konfiguračná voľba je vhodná na zadanie rôznych kľúčov pre jednotlivé hosty?\nCODE:\nENDCODE",
+  "options": [
+   "`IdentityFile` v príslušnom bloku `Host`",
+   "`PortForward` v príslušnom bloku `Match`",
+   "`KnownHostsFile` pre každý host",
+   "`CompressionLevel` pre každého používateľa"
+  ],
+  "answer": 0,
+  "explanation": "V konfigurácii SSH klienta určuje `IdentityFile` privátny kľúč, ktorý sa dá použiť na autentifikáciu, a v blokoch `Host` pre jednotlivé hosty môžeš zadať rôzne hodnoty. Pre rôzne servery tak môžeš používať rôzne kľúče. Je lákavé zvoliť `KnownHostsFile`, pretože tiež súvisí s identifikáciou hosta, no riadi ukladanie kľúčov hostov serverov, nie autentifikačný kľúč používateľa."
+ },
+ {
+  "id": 137,
+  "level": "medior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "output",
+  "question": "Čo môže ukázať nasledujúci príkaz?",
+  "code": "lsblk -f",
+  "options": [
+   "Iba súborové systémy podporované CPU.",
+   "Okrem blokových zariadení a partícií aj informácie, ako je typ súborového systému, UUID a bod pripojenia.",
+   "Iba miesto na disku, ktoré momentálne využívajú procesy.",
+   "Iba šifrovacie kľúče logických zväzkov LVM."
+  ],
+  "answer": 1,
+  "explanation": "`lsblk -f` zobrazí informácie súvisiace so súborovým systémom, ako je typ súborového systému, LABEL, UUID a bod pripojenia, v závislosti od dostupnej verzie a konfigurácie. Je užitočný na rýchlu kontrolu blokových zariadení a súborových systémov. Je lákavé myslieť iba na rozloženie partícií, pretože aj obyčajný `lsblk` ukazuje predovšetkým hierarchiu blokových zariadení."
+ },
+ {
+  "id": 138,
+  "level": "medior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "scenario",
+  "question": "Medzi logmi služby chceš nájsť záznamy journalu spojené s konkrétnym PID. Ktorý filter `journalctl` je najpriamejší?",
+  "code": "journalctl _PID=1234",
+  "options": [
+   "`_PID=1234`",
+   "`-k`",
+   "`-b`",
+   "`-u`"
+  ],
+  "answer": 0,
+  "explanation": "Filter `_PID=1234` so štruktúrovanými poľami journald vráti záznamy spojené so zadaným ID procesu. `-k` filtruje správy jadra, `-b` filtruje podľa štartu a `-u` podľa jednotky. Je lákavé použiť `-u`, pretože sa bežne používa pri práci s logmi služieb, no filtrovanie podľa PID neposkytuje."
+ },
+ {
+  "id": 139,
+  "level": "medior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "behavior",
+  "question": "Cron úloha sa má spúšťať každých 30 sekúnd. Prečo sa to nedá presne vyjadriť jedným tradičným päťpoľovým cron výrazom?\nCODE:\nENDCODE",
+  "options": [
+   "Cron môže bežať iba ako root.",
+   "Cron nedokáže spúšťať príkazy.",
+   "Tradičná päťpoľová syntax cronu má granularitu na úrovni minút, takže interval v sekundách sa nedá vyjadriť priamo.",
+   "Cron dokáže spúšťať úlohy iba raz týždenne."
+  ],
+  "answer": 2,
+  "explanation": "Najmenším časovým poľom v tradičnom formáte cronu sú minúty, takže 30-sekundový interval sa nedá vyjadriť jedným štandardným záznamom cronu. Pre takúto požiadavku môže byť vhodnejší iný mechanizmus, napríklad systemd timer alebo samostatná plánovacia logika. Je lákavé použiť cron výraz v štýle `*/30`, pretože syntax podobné intervaly podporuje, no tieto intervaly sa merajú v minútach."
+ },
+ {
+  "id": 140,
+  "level": "medior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "output",
+  "question": "Čo vypíše nasledujúci kód?",
+  "code": "export APP_ENV=production\nbash -c 'printf \"%s\\n\" \"$APP_ENV\"'",
+  "options": [
+   "`production`",
+   "`APP_ENV`",
+   "Prázdny riadok",
+   "`bash`"
+  ],
+  "answer": 0,
+  "explanation": "`export` urobí z `APP_ENV` súčasť prostredia shellu, takže podproces `bash` ju zdedí. `printf` potom vypíše hodnotu premennej prostredia. Je lákavé očakávať prázdny riadok, pretože v podriadenom shelli nie je žiadne explicitné priradenie, no exportované premenné prostredia sa dedia."
+ },
+ {
+  "id": 141,
+  "level": "senior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "production",
+  "question": "Na serveri so 16 logickými CPU jeden proces trvalo využíva približne 100 % CPU. Ktorý záver je najpresnejší?\nCODE:\nENDCODE",
+  "options": [
+   "Kapacita CPU celého počítača je určite na 100 %.",
+   "Proces určite beží v 16 vláknach.",
+   "Proces môže využívať približne jedno celé CPU, kým ostatné CPU počítača zostávajú k dispozícii.",
+   "Proces určite beží v priestore jadra."
+  ],
+  "answer": 2,
+  "explanation": "Pri klasickom vykazovaní CPU procesov v štýle `top` sa percento CPU procesu môže vyjadrovať vzhľadom na plnú kapacitu jedného CPU, takže jednovláknový proces môže na počítači so 16 CPU dosiahnuť zhruba 100 % bez toho, aby saturoval celý systém. Viacvláknový proces môže vykazovať podstatne vyššie hodnoty. Je lákavé vnímať 100 % ako plné vyťaženie počítača, pretože intuitívne to tak znie."
+ },
+ {
+  "id": 142,
+  "level": "senior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "scenario",
+  "question": "Webová aplikácia potrebuje iba čítať obsah konkrétneho adresára a k zvyšku systému prístup nepotrebuje. Ktorý prístup najúčinnejšie zmenší jej prístupovú plochu k súborovému systému?\nCODE:\nENDCODE",
+  "options": [
+   "Sprístupniť používateľovi aplikácie zápis do celého súborového systému `/`.",
+   "Spúšťať aplikáciu ako root.",
+   "Nastaviť na každý súbor oprávnenia `777`.",
+   "Použiť vhodné oprávnenia a v prípade potreby izoláciu typu sandbox/chroot, aby aplikácia mala prístup iba k zdrojom, ktoré potrebuje."
+  ],
+  "answer": 3,
+  "explanation": "Na zmenšenie prístupovej plochy by aplikácia mala dostať oprávnenia iba k súborom a adresárom, ktoré skutočne potrebuje, a kde je to vhodné, aj ďalšie izolačné mechanizmy. Samotný chroot netreba považovať za úplnú bezpečnostnú hranicu pre každý model hrozieb, preto môžu byť relevantné aj iné sandboxové mechanizmy. Je lákavé použiť root alebo `777`, pretože to odstráni chyby oprávnení, no výrazne to zväčší dopad kompromitovania."
+ },
+ {
+  "id": 143,
+  "level": "senior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "debug",
+  "question": "Linuxový systém počas štartu nenájde koreňový súborový systém, pričom potrebný ovládač úložiska je zostavený ako modul, nie priamo v jadre. Aká môže byť kľúčová úloha initramfs v tejto situácii?\nCODE:\nENDCODE",
+  "options": [
+   "Obnoviť históriu shellu používateľa.",
+   "Poskytnúť potrebné ovládače úložiska a logiku vyhľadávania zariadení v raných fázach štartu.",
+   "Preinštalovať všetky aplikácie v systéme.",
+   "Upraviť firmvér BIOS."
+  ],
+  "answer": 1,
+  "explanation": "Ak ovládač potrebný na prístup ku koreňovému súborovému systému nie je zabudovaný v jadre, initramfs môže príslušný modul obsahovať a načítať ho v ranom userspace. Jadro tak môže rozpoznať koreňové úložné zariadenie a pristúpiť k nemu ešte pred odovzdaním riadenia skutočnému koreňovému súborovému systému. Je lákavé myslieť na preinštalovanie aplikácií, pretože chyba nastáva počas štartu, no hlavnou úlohou initramfs je poskytnúť prostredie raného štartu."
+ },
+ {
+  "id": 144,
+  "level": "senior",
+  "area": "Permissions & ownership",
+  "topic": "Permissions & ownership",
+  "type": "trap",
+  "question": "Súbor má oprávnenia `-rwxrwxrwx`, no používateľ ho napriek tomu nemôže zo svojho adresára zmazať. Čo môže byť dôvodom?\nCODE:\nENDCODE",
+  "options": [
+   "Mazanie súboru vždy vyžaduje práva roota.",
+   "Mazaniu bráni právo na spustenie súboru.",
+   "Mazanie súboru riadia predovšetkým práva na zápis a spustenie rodičovského adresára a napríklad jeho sticky bit.",
+   "Jadro automaticky zabráni mazaniu, pretože sú prítomné všetky tri sady `rwx`."
+  ],
+  "answer": 2,
+  "explanation": "Právo zmazať súbor súvisí predovšetkým s oprávneniami adresára, pretože mazanie mení položku adresára. Sticky bit na adresári môže pridať ďalšie obmedzenia, ako napríklad v `/tmp`. Je lákavé zamerať sa na vlastné oprávnenia `rwx` súboru, pretože viditeľne dávajú plný prístup, no mazanie od práva na zápis do súboru nezávisí."
+ },
+ {
+  "id": 145,
+  "level": "senior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "production",
+  "question": "Server sprístupňuje aplikáciu na viacerých rozhraniach, no povolené majú byť iba spojenia z konkrétnej siete. Prečo na riadenie prístupu nestačí spoliehať sa iba na adresu naviazania aplikácie?\nCODE:\nENDCODE",
+  "options": [
+   "Adresa naviazania určuje iba to, na ktorej lokálnej adrese socket počúva; riadenie prístupu podľa zdrojovej adresy môže vyžadovať ďalšie sieťové filtrovanie, napríklad firewall.",
+   "Adresa naviazania automaticky šifruje spojenie.",
+   "Adresa naviazania automaticky autentifikuje používateľa klienta.",
+   "Adresa naviazania vypína všetky TCP spojenia."
+  ],
+  "answer": 0,
+  "explanation": "Adresa naviazania socketu určuje, na ktorej lokálnej adrese alebo rozhraní aplikácia počúva, no nie je všeobecným pravidlom riadenia prístupu podľa zdrojovej adresy. Ak treba prístup obmedziť na konkrétnu podsieť, môžu byť potrebné aj firewall alebo kontroly na úrovni aplikácie. Je lákavé považovať adresu naviazania za úplné pravidlo riadenia prístupu, pretože v niektorých topológiách naozaj ovplyvňuje, cez ktoré lokálne rozhrania je služba dostupná, no filtrovanie prevádzky nenahrádza."
+ },
+ {
+  "id": 146,
+  "level": "senior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "performance",
+  "question": "Súborový systém ext4 je podľa `df -h` zaplnený na 90 %, no aplikácia pri vytváraní nového súboru nečakane dostane chybu `ENOSPC`. Ktoré ďalšie faktory treba preskúmať?\nCODE:\nENDCODE",
+  "options": [
+   "Iba teplotu CPU.",
+   "Iba kľúč hosta SSH.",
+   "Iba verziu jadra.",
+   "Vyčerpanie inódov, kvóty, rezervované bloky a ďalšie skutočné kapacitné limity súborového systému."
+  ],
+  "answer": 3,
+  "explanation": "`ENOSPC` nemusí znamenať, že kapacita v bajtoch zobrazená cez `df -h` je úplne vyčerpaná. Môžu byť vyčerpané inódy, môže byť dosiahnutá kvóta používateľa alebo projektu, prípadne môže zohrávať úlohu rezervované miesto špecifické pre súborový systém a ďalšie limity. Je lákavé zamerať sa iba na percento využitia disku, pretože `ENOSPC` sa bežne spája s klasickým nedostatkom miesta."
+ },
+ {
+  "id": 147,
+  "level": "senior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "scenario",
+  "question": "Na produkčnom serveri sa jednotka neustále reštartuje a rýchlo generuje veľké množstvo logov. Ktorý prístup pomôže preskúmať hlavnú príčinu aj správanie systemd pri reštartoch?",
+  "code": "journalctl -u myservice -b\nsystemctl status myservice",
+  "options": [
+   "Zmazať iba logové súbory.",
+   "Preskúmať záznamy journalu jednotky spolu so `systemctl status` vrátane návratového kódu a nastavení reštartu.",
+   "Okamžite preinštalovať server.",
+   "Náhodne zmeniť port služby."
+  ],
+  "answer": 1,
+  "explanation": "`journalctl` môže poskytnúť podrobné chronologické udalosti služby, kým `systemctl status` zhrnie aktuálny stav, posledné zlyhanie a výsledok spustenia. Spolu pomôžu zistiť návratový kód, slučku reštartov a relevantnú konfiguráciu jednotky. Je lákavé logy zmazať, pretože rýchlo rastú, no zmazanie neodstráni skutočnú príčinu."
+ },
+ {
+  "id": 148,
+  "level": "senior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "edgecase",
+  "question": "Linuxová služba sa potrebuje naviazať na TCP port 443, no nechceš ju spúšťať ako root. Ktoré riešenie môže povoliť použitie portu s nízkym číslom bez toho, aby proces dostal plné práva roota?\nCODE:\nENDCODE",
+  "options": [
+   "Nastaviť oprávnenia celého súborového systému služby na `777`.",
+   "Vložiť heslo roota do premennej prostredia.",
+   "Použiť pre daný proces vhodnú Linux capability, napríklad `CAP_NET_BIND_SERVICE`.",
+   "Udeliť právo na zápis do celého adresára `/etc`."
+  ],
+  "answer": 2,
+  "explanation": "`CAP_NET_BIND_SERVICE` môže procesu umožniť naviazať sa na privilegované porty pod 1024 bez plných práv roota. Presná konfigurácia by mala zodpovedať spôsobu spúšťania služby a použitému bezpečnostnému modelu. Je lákavé spúšťať službu ako root, pretože to problém s oprávnením na naviazanie priamo vyrieši, no dáva to zbytočne široké oprávnenia."
+ },
+ {
+  "id": 149,
+  "level": "senior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "production",
+  "question": "Vlákno vo viacvláknovej aplikácii spôsobuje vysoké využitie CPU. Ktorý prístup pomôže presne zistiť, ktoré vlákno CPU spotrebúva?\nCODE:\nENDCODE",
+  "options": [
+   "`top -H -p <PID>`",
+   "`df -h`",
+   "`ip route`",
+   "`journalctl --disk-usage`"
+  ],
+  "answer": 0,
+  "explanation": "`top -H -p <PID>` dokáže zobraziť vlákna zadaného procesu ako samostatné položky, takže môžeš nájsť vlákno s nezvyčajne vysokým využitím CPU. Na zistenie, ktorá cesta v kóde CPU spotrebúva, môže byť potrebný ďalší profiling. Je lákavé skontrolovať iba celkovú hodnotu CPU procesu, pretože rýchlo odhalí záťaž, no jednotlivé vlákna neidentifikuje."
+ },
+ {
+  "id": 150,
+  "level": "senior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "production",
+  "question": "V Bash skripte chceš, aby sa pipeline považovala za neúspešnú, keď zlyhá ktorýkoľvek príkaz v nej, aj keď posledný príkaz uspeje. Ktoré nastavenie je potrebné?",
+  "code": "set -o pipefail\nfalse | true\necho \"$?\"",
+  "options": [
+   "`set -u`",
+   "`set -x`",
+   "`set -e`",
+   "`set -o pipefail`"
+  ],
+  "answer": 3,
+  "explanation": "Návratový kód pipeline v Bashi je predvolene stavom jej posledného príkazu, takže `false | true` by vrátilo 0. S `pipefail` vráti pipeline nenulový stav, ak zlyhá ktorýkoľvek príkaz, konkrétne stav príkazu najviac vpravo, ktorý skončil s nenulovým stavom. Je lákavé zvoliť `set -e`, pretože tiež súvisí so spracovaním chýb, no samo osebe pravidlo návratového kódu pipeline nemení."
+ },
+ {
+  "id": 151,
+  "level": "senior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "scenario",
+  "question": "Služba spúšťa viacero worker procesov a pri ukončení rodičovského procesu chceš zabezpečiť, aby sa zastavil celý strom procesov. Prečo nestačí poslať SIGTERM iba rodičovskému procesu?",
+  "options": [
+   "SIGTERM automaticky zastaví iba najmladší podproces.",
+   "Podprocesy SIGTERM vždy ignorujú.",
+   "SIGTERM sa dá použiť iba na vlákna jadra.",
+   "Signál sa pošle zadanému PID, takže podprocesy ho automaticky nedostanú."
+  ],
+  "answer": 3,
+  "explanation": "Bežný kill pošle signál jednému PID. Na správu celého stromu procesov je potrebný samostatný mechanizmus, napríklad skupina procesov alebo cgroup. Podprocesy môžu SIGTERM spracovať vlastnými obsluhami signálov alebo predvoleným správaním, no signál poslaný rodičovi automaticky nededia."
+ },
+ {
+  "id": 152,
+  "level": "senior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "theory",
+  "question": "Linuxová služba potrebuje iba prístup k TCP portu 443 a nevyžaduje práva roota. Ktorý prístup najlepšie dodržiava princíp najnižších oprávnení?",
+  "options": [
+   "Spúšťať službu natrvalo ako root.",
+   "Použiť vyhradeného používateľa a udeliť iba potrebné capabilities alebo iné obmedzené oprávnenia.",
+   "Spúšťať službu s plnými oprávneniami pre každého používateľa.",
+   "Dať službe prístup k celému adresáru `/dev`."
+  ],
+  "answer": 1,
+  "explanation": "Vyhradený servisný používateľ a minimálne potrebné capabilities zmenšujú dopad kompromitovanej služby. Beh pod rootom vytvára výrazne väčšiu útočnú plochu. Na naviazanie na privilegovaný port môže napríklad stačiť `CAP_NET_BIND_SERVICE`, ak je to vhodné, no capability treba udeliť, iba keď je naozaj potrebná."
+ },
+ {
+  "id": 153,
+  "level": "senior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "behavior",
+  "question": "Aký je najdôležitejší rozdiel medzi bind mountom a symbolickým odkazom?",
+  "options": [
+   "Bind mount sprístupní súbor alebo adresár v inom bode pripojenia, kým symbolický odkaz je odkaz v súborovom systéme.",
+   "Symbolický odkaz je vždy rýchlejší ako bind mount.",
+   "Bind mount sa dá použiť iba s bežnými súbormi.",
+   "Symbolický odkaz vždy zabráni zmazaniu cieľa."
+  ],
+  "answer": 0,
+  "explanation": "Bind mount sprístupní existujúci súbor alebo adresár na inom mieste na úrovni mount namespace jadra. Symbolický odkaz je špeciálny objekt súborového systému, ktorý obsahuje cestu. Tieto dva mechanizmy sa preto líšia v tom, ako sa vyhodnocujú, ako sa správajú oprávnenia a ako interagujú s namespaces."
+ },
+ {
+  "id": 154,
+  "level": "senior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "trap",
+  "question": "Čo robí `trap` v nasledujúcom Bash skripte, ak funkcia `cleanup` maže dočasný súbor?",
+  "code": "cleanup() {\n    rm -f \"$tmp\"\n}\n\ntrap cleanup EXIT\n\ntmp=$(mktemp)\nprintf '%s\\n' \"work\" > \"$tmp\"",
+  "options": [
+   "`cleanup` sa spustí hneď pri registrácii `trap`.",
+   "`cleanup` sa spustí, iba ak skript dostane SIGTERM.",
+   "`cleanup` sa spustí pri ukončení shellu.",
+   "`cleanup` sa spustí, iba ak skript skončí cez `exit 0`."
+  ],
+  "answer": 2,
+  "explanation": "Trap `EXIT` sa vykoná pri ukončení shellu bez ohľadu na to, či skript skončí normálne alebo napríklad explicitným `exit`. Je to bežný vzor na upratanie dočasných zdrojov. Prípad s explicitným `exit 0` môže byť zavádzajúci, pretože trap EXIT naozaj spustí, no nie je jediným prípadom, keď sa tak stane."
+ },
+ {
+  "id": 155,
+  "level": "senior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "edgecase",
+  "question": "Aký je v nasledujúcom príklade kľúčový rozdiel medzi process substitution v Bashi a klasickou rúrou (pipe)?",
+  "code": "diff <(sort file1) <(sort file2)",
+  "options": [
+   "Process substitution vždy zapisuje výstup na disk.",
+   "`diff` dostane dva vstupy podobné súborom, napojené na výstupy dvoch príkazov, pričom tieto dva príkazy bežia ako samostatné procesy.",
+   "Príkazy `sort` bežia postupne, takže nejde o paralelizmus.",
+   "Process substitution funguje výlučne s binárnymi dátami."
+  ],
+  "answer": 1,
+  "explanation": "Process substitution `<(command)` poskytne príkazu odkaz podobný súboru, kým príkaz beží na pozadí. `diff` tak môže s dvoma vstupmi zaobchádzať ako s argumentmi-súbormi bez toho, aby bolo treba výstupy najprv ručne uložiť do dočasných súborov. Tento prístup je užitočný, keď príkazy potrebujú poskytnúť viacero vstupov podobných súborom namiesto jednoduchej pipeline."
+ },
+ {
+  "id": 156,
+  "level": "senior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "performance",
+  "question": "Na produkčnom Linuxovom serveri je vyťaženie CPU nízke, kým časy odozvy aplikácie výrazne vzrástli. `iostat` ukazuje na konkrétnom blokovom zariadení vysokú hodnotu `%util` a rastúci I/O await. Aký je najpravdepodobnejší záver?",
+  "options": [
+   "Cache CPU je príliš malá.",
+   "Systém je určite pomalý kvôli nedostatku pamäte.",
+   "Úzkym hrdlom je pravdepodobne I/O latencia úložného zariadenia.",
+   "Sieťové rozhranie je určite chybné."
+  ],
+  "answer": 2,
+  "explanation": "Nízke vyťaženie CPU v kombinácii s vysokým čakaním na I/O úložiska naznačuje, že procesy môžu čakať na dokončenie I/O operácií. `await` poskytuje informáciu o priemernom čase čakania na I/O operácie a ich spracovania. Nedokazuje to, že príčinou je vo všetkých prípadoch úložisko, no pri uvedených meraniach je to najpriamejšia hypotéza."
+ },
+ {
+  "id": 157,
+  "level": "senior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "debug",
+  "question": "Server má dve sieťové rozhrania. Pri spojení od vzdialeného klienta odchádza odpoveď servera cez iné rozhranie, než cez ktoré prišla požiadavka. Ktorý mechanizmus Linuxu by si mal preskúmať ako prvý?",
+  "options": [
+   "Smerovaciu tabuľku a výber cesty.",
+   "Voľby pripojenia súborového systému.",
+   "Hodnoty nice procesov.",
+   "Nastavenia uchovávania v journald."
+  ],
+  "answer": 0,
+  "explanation": "Cestu odchádzajúcich paketov určuje smerovacie rozhodnutie jadra. Pri viacerých rozhraniach preto treba skontrolovať smerovaciu tabuľku, cestu zvolenú pre cieľ a v prípade potreby aj pravidlá policy routingu a k nim priradené smerovacie tabuľky. Problém nespôsobuje priorita procesov ani logovanie."
+ },
+ {
+  "id": 158,
+  "level": "senior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "production",
+  "question": "Systemd služba otvára príliš veľa súborov a občas skončí s chybou `Too many open files`. Ktoré nastavenie priamo zvýši limit deskriptorov súborov služby?",
+  "options": [
+   "`LimitCPU=`",
+   "`LimitNOFILE=`",
+   "`MemoryMax=`",
+   "`TasksMax=`"
+  ],
+  "answer": 1,
+  "explanation": "`LimitNOFILE=` riadi počet deskriptorov súborov dostupných pre službu. `LimitCPU` sa týka času CPU, `MemoryMax` využitia pamäte a `TasksMax` obmedzuje počet procesov a úloh. Po zmene nastavenia môže byť potrebné znovu načítať jednotku a službu primerane reštartovať."
+ },
+ {
+  "id": 159,
+  "level": "senior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "scenario",
+  "question": "Úspešne si zväčšil logický zväzok LVM, no `df -h` stále ukazuje predchádzajúcu veľkosť súborového systému. Aký je najpravdepodobnejší dôvod?",
+  "options": [
+   "LVM vždy automaticky zmenšuje veľkosť súborového systému.",
+   "`df` zobrazuje iba inódy.",
+   "Blokové zariadenie sa zväčšilo, no súborový systém treba zväčšiť samostatne, ak to daný súborový systém vyžaduje.",
+   "`df` dokáže novú veľkosť zobraziť až po reštarte."
+  ],
+  "answer": 2,
+  "explanation": "Logický zväzok LVM a súborový systém nad ním sú samostatné vrstvy. Zväčšenie logického zväzku nemusí zväčšiť miesto dostupné pre súborový systém. V závislosti od súborového systému môže byť potrebná samostatná operácia zmeny veľkosti, napríklad `resize2fs` pre ext4 alebo zvyčajne `xfs_growfs` pre XFS."
+ },
+ {
+  "id": 160,
+  "level": "senior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "scenario",
+  "question": "Administrátor potrebuje pristupovať k internému serveru cez jump host. Ktorá funkcia SSH umožní pristupovať k cieľovému hostu priamo z konfigurácie klienta, pričom spojenie vedie cez jump host?",
+  "options": [
+   "`ProxyJump`",
+   "`StrictHostKeyChecking=no`",
+   "`ForwardAgent=no`",
+   "`ServerAliveCountMax`"
+  ],
+  "answer": 0,
+  "explanation": "`ProxyJump` (`-J`) nadviaže spojenie s cieľovým hostom cez sprostredkujúci SSH host. Je to čistejšie a spravidla bezpečnejšie ako ručné vytváranie vnorených SSH relácií. Ostatné nastavenia riadia iné správanie SSH a cestu cez jump host nekonfigurujú."
+ },
+ {
+  "id": 161,
+  "level": "senior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "behavior",
+  "question": "Prečo môže byť úprava parametrov jadra v `/proc/sys` užitočná pri ladení výkonu produkčného systému?",
+  "options": [
+   "Pretože každá hodnota v `/proc/sys` mení iba konfiguráciu bootloadera.",
+   "Pretože ide o parametre jadra za behu, ktoré riadia určité správanie jadra počas behu systému.",
+   "Pretože súbory v `/proc/sys` sú moduly jadra uložené na fyzickom disku.",
+   "Pretože tieto súbory priamo menia binárny kód aplikácií."
+  ],
+  "answer": 1,
+  "explanation": "Virtuálne rozhranie `/proc/sys`, ktoré poskytuje procfs, sprístupňuje mnoho parametrov jadra meniteľných za behu vrátane parametrov ovplyvňujúcich sieť a správu pamäte. Niektoré z nich sa dajú spravovať cez `sysctl` a trvalé nastavenie vyžaduje príslušnú systémovú konfiguráciu. Nie každý parameter sa dá v produkcii bezpečne meniť, preto by zmeny mali vychádzať z meraní a mať plán na návrat."
+ },
+ {
+  "id": 162,
+  "level": "senior",
+  "area": "Users & groups",
+  "topic": "Users & groups",
+  "type": "edgecase",
+  "question": "Aplikácia potrebuje prístup k súboru, no nechceš meniť vlastníka ani skupinu súboru. Rôzni používatelia navyše potrebujú rôzne oprávnenia. Ktorý mechanizmus Linuxu je na to vhodný?",
+  "options": [
+   "Iba sticky bit.",
+   "Iba bit setgid.",
+   "ACL pomocou nástrojov ako `setfacl` a `getfacl`.",
+   "Premenovanie súboru."
+  ],
+  "answer": 2,
+  "explanation": "Access Control Lists umožňujú pridať pravidlá prístupu pre konkrétnych používateľov alebo skupiny nad rámec tradičného modelu oprávnení vlastník/skupina/ostatní. Napríklad `setfacl -m u:alice:r file` môže konkrétnemu používateľovi udeliť právo na čítanie. Sticky bit a bit setgid slúžia na iné účely."
+ },
+ {
+  "id": 163,
+  "level": "senior",
+  "area": "Text processing (grep, sed, awk)",
+  "topic": "Text processing (grep, sed, awk)",
+  "type": "algorithm",
+  "question": "V niekoľkogigabajtovom logovom súbore chceš nájsť každý riadok obsahujúci stavový kód HTTP 5xx. Ktorý prístup je najpriamejší a dá sa spracovať prúdovo?",
+  "options": [
+   "`grep -E ' 5[0-9][0-9] ' application.log`",
+   "`cat application.log > /tmp/all.log && nano /tmp/all.log`",
+   "`sort application.log | uniq`",
+   "`sed 's/.*//' application.log`"
+  ],
+  "answer": 0,
+  "explanation": "`grep` dokáže spracovať súbor prúdovo riadok po riadku pomocou regulárneho výrazu, takže nie je potrebné kopírovať celý súbor do pamäte ani pridávať zbytočný medzikrok spracovania. Vzor vrátane okolitých medzier cieli na stavový kód v typických formátoch logov, hoci pre konkrétny formát logu môže byť potrebné ho upraviť."
+ },
+ {
+  "id": 164,
+  "level": "senior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "production",
+  "question": "Systemd služba zapíše do journald v krátkom čase tisíce rovnakých chýb. Aký problém to môže spôsobiť a ktorý mechanizmus je pre riešenie tejto situácie priamo relevantný?",
+  "options": [
+   "journald automaticky vypne celý systém; riešiť to môže iba konfigurácia cronu.",
+   "journald uchováva každý opakovaný riadok navždy; riešiť to dá iba `grep`.",
+   "systemd automaticky zmaže dotknutú službu; zmeniť sa dá iba konfigurácia SSH.",
+   "Nadmerné logovanie môže spotrebúvať zdroje a úložisko; nastavenia rate limitingu v journald môžu obmedziť príliš rýchle generovanie logov."
+  ],
+  "answer": 3,
+  "explanation": "Veľký objem opakovaných logov môže zvýšiť spotrebu CPU, I/O aj úložiska. Rate limiting v journald môže obmedziť počet prijatých správ, keď prichádzajú príliš rýchlo, no trvalým riešením je opraviť skutočný problém v aplikácii. Rate limiting nenahrádza preskúmanie chyby aplikácie."
+ },
+ {
+  "id": 165,
+  "level": "senior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "behavior",
+  "question": "Čo spravidla znamená, keď má proces v Linuxe stav `D`?",
+  "options": [
+   "Proces je v stave zombie.",
+   "Proces je spravidla v neprerušiteľnom spánku, zvyčajne čaká na I/O alebo inú operáciu so zdrojmi v jadre.",
+   "Proces beží v režime ladenia.",
+   "Proces bol automaticky zastavený cez SIGSTOP."
+  ],
+  "answer": 1,
+  "explanation": "Stav `D` zvyčajne znamená neprerušiteľný spánok, často spojený s blokujúcim I/O. Takýto proces nemusí počas čakania na dokončenie operácie jadra okamžite reagovať na bežné signály. Je to obzvlášť dôležité pri skúmaní problémov s úložiskom alebo sieťovými súborovými systémami."
+ },
+ {
+  "id": 166,
+  "level": "senior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "debug",
+  "question": "V Bash skripte chceš bezpečne spracovať riadky výstupu príkazu bez nečakaného rozdelenia na bielych znakoch alebo interpretácie spätných lomiek. Ktorý vzor je najvhodnejší?",
+  "options": [
+   "`for x in $(command); do ...; done`",
+   "`while read line; do ...; done < <(command)`",
+   "`while IFS= read -r line; do ...; done < <(command)`",
+   "`for x in \"$(command)\"; do ...; done`"
+  ],
+  "answer": 2,
+  "explanation": "`IFS= read -r` zabráni nechcenému spracovaniu úvodných a koncových bielych znakov aj escapovaniu spätnými lomkami. Process substitution napojí výstup príkazu na vstup cyklu while. Cyklus `for` založený na substitúcii príkazu sa môže kvôli rozdeleniu na slová a globbingu ľahko správať nesprávne."
+ },
+ {
+  "id": 167,
+  "level": "senior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "performance",
+  "question": "TCP spojenie sa na Linuxovom serveri úspešne nadviaže, no pri veľkých prenosoch dát priepustnosť výrazne klesne. Na sieťovom rozhraní nie je výrazná strata paketov, no MTU sa medzi sieťovými segmentmi líši. Ktorý problém by si mal preskúmať?",
+  "options": [
+   "Path MTU a možné problémy s PMTUD/fragmentáciou.",
+   "Číslo inódy súboru `/etc/passwd`.",
+   "Nastavenie `Restart=` systemd jednotky.",
+   "Rozvrh démona cron."
+  ],
+  "answer": 0,
+  "explanation": "Keď sa MTU líšia a Path MTU Discovery je pokazené alebo blokované, príliš veľké pakety môžu spôsobovať problémy a výrazné zhoršenie výkonu. Skúmanie by malo zahŕňať path MTU, ICMP chyby, TCP retransmisie a sieťovú cestu. Úspešne nadviazané spojenie problém súvisiaci s MTU nevylučuje."
+ },
+ {
+  "id": 168,
+  "level": "senior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "scenario",
+  "question": "Aplikácia nepotrebuje správu siete, raw sockety ani možnosť načítavať moduly jadra. Prečo môže byť selektívne obmedzenie Linux capabilities prínosné?",
+  "options": [
+   "Pretože vypnutie capabilities aplikáciu vždy zrýchli.",
+   "Pretože to aplikáciu automaticky zašifruje.",
+   "Pretože capabilities riadia iba vlastníctvo súborov.",
+   "Pretože časti úplnej sady práv roota sa dajú rozdeliť na jednotlivé capabilities, čo umožňuje zúžiť rozsah potrebných privilegovaných operácií."
+  ],
+  "answer": 3,
+  "explanation": "Linux capabilities rozdeľujú časti tradičnej sady práv roota na samostatné jednotky oprávnení. Službe tak môžeš udeliť iba tie privilegované operácie, ktoré skutočne potrebuje, a ostatné capabilities odobrať. Je to dôležitý mechanizmus na minimalizáciu oprávnení."
+ },
+ {
+  "id": 169,
+  "level": "senior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "behavior",
+  "question": "Systemd jednotka obsahuje `After=network-online.target`. Čo to samo osebe znamená?",
+  "options": [
+   "Služba vždy vytvorí a nakonfiguruje sieťové rozhrania.",
+   "Služba sa môže spustiť, iba keď je každé sieťové spojenie fyzicky funkčné.",
+   "systemd zaradí jednotku za zadaný target, no samo osebe to nevytvára závislosť od tohto targetu.",
+   "Služba sa automaticky reštartuje, ak sa stratí sieťové spojenie."
+  ],
+  "answer": 2,
+  "explanation": "`After=` určuje poradie spúšťania, no samo osebe závislosť nevtiahne. Ak jednotka target skutočne potrebuje, môže byť podľa situácie potrebné aj `Wants=` alebo `Requires=`. `After=` teda nie je rovnocenné s deklarovaním závislosti."
+ },
+ {
+  "id": 170,
+  "level": "senior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "edgecase",
+  "question": "Súborový systém má podľa `df -h` stále niekoľko gigabajtov voľného miesta, no vytvorenie nového súboru zlyhá s chybou `No space left on device`. Aká je typická možná príčina?",
+  "options": [
+   "Súborovému systému sa minuli inódy, čo sa dá overiť cez `df -i`.",
+   "Taktovacia frekvencia CPU je príliš nízka.",
+   "Proces nemá oprávnenie poslať SIGCONT.",
+   "DNS cache je plná."
+  ],
+  "answer": 0,
+  "explanation": "Súborovému systému sa môžu minúť dva rozdielne zdroje: dátové bloky alebo inódy. Ak sú inódy vyčerpané, nové súbory sa nedajú vytvoriť, aj keď na úrovni blokov zostáva veľa voľného miesta. Využitie inódov skontroluješ cez `df -i`."
+ },
+ {
+  "id": 171,
+  "level": "senior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "production",
+  "question": "CPU-náročná aplikácia sa postupne spomaľuje, kým na počítači je aktívnych mnoho ďalších procesov. Profiling cez `perf` ukazuje, že výrazná časť behu aplikácie sa sústreďuje v jednej funkcii. Aký je najdôležitejší ďalší krok?",
+  "options": [
+   "Okamžite reštartovať celý server.",
+   "Zmazať všetky logy jadra.",
+   "Preskúmať hot path funkcie a hľadať možnosti optimalizácie na úrovni algoritmu alebo implementácie.",
+   "Zmazať všetky cron úlohy."
+  ],
+  "answer": 2,
+  "explanation": "Profiling slúži na to, aby na základe meraní odhalil hot paths, ktoré spotrebúvajú významnú časť času CPU. Ak jedna funkcia dominuje behu, treba ďalej skúmať jej algoritmus, cykly, vzory prístupu do pamäte a volaní. Reštart celého systému deterministické úzke hrdlo CPU v aplikácii nerieši."
+ },
+ {
+  "id": 172,
+  "level": "senior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "scenario",
+  "question": "Po aktualizácii na nové jadro počítač už nenaštartuje, no predchádzajúce jadro je v štartovacom menu stále dostupné. Prečo môže byť štart s predchádzajúcim jadrom užitočným prvým krokom?",
+  "options": [
+   "Pretože predchádzajúce jadro vždy automaticky obnoví všetky súbory.",
+   "Pretože predtým funkčné jadro ti umožní preskúmať problém, štartovaciu konfiguráciu, initramfs a ovládače spojené s novým jadrom.",
+   "Pretože bootloader nedokáže načítať nové jadro.",
+   "Pretože použitie starého jadra automaticky zmaže nové jadro."
+  ],
+  "answer": 1,
+  "explanation": "Predtým funkčné jadro poskytuje rýchlu cestu k obnove a zároveň ti umožní skontrolovať initramfs, moduly, konfiguráciu a nastavenia bootloadera spojené s novým jadrom. Je to bežná stratégia obnovy v produkcii. Štart so starým jadrom sám osebe inštaláciu nového jadra nezmaže ani neopraví."
+ },
+ {
+  "id": 173,
+  "level": "senior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "scenario",
+  "question": "Opakovaná úloha na pozadí sa musí spustiť v konkrétnom čase a potrebuješ aj limity zdrojov, logovanie a správu závislostí. Prečo môže byť systemd timer vhodnejší ako klasická cron úloha?",
+  "options": [
+   "Pretože systemd timery sa dajú použiť iba na úlohy súvisiace so sieťou.",
+   "Pretože cron nedokáže spúšťať príkazy.",
+   "Pretože systemd timer automaticky spúšťa každý skript ako root.",
+   "Pretože timer je úzko integrovaný so systemd službami, pre ktoré sa dajú nastaviť limity zdrojov, závislosti a logovanie."
+  ],
+  "answer": 3,
+  "explanation": "Systemd timer zvyčajne nespúšťa príkaz priamo, ale aktivuje servisnú jednotku. Spúšťanie tak môže využiť správu závislostí v systemd, limity zdrojov a integráciu s journald. Pre jednoduché plánované úlohy môže byť cron stále vhodný."
+ },
+ {
+  "id": 174,
+  "level": "senior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "security",
+  "question": "Administrátor pri práci cez jump host používa SSH agent forwarding. Aké je najdôležitejšie bezpečnostné riziko?",
+  "options": [
+   "Cieľový počítač automaticky dostane súbor s privátnym kľúčom.",
+   "Protokol SSH sa v tomto prípade vždy prepne na autentifikáciu heslom.",
+   "Kompromitovaný sprostredkujúci host môže cez preposlaný socket agenta vykonávať autentifikačné operácie s kľúčmi dostupnými cez agenta.",
+   "Agent forwarding vypne overovanie kľúča hosta."
+  ],
+  "answer": 2,
+  "explanation": "Pri agent forwardingu sa samotný privátny kľúč na sprostredkujúci host neprenáša, no prístup k agentovi predstavuje bezpečnostné riziko. Kompromitovaný host sa môže pokúsiť vykonávať autentifikačné operácie cez preposielací kanál. Agent forwarding preto používaj iba na dôveryhodných sprostredkujúcich hostoch a len vtedy, keď je to potrebné."
+ },
+ {
+  "id": 175,
+  "level": "senior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "edgecase",
+  "question": "Systemd služba nevidí premennú `export APP_ENV=production` nastavenú v shelli, kým podprocesy spustené z toho istého terminálu ju vidia. Aké je správne vysvetlenie?",
+  "options": [
+   "Systemd služba nededí shellové prostredie terminálu ako podproces; jej prostredie určuje konfigurácia systemd jednotky a správcu.",
+   "`export` funguje iba vo Windows.",
+   "systemd automaticky zmaže z počítača všetky premenné prostredia.",
+   "Premenná by sa mohla zdediť, iba ak by bola `readonly`."
+  ],
+  "answer": 0,
+  "explanation": "Premenné prostredia sa šíria dedením medzi procesmi; nie sú globálnym stavom systému. Systemd služba bežne dostáva prostredie zostavené správcom systemd, nie aktuálne prostredie ľubovoľného interaktívneho shellu. Premenné špecifické pre službu môžeš nastaviť napríklad cez `Environment=` alebo `EnvironmentFile=`."
+ },
+ {
+  "id": 176,
+  "level": "senior",
+  "area": "Processes & signals",
+  "topic": "Processes & signals",
+  "type": "edgecase",
+  "question": "Proces beží ako vedúci skupiny procesov a spustil viacero podprocesov. Čo urobí `kill -- -1234`, ak je 1234 ID skupiny procesov?",
+  "code": "kill -- -1234",
+  "options": [
+   "Pošle SIGTERM procesu s PID 1234.",
+   "Pošle SIGTERM každému členovi skupiny procesov 1234.",
+   "Pošle SIGKILL celému stromu procesov.",
+   "Zastaví všetkých potomkov spustených vedúcim skupiny procesov 1234 bez ohľadu na ich skupiny procesov."
+  ],
+  "answer": 1,
+  "explanation": "`kill` so záporným PID pošle signál skupine procesov. `kill -- -1234` teda pošle SIGTERM každému členovi skupiny procesov 1234. To sa líši od zadania jedného kladného PID. Skupina procesov a celý strom procesov nemusia byť tou istou množinou procesov."
+ },
+ {
+  "id": 177,
+  "level": "senior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "scenario",
+  "question": "Aplikáciu spúšťaš ako systemd službu a chceš zabezpečiť, aby v prípade kompromitovania mala prístup k čo najmenšiemu množstvu systémových zdrojov. Ktorý prístup najlepšie zodpovedá tomuto cieľu?",
+  "options": [
+   "Spúšťať službu pod vyhradeným používateľom a použiť sandboxing v systemd, obmedzenia namespaces a obmedzenia capabilities.",
+   "Spúšťať službu ako root, aby ju systemd mohol ľahšie spravovať.",
+   "Sprístupniť službe zápis do celého súborového systému.",
+   "Automaticky zapnúť všetky capabilities."
+  ],
+  "answer": 0,
+  "explanation": "Vyhradený používateľ, capabilities obmedzené na tie skutočne potrebné a sandboxing v systemd môžu spoločne zúžiť dosah kompromitovanej služby. Môže ísť aj o obmedzenia prístupu k súborovému systému, sieti a zariadeniam. Cieľom nie je použiť jediný izolačný mechanizmus, ale minimalizovať oprávnenia a zdroje, ktoré služba potrebuje."
+ },
+ {
+  "id": 178,
+  "level": "senior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "behavior",
+  "question": "Čo sa na Linuxovom systéme zvyčajne stane, ak proces otvorí súbor a iný proces ho potom zmaže, kým ho prvý proces stále drží otvorený?",
+  "options": [
+   "Jadro okamžite uvoľní dátové bloky súboru.",
+   "Súbor sa automaticky presunie do adresára `/lost+found`.",
+   "Názov súboru sa z adresára odstráni, no inóda a príslušné dáta môžu zostať, kým otvorený odkaz nezanikne.",
+   "Mazanie vždy zlyhá, kým súbor používa akýkoľvek proces."
+  ],
+  "answer": 2,
+  "explanation": "`unlink` odstráni položku adresára, no už otvorený súbor môže zostať prístupný cez deskriptor súboru. Jadro môže zdroje súboru uvoľniť až vtedy, keď neexistuje žiadny odkaz v adresári ani aktívny otvorený odkaz. Preto môže zmazaný, no stále otvorený logový súbor naďalej zaberať miesto na disku."
+ },
+ {
+  "id": 179,
+  "level": "senior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "trap",
+  "question": "V Bash skripte používaš:\nPrečo môže byť v tomto príklade dôležité `set -E`?",
+  "code": "set -E\ntrap 'printf \"error at line %s\\n\" \"$LINENO\"' ERR\n\nfoo() {\n    false\n}\n\nfoo\nprintf '%s\\n' \"done\"",
+  "options": [
+   "Zapne režim POSIX v Bashi.",
+   "Automaticky zapne režim `set -e`.",
+   "Každú chybu automaticky ukončí cez SIGKILL.",
+   "Umožní, aby shellové funkcie zdedili trap ERR."
+  ],
+  "answer": 3,
+  "explanation": "`set -E`, známe aj ako `set -o errtrace`, spôsobí, že trap ERR zdedia shellové funkcie, substitúcie príkazov a niektoré ďalšie kontexty subshellov. Je to obzvlášť užitočné pri zložitejšom spracovaní chýb. Trap ERR nie je to isté ako `errexit` a nezaručuje, že sa zachytí každá možná chyba."
+ },
+ {
+  "id": 180,
+  "level": "senior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "edgecase",
+  "question": "Čo ti umožňuje nasledujúca konštrukcia?",
+  "code": "while IFS= read -r line; do\n    printf '%s\\n' \"$line\"\ndone < <(generate_data)",
+  "options": [
+   "Pomocou process substitution napojí výstup `generate_data` na štandardný vstup cyklu `while`.",
+   "Výstup `generate_data` vždy uloží do trvalého dočasného súboru.",
+   "Cyklus `while` výstup `generate_data` úplne ignoruje.",
+   "`generate_data` vždy beží v tom istom procese shellu ako cyklus `while`."
+  ],
+  "answer": 0,
+  "explanation": "`< <(generate_data)` pomocou process substitution poskytne vstup podobný súboru, z ktorého cyklus `while` číta. `generate_data` môže bežať v samostatnom kontexte, kým cyklus zostáva vo vlastnom kontexte shellu. Užitočné je to aj preto, že sa tým vyhneš bežnému problému so subshellom pri klasických pipelines, keď zmeny premenných v cykle nemusia v rodičovskom shelli pretrvať."
+ },
+ {
+  "id": 181,
+  "level": "senior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "performance",
+  "question": "Server vykazuje vysoký load average, no aj podiel nečinného času CPU je výrazný. V zozname procesov je niekoľko procesov v stave `D`. Čo túto situáciu najlepšie vysvetľuje?",
+  "options": [
+   "Load average meria iba využitie CPU, takže výsledok je protirečivý.",
+   "K load average môžu prispievať aj úlohy v stave `D`, ktoré sú v neprerušiteľnom spánku.",
+   "Stav `D` vždy znamená, že proces je už zombie.",
+   "Vysoký load average v tejto situácii vždy naznačuje problém s DNS."
+  ],
+  "answer": 1,
+  "explanation": "Na Linuxe load average nepredstavuje jednoducho vyťaženie CPU. Okrem úloh pripravených na beh k nemu môžu prispievať aj určité úlohy v neprerušiteľnom spánku, napríklad tie, ktoré čakajú na blokujúce I/O. Load average preto môže byť vysoký, aj keď je významná časť času CPU nečinná."
+ },
+ {
+  "id": 182,
+  "level": "senior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "debug",
+  "question": "Server má viacero IP adries a služba má byť dostupná iba na jednej konkrétnej adrese. Ktorá konfigurácia to vyjadruje najpresnejšie?",
+  "options": [
+   "Nechať službu naviazať sa na všetky rozhrania cez `0.0.0.0`.",
+   "Nechať službu naviazať sa na neexistujúcu IP adresu.",
+   "Nechať službu naviazať sa na požadovanú konkrétnu lokálnu IP adresu.",
+   "Zmeniť iba DNS záznam klienta."
+  ],
+  "answer": 2,
+  "explanation": "Naviazanie na konkrétnu lokálnu IP adresu umožní službe prijímať spojenia iba na tejto adrese. Pri IPv4 `0.0.0.0` spravidla znamená naviazanie na všetky lokálne IPv4 rozhrania. Zmena adresy naviazania nenahrádza kontrolu všetkých potrebných sieťových pravidiel alebo pravidiel firewallu."
+ },
+ {
+  "id": 183,
+  "level": "senior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "production",
+  "question": "Systemd služba sa musí spustiť až po úspešnom spustení inej služby a druhá služba by nemala zmysel, ak by prvá nebola dostupná. Ktorá kombinácia to vyjadruje najvhodnejšie?",
+  "options": [
+   "`After=` a `Requires=`",
+   "Iba `Description=`",
+   "`Restart=` a `Nice=`",
+   "`LimitNOFILE=` a `MemoryMax=`"
+  ],
+  "answer": 0,
+  "explanation": "`Requires=` vytvára vzťah závislosti, kým `After=` určuje poradie spúšťania. Spolu vyjadrujú, že jedna jednotka závisí od druhej a že na poradí ich spúšťania záleží. Samotné `After=` určuje iba poradie, takže na vyjadrenie závislosti nestačí."
+ },
+ {
+  "id": 184,
+  "level": "senior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "scenario",
+  "question": "Chceš zväčšiť logický zväzok so súborovým systémom ext4. Aký je správny všeobecný postup, ak najprv zväčšíš LV?",
+  "options": [
+   "Zmenšiť LV a potom preformátovať celý disk.",
+   "Zväčšiť LV a potom zväčšiť aj súborový systém ext4.",
+   "Zmeniť iba názov adresára bodu pripojenia.",
+   "Najprv zmazať súborový systém a potom reštartovať."
+  ],
+  "answer": 1,
+  "explanation": "Vrstva LVM a veľkosť súborového systému sa spravujú samostatne. Po zväčšení LV treba rozšíriť aj súborový systém ext4, napríklad cez `resize2fs`, prípadne môže príslušnú zmenu veľkosti súborového systému automaticky vykonať `lvextend -r`. Presné príkazy vždy vyberaj podľa súborového systému a dostupných nástrojov."
+ },
+ {
+  "id": 185,
+  "level": "senior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "scenario",
+  "question": "Administrátor chce použiť SSH spojenie na TCP forwarding, aby sa dostal k internej službe, bez potreby vzdialeného shellu. Ktorá funkcia SSH je na to vhodná?",
+  "options": [
+   "`ssh-keygen -R`",
+   "`ssh-copy-id`",
+   "`ssh -N -L`",
+   "`ssh -v`"
+  ],
+  "answer": 2,
+  "explanation": "`-L` vytvorí lokálny port forwarding, kým `-N` určuje, že sa nemá spustiť žiadny vzdialený príkaz ani shell. Napríklad lokálny port sa tak dá cez SSH server preposlať na interný cieľ. To môže byť užitočné pri administrácii a scenároch bezpečného sieťového prístupu."
+ },
+ {
+  "id": 186,
+  "level": "senior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "scenario",
+  "question": "Linuxový počítač sa počas štartu dostane do prostredia initramfs, no nedokáže pripojiť koreňový súborový systém. Ktorú príčinu by si mal preskúmať ako prvú?",
+  "options": [
+   "Súbor `.bashrc` používateľa.",
+   "Potrebný ovládač úložiska, modul koreňového súborového systému a obsah initramfs.",
+   "Aktuálnu premennú `PATH` používateľa.",
+   "Rozvrh démona cron."
+  ],
+  "answer": 1,
+  "explanation": "Ak sa štart dostane do initramfs, no koreňový súborový systém sa nedá pripojiť, medzi bežné príčiny patrí chýbajúci ovládač úložiska alebo súborového systému, nesprávny initramfs alebo nesprávny parameter koreňového zariadenia. Jednou z úloh initramfs je poskytnúť prostredie raného štartu potrebné na prístup ku koreňovému súborovému systému. Konfigurácia shellu alebo cronu v tejto fáze spravidla nie je relevantná."
+ },
+ {
+  "id": 187,
+  "level": "senior",
+  "area": "Logs & journald",
+  "topic": "Logs & journald",
+  "type": "behavior",
+  "question": "Chceš si pozrieť logy systemd služby iba z aktuálneho štartu systému. Ktoré použitie `journalctl` je najpresnejšie?",
+  "options": [
+   "`journalctl -b`",
+   "`journalctl --vacuum-time=1s`",
+   "`journalctl --disk-usage`",
+   "`journalctl --rotate`"
+  ],
+  "answer": 0,
+  "explanation": "`journalctl -b` vyfiltruje záznamy journalu na aktuálny štart. Ak potrebuješ logy konkrétnej služby, môžeš výber ďalej zúžiť, napríklad cez `journalctl -b -u myservice`. Ostatné príkazy slúžia na údržbu journalu alebo kontrolu využitia úložiska."
+ },
+ {
+  "id": 188,
+  "level": "senior",
+  "area": "Cron & scheduling",
+  "topic": "Cron & scheduling",
+  "type": "edgecase",
+  "question": "Cron úloha beží dlho a je možné, že predchádzajúca inštancia ešte beží, keď sa začne ďalšie naplánované spustenie. Ktorý problém treba riešiť?",
+  "options": [
+   "Cron vždy čaká na dokončenie predchádzajúcej inštancie.",
+   "Cron vždy ukončí predchádzajúcu inštanciu cez SIGKILL.",
+   "Prekrývajúce sa spustenia môžu spôsobiť race conditions, duplicitné spracovanie alebo vyčerpanie zdrojov.",
+   "K prekrytiu môže dôjsť, iba ak na počítači nebeží systemd."
+  ],
+  "answer": 2,
+  "explanation": "Klasický cron sám osebe neposkytuje všeobecnú záruku, že úloha pobeží iba v jednej inštancii. Pri dlho bežiacich úlohách sa na riadenie prekrývajúcich sa spustení dá použiť lockfile, `flock`, zámok v databáze alebo iný koordinačný mechanizmus. Vhodné riešenie závisí od toho, či je aplikácia idempotentná a aká miera súbežnosti je prípustná."
+ },
+ {
+  "id": 189,
+  "level": "senior",
+  "area": "Environment variables",
+  "topic": "Environment variables",
+  "type": "behavior",
+  "question": "V Bash skripte používaš nasledujúci príkaz:\nČo platí o premennej `APP_ENV`?",
+  "code": "APP_ENV=production ./start.sh",
+  "options": [
+   "Premenná sa stane globálne dostupnou v každom neskôr spustenom shelli.",
+   "Premenná je prítomná v prostredí `start.sh` a podprocesy, ktoré spustí, ju môžu zdediť.",
+   "Premenná sa automaticky pridá do `/etc/environment`.",
+   "Hodnota premennej sa natrvalo zmení pre každého používateľa."
+  ],
+  "answer": 1,
+  "explanation": "Priradenie `NAME=value` umiestnené pred príkazom nastaví premennú v prostredí tohto príkazu. Proces `start.sh` dostane toto prostredie a podprocesy, ktoré z neho spustí, môžu premennú zdediť. Priradenie automaticky nemení prostredie interaktívneho shellu ani systémový konfiguračný súbor."
+ },
+ {
+  "id": 190,
+  "level": "senior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "debug",
+  "question": "Využitie CPU aplikáciou je vysoké, no celková záťaž CPU nevysvetľuje, prečo sa aplikácia spomalila. Podľa `perf` trávi výraznú časť času v priestore jadra a systém má veľký počet prepnutí kontextu. Ktorý smer môže byť pre ďalšie skúmanie relevantný?",
+  "options": [
+   "Stačí zmeniť iba DNS TTL.",
+   "Treba premenovať bod pripojenia súborového systému.",
+   "Zakomentovanie cron úloh problém určite vyrieši.",
+   "Treba profilovať príčiny systémových volaní, zámkov, I/O a prepnutí kontextu, napríklad pomocou udalostí a trasovania v `perf`."
+  ],
+  "answer": 3,
+  "explanation": "Vysoký čas v jadre a veľa prepnutí kontextu môžu naznačovať, že aplikácia trávi veľa času v systémových volaniach, plánovaní, zamykaní alebo I/O. Ďalší profiling pomôže určiť, ktoré udalosti dominujú. Samotné súhrnné percento CPU neodhalí skutočnú hot path ani úzke hrdlo na úrovni jadra."
+ },
+ {
+  "id": 191,
+  "level": "senior",
+  "area": "Security hardening",
+  "topic": "Security hardening",
+  "type": "behavior",
+  "question": "Aký je hlavný rozdiel medzi prístupom povinného riadenia prístupu (mandatory access control) v štýle SELinux alebo AppArmor a tradičnými unixovými oprávneniami vlastník/skupina/režim?",
+  "options": [
+   "Povinné riadenie prístupu mení iba vlastníctvo súborov.",
+   "Povinné riadenie prístupu automaticky spúšťa každý proces ako root.",
+   "Povinné riadenie prístupu môže popri tradičných DAC oprávneniach uplatňovať ďalšie centrálne alebo politikou vynucované pravidlá prístupu.",
+   "Povinné riadenie prístupu sa používa iba na šifrovanie sieťových paketov."
+  ],
+  "answer": 2,
+  "explanation": "Tradičné unixové oprávnenia patria do modelu voliteľného riadenia prístupu (DAC), v ktorom sa prístup overuje podľa vlastníka a ďalších pravidiel oprávnení. SELinux a AppArmor môžu uplatňovať ďalšie obmedzenia založené na politikách, ktoré dokážu zúžiť dosah kompromitovaného procesu. Presné správanie a model politík sa medzi systémami líšia."
+ },
+ {
+  "id": 192,
+  "level": "senior",
+  "area": "Filesystem hierarchy",
+  "topic": "Filesystem hierarchy",
+  "type": "edgecase",
+  "question": "Prečo môže byť nebezpečné nahradiť alebo zakryť adresár so systémovými súbormi samostatným pripojením (mount), takže pôvodný obsah adresára zostane pod pripojením skrytý?",
+  "options": [
+   "Pretože pôvodný obsah pod bodom pripojenia sa automaticky zmaže.",
+   "Pretože pôvodný obsah za bodom pripojenia sa dočasne stane nedostupným, takže aplikácie alebo systémové komponenty nemusia nájsť súbory, ktoré očakávajú.",
+   "Pretože Linux nepodporuje viacero bodov pripojenia v jednom systéme.",
+   "Pretože každé pripojenie sa automaticky stane iba na čítanie."
+  ],
+  "answer": 1,
+  "explanation": "Existujúci obsah adresára pod bodom pripojenia sa nezmaže, no pripojený súborový systém ho pred bežným vyhodnocovaním ciest skryje. To môže byť obzvlášť nebezpečné, ak systémový komponent očakáva na tomto mieste v pôvodnom súborovom systéme konfiguračný súbor alebo súbor za behu. Po odpojení bude pôvodný obsah opäť viditeľný."
+ },
+ {
+  "id": 193,
+  "level": "senior",
+  "area": "Bash scripting",
+  "topic": "Bash scripting",
+  "type": "algorithm",
+  "question": "V Bash skripte chceš spustiť viacero príkazov tak, aby skript pokračoval, iba ak predchádzajúci príkaz uspeje. Ktoré riešenie to priamo vyjadrí na jednom príkazovom riadku?",
+  "options": [
+   "`command1 && command2`",
+   "`command1 || command2`",
+   "`command1 ; command2`",
+   "`command1 & command2`"
+  ],
+  "answer": 0,
+  "explanation": "Operátor `&&` spustí druhý príkaz, iba ak prvý uspeje, teda vráti nulový návratový kód. `||` spustí druhý príkaz, keď prvý zlyhá, bodkočiarka nerobí druhý príkaz závislým od úspechu prvého a `&` spustí prvý príkaz na pozadí."
+ },
+ {
+  "id": 194,
+  "level": "senior",
+  "area": "Pipes & redirection",
+  "topic": "Pipes & redirection",
+  "type": "behavior",
+  "question": "Čo v Bashi spôsobí nasledujúci príkaz?",
+  "code": "printf '%s\\n' \"hello\" 2>/tmp/error.log | wc -l",
+  "options": [
+   "Výstup `printf` aj `wc` ide do `/tmp/error.log`.",
+   "Štandardný chybový výstup `printf` ide do `/tmp/error.log`, kým jeho štandardný výstup sa cez rúru odovzdá do `wc`.",
+   "Štandardný výstup `wc` ide do `/tmp/error.log`.",
+   "Rúra nefunguje, pretože v tom istom príkaze sa nedá použiť presmerovanie."
+  ],
+  "answer": 1,
+  "explanation": "`2>/tmp/error.log` presmeruje iba prúd štandardného chybového výstupu `printf`. Štandardný výstup zostáva vstupom pipeline, takže `wc -l` spočíta riadok, ktorý vytvoril `printf`. Presmerovanie a pipelines sa dajú používať spolu."
+ },
+ {
+  "id": 195,
+  "level": "senior",
+  "area": "Networking",
+  "topic": "Networking",
+  "type": "scenario",
+  "question": "TCP port je na serveri v stave LISTEN, no vzdialení klienti sa nedokážu pripojiť, kým z localhostu na tom istom počítači spojenie funguje. Ktorý postup skúmania je najrozumnejší?",
+  "options": [
+   "Okamžite zmazať celý obsah `/var/log`.",
+   "Zmeniť hodnotu nice procesu.",
+   "Najprv skontrolovať adresu naviazania, potom pravidlá firewallu na hoste a v sieti a nakoniec smerovanie a sieťovú cestu.",
+   "Reštartovať počítač bez kontroly konfigurácie."
+  ],
+  "answer": 2,
+  "explanation": "Keď služba funguje z localhostu, no vzdialene je nedostupná, treba overiť, či nie je naviazaná iba na loopback adresu a či spojenie neblokuje firewall na hoste alebo v sieti. Potom treba skontrolovať smerovanie a celú sieťovú cestu. Samotný stav `LISTEN` vzdialenú dostupnosť nezaručuje."
+ },
+ {
+  "id": 196,
+  "level": "senior",
+  "area": "systemd & services",
+  "topic": "systemd & services",
+  "type": "production",
+  "question": "Služba spotrebúva príliš veľa času CPU a jej využitie CPU chceš obmedziť na úrovni systemd bez úpravy kódu aplikácie. Ktorý mechanizmus sa na to dá použiť?",
+  "options": [
+   "`CPUQuota=`",
+   "`StandardOutput=`",
+   "`Description=`",
+   "`WorkingDirectory=`"
+  ],
+  "answer": 0,
+  "explanation": "`CPUQuota=` umožňuje systemd uplatniť na službu limit zdrojov, zvyčajne pomocou cgroups. Využitie CPU službou sa tak dá obmedziť bez toho, aby aplikácia musela obmedzenie implementovať sama. Presný účinok závisí od nastavenej hodnoty a dostupných zdrojov CPU systému."
+ },
+ {
+  "id": 197,
+  "level": "senior",
+  "area": "Disks & storage",
+  "topic": "Disks & storage",
+  "type": "performance",
+  "question": "Databáza vykonáva veľké množstvo náhodného I/O. Podľa `iostat` je I/O latencia vysoká, kým hĺbka frontu úložiska zostáva trvalo vysoká. Ktorý záver je najlepšie podložený?",
+  "options": [
+   "Systém je určite viazaný na CPU.",
+   "Záťaž úložného subsystému a čakanie na I/O pravdepodobne vytvárajú úzke hrdlo.",
+   "DNS resolver je určite príliš pomalý.",
+   "Procesy sú určite zombie."
+  ],
+  "answer": 1,
+  "explanation": "Vysoká I/O latencia v kombinácii s trvalo vysokou hĺbkou frontu môže naznačovať, že do úložného subsystému prichádza viac I/O, než dokáže v danom čase efektívne spracovať. Situáciu treba vyhodnotiť spolu s ďalšími metrikami, ako je priepustnosť, IOPS, await a I/O vzor aplikácie. Jediná metrika sama osebe nedokazuje každú príčinu problému s výkonom."
+ },
+ {
+  "id": 198,
+  "level": "senior",
+  "area": "SSH",
+  "topic": "SSH",
+  "type": "edgecase",
+  "question": "SSH spojenie preruší sieťové zariadenie po dlhšej dobe nečinnosti. Aplikácia negeneruje nepretržitú prevádzku. Ktoré nastavenie SSH môže pomôcť udržať nečinné spojenie nažive?",
+  "options": [
+   "`IdentityAgent`",
+   "`UserKnownHostsFile`",
+   "`ServerAliveInterval`",
+   "`PreferredAuthentications`"
+  ],
+  "answer": 2,
+  "explanation": "`ServerAliveInterval` určuje, ako často klient pošle serveru keepalive správu na úrovni SSH, keď neprebieha iná prevádzka. To môže pomôcť pri časových limitoch nečinnosti, ktoré uplatňujú niektoré sieťové zariadenia. `ClientAliveInterval` je naopak nastavenie na strane servera."
+ },
+ {
+  "id": 199,
+  "level": "senior",
+  "area": "Boot & kernel",
+  "topic": "Boot & kernel",
+  "type": "debug",
+  "question": "Linuxový systém sa hneď po štarte reštartuje a na konzole sa nakrátko objaví správa kernel panic. Ktorý prístup je na izolovanie problému najužitočnejší?",
+  "options": [
+   "Zmazať iba históriu shellu používateľa.",
+   "Zmeniť rozvrhy všetkých cron úloh.",
+   "Zmeniť adresu DNS servera.",
+   "Naštartovať predtým funkčné jadro a skontrolovať parametre jadra a štartu, initramfs, ovládače a relevantné logy z raného štartu."
+  ],
+  "answer": 3,
+  "explanation": "Kernel panic môže naznačovať problém v ranej fáze štartu, takže použitie predtým funkčného jadra rýchlo ukáže, či problém súvisí s novým jadrom. Potom môžeš skontrolovať obsah initramfs, parametre jadra, ovládače a dostupné logy zo štartu. Presná diagnostika závisí od správy panic a od priebehu štartu."
+ },
+ {
+  "id": 200,
+  "level": "senior",
+  "area": "Performance troubleshooting",
+  "topic": "Performance troubleshooting",
+  "type": "scenario",
+  "question": "Produkčná služba sa periodicky spomaľuje. Priemerné využitie CPU, pamäte a úložiska vyzerá normálne, no spomalenie nastáva v krátkych, ťažko reprodukovateľných časových oknách. Aká je najlepšia diagnostická stratégia?",
+  "options": [
+   "Pri každom spomalení okamžite reštartovať systém.",
+   "Skontrolovať iba výstup `top` z aktuálneho okamihu.",
+   "Zmeniť všetky parametre jadra naraz.",
+   "Zbierať metriky s časovými značkami a cielené dáta z trasovania/profilingu a potom korelovať okná spomalenia s udalosťami na úrovni systému a aplikácie."
+  ],
+  "answer": 3,
+  "explanation": "Pri krátkodobých problémoch s výkonom jediná snímka ľahko prehliadne spúšťaciu udalosť. Metriky s časovými značkami, trasovanie, dáta o latencii na úrovni aplikácie a cielený profiling ti umožnia presne korelovať, čo sa dialo v problematických oknách. Cielená pozorovateľnosť a postupné overovanie hypotéz sú spoľahlivejšie ako súčasná zmena viacerých konfigurácií."
+ }
+]

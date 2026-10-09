@@ -13,40 +13,41 @@ interface Step {
   data: string;
   en: string;
   hu: string;
+  sk: string;
   bad?: boolean;
 }
 
 function steps(c: Case): Step[] {
-  const req: Step = { at: 'Client', dir: 'down', data: c === 'invalid' ? 'POST /api/tasks\n{ "title": "" }' : 'POST /api/tasks\n{ "title": "Buy milk", "dueDate": "2026-10-10" }', en: 'The client sends JSON over HTTP.', hu: 'A kliens JSON-t küld HTTP-n.' };
-  const ctrl: Step = { at: 'Controller', dir: 'down', data: 'CreateTaskRequest(title="Buy milk", dueDate=2026-10-10)', en: '@RestController maps the URL and turns JSON into a request DTO; @Valid checks it.', hu: 'A @RestController leképezi az URL-t, a JSON-ból kérés-DTO lesz; a @Valid ellenőrzi.' };
+  const req: Step = { at: 'Client', dir: 'down', data: c === 'invalid' ? 'POST /api/tasks\n{ "title": "" }' : 'POST /api/tasks\n{ "title": "Buy milk", "dueDate": "2026-10-10" }', en: 'The client sends JSON over HTTP.', hu: 'A kliens JSON-t küld HTTP-n.', sk: 'Klient pošle JSON cez HTTP.' };
+  const ctrl: Step = { at: 'Controller', dir: 'down', data: 'CreateTaskRequest(title="Buy milk", dueDate=2026-10-10)', en: '@RestController maps the URL and turns JSON into a request DTO; @Valid checks it.', hu: 'A @RestController leképezi az URL-t, a JSON-ból kérés-DTO lesz; a @Valid ellenőrzi.', sk: '@RestController namapuje URL a z JSON-u spraví request DTO; @Valid ho overí.' };
   if (c === 'invalid')
     return [
       req,
-      { ...ctrl, data: 'CreateTaskRequest(title="")\n@NotBlank title → violation', en: 'Validation fails in the controller layer — the service is never called.', hu: 'Az ellenőrzés a controller rétegben elbukik — a service-t meg sem hívjuk.', bad: true },
-      { at: 'Client', dir: 'up', data: '400 Bad Request\n{ "errors": { "title": "must not be blank" } }', en: 'A @RestControllerAdvice turns the exception into a clear 400 response.', hu: 'Egy @RestControllerAdvice világos 400-as válasszá alakítja a kivételt.', bad: true },
+      { ...ctrl, data: 'CreateTaskRequest(title="")\n@NotBlank title → violation', en: 'Validation fails in the controller layer — the service is never called.', hu: 'Az ellenőrzés a controller rétegben elbukik — a service-t meg sem hívjuk.', sk: 'Validácia zlyhá už vo vrstve controllera – service sa vôbec nezavolá.', bad: true },
+      { at: 'Client', dir: 'up', data: '400 Bad Request\n{ "errors": { "title": "must not be blank" } }', en: 'A @RestControllerAdvice turns the exception into a clear 400 response.', hu: 'Egy @RestControllerAdvice világos 400-as válasszá alakítja a kivételt.', sk: '@RestControllerAdvice premení výnimku na zrozumiteľnú odpoveď 400.', bad: true },
     ];
-  const svc: Step = { at: 'Service', dir: 'down', data: 'taskService.create(request)\n→ rule: title must be unique per user', en: 'The service holds the business rules and the transaction (@Transactional).', hu: 'A service tartalmazza az üzleti szabályokat és a tranzakciót (@Transactional).' };
-  const repoCheck: Step = { at: 'Repository', dir: 'down', data: 'taskRepository.existsByOwnerAndTitle(…)', en: 'The repository is the only layer that talks to the database.', hu: 'A repository az egyetlen réteg, amely az adatbázissal beszél.' };
+  const svc: Step = { at: 'Service', dir: 'down', data: 'taskService.create(request)\n→ rule: title must be unique per user', en: 'The service holds the business rules and the transaction (@Transactional).', hu: 'A service tartalmazza az üzleti szabályokat és a tranzakciót (@Transactional).', sk: 'Service drží biznis pravidlá a transakciu (@Transactional).' };
+  const repoCheck: Step = { at: 'Repository', dir: 'down', data: 'taskRepository.existsByOwnerAndTitle(…)', en: 'The repository is the only layer that talks to the database.', hu: 'A repository az egyetlen réteg, amely az adatbázissal beszél.', sk: 'Repository je jediná vrstva, ktorá komunikuje s databázou.' };
   if (c === 'duplicate')
     return [
       req,
       ctrl,
       svc,
       repoCheck,
-      { at: 'Database', dir: 'up', data: 'SELECT … → true', en: 'A task with this title already exists.', hu: 'Már létezik ilyen című feladat.' },
-      { at: 'Service', dir: 'up', data: 'throw new DuplicateTaskException(title)', en: 'The rule is broken, so the service throws a domain exception.', hu: 'Sérül a szabály, ezért a service domain-kivételt dob.', bad: true },
-      { at: 'Client', dir: 'up', data: '409 Conflict\n{ "error": "Task \\"Buy milk\\" already exists" }', en: 'The exception handler maps it to 409 Conflict.', hu: 'A kivételkezelő 409 Conflict válasszá alakítja.', bad: true },
+      { at: 'Database', dir: 'up', data: 'SELECT … → true', en: 'A task with this title already exists.', hu: 'Már létezik ilyen című feladat.', sk: 'Úloha s týmto názvom už existuje.' },
+      { at: 'Service', dir: 'up', data: 'throw new DuplicateTaskException(title)', en: 'The rule is broken, so the service throws a domain exception.', hu: 'Sérül a szabály, ezért a service domain-kivételt dob.', sk: 'Pravidlo je porušené, takže service vyhodí doménovú výnimku.', bad: true },
+      { at: 'Client', dir: 'up', data: '409 Conflict\n{ "error": "Task \\"Buy milk\\" already exists" }', en: 'The exception handler maps it to 409 Conflict.', hu: 'A kivételkezelő 409 Conflict válasszá alakítja.', sk: 'Exception handler ju premení na 409 Conflict.', bad: true },
     ];
   return [
     req,
     ctrl,
     svc,
-    { at: 'Repository', dir: 'down', data: 'taskRepository.save(new Task(…))', en: 'The service builds an entity and asks the repository to save it.', hu: 'A service entitást épít, és megkéri a repositoryt, hogy mentse.' },
-    { at: 'Database', dir: 'down', data: "INSERT INTO task (title, due_date, owner_id)\nVALUES ('Buy milk', '2026-10-10', 7)", en: 'Hibernate generates the SQL.', hu: 'A Hibernate legenerálja az SQL-t.' },
-    { at: 'Repository', dir: 'up', data: 'Task(id=43, title="Buy milk", …)', en: 'The saved entity comes back with its generated id.', hu: 'A mentett entitás a generált azonosítóval jön vissza.' },
-    { at: 'Service', dir: 'up', data: 'TaskResponse(id=43, title="Buy milk", dueDate=2026-10-10)', en: 'The entity is mapped to a response DTO — internal fields stay hidden.', hu: 'Az entitásból válasz-DTO lesz — a belső mezők rejtve maradnak.' },
-    { at: 'Controller', dir: 'up', data: 'ResponseEntity.created(URI("/api/tasks/43")).body(dto)', en: 'The controller picks the status code and headers.', hu: 'A controller választja ki az állapotkódot és a fejléceket.' },
-    { at: 'Client', dir: 'up', data: '201 Created\nLocation: /api/tasks/43\n{ "id": 43, "title": "Buy milk", "dueDate": "2026-10-10" }', en: 'JSON goes back to the client.', hu: 'A JSON visszamegy a kliensnek.' },
+    { at: 'Repository', dir: 'down', data: 'taskRepository.save(new Task(…))', en: 'The service builds an entity and asks the repository to save it.', hu: 'A service entitást épít, és megkéri a repositoryt, hogy mentse.', sk: 'Service vytvorí entitu a požiada repository, aby ju uložilo.' },
+    { at: 'Database', dir: 'down', data: "INSERT INTO task (title, due_date, owner_id)\nVALUES ('Buy milk', '2026-10-10', 7)", en: 'Hibernate generates the SQL.', hu: 'A Hibernate legenerálja az SQL-t.', sk: 'Hibernate vygeneruje SQL.' },
+    { at: 'Repository', dir: 'up', data: 'Task(id=43, title="Buy milk", …)', en: 'The saved entity comes back with its generated id.', hu: 'A mentett entitás a generált azonosítóval jön vissza.', sk: 'Uložená entita sa vráti s vygenerovaným id.' },
+    { at: 'Service', dir: 'up', data: 'TaskResponse(id=43, title="Buy milk", dueDate=2026-10-10)', en: 'The entity is mapped to a response DTO — internal fields stay hidden.', hu: 'Az entitásból válasz-DTO lesz — a belső mezők rejtve maradnak.', sk: 'Entita sa namapuje na response DTO – interné polia ostanú skryté.' },
+    { at: 'Controller', dir: 'up', data: 'ResponseEntity.created(URI("/api/tasks/43")).body(dto)', en: 'The controller picks the status code and headers.', hu: 'A controller választja ki az állapotkódot és a fejléceket.', sk: 'Controller zvolí stavový kód a hlavičky.' },
+    { at: 'Client', dir: 'up', data: '201 Created\nLocation: /api/tasks/43\n{ "id": 43, "title": "Buy milk", "dueDate": "2026-10-10" }', en: 'JSON goes back to the client.', hu: 'A JSON visszamegy a kliensnek.', sk: 'JSON putuje späť ku klientovi.' },
   ];
 }
 
@@ -60,15 +61,15 @@ export default function LayeredRequest({ lang }: WidgetProps) {
   useAutoplay(playing, i, all.length, setI, setPlaying, 1900);
   const s = all[Math.min(i, all.length - 1)];
   return (
-    <Frame lang={lang} title={t('A request through the layers', 'Egy kérés útja a rétegeken át')} hint={t('Follow a POST through Controller → Service → Repository and back. Try the failure cases too.', 'Kövess végig egy POST-ot: Controller → Service → Repository és vissza. Próbáld ki a hibás eseteket is.')}>
+    <Frame lang={lang} title={t('A request through the layers', 'Egy kérés útja a rétegeken át', 'Požiadavka naprieč vrstvami')} hint={t('Follow a POST through Controller → Service → Repository and back. Try the failure cases too.', 'Kövess végig egy POST-ot: Controller → Service → Repository és vissza. Próbáld ki a hibás eseteket is.', 'Sleduj POST cez Controller → Service → Repository a späť. Vyskúšaj aj chybové prípady.')}>
       <Seg
         label="case"
         value={c}
         onChange={setC}
         options={[
-          { v: 'ok', l: t('Valid request', 'Érvényes kérés') },
-          { v: 'invalid', l: t('Blank title', 'Üres cím') },
-          { v: 'duplicate', l: t('Duplicate title', 'Ismétlődő cím') },
+          { v: 'ok', l: t('Valid request', 'Érvényes kérés', 'Platná požiadavka') },
+          { v: 'invalid', l: t('Blank title', 'Üres cím', 'Prázdny názov') },
+          { v: 'duplicate', l: t('Duplicate title', 'Ismétlődő cím', 'Duplicitný názov') },
         ]}
       />
       <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,12rem)_1fr]">

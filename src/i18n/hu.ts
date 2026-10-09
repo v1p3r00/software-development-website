@@ -305,6 +305,7 @@ export const hu: Dict = {
     copied: 'Másolva',
     hu: 'Magyar',
     en: 'Angol',
+    sk: 'Szlovák',
     hintOpen: 'megnyitás',
     hintSelect: 'kiválasztás',
     hintClose: 'bezárás',

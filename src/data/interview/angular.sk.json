@@ -1,0 +1,3303 @@
+[
+ {
+  "id": 1,
+  "level": "junior",
+  "area": "Components & templates",
+  "topic": "Components & templates",
+  "type": "behavior",
+  "question": "Čo sa zobrazí na obrazovke pri nasledujúcej šablóne Angular komponentu?",
+  "code": "title = 'Angular';",
+  "options": [
+   "Angular",
+   "title",
+   "{{ title }}",
+   "Nič, pretože property nie je definovaná ako signal"
+  ],
+  "answer": 0,
+  "explanation": "Angular interpolácia načíta aktuálnu hodnotu property `title` komponentu a zobrazí ju v šablóne. Signal na to nie je potrebný; šablóny v Angulari dokážu čítať aj bežné property komponentu. Najčastejšia nesprávna odpoveď láka preto, lebo moderné príklady v Angulari často používajú signals, no klasický property binding je stále plne podporovaný."
+ },
+ {
+  "id": 2,
+  "level": "junior",
+  "area": "Data binding",
+  "topic": "Data binding",
+  "type": "output",
+  "question": "Aký bude popis tlačidla pri nasledujúcej Angular šablóne?\n<button [textContent]=\"label\"></button>\nENDCODE",
+  "code": "export class AppComponent {\n  label = 'Save';\n}",
+  "options": [
+   "`label`",
+   "`{{ label }}`",
+   "`Save`",
+   "Prázdne tlačidlo"
+  ],
+  "answer": 2,
+  "explanation": "Property binding `[textContent]` priamo nastaví DOM property `textContent` elementu na hodnotu `label` z komponentu, takže tlačidlo zobrazí `Save`. Najčastejšia nesprávna odpoveď láka preto, lebo interpolácia a property binding majú podobný účel, no tu sa priamo priraďuje DOM property."
+ },
+ {
+  "id": 3,
+  "level": "junior",
+  "area": "Directives",
+  "topic": "Directives",
+  "type": "behavior",
+  "question": "Čo robí nasledujúca šablóna v Angulari?",
+  "code": "<p [class.active]=\"isActive\">Profile</p>",
+  "options": [
+   "Trieda `active` sa pridá vždy",
+   "Trieda `active` je prítomná iba vtedy, keď je `isActive` truthy",
+   "Trieda `active` je prítomná iba vtedy, keď je `isActive` falsy",
+   "Angular vyhodí chybu, pretože na class binding je potrebná direktíva `ngClass`"
+  ],
+  "answer": 1,
+  "explanation": "`[class.active]` riadi prítomnosť jednej CSS triedy. Keď je `isActive` truthy, trieda `active` sa pridá; keď je falsy, trieda sa odstráni. Najčastejšia nesprávna odpoveď láka preto, lebo starší Angular kód často používa `ngClass`, hoci pri riadení jedinej triedy je priamy class binding jednoduchší."
+ },
+ {
+  "id": 4,
+  "level": "junior",
+  "area": "Pipes",
+  "topic": "Pipes",
+  "type": "output",
+  "question": "Čo sa zobrazí v šablóne, ak má `name` hodnotu `angular`?\n<p>{{ name | uppercase }}</p>\nENDCODE",
+  "code": "name = 'angular';",
+  "options": [
+   "angular",
+   "Angular",
+   "ANGULAR",
+   "`uppercase`"
+  ],
+  "answer": 2,
+  "explanation": "Vstavaná pipe `uppercase` v Angulari prevedie reťazec na veľké písmená, takže výsledok je `ANGULAR`. Pipe aplikuje transformáciu na hodnotu zobrazenú v šablóne. Najčastejšia nesprávna odpoveď láka preto, lebo pipe nemení samotnú property `name` komponentu; transformuje iba hodnotu na zobrazenie."
+ },
+ {
+  "id": 5,
+  "level": "junior",
+  "area": "Dependency injection",
+  "topic": "Dependency injection",
+  "type": "theory",
+  "question": "Čo sa stane, keď sa služba s `providedIn: 'root'` injektuje do konštruktora Angular komponentu?",
+  "code": "@Injectable({ providedIn: 'root' })\nexport class LoggerService {}\n\n@Component({\n  selector: 'app-root',\n  template: ''\n})\nexport class AppComponent {\n  constructor(private logger: LoggerService) {}\n}",
+  "options": [
+   "Angular nedokáže vytvoriť službu bez explicitného providera",
+   "Angular získa službu cez root injector",
+   "Služba sa vytvorí, iba ak ju používa šablóna",
+   "Služba automaticky dostane samostatnú inštanciu pre každý komponent"
+  ],
+  "answer": 1,
+  "explanation": "`providedIn: 'root'` zaregistruje službu v root injectore, takže mechanizmus dependency injection v Angulari ju dokáže pre komponent poskytnúť. Zvyčajne z toho vznikne singleton inštancia pre celú aplikáciu. Najčastejšia nesprávna odpoveď láka preto, lebo mnohé DI príklady obsahujú aj explicitné pole `providers`, no pri `providedIn: 'root'` to nie je potrebné."
+ },
+ {
+  "id": 6,
+  "level": "junior",
+  "area": "Services & providers",
+  "topic": "Services & providers",
+  "type": "scenario",
+  "question": "Služba je deklarovaná v poli `providers` komponentu. Aký je najdôležitejší dôsledok?",
+  "code": "@Component({\n  selector: 'app-user',\n  template: '',\n  providers: [UserService]\n})\nexport class UserComponent {}",
+  "options": [
+   "Celá aplikácia používa tú istú inštanciu",
+   "Služba vypne root injector",
+   "Komponent môže cez svoj injector dostať vlastnú inštanciu služby",
+   "Služba funguje iba v SSR prostredí"
+  ],
+  "answer": 2,
+  "explanation": "Provider deklarovaný na komponente vytvorí providera v hierarchii injectorov daného komponentu, takže tento komponent a príslušný podstrom injekcie môžu dostať vlastnú inštanciu `UserService`. To sa líši od providera na úrovni root. Najčastejšia nesprávna odpoveď láka preto, lebo služby sa často používajú ako singletony, no ich inštanciu a životnosť určuje rozsah providera."
+ },
+ {
+  "id": 7,
+  "level": "junior",
+  "area": "Lifecycle hooks",
+  "topic": "Lifecycle hooks",
+  "type": "behavior",
+  "question": "Kedy sa v komponente spustí `ngOnInit()`?",
+  "code": "export class UserComponent implements OnInit {\n  ngOnInit() {\n    console.log('init');\n  }\n}",
+  "options": [
+   "Pri každom cykle change detection",
+   "Raz, po inicializácii inštancie komponentu",
+   "Zakaždým, keď sa šablóna znova vykreslí",
+   "Iba keď sa komponent ničí"
+  ],
+  "answer": 1,
+  "explanation": "`ngOnInit` je súčasťou životného cyklu inicializácie komponentu a pre danú inštanciu komponentu sa spustí raz. Nie je súčasťou každého cyklu change detection. Najčastejšia nesprávna odpoveď láka preto, lebo `ngOnInit` prebieha okolo prvého vykreslenia, no nie je to univerzálny callback pri renderovaní."
+ },
+ {
+  "id": 8,
+  "level": "junior",
+  "area": "Change detection & OnPush",
+  "topic": "Change detection & OnPush",
+  "type": "trap",
+  "question": "Čo znamená, že komponent používa stratégiu change detection `OnPush`?",
+  "code": "@Component({\n  selector: 'app-user',\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: '{{ user.name }}'\n})\nexport class UserComponent {\n  @Input() user!: User;\n}",
+  "options": [
+   "Change detection komponent už nikdy neskontroluje",
+   "Komponent sa skontroluje iba pri reštarte celej aplikácie",
+   "Angular komponent skontroluje za podmienok, ako je zmena referencie inputu, udalosť spracovaná komponentom alebo príslušná reaktívna notifikácia",
+   "`OnPush` funguje iba v produkčných buildoch"
+  ],
+  "answer": 2,
+  "explanation": "`OnPush` change detection natrvalo nevypína. Angular môže `OnPush` komponent skontrolovať okrem iného vtedy, keď sa zmení referencia inputu, nastane udalosť spracovaná komponentom alebo keď moderné reaktívne primitíva ako signals oznámia Angularu relevantnú zmenu. Najčastejšia nesprávna odpoveď láka preto, lebo `OnPush` naozaj obmedzuje zbytočné kontroly, no neznamená, že je komponent z change detection úplne vyradený."
+ },
+ {
+  "id": 9,
+  "level": "junior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "output",
+  "question": "Čo sa zobrazí v šablóne pri použití nasledujúcich Angular signals?\n<p>{{ doubleCount() }}</p>\nENDCODE",
+  "code": "count = signal(2);\n\ndoubleCount = computed(() => this.count() * 2);",
+  "options": [
+   "2",
+   "4",
+   "`doubleCount`",
+   "Chyba v Angular šablóne"
+  ],
+  "answer": 1,
+  "explanation": "`count()` vráti aktuálnu hodnotu signalu, teda 2. Signal `computed` ju vynásobí dvoma, takže `doubleCount()` vráti 4. Najčastejšia nesprávna odpoveď láka preto, lebo deklarácia `computed` neobsahuje explicitnú počiatočnú hodnotu, no jeho hodnota sa vypočíta odvodzovacou funkciou."
+ },
+ {
+  "id": 10,
+  "level": "junior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "behavior",
+  "question": "Čo sa stane s nasledujúcim Observable?",
+  "code": "const numbers$ = of(1, 2, 3);\n\nnumbers$.subscribe(value => console.log(value));",
+  "options": [
+   "Vypíše sa iba 3",
+   "Observable emituje jednu hodnotu, ktorou je pole",
+   "Vypíše sa 1, potom 2, potom 3",
+   "Nestane sa nič, pretože Observables sa dajú použiť iba na HTTP požiadavky"
+  ],
+  "answer": 2,
+  "explanation": "`of(1, 2, 3)` vytvorí tri po sebe idúce emisie, takže subscriber sa spustí trikrát – s hodnotou 1, potom 2 a potom 3. Observable je všeobecná abstrakcia prúdu hodnôt, či už synchrónnych, alebo asynchrónnych. Najčastejšia nesprávna odpoveď láka preto, lebo viacero hodnôt sa dá ľahko zameniť s jednou hodnotou v podobe poľa."
+ },
+ {
+  "id": 11,
+  "level": "junior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "scenario",
+  "question": "Chceš v Angular aplikácii automaticky pridať hlavičku Authorization ku každej HTTP požiadavke. Ktoré riešenie je najvhodnejšie?",
+  "code": "GET /api/users\nAuthorization: Bearer <token>",
+  "options": [
+   "Pridať hlavičku ručne v každom komponente",
+   "Použiť HttpInterceptor",
+   "Vytvoriť pipe",
+   "Upraviť konfiguráciu Routera"
+  ],
+  "answer": 1,
+  "explanation": "HTTP interceptor poskytuje centrálne miesto na úpravu požiadaviek, napríklad na pridanie hlavičky Authorization. Vďaka tomu nemusíš rovnakú logiku duplikovať pri každom volaní HttpClient. Najčastejšia nesprávna odpoveď láka preto, lebo hlavička sa naozaj objaví pri každej jednotlivej požiadavke, no nemala by sa duplikovať naprieč komponentmi."
+ },
+ {
+  "id": 12,
+  "level": "junior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "behavior",
+  "question": "Aký je hlavný účel route guardu v Angulari?",
+  "code": "export const authGuard: CanActivateFn = () => {\n  return isLoggedIn();\n};",
+  "options": [
+   "Aplikovanie CSS štýlov",
+   "Transformácia HTTP odpovedí",
+   "Rozhodnutie, či je navigácia na route povolená",
+   "Kompilácia šablón komponentov"
+  ],
+  "answer": 2,
+  "explanation": "Route guard sa zapája do životného cyklu routingu a môže rozhodnúť, či je navigácia povolená, presmerovaná alebo inak spracovaná. Typickým použitím je ochrana route, ktoré vyžadujú autentifikáciu. Najčastejšia nesprávna odpoveď láka preto, lebo autentifikácia často zahŕňa služby a HTTP požiadavky, no priamou zodpovednosťou guardu je riadenie navigácie."
+ },
+ {
+  "id": 13,
+  "level": "junior",
+  "area": "Forms",
+  "topic": "Forms",
+  "type": "output",
+  "question": "Aká bude aktuálna hodnota v komponente, ak používateľ napíše do inputu `Budapest`?\n<input [(ngModel)]=\"name\">\n<p>{{ name }}</p>\nENDCODE",
+  "code": "name = '';",
+  "options": [
+   "Zostane prázdny reťazec",
+   "`Budapest`",
+   "`name`",
+   "`undefined`"
+  ],
+  "answer": 1,
+  "explanation": "Obojsmerný binding `ngModel` prepája hodnotu inputu s property `name` komponentu. Keď používateľ napíše `Budapest`, táto hodnota sa priradí do property a interpolácia zobrazí tú istú hodnotu. Najčastejšia nesprávna odpoveď láka preto, lebo input má na začiatku prázdnu hodnotu, no obojsmerný binding udržiava property synchronizovanú s ďalším vstupom používateľa."
+ },
+ {
+  "id": 14,
+  "level": "junior",
+  "area": "Standalone components",
+  "topic": "Standalone components",
+  "type": "theory",
+  "question": "Ktoré tvrdenie o standalone Angular komponente je správne?",
+  "code": "@Component({\n  selector: 'app-user',\n  standalone: true,\n  imports: [CommonModule],\n  template: '<p>Users</p>'\n})\nexport class UserComponent {}",
+  "options": [
+   "Musí byť deklarovaný v poli `declarations` nejakého NgModule",
+   "Nemôže používať iné Angular direktívy ani pipes",
+   "Môže priamo spravovať importy, ktoré potrebuje jeho vlastná šablóna",
+   "Dá sa použiť iba v unit testoch"
+  ],
+  "answer": 2,
+  "explanation": "Standalone komponent môže komponenty, direktívy a pipes potrebné pre svoju šablónu deklarovať vo vlastnom poli `imports`. Preto nemusí byť deklarovaný v poli `declarations` nejakého NgModule. Najčastejšia nesprávna odpoveď láka preto, lebo klasická architektúra Angularu sa vo veľkej miere opierala o NgModules."
+ },
+ {
+  "id": 15,
+  "level": "junior",
+  "area": "Components & templates",
+  "topic": "Components & templates",
+  "type": "debug",
+  "question": "Šablóna komponentu nevykreslí nasledujúci `UserComponent` a Angular pri kompilácii šablóny hlási, že `app-user` je neznámy element. Komponent je standalone. Čo je najpravdepodobnejšia príčina?",
+  "code": "@Component({\n  selector: 'app-page',\n  standalone: true,\n  template: '<app-user></app-user>'\n})\nexport class PageComponent {}",
+  "options": [
+   "Selektor sa musí volať `user-component`",
+   "`UserComponent` nebol pridaný do zoznamu `imports` v `PageComponent`",
+   "Standalone komponenty nemôžu používať iné komponenty",
+   "Namiesto `template` sa musí vždy použiť `templateUrl`"
+  ],
+  "answer": 1,
+  "explanation": "V standalone komponente treba standalone komponenty používané v šablóne explicitne importovať cez pole `imports`. Ak tam `UserComponent` chýba, Angular nedokáže element `app-user` rozpoznať. Najčastejšia nesprávna odpoveď láka preto, lebo v klasických aplikáciách postavených na NgModule sa declarations a importy spravovali na inej úrovni architektúry."
+ },
+ {
+  "id": 16,
+  "level": "junior",
+  "area": "Data binding",
+  "topic": "Data binding",
+  "type": "output",
+  "question": "Čo sa stane, keď používateľ klikne na tlačidlo v nasledujúcom kóde?\n<button (click)=\"increment()\">+</button>\n<p>{{ count }}</p>\nENDCODE",
+  "code": "count = 0;\n\nincrement() {\n  this.count++;\n}",
+  "options": [
+   "Hodnota `count` sa zvýši o jedna a šablóna sa aktualizuje",
+   "`count` sa zmení až po opätovnom načítaní stránky",
+   "Event handler funguje iba pre udalosti klávesnice",
+   "Angular nedovoľuje volať metódy z event bindingov"
+  ],
+  "answer": 0,
+  "explanation": "Event binding `(click)` prepája udalosť kliknutia na tlačidlo s metódou `increment()` komponentu. Metóda zvýši `count` a change detection v Angulari podľa toho aktualizuje šablónu. Najčastejšia nesprávna odpoveď láka preto, lebo po zmene property komponentu nenasleduje žiadne explicitné volanie renderovania, no aktualizáciu zabezpečí Angular."
+ },
+ {
+  "id": 17,
+  "level": "junior",
+  "area": "Directives",
+  "topic": "Directives",
+  "type": "behavior",
+  "question": "Aký je rozdiel medzi nasledujúcimi dvoma Angular bindingmi?",
+  "code": "<div [class.active]=\"isActive\"></div>\n<div [style.color]=\"textColor\"></div>",
+  "options": [
+   "Oba menia tú istú CSS triedu",
+   "Prvý riadi prítomnosť CSS triedy, druhý hodnotu inline štýlu",
+   "Prvý akceptuje iba reťazce, druhý iba booleany",
+   "Oba fungujú iba bez property komponentu"
+  ],
+  "answer": 1,
+  "explanation": "`[class.active]` prepína konkrétnu CSS triedu, zatiaľ čo `[style.color]` nastavuje DOM property `style.color` elementu. Ide o dva rozličné mechanizmy bindingu. Najčastejšia nesprávna odpoveď láka preto, lebo oba ovplyvňujú vzhľad, no pracujú s rôznymi DOM properties."
+ },
+ {
+  "id": 18,
+  "level": "junior",
+  "area": "Pipes",
+  "topic": "Pipes",
+  "type": "trap",
+  "question": "Nasledujúca šablóna má zobraziť objekt vo formáte JSON. Ktorú pipe treba použiť?\n<pre>{{ user | json }}</pre>\nENDCODE",
+  "code": "user = {\n  name: 'Anna',\n  age: 30\n};",
+  "options": [
+   "`object`",
+   "`stringify`",
+   "`json`",
+   "`serialize`"
+  ],
+  "answer": 2,
+  "explanation": "Vstavaná pipe `json` v Angulari zobrazí textovú reprezentáciu objektu podobnú JSON, čo je užitočné najmä pri ladení. Najčastejšia nesprávna odpoveď láka preto, lebo v JavaScripte často priamo používame `JSON.stringify()`, no Angular na tento účel ponúka v šablónach vstavanú pipe."
+ },
+ {
+  "id": 19,
+  "level": "junior",
+  "area": "Lifecycle hooks",
+  "topic": "Lifecycle hooks",
+  "type": "scenario",
+  "question": "Komponent dostáva hodnotu cez `@Input()` a musí reagovať zakaždým, keď sa hodnota tohto inputu zmení. Ktorý lifecycle hook je najpriamejšou voľbou?",
+  "code": "@Input() user!: User;",
+  "options": [
+   "`ngOnDestroy`",
+   "`ngAfterViewInit`",
+   "`ngOnChanges`",
+   "`ngDoCheck`"
+  ],
+  "answer": 2,
+  "explanation": "`ngOnChanges` poskytuje informácie o zmenách input properties a cez objekt `SimpleChanges` sprístupňuje predchádzajúce aj aktuálne hodnoty. Je navrhnutý presne na tento prípad. Najčastejšia nesprávna odpoveď láka preto, lebo aj `ngDoCheck` sa dá použiť na sledovanie zmien, no je oveľa všeobecnejší a ľahko vedie k zbytočnej práci."
+ },
+ {
+  "id": 20,
+  "level": "junior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "behavior",
+  "question": "Čo sa stane, keď sa nasledujúci signal aktualizuje pomocou `set()`?",
+  "code": "count = signal(0);\n\nincrease() {\n  this.count.set(this.count() + 1);\n}",
+  "options": [
+   "Signal dostane novú hodnotu a reaktívni Angular konzumenti, ktorí ho čítajú, môžu byť o zmene informovaní",
+   "`set()` zmení iba lokálnu premennú a Angular to nezaznamená",
+   "Hodnota signalu zostane vždy `0`",
+   "`set()` sa dá použiť iba s Observables"
+  ],
+  "answer": 0,
+  "explanation": "`set()` priradí signalu novú hodnotu. Reaktivita v Angulari založená na signals sleduje, ktorí konzumenti signal čítajú, takže príslušní reaktívni konzumenti sa môžu aktualizovať. Najčastejšia nesprávna odpoveď láka preto, lebo `set()` vyzerá ako bežné priradenie property v JavaScripte, no je súčasťou reaktívneho systému signalu."
+ },
+ {
+  "id": 21,
+  "level": "junior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "output",
+  "question": "Čo vypíše nasledujúci kód?",
+  "code": "of(1, 2, 3)\n  .pipe(map(x => x * 10))\n  .subscribe(x => console.log(x));",
+  "options": [
+   "1, 2, 3",
+   "10, 20, 30",
+   "0, 1, 2",
+   "30"
+  ],
+  "answer": 1,
+  "explanation": "RxJS operátor `map` transformuje každú emisiu samostatne: z 1 je 10, z 2 je 20 a z 3 je 30. Subscriber potom tieto hodnoty dostáva postupne. Najčastejšia nesprávna odpoveď láka preto, lebo aj `Array.map()` v JavaScripte robí transformácie, no tu sa operácia aplikuje na emisie Observable."
+ },
+ {
+  "id": 22,
+  "level": "junior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "debug",
+  "question": "Komponent vykoná nasledujúcu HTTP požiadavku. Vývojár očakáva, že JSON objekt vrátený backendom sa automaticky stane inštanciou `User` s vlastnými metódami. Prečo je tento predpoklad nesprávny?",
+  "code": "interface User {\n  name: string;\n}\n\nthis.http.get<User>('/api/user').subscribe(user => {\n  console.log(user.name);\n});",
+  "options": [
+   "HttpClient v Angulari nevie spracovať JSON",
+   "TypeScript interface automaticky vytvorí runtime triedu",
+   "Generický typ pomáha s typovou kontrolou pri kompilácii, ale nevytvára inštanciu runtime triedy",
+   "HttpClient vie spracovať iba textové odpovede"
+  ],
+  "answer": 2,
+  "explanation": "Generický parameter `get<User>()` poskytuje predovšetkým informáciu pre TypeScript v čase kompilácie. JSON vrátený serverom nepremení na skutočnú inštanciu triedy `User` a interface za behu vôbec neexistuje. Najčastejšia nesprávna odpoveď láka preto, lebo kód explicitne obsahuje typ `User`, takže to môže vyzerať, že prebieha konverzia za behu."
+ },
+ {
+  "id": 23,
+  "level": "junior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "scenario",
+  "question": "Na route je pripojený nasledujúci guard. Používateľ nie je prihlásený. Čo sa stane, keď sa pokúsi navigovať na túto route?\n{\n  path: 'admin',\n  canActivate: [authGuard],\n  loadComponent: () => import('./admin.component')\n}\nENDCODE",
+  "code": "export const authGuard: CanActivateFn = () => {\n  return false;\n};",
+  "options": [
+   "Navigácia na route `admin` nie je povolená",
+   "Angular automaticky naviguje na route `/login`",
+   "`AdminComponent` sa vždy načíta, ale nezobrazí",
+   "Výsledok guardu sa používa iba na logovanie"
+  ],
+  "answer": 0,
+  "explanation": "Keď `CanActivate` guard vráti `false`, navigácia na danú route sa zruší. Guard automaticky nepresmeruje na `/login`; na takéto správanie treba explicitné rozhodnutie o presmerovaní alebo ďalšiu navigačnú logiku. Najčastejšia nesprávna odpoveď láka preto, lebo presmerovanie neprihlásených používateľov na prihlasovaciu stránku je veľmi bežný vzor guardu."
+ },
+ {
+  "id": 24,
+  "level": "junior",
+  "area": "Forms",
+  "topic": "Forms",
+  "type": "scenario",
+  "question": "V reaktívnom formulári chceš, aby bolo pole e-mail povinné. Ktoré riešenie je správne?",
+  "code": "this.form = new FormGroup({\n  email: new FormControl('', Validators.required)\n});",
+  "options": [
+   "`new FormControl('', required: true)`",
+   "`new FormControl('', Validators.required)`",
+   "`new FormControl('', RequiredValidator())`",
+   "`new FormControl('', { required: true })`"
+  ],
+  "answer": 1,
+  "explanation": "V Reactive Forms sa validátory dajú zadať ako druhý argument `FormControl`, napríklad `Validators.required`. Ide o referenciu na funkciu validátora. Najčastejšia nesprávna odpoveď láka preto, lebo konfiguračné objekty často používajú zápis ako `required: true`, no API validátorov v Reactive Forms funguje inak."
+ },
+ {
+  "id": 25,
+  "level": "junior",
+  "area": "Standalone components",
+  "topic": "Standalone components",
+  "type": "production",
+  "question": "V novej Angular aplikácii používaš standalone komponenty a v šablóne chceš použiť blok `@if`. Nasledujúci kód beží v prostredí Angular 17+. Ktoré tvrdenie je správne?",
+  "code": "@Component({\n  standalone: true,\n  template: `\n    @if (isLoggedIn) {\n      <p>Logged in</p>\n    }\n  `\n})\nexport class HeaderComponent {\n  isLoggedIn = true;\n}",
+  "options": [
+   "`@if` funguje iba v komponentoch deklarovaných v NgModule",
+   "`@if` vždy vyžaduje samostatný import direktívy `NgIf`",
+   "`@if` je súčasťou modernej vstavanej control flow syntaxe Angularu",
+   "`@if` funguje iba počas SSR"
+  ],
+  "answer": 2,
+  "explanation": "Od Angularu 17 je `@if` súčasťou modernej vstavanej control flow syntaxe Angularu a dá sa použiť priamo v šablónach bez klasickej direktívy `*ngIf`. Dá sa použiť aj v standalone komponentoch. Najčastejšia nesprávna odpoveď láka preto, lebo staršie verzie Angularu na podmienené vykresľovanie zvyčajne používali `*ngIf` a vyžadovali dostupnosť príslušnej direktívy."
+ },
+ {
+  "id": 26,
+  "level": "junior",
+  "area": "Components & templates",
+  "topic": "Components & templates",
+  "type": "output",
+  "question": "Čo sa zobrazí v šablóne pri nasledujúcom komponente?",
+  "code": "@Component({\n  selector: 'app-user',\n  template: `\n    <h2>{{ user.name }}</h2>\n    @if (user.isAdmin) {\n      <span>Admin</span>\n    }\n  `\n})\nexport class UserComponent {\n  user = {\n    name: 'Anna',\n    isAdmin: false\n  };\n}",
+  "options": [
+   "Iba text `Admin`",
+   "`Anna` a za ním `Admin`",
+   "Nič",
+   "Iba `Anna`"
+  ],
+  "answer": 3,
+  "explanation": "Interpolácia zobrazí hodnotu `user.name`, takže sa vykreslí `Anna`. Podmienka `@if` je `false`, takže text `Admin` sa do DOM nepridá. Najčastejšia nesprávna odpoveď láka preto, lebo podmienený blok sa dá ľahko zameniť s niečím, čo ovplyvňuje celú šablónu."
+ },
+ {
+  "id": 27,
+  "level": "junior",
+  "area": "Data binding",
+  "topic": "Data binding",
+  "type": "behavior",
+  "question": "Čo sa v nasledujúcom kóde stane, keď používateľ zmení vybranú možnosť?\n<select [(ngModel)]=\"selectedColor\">\n  <option value=\"red\">Červená</option>\n  <option value=\"blue\">Modrá</option>\n</select>\nENDCODE",
+  "code": "selectedColor = 'red';",
+  "options": [
+   "Hodnota `selectedColor` sa automaticky aktualizuje na vybraté `value`",
+   "Hodnota `selectedColor` zostane vždy `red`",
+   "`ngModel` funguje iba s elementmi input",
+   "Zmení sa šablóna, ale property komponentu nie"
+  ],
+  "answer": 0,
+  "explanation": "Obojsmerný binding `ngModel` prepája aktuálnu hodnotu selectu s property `selectedColor`. Ak používateľ vyberie možnosť `blue`, property bude mať hodnotu `blue`. Najčastejšia nesprávna odpoveď láka preto, lebo počiatočná hodnota je `red`, no obojsmerný binding prenáša späť do komponentu aj ďalšie zmeny."
+ },
+ {
+  "id": 28,
+  "level": "junior",
+  "area": "Directives",
+  "topic": "Directives",
+  "type": "debug",
+  "question": "Vývojár vytvorí vlastnú atribútovú direktívu, no direktíva sa na elementoch nerozpozná. Čo s najväčšou pravdepodobnosťou chýba v nasledujúcom standalone komponente?",
+  "code": "@Directive({\n  selector: '[appHighlight]',\n  standalone: true\n})\nexport class HighlightDirective {}\n\n@Component({\n  selector: 'app-page',\n  standalone: true,\n  template: '<p appHighlight>Text</p>'\n})\nexport class PageComponent {}",
+  "options": [
+   "Direktívu treba zmeniť na `@Pipe`",
+   "`HighlightDirective` treba pridať do poľa `imports` komponentu",
+   "Názov direktívy treba zmeniť na `highlight`",
+   "V šablóne treba namiesto `appHighlight` použiť `[appHighlight]`"
+  ],
+  "answer": 1,
+  "explanation": "V standalone komponente treba standalone direktívu používanú v šablóne explicitne sprístupniť cez pole `imports` komponentu. Selektor `[appHighlight]` je správny a `appHighlight` je platná syntax pri použití atribútovej direktívy v šablóne. Najčastejšia nesprávna odpoveď láka preto, lebo deklarácia selektora obsahuje hranaté zátvorky, no to neznamená, že sú potrebné aj pri použití direktívy."
+ },
+ {
+  "id": 29,
+  "level": "junior",
+  "area": "Pipes",
+  "topic": "Pipes",
+  "type": "edgecase",
+  "question": "Čo sa stane s nasledujúcou šablónou, ak má `price` hodnotu `null`?\n<p>{{ price | currency:'EUR' }}</p>\nENDCODE",
+  "code": "price: number | null = null;",
+  "options": [
+   "Angular vždy zobrazí `0 EUR`",
+   "Kompilácia šablóny zlyhá",
+   "Currency pipe nevytvorí žiadnu zobrazenú hodnotu",
+   "Pipe automaticky prevedie hodnotu `null` na reťazec"
+  ],
+  "answer": 2,
+  "explanation": "`CurrencyPipe` v Angulari pri vstupe `null` vráti `null` namiesto hodnoty naformátovanej ako mena, takže odstavec nezobrazí žiadnu sumu. Najčastejšia nesprávna odpoveď láka preto, lebo biznis aplikácie často menia chýbajúce číselné hodnoty na nulu alebo inú predvolenú hodnotu, no pipe to automaticky nerobí."
+ },
+ {
+  "id": 30,
+  "level": "junior",
+  "area": "Dependency injection",
+  "topic": "Dependency injection",
+  "type": "scenario",
+  "question": "V standalone komponente chceš inštanciu služby s rozsahom obmedzeným na tento komponent a podstrom injekcie jeho potomkov. Ktoré riešenie je najvhodnejšie?",
+  "code": "@Component({\n  standalone: true,\n  selector: 'app-editor',\n  template: '',\n  providers: [EditorStateService]\n})\nexport class EditorComponent {}",
+  "options": [
+   "Službu treba vytvoriť s `providedIn: 'root'`",
+   "Službu treba uložiť do globálnej premennej",
+   "Službu treba poskytnúť v poli `providers` komponentu `EditorComponent`",
+   "Službu treba zaregistrovať ako pipe"
+  ],
+  "answer": 2,
+  "explanation": "Pole `providers` komponentu vytvára rozsah providerov na úrovni komponentu. Vďaka tomu môže `EditorComponent` dostať vlastnú inštanciu `EditorStateService`, ktorú môžu v hierarchii injectorov zdediť aj príslušní potomkovia. Najčastejšia nesprávna odpoveď láka preto, lebo `providedIn: 'root'` je najbežnejší vzor pre služby na úrovni celej aplikácie."
+ },
+ {
+  "id": 31,
+  "level": "junior",
+  "area": "Services & providers",
+  "topic": "Services & providers",
+  "type": "behavior",
+  "question": "Dva rôzne komponenty injektujú tú istú službu s `providedIn: 'root'`. Aký je typický výsledok?",
+  "code": "@Injectable({ providedIn: 'root' })\nexport class CounterService {\n  count = 0;\n}",
+  "options": [
+   "Každý komponent dostane samostatnú inštanciu `CounterService`",
+   "Služba dostane novú inštanciu pri každom cykle change detection",
+   "Služba patrí iba prvému komponentu",
+   "Oba komponenty môžu používať tú istú inštanciu služby na úrovni root"
+  ],
+  "answer": 3,
+  "explanation": "Provider s `providedIn: 'root'` patrí root injectoru, takže pri takýchto injekciách sa v celej aplikácii zvyčajne vracia tá istá inštancia služby. Stav `count` tak môžu oba komponenty zdieľať. Najčastejšia nesprávna odpoveď láka preto, lebo každý komponent má vlastnú injekciu cez konštruktor, no to automaticky neznamená samostatnú inštanciu služby."
+ },
+ {
+  "id": 32,
+  "level": "junior",
+  "area": "Lifecycle hooks",
+  "topic": "Lifecycle hooks",
+  "type": "trap",
+  "question": "Komponent potrebuje v metóde `ngOnDestroy()` vykonať upratovanie. Kedy Angular túto metódu zavolá?",
+  "code": "export class TimerComponent implements OnDestroy {\n  ngOnDestroy() {\n    console.log('destroy');\n  }\n}",
+  "options": [
+   "Keď sa inštancia komponentu odstráni z Angular view",
+   "Pri každej zmene hodnoty inputu",
+   "Po každej HTTP požiadavke",
+   "Počas každého cyklu change detection v aplikácii"
+  ],
+  "answer": 0,
+  "explanation": "`ngOnDestroy` sa spustí, keď Angular inštanciu komponentu zničí a odstráni. Bežne sa používa na upratanie subscriptions, časovačov alebo iných zdrojov. Najčastejšia nesprávna odpoveď láka preto, lebo zmeny stavu komponentu sa môžu časovo prekrývať s aktivitou životného cyklu, no `ngOnDestroy` patrí konkrétne do fázy zániku."
+ },
+ {
+  "id": 33,
+  "level": "junior",
+  "area": "Change detection & OnPush",
+  "topic": "Change detection & OnPush",
+  "type": "output",
+  "question": "Čo sa stane v nasledujúcom prípade, ak rodičovský komponent používa `OnPush` a mení tú istú referenciu objektu?",
+  "code": "user = { name: 'Anna' };\n\nrename() {\n  this.user.name = 'Béla';\n}",
+  "options": [
+   "Referencia objektu sa automaticky nahradí",
+   "Property `name` sa zmení, ale referencia zostane rovnaká",
+   "Angular vždy vytvorí nový objekt",
+   "TypeScript nahlási chybu"
+  ],
+  "answer": 1,
+  "explanation": "`this.user.name = 'Béla'` zmení property objektu, no samotná referencia `user` zostane nezmenená. Pri `OnPush` je to obzvlášť dôležité, pretože zmena inputu založená na referencii takúto mutáciu na mieste automaticky nezachytí. Najčastejšia nesprávna odpoveď láka preto, lebo hodnota property sa naozaj zmení, no referencia objektu zostane identická."
+ },
+ {
+  "id": 34,
+  "level": "junior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "behavior",
+  "question": "Aký je správny spôsob, ako zvýšiť hodnotu zapisovateľného signalu v nasledujúcom kóde?",
+  "code": "count = signal(10);",
+  "options": [
+   "`count.value++`",
+   "`count = count + 1`",
+   "`count.update(value => value + 1)`",
+   "`count.increment()`"
+  ],
+  "answer": 2,
+  "explanation": "Zapisovateľný signal sa dá aktualizovať cez API `set()` alebo `update()`. `update()` je užitočné najmä vtedy, keď nová hodnota závisí od predchádzajúcej. Najčastejšia nesprávna odpoveď láka preto, lebo bežnú JavaScript property možno zmeniť pomocou `++`, no signal používa vlastné API založené na funkciách."
+ },
+ {
+  "id": 35,
+  "level": "junior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "scenario",
+  "question": "V komponente sa prihlásiš na odber HTTP Observable. Observable raz emituje odpoveď a potom sa ukončí. Ktoré tvrdenie o tejto subscription je správne?",
+  "code": "this.http.get<User>('/api/user').subscribe(user => {\n  console.log(user);\n});",
+  "options": [
+   "Subscription sa vytvorí a po HTTP požiadavke sa Observable zvyčajne ukončí",
+   "Observable spustí novú HTTP požiadavku pri každom cykle change detection",
+   "Observable zostane aktívny donekonečna",
+   "`subscribe()` funguje, iba ak sa zavolá aj `unsubscribe()`"
+  ],
+  "answer": 0,
+  "explanation": "HTTP Observables, ktoré vracia HttpClient v Angulari, zvyčajne emitujú jednu odpoveď a potom sa ukončia. Pri jednej HTTP požiadavke preto subscription nezostáva aktívna donekonečna. Najčastejšia nesprávna odpoveď láka preto, lebo správa životného cyklu subscriptions je pri mnohých RxJS streamoch dôležitá, no HTTP Observables sú zvyčajne konečné streamy."
+ },
+ {
+  "id": 36,
+  "level": "junior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "debug",
+  "question": "Interceptor chce upraviť HTTP požiadavku, no vývojár sa pokúša meniť objekt požiadavky priamo. Aký je správny prístup?",
+  "code": "export const authInterceptor: HttpInterceptorFn = (req, next) => {\n  req.headers.set('Authorization', 'Bearer token');\n  return next(req);\n};",
+  "options": [
+   "Objekt požiadavky treba vždy upravovať pomocou `JSON.parse()`",
+   "Požiadavku treba naklonovať a ďalej odovzdať upravenú inštanciu",
+   "Požiadavku treba vytvoriť znova pomocou `new Request()`",
+   "Interceptor nemôže upravovať požiadavky"
+  ],
+  "answer": 1,
+  "explanation": "API `HttpRequest` v Angulari je immutable, takže úpravy sa zvyčajne robia cez `clone()`. Napríklad hlavičky sa dajú zadať na naklonovanej požiadavke a túto upravenú požiadavku treba potom odovzdať handleru `next`. Najčastejšia nesprávna odpoveď láka preto, lebo `headers.set()` vyzerá ako mutácia, no immutable model požiadavky znamená, že treba vytvoriť novú, upravenú inštanciu."
+ },
+ {
+  "id": 37,
+  "level": "junior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "behavior",
+  "question": "Konfigurácia route obsahuje `path: 'users/:id'`. Ktorá URL zodpovedá tejto route?",
+  "code": "{\n  path: 'users/:id',\n  component: UserComponent\n}",
+  "options": [
+   "`/users`",
+   "`/users/`",
+   "`/users/42`",
+   "`/user?id=42`"
+  ],
+  "answer": 2,
+  "explanation": "`:id` predstavuje dynamický parameter route, takže URL ako `/users/42` sa s route zhoduje a `id` má hodnotu `42`. URL s query parametrom `/user?id=42` používa iný mechanizmus routingu. Najčastejšia nesprávna odpoveď láka preto, lebo oba prístupy môžu niesť údaje podobné identifikátoru, no path parametre a query parametre sú rozdielne koncepty."
+ },
+ {
+  "id": 38,
+  "level": "junior",
+  "area": "Forms",
+  "topic": "Forms",
+  "type": "debug",
+  "question": "V reaktívnom formulári sa vykoná nasledujúci kód. Aký bude stav formulára?",
+  "code": "this.form = new FormGroup({\n  username: new FormControl('', Validators.required)\n});",
+  "options": [
+   "`VALID`",
+   "`PENDING`",
+   "`DISABLED`",
+   "`INVALID`"
+  ],
+  "answer": 3,
+  "explanation": "Počiatočná hodnota controlu `username` je prázdny reťazec, pričom `Validators.required` vyžaduje, aby mal hodnotu. Control, a teda aj formulár, je preto `INVALID`. Najčastejšia nesprávna odpoveď láka preto, lebo formulár sa úspešne vytvorí a dá sa používať, no úspešné vytvorenie a platný stav sú dva rozdielne pojmy."
+ },
+ {
+  "id": 39,
+  "level": "junior",
+  "area": "Standalone components",
+  "topic": "Standalone components",
+  "type": "theory",
+  "question": "Ktoré tvrdenie správne opisuje jednu z výhod standalone komponentov?",
+  "code": "@Component({\n  standalone: true,\n  selector: 'app-dashboard',\n  imports: [UserComponent, DatePipe],\n  template: `\n    <app-user></app-user>\n    {{ today | date }}\n  `\n})\nexport class DashboardComponent {\n  today = new Date();\n}",
+  "options": [
+   "Komponent nemôže používať dependency injection",
+   "Závislosti šablóny sa dajú deklarovať priamo v zozname importov komponentu",
+   "Komponent sa dá použiť iba s lazy loadingom",
+   "Standalone komponent nemôže obsahovať šablónu"
+  ],
+  "answer": 1,
+  "explanation": "Property `imports` standalone komponentu umožňuje priradiť komponenty, direktívy a pipes používané v jeho šablóne priamo ku komponentu. Znižuje sa tým potreba konfigurácie založenej na NgModule. Najčastejšia nesprávna odpoveď láka preto, lebo standalone komponenty sa často používajú s lazy-loaded route, no to nie je ich jediné využitie."
+ },
+ {
+  "id": 40,
+  "level": "junior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "performance",
+  "question": "V šablóne sa používa nasledujúci kód. Prečo to môže byť problém z hľadiska výkonu?",
+  "code": "<div>{{ calculateTotal() }}</div>",
+  "options": [
+   "Angular nedovoľuje volať metódy zo šablón",
+   "Metóda sa spustí iba raz za celý životný cyklus aplikácie",
+   "Metóda sa môže počas change detection vykonať viackrát",
+   "Metóda sa automaticky spustí vo Web Workeri"
+  ],
+  "answer": 2,
+  "explanation": "Metóda volaná z výrazu v šablóne sa môže počas change detection vyhodnotiť viackrát. Ak `calculateTotal()` robí náročný výpočet, môže to spôsobiť zbytočné zaťaženie CPU. Najčastejšia nesprávna odpoveď láka preto, lebo volanie metódy vyzerá ako jeden výraz v šablóne, no vyhodnocovanie výrazov v šablóne je súčasťou procesu change detection."
+ },
+ {
+  "id": 41,
+  "level": "junior",
+  "area": "Components & templates",
+  "topic": "Components & templates",
+  "type": "trap",
+  "question": "Chceš pomocou `@Output()` poslať udalosť z child komponentu rodičovi. Ktoré riešenie je správne?",
+  "code": "@Output() saved = new EventEmitter<void>();\n\nsave() {\n  this.saved.emit();\n}",
+  "options": [
+   "Rodičovská šablóna môže použiť `(saved)=\"onSaved()\"`",
+   "Rodičovská šablóna musí použiť `[saved]=\"onSaved()\"`",
+   "`EventEmitter` sa dá použiť iba na HTTP udalosti",
+   "Child komponent musí namiesto `emit()` volať `subscribe()`"
+  ],
+  "answer": 0,
+  "explanation": "Rodičovský komponent môže udalosť `@Output()` spracovať vo svojej šablóne pomocou event bindingu, napríklad `(saved)=\"onSaved()\"`. Child udalosť emituje pomocou `emit()`. Najčastejšia nesprávna odpoveď láka preto, lebo aj hranaté zátvorky sú syntaxou bindingu v Angulari, no na event binding sa používajú okrúhle zátvorky."
+ },
+ {
+  "id": 42,
+  "level": "junior",
+  "area": "Data binding",
+  "topic": "Data binding",
+  "type": "output",
+  "question": "Aký bude stav `disabled` tlačidla v nasledujúcom komponente?\n<button [disabled]=\"isSaving\">Uložiť</button>\nENDCODE",
+  "code": "isSaving = true;",
+  "options": [
+   "Tlačidlo bude aktívne",
+   "Tlačidlo bude neaktívne (disabled)",
+   "Tlačidlo bude neaktívne až po kliknutí",
+   "Binding `[disabled]` sa vykreslí ako reťazec"
+  ],
+  "answer": 1,
+  "explanation": "Property binding `[disabled]` nastaví DOM property `disabled` tlačidla na hodnotu `isSaving`. Keďže hodnota je `true`, tlačidlo je neaktívne. Najčastejšia nesprávna odpoveď láka preto, lebo HTML atribút `disabled` má špeciálnu booleovskú sémantiku, no property binding priamo riadi DOM property."
+ },
+ {
+  "id": 43,
+  "level": "junior",
+  "area": "Directives",
+  "topic": "Directives",
+  "type": "behavior",
+  "question": "Na čo sa v Angular direktíve používa `@HostListener`?",
+  "code": "@Directive({\n  selector: '[appHighlight]',\n  standalone: true\n})\nexport class HighlightDirective {\n  @HostListener('mouseenter')\n  onMouseEnter() {\n    console.log('enter');\n  }\n}",
+  "options": [
+   "Na premenu host elementu na iný komponent",
+   "Na počúvanie udalostí host elementu v rámci direktívy",
+   "Na to, aby sa z direktívy stal HTTP interceptor",
+   "Na automatickú premenu direktívy na pipe"
+  ],
+  "answer": 1,
+  "explanation": "`@HostListener` umožňuje direktíve počúvať udalosti spojené s jej host elementom. V príklade sa `onMouseEnter()` spustí, keď nastane udalosť `mouseenter`. Najčastejšia nesprávna odpoveď láka preto, lebo direktívy môžu meniť správanie host elementu, no `@HostListener` slúži konkrétne na spracovanie udalostí."
+ },
+ {
+  "id": 44,
+  "level": "junior",
+  "area": "Pipes",
+  "topic": "Pipes",
+  "type": "behavior",
+  "question": "Aký je hlavný rozdiel medzi pure a impure pipe v Angulari?",
+  "code": "@Pipe({\n  name: 'example',\n  pure: false\n})\nexport class ExamplePipe implements PipeTransform {\n  transform(value: string) {\n    return value;\n  }\n}",
+  "options": [
+   "Impure pipe sa spúšťa iba počas SSR",
+   "Pure pipe nemôže prijímať argumenty",
+   "Impure pipe sa nedá použiť v šablónach",
+   "Impure pipe sa môže pri zmenách vyhodnocovať častejšie, preto ju treba z hľadiska výkonu používať opatrne"
+  ],
+  "answer": 3,
+  "explanation": "Pure pipe, ktorá je predvolená, sa znova vyhodnotí iba vtedy, keď sa jej vstup zmení referenciou alebo primitívnou hodnotou. Impure pipe sa naopak môže počas change detection vyhodnocovať častejšie, čo môže byť nákladné. Najčastejšia nesprávna odpoveď láka preto, lebo rozdiel medzi pure a impure môže pôsobiť, akoby ovplyvňoval iba funkčnosť pipe, no môže mať výrazný dopad na výkon."
+ },
+ {
+  "id": 45,
+  "level": "junior",
+  "area": "Dependency injection",
+  "topic": "Dependency injection",
+  "type": "edgecase",
+  "question": "Čo znamená nasledujúca deklarácia dependency injection?",
+  "code": "constructor(@Optional() private logger: LoggerService) {}",
+  "options": [
+   "`LoggerService` musí existovať, inak sa aplikácia zastaví",
+   "Angular sa ju pokúsi injektovať iba v produkčných buildoch",
+   "Ak nie je dostupný žiadny provider, hodnota môže byť `null` namiesto bežnej DI chyby",
+   "Služba sa automaticky stane `providedIn: 'root'`"
+  ],
+  "answer": 2,
+  "explanation": "`@Optional()` hovorí systému dependency injection v Angulari, že chýbajúca závislosť sa nemusí nutne považovať za DI chybu. Ak neexistuje vhodný provider, závislosť môže byť `null`. Najčastejšia nesprávna odpoveď láka preto, lebo chýbajúci provider bežne spôsobí chybu dependency injection, no `Optional` práve túto požiadavku zmierňuje."
+ },
+ {
+  "id": 46,
+  "level": "junior",
+  "area": "Services & providers",
+  "topic": "Services & providers",
+  "type": "scenario",
+  "question": "Chceš injektovať jednu službu do inej služby. Ktorý prístup zodpovedá modelu dependency injection v Angulari?",
+  "code": "@Injectable({ providedIn: 'root' })\nexport class UserService {\n  constructor(private api: ApiService) {}\n}",
+  "options": [
+   "K `ApiService` treba vždy pristupovať cez globálnu premennú",
+   "Systém dependency injection v Angulari dokáže `ApiService` poskytnúť cez konštruktor",
+   "Služba nemôže závisieť od inej služby",
+   "Dependency injection môžu používať iba komponenty"
+  ],
+  "answer": 1,
+  "explanation": "V systéme dependency injection v Angulari môže injectable služba dostávať závislosti rovnako ako komponent. Ak je `ApiService` dostupná ako provider, Angular ju pri vytváraní `UserService` dokáže poskytnúť. Najčastejšia nesprávna odpoveď láka preto, lebo dependency injection sa často ukazuje na konštruktoroch komponentov, no aj injectable objekty môžu závisieť jeden od druhého."
+ },
+ {
+  "id": 47,
+  "level": "junior",
+  "area": "Lifecycle hooks",
+  "topic": "Lifecycle hooks",
+  "type": "scenario",
+  "question": "Komponent potrebuje cez `@ViewChild` pristúpiť k DOM elementu alebo child komponentu. Po ktorom bode životného cyklu je inicializácia view zaručene dokončená?",
+  "code": "@ViewChild('input') input!: ElementRef<HTMLInputElement>;",
+  "options": [
+   "`ngOnDestroy`",
+   "`ngOnChanges`",
+   "`ngAfterViewInit`",
+   "`constructor`"
+  ],
+  "answer": 2,
+  "explanation": "Lifecycle hook `ngAfterViewInit` sa spustí po inicializácii view komponentu. Je to preto typické miesto na prácu s child elementmi view, ktoré sú dostupné až po jeho vytvorení. Najčastejšia nesprávna odpoveď láka preto, lebo konštruktor sa spúšťa skôr, no vtedy ešte view nie je inicializované."
+ },
+ {
+  "id": 48,
+  "level": "junior",
+  "area": "Change detection & OnPush",
+  "topic": "Change detection & OnPush",
+  "type": "scenario",
+  "question": "Zmení sa signal, ktorý číta šablóna `OnPush` komponentu. Aký je dôležitý dôsledok?",
+  "code": "@Component({\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: '{{ count() }}'\n})\nexport class CounterComponent {\n  count = signal(0);\n}",
+  "options": [
+   "Zmena signalu nemôže ovplyvniť `OnPush` komponent",
+   "Signals fungujú iba vtedy, keď komponent používa predvolenú (Default) change detection",
+   "Zmena signalu sa prejaví až po úplnom obnovení stránky",
+   "Angular dokáže čítanie signalu sledovať ako reaktívnu závislosť a komponent primerane aktualizovať"
+  ],
+  "answer": 3,
+  "explanation": "Angular reaktívne sleduje signals, ktoré šablóna číta. Keď sa takýto signal zmení, príslušný `OnPush` komponent môže byť naplánovaný na aktualizáciu, takže vývojár nemusí komponent prepínať späť na predvolenú change detection. Najčastejšia nesprávna odpoveď láka preto, lebo `OnPush` môže pôsobiť veľmi obmedzujúco, no signals sú navrhnuté tak, aby do tohto modelu prirodzene zapadli."
+ },
+ {
+  "id": 49,
+  "level": "junior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "trap",
+  "question": "Čo sa stane s nasledujúcim kódom?",
+  "code": "const observable$ = new Observable<number>(subscriber => {\n  subscriber.next(1);\n  subscriber.next(2);\n});\n\nconsole.log('before');\n\nobservable$.subscribe(value => console.log(value));\n\nconsole.log('after');",
+  "options": [
+   "Vypíše sa `before`, potom `1`, `2` a potom `after`",
+   "Vypíše sa `before`, potom `after` a neskôr `1`, `2`",
+   "Vypíše sa iba `after`",
+   "Observable sa automaticky stane asynchrónnym"
+  ],
+  "answer": 0,
+  "explanation": "Funkcia Observable sa spustí pri volaní `subscribe()` a tento príklad neobsahuje žiadny časovač, Promise ani inú asynchrónnu operáciu. Poradie je preto `before`, `1`, `2`, `after`. Najčastejšia nesprávna odpoveď láka preto, lebo Observables sa často používajú na asynchrónne dátové streamy, no Observable sám osebe z operácie automaticky asynchrónnu nespraví."
+ },
+ {
+  "id": 50,
+  "level": "junior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "production",
+  "question": "Zoznam v Angulari obsahuje stovky položiek a často sa aktualizuje. Pri nasledujúcom použití `@for` chceš znížiť zbytočné náklady na opätovné použitie alebo znovuvytváranie DOM. Ak má každá položka stabilné, unikátne `id`, ktoré riešenie je najvhodnejšie?",
+  "code": "@for (user of users; track user.id) {\n  <app-user [user]=\"user\" />\n}",
+  "options": [
+   "Odstrániť výraz `track`",
+   "Vo všetkých prípadoch použiť `track $index`",
+   "Použiť `track user.id` ako stabilný unikátny identifikátor",
+   "Pre každú položku vytvoriť nový objekt `User`"
+  ],
+  "answer": 2,
+  "explanation": "Výraz `track` v `@for` pomáha Angularu určiť, ktoré dátové položky zodpovedajú ktorým DOM reprezentáciám. Stabilné, unikátne `id` umožní Angularu pri zmene zoznamu efektívnejšie znovu použiť existujúce DOM štruktúry. Najčastejšia nesprávna odpoveď láka preto, lebo index je vždy poruke, no v dynamicky sa meniacich zoznamoch nepredstavuje stabilnú identitu položky."
+ },
+ {
+  "id": 51,
+  "level": "junior",
+  "area": "Testing",
+  "topic": "Testing",
+  "type": "scenario",
+  "question": "V unit teste standalone Angular komponentu chceš overiť, že komponent správne vykreslí svoj nadpis. Ktorý prístup je najvhodnejší?",
+  "code": "@Component({\n  standalone: true,\n  template: '<h1>{{ title }}</h1>'\n})\nexport class HeaderComponent {\n  title = 'Dashboard';\n}",
+  "options": [
+   "Priamo zavolať konštruktor komponentu a potom skontrolovať DOM",
+   "Načítať HTML súbor komponentu ako text",
+   "Nakonfigurovať `TestBed` tak, že komponent vložíš do poľa `declarations`",
+   "Nakonfigurovať `TestBed` s `imports: [HeaderComponent]`, potom zavolať `createComponent()` a `detectChanges()`"
+  ],
+  "answer": 3,
+  "explanation": "Pri standalone komponentoch sa testovaný komponent dá zadať do poľa `imports` v `TestBed.configureTestingModule()`. `createComponent()` komponent vytvorí a `detectChanges()` spustí príslušnú change detection, aby sa dal skontrolovať DOM. Priame volanie konštruktora láka, lebo pôsobí jednoducho, no samo osebe nevytvorí view spravované Angularom ani vykreslený DOM."
+ },
+ {
+  "id": 52,
+  "level": "junior",
+  "area": "SSR & hydration",
+  "topic": "SSR & hydration",
+  "type": "scenario",
+  "question": "Angular aplikácia používa server-side rendering (SSR). Počas inicializácie komponentu chceš priamo pristupovať k `window.localStorage`. Aký je najdôležitejší problém?",
+  "code": "@Component({\n  selector: 'app-settings',\n  template: ''\n})\nexport class SettingsComponent {\n  theme = window.localStorage.getItem('theme');\n}",
+  "options": [
+   "`localStorage` sa dá použiť iba v standalone komponentoch",
+   "Objekt `window` nemusí byť v serverovom JavaScript prostredí dostupný",
+   "SSR automaticky skopíruje všetky hodnoty z localStorage na server",
+   "`localStorage.getItem()` vždy vracia Promise"
+  ],
+  "answer": 1,
+  "explanation": "Pri SSR sa kód komponentu môže vykonávať aj v serverovom prostredí, kde objekt `window` špecifický pre prehliadač spravidla neexistuje. Operácie špecifické pre prehliadač treba ošetriť vhodnými kontrolami platformy alebo callbackmi renderovania, ktoré bežia iba v prehliadači. Nesprávny predpoklad láka preto, lebo v klasickej klientskej Angular aplikácii je localStorage vždy dostupný, no to neznamená, že je dostupný aj pri vykonávaní na serveri."
+ },
+ {
+  "id": 53,
+  "level": "junior",
+  "area": "Components & templates",
+  "topic": "Components & templates",
+  "type": "output",
+  "question": "Čo sa zobrazí v nasledujúcej šablóne v Angulari 17+?",
+  "code": "@Component({\n  standalone: true,\n  template: `\n    @switch (status) {\n      @case ('loading') {\n        <p>Loading...</p>\n      }\n      @case ('success') {\n        <p>Completed</p>\n      }\n      @default {\n        <p>Unknown</p>\n      }\n    }\n  `\n})\nexport class StatusComponent {\n  status = 'success';\n}",
+  "options": [
+   "`Completed`",
+   "`Loading...`",
+   "`Unknown`",
+   "Všetky tri texty"
+  ],
+  "answer": 0,
+  "explanation": "`@switch` porovnáva aktuálnu hodnotu `status` s jednotlivými hodnotami `@case`. Keďže `status` je `success`, vykreslí sa iba zodpovedajúci blok, takže sa zobrazí `Completed`. Blok `@default` láka preto, lebo slúži ako záložná možnosť, no použije sa iba vtedy, keď sa nezhoduje žiadny case."
+ },
+ {
+  "id": 54,
+  "level": "junior",
+  "area": "Data binding",
+  "topic": "Data binding",
+  "type": "trap",
+  "question": "Akú hodnotu bude mať DOM property `value` elementu input po prvom vykreslení nasledujúcej šablóny?",
+  "code": "@Component({\n  standalone: true,\n  template: `\n    <input #searchInput value=\"Angular\">\n    <p>{{ searchInput.value }}</p>\n  `\n})\nexport class SearchComponent {}",
+  "options": [
+   "`undefined`",
+   "`searchInput`",
+   "`Angular`",
+   "Prázdny reťazec"
+  ],
+  "answer": 2,
+  "explanation": "Referenčná premenná šablóny `#searchInput` odkazuje na DOM element input. `searchInput.value` načíta aktuálnu hodnotu elementu, ktorá je po prvom vykreslení `Angular`. `undefined` láka preto, lebo premenná nie je deklarovaná v triede komponentu, no referenčná premenná šablóny existuje vo vlastnom rozsahu šablóny."
+ },
+ {
+  "id": 55,
+  "level": "junior",
+  "area": "Directives",
+  "topic": "Directives",
+  "type": "output",
+  "question": "Koľko položiek zoznamu vykreslí nasledujúca šablóna v Angulari 17+?",
+  "code": "@Component({\n  standalone: true,\n  template: `\n    <ul>\n      @for (item of items; track item.id) {\n        @if (item.active) {\n          <li>{{ item.name }}</li>\n        }\n      }\n    </ul>\n  `\n})\nexport class ListComponent {\n  items = [\n    { id: 1, name: 'A', active: true },\n    { id: 2, name: 'B', active: false },\n    { id: 3, name: 'C', active: true }\n  ];\n}",
+  "options": [
+   "3",
+   "1",
+   "0",
+   "2"
+  ],
+  "answer": 3,
+  "explanation": "`@for` spracuje všetky tri položky, no vnorený `@if` vykreslí `li` iba pre položky, kde je `active` `true`. Zobrazia sa preto `A` a `C`, teda spolu dve položky zoznamu. Trojka láka preto, lebo cyklus naozaj prebehne trikrát, no podmienený blok umožní vykreslenie iba v dvoch prípadoch."
+ },
+ {
+  "id": 56,
+  "level": "junior",
+  "area": "Forms",
+  "topic": "Forms",
+  "type": "behavior",
+  "question": "V reaktívnom formulári vykonáš nasledujúcu operáciu. Čo sa stane s hodnotou FormControl `name`?",
+  "code": "const form = new FormGroup({\n  name: new FormControl('Anna'),\n  age: new FormControl(25)\n});\n\nform.patchValue({\n  name: 'Peter'\n});",
+  "options": [
+   "`name` bude `Peter`, kým `age` zostane nezmenené",
+   "Nastane chyba, pretože treba zadať všetky polia",
+   "Hodnoty oboch polí budú `null`",
+   "`patchValue()` funguje iba s template-driven formulármi"
+  ],
+  "answer": 0,
+  "explanation": "`patchValue()` umožňuje čiastočnú aktualizáciu hodnôt formulára. V tomto príklade sa na `Peter` zmení iba `name`, zatiaľ čo `age` zostane 25. Chyba kvôli chýbajúcemu poľu láka preto, lebo `setValue()` vyžaduje kompletnú štruktúru hodnôt FormGroup, no `patchValue()` nie."
+ },
+ {
+  "id": 57,
+  "level": "junior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "scenario",
+  "question": "V Angular komponente chceš sledovať parameter `id` aktuálnej route tak, aby sa aktualizoval aj vtedy, keď router znova použije ten istý komponent s iným parametrom. Ktorý prístup je vhodný?",
+  "code": "{\n  path: 'products/:id',\n  component: ProductComponent\n}",
+  "options": [
+   "Pri každej navigácii zavolať `window.location.reload()`",
+   "Použiť Observable `ActivatedRoute.paramMap`",
+   "Parameter route sa dá prečítať iba v konštruktore komponentu",
+   "Pri každej navigácii znova vytvoriť službu `Router`"
+  ],
+  "answer": 1,
+  "explanation": "Observable `ActivatedRoute.paramMap` môže emitovať novú hodnotu, keď sa zmenia parametre aktuálnej route. Komponent tak dokáže reagovať na navigáciu, napríklad z `/products/1` na `/products/2`, bez znovunačítania stránky. Použitie snapshotu láka preto, lebo veľmi jednoducho poskytne aktuálnu hodnotu parametra, no sám osebe ďalšie zmeny nesleduje."
+ },
+ {
+  "id": 58,
+  "level": "junior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "output",
+  "question": "Čo sa v nasledujúcom kóde stane, ak server odpovie HTTP statusom 404 a odpoveď netransformuje žiadny interceptor?",
+  "code": "this.http.get('/api/missing').subscribe({\n  next: value => console.log('success'),\n  error: err => console.log('error')\n});",
+  "options": [
+   "Vypíše sa `success`",
+   "Nestane sa nič",
+   "Vypíše sa `error`",
+   "Vypíše sa `success` aj `error`"
+  ],
+  "answer": 2,
+  "explanation": "HttpClient v Angulari predvolene považuje neúspešné HTTP status kódy za chyby, takže odpoveď 404 sa doručí do callbacku `error` subscription. Callback `next` sa pri tejto neúspešnej odpovedi nespustí. Úspešná vetva láka preto, lebo server technicky vrátil HTTP odpoveď, no HttpClient posiela neúspešné status kódy chybovým kanálom."
+ },
+ {
+  "id": 59,
+  "level": "junior",
+  "area": "Testing",
+  "topic": "Testing",
+  "type": "debug",
+  "question": "V unit teste komponentu zmeníš jednu z jeho properties, no DOM stále zobrazuje starú hodnotu. Aký je najzrejmejší ďalší krok?",
+  "code": "const fixture = TestBed.createComponent(HeaderComponent);\n\nfixture.detectChanges();\n\nfixture.componentInstance.title = 'Updated';\n\n// DOM assertion follows",
+  "options": [
+   "Vyčistiť celé prostredie TestBed",
+   "Znova skompilovať komponent kompilátorom TypeScriptu",
+   "Znova načítať prehliadač",
+   "Znova zavolať `fixture.detectChanges()`"
+  ],
+  "answer": 3,
+  "explanation": "Po priamej zmene property komponentu v teste je zvyčajne potrebné ďalšie volanie `fixture.detectChanges()`, aby sa aktualizovala šablóna. DOM potom môže zobraziť novú hodnotu. Opätovné vytvorenie komponentu láka preto, lebo aj prvé vykreslenie súvisí s vytvorením fixture, no stačí spustiť change detection na existujúcej fixture."
+ },
+ {
+  "id": 60,
+  "level": "junior",
+  "area": "SSR & hydration",
+  "topic": "SSR & hydration",
+  "type": "theory",
+  "question": "Aký je hlavný účel hydratácie v Angular aplikácii renderovanej na serveri?",
+  "options": [
+   "Okamžite zmazať všetko HTML vykreslené na serveri a vytvoriť nový DOM",
+   "Pri inicializácii klientskej Angular aplikácie znova použiť DOM štruktúru vytvorenú serverom",
+   "Vypnúť všetky HTTP požiadavky v prehliadači",
+   "Spúšťať TypeScript priamo v prehliadači bez kompilácie"
+  ],
+  "answer": 1,
+  "explanation": "Počas hydratácie Angular prepojí klientsku aplikáciu s HTML vytvoreným na serveri a tam, kde je to možné, znova použije existujúcu DOM štruktúru. Môže to obmedziť zbytočné znovuvytváranie DOM a vizuálne blikanie. Úplné prekreslenie láka preto, lebo pri klasickom klientskom bootstrape si Angular DOM vytvára sám, kým hydratácia je navrhnutá práve na to, aby sa DOM vykreslený na serveri zbytočne nevytváral znova."
+ },
+ {
+  "id": 61,
+  "level": "medior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "output",
+  "question": "V akom poradí sa vypíšu hodnoty, keď sa spustí nasledujúci RxJS kód? Predpokladaj, že všetky potrebné RxJS operátory sú importované.",
+  "code": "const source$ = of(1, 2, 3, 4);\n\nsource$\n  .pipe(\n    filter(x => x % 2 === 0),\n    map(x => x * 3),\n    take(1)\n  )\n  .subscribe(console.log);",
+  "options": [
+   "6",
+   "6, 12",
+   "3, 6, 9, 12",
+   "12"
+  ],
+  "answer": 0,
+  "explanation": "`filter` prepustí iba párne hodnoty, takže prvou hodnotou odovzdanou do `map` je 2. `map` ju vynásobí tromi, čím vznikne 6. `take(1)` ukončí subscription po prvej emitovanej hodnote, takže 4 sa k subscriberovi nikdy nedostane. Možnosť 6 aj 12 láka preto, lebo obe hodnoty spĺňajú podmienku filtra, no `take(1)` obmedzí počet emisií na jednu."
+ },
+ {
+  "id": 62,
+  "level": "medior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "output",
+  "question": "Aké hodnoty sa do konca nasledujúceho kódu vypíšu do konzoly?",
+  "code": "const count = signal(2);\n\nconst doubled = computed(() => {\n  console.log('computed');\n  return count() * 2;\n});\n\nconsole.log(doubled());\ncount.set(3);\ncount.set(4);\nconsole.log(doubled());",
+  "options": [
+   "`computed` sa spustí trikrát a vypísané hodnoty sú 4 a 8",
+   "`computed` sa spustí raz a vypísané hodnoty sú 4 a 4",
+   "`computed` sa spustí dvakrát a vypísané hodnoty sú 4 a 8",
+   "`computed` sa spustí štyrikrát a vypísané hodnoty sú 4 a 6"
+  ],
+  "answer": 2,
+  "explanation": "Signals `computed` sú lenivé a memoizované. Prvé čítanie `doubled()` vypočíta 4 a vypíše `computed`. Dve volania `set()` zneplatnia uložený výsledok, no nevynútia okamžitý prepočet. Ďalšie čítanie vypočíta 8 z aktuálnej hodnoty `count`, ktorá je 4, takže výpočet prebehne celkovo dvakrát. Tri výpočty lákajú preto, lebo nastanú dve aktualizácie signalu, no `computed` sa pri každej aktualizácii hneď neprepočítava."
+ },
+ {
+  "id": 63,
+  "level": "medior",
+  "area": "Change detection & OnPush",
+  "topic": "Change detection & OnPush",
+  "type": "scenario",
+  "question": "`OnPush` child komponent dostáva objekt cez `@Input()`. Rodič v click handleri zmení property toho istého objektu, pričom child vykresľuje iba tento input. Child nedostane žiadnu inú notifikáciu o aktualizácii. Ktorá zmena zabezpečí, že sa zmena inputu založená na referencii zachytí?",
+  "code": "@Component({\n  selector: 'app-parent',\n  template: `\n    <button (click)=\"rename()\">Rename</button>\n    <app-profile [user]=\"user\" />\n  `\n})\nexport class ParentComponent {\n  user = { id: 1, name: 'Anna' };\n\n  rename() {\n    this.user.name = 'Peter';\n  }\n}",
+  "options": [
+   "Premenovať metódu `rename()` na `update()`",
+   "Deklarovať `@Input()` property v childe s modifikátorom `private`",
+   "Zmraziť objekt `user` pomocou `Object.freeze()`",
+   "Vytvoriť novú referenciu objektu, napríklad `this.user = { ...this.user, name: 'Peter' }`"
+  ],
+  "answer": 3,
+  "explanation": "Zmena referencie je spoľahlivý spôsob, ako urobiť zmenu `OnPush` inputu zistiteľnou. Object spread vytvorí nový objekt, ktorého property `name` už má hodnotu `Peter`, takže Angular dokáže zaznamenať novú referenciu inputu. Priama mutácia property láka preto, lebo obsah JavaScript objektu sa naozaj zmení, no nezmenená referencia objektu na kontrolu `OnPush` inputu založenú na referencii nestačí."
+ },
+ {
+  "id": 64,
+  "level": "medior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "output",
+  "question": "Čo vypíše nasledujúci kód?",
+  "code": "const subject = new BehaviorSubject<number>(10);\n\nsubject.next(20);\n\nsubject.subscribe(value => {\n  console.log(value);\n});\n\nsubject.next(30);",
+  "options": [
+   "10, 20, 30",
+   "20, 30",
+   "Iba 30",
+   "10, 30"
+  ],
+  "answer": 1,
+  "explanation": "`BehaviorSubject` si uchováva aktuálnu hodnotu a novému subscriberovi ju okamžite emituje. V čase prihlásenia je poslednou hodnotou 20, takže sa emituje ako prvá. Potom `next(30)` vytvorí ďalšiu emisiu. Hodnota 10 láka preto, lebo je to počiatočná hodnota odovzdaná konštruktoru, no pred prihlásením už bola nahradená."
+ },
+ {
+  "id": 65,
+  "level": "medior",
+  "area": "Forms",
+  "topic": "Forms",
+  "type": "debug",
+  "question": "Na reaktívnom formulári sa zavolá nasledujúce `setValue()`. Aký je výsledok?",
+  "code": "const form = new FormGroup({\n  firstName: new FormControl('Anna'),\n  lastName: new FormControl('Smith')\n});\n\nform.setValue({\n  firstName: 'Peter'\n} as any);",
+  "options": [
+   "`lastName` sa automaticky stane prázdnym reťazcom",
+   "Zmení sa iba `firstName` a bez chyby",
+   "Nastane chyba za behu, pretože `setValue()` očakáva kompletnú štruktúru hodnôt",
+   "`setValue()` volanie ignoruje"
+  ],
+  "answer": 2,
+  "explanation": "`FormGroup.setValue()` vyžaduje, aby odovzdaný objekt obsahoval hodnoty pre všetky povinné controls formulára. `lastName` chýba, takže nastane chyba za behu. `as any` obíde typovú kontrolu TypeScriptu pri kompilácii, no nezmení validáciu, ktorú Angular robí za behu. Čiastočná aktualizácia láka preto, lebo `patchValue()` takéto správanie podporuje, no `setValue()` nie."
+ },
+ {
+  "id": 66,
+  "level": "medior",
+  "area": "Dependency injection",
+  "topic": "Dependency injection",
+  "type": "behavior",
+  "question": "V Angular aplikácii sa používa nasledujúca konfigurácia providerov. Čo sa stane, keď si komponent vyžiada závislosť `LoggerService`?",
+  "code": "providers: [\n  LoggerService,\n  {\n    provide: LoggerService,\n    useClass: AdvancedLoggerService\n  }\n]",
+  "options": [
+   "Prednosť má neskorší provider, takže sa poskytne inštancia `AdvancedLoggerService`",
+   "Angular injektuje súčasne dve samostatné inštancie",
+   "Kvôli duplicitnému providerovi nastane chyba pri kompilácii",
+   "Prednosť má vždy prvý provider"
+  ],
+  "answer": 0,
+  "explanation": "Pri bežnom providerovi, ktorý nie je multi, neskorší provider pre ten istý token v tej istej konfigurácii prepíše skorší. Získanie tokenu `LoggerService` preto vráti inštanciu `AdvancedLoggerService`, za predpokladu, že je trieda inak injectable. Chyba pri kompilácii láka preto, lebo v niektorých systémoch je duplicitná konfigurácia zakázaná, no Angular DI prepisovanie providerov podporuje."
+ },
+ {
+  "id": 67,
+  "level": "medior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "scenario",
+  "question": "Pri každej zmene vyhľadávacieho poľa spúšťaš HTTP požiadavku. Keď príde nový hľadaný výraz, chceš, aby sa subscription na predchádzajúcu prebiehajúcu požiadavku zrušila a spracoval sa iba posledný výsledok vyhľadávania. Ktorý RxJS operátor je najvhodnejší?",
+  "code": "searchControl.valueChanges.pipe(\n  debounceTime(300),\n  distinctUntilChanged(),\n  // missing operator\n);",
+  "options": [
+   "`mergeMap`",
+   "`concatMap`",
+   "`exhaustMap`",
+   "`switchMap`"
+  ],
+  "answer": 3,
+  "explanation": "`switchMap` sa pri príchode novej vonkajšej emisie odhlási z predchádzajúceho vnútorného Observable a prihlási sa na nový. S HttpClient v Angulari to môže viesť aj k zrušeniu predchádzajúcej prebiehajúcej HTTP požiadavky. `mergeMap` láka preto, lebo je užitočný pri súbežných asynchrónnych operáciách, no predchádzajúce subscriptions vyhľadávania automaticky neruší."
+ },
+ {
+  "id": 68,
+  "level": "medior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "scenario",
+  "question": "Route guard má neprihlásených používateľov presmerovať na `/login`. Ktorý prístup najlepšie zodpovedá odporúčanému správaniu Angular Routera?",
+  "code": "export const authGuard: CanActivateFn = () => {\n  const router = inject(Router);\n  const auth = inject(AuthService);\n\n  if (auth.isAuthenticated()) {\n    return true;\n  }\n\n  // What should be returned here?\n};",
+  "options": [
+   "`return false`, pretože to automaticky presmeruje na prihlasovaciu stránku",
+   "`return router.parseUrl('/login')`",
+   "`return undefined`",
+   "`return true` a presmerovanie urobiť v komponente"
+  ],
+  "answer": 1,
+  "explanation": "Guard môže vrátiť `UrlTree`, ktorý Router považuje za rozhodnutie o presmerovaní. `router.parseUrl('/login')` vytvorí príslušný `UrlTree`, takže netreba imperatívnu navigáciu. Vrátenie `false` láka preto, lebo naozaj zabráni aktivácii chránenej route, no samo osebe používateľa na prihlasovaciu stránku nepresmeruje."
+ },
+ {
+  "id": 69,
+  "level": "medior",
+  "area": "State management (NgRx)",
+  "topic": "State management (NgRx)",
+  "type": "theory",
+  "question": "V aplikácii s NgRx Store chceš do stavu pridať nového používateľa. Ktorý prístup zodpovedá základnému modelu správy stavu v NgRx?",
+  "options": [
+   "Komponent priamo upraví interný objekt stavu Store",
+   "Komponent priamo zavolá reducer a výsledok potom uloží",
+   "Komponent dispatchne action, z ktorej reducer vytvorí nový stav",
+   "Store automaticky sleduje všetky properties komponentov"
+  ],
+  "answer": 2,
+  "explanation": "V NgRx Store sú zmeny stavu opísané actions a reducery vypočítajú nový stav z aktuálneho stavu a action. Vzniká tak predvídateľný jednosmerný tok dát. Priama mutácia stavu láka preto, lebo na stav sa dá pozerať ako na bežný JavaScript objekt, no porušuje immutable model správy stavu, ktorý NgRx používa."
+ },
+ {
+  "id": 70,
+  "level": "medior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "performance",
+  "question": "Veľká stránka v Angulari má zobraziť tisíce riadkov, no používateľ naraz vidí len asi dvadsať. Ktoré riešenie dokáže najúčinnejšie znížiť počet vykreslených DOM elementov a zároveň zachovať celý zoznam skrolovateľný?",
+  "options": [
+   "Pre každý riadok vytvoriť samostatný `setTimeout()`",
+   "Skryť všetky riadky pomocou `display: none`",
+   "Dať každý riadok do samostatného Angular komponentu bez virtualizácie",
+   "Použiť virtual scrolling, napríklad s Angular CDK"
+  ],
+  "answer": 3,
+  "explanation": "Virtual scrolling vykresľuje iba položky vo viditeľnom rozsahu a jeho bezprostrednom okolí (buffer), pričom používateľ môže skrolovať celým zoznamom. Môže to výrazne zmenšiť veľkosť DOM a náklady na renderovanie. `display: none` láka preto, lebo elementy vizuálne skryje, no v DOM zostanú."
+ },
+ {
+  "id": 71,
+  "level": "medior",
+  "area": "Services & providers",
+  "topic": "Services & providers",
+  "type": "behavior",
+  "question": "Čo robí `useExisting` v nasledujúcej konfigurácii providerov?",
+  "code": "providers: [\n  PrimaryLoggerService,\n  {\n    provide: LoggerService,\n    useExisting: PrimaryLoggerService\n  }\n]",
+  "options": [
+   "Token `LoggerService` odkazuje na tú istú inštanciu ako `PrimaryLoggerService`",
+   "`LoggerService` dostane pri každej injekcii novú inštanciu",
+   "`useExisting` vytvorí novú inštanciu `LoggerService`",
+   "Tieto dve služby fungujú, iba ak majú rovnaký názov triedy"
+  ],
+  "answer": 0,
+  "explanation": "`useExisting` vytvorí alias na existujúci token providera, takže získanie `LoggerService` aj `PrimaryLoggerService` vráti v rámci daného injectora tú istú inštanciu objektu. Líši sa to od `useClass`, ktorý môže vytvoriť samostatnú inštanciu providera. Vytvorenie novej inštancie láka preto, lebo v konfigurácii sa objavujú dva rôzne tokeny, no alias novú inštanciu nevytvára."
+ },
+ {
+  "id": 72,
+  "level": "medior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "output",
+  "question": "Aký je výstup nasledujúceho RxJS kódu?",
+  "code": "const source$ = of(1, 2, 3);\n\nsource$\n  .pipe(\n    scan((acc, value) => acc + value, 0)\n  )\n  .subscribe(console.log);",
+  "options": [
+   "6",
+   "0, 1, 3, 6",
+   "1, 3, 6",
+   "1, 2, 3"
+  ],
+  "answer": 2,
+  "explanation": "`scan` po každej emisii emituje aktuálnu akumulovanú hodnotu. Začína od 0, najprv pripočíta 1, potom 2 a nakoniec 3. Emitované hodnoty sú preto 1, 3 a 6. Jediný výsledok 6 láka preto, lebo operátor `reduce` by akumulovaný výsledok emitoval až po ukončení streamu, kým `scan` emituje aj priebežné výsledky."
+ },
+ {
+  "id": 73,
+  "level": "medior",
+  "area": "Forms",
+  "topic": "Forms",
+  "type": "edgecase",
+  "question": "Reaktívny formulár má neaktívny (disabled) control `age`. Čo vrátia `form.value` a `form.getRawValue()`?",
+  "code": "const form = new FormGroup({\n  name: new FormControl('Anna'),\n  age: new FormControl({ value: 30, disabled: true })\n});\n\nconsole.log(form.value);\nconsole.log(form.getRawValue());",
+  "options": [
+   "Obe obsahujú pole `age`",
+   "`form.value` pole `age` neobsahuje, zatiaľ čo `getRawValue()` áno",
+   "Ani jedno pole `age` neobsahuje",
+   "`getRawValue()` pri neaktívnom controle vyhodí chybu"
+  ],
+  "answer": 1,
+  "explanation": "Pri aktívnom `FormGroup` obsahuje property `value` bežne iba hodnoty aktívnych controls. `getRawValue()` zahŕňa aj neaktívne controls. Zahrnutie všetkých polí láka preto, lebo control `age` naozaj existuje a má hodnotu, no jeho neaktívny stav ovplyvňuje súhrnnú hodnotu formulára."
+ },
+ {
+  "id": 74,
+  "level": "medior",
+  "area": "Testing",
+  "topic": "Testing",
+  "type": "scenario",
+  "question": "V unit teste služby chceš overiť HTTP požiadavku bez skutočného sieťového volania. Ktorý prístup zodpovedá modernému testovaciemu API Angularu?",
+  "code": "TestBed.configureTestingModule({\n  providers: [\n    provideHttpClient(),\n    provideHttpClientTesting(),\n    UserService\n  ]\n});",
+  "options": [
+   "Pre každý unit test spustiť skutočný backend server",
+   "V každom teste prepísať globálny `window.fetch`",
+   "Na mockovanie HTTP požiadaviek použiť `RouterTestingHarness`",
+   "Injektovať `HttpTestingController` a požiadavku overiť pomocou `expectOne()`"
+  ],
+  "answer": 3,
+  "explanation": "`provideHttpClientTesting()` nakonfiguruje testovací HTTP backend a `HttpTestingController` umožňuje požiadavky zachytiť, skontrolovať a poskytnúť im mock odpovede. Pomocou `expectOne()` sa dá overiť, že očakávaná požiadavka bola odoslaná. Spustenie skutočného backendu láka preto, lebo pri integračných testoch to môže byť vhodné, no do izolovaného unit testu to prináša zbytočnú externú závislosť."
+ },
+ {
+  "id": 75,
+  "level": "medior",
+  "area": "SSR & hydration",
+  "topic": "SSR & hydration",
+  "type": "production",
+  "question": "V Angular aplikácii so SSR a hydratáciou komponent pred hydratáciou priamo upraví DOM. V dôsledku toho sa HTML vykreslené na serveri líši od štruktúry, ktorú očakáva klient. Čo sa môže stať?",
+  "code": "@Component({\n  selector: 'app-banner',\n  template: `\n    <div>\n      <span>Welcome</span>\n    </div>\n  `\n})\nexport class BannerComponent {\n  constructor() {\n    if (typeof document !== 'undefined') {\n      document.querySelector('app-banner div')\n        ?.appendChild(document.createElement('p'));\n    }\n  }\n}",
+  "options": [
+   "Hydratácia všetky rozdiely automaticky ignoruje",
+   "Hydratácia vždy úplne reštartuje serverovú aplikáciu",
+   "Môže nastať chyba hydration mismatch, pretože štruktúra DOM sa líši od toho, čo Angular očakáva",
+   "Priama manipulácia s DOM zaručene zrýchli hydratáciu"
+  ],
+  "answer": 2,
+  "explanation": "Počas hydratácie sa Angular snaží prepojiť klientske view so štruktúrou DOM vytvorenou serverom. Ak priama alebo externá manipulácia s DOM túto štruktúru pred hydratáciou zmení, očakávaná štruktúra uzlov sa môže líšiť od skutočného DOM, čo vedie k hydration mismatch. Automatická oprava láka preto, lebo frameworky mnohé aktualizácie DOM riešia samy, no zhodné štruktúry sú pre úspešnú hydratáciu kľúčové."
+ },
+ {
+  "id": 76,
+  "level": "medior",
+  "area": "State management (NgRx)",
+  "topic": "State management (NgRx)",
+  "type": "scenario",
+  "question": "V aplikácii postavenej na NgRx má komponent zobraziť zoznam používateľov uložený v store. Aký je najidiomatickejší prístup?",
+  "options": [
+   "Čítať stav cez selector z inštancie `Store` a výsledok konzumovať ako Observable alebo signal",
+   "Pri každej zmene komponentu priamo upraviť interný objekt stavu store",
+   "Z reducera priamo manipulovať s inštanciou komponentu",
+   "Nechať službu udržiavať pre každý komponent samostatnú lokálnu kópiu namiesto použitia store"
+  ],
+  "answer": 0,
+  "explanation": "V NgRx komponenty zvyčajne čítajú stav cez selectory, takže prístup k stavu zostáva deklaratívny a centrálne spravovaný. Priama mutácia stavu obchádza tok stavu založený na reduceroch a porušuje základné princípy architektúry. Lokálna kópia v službe by tiež oslabila výhody centralizovanej správy stavu."
+ },
+ {
+  "id": 77,
+  "level": "medior",
+  "area": "Dependency injection",
+  "topic": "Dependency injection",
+  "type": "edgecase",
+  "question": "Čo sa stane, ak v konštruktore služby injektuješ token, pre ktorý neexistuje žiadny provider, a nepoužiješ `@Optional()`?",
+  "options": [
+   "Angular odovzdá `undefined`",
+   "Angular vyhodí DI chybu, pretože pre token nenašiel žiadneho providera",
+   "Angular automaticky vytvorí novú inštanciu tokenu",
+   "Angular vyhodí chybu iba v produkčnom builde"
+  ],
+  "answer": 1,
+  "explanation": "Pri povinnej závislosti Angular nahlási chybu, keď injector pre token nenájde vhodného providera. S `@Optional()` sa chýbajúca závislosť dá namiesto toho ošetriť a výsledkom bude `null`. Angular nedokáže automaticky vytvoriť inštanciu ľubovoľného tokenu bez príslušného providera."
+ },
+ {
+  "id": 78,
+  "level": "medior",
+  "area": "Standalone components",
+  "topic": "Standalone components",
+  "type": "debug",
+  "question": "Nasledujúci standalone komponent používa vo svojej šablóne vlastnú `HighlightDirective`, no Angular za behu hlási, že element alebo direktíva je neznáma. Čo je najpravdepodobnejšia príčina?",
+  "code": "@Component({\n  selector: 'app-demo',\n  standalone: true,\n  imports: [],\n  template: `<p appHighlight>Hello</p>`\n})\nexport class DemoComponent {}",
+  "options": [
+   "Direktíva musí byť vždy deklarovaná v NgModule",
+   "`standalone: true` sa nedá používať s vlastnými direktívami",
+   "Ak je direktíva standalone, treba ju importovať do poľa `imports` komponentu",
+   "Direktívu možno použiť iba vnútri šablóny komponentu"
+  ],
+  "answer": 2,
+  "explanation": "Pri standalone komponente treba jeho priame závislosti šablóny deklarovať v poli `imports`. Ak je `HighlightDirective` standalone, je potrebné napríklad `imports: [HighlightDirective]`. Standalone architektúra umožňuje deklarovať takéto závislosti práve bez NgModule."
+ },
+ {
+  "id": 79,
+  "level": "medior",
+  "area": "Change detection & OnPush",
+  "topic": "Change detection & OnPush",
+  "type": "trap",
+  "question": "`OnPush` komponent obsahuje nasledujúcu šablónu:\nČo sa stane po kliknutí na tlačidlo?",
+  "code": "@Component({\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `\n    <button (click)=\"count = count + 1\">{{ count }}</button>\n  `\n})\nexport class CounterComponent {\n  count = 0;\n}",
+  "options": [
+   "Komponent sa neaktualizuje, pretože `OnPush` vypína change detection",
+   "Šablóna sa aktualizuje, iba keď rodičovský komponent zmení input",
+   "Angular vyhodí chybu, pretože v `OnPush` komponente sa polia nedajú meniť",
+   "Udalosť spracovaná komponentom môže spustiť change detection, takže sa zobrazená hodnota aktualizuje"
+  ],
+  "answer": 3,
+  "explanation": "`OnPush` change detection nevypína. DOM udalosť spracovaná v rámci komponentu môže komponent označiť na kontrolu, takže sa vykreslí nová hodnota `count`."
+ },
+ {
+  "id": 80,
+  "level": "medior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "output",
+  "question": "Aký je výstup nasledujúceho kódu?",
+  "code": "const firstName = signal('Anna');\nconst lastName = signal('Kovacs');\n\nconst fullName = computed(() => `${firstName()} ${lastName()}`);\n\nconsole.log(fullName());\nlastName.set('Nagy');\nconsole.log(fullName());",
+  "options": [
+   "`Anna Kovacs`, potom `Anna Nagy`",
+   "`Anna Kovacs`, potom `Anna Kovacs`",
+   "`undefined`, potom `Anna Nagy`",
+   "`Anna Nagy`, potom `Anna Nagy`"
+  ],
+  "answer": 0,
+  "explanation": "`computed` automaticky sleduje signals, ktoré sa počas jeho výpočtu čítajú. Pri prvom čítaní je priezvisko `Kovacs`; po zmene signalu použije ďalšie čítanie novú hodnotu `Nagy`."
+ },
+ {
+  "id": 81,
+  "level": "medior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "scenario",
+  "question": "Chceš spúšťať HTTP požiadavky z Observable `valueChanges` vyhľadávacieho poľa tak, aby výsledok staršieho, ešte bežiaceho vyhľadávania nemohol prepísať výsledok novšieho. Ktorý RxJS operátor sa na toto správanie hodí najlepšie?",
+  "options": [
+   "`mergeMap`",
+   "`switchMap`",
+   "`concatMap`",
+   "`reduce`"
+  ],
+  "answer": 1,
+  "explanation": "`switchMap` sa pri príchode novej vonkajšej hodnoty odhlási z predchádzajúceho vnútorného Observable, takže pri vyhľadávaní zostáva relevantná iba posledná požiadavka. `mergeMap` naopak môže nechať predchádzajúce požiadavky bežať paralelne ďalej."
+ },
+ {
+  "id": 82,
+  "level": "medior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "debug",
+  "question": "Aký problém má nasledujúca implementácia interceptora?",
+  "code": "intercept(req: HttpRequest<unknown>, next: HttpHandler) {\n  req.headers.set('Authorization', 'Bearer token');\n  return next.handle(req);\n}",
+  "options": [
+   "Hlavičku `Authorization` možno použiť iba pri GET požiadavkách",
+   "Interceptor nemôže meniť objekt `HttpRequest` na mieste",
+   "`next.handle()` namiesto Observable prijíma iba Promise",
+   "`HttpHeaders` je v interceptore vždy prázdny"
+  ],
+  "answer": 1,
+  "explanation": "`HttpRequest` a `HttpHeaders` používajú immutable API, takže `set()` existujúci objekt na mieste nezmení. Upravenú požiadavku možno zvyčajne vytvoriť pomocou `req.clone({ setHeaders: { Authorization: 'Bearer token' } })` a tento klon potom odovzdať ďalšiemu handleru."
+ },
+ {
+  "id": 83,
+  "level": "medior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "scenario",
+  "question": "Route má byť prístupná iba používateľom s rolou admin. Kde je najlepšie túto kontrolu implementovať?",
+  "options": [
+   "V route guarde, ktorý overí oprávnenie pred navigáciou",
+   "Výhradne v metóde `ngOnInit()` admin komponentu",
+   "V globálnom súbore `main.ts`",
+   "V CSS súbore komponentu route"
+  ],
+  "answer": 0,
+  "explanation": "Route guard sa zapája do procesu navigácie a môže prístup povoliť alebo zamietnuť ešte pred aktiváciou route. Kontrola v komponente prichádza príliš neskoro na to, aby sama osebe poskytla ochranu na úrovni route."
+ },
+ {
+  "id": 84,
+  "level": "medior",
+  "area": "Forms",
+  "topic": "Forms",
+  "type": "edgecase",
+  "question": "Čo sa stane s nasledujúcim reaktívnym formulárom?",
+  "code": "const form = new FormGroup({\n  name: new FormControl('Anna'),\n  age: new FormControl(30)\n});\n\nform.patchValue({\n  name: 'Peter',\n  unknownField: true\n});",
+  "options": [
+   "Celý formulár bude neplatný",
+   "Kvôli neznámemu poľu sa vyhodí výnimka za behu",
+   "`unknownField` sa pridá do formulára",
+   "`name` sa aktualizuje, zatiaľ čo neznáme pole `FormGroup` ignoruje"
+  ],
+  "answer": 3,
+  "explanation": "`patchValue()` je určené na čiastočné aktualizácie a ignoruje properties, ktoré v štruktúre formulára neexistujú. `name` preto bude `Peter`, zatiaľ čo `age` zostane nezmenené."
+ },
+ {
+  "id": 85,
+  "level": "medior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "performance",
+  "question": "Stránka v Angulari má zobraziť niekoľko tisíc záznamov v dlhom zozname. Ktorý prístup dokáže výrazne znížiť počet elementov prítomných v DOM naraz?",
+  "options": [
+   "Pre každú položku použiť samostatný `setInterval()`",
+   "Pre každú položku zoznamu vytvoriť samostatnú inštanciu služby",
+   "Použiť virtual scrolling, ktorý vykresľuje iba podmnožinu viditeľných položiek",
+   "Použiť v šablóne `JSON.stringify()` na položky zoznamu"
+  ],
+  "answer": 2,
+  "explanation": "Virtual scrolling udržiava v DOM aktívne iba elementy potrebné pre aktuálny viewport, čím pri veľkých zoznamoch znižuje náklady na renderovanie aj pamäť. Ostatné prístupy počet DOM elementov podstatne neznížia."
+ },
+ {
+  "id": 86,
+  "level": "medior",
+  "area": "Testing",
+  "topic": "Testing",
+  "type": "scenario",
+  "question": "V Angular teste standalone komponentu používa šablóna komponentu iný standalone komponent. Ako treba túto závislosť ošetriť v konfigurácii TestBed?",
+  "options": [
+   "Pridať použitý komponent do poľa `imports`",
+   "Použitý komponent vždy poskytnúť v `providers`",
+   "Dať použitý komponent do poľa `declarations`",
+   "Standalone komponent nemôže v testoch používať iný komponent"
+  ],
+  "answer": 0,
+  "explanation": "Pri standalone komponentoch sa závislosti šablóny spravujú cez `imports`, takže test by mal kopírovať tú istú štruktúru závislostí. `providers` slúži na tokeny dependency injection a `declarations` nie je pre standalone komponenty primárnym konfiguračným mechanizmom."
+ },
+ {
+  "id": 87,
+  "level": "medior",
+  "area": "SSR & hydration",
+  "topic": "SSR & hydration",
+  "type": "trap",
+  "question": "Angular aplikácia vykreslí úvodné HTML pomocou SSR a potom používa hydratáciu. Prečo môže byť problém, ak komponent v `ngOnInit()` priamo upravuje DOM volaním `document.querySelector()`?",
+  "options": [
+   "Pretože `document` existuje iba v TypeScripte",
+   "Pretože DOM je vždy úplne nemenný",
+   "Pretože selektor funguje iba so standalone komponentmi",
+   "Pretože DOM vygenerovaný serverom a štruktúra očakávaná klientom sa môžu rozísť, čo spôsobí problémy s hydratáciou"
+  ],
+  "answer": 3,
+  "explanation": "Počas hydratácie sa Angular snaží znova použiť DOM vygenerovaný na serveri. Ručná manipulácia s DOM môže zmeniť štruktúru alebo stav, ktorý Angular očakáva, a spôsobiť nezhody a chyby hydratácie."
+ },
+ {
+  "id": 88,
+  "level": "medior",
+  "area": "Services & providers",
+  "topic": "Services & providers",
+  "type": "behavior",
+  "question": "Čo poskytuje nasledujúca konfigurácia providerov?",
+  "code": "providers: [\n  LoggerService,\n  {\n    provide: AuditLogger,\n    useExisting: LoggerService\n  }\n]",
+  "options": [
+   "Vytvoria sa dve samostatné inštancie `LoggerService`",
+   "`AuditLogger` aj `LoggerService` odkazujú na tú istú inštanciu `LoggerService`",
+   "`AuditLogger` automaticky dedí od `LoggerService`",
+   "`AuditLogger` sa nedá injektovať"
+  ],
+  "answer": 1,
+  "explanation": "`useExisting` vytvorí alias na existujúcu inštanciu providera. Získanie tokenu `AuditLogger` preto vráti tú istú inštanciu `LoggerService` namiesto vytvorenia novej."
+ },
+ {
+  "id": 89,
+  "level": "medior",
+  "area": "Components & templates",
+  "topic": "Components & templates",
+  "type": "output",
+  "question": "Čo sa vykreslí v šablóne?",
+  "code": "@Component({\n  template: `\n    <p>{{ user.name }}</p>\n    <p>{{ user.address.city }}</p>\n  `\n})\nexport class UserComponent {\n  user = {\n    name: 'Anna',\n    address: {\n      city: 'Budapest'\n    }\n  };\n}",
+  "options": [
+   "Iba `Anna`",
+   "Iba `Budapest`",
+   "`Anna`, potom `Budapest`",
+   "`undefined`, potom `undefined`"
+  ],
+  "answer": 2,
+  "explanation": "Interpolácie čítajú vnorené hodnoty properties z poskytnutého objektu. Keďže obe properties existujú, dva odstavce zobrazia `Anna` a `Budapest`."
+ },
+ {
+  "id": 90,
+  "level": "medior",
+  "area": "Pipes",
+  "topic": "Pipes",
+  "type": "behavior",
+  "question": "Prečo môže byť použitie vlastnej impure pipe vo veľkom zozname výkonnostný problém?",
+  "options": [
+   "Pretože impure pipe sa spustí iba raz",
+   "Pretože impure pipe nemôže prijímať argumenty",
+   "Pretože impure pipe funguje iba na serveri",
+   "Pretože impure pipe sa môže počas change detection vyhodnocovať častejšie"
+  ],
+  "answer": 3,
+  "explanation": "Impure pipes nie sú obmedzené na spúšťanie iba pri zmene referencie vstupu, takže sa počas change detection môžu vykonávať častejšie. Pri veľkých dátových sadách to môže znamenať veľké množstvo zbytočných výpočtov."
+ },
+ {
+  "id": 91,
+  "level": "medior",
+  "area": "Lifecycle hooks",
+  "topic": "Lifecycle hooks",
+  "type": "behavior",
+  "question": "Hodnota `@Input()` sa počas životnosti komponentu mení. Ktorý lifecycle hook je vhodný na spracovanie zmien inputov?",
+  "options": [
+   "`ngOnChanges`",
+   "`ngAfterViewInit`",
+   "`ngOnDestroy`",
+   "`ngAfterContentChecked`"
+  ],
+  "answer": 0,
+  "explanation": "`ngOnChanges` sa spustí, keď sa zmenia input properties spravované Angularom, a poskytuje prístup k predchádzajúcej aj aktuálnej hodnote. Ostatné hooky súvisia s inými udalosťami životného cyklu."
+ },
+ {
+  "id": 92,
+  "level": "medior",
+  "area": "Data binding",
+  "topic": "Data binding",
+  "type": "output",
+  "question": "Aký text sa zobrazí?",
+  "code": "@Component({\n  template: `\n    <input [value]=\"name\">\n    <p>{{ name }}</p>\n  `\n})\nexport class ProfileComponent {\n  name = 'Anna';\n}",
+  "options": [
+   "`Anna` sa zobrazí v inpute aj v odstavci",
+   "`Anna` sa zobrazí iba v inpute",
+   "`Anna` sa zobrazí iba v odstavci",
+   "Na žiadnom z miest sa nezobrazí žiadna hodnota"
+  ],
+  "answer": 0,
+  "explanation": "Property binding nastaví property `value` inputu na hodnotu `name` z komponentu a interpolácia zobrazí tú istú property v odstavci. Bez obojsmerného bindingu však vstup od používateľa hodnotu do komponentu automaticky nezapíše."
+ },
+ {
+  "id": 93,
+  "level": "medior",
+  "area": "Directives",
+  "topic": "Directives",
+  "type": "behavior",
+  "question": "Vo vlastnej atribútovej direktíve používaš toto:\nAký je hlavný účel `@HostListener`?",
+  "code": "@HostListener('mouseenter')\nonMouseEnter() {\n  this.isHovered = true;\n}",
+  "options": [
+   "Počúvanie udalostí, ktoré nastanú na host elemente direktívy",
+   "Vytváranie nových DOM elementov",
+   "Vypnutie automatickej dependency injection pre direktívu",
+   "Odstraňovanie CSS tried z host elementu"
+  ],
+  "answer": 0,
+  "explanation": "`@HostListener` umožňuje direktíve reagovať na DOM udalosti spojené s jej host elementom. Event handler môže napríklad aktualizovať stav alebo spustiť iné správanie UI."
+ },
+ {
+  "id": 94,
+  "level": "medior",
+  "area": "State management (NgRx)",
+  "topic": "State management (NgRx)",
+  "type": "theory",
+  "question": "Aká je hlavná zodpovednosť reducera v systéme správy stavu NgRx?",
+  "options": [
+   "Priamo vykonávať HTTP požiadavky",
+   "Vytvoriť nový stav z action a aktuálneho stavu",
+   "Spravovať lifecycle hooky komponentov",
+   "Dynamicky registrovať routes"
+  ],
+  "answer": 1,
+  "explanation": "Reducer je čistá funkcia, ktorá určí nový stav z aktuálneho stavu a action. Operácie s vedľajšími efektmi, ako sú HTTP požiadavky, sa zvyčajne riešia v effects."
+ },
+ {
+  "id": 95,
+  "level": "medior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "output",
+  "question": "Čo sa vypíše do konzoly?",
+  "code": "of(1, 2, 3)\n  .pipe(\n    map(x => x * 2),\n    filter(x => x > 2)\n  )\n  .subscribe(x => console.log(x));",
+  "options": [
+   "`1`, `2`, `3`",
+   "`2`, `4`, `6`",
+   "`4`, `6`",
+   "`6`"
+  ],
+  "answer": 2,
+  "explanation": "`map` najprv vytvorí 2, 4 a 6. `filter` odstráni 2, pretože nie je väčšia ako 2, takže zostanú 4 a 6."
+ },
+ {
+  "id": 96,
+  "level": "medior",
+  "area": "Forms",
+  "topic": "Forms",
+  "type": "behavior",
+  "question": "Aký je rozdiel medzi `setValue()` a `patchValue()` pri `FormGroup`?",
+  "options": [
+   "`setValue()` prijíma iba reťazcové hodnoty",
+   "`patchValue()` vždy validuje celý formulár",
+   "Obe metódy fungujú úplne rovnako",
+   "`setValue()` očakáva hodnoty zodpovedajúce celej štruktúre formulára, kým `patchValue()` podporuje aj čiastočné aktualizácie"
+  ],
+  "answer": 3,
+  "explanation": "`setValue()` očakáva hodnotu zodpovedajúcu celej štruktúre formulára a pri chýbajúcich povinných poliach môže nahlásiť chybu. `patchValue()` prijme čiastočný objekt a aktualizuje iba zadané controls."
+ },
+ {
+  "id": 97,
+  "level": "medior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "production",
+  "question": "V cykle `@for` vykresľuješ záznamy so stabilnými, unikátnymi ID z backendu. Ktorý prístup pomôže Angularu efektívne sledovať položky?",
+  "options": [
+   "`track item.id`",
+   "`track Math.random()`",
+   "`track JSON.stringify(item) + Date.now()`",
+   "Vo všetkých prípadoch vynechať `track`"
+  ],
+  "answer": 0,
+  "explanation": "Stabilný, unikátny identifikátor umožní Angularu určiť, ktoré DOM elementy zodpovedajú tým istým dátovým položkám. Náhodný alebo meniaci sa identifikátor Angularu znemožní využiť túto optimalizáciu sledovania."
+ },
+ {
+  "id": 98,
+  "level": "medior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "scenario",
+  "question": "V aplikácii chceš centrálne logovať chyby zo všetkých HTTP odpovedí, napríklad odpovede 500. Kde je najlepšie to implementovať?",
+  "options": [
+   "Samostatne v šablóne každého komponentu",
+   "V každom volaní `subscribe()` s rovnakým kódom na spracovanie chýb",
+   "V HTTP interceptore, kde sa dá stream odpovedí a chýb spracovať centrálne",
+   "V CSS súboroch"
+  ],
+  "answer": 2,
+  "explanation": "Interceptor poskytuje centrálne miesto pre prierezové HTTP záležitosti, ako je logovanie, spracovanie chýb či autentifikácia. Znižuje sa tým duplicita HTTP logiky naprieč komponentmi."
+ },
+ {
+  "id": 99,
+  "level": "medior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "behavior",
+  "question": "Parameter route sa za behu aplikácie zmení z `/users/1` na `/users/2` bez toho, aby sa ten istý komponent route vytvoril znova. Ktorý prístup umožní komponentu na zmenu reagovať?",
+  "options": [
+   "Spoliehať sa iba na jednorazové spustenie `ngOnInit()`",
+   "Sledovať Observable `ActivatedRoute.paramMap` alebo použiť jeho zodpovedajúce reaktívne API",
+   "Pri každej zmene parametra úplne znova načítať stránku",
+   "Považovať parameter route za CSS premennú"
+  ],
+  "answer": 1,
+  "explanation": "Pri zmene parametrov route sa môže znova použiť tá istá inštancia komponentu route, takže jednorazová inicializácia nemusí stačiť. Reaktívne sledovanie parametrov route zabezpečí, že komponent zareaguje na nové ID."
+ },
+ {
+  "id": 100,
+  "level": "medior",
+  "area": "State management (NgRx)",
+  "topic": "State management (NgRx)",
+  "type": "scenario",
+  "question": "V NgRx aplikácii effect spustí HTTP požiadavku ako reakciu na action `loadUsers`. Ktorý prístup po úspešnej odpovedi zodpovedá toku actions v NgRx?",
+  "options": [
+   "Effect priamo upraví objekt stavu store",
+   "Effect vytvorí novú action, ktorú spracuje reducer",
+   "Effect priamo upraví properties komponentu",
+   "Effect HTTP odpoveď ignoruje, pretože sieťovú požiadavku vykonáva reducer"
+  ],
+  "answer": 1,
+  "explanation": "Effect rieši vedľajšie efekty, ako sú HTTP požiadavky, a na základe úspešného výsledku zvyčajne dispatchne novú action. Reducer túto action spracuje a v rámci immutable prechodu stavu vytvorí nový stav."
+ },
+ {
+  "id": 101,
+  "level": "medior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "behavior",
+  "question": "Čo sa v nasledujúcom kóde stane, keď sa zmení signal `count`?",
+  "code": "const count = signal(1);\n\neffect(() => {\n  console.log('count:', count());\n});\n\ncount.set(2);\ncount.set(3);",
+  "options": [
+   "Effect sa nikdy nespustí, pretože signals sa dajú sledovať iba zo šablón",
+   "Effect sa spustí až po prvom `set()`",
+   "Effect sa spustí, iba keď ho zavoláš ručne",
+   "Effect sa reaktívne spustí znova, keď sa zmení hodnota signalu, ktorý číta"
+  ],
+  "answer": 3,
+  "explanation": "`effect()` automaticky sleduje signals, ktoré sa počas jeho vykonávania čítajú. Keďže effect číta `count()`, zmeny tohto signalu spôsobia, že sa effect spustí znova."
+ },
+ {
+  "id": 102,
+  "level": "medior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "edgecase",
+  "question": "Čo sa stane s nasledujúcim Observable?",
+  "code": "const source$ = new Observable(subscriber => {\n  subscriber.next(1);\n  subscriber.complete();\n  subscriber.next(2);\n});\n\nsource$.subscribe({\n  next: value => console.log(value),\n  complete: () => console.log('done')\n});",
+  "options": [
+   "Vypíše sa `1` a potom `done`; neskoršie `next(2)` sa ignoruje",
+   "Vypíše sa `1`, `done` a `2`",
+   "Vypíše sa iba `done`",
+   "Observable kvôli druhému `next()` vyhodí chybu za behu"
+  ],
+  "answer": 0,
+  "explanation": "Keď Observable zavolá `complete()`, je uzavretý, takže ďalšie notifikácie `next()` sa subscriberovi nedoručia. Po ukončení sa už neemitujú žiadne ďalšie hodnoty."
+ },
+ {
+  "id": 103,
+  "level": "medior",
+  "area": "Components & templates",
+  "topic": "Components & templates",
+  "type": "scenario",
+  "question": "Rodičovský komponent odovzdáva childu objekt cez property `@Input()`. Rodič si ponechá tú istú referenciu objektu a zmení iba jednu z jeho properties. Aký je hlavný problém pri použití `OnPush`?",
+  "options": [
+   "`@Input()` objekt automaticky hĺbkovo naklonuje",
+   "Child pri každom cykle change detection vždy dostane novú inštanciu",
+   "Zmena property objektu nemení referenciu objektu",
+   "`OnPush` komponent nemôže prijímať hodnoty `@Input()`"
+  ],
+  "answer": 2,
+  "explanation": "Kontrola inputov pri `OnPush` sa opiera predovšetkým o zmeny referencií. Ak zostane zachovaná tá istá referencia objektu, zmena vnútornej property nepredstavuje novú referenciu inputu; immutable aktualizácia, napríklad vytvorenie nového objektu, urobí zmenu explicitnou."
+ },
+ {
+  "id": 104,
+  "level": "medior",
+  "area": "Dependency injection",
+  "topic": "Dependency injection",
+  "type": "scenario",
+  "question": "Chceš, aby bola služba dostupná iba pre konkrétny komponent a jeho potomkov, zatiaľ čo iné komponenty môžu používať vlastné inštancie. Kde treba providera deklarovať?",
+  "options": [
+   "V poli `providers` komponentu",
+   "Vždy s `providedIn: 'root'`",
+   "V globálnom objekte `window`",
+   "V ľubovoľnom CSS súbore"
+  ],
+  "answer": 0,
+  "explanation": "Provider deklarovaný na úrovni komponentu patrí injectoru tohto komponentu, takže jeho inštancia je dostupná komponentu a hierarchii injectorov pod ním. Ak je potrebný lokálny životný cyklus, vyhneš sa tak globálnemu rozsahu singletonu."
+ },
+ {
+  "id": 105,
+  "level": "medior",
+  "area": "Services & providers",
+  "topic": "Services & providers",
+  "type": "edgecase",
+  "question": "Čo robí provider `useFactory` v systéme dependency injection v Angulari?",
+  "code": "providers: [\n  {\n    provide: API_URL,\n    useFactory: () => 'https://api.example.com'\n  }\n]",
+  "options": [
+   "Angular automaticky pošle HTTP požiadavku na danú URL",
+   "Pri získaní tokenu `API_URL` sa injektovanou hodnotou stane hodnota vrátená factory funkciou",
+   "Factory sa dá použiť iba v unit testoch",
+   "Token `API_URL` musí vždy vracať inštanciu triedy"
+  ],
+  "answer": 1,
+  "explanation": "`useFactory` umožňuje, aby hodnotu providera vytvorila factory funkcia. Keď sa `API_URL` injektuje, Angular zavolá factory a jej návratovú hodnotu poskytne ako závislosť."
+ },
+ {
+  "id": 106,
+  "level": "medior",
+  "area": "Lifecycle hooks",
+  "topic": "Lifecycle hooks",
+  "type": "edgecase",
+  "question": "V komponente chceš po inicializácii view pristúpiť k elementu, na ktorý odkazuje `@ViewChild`. Prečo sa na to nemáš spoliehať na `ngOnInit()`?",
+  "options": [
+   "`ngOnInit()` sa vždy spustí dvakrát",
+   "`@ViewChild` sa dá použiť iba v službách",
+   "Komponent sa po `ngOnInit()` automaticky zničí",
+   "View komponentu v tom momente ešte nemusí byť úplne inicializované"
+  ],
+  "answer": 3,
+  "explanation": "`ngOnInit()` súvisí s inicializáciou komponentu, zatiaľ čo child elementy view sú dostupné až neskôr v životnom cykle. Pre inicializáciu, ktorá závisí od view komponentu, je vhodným bodom životného cyklu `ngAfterViewInit()`."
+ },
+ {
+  "id": 107,
+  "level": "medior",
+  "area": "Change detection & OnPush",
+  "topic": "Change detection & OnPush",
+  "type": "behavior",
+  "question": "Čo sa stane s `OnPush` komponentom, keď sa zmení signal čítaný v jeho šablóne?",
+  "options": [
+   "Angular označí komponent, ktorý signal čítal, ako kandidáta na kontrolu",
+   "Komponent sa aktualizuje až po úplnom znovunačítaní stránky",
+   "Zmena signalu upozorní iba služby",
+   "Zmena signalu sa kvôli `OnPush` úplne ignoruje"
+  ],
+  "answer": 0,
+  "explanation": "Keď sa signal číta v šablóne komponentu, Angular túto závislosť sleduje. Keď sa signal zmení, komponent môže byť označený na kontrolu, takže sa nová hodnota vykreslí aj pri stratégii `OnPush`."
+ },
+ {
+  "id": 108,
+  "level": "medior",
+  "area": "Pipes",
+  "topic": "Pipes",
+  "type": "output",
+  "question": "Čo sa vykreslí v šablóne?",
+  "code": "@Component({\n  template: `\n    <p>{{ name | uppercase }}</p>\n    <p>{{ price | number:'1.2-2' }}</p>\n  `\n})\nexport class ProductComponent {\n  name = 'Angular';\n  price = 12.5;\n}",
+  "options": [
+   "`angular` a `12.5`",
+   "`ANGULAR` a `12`",
+   "`Angular` a `12.50`",
+   "`ANGULAR` a `12.50`"
+  ],
+  "answer": 3,
+  "explanation": "Pipe `uppercase` prevedie reťazec na veľké písmená. `number:'1.2-2'` zobrazí aspoň jednu celú číslicu a presne dve desatinné miesta, takže výsledok je `12.50`."
+ },
+ {
+  "id": 109,
+  "level": "medior",
+  "area": "Forms",
+  "topic": "Forms",
+  "type": "behavior",
+  "question": "V reaktívnom formulári chceš reagovať na zmeny hodnoty `FormControl`. Ktoré API je najvhodnejšie?",
+  "options": [
+   "`control.eventsOnly`",
+   "`control.valueChanges`",
+   "`control.onValueChanged`",
+   "`control.formChanges`"
+  ],
+  "answer": 1,
+  "explanation": "Observable `valueChanges` emituje pri každej zmene hodnoty controlu a dá sa ďalej spracovať RxJS operátormi. Patrí medzi základné reaktívne API reaktívnych formulárov v Angulari."
+ },
+ {
+  "id": 110,
+  "level": "medior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "scenario",
+  "question": "Z guardu chceš používateľa presmerovať na prihlasovaciu stránku, keď nemá oprávnenie. Ktorý prístup najlepšie zodpovedá modelu routingu v Angulari?",
+  "options": [
+   "Guard vždy vráti `true` a presmerovanie urobí komponent",
+   "Guard priamo zavolá `window.location.reload()`",
+   "Guard vráti `UrlTree` na presmerovanie",
+   "Guard zmení CSS triedu na elemente route"
+  ],
+  "answer": 2,
+  "explanation": "Guard môže vrátiť `UrlTree`, vďaka čomu Angular naviguje na zadanú route namiesto pokračovania v aktuálnej navigácii. Je to čistejšie než riešiť presmerovanie z komponentu alebo cez priame API prehliadača."
+ },
+ {
+  "id": 111,
+  "level": "medior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "behavior",
+  "question": "Prečo je užitočné odovzdávať z HTTP interceptora upravenú požiadavku vytvorenú pomocou `req.clone()`?",
+  "options": [
+   "Pretože pôvodný `HttpRequest` je immutable",
+   "Pretože `clone()` automaticky pošle novú HTTP požiadavku",
+   "Pretože interceptory môžu prijímať iba naklonované objekty",
+   "Pretože `clone()` vypína spracovanie HTTP chýb"
+  ],
+  "answer": 0,
+  "explanation": "API `HttpRequest` v Angulari je immutable, takže namiesto mutácie existujúcej požiadavky treba vytvoriť upravený klon. Klon predstavuje upravenú požiadavku v tej istej HTTP pipeline."
+ },
+ {
+  "id": 112,
+  "level": "medior",
+  "area": "Standalone components",
+  "topic": "Standalone components",
+  "type": "scenario",
+  "question": "V standalone komponente chceš používať direktívy Angular Routera, napríklad `routerLink`. Čo je potrebné?",
+  "options": [
+   "Celú aplikáciu treba prekonfigurovať pomocou NgModules",
+   "Do poľa `imports` komponentu treba pridať príslušný standalone import, ktorý poskytuje direktívy routera",
+   "`routerLink` sa dá použiť iba zo služby",
+   "Standalone komponent automaticky importuje všetky Angular direktívy"
+  ],
+  "answer": 1,
+  "explanation": "V standalone komponente sú direktívy používané v šablóne explicitnými závislosťami šablóny. Príslušný import routera preto treba poskytnúť, napríklad cez potrebné direktívy routera alebo vhodný export routera."
+ },
+ {
+  "id": 113,
+  "level": "medior",
+  "area": "State management (NgRx)",
+  "topic": "State management (NgRx)",
+  "type": "scenario",
+  "question": "Selector odvodzuje vypočítanú hodnotu z viacerých polí stavu. Prečo je použitie selectora lepšie než ručný výpočet v komponente?",
+  "options": [
+   "Selector automaticky posiela HTTP požiadavky",
+   "Selector mení spôsob fungovania reducera",
+   "Selector úplne vypína change detection",
+   "Selector deklaratívne zapuzdruje logiku dopytov odvodených zo stavu a môže poskytovať aj memoizáciu"
+  ],
+  "answer": 3,
+  "explanation": "Selector oddeľuje logiku dopytov na stav a odvodených hodnôt od komponentov. Vhodné NgRx selectory môžu využívať memoizáciu, čím sa vyhnú zbytočným prepočtom, keď sa ich vstupy nezmenili."
+ },
+ {
+  "id": 114,
+  "level": "medior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "scenario",
+  "question": "V streame chceš každú prichádzajúcu hodnotu namapovať na vnútorný Observable a zároveň dovoliť, aby predchádzajúce vnútorné Observables pri príchode nových hodnôt bežali paralelne ďalej. Ktorý operátor je vhodný?",
+  "options": [
+   "`switchMap`",
+   "`exhaustMap`",
+   "`mergeMap`",
+   "`takeUntil`"
+  ],
+  "answer": 2,
+  "explanation": "`mergeMap` môže pre každú vonkajšiu hodnotu vytvoriť subscription na vnútorný Observable, takže bežia súbežne. Je to vhodné, keď nechceš, aby nová hodnota zrušila predchádzajúce vnútorné operácie."
+ },
+ {
+  "id": 115,
+  "level": "medior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "performance",
+  "question": "V šablóne komponentu voláš tú istú náročnú metódu viackrát. Prečo to môže byť problém?",
+  "options": [
+   "Angular dokáže použiť iba prvý výsledok metódy",
+   "Metóda volaná zo šablóny vždy vytvorí samostatnú službu",
+   "Metóda sa automaticky prevedie na Promise",
+   "Metóda sa môže počas change detection spustiť viackrát, takže sa náročný výpočet opakuje"
+  ],
+  "answer": 3,
+  "explanation": "Metódy volané zo šablón sa môžu počas change detection vyhodnocovať opakovane. Ak je výpočet náročný a objavuje sa na viacerých miestach, môže to spôsobiť výraznú zbytočnú záťaž CPU; vhodnejší môže byť reaktívny alebo memoizovaný prístup."
+ },
+ {
+  "id": 116,
+  "level": "medior",
+  "area": "Testing",
+  "topic": "Testing",
+  "type": "debug",
+  "question": "V teste komponentu zmeníš property komponentu, no očakávaná zmena DOM sa hneď neprejaví. Čo môže v teste chýbať?",
+  "options": [
+   "Nové `TestBed.configureTestingModule()` pred každou asserciou",
+   "Vytvorenie novej inštancie komponentu po každej zmene property",
+   "Potrebné volanie `fixture.detectChanges()` po zmene",
+   "Úplné znovunačítanie prehliadača"
+  ],
+  "answer": 2,
+  "explanation": "Po programovej zmene stavu komponentu musí test spustiť change detection, ak chceš overiť výslednú aktualizáciu DOM. `fixture.detectChanges()` znova spustí príslušnú kontrolu šablóny."
+ },
+ {
+  "id": 117,
+  "level": "medior",
+  "area": "SSR & hydration",
+  "topic": "SSR & hydration",
+  "type": "edgecase",
+  "question": "Prečo je dôležité vyhnúť sa priamemu používaniu globálnych API špecifických pre prehliadač v kóde, ktorý sa v SSR Angular aplikácii môže vykonávať aj na serveri?",
+  "options": [
+   "Pretože API prehliadača sú na serveri pomalšie",
+   "Pretože globálne objekty prehliadača ako `window` či `localStorage` nemusia v serverovom prostredí existovať",
+   "Pretože SSR automaticky vypína TypeScript",
+   "Pretože hydratácia pozostáva výlučne z CSS"
+  ],
+  "answer": 1,
+  "explanation": "Počas SSR sa ten istý kód aplikácie môže vykonávať v serverovom prostredí, kde globálne objekty prehliadača nie sú dostupné. Logika špecifická pre platformu preto môže vyžadovať kontroly platformy špecifické pre Angular alebo vhodné API životného cyklu."
+ },
+ {
+  "id": 118,
+  "level": "medior",
+  "area": "Directives",
+  "topic": "Directives",
+  "type": "scenario",
+  "question": "Pomocou atribútovej direktívy v Angulari chceš zmeniť farbu pozadia host elementu. Ktorý prístup najlepšie zodpovedá úlohe direktívy?",
+  "options": [
+   "Premeniť každého potomka host elementu na nový komponent",
+   "Navigovať na host element pomocou Angular Routera",
+   "V direktíve použiť DOM/style API host elementu cez vhodnú abstrakciu Angularu",
+   "Namiesto direktívy vždy použiť pipe"
+  ],
+  "answer": 2,
+  "explanation": "Typickou úlohou atribútovej direktívy je meniť správanie alebo vzhľad jej host elementu. V Angulari sa to dá robiť pomocou API ako `ElementRef` a `Renderer2`, s ohľadom na vhodnú abstrakciu DOM a kompatibilitu s platformou."
+ },
+ {
+  "id": 119,
+  "level": "medior",
+  "area": "Data binding",
+  "topic": "Data binding",
+  "type": "trap",
+  "question": "Aký je kľúčový rozdiel medzi `[value]=\"name\"` a `[(ngModel)]=\"name\"` pri vstupnom poli?",
+  "options": [
+   "`[value]` je jednosmerný property binding, kým `[(ngModel)]` zabezpečuje obojsmerný tok dát medzi komponentom a poľom",
+   "`[value]` vždy aktualizuje property komponentu, keď používateľ píše",
+   "`[(ngModel)]` sa dá použiť iba s reaktívnymi formulármi",
+   "Obe syntaxe fungujú úplne rovnako"
+  ],
+  "answer": 0,
+  "explanation": "`[value]` odovzdá hodnotu z komponentu do inputu, no sám osebe nezapisuje zmeny používateľa späť do komponentu. `[(ngModel)]` kombinuje binding hodnoty so spracovaním zmien a zabezpečuje obojsmernú synchronizáciu."
+ },
+ {
+  "id": 120,
+  "level": "medior",
+  "area": "Components & templates",
+  "topic": "Components & templates",
+  "type": "behavior",
+  "question": "Child komponent chce upozorniť rodičovský komponent na udalosť, ktorá vznikla v childe. Ktorý mechanizmus Angularu je tradičným a idiomatickým riešením?",
+  "options": [
+   "Child priamo zmení privátnu property rodiča",
+   "Child pomocou `@Output()` emituje udalosť, ktorú rodič spracuje",
+   "Child zapíše dáta do DOM objektu `window`",
+   "Child s rodičom vždy komunikuje cez navigáciu medzi routes"
+  ],
+  "answer": 1,
+  "explanation": "Child komponent môže pomocou `@Output()` publikovať udalosť, ktorú rodič spracuje cez event binding vo svojej šablóne. Zabezpečuje to voľne previazanú a jasne definovanú komunikáciu medzi komponentmi."
+ },
+ {
+  "id": 121,
+  "level": "medior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "edgecase",
+  "question": "Pri požiadavke cez `HttpClient` chceš chybu spracovať pomocou `catchError` a potom pokračovať v reťazci Observable so záložnou hodnotou. Ktorý prístup je vhodný?",
+  "options": [
+   "Z callbacku `catchError` vrátiť nový Observable",
+   "Z callbacku `catchError` vždy vrátiť `void`",
+   "`catchError` sa spúšťa iba pri odpovediach HTTP 200",
+   "`catchError` požiadavku automaticky zopakuje"
+  ],
+  "answer": 0,
+  "explanation": "`catchError` dokáže neúspešný Observable nahradiť novým Observable, napríklad `of(fallbackValue)`. Stream tak môže pokračovať so záložnou hodnotou, ak to biznis logika aplikácie dovoľuje."
+ },
+ {
+  "id": 122,
+  "level": "medior",
+  "area": "Forms",
+  "topic": "Forms",
+  "type": "scenario",
+  "question": "Chceš vypnúť control reaktívneho formulára tak, aby bol vylúčený z výsledku `FormGroup.value`. Ktorý prístup je vhodný?",
+  "options": [
+   "`control.hide()`",
+   "`control.disable()`",
+   "`control.removeValue()`",
+   "`control.excludeFromForm()`"
+  ],
+  "answer": 1,
+  "explanation": "`disable()` control deaktivuje a neaktívne controls sú z výsledku `FormGroup.value` rodiča bežne vylúčené. Ak treba zahrnúť aj neaktívne polia, dá sa použiť `getRawValue()`."
+ },
+ {
+  "id": 123,
+  "level": "medior",
+  "area": "Change detection & OnPush",
+  "topic": "Change detection & OnPush",
+  "type": "scenario",
+  "question": "V `OnPush` komponente zobrazuješ dáta z Observable pomocou pipe `async`. Prečo sa šablóna môže aktualizovať, aj keď neprišla nová referencia `@Input()`?",
+  "options": [
+   "Pipe `async` aktualizuje iba root komponent",
+   "Observable pri každej emisii vytvorí nový komponent",
+   "Pipe `async` pri emisii nových hodnôt upozorní systém change detection v Angulari",
+   "`OnPush` sa v tomto prípade automaticky prepne na stratégiu `Default`"
+  ],
+  "answer": 2,
+  "explanation": "Pipe `async` sa prihlási na odber Observable a pri emisii nových hodnôt upozorní Angular, že príslušné view treba aktualizovať. `OnPush` komponent tak môže reagovať na nové hodnoty z Observable."
+ },
+ {
+  "id": 124,
+  "level": "medior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "scenario",
+  "question": "Chceš, aby sa subscription na Observable spojená s komponentom automaticky ukončila, keď sa komponent zničí. Ktorý moderný prístup v Angulari je vhodný?",
+  "options": [
+   "Pre každý Observable použiť samostatný `setTimeout()`",
+   "Ručné upratovanie subscriptions vždy vynechať",
+   "Každú subscription uložiť do globálnej premennej",
+   "Použiť `DestroyRef` a `takeUntilDestroyed()` z Angularu"
+  ],
+  "answer": 3,
+  "explanation": "`takeUntilDestroyed()` viaže upratanie subscription na Observable na životný cyklus Angularu, takže subscription sa môže automaticky ukončiť, keď sa príslušný komponent alebo injectable kontext zničí. Znižuje sa tým potreba ručnej správy subscriptions."
+ },
+ {
+  "id": 125,
+  "level": "medior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "production",
+  "question": "Vo veľkej Angular aplikácii chceš znížiť množstvo JavaScriptu, ktorý sa musí načítať pri štarte. Ktorý prístup môže pomôcť?",
+  "options": [
+   "Importovať všetky komponenty naraz do root komponentu",
+   "Pridať ten istý veľký balík služieb ku každej route",
+   "Používať v každej šablóne viac pipes",
+   "Použiť lazy loading pre funkcie alebo routes, ktoré sa používajú zriedkavejšie"
+  ],
+  "answer": 3,
+  "explanation": "Lazy loading umožňuje načítať kód niektorých funkcií až vtedy, keď je naozaj potrebný. Môže to zmenšiť úvodný bundle a zlepšiť výkon pri štarte aplikácie."
+ },
+ {
+  "id": 126,
+  "level": "medior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "edgecase",
+  "question": "Čo sa stane v nasledujúcom kóde, keď sa `details` vnútri `computed` číta iba podmienene?",
+  "code": "const showDetails = signal(false);\nconst details = signal('Angular');\n\nconst text = computed(() =>\n  showDetails() ? details() : 'Hidden'\n);\n\nconsole.log(text());\ndetails.set('Signals');\nconsole.log(text());\nshowDetails.set(true);\nconsole.log(text());",
+  "options": [
+   "`computed` sa pri zmene `details` vždy prepočíta",
+   "`computed` závisí iba od signals, ktoré sa naozaj čítajú, takže zmena `details` ho nezneplatní, kým je `showDetails` false",
+   "`computed` nedokáže spracovať podmienené závislosti na signals",
+   "`computed` automaticky zaregistruje každý signal ako závislosť"
+  ],
+  "answer": 1,
+  "explanation": "`computed` dynamicky sleduje signals, ktoré sa počas konkrétneho výpočtu naozaj čítajú. Kým je `showDetails()` false, `details()` sa nečíta, takže jeho zmena sama osebe výpočet nezneplatní. Keď sa `showDetails` stane true, `details` sa pri ďalšom výpočte stane závislosťou."
+ },
+ {
+  "id": 127,
+  "level": "medior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "trap",
+  "question": "Aký je v tomto ohľade kľúčový rozdiel medzi `Observable` a `Promise`?",
+  "options": [
+   "Observable môže v čase emitovať viacero hodnôt, kým Promise predstavuje jeden budúci výsledok",
+   "Observable je vždy synchrónny a Promise je vždy synchrónny",
+   "Promise podporuje viacerých subscriberov, kým Observable iba jedného",
+   "Observable nedokáže signalizovať chyby"
+  ],
+  "answer": 0,
+  "explanation": "Observable môže v čase emitovať žiadnu, jednu alebo viacero hodnôt a konzumenti sa prihlasujú na odber jeho streamu. Promise predstavuje jeden budúci výsledok, ktorý buď uspeje, alebo zlyhá."
+ },
+ {
+  "id": 128,
+  "level": "medior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "scenario",
+  "question": "Autentifikačný interceptor pridáva token ku každej API požiadavke, no token nechceš posielať externej analytickej službe. Aký je najlepší prístup?",
+  "options": [
+   "Pridať token ku každej požiadavke, pretože interceptor ich nedokáže rozlíšiť",
+   "Dať token do tela odpovede",
+   "Rozhodnúť, či je autentifikácia potrebná, podľa URL požiadavky alebo iných spoľahlivých metadát požiadavky",
+   "Pridávať token ručne v každom komponente"
+  ],
+  "answer": 2,
+  "explanation": "Interceptor môže centrálne skontrolovať každú požiadavku a autentifikačnú hlavičku pridať iba k požiadavkám smerujúcim na tvoj vlastný backend. Znižuje sa tým riziko, že citlivé prihlasovacie údaje omylom pošleš externej službe."
+ },
+ {
+  "id": 129,
+  "level": "medior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "edgecase",
+  "question": "Route resolver spustí pred navigáciou HTTP požiadavku. Čo sa stane, ak Observable vrátený resolverom skončí chybou?",
+  "options": [
+   "Angular automaticky považuje navigáciu za úspešnú",
+   "Komponent sa vždy vytvorí a dáta dostane neskôr",
+   "Angular chybu resolvera ignoruje",
+   "Navigácia sa normálne nedokončí a chybu resolvera treba ošetriť"
+  ],
+  "answer": 3,
+  "explanation": "Resolver poskytuje dáta ešte pred aktiváciou route. Ak stream resolvera skončí chybou, navigácia môže zlyhať, takže chybu treba vhodne ošetriť, napríklad v pipeline Observable alebo v architektúre routingu."
+ },
+ {
+  "id": 130,
+  "level": "medior",
+  "area": "Forms",
+  "topic": "Forms",
+  "type": "debug",
+  "question": "Prečo je nasledujúca konfigurácia reaktívneho formulára nesprávna, ak chceš pre control `name` zadať počiatočnú hodnotu aj validátor?",
+  "code": "const form = new FormGroup({\n  name: new FormControl(\n    'Anna',\n    Validators.required\n  )\n});",
+  "options": [
+   "Konfigurácia je neplatná, pretože `FormControl` nemôže prijať validátor",
+   "Konfigurácia je platná; druhým argumentom konštruktora `FormControl` môže byť synchrónny validátor",
+   "`Validators.required` sa dá použiť iba s template-driven formulármi",
+   "Počiatočná hodnota musí byť vždy objekt"
+  ],
+  "answer": 1,
+  "explanation": "Prvým argumentom konštruktora `FormControl` môže byť počiatočná hodnota a druhým synchrónny validátor alebo konfigurácia validátorov. Zobrazená konfigurácia je preto pre reaktívne formuláre platná."
+ },
+ {
+  "id": 131,
+  "level": "medior",
+  "area": "Standalone components",
+  "topic": "Standalone components",
+  "type": "behavior",
+  "question": "Aká je jedna z hlavných výhod toho, že je Angular komponent standalone?",
+  "options": [
+   "Komponent má automaticky prístup ku každému npm balíku",
+   "Komponent nemôže používať dependency injection",
+   "Závislosti šablóny komponentu sa dajú deklarovať priamo v jeho poli `imports` bez deklarácie v NgModule",
+   "Komponent funguje iba v SSR prostredí"
+  ],
+  "answer": 2,
+  "explanation": "Standalone komponenty môžu svoje závislosti šablóny deklarovať priamo v poli `imports`. Umožňuje to jednoduchšiu štruktúru závislostí a znižuje réžiu deklarácií založených na NgModule."
+ },
+ {
+  "id": 132,
+  "level": "medior",
+  "area": "Testing",
+  "topic": "Testing",
+  "type": "scenario",
+  "question": "Služba používa Angular `HttpClient` a v unit teste chceš overiť presnú URL, na ktorú poslala požiadavku, a potom poskytnúť kontrolovanú odpoveď. Ktorý prístup je vhodný?",
+  "options": [
+   "`HttpTestingController.expectOne()`",
+   "`window.fetch.mockRequest()`",
+   "`RouterTestingHarness.navigate()`",
+   "Samotné `fixture.detectChanges()`"
+  ],
+  "answer": 0,
+  "explanation": "`HttpTestingController` umožňuje zachytiť a skontrolovať HTTP požiadavky odoslané počas testu. Pomocou `expectOne()` sa dá overiť URL a ďalšie vlastnosti požiadavky a potom poskytnúť kontrolovanú odpoveď."
+ },
+ {
+  "id": 133,
+  "level": "medior",
+  "area": "SSR & hydration",
+  "topic": "SSR & hydration",
+  "type": "behavior",
+  "question": "Aký je jeden z hlavných cieľov hydratácie v Angular SSR aplikácii?",
+  "options": [
+   "Úplne odstrániť a znova vykresliť HTML vygenerované serverom",
+   "Previesť CSS súbory na JavaScript",
+   "Automaticky migrovať backendovú databázu",
+   "Znova použiť DOM vytvorený serverom a prepojiť ho s klientskou Angular aplikáciou"
+  ],
+  "answer": 3,
+  "explanation": "Počas hydratácie Angular znova použije DOM, ktorý už bol vygenerovaný na serveri, a prepojí ho so správaním klientskej aplikácie. Vyhne sa tak úplnému prekresleniu DOM na klientovi a môže zlepšiť zážitok z úvodného načítania."
+ },
+ {
+  "id": 134,
+  "level": "medior",
+  "area": "State management (NgRx)",
+  "topic": "State management (NgRx)",
+  "type": "scenario",
+  "question": "V NgRx reduceri chceš immutable spôsobom pridať položku do poľa. Ktorý prístup zodpovedá úlohe reducera?",
+  "options": [
+   "`state.items.push(action.item)` a vrátiť pôvodný stav",
+   "Z reducera priamo upraviť databázu",
+   "Vytvoriť nový objekt stavu, v ktorom je `items` nové pole obsahujúce pridanú položku",
+   "Upraviť property komponentu"
+  ],
+  "answer": 2,
+  "explanation": "Reducer by mal vytvárať čistý a predvídateľný prechod stavu. Namiesto mutácie pôvodného poľa vytvor nové pole a nový objekt stavu, napríklad pomocou spread operátora, aby mohla správne fungovať detekcia zmien založená na referenciách."
+ },
+ {
+  "id": 135,
+  "level": "medior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "production",
+  "question": "Vo veľkej tabuľke sa dáta jedného riadku často menia, zatiaľ čo tisíce ďalších riadkov zostávajú nezmenené. Ktorý prístup môže pomôcť vyhnúť sa zbytočným aktualizáciám DOM?",
+  "options": [
+   "Pre každý riadok použiť samostatný `setInterval()`",
+   "Použiť pre zoznam stabilný identifikátor `track` a stav aktualizovať immutable spôsobom",
+   "Po každej zmene znova načítať celú stránku",
+   "Nahradiť každý riadok výsledkom `JSON.stringify()`"
+  ],
+  "answer": 1,
+  "explanation": "So stabilným kľúčom na sledovanie dokáže Angular efektívnejšie určiť, ktoré položky zoznamu zostali nezmenené. V kombinácii s immutable aktualizáciami stavu a vhodným sledovaním to môže obmedziť zbytočnú prácu s DOM."
+ },
+ {
+  "id": 136,
+  "level": "medior",
+  "area": "Components & templates",
+  "topic": "Components & templates",
+  "type": "edgecase",
+  "question": "Čo sa stane s nasledujúcou šablónou, ak je `user` na začiatku `null` a neskôr sa z neho stane objekt?",
+  "code": "<p>{{ user?.profile?.name }}</p>",
+  "options": [
+   "Šablóna okamžite vyhodí chybu za behu, pretože `user` je null",
+   "Angular objekt `user` automaticky vytvorí",
+   "Šablóna môže bez chyby vykresliť `undefined` a neskôr zobraziť dostupné meno",
+   "Optional chaining sa dá použiť iba v TypeScript súboroch"
+  ],
+  "answer": 2,
+  "explanation": "Optional chaining zabráni tomu, aby prístup k property na medzihodnote null alebo undefined spôsobil chybu za behu. Kým `user` alebo `profile` nie je dostupný, výraz nevykreslí žiadne meno; keď hodnota dostupná bude, meno sa môže vykresliť."
+ },
+ {
+  "id": 137,
+  "level": "medior",
+  "area": "Services & providers",
+  "topic": "Services & providers",
+  "type": "scenario",
+  "question": "V konštruktore služby potrebuješ inú službu. Aký je idiomatický prístup v Angular DI?",
+  "options": [
+   "V každej metóde vytvoriť inštanciu závislosti operátorom `new`",
+   "Odovzdať závislosť cez CSS",
+   "Uložiť závislosť do globálnej premennej",
+   "Injektovať závislosť cez konštruktor služby"
+  ],
+  "answer": 3,
+  "explanation": "Pri dependency injection v Angulari sa potrebné služby zvyčajne získavajú cez injekciu v konštruktore alebo cez API `inject()`. Injector tak môže spravovať životný cyklus a konfiguráciu závislosti."
+ },
+ {
+  "id": 138,
+  "level": "medior",
+  "area": "Directives",
+  "topic": "Directives",
+  "type": "scenario",
+  "question": "Chceš implementovať vlastné správanie podobné štrukturálnej direktíve, ktoré na základe podmienky vytvorí šablónu. Ktoré koncepty Angularu s tým súvisia najpriamejšie?",
+  "options": [
+   "`TemplateRef` a `ViewContainerRef`",
+   "`HttpClient` a `HttpHeaders`",
+   "`ActivatedRoute` a `Router`",
+   "`FormGroup` a `FormControl`"
+  ],
+  "answer": 0,
+  "explanation": "`TemplateRef` predstavuje šablónu, zatiaľ čo `ViewContainerRef` umožňuje vytvárať a spravovať vložené (embedded) views. Tieto koncepty sú základom pochopenia, ako fungujú štrukturálne direktívy."
+ },
+ {
+  "id": 139,
+  "level": "medior",
+  "area": "Pipes",
+  "topic": "Pipes",
+  "type": "behavior",
+  "question": "Pure pipe dostane ako vstup objekt. Čo sa zvyčajne stane, ak zmeníš jednu z properties objektu, no referenciu objektu ponecháš nezmenenú?",
+  "options": [
+   "Pipe sa vždy spustí znova",
+   "Pipe objekt automaticky hĺbkovo naklonuje",
+   "Pipe sa zvyčajne nespustí znova len kvôli mutácii vnútornej property",
+   "Angular kvôli mutácii vyhodí chybu"
+  ],
+  "answer": 2,
+  "explanation": "Pure pipe sa spolieha na zmeny svojich vstupných hodnôt, čo pri objektoch spravidla znamená zmenu referencie. Ak zostane zachovaná tá istá referencia objektu, mutácia vnútornej property sama osebe nemusí spôsobiť opätovné spustenie pipe."
+ },
+ {
+  "id": 140,
+  "level": "medior",
+  "area": "Change detection & OnPush",
+  "topic": "Change detection & OnPush",
+  "type": "scenario",
+  "question": "V `OnPush` komponente vykresľuješ pole z `@Input()`. Rodič pridá položku do pôvodného poľa pomocou `push()`, no referencia zostane nezmenená. Aký je najlepší prístup?",
+  "options": [
+   "Aktualizovať pole s novou referenciou, napríklad pomocou spread operátora",
+   "`OnPush` automaticky robí hĺbkové porovnanie",
+   "Po každom `push()` sa vytvorí nová inštancia komponentu",
+   "Polia v `@Input()` sa nedajú používať s `OnPush` komponentmi"
+  ],
+  "answer": 0,
+  "explanation": "Pri `OnPush` komponente je zmena referencie inputu pre Angular dôležitým signálom. Vytvorenie nového poľa, napríklad `[...items, newItem]`, vytvorí explicitnú zmenu referencie, ktorú Angular dokáže zachytiť."
+ },
+ {
+  "id": 141,
+  "level": "senior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "architecture",
+  "question": "V komplexnej Angular aplikácii obsahuje signal zdieľaný, dlhodobý stav, ktorý používa viacero komponentov a služieb. Na čo treba pri návrhu architektúry myslieť?",
+  "options": [
+   "Každý signal musí byť vytvorený ako globálna premenná",
+   "Signals by sa mali vždy duplikovať samostatne pre každý komponent",
+   "Jasne určiť vlastníctvo stavu a právo zápisu, napríklad obmedzením mutácií cez API na úrovni služby",
+   "Signals odstraňujú potrebu služieb"
+  ],
+  "answer": 2,
+  "explanation": "Pri zdieľanom stave je dôležité určiť, ktorá vrstva stav vlastní a kde ho možno meniť. Zapisovateľný signal zapuzdrený v službe, ktorá navonok poskytuje API iba na čítanie, umožňuje kontrolovaný prístup k stavu."
+ },
+ {
+  "id": 142,
+  "level": "senior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "production",
+  "question": "Vo vyhľadávaní používateľ píše rýchlo a každá hodnota by spustila HTTP požiadavku. Cieľom je nespracúvať výsledky starších vyhľadávaní, keď už prišlo novšie. Ktorá kombinácia je najvhodnejšia?",
+  "options": [
+   "`debounceTime` a `switchMap`",
+   "`concatMap` a `delay`",
+   "`mergeMap` a `scan`",
+   "`reduce` a `buffer`"
+  ],
+  "answer": 0,
+  "explanation": "`debounceTime` znižuje počet požiadaviek tým, že počká na prestávku v písaní, a `switchMap` sa pri príchode nového vyhľadávania odhlási z predchádzajúceho vnútorného streamu. Spolu sú bežným riešením pre autocomplete alebo vyhľadávanie počas písania."
+ },
+ {
+  "id": 143,
+  "level": "senior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "architecture",
+  "question": "Vo veľkej Angular aplikácii výrazne narástla veľkosť úvodného bundlu, pretože zriedka používané admin funkcie sú jeho súčasťou. Ktorý architektonický prístup je vhodný?",
+  "options": [
+   "Načítať všetky admin komponenty eagerly z root komponentu",
+   "Umiestniť admin funkcie za lazy-loaded route alebo hranicu feature",
+   "Premeniť všetky admin služby na globálne premenné",
+   "Skopírovať všetky admin šablóny do jedného veľkého komponentu"
+  ],
+  "answer": 1,
+  "explanation": "Lazy loading zriedka používaných funkcií zabráni tomu, aby ich kód bol súčasťou úvodného načítania. Môže to znížiť množstvo úvodného JavaScriptu a zlepšiť výkon pri štarte."
+ },
+ {
+  "id": 144,
+  "level": "senior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "production",
+  "question": "Aplikácia používa autentifikáciu založenú na access tokenoch. Keď API požiadavka vráti `401 Unauthorized`, aplikácia sa má pokúsiť token obnoviť a potom pôvodnú požiadavku zopakovať. Aké je najdôležitejšie architektonické riziko pri obnove tokenu v interceptore?",
+  "options": [
+   "Interceptor nikdy nemôže pracovať s Observables",
+   "Odpoveď `401` vždy znamená, že používateľa treba okamžite odhlásiť",
+   "Interceptor automaticky rieši súbežné požiadavky na obnovu",
+   "Viacero súbežných odpovedí `401` môže spustiť viacero požiadaviek na obnovu, takže proces obnovy treba koordinovať"
+  ],
+  "answer": 3,
+  "explanation": "Viacero súbežných požiadaviek môže dostať odpoveď `401`, takže naivná implementácia môže pre každú z nich spustiť samostatnú požiadavku na obnovu. V produkcii je často potrebné koordinovať spoločný proces obnovy, aby sa ďalšie požiadavky mohli pripojiť k už prebiehajúcej obnove."
+ },
+ {
+  "id": 145,
+  "level": "senior",
+  "area": "State management (NgRx)",
+  "topic": "State management (NgRx)",
+  "type": "architecture",
+  "question": "V NgRx aplikácii komponent priamo mení property objektu stavu v store. Prečo sa to považuje za problém?",
+  "options": [
+   "Pretože store môže obsahovať iba reťazce",
+   "Pretože to obchádza prechod stavu založený na action → reducer a zmeny stavu môžu byť nepredvídateľné",
+   "Pretože komponent už nemôže používať šablóny",
+   "Pretože NgRx je určený iba na spracovanie HTTP požiadaviek"
+  ],
+  "answer": 1,
+  "explanation": "Centrálny tok stavu v NgRx je postavený na explicitných prechodoch stavu, ktoré vytvárajú actions a reducery. Priama mutácia tento mechanizmus obchádza, sťažuje sledovanie zmien a môže porušiť princípy immutable správy stavu."
+ },
+ {
+  "id": 146,
+  "level": "senior",
+  "area": "SSR & hydration",
+  "topic": "SSR & hydration",
+  "type": "production",
+  "question": "V Angular aplikácii so SSR a hydratáciou používa komponent na serveri a na klientovi rozdielne počiatočné dáta, takže DOM vygenerovaný serverom nezodpovedá obsahu, ktorý očakáva klient. Čo môže byť dôsledkom?",
+  "options": [
+   "Hydration mismatch alebo chyba hydratácie",
+   "Angular automaticky premenuje komponenty",
+   "CSS sa automaticky vypne",
+   "Router zmaže všetky routes"
+  ],
+  "answer": 0,
+  "explanation": "Hydratácia predpokladá, že sa klientska aplikácia dokáže zladiť so štruktúrou DOM vygenerovanou serverom. Ak sa úvodné vykreslenie nedeterministicky líši, Angular môže zistiť hydration mismatch, čo môže viesť k chybe alebo neželanému prekresleniu."
+ },
+ {
+  "id": 147,
+  "level": "senior",
+  "area": "Testing",
+  "topic": "Testing",
+  "type": "production",
+  "question": "Zložitý test Angular komponentu je nestabilný (flaky), pretože bežia asynchrónne Observables a časovače. Ktorý prístup môže pomôcť urobiť časovanie testu deterministickým?",
+  "options": [
+   "Po každej asynchrónnej operácii zavolať `window.location.reload()`",
+   "Globálne vypnúť všetky Observables",
+   "Použiť vhodné nástroje na falošné časovače a async v testovacom prostredí Angularu, napríklad `fakeAsync` a `tick`, kde je to vhodné",
+   "Spúšťať každý test s nekonečným timeoutom"
+  ],
+  "answer": 2,
+  "explanation": "Pomocou `fakeAsync` a `tick` sa dajú niektoré časové a asynchrónne operácie v teste riadiť deterministicky. Vhodný prístup závisí od toho, aké asynchrónne mechanizmy komponent používa."
+ },
+ {
+  "id": 148,
+  "level": "senior",
+  "area": "Dependency injection",
+  "topic": "Dependency injection",
+  "type": "architecture",
+  "question": "Vo veľkej Angular aplikácii potrebuje viacero features poskytovať tú istú konfiguráciu založenú na tokene s rôznymi hodnotami. Ktorý DI prístup umožní injectoru na nižšej úrovni prepísať providera definovaného vyššie?",
+  "options": [
+   "Deklarovať providera s tým istým tokenom v príslušnom injectore feature alebo komponentu",
+   "Vytvoriť nový TypeScript interface bez providera",
+   "V každej feature premenovať token",
+   "Upraviť závislosť priamo za behu"
+  ],
+  "answer": 0,
+  "explanation": "Hierarchické injectory v Angulari umožňujú child injectoru poskytnúť pre ten istý token vlastnú hodnotu. V rozsahu tohto injectora sa namiesto providera z vyššej úrovne použije provider z nižšej úrovne."
+ },
+ {
+  "id": 149,
+  "level": "senior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "architecture",
+  "question": "V podnikovej aplikácii s viacerými rolami sú niektoré routes prístupné iba používateľom s konkrétnymi oprávneniami. Na čo treba pri návrhu guardov myslieť najviac?",
+  "options": [
+   "Guardy by mali priamo implementovať všetku biznis logiku a databázové operácie",
+   "Guard by mal spravovať iba stav CSS",
+   "Guardy by mali vždy vykonať úplné znovunačítanie stránky",
+   "Guardy by mali slúžiť ako jasne definované hranice autorizácie, no citlivá autorizácia na backende sa nesmie spoliehať iba na ochranu na strane klienta"
+  ],
+  "answer": 3,
+  "explanation": "Route guard je užitočný pre UX na strane klienta a riadenie navigácie, no sám osebe nie je bezpečnostnou hranicou, pretože kód na strane klienta sa dá upraviť alebo obísť. Autorizáciu citlivých zdrojov musí vynucovať aj backend."
+ },
+ {
+  "id": 150,
+  "level": "senior",
+  "area": "Components & templates",
+  "topic": "Components & templates",
+  "type": "architecture",
+  "question": "Vo veľkej Angular aplikácii obsahuje šablóna komponentu viacero nezávislých častí biznis logiky a zložité výpočty. Aký by mohol byť udržiavateľnejší prístup?",
+  "options": [
+   "Nechať všetky výpočty priamo v šablóne, aby sa spúšťali znova pri každom cykle change detection",
+   "Dať všetku logiku do jednej obrovskej triedy komponentu",
+   "Primerane oddeliť prezentačnú a biznis logiku, napríklad menšími zodpovednosťami komponentov, computed stavom alebo samostatnými službami",
+   "Implementovať všetku biznis logiku pomocou CSS selektorov"
+  ],
+  "answer": 2,
+  "explanation": "Rozdelenie zodpovedností vo veľkých komponentoch zlepšuje testovateľnosť, čitateľnosť a udržiavateľnosť. Namiesto náročných výpočtov priamo v šablóne sa dá použiť reaktívny alebo memoizovaný stav a vhodne zapuzdrené služby."
+ },
+ {
+  "id": 151,
+  "level": "senior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "architecture",
+  "question": "V službe chceš interný zapisovateľný signal sprístupniť konzumentom iba na čítanie. Ktorý prístup je najvhodnejší?",
+  "code": "private readonly _users = signal<User[]>([]);\n\nreadonly users = this._users.asReadonly();",
+  "options": [
+   "Dať každému komponentu priamy prístup k zapisovateľnému signalu",
+   "Pri každom čítaní previesť hodnotu signalu na JSON",
+   "Sprístupniť zapisovateľný signal ako API iba na čítanie pomocou `asReadonly()`",
+   "Namiesto signalu vždy použiť globálnu premennú"
+  ],
+  "answer": 2,
+  "explanation": "`asReadonly()` umožňuje interný zapisovateľný signal sprístupniť navonok cez rozhranie iba na čítanie. Zmeny stavu tak zostávajú vnútri služby a zapuzdrenie je lepšie."
+ },
+ {
+  "id": 152,
+  "level": "senior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "edgecase",
+  "question": "Observable emituje viacero hodnôt a zdieľaš ho pomocou `shareReplay({ bufferSize: 1, refCount: true })`. Aký je jeden dôležitý dôsledok `refCount: true`?",
+  "options": [
+   "Upstream subscription sa môže ukončiť, keď sa odhlási posledný subscriber",
+   "Observable automaticky emituje iba jednu hodnotu",
+   "Upstream subscription zostane aktívna navždy",
+   "Replay buffer sa automaticky stane neobmedzene veľkým"
+  ],
+  "answer": 0,
+  "explanation": "Pri `refCount: true` je zdieľaná upstream subscription viazaná na počet aktívnych downstream subscriberov. Keď sa posledný subscriber odhlási, upstream subscription sa môže ukončiť."
+ },
+ {
+  "id": 153,
+  "level": "senior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "architecture",
+  "question": "Chceš HTTP chyby v interceptore spracúvať konzistentne, no niektoré chyby musia na biznis úrovni riešiť jednotlivé features. Ktorá architektúra je najvhodnejšia?",
+  "options": [
+   "V interceptore úplne pohltiť každú HTTP chybu",
+   "V interceptore automaticky premeniť každú chybu na `null`",
+   "Všetky chyby preposlať priamo na backend",
+   "V interceptore riešiť iba skutočne prierezové záležitosti a spracovanie biznis chýb špecifických pre feature nechať na konzumentovi"
+  ],
+  "answer": 3,
+  "explanation": "Interceptor je vhodným miestom pre prierezové záležitosti, ako je logovanie, autentifikácia či všeobecné spracovanie na úrovni transportu. Chyby s biznis významom sú často špecifické pre konkrétnu feature, a preto by ich mal spracovať konzument."
+ },
+ {
+  "id": 154,
+  "level": "senior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "architecture",
+  "question": "V Angular aplikácii je veľká časť UI potrebná až po interakcii používateľa. Ktorý prístup môže pomôcť znížiť náklady na úvodné vykreslenie?",
+  "options": [
+   "Hneď vytvoriť každú časť UI a skryť ju pomocou CSS",
+   "Vytvoriť alebo načítať potrebné UI až vtedy, keď je naozaj potrebné",
+   "Prekresľovať každý komponent pomocou `setInterval()`",
+   "Vopred previesť všetky dáta do podoby `JSON.stringify()`"
+  ],
+  "answer": 1,
+  "explanation": "Keď sa vyhneš zbytočnému vytváraniu DOM a stromu komponentov, môžeš znížiť náklady na úvodné vykreslenie aj change detection. Pri UI riadenom interakciou môže byť vhodnou stratégiou podmienené vykresľovanie alebo lazy loading."
+ },
+ {
+  "id": 155,
+  "level": "senior",
+  "area": "State management (NgRx)",
+  "topic": "State management (NgRx)",
+  "type": "architecture",
+  "question": "V NgRx aplikácii musí effect aktualizovať stav na základe výsledku HTTP požiadavky. Ktorý tok dát najlepšie zodpovedá architektúre NgRx?",
+  "options": [
+   "Effect → priama mutácia stavu",
+   "Komponent → priame volanie metódy reducera",
+   "Effect → success action → reducer → nový stav",
+   "Effect → priama manipulácia s DOM"
+  ],
+  "answer": 2,
+  "explanation": "Effect rieši vedľajší efekt, napríklad HTTP požiadavku, a na základe výsledku môže dispatchnúť action. Reducer túto action spracuje ako čistý prechod stavu."
+ },
+ {
+  "id": 156,
+  "level": "senior",
+  "area": "Dependency injection",
+  "topic": "Dependency injection",
+  "type": "edgecase",
+  "question": "Pre token nakonfiguruješ provider `useClass`. Čo sa stane, keď sa token injektuje?",
+  "code": "providers: [\n  {\n    provide: Logger,\n    useClass: ProductionLogger\n  }\n]",
+  "options": [
+   "Angular pri získaní tokenu `Logger` použije inštanciu `ProductionLogger`",
+   "Angular si uloží iba názov interface `Logger`",
+   "Angular hľadá existujúcu inštanciu `Logger` a inštanciu `ProductionLogger` nikdy nevytvorí",
+   "Provider sa dá použiť iba zo šablón"
+  ],
+  "answer": 0,
+  "explanation": "`useClass` hovorí injectoru, ktorú konkrétnu triedu má pri získaní tokenu použiť. Pre token `Logger` sa preto môže poskytnúť inštancia `ProductionLogger`."
+ },
+ {
+  "id": 157,
+  "level": "senior",
+  "area": "SSR & hydration",
+  "topic": "SSR & hydration",
+  "type": "production",
+  "question": "V Angular SSR aplikácii musí komponent použiť API špecifické pre prehliadač až po vykreslení na klientovi. Ktorý prístup najlepšie zodpovedá modelu Angular SSR?",
+  "options": [
+   "Volať API prehliadača bezpodmienečne z konštruktora",
+   "Volať API prehliadača pri každom vykreslení na serveri",
+   "Volať API prehliadača z CSS",
+   "Izolovať vykonávanie iba v prehliadači pomocou vhodného mechanizmu platformy alebo životného cyklu Angularu"
+  ],
+  "answer": 3,
+  "explanation": "Pri SSR môže kód komponentu bežať aj na serveri, takže bezpodmienečné používanie API dostupných iba v prehliadači môže spôsobiť chyby. Vykonávanie na strane klienta treba izolovať pomocou vhodných mechanizmov platformy a životného cyklu Angularu."
+ },
+ {
+  "id": 158,
+  "level": "senior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "architecture",
+  "question": "V aplikácii načítavajú resolvery dáta potrebné pre routes, no niektoré API požiadavky môžu trvať niekoľko sekúnd. Aký je hlavný kompromis?",
+  "options": [
+   "Resolver vždy zrýchli API požiadavku",
+   "Navigácia môže čakať na dáta z resolvera, takže pomalý resolver môže zvýšiť latenciu navigácie",
+   "Resolver vždy beží na pozadí po navigácii",
+   "Resolver vypína change detection v Angulari"
+  ],
+  "answer": 1,
+  "explanation": "Účelom resolvera je sprístupniť potrebné dáta ešte pred aktiváciou route. Pomalý resolver preto môže priamo ovplyvniť čas navigácie, takže nie každé načítanie dát treba implementovať ako resolver."
+ },
+ {
+  "id": 159,
+  "level": "senior",
+  "area": "Testing",
+  "topic": "Testing",
+  "type": "architecture",
+  "question": "V zložitom teste komponentu sa chceš vyhnúť skutočným HTTP požiadavkám na backend, no zároveň otestovať skutočný tok `HttpClient` v komponente. Aký je najlepší prístup?",
+  "options": [
+   "Pripojiť test na skutočný produkčný backend",
+   "Zakomentovať všetky HTTP volania",
+   "Použiť testovaciu HTTP infraštruktúru Angularu a na požiadavky poskytnúť kontrolované odpovede",
+   "Nahradiť každú metódu komponentu prázdnym mockom"
+  ],
+  "answer": 2,
+  "explanation": "Testovacia HTTP infraštruktúra Angularu umožňuje otestovať skutočnú pipeline `HttpClient` bez prístupu k sieti. Dajú sa tak deterministicky overiť URL požiadaviek, metódy, telá aj rôzne scenáre odpovedí."
+ },
+ {
+  "id": 160,
+  "level": "senior",
+  "area": "Change detection & OnPush",
+  "topic": "Change detection & OnPush",
+  "type": "architecture",
+  "question": "Veľký strom komponentov používa stratégiu `OnPush`, no globálna služba často mení objekty bez zmeny ich referencií. Prečo je to z architektonického hľadiska problém?",
+  "options": [
+   "`OnPush` všetky objekty automaticky hĺbkovo klonuje",
+   "`OnPush` podporuje iba primitívne hodnoty",
+   "Služby nesmú meniť objekty",
+   "Keďže change detection sa opiera o referencie, vnútorné mutácie môžu spôsobiť skryté alebo ťažko vystopovateľné problémy s aktualizáciou UI"
+  ],
+  "answer": 3,
+  "explanation": "`OnPush` dobre funguje s immutable aktualizáciami stavu, pri ktorých zmena vytvorí novú referenciu. Mutácia objektu na mieste neposkytuje rovnako jasný signál o zmene, čo môže vo veľkom strome komponentov viesť k ťažko diagnostikovateľnému správaniu."
+ },
+ {
+  "id": 161,
+  "level": "senior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "production",
+  "question": "V streame môže operácia zlyhať, no chceš, aby vonkajší stream zostal aktívny a ďalšie vonkajšie hodnoty sa mohli stále spracovať. Kam treba pri vnútornom streame v štýle `switchMap` zvyčajne umiestniť `catchError`?",
+  "options": [
+   "Do príslušného vnútorného Observable, aby chyba vo vnútri nemusela ukončiť vonkajší stream",
+   "Vždy do najvyššieho volania `subscribe()` v aplikácii",
+   "Vo všetkých prípadoch pred `map()`",
+   "`catchError` sa nedá použiť so `switchMap`"
+  ],
+  "answer": 0,
+  "explanation": "Ak `catchError` spracuje chybu vnútri vnútorného Observable vytvoreného cez `switchMap`, vnútorný stream sa dá nahradiť a vonkajší stream môže naďalej prijímať nové hodnoty. Ak je spracovanie chýb na konci celej pipeline, môže sa ukončiť aj vonkajší stream."
+ },
+ {
+  "id": 162,
+  "level": "senior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "architecture",
+  "question": "Viacero komponentov číta stav založený na signals, no meniť ho má smieť iba jedna služba. Ktorý návrh poskytuje najlepšie zapuzdrenie?",
+  "options": [
+   "Dať každému komponentu prístup k zapisovateľnému signalu",
+   "Ponechať zapisovateľný signal v službe privátny a navonok sprístupniť iba signal na čítanie alebo metódy",
+   "Uložiť hodnotu signalu ako globálnu property `window`",
+   "V každom komponente vytvoriť samostatnú kópiu toho istého stavu"
+  ],
+  "answer": 1,
+  "explanation": "Oddelenie interného zapisovateľného signalu od externého prístupu iba na čítanie vytvára jasný model vlastníctva. Komponenty môžu stav sledovať, zatiaľ čo právo meniť ho zostáva službe."
+ },
+ {
+  "id": 163,
+  "level": "senior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "production",
+  "question": "V Angular aplikácii obsahuje veľká, zložitá šablóna niekoľko náročných výpočtov, ktoré sa opakujú s rovnakými vstupmi. Ktorý prístup môže znížiť zbytočné prepočty?",
+  "options": [
+   "Spúšťať každý výpočet pomocou `setInterval()`",
+   "Previesť každý výsledok na reťazec",
+   "Použiť reaktívny alebo memoizovaný odvodený stav, napríklad vhodné hodnoty `computed`",
+   "Prepnúť celú aplikáciu na change detection `Default`"
+  ],
+  "answer": 2,
+  "explanation": "Memoizovaný odvodený stav umožňuje výpočet zneplatniť a prepočítať iba vtedy, keď sa zmenia jeho relevantné vstupy. Môže to obmedziť náročné výpočty, ktoré by sa inak zo šablóny opakovane vykonávali."
+ },
+ {
+  "id": 164,
+  "level": "senior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "edgecase",
+  "question": "Interceptor aplikuje na HTTP chyby mechanizmus opakovania (retry). Prečo je nebezpečné automaticky opakovať každú chybu donekonečna?",
+  "options": [
+   "Pretože HTTP požiadavky nikdy nemôžu byť idempotentné",
+   "Pretože retry vždy vypne timeout",
+   "Pretože interceptor nemôže používať RxJS operátory",
+   "Môže to spôsobiť nekonečné slučky opakovaní, zbytočnú záťaž alebo neželané opakované vedľajšie efekty"
+  ],
+  "answer": 3,
+  "explanation": "Nie každá chyba je dočasná a nie každú HTTP operáciu je bezpečné zopakovať. Stratégia opakovania by mala zohľadniť obmedzený počet pokusov, vhodné filtrovanie chýb, backoff a to, či je operácia idempotentná."
+ },
+ {
+  "id": 165,
+  "level": "senior",
+  "area": "State management (NgRx)",
+  "topic": "State management (NgRx)",
+  "type": "architecture",
+  "question": "NgRx selector odvodzuje z veľkého objektu stavu zložitý zoznam. Selector pri každom vyhodnotení vytvorí nové pole, aj keď sa relevantné vstupy nezmenili. Čo môže byť dôsledkom?",
+  "options": [
+   "Angular selector automaticky zničí",
+   "Zbytočné prepočty a zmeny referencií môžu spustiť ďalšie vykresľovanie alebo spracovanie v ďalších častiach",
+   "NgRx automaticky upraví databázu",
+   "Reducer už nemôže prijímať actions"
+  ],
+  "answer": 1,
+  "explanation": "Nová referencia poľa pri každom vyhodnotení sa konzumentom môže javiť ako zmena, aj keď predstavuje tie isté dáta. Memoizované selectory a stabilný odvodený stav pomáhajú tejto zbytočnej práci predísť."
+ },
+ {
+  "id": 166,
+  "level": "senior",
+  "area": "Dependency injection",
+  "topic": "Dependency injection",
+  "type": "architecture",
+  "question": "V podnikovej Angular aplikácii chceš používať tú istú abstrakciu podobnú interface s viacerými implementáciami v rôznych prostrediach. Prečo môže byť na to vhodný `InjectionToken`?",
+  "options": [
+   "Pretože `InjectionToken` môže slúžiť ako runtime token pre závislosti, ktoré nemajú runtime token v podobe triedy",
+   "Pretože `InjectionToken` automaticky posiela HTTP požiadavky",
+   "Pretože `InjectionToken` nahrádza kompilátor TypeScriptu",
+   "Pretože každý `InjectionToken` sa automaticky správa ako singleton bez ohľadu na rozsah"
+  ],
+  "answer": 0,
+  "explanation": "TypeScript interface za behu neexistuje, a preto sám osebe nemôže slúžiť ako DI token. `InjectionToken` poskytuje stabilný runtime identifikátor, ktorý sa dá v rôznych prostrediach alebo injectoroch spojiť s rôznymi providermi."
+ },
+ {
+  "id": 167,
+  "level": "senior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "security",
+  "question": "Admin route guard overuje, či má používateľ rolu admin. Prečo to samo osebe na ochranu admin API endpointov nestačí?",
+  "options": [
+   "Pretože guardy fungujú iba v produkčných buildoch",
+   "Pretože guard nedokáže chrániť routes",
+   "Pretože kód na strane klienta sa dá upraviť alebo obísť, takže autorizáciu musí vynucovať aj backend",
+   "Pretože admin roly existujú iba v CSS"
+  ],
+  "answer": 2,
+  "explanation": "Route guard poskytuje riadenie navigácie na strane klienta, no nie je dôveryhodnou bezpečnostnou hranicou. Útočník môže kód na strane klienta upraviť alebo obísť, takže autorizáciu citlivých API operácií musí vynucovať aj server."
+ },
+ {
+  "id": 168,
+  "level": "senior",
+  "area": "Testing",
+  "topic": "Testing",
+  "type": "architecture",
+  "question": "Test komponentu overuje príliš veľa interných detailov implementácie, takže aj jednoduchý refaktoring spôsobí zlyhanie mnohých testov. Aká by bola udržiavateľnejšia testovacia stratégia?",
+  "options": [
+   "Priamo testovať každú privátnu property",
+   "Úplne zamockovať interné metódy komponentu",
+   "Zmazať všetky testy a spoliehať sa iba na manuálne testovanie",
+   "Testovať predovšetkým pozorovateľné správanie, interakcie používateľa a verejný kontrakt komponentu"
+  ],
+  "answer": 3,
+  "explanation": "Testy zamerané na správanie sú menej previazané s detailmi implementácie, takže interný refaktoring ich rozbije menej pravdepodobne. Testy by mali predovšetkým overovať, čo komponent garantuje svojim konzumentom alebo používateľom."
+ },
+ {
+  "id": 169,
+  "level": "senior",
+  "area": "SSR & hydration",
+  "topic": "SSR & hydration",
+  "type": "production",
+  "question": "V aplikácii so SSR a hydratáciou komponent pri každom vykreslení generuje v šablóne náhodné ID. Prečo to môže byť problém?",
+  "options": [
+   "Náhodnosť automaticky vypne Router",
+   "Server a klient môžu vytvoriť rozdielne výsledky vykreslenia, čo môže viesť k hydration mismatch",
+   "Šablóny nemôžu obsahovať reťazce",
+   "SSR nedokáže vykresľovať komponenty"
+  ],
+  "answer": 1,
+  "explanation": "Ak server a klient z rovnakého počiatočného stavu vygenerujú rozdielne náhodné hodnoty, vykreslený DOM sa môže líšiť. Pri hydratácii môže takýto nedeterministický úvodný výstup viesť k nezhode (mismatch)."
+ },
+ {
+  "id": 170,
+  "level": "senior",
+  "area": "Components & templates",
+  "topic": "Components & templates",
+  "type": "architecture",
+  "question": "Veľký komponent rieši biznis logiku viacerých rôznych features, takže sa ťažko testuje. Aký je jeden z najdôležitejších cieľov refaktoringu?",
+  "options": [
+   "Spojiť všetku logiku do jedného výrazu v šablóne",
+   "Zväčšiť komponent pridaním ďalších pomocných metód",
+   "Rozdeliť zodpovednosti do menších komponentov a vhodných služieb",
+   "Premeniť všetky závislosti komponentu na globálne premenné"
+  ],
+  "answer": 2,
+  "explanation": "Komponenty a služby s jasne vymedzenými zodpovednosťami sa ľahšie testujú a udržiavajú. Rozdelenie zodpovedností znižuje implicitné previazanie a vytvára jasnejšie hranice."
+ },
+ {
+  "id": 171,
+  "level": "senior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "production",
+  "question": "V komponente ten istý cold Observable konzumuje viacero nezávislých volaní `subscribe()` a každá subscription spustí samostatnú HTTP požiadavku. Čo môže byť vhodným riešením, ak chceš ten istý výsledok zdieľať medzi konzumentmi?",
+  "options": [
+   "Pred každou subscription spustiť novú HTTP požiadavku",
+   "Použiť `shareReplay` s vhodnou sémantikou cache/replay",
+   "Zvýšiť počet subscriptions",
+   "Opakovať každú HTTP požiadavku pomocou `setInterval()`"
+  ],
+  "answer": 1,
+  "explanation": "Cold Observable môže pre každého subscribera spustiť samostatné vykonanie. Vhodne nakonfigurovaný `shareReplay` umožňuje zdieľať výsledok zdroja medzi viacerými konzumentmi a zároveň kontrolovať správanie replay."
+ },
+ {
+  "id": 172,
+  "level": "senior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "production",
+  "question": "Dashboard obsahuje viacero nezávislých widgetov, ktoré sa obnovujú v rôznych časoch. Ktorý architektonický prístup môže pomôcť zabrániť tomu, aby zmena v jednom widgete zbytočne ovplyvnila veľký strom komponentov?",
+  "options": [
+   "Riešiť každý widget v jednom obrovskom komponente",
+   "Po každej aktualizácii prekresliť celú stránku",
+   "Pre každý widget použiť globálny `setInterval()`",
+   "Rozdeliť widgety do dobre izolovaných komponentov a použiť lokálny alebo cielený reaktívny stav"
+  ],
+  "answer": 3,
+  "explanation": "Dobre izolované komponenty a cielený reaktívny stav umožňujú, aby zmena spustila prácu predovšetkým v príslušnej časti UI. Môže to znížiť zbytočné náklady na change detection a vykresľovanie, najmä vo veľkých dashboardoch."
+ },
+ {
+  "id": 173,
+  "level": "senior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "production",
+  "question": "Vnútri `effect()` meníš signal, ktorý ten istý effect aj číta. Prečo s tým treba narábať opatrne?",
+  "options": [
+   "Pretože signals sa z effectu nikdy nedajú meniť",
+   "Pretože každý effect automaticky posiela HTTP požiadavku",
+   "Pretože ak zmena spôsobí ďalšiu zmenu závislosti, môže vzniknúť reaktívny cyklus alebo opakované spúšťanie effectu",
+   "Pretože effects sa dajú volať iba zo šablón"
+  ],
+  "answer": 2,
+  "explanation": "Effects sú určené predovšetkým na synchronizáciu reaktívneho stavu s externými vedľajšími efektmi, nie na odvodzovanie stavu. Ak effect mení jednu zo svojich vlastných závislostí, môže vzniknúť ťažko sledovateľná reaktívna spätná väzba, preto je na odvodený stav vo všeobecnosti vhodnejšie `computed()`."
+ },
+ {
+  "id": 174,
+  "level": "senior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "security",
+  "question": "Interceptor automaticky pridáva hlavičku `Authorization` ku každej HTTP požiadavke. Prečo to môže byť bezpečnostný problém?",
+  "options": [
+   "Pretože hlavičku Authorization nemožno použiť s HTTPS",
+   "Pretože token by sa mohol omylom poslať na externý origin, ktorý ho nepotrebuje",
+   "Pretože interceptor vidí iba POST požiadavky",
+   "Pretože Angular po každej požiadavke token automaticky zmaže"
+  ],
+  "answer": 1,
+  "explanation": "Ak interceptor správne neobmedzí, ktoré originy alebo endpointy prihlasovacie údaje dostanú, token ako citlivý údaj sa môže dostať k nechcenému príjemcovi. Explicitné overenie cieľa požiadavky je preto dôležitou súčasťou návrhu auth interceptora."
+ },
+ {
+  "id": 175,
+  "level": "senior",
+  "area": "State management (NgRx)",
+  "topic": "State management (NgRx)",
+  "type": "architecture",
+  "question": "V NgRx aplikácii obsahuje stav feature príliš veľa nesúvisiaceho UI stavu a doménových dát v jednej monolitickej štruktúre. Čo môže byť jedným z dôsledkov?",
+  "options": [
+   "NgRx všetky dáta automaticky normalizuje",
+   "Reducer automaticky rozdelí stav do služieb",
+   "Actions sa už nedajú používať",
+   "Vlastníctvo stavu, selectory, testovanie aj izolovanie zmien môžu byť náročnejšie"
+  ],
+  "answer": 3,
+  "explanation": "Príliš monolitická štruktúra stavu môže vytvárať silné previazanie a ťažko sledovateľné závislosti. Usporiadanie stavu podľa logických hraníc features alebo domén môže zlepšiť udržiavateľnosť aj izolované testovanie."
+ },
+ {
+  "id": 176,
+  "level": "senior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "architecture",
+  "question": "V Angular aplikácii spravuje služba interný stav pomocou Signalu. Komponenty potrebujú stav iba čítať a nesmú ho meniť. Ktorý návrh API je najvhodnejší?",
+  "code": "private readonly _user = signal<User | null>(null);\n\nreadonly user = this._user.asReadonly();",
+  "options": [
+   "Komponenty by mali dostať zapisovateľný signal priamo, aby ho mohli používať flexibilnejšie.",
+   "Zapisovateľný signal by mal zostať privátny a stav by sa mal sprístupniť cez signal iba na čítanie.",
+   "Signals by sa v službách mali vždy nahradiť BehaviorSubject.",
+   "Hodnota signalu by sa mala sprístupniť cez getter, pretože signal sa nedá odovzdať komponentu."
+  ],
+  "answer": 1,
+  "explanation": "Vlastník stavu si ponechá zapisovateľný signal, zatiaľ čo konzumenti dostanú iba rozhranie na čítanie, ktoré poskytuje `asReadonly()`. Znižuje sa tým možnosť náhodnej zmeny stavu a model vlastníctva je jasnejší. Priame sprístupnenie zapisovateľného signalu môže lákať, lebo je jednoduché, no dáva konzumentom širšie právomoci na zmeny, než je potrebné."
+ },
+ {
+  "id": 177,
+  "level": "senior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "production",
+  "question": "Vyhľadávacie pole pri každej zmene spustí HTTP požiadavku. Predchádzajúce výsledky vyhľadávania už nie sú relevantné, keď používateľ zadá nový výraz. Ktoré riešenie túto sémantiku vyjadruje najlepšie?",
+  "code": "this.searchControl.valueChanges.pipe(\n  debounceTime(300),\n  distinctUntilChanged(),\n  switchMap(term => this.http.get<Result[]>(`/api/search?q=${term}`))\n);",
+  "options": [
+   "`mergeMap`, pretože každé vyhľadávanie sa musí vždy dokončiť.",
+   "`concatMap`, pretože vyhľadávania sa musia spracovať v pôvodnom poradí.",
+   "`exhaustMap`, pretože prvé vyhľadávanie je dôležitejšie ako ostatné.",
+   "`switchMap`, pretože prepnutie na nové vyhľadávanie môže ukončiť predchádzajúcu vnútornú subscription."
+  ],
+  "answer": 3,
+  "explanation": "`switchMap` sa pri každej novej vonkajšej hodnote prepne na aktuálny vnútorný Observable, takže predchádzajúce výsledky vyhľadávania sa už ďalej neposielajú. To dobre zodpovedá modelu vyhľadávania, v ktorom vyhráva posledná hodnota. `mergeMap` sa môže zdať vhodný, lebo spustí každú HTTP požiadavku, no staršia odpoveď by potom mohla prísť neskôr a prepísať novší výsledok."
+ },
+ {
+  "id": 178,
+  "level": "senior",
+  "area": "SSR & hydration",
+  "topic": "SSR & hydration",
+  "type": "production",
+  "question": "V Angular aplikácii so SSR a hydratáciou generuje nasledujúca šablóna pri každom vykreslení nový identifikátor. Prečo to môže byť problém?",
+  "code": "<div [attr.data-id]=\"Math.random()\">\n  {{ title }}\n</div>",
+  "options": [
+   "`Math.random()` sa dá použiť iba v TypeScript súboroch.",
+   "Hydratácia automaticky odstráni všetky dynamické atribúty.",
+   "Prehliadač nedokáže šablónu vykonať kvôli náhodnej hodnote.",
+   "Na serveri a v prehliadači sa môže vygenerovať iná hodnota, čo môže spôsobiť nezhodu medzi DOM zo servera a DOM očakávaným klientom."
+  ],
+  "answer": 3,
+  "explanation": "Pri SSR sa šablóna najprv vykreslí na serveri a klient sa potom počas hydratácie pokúsi existujúci DOM znova použiť. Ak sa nedeterministická hodnota líši, stav vykreslený na serveri a na klientovi sa nemusia zhodovať. Problém môže pôsobiť neškodne, lebo náhodný atribút je sám osebe platné HTML, no pre hydratáciu je deterministický úvodný DOM dôležitý."
+ },
+ {
+  "id": 179,
+  "level": "senior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "architecture",
+  "question": "Zložitý dashboard obsahuje niekoľko nezávislých widgetov. Zmena stavu v jednom widgete momentálne spôsobí prepočet veľkej časti dashboardu. Ktorý architektonický prístup dokáže zbytočnú prácu obmedziť najúčinnejšie?",
+  "options": [
+   "Rozdeliť widgety do menších komponentov, použiť lokálny reaktívny stav a obmedziť aktualizácie na dotknuté oblasti.",
+   "Po každej zmene stavu ručne zavolať `ApplicationRef.tick()`.",
+   "Dať stav všetkých widgetov do jedného veľkého objektu.",
+   "Používať v každej šablóne gettery, aby Angular mohol automaticky optimalizovať."
+  ],
+  "answer": 0,
+  "explanation": "Menšie hranice komponentov a cielený reaktívny stav umožňujú, aby zmena aktivovala iba tie časti UI, ktorých sa naozaj týka. Môže to výrazne znížiť náklady na vykresľovanie a výpočty, najmä vo veľkých dashboardoch. Explicitné spustenie globálneho ticku môže lákať, lebo zaručí aktualizáciu, no môže spustiť zbytočne rozsiahlu prácu."
+ },
+ {
+  "id": 180,
+  "level": "senior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "security",
+  "question": "Interceptor automaticky pridáva hlavičku `Authorization` ku každej HTTP požiadavke. Aplikácia však volá aj externé analytické API. Aký je najdôležitejší bezpečnostný problém?",
+  "code": "intercept(req: HttpRequest<unknown>, next: HttpHandler) {\n  return next.handle(\n    req.clone({\n      setHeaders: {\n        Authorization: `Bearer ${this.token}`\n      }\n    })\n  );\n}",
+  "options": [
+   "Hlavičku `Authorization` nemožno posielať cez HTTPS.",
+   "Token sa môže dostať na externý origin, ktorý tieto autentifikačné údaje vôbec nepotrebuje.",
+   "Interceptor môže upravovať iba GET požiadavky.",
+   "Použitie `clone()` automaticky pošle požiadavku dvakrát."
+  ],
+  "answer": 1,
+  "explanation": "Globálny interceptor nemusí vedieť, či je cieľový systém dôveryhodný backend alebo externá služba. Hlavičku Authorization by preto mal pridávať iba k vhodne zacieleným požiadavkám, napríklad podľa originu alebo explicitných metadát požiadavky. HTTPS chráni dáta počas prenosu, no neospravedlňuje poslanie tokenu na nechcený cieľ."
+ },
+ {
+  "id": 181,
+  "level": "senior",
+  "area": "State management (NgRx)",
+  "topic": "State management (NgRx)",
+  "type": "architecture",
+  "question": "Stav NgRx feature uchováva dáta niekoľkých nezávislých domén v jednom veľkom objekte. Komponenty navyše priamo poznajú internú štruktúru stavu. Aký problém môže časom vzniknúť?",
+  "options": [
+   "Reducer sa už nebude dať používať s TypeScriptom.",
+   "NgRx automaticky stratí celý stav.",
+   "Stav bude dostupný iba počas SSR.",
+   "Silné previazanie môže sťažiť úpravy, testovanie aj oddeľovanie features."
+  ],
+  "answer": 3,
+  "explanation": "Príliš centralizovaný model stavu, ktorý odhaľuje internú štruktúru, zvyšuje previazanie medzi komponentmi a vrstvou správy stavu. Správne oddelenie features a prístup cez selectory zvyčajne vedú k udržiavateľnejšiemu modelu. Jeden veľký objekt stavu môže pôsobiť jednoduchšie, lebo spočiatku vyžaduje menej boilerplate kódu, no závislosti sa môžu rýchlo stať ťažko zvládnuteľnými."
+ },
+ {
+  "id": 182,
+  "level": "senior",
+  "area": "Dependency injection",
+  "topic": "Dependency injection",
+  "type": "edgecase",
+  "question": "V hierarchii DI v Angulari poskytuje službu pre ten istý token rodičovský aj child injector. Child komponent tento token injektuje. Ktorý provider sa použije?",
+  "options": [
+   "Provider z child injectora, pretože vyhľadávanie pri injekcii začína v lokálnom kontexte injectora a postupuje hierarchiou smerom nahor.",
+   "Vo všetkých prípadoch provider z root injectora.",
+   "Obe inštancie sa automaticky zlúčia do jednej zdieľanej inštancie.",
+   "Angular náhodne vyberie jedného z dvoch providerov."
+  ],
+  "answer": 0,
+  "explanation": "Pri získavaní závislosti Angular najprv prehľadá príslušný lokálny kontext injectora, takže provider v child injectore môže prepísať providera na vyššej úrovni. Umožňuje to prispôsobenie na úrovni feature alebo komponentu. Root provider sa môže javiť ako prirodzená voľba, lebo mnohé služby používajú `providedIn: 'root'`, no to lokálnemu prepísaniu nebráni."
+ },
+ {
+  "id": 183,
+  "level": "senior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "security",
+  "question": "Angular aplikácia používa route guard, aby používatelia bez roly admin nemohli otvoriť route `/admin`. Backendové API však admin oprávnenie neoveruje. Aký je správny záver?",
+  "options": [
+   "Samotný guard poskytuje dostatočnú ochranu prístupu na strane servera.",
+   "Vďaka guardu backend automaticky pozná oprávnenia používateľa.",
+   "Autorizáciu musí vynucovať aj backend, pretože guard na strane klienta nie je bezpečnostnou hranicou.",
+   "Admin route treba z Angular aplikácie úplne odstrániť."
+  ],
+  "answer": 2,
+  "explanation": "Route guard riadi navigáciu na strane klienta, no klientsky kód ani sieťové požiadavky nemožno považovať za dôveryhodnú bezpečnostnú hranicu. Backend musí autorizáciu vynucovať pre každý chránený zdroj. Guard je užitočný ako vrstva UX a navigácie, no autorizáciu na strane servera nenahrádza."
+ },
+ {
+  "id": 184,
+  "level": "senior",
+  "area": "Testing",
+  "topic": "Testing",
+  "type": "architecture",
+  "question": "Pri testovaní zložitého komponentu test priamo kontroluje privátne polia a interné metódy komponentu. Prečo to môže byť z dlhodobého hľadiska zlá testovacia stratégia?",
+  "options": [
+   "V Angular komponentoch nemôžu existovať privátne polia.",
+   "Testy sú príliš úzko previazané s detailmi implementácie, takže interný refaktoring môže zbytočne rozbiť veľa testov.",
+   "TestBed podporuje iba verejné properties.",
+   "Privátne metódy sú vždy pomalšie ako verejné."
+  ],
+  "answer": 1,
+  "explanation": "Testy založené na správaní a verejnom kontrakte sú zvyčajne stabilnejšie, pretože nezávisia od toho, akými internými poliami či metódami komponent svoje správanie implementuje. Interný refaktoring tak nemusí nevyhnutne vyžadovať zmeny testov. Kontrola detailov implementácie môže lákať, lebo poskytuje podrobnejšiu kontrolu, no vytvára silné previazanie medzi testom a implementáciou."
+ },
+ {
+  "id": 185,
+  "level": "senior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "trap",
+  "question": "Chceme odvodiť hodnotu z iných signals. Prečo je na to lepšie použiť `computed()` než meniť iný signal vnútri `effect()`?",
+  "code": "readonly firstName = signal('Anna');\nreadonly lastName = signal('Kovacs');\n\nreadonly fullName = computed(\n  () => `${this.firstName()} ${this.lastName()}`\n);",
+  "options": [
+   "`computed()` je navrhnutý práve na deklarovanie odvodeného stavu a automaticky sleduje svoje závislosti.",
+   "`effect()` nedokáže čítať signals.",
+   "`computed()` nereaguje na zmeny signals.",
+   "`effect()` sa dá použiť iba na HTTP požiadavky."
+  ],
+  "answer": 0,
+  "explanation": "`computed()` deklaratívne opisuje stav odvodený z iných signals a Angular automaticky sleduje závislosti, ktoré sa čítajú. Je to čistejšie a menej náchylné na chyby než ručné udržiavanie ďalšieho signalu vnútri effectu. Effect sa môže zdať vhodný, lebo dokáže reagovať na zmeny, no je určený predovšetkým na vedľajšie efekty, nie na udržiavanie odvodeného stavu."
+ },
+ {
+  "id": 186,
+  "level": "senior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "edgecase",
+  "question": "Vonkajší Observable spúšťa pomocou `switchMap` viacero HTTP požiadaviek. Chyba HTTP Observable však ukončí celý stream vyhľadávania. Ktorá štruktúra umožní, aby ďalšie vyhľadávania pokračovali aj po jednotlivej HTTP chybe?",
+  "code": "this.search$.pipe(\n  switchMap(term =>\n    this.http.get<Result[]>(`/api/search?q=${term}`).pipe(\n      catchError(() => of([]))\n    )\n  )\n);",
+  "options": [
+   "`catchError` treba úplne odstrániť.",
+   "`catchError` treba používať iba počas bootstrapu aplikácie.",
+   "`catchError` treba umiestniť za celý stream, aby ho každá chyba automaticky reštartovala.",
+   "`catchError` treba umiestniť do vnútorného Observable, aby sa jednotlivá HTTP chyba ošetrila náhradnou hodnotou a vonkajší stream mohol pokračovať."
+  ],
+  "answer": 3,
+  "explanation": "Vnútorný `catchError` nahradí konkrétnu HTTP požiadavku záložným Observable, napríklad prázdnym výsledkom, takže vonkajší stream `search$` sa kvôli tejto HTTP chybe neukončí. Ďalšie hodnoty vyhľadávania tak môžu spúšťať nové vnútorné Observables. Umiestnenie `catchError` na vonkajšiu úroveň môže pôsobiť pohodlne, lebo centralizuje spracovanie chýb, no vonkajší stream sa potom môže ukončiť."
+ },
+ {
+  "id": 187,
+  "level": "senior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "production",
+  "question": "Veľký zoznam vykonáva pre každú položku zložitý výpočet a výsledok sa mení, iba keď sa zmení niekoľko vstupných signals. Aké je najvhodnejšie riešenie?",
+  "options": [
+   "Vykonať výpočet znova pri každom vykreslení šablóny.",
+   "Pravidelne obnovovať výpočet pomocou `setInterval()`.",
+   "Pre každú položku spustiť samostatnú HTTP požiadavku.",
+   "Memoizovať odvodenú hodnotu s vhodnými závislosťami, napríklad pomocou `computed()`, aby sa prepočítala iba pri zmene relevantných vstupov."
+  ],
+  "answer": 3,
+  "explanation": "Memoizovaný odvodený stav umožňuje Angularu prepočítavať iba vtedy, keď sa zmení skutočná závislosť. Je to užitočné najmä pri náročných výpočtoch a veľkých zoznamoch. Prepočítanie hodnoty pri každej kontrole šablóny môže pôsobiť jednoducho, lebo nevyžaduje samostatnú správu stavu, no môže spôsobiť zbytočnú prácu CPU."
+ },
+ {
+  "id": 188,
+  "level": "senior",
+  "area": "HttpClient & interceptors",
+  "topic": "HttpClient & interceptors",
+  "type": "edgecase",
+  "question": "Interceptor po prijatí odpovede 401 spustí obnovu access tokenu. V krátkom čase dostane odpoveď 401 aj päť ďalších požiadaviek. Aký je typický produkčný problém, ak každá odpoveď 401 spustí vlastnú požiadavku na obnovu?",
+  "options": [
+   "Angular vypne všetky HTTP požiadavky.",
+   "Môže súbežne bežať viacero požiadaviek na obnovu, čo vedie k race conditions a nekonzistentnému stavu tokenu.",
+   "Refresh token sa automaticky zmaže.",
+   "HttpClient nepodporuje požiadavky spustené z interceptorov."
+  ],
+  "answer": 1,
+  "explanation": "Keď viacero požiadaviek súbežne dostane odpoveď 401, môže sa bez koordinácie spustiť viacero procesov obnovy. Môžu sa dokončiť v rôznom poradí a spôsobiť konfliktný stav tokenu alebo zbytočnú sieťovú prevádzku. Okamžité spustenie obnovy pri každej chybe môže lokálne pôsobiť jednoducho, no pri súbežných požiadavkách to nie je bezpečný model správy stavu."
+ },
+ {
+  "id": 189,
+  "level": "senior",
+  "area": "Routing & guards",
+  "topic": "Routing & guards",
+  "type": "production",
+  "question": "Angular route resolver čaká na pomalú operáciu na backende. Čo sa deje s navigáciou, kým Observable resolvera nevráti výsledok?",
+  "options": [
+   "Navigácia môže čakať na dokončenie resolvera, takže pomalý resolver môže oddialiť aktiváciu route.",
+   "Router route aktivuje okamžite a dáta doplní neskôr.",
+   "Resolver automaticky beží vo vlákne na pozadí, takže na navigáciu nemá vplyv.",
+   "Resolver môže vracať iba statické dáta."
+  ],
+  "answer": 0,
+  "explanation": "Resolver slúži na načítanie dát potrebných pred aktiváciou route, takže pomalý alebo nikdy sa neukončujúci Observable môže priamo ovplyvniť navigáciu. Preto sú dôležité vhodné stratégie pre timeout, chyby a načítavanie. Okamžitá aktivácia route sa môže zdať intuitívna, lebo veľa načítavania dát prebieha na úrovni komponentu, no resolvery sa zapájajú do iného životného cyklu navigácie."
+ },
+ {
+  "id": 190,
+  "level": "senior",
+  "area": "SSR & hydration",
+  "topic": "SSR & hydration",
+  "type": "production",
+  "question": "V SSR aplikácii komponent počas inicializácie používa API dostupné iba v prehliadači. Prečo s tým treba narábať opatrne?",
+  "options": [
+   "API prehliadača fungujú iba v produkčných buildoch.",
+   "Všetky API prehliadača sa počas SSR automaticky mockujú.",
+   "V prostredí server-side renderingu nemusia objekty ako `window` či `localStorage` existovať.",
+   "Hydratácia automaticky prenesie globálne objekty prehliadača na server."
+  ],
+  "answer": 2,
+  "explanation": "Server-side rendering nebeží v prostredí prehliadača, takže globálne objekty špecifické pre prehliadač nemusia byť dostupné. Operácie určené iba pre prehliadač treba naviazať na vhodnú platformu alebo životný cyklus vykresľovania. Predpoklad, že sa API prehliadača automaticky mockujú, sa môže zdať rozumný, lebo v klientskom Angular prostredí sú prirodzene dostupné, no pre SSR neplatí."
+ },
+ {
+  "id": 191,
+  "level": "senior",
+  "area": "Change detection & OnPush",
+  "topic": "Change detection & OnPush",
+  "type": "edgecase",
+  "question": "`OnPush` komponent dostáva ako input objekt. Rodič zmení internú property toho istého objektu bez vytvorenia novej referencie. Prečo sa očakávaná aktualizácia childu nemusí uskutočniť?",
+  "code": "user = { name: 'Anna' };\n\nrename() {\n  this.user.name = 'Peter';\n}",
+  "options": [
+   "`OnPush` komponenty môžu prijímať iba primitívne hodnoty inputov.",
+   "Angular automaticky premieňa input objekty na immutable objekty.",
+   "Child komponent sa môže znova vykresliť, iba ak sa input objekt ošetrí pomocou `Object.freeze()`.",
+   "Referencia zostane nezmenená, takže detekcia zmien inputov pri `OnPush` sa nespráva rovnako ako pri novej referencii objektu."
+  ],
+  "answer": 3,
+  "explanation": "Kľúčovou optimalizáciou `OnPush` je zisťovanie zmien inputov na základe referencií. Ak zostane na mieste ten istý objekt, mutácia internej property nevytvorí novú referenciu inputu. Vytvorenie nového objektu, napríklad pomocou spread operátora, poskytne jasnejší signál o zmene. `freeze()` sa môže javiť ako riešenie, lebo dokáže mutácii zabrániť, no samo osebe nerieši šírenie zmeny."
+ },
+ {
+  "id": 192,
+  "level": "senior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "architecture",
+  "question": "Cold Observable spúšťa z viacerých komponentov tú istú náročnú operáciu načítania dát. Ktorú RxJS stratégiu možno použiť, aby aktívni subscriberi zdieľali ten istý výsledok?",
+  "options": [
+   "`shareReplay`",
+   "`delay`",
+   "`scan`",
+   "`pairwise`"
+  ],
+  "answer": 0,
+  "explanation": "`shareReplay` umožňuje zdieľať cold Observable medzi viacerými subscribermi a zároveň novým subscriberom prehrať hodnoty z buffera. Vhodná konfigurácia závisí od požadovaného životného cyklu subscription a správania cache. `delay` sa môže zdať relevantný, lebo mení časovanie Observable, no subscription nezdieľa."
+ },
+ {
+  "id": 193,
+  "level": "senior",
+  "area": "Dependency injection",
+  "topic": "Dependency injection",
+  "type": "architecture",
+  "question": "V aplikácii chceme injektovať službu na základe TypeScript interface. Prečo je zvyčajne potrebný samostatný DI token?",
+  "options": [
+   "TypeScript interface nezostáva ako runtime konštrukcia, ktorú by Angular mohol použiť ako DI token.",
+   "Interface sa počas buildu automaticky prevedie na inštanciu služby.",
+   "Angular povoľuje ako DI tokeny iba abstraktné triedy.",
+   "Interface vždy vedie k pomalšiemu získavaniu závislostí."
+  ],
+  "answer": 0,
+  "explanation": "TypeScript interface nemá po kompilácii žiadnu runtime reprezentáciu, ktorú by systém DI v Angulari mohol použiť na vyhľadanie závislosti. Ako runtime token môže slúžiť napríklad `InjectionToken`. Interface sa môže zdať postačujúci, lebo pre typový systém TypeScriptu dokonale opisuje kontrakt, no runtime mechanizmus DI vyžaduje skutočný token."
+ },
+ {
+  "id": 194,
+  "level": "senior",
+  "area": "State management (NgRx)",
+  "topic": "State management (NgRx)",
+  "type": "edgecase",
+  "question": "NgRx selector pri každom vyhodnotení vytvorí nové pole, aj keď sa zdrojový stav sémanticky nezmenil. Čo môže byť dôsledkom?",
+  "code": "export const selectActiveUsers = createSelector(\n  selectUsers,\n  users => users.filter(user => user.active)\n);",
+  "options": [
+   "Reducer sa automaticky zničí.",
+   "NgRx vypne memoizáciu selectora.",
+   "Selector nemôže vracať pole.",
+   "Môže vzniknúť nová referencia, ktorá môže spôsobiť zbytočné prepočty alebo aktualizácie komponentov v ďalších častiach."
+  ],
+  "answer": 3,
+  "explanation": "Pole vytvorené selectorom môže mať novú referenciu zakaždým, keď sa selector naozaj prepočíta. Ak je odvodený výsledok sémanticky nezmenený, no referencia je nová, konzumenti ďalej v reťazci to môžu vyhodnotiť ako zmenu. `filter()` sa môže zdať prirodzeným riešením, lebo jednoducho vytvorí požadované dáta, no treba myslieť aj na stabilitu referencie."
+ },
+ {
+  "id": 195,
+  "level": "senior",
+  "area": "Testing",
+  "topic": "Testing",
+  "type": "production",
+  "question": "Komponent závisí od časovania súvisiaceho s Observable. Test musí overiť časovo závislé správanie deterministicky a bez skutočného čakania. Ktorá testovacia technika Angularu je vhodná?",
+  "options": [
+   "Na kontrolu časovania použiť `console.log()`.",
+   "Použiť `fakeAsync` a `tick()` na riadenie plynutia virtuálneho času.",
+   "Vytvoriť v teste nekonečnú slučku `setTimeout()`.",
+   "Odstrániť z produkčného kódu všetko časovanie."
+  ],
+  "answer": 1,
+  "explanation": "`fakeAsync` a `tick()` umožňujú v teste simulovať plynutie času v kontrolovanom prostredí, takže správanie založené na časovačoch sa dá overiť rýchlo a deterministicky. Znižuje sa tým riziko nestability spôsobenej skutočným oneskorením. Skutočné volania `setTimeout` sa môžu zdať jednoduchšie, lebo pripomínajú produkčné správanie, no testy môžu byť pomalé a nestabilné."
+ },
+ {
+  "id": 196,
+  "level": "senior",
+  "area": "Components & templates",
+  "topic": "Components & templates",
+  "type": "architecture",
+  "question": "Angular komponent s tisíckami riadkov rieši naraz prezentáciu, biznis pravidlá, HTTP volania, transformáciu stavu aj zložitú logiku formulárov. Aký je najdôležitejší architektonický problém?",
+  "options": [
+   "Komponent používa príliš málo lifecycle hookov.",
+   "Každý údaj v šablóne sa musí čítať zo signalu.",
+   "V jednom komponente je sústredených príliš veľa zodpovedností, takže sa ťažšie testuje, znovu používa aj upravuje.",
+   "Komponenty nesmú obsahovať biznis logiku."
+  ],
+  "answer": 2,
+  "explanation": "Sústredenie príliš veľa zodpovedností v jednom komponente vytvára silné previazanie a sťažuje údržbu. Oddelenie prezentácie, doménovej logiky, správy stavu a infraštruktúry do vhodných hraníc môže zlepšiť testovateľnosť a lokalizovať zmeny. Úplný zákaz biznis logiky by bol príliš prísny, pretože menšie rozhodnutia špecifické pre UI môžu v komponente prirodzene zostať."
+ },
+ {
+  "id": 197,
+  "level": "senior",
+  "area": "Signals",
+  "topic": "Signals",
+  "type": "production",
+  "question": "Effect reaguje na zmenu signalu a potom ten istý signal zmení. Prečo to môže byť architektonicky nebezpečné?",
+  "code": "const count = signal(0);\n\neffect(() => {\n  const value = count();\n  count.set(value + 1);\n});",
+  "options": [
+   "Môže to vytvoriť reaktívnu spätnú väzbu, preto je na odvodený stav vo všeobecnosti vhodnejšie `computed()`.",
+   "Effect nedokáže čítať signals.",
+   "`set()` vždy vypne Angular aplikáciu.",
+   "Effect sa dá vytvoriť iba z HTTP interceptora."
+  ],
+  "answer": 0,
+  "explanation": "Effect číta signal `count` a potom ten istý signal zmení, čo môže spustiť ďalšiu reakciu a viesť k spätnej väzbe alebo inak ťažko sledovateľnému reaktívnemu správaniu. Pre odvodený stav je `computed()` vo všeobecnosti čistejším modelom. Zápis do signalu nie je sám osebe zakázaný, no spätný zápis do stavu, ktorý effect sám číta, treba navrhnúť opatrne."
+ },
+ {
+  "id": 198,
+  "level": "senior",
+  "area": "Performance",
+  "topic": "Performance",
+  "type": "production",
+  "question": "Úvodné načítanie Angular aplikácie trvá príliš dlho, pretože kód zriedka používaného admin rozhrania je súčasťou úvodného bundlu. Ktoré architektonické riešenie je vhodné?",
+  "options": [
+   "Vložiť admin kód do šablóny každého komponentu.",
+   "Načítavať feature lazy, aby sa stiahla až vtedy, keď je jej route alebo funkcia naozaj potrebná.",
+   "Importovať admin modul znova v každej službe.",
+   "Spojiť celú aplikáciu do jedného veľkého standalone komponentu."
+  ],
+  "answer": 1,
+  "explanation": "Lazy loading dokáže kód zriedka používaných features udržať mimo úvodného načítania, takže admin rozhranie sa stiahne až v prípade potreby. Môže to znížiť úvodné náklady na JavaScript, najmä vo veľkých aplikáciách. Eager načítanie admin kódu sa môže zdať jednoduchšie, lebo sa vyhne neskoršej sieťovej požiadavke, no zbytočne zvyšuje úvodné náklady."
+ },
+ {
+  "id": 199,
+  "level": "senior",
+  "area": "RxJS & Observables",
+  "topic": "RxJS & Observables",
+  "type": "production",
+  "question": "V Observable streame chceme zabezpečiť, aby sa subscription pri zničení komponentu správne ukončila. Ktoré moderné riešenie v Angulari tejto požiadavke dobre zodpovedá?",
+  "code": "this.searchControl.valueChanges.pipe(\n  debounceTime(300),\n  takeUntilDestroyed(this.destroyRef)\n).subscribe(value => {\n  this.search(value);\n});",
+  "options": [
+   "Každú subscription treba ručne odhlásiť pomocou `setTimeout()`.",
+   "Subscriptions netreba spravovať, pretože každý Observable sa ukončí automaticky.",
+   "Z komponentu treba odstrániť všetky RxJS operátory.",
+   "`DestroyRef` a `takeUntilDestroyed()` dokážu naviazať životný cyklus subscription na zničenie komponentu."
+  ],
+  "answer": 3,
+  "explanation": "`takeUntilDestroyed()` viaže životný cyklus subscription na Observable na životný cyklus zániku v Angulari, takže stream sa môže automaticky ukončiť, keď sa komponent zničí. Znižuje sa tým možnosť chýb spôsobených ručnou správou subscriptions. Predpoklad automatického ukončenia môže lákať, lebo niektoré Observables sa naozaj ukončia samy, no dlhodobé streamy ako `valueChanges` môžu zostať aktívne."
+ },
+ {
+  "id": 200,
+  "level": "senior",
+  "area": "SSR & hydration",
+  "topic": "SSR & hydration",
+  "type": "architecture",
+  "question": "V Angular aplikácii so SSR a hydratáciou používajú server a klient pre ten istý komponent rozdielne počiatočné dáta. HTML zo servera zobrazuje cenu produktu 25 €, kým prvé vykreslenie na klientovi zobrazí 30 €. Prečo je to pri hydratácii obzvlášť problematické?",
+  "options": [
+   "Hydratácia funguje iba vtedy, keď sú všetky dáta statické.",
+   "Klient musí znova načítať celý HTML dokument.",
+   "Angular počas hydratácie nedokáže vykonávať HTTP požiadavky.",
+   "Nezhoda medzi DOM vykresleným na serveri a počiatočnou štruktúrou či hodnotou očakávanou klientom môže viesť k hydration mismatch alebo problému s prekreslením."
+  ],
+  "answer": 3,
+  "explanation": "Hydratácia predpokladá, že DOM vytvorený serverom zodpovedá tomu, čo klient z rovnakého počiatočného stavu očakáva. Ak sa počiatočné dáta líšia, Angular nedokáže DOM vykreslený na serveri spoľahlivo znova použiť. Rozdielne dáta môžu pôsobiť neškodne, lebo klient by mohol neskôr zobraziť správnu hodnotu, no pre hydratáciu je dôležitá zhoda hneď na začiatku."
+ }
+]

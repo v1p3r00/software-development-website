@@ -41,7 +41,7 @@ export default function IndexScan({ lang }: WidgetProps) {
 
   const list = mode === 'scan' ? ROWS : SORTED;
   return (
-    <Frame lang={lang} title={t('Full table scan vs. index lookup', 'Teljes táblaolvasás vs. indexes keresés')} hint={t('Run the same query twice: without and with an index on email.', 'Futtasd le ugyanazt a lekérdezést kétszer: email index nélkül és indexszel.')}>
+    <Frame lang={lang} title={t('Full table scan vs. index lookup', 'Teljes táblaolvasás vs. indexes keresés', 'Full table scan vs. vyhľadanie cez index')} hint={t('Run the same query twice: without and with an index on email.', 'Futtasd le ugyanazt a lekérdezést kétszer: email index nélkül és indexszel.', 'Spusti ten istý dopyt dvakrát: bez indexu na email a s ním.')}>
       <div className="flex flex-wrap items-center gap-2">
         <Seg
           label="mode"
@@ -53,12 +53,12 @@ export default function IndexScan({ lang }: WidgetProps) {
             setFound(false);
           }}
           options={[
-            { v: 'scan', l: t('No index (Seq Scan)', 'Index nélkül (Seq Scan)') },
+            { v: 'scan', l: t('No index (Seq Scan)', 'Index nélkül (Seq Scan)', 'Bez indexu (Seq Scan)') },
             { v: 'index', l: 'CREATE INDEX … (email)' },
           ]}
         />
         <button type="button" className="vw-btn on ml-auto" onClick={run}>
-          ▶ {t('Run query', 'Lekérdezés futtatása')}
+          ▶ {t('Run query', 'Lekérdezés futtatása', 'Spustiť dopyt')}
         </button>
       </div>
       <pre className="vw-code mt-3">{`SELECT * FROM users WHERE email = '${TARGET}';`}</pre>
@@ -75,13 +75,13 @@ export default function IndexScan({ lang }: WidgetProps) {
       </div>
       <div className="mt-3 flex flex-wrap items-baseline gap-x-6 gap-y-1">
         <span className="font-mono text-[14.5px] text-text">
-          {t('rows examined', 'megvizsgált sorok')}: <span className="text-accent">{visited.length}</span> / {ROWS.length}
+          {t('rows examined', 'megvizsgált sorok', 'prezreté riadky')}: <span className="text-accent">{visited.length}</span> / {ROWS.length}
         </span>
         {found && (
           <span className="text-[15px] text-muted">
             {mode === 'scan'
-              ? t('Without an index the database reads every row — the cost grows with the table.', 'Index nélkül az adatbázis minden sort elolvas — a költség a táblával együtt nő.')
-              : t('The B-tree index is sorted, so each step halves the search space: ~log₂(n) reads.', 'A B-fa index rendezett, így minden lépés megfelezi a keresési teret: kb. log₂(n) olvasás.')}
+              ? t('Without an index the database reads every row — the cost grows with the table.', 'Index nélkül az adatbázis minden sort elolvas — a költség a táblával együtt nő.', 'Bez indexu databáza prečíta každý riadok – cena rastie s veľkosťou tabuľky.')
+              : t('The B-tree index is sorted, so each step halves the search space: ~log₂(n) reads.', 'A B-fa index rendezett, így minden lépés megfelezi a keresési teret: kb. log₂(n) olvasás.', 'B-strom index je zoradený, takže každý krok rozpolí priestor hľadania: ~log₂(n) čítaní.')}
           </span>
         )}
       </div>

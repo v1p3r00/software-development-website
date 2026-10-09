@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useI18n } from '../i18n';
+import type { Lang } from '../data/projects';
 import { useSeo } from '../hooks/useSeo';
 import { Arrow, Section, SectionHeader, cx } from '../components/ui';
 import Preview, { PrintCopy } from '../components/cv/Preview';
@@ -28,7 +29,7 @@ const EXAMPLE = 'dm.cv.example';
 
 type Step = { key: string; label: string; section?: CvSection };
 
-function load(lang: 'en' | 'hu'): { cv: Cv; example: boolean } {
+function load(lang: Lang): { cv: Cv; example: boolean } {
   try {
     const raw = window.localStorage.getItem(STORE);
     const cv = raw ? normalize(JSON.parse(raw), lang) : null;

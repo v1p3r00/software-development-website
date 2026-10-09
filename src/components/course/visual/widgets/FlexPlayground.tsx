@@ -20,7 +20,7 @@ export default function FlexPlayground({ lang }: WidgetProps) {
       ? `.row {\n  display: flex;\n  flex-direction: ${dir};\n  justify-content: ${justify};\n  align-items: ${align};\n  flex-wrap: ${wrap};\n  gap: ${gap}px;\n}`
       : `.grid {\n  display: grid;\n  grid-template-columns: repeat(${cols}, 1fr);\n  gap: ${gap}px;\n}`;
   return (
-    <Frame lang={lang} title={t('Flexbox & Grid playground', 'Flexbox és Grid játszótér')} hint={t('Change one property at a time and watch the boxes move.', 'Egyszerre egy tulajdonságot változtass, és figyeld a dobozokat.')}>
+    <Frame lang={lang} title={t('Flexbox & Grid playground', 'Flexbox és Grid játszótér', 'Ihrisko pre Flexbox a Grid')} hint={t('Change one property at a time and watch the boxes move.', 'Egyszerre egy tulajdonságot változtass, és figyeld a dobozokat.', 'Meň vždy jednu vlastnosť a sleduj, ako sa boxy posúvajú.')}>
       <div className="mb-4">
         <Seg label="mode" options={[{ v: 'flex', l: 'display: flex' }, { v: 'grid', l: 'display: grid' }]} value={mode} onChange={setMode} />
       </div>
@@ -40,7 +40,7 @@ export default function FlexPlayground({ lang }: WidgetProps) {
         <Field label={`gap: ${gap}px`}>
           <input className="vw-range" type="range" min={0} max={32} value={gap} onChange={(e) => setGap(Number(e.target.value))} aria-label="gap" />
         </Field>
-        <Field label={t(`items: ${count}`, `elemek: ${count}`)}>
+        <Field label={t(`items: ${count}`, `elemek: ${count}`, `položky: ${count}`)}>
           <input className="vw-range" type="range" min={1} max={6} value={count} onChange={(e) => setCount(Number(e.target.value))} aria-label="items" />
         </Field>
       </div>

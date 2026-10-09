@@ -4,6 +4,7 @@ import { marked } from 'marked';
 import { articles, formatDate, inLang, listedArticles, loadBody, useArticleBody } from '../data/articles';
 import { isoDate, isPublished } from '../content/frontmatter';
 import { site } from '../data/site';
+import { LANGS } from '../data/projects';
 import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
 import { useGoToSection } from '../hooks/useGoToSection';
@@ -22,7 +23,7 @@ export default function Article() {
   const article = articles.find((a) => a.slug === slug);
   const v = article ? inLang(article, lang) : null;
   // the share picture of the language shown, else the other language's
-  const image = v?.image ?? article?.versions.en?.image ?? article?.versions.hu?.image;
+  const image = v?.image ?? article?.versions.en?.image ?? article?.versions.hu?.image ?? article?.versions.sk?.image;
   // links to other sites (sources, references) open in a new tab
   const body = useArticleBody(article?.slug, lang);
   const html = useMemo(
@@ -92,7 +93,7 @@ export default function Article() {
           image,
           // scheduled: reachable by link, but kept out of search results until its date
           noindex: !isPublished(article.date),
-          langs: (['en', 'hu'] as const).filter((l) => article.versions[l]),
+          langs: LANGS.filter((l) => article.versions[l]),
           jsonLd,
         }
       : { title: t.seo.notFoundTitle, description: t.articles.notFound, path: `/articles/${slug ?? ''}/`, noindex: true },

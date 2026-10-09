@@ -3,15 +3,15 @@ import type { Lang } from '../../../../data/projects';
 
 export type WidgetProps = { lang: Lang };
 
-/** picks the EN or HU string */
-export const tr = (lang: Lang) => (en: string, hu: string) => (lang === 'hu' ? hu : en);
+/** picks the EN, HU or SK string */
+export const tr = (lang: Lang) => (en: string, hu: string, sk: string) => ({ en, hu, sk })[lang];
 
 export function Frame({ lang, title, hint, children }: { lang: Lang; title: string; hint?: string; children: ReactNode }) {
   return (
     <figure className="vis-widget not-prose">
       <div className="vis-widget-head">
         <span className="vis-kicker w-full" style={{ color: 'rgb(var(--v-violet))' }}>
-          ▶ {lang === 'hu' ? 'Interaktív' : 'Interactive'}
+          ▶ {{ en: 'Interactive', hu: 'Interaktív', sk: 'Interaktívne' }[lang]}
         </span>
         <span className="vis-title !mt-0">{title}</span>
         {hint && <span className="w-full text-[16.5px] leading-snug text-muted">{hint}</span>}
@@ -49,16 +49,16 @@ export function Stepper({ lang, i, n, setI, playing, setPlaying }: { lang: Lang;
   return (
     <div className="flex flex-wrap items-center gap-1.5">
       <button type="button" className="vw-btn" onClick={() => { setPlaying(false); setI(0); }} disabled={i === 0}>
-        ⟲ {t('Reset', 'Elölről')}
+        ⟲ {t('Reset', 'Elölről', 'Od začiatku')}
       </button>
       <button type="button" className="vw-btn" onClick={() => { setPlaying(false); setI(Math.max(0, i - 1)); }} disabled={i === 0}>
-        ← {t('Back', 'Vissza')}
+        ← {t('Back', 'Vissza', 'Späť')}
       </button>
       <button type="button" className="vw-btn on" onClick={() => { setPlaying(false); setI(Math.min(n - 1, i + 1)); }} disabled={i >= n - 1}>
-        {t('Next', 'Tovább')} →
+        {t('Next', 'Tovább', 'Ďalej')} →
       </button>
       <button type="button" className="vw-btn" onClick={() => { if (i >= n - 1) setI(0); setPlaying(!playing); }}>
-        {playing ? '❚❚ ' + t('Pause', 'Szünet') : '▶ ' + t('Play', 'Lejátszás')}
+        {playing ? '❚❚ ' + t('Pause', 'Szünet', 'Pauza') : '▶ ' + t('Play', 'Lejátszás', 'Prehrať')}
       </button>
       <span className="label ml-auto">
         {i + 1} / {n}

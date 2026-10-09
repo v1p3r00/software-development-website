@@ -8,7 +8,7 @@ import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
 import { useTheme } from '../hooks/useTheme';
 import { Section, SectionHeader, cx } from '../components/ui';
-import { ConsultCta, Group, Segmented, Slider, Swatches, huf } from '../components/tools/kit';
+import { ConsultCta, Group, Segmented, Slider, Swatches, money } from '../components/tools/kit';
 import { FIT, FONTS, createLightRig, drawDesign, makeUniforms, modelId, patchShirt, printCanvas, printTexture } from '../components/tools/shirtScene';
 import type { Design, FontId, Garment, Gender, LightPreset, LightRig, ModelId, ShirtUniforms, Side } from '../components/tools/shirtScene';
 import { createStage, download } from '../components/tools/stage';
@@ -18,22 +18,22 @@ import type { Stage } from '../components/tools/stage';
 const MODEL_VERSION = 7;
 
 const SHIRTS = [
-  { id: '#f4f3ef', en: 'White', hu: 'Fehér' },
-  { id: '#1d1e20', en: 'Black', hu: 'Fekete' },
-  { id: '#9b9c9e', en: 'Heather grey', hu: 'Melírszürke' },
-  { id: '#1f2b47', en: 'Navy', hu: 'Sötétkék' },
-  { id: '#b3262d', en: 'Red', hu: 'Piros' },
-  { id: '#2f4b36', en: 'Forest', hu: 'Erdőzöld' },
-  { id: '#d8c9a9', en: 'Sand', hu: 'Homok' },
-  { id: '#9cc4e2', en: 'Sky', hu: 'Égkék' },
+  { id: '#f4f3ef', en: 'White', hu: 'Fehér', sk: 'Biela' },
+  { id: '#1d1e20', en: 'Black', hu: 'Fekete', sk: 'Čierna' },
+  { id: '#9b9c9e', en: 'Heather grey', hu: 'Melírszürke', sk: 'Melírovaná sivá' },
+  { id: '#1f2b47', en: 'Navy', hu: 'Sötétkék', sk: 'Námornícka modrá' },
+  { id: '#b3262d', en: 'Red', hu: 'Piros', sk: 'Červená' },
+  { id: '#2f4b36', en: 'Forest', hu: 'Erdőzöld', sk: 'Lesná zelená' },
+  { id: '#d8c9a9', en: 'Sand', hu: 'Homok', sk: 'Piesková' },
+  { id: '#9cc4e2', en: 'Sky', hu: 'Égkék', sk: 'Nebeská modrá' },
 ];
 const INKS = [
-  { id: '#141414', en: 'Black', hu: 'Fekete' },
-  { id: '#ffffff', en: 'White', hu: 'Fehér' },
-  { id: '#ff5f1f', en: 'Orange', hu: 'Narancs' },
-  { id: '#d21c24', en: 'Red', hu: 'Piros' },
-  { id: '#c9a227', en: 'Gold', hu: 'Arany' },
-  { id: '#2a5fd1', en: 'Blue', hu: 'Kék' },
+  { id: '#141414', en: 'Black', hu: 'Fekete', sk: 'Čierna' },
+  { id: '#ffffff', en: 'White', hu: 'Fehér', sk: 'Biela' },
+  { id: '#ff5f1f', en: 'Orange', hu: 'Narancs', sk: 'Oranžová' },
+  { id: '#d21c24', en: 'Red', hu: 'Piros', sk: 'Červená' },
+  { id: '#c9a227', en: 'Gold', hu: 'Arany', sk: 'Zlatá' },
+  { id: '#2a5fd1', en: 'Blue', hu: 'Kék', sk: 'Modrá' },
 ];
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'] as const;
 const BASE: Record<Garment, number> = { tee: 5990, hoodie: 12990 };
@@ -129,6 +129,51 @@ const T = {
     loading: '3D modell betöltése…',
     noGl: 'Ez a böngésző nem tudta elindítani a 3D nézetet.',
     views: { chest: 'Közeli', body: 'Teljes alak' },
+    sample: 'softwaredevelopment.hu',
+  },
+  sk: {
+    title: '3D návrhár tričiek a mikín',
+    subtitle: 'Návrhár tričiek a mikín — orientačné ceny',
+    intro: 'Vyberte model, tričko alebo mikinu a farbu, potom pridajte text alebo vlastný obrázok na prednú či zadnú stranu — potlač sa na 3D oblečenie prenáša už počas písania.',
+    model: 'Model',
+    man: 'Muž',
+    woman: 'Žena',
+    garment: 'Oblečenie',
+    hoodie: 'Mikina s kapucňou',
+    shirt: 'Farba',
+    lighting: 'Osvetlenie',
+    lights: { studio: 'Štúdio', daylight: 'Denné svetlo', golden: 'Zlatá hodinka', spotlight: 'Reflektor' },
+    lightDir: 'Smer svetla',
+    custom: 'Vlastná farba',
+    side: 'Strana potlače',
+    front: 'Predná',
+    back: 'Zadná',
+    text: 'Text',
+    textHint: 'Najviac 4 riadky',
+    font: 'Písmo',
+    ink: 'Farba textu',
+    image: 'Obrázok',
+    upload: 'Nahrať obrázok',
+    replace: 'Vymeniť obrázok',
+    remove: 'Odstrániť',
+    imageHint: 'Najlepšie vyzerá PNG s priehľadným pozadím. Súbor zostáva vo vašom prehliadači.',
+    size: 'Veľkosť potlače',
+    pos: 'Poloha',
+    order: 'Objednávka',
+    shirtSize: 'Veľkosť',
+    qty: 'Množstvo',
+    pcs: 'ks',
+    tee: 'Tričko',
+    printText: 'potlač, text',
+    printImage: 'potlač, obrázok',
+    discount: 'Množstevná zľava',
+    total: 'Spolu',
+    demo: 'Orientačné ceny s DPH. Od 10, 25 a 50 kusov sú nižšie.',
+    save: 'Uložiť mockup',
+    drag: 'Potiahnutím otočíte · kolieskom alebo prstami priblížite',
+    loading: 'Načítava sa 3D model…',
+    noGl: 'Tento prehliadač nedokázal spustiť 3D zobrazenie.',
+    views: { chest: 'Detail', body: 'Celá postava' },
     sample: 'softwaredevelopment.hu',
   },
 };
@@ -381,7 +426,7 @@ export default function ShirtDesigner() {
         right={
           <button
             type="button"
-            onClick={() => stage.current && download(stage.current.snapshot(), lang === 'hu' ? (garment === 'tee' ? 'polo-mockup.png' : 'pulover-mockup.png') : `${garment === 'tee' ? 'tshirt' : 'hoodie'}-mockup.png`)}
+            onClick={() => stage.current && download(stage.current.snapshot(), lang === 'hu' ? (garment === 'tee' ? 'polo-mockup.png' : 'pulover-mockup.png') : lang === 'sk' ? (garment === 'tee' ? 'tricko-mockup.png' : 'mikina-mockup.png') : `${garment === 'tee' ? 'tshirt' : 'hoodie'}-mockup.png`)}
             disabled={!modelReady}
             data-cursor="follow"
             className="group flex items-center gap-2 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors hover:text-accent disabled:opacity-40"
@@ -562,13 +607,13 @@ export default function ShirtDesigner() {
               {price.lines.map((l) => (
                 <li key={l.label} className="flex justify-between gap-3 text-[13px] text-muted">
                   <span className="min-w-0">{l.label}</span>
-                  <span className="shrink-0 font-mono text-text">{l.value < 0 ? `−${huf(-l.value)}` : huf(l.value)}</span>
+                  <span className="shrink-0 font-mono text-text">{l.value < 0 ? `−${money(-l.value, lang)}` : money(l.value, lang)}</span>
                 </li>
               ))}
             </ul>
             <div className="mt-3 flex items-baseline justify-between gap-3 border-t border-line pt-3">
               <span className="font-mono text-[12px] uppercase tracking-tech text-text">{t.total}</span>
-              <span className="display text-[1.7rem] leading-none text-accent">{huf(price.total)}</span>
+              <span className="display text-[1.7rem] leading-none text-accent">{money(price.total, lang)}</span>
             </div>
             <p className="mt-2 text-[12px] text-dim">{t.demo}</p>
           </div>

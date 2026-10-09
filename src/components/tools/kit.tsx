@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { useI18n } from '../../i18n';
+import type { Lang } from '../../data/projects';
 import { useGoToSection } from '../../hooks/useGoToSection';
 import { Arrow, cx } from '../ui';
 
@@ -7,19 +8,34 @@ import { Arrow, cx } from '../ui';
 export function ConsultCta({ className = '' }: { className?: string }) {
   const { lang, lp } = useI18n();
   const goTo = useGoToSection();
-  const hu = lang === 'hu';
+  const c = {
+    en: {
+      label: 'Custom development',
+      lead: 'Want a custom development like this for your own site? Ask for a free consultation.',
+      body: 'A configurator, a 3D product view, a price calculator or a quote request — built around your products, prices and brand.',
+      cta: 'Free consultation',
+    },
+    hu: {
+      label: 'Egyedi fejlesztés',
+      lead: 'Szeretnél egy ilyen egyedi fejlesztést a saját oldaladra? Kérj ingyenes konzultációt.',
+      body: 'Konfigurátor, 3D termékbemutató, árkalkulátor vagy ajánlatkérő — a saját termékeiddel, áraiddal és arculatoddal.',
+      cta: 'Ingyenes konzultáció',
+    },
+    sk: {
+      label: 'Vývoj na mieru',
+      lead: 'Chceli by ste podobné riešenie na mieru aj pre svoj web? Dohodnite si bezplatnú konzultáciu.',
+      body: 'Konfigurátor, 3D ukážka produktu, cenová kalkulačka alebo dopyt po ponuke — postavené na vašich produktoch, cenách a vizuálnej identite.',
+      cta: 'Bezplatná konzultácia',
+    },
+  }[lang];
   return (
     <div className={cx('contact-box border border-accent bg-surface p-5 sm:p-6', className)}>
-      <div className="label-a">// {hu ? 'Egyedi fejlesztés' : 'Custom development'}</div>
+      <div className="label-a">// {c.label}</div>
       <p className="mt-2 text-[15px] font-semibold leading-snug text-text sm:text-base">
-        {hu
-          ? 'Szeretnél egy ilyen egyedi fejlesztést a saját oldaladra? Kérj ingyenes konzultációt.'
-          : 'Want a custom development like this for your own site? Ask for a free consultation.'}
+        {c.lead}
       </p>
       <p className="mt-2 text-[13px] leading-relaxed text-muted">
-        {hu
-          ? 'Konfigurátor, 3D termékbemutató, árkalkulátor vagy ajánlatkérő — a saját termékeiddel, áraiddal és arculatoddal.'
-          : 'A configurator, a 3D product view, a price calculator or a quote request — built around your products, prices and brand.'}
+        {c.body}
       </p>
       <a
         href={`${lp('/')}#contact`}
@@ -27,7 +43,7 @@ export function ConsultCta({ className = '' }: { className?: string }) {
         data-cursor="follow"
         className="hero-cta group mt-4 inline-flex items-center gap-3 bg-accent px-5 py-3 font-mono text-[12.5px] font-semibold uppercase tracking-tech text-onaccent transition-colors hover:bg-text"
       >
-        {hu ? 'Ingyenes konzultáció' : 'Free consultation'}
+        {c.cta}
         <Arrow className="transition-transform duration-300 group-hover:translate-x-1" />
       </a>
     </div>
@@ -173,3 +189,7 @@ export function Toggle({ label, checked, onChange }: { label: string; checked: b
 }
 
 export const huf = (n: number) => `${Math.round(n / 1000) * 1000}`.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' Ft';
+
+/** demo prices are kept in forints; Slovak visitors see them in euros (~400 Ft = 1 €, rounded to 10 €) */
+export const money = (n: number, lang: Lang) =>
+  lang === 'sk' ? `${Math.round(n / 4000) * 10}`.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' €' : huf(n);

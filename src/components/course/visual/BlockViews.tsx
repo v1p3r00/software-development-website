@@ -5,12 +5,12 @@ import type { Tone } from './blocks';
 
 const TERM_TONES: Tone[] = ['blue', 'violet', 'green', 'amber', 'pink', 'cyan'];
 
-const CALLOUT: Record<CalloutVariant, { icon: string; en: string; hu: string }> = {
-  tip: { icon: '✦', en: 'Tip', hu: 'Tipp' },
-  warn: { icon: '!', en: 'Watch out', hu: 'Figyelem' },
-  ide: { icon: '⌘', en: 'In IntelliJ IDEA', hu: 'IntelliJ IDEA-ban' },
-  note: { icon: 'i', en: 'Note', hu: 'Megjegyzés' },
-  info: { icon: '?', en: 'Good to know', hu: 'Jó tudni' },
+const CALLOUT: Record<CalloutVariant, { icon: string } & Record<Lang, string>> = {
+  tip: { icon: '✦', en: 'Tip', hu: 'Tipp', sk: 'Tip' },
+  warn: { icon: '!', en: 'Watch out', hu: 'Figyelem', sk: 'Pozor' },
+  ide: { icon: '⌘', en: 'In IntelliJ IDEA', hu: 'IntelliJ IDEA-ban', sk: 'V IntelliJ IDEA' },
+  note: { icon: 'i', en: 'Note', hu: 'Megjegyzés', sk: 'Poznámka' },
+  info: { icon: '?', en: 'Good to know', hu: 'Jó tudni', sk: 'Dobré vedieť' },
 };
 
 export function Callout({ variant, title, md, lang }: { variant: CalloutVariant; title: string; md: string; lang: Lang }) {
@@ -36,7 +36,7 @@ export function Compare({ spec, lang }: { spec: CompareSpec; lang: Lang }) {
   ];
   return (
     <figure className="vis-figure">
-      <div className="vis-kicker">{lang === 'hu' ? 'Összehasonlítás' : 'Side by side'}</div>
+      <div className="vis-kicker">{{ en: 'Side by side', hu: 'Összehasonlítás', sk: 'Porovnanie' }[lang]}</div>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         {sides.map(({ s, tone, mark }) => (
           <div key={tone} className={`vis-compare vis-compare-${tone} min-w-0`}>
@@ -61,7 +61,7 @@ export function Compare({ spec, lang }: { spec: CompareSpec; lang: Lang }) {
 export function Terms({ items, lang }: { items: { term: string; def: string }[]; lang: Lang }) {
   return (
     <figure className="vis-figure">
-      <div className="vis-kicker">{lang === 'hu' ? 'Kulcsfogalmak' : 'Key terms'}</div>
+      <div className="vis-kicker">{{ en: 'Key terms', hu: 'Kulcsfogalmak', sk: 'Kľúčové pojmy' }[lang]}</div>
       <dl className="mt-4 grid gap-3 sm:grid-cols-2">
         {items.map((x, i) => (
           <div key={x.term} className={'vis-term tone-' + TERM_TONES[i % TERM_TONES.length]}>

@@ -71,9 +71,9 @@ export function parseArticle(raw: string): ParsedArticle {
 }
 
 /** `…/articles/<slug>/<lang>.md` → { slug, lang } */
-export function articlePath(path: string): { slug: string; lang: 'en' | 'hu' } | null {
-  const m = /articles\/([^/]+)\/(en|hu)\.md$/.exec(path);
-  return m && !m[1].startsWith('_') ? { slug: m[1], lang: m[2] as 'en' | 'hu' } : null;
+export function articlePath(path: string): { slug: string; lang: 'en' | 'hu' | 'sk' } | null {
+  const m = /articles\/([^/]+)\/(en|hu|sk)\.md$/.exec(path);
+  return m && !m[1].startsWith('_') ? { slug: m[1], lang: m[2] as 'en' | 'hu' | 'sk' } : null;
 }
 
 /** `2026-10-15` or `2026-10-15 14:30` → ISO 8601 (`2026-10-15T14:30:00`), for <time> and schema.org */

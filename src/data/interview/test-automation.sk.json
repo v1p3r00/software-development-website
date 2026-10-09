@@ -1,0 +1,3233 @@
+[
+ {
+  "id": 1,
+  "level": "junior",
+  "area": "Test strategy & pyramid",
+  "topic": "Test strategy & pyramid",
+  "type": "theory",
+  "question": "Navrhuješ stratégiu testovania pre novú webovú aplikáciu. Ktorý prístup najlepšie zodpovedá klasickej testovacej pyramíde?",
+  "options": [
+   "Veľa rýchlych unit testov, menej API/integračných testov a ešte menej pomalých UI end-to-end testov",
+   "Málo unit testov a veľa UI end-to-end testov, pretože overujú skutočné správanie používateľa",
+   "Iba end-to-end testy, aby sa netrebalo zaoberať internými detailmi implementácie",
+   "Rovnaký počet testov na každej vrstve, aby bolo pokrytie vyvážené"
+  ],
+  "answer": 0,
+  "explanation": "Princípom testovacej pyramídy je mať najviac lacných, rýchlych a izolovaných testov a menej drahých a pomalých UI end-to-end testov. Vďaka tomu dostaneš rýchlejšiu spätnú väzbu a spravidla stabilnejšiu sadu testov. Veľa UI testov môže lákať, pretože majú najbližšie k skutočným používateľským scenárom, no zvyčajne sú pomalšie a krehkejšie."
+ },
+ {
+  "id": 2,
+  "level": "junior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "output",
+  "question": "Čo urobí nasledujúci JUnit test, ak metóda `Calculator.add` jednoducho sčíta oba parametre?",
+  "code": "@Test\nvoid addsNumbers() {\n    Calculator calculator = new Calculator();\n\n    int result = calculator.add(2, 3);\n\n    assertEquals(5, result);\n}",
+  "options": [
+   "Test prejde, pretože výsledok je 5",
+   "Test zlyhá, pretože `assertEquals` sa nedá použiť s primitívnymi hodnotami `int`",
+   "Test prejde iba vtedy, ak je `Calculator` Spring bean",
+   "Test počas behu vyhodí výnimku, pretože chýba `@BeforeEach`"
+  ],
+  "answer": 0,
+  "explanation": "`Calculator` sa vytvára priamo, `add(2, 3)` vráti 5, a preto sa očakávaná a skutočná hodnota zhodujú. JUnit `assertEquals` sa dá použiť aj na porovnanie primitívnych celých čísel. Potreba Spring beanu sa môže zdať pravdepodobná, keďže veľa Java projektov používa JUnit spolu so Springom, no jednoduchý unit test Spring nepotrebuje."
+ },
+ {
+  "id": 3,
+  "level": "junior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "theory",
+  "question": "V unit teste chceš izolovať volanie externej platobnej služby a vždy vrátiť vopred definovanú úspešnú odpoveď. Ktorý prístup je najvhodnejší?",
+  "options": [
+   "V každom teste volať skutočnú platobnú službu",
+   "Použiť stub, ktorý testu vráti kontrolovanú odpoveď",
+   "Nasadiť celú aplikáciu do samostatného produkčného prostredia",
+   "Odstrániť volanie platobnej služby z testu a ničím ho nenahradiť"
+  ],
+  "answer": 1,
+  "explanation": "Stub poskytuje vopred definované odpovede namiesto závislosti, takže test sa správa deterministicky a sústreďuje sa na testovaný komponent. Skutočná externá služba môže urobiť unit test pomalým a závislým od prostredia. Môže lákať považovať mock a stub za úplne rovnaký pojem, no stub predovšetkým dodáva testu kontrolované dáta alebo správanie."
+ },
+ {
+  "id": 4,
+  "level": "junior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "behavior",
+  "question": "Čo sa zvyčajne stane pri spustení nasledujúceho Selenium kódu, ak sa stránka načítala, ale element s ID `login` sa v DOM ešte neobjavil?",
+  "code": "WebDriver driver = new ChromeDriver();\n\ndriver.get(\"https://example.com\");\ndriver.findElement(By.id(\"login\")).click();",
+  "options": [
+   "Selenium v každom prípade automaticky čaká 30 sekúnd",
+   "Selenium automaticky opakuje kliknutie, kým sa element neobjaví",
+   "`findElement` zvyčajne zlyhá s výnimkou `NoSuchElementException`",
+   "Prehliadač automaticky znovu načíta stránku"
+  ],
+  "answer": 2,
+  "explanation": "Bez explicitného alebo vhodne nastaveného implicitného čakania `findElement` nezaručuje, že počká na element, ktorý sa objaví neskôr. Ak sa element v momente vyhľadávania nenájde, Selenium vyhodí `NoSuchElementException`. Predstava automatického dlhého čakania je lákavá, pretože moderné UI čakanie často naozaj vyžadujú, no čakanie treba nakonfigurovať alebo explicitne implementovať."
+ },
+ {
+  "id": 5,
+  "level": "junior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "behavior",
+  "question": "Aký je v Playwrighte vhodný prístup, ak zobrazenie tlačidla závisí od asynchrónneho volania API?",
+  "code": "await page.goto('/dashboard');\nawait page.getByRole('button', { name: 'Save' }).click();",
+  "options": [
+   "Vždy pridať pevné čakanie, napríklad `sleep(5000)`",
+   "Pred každým testom reštartovať prehliadač",
+   "Spustiť test dvakrát za sebou",
+   "Spoľahnúť sa na lokátory a zabudované auto-waiting v Playwrighte a v prípade potreby použiť cielené kontroly stavu"
+  ],
+  "answer": 3,
+  "explanation": "Lokátory a akcie v Playwrighte automaticky čakajú na mnohé relevantné podmienky, napríklad na to, kým sa s elementom dá pracovať. Ak biznisová podmienka vyžaduje čakať na konkrétnu odpoveď API alebo stav UI, môžeš použiť aj cielené čakanie. Pevný sleep láka svojou jednoduchosťou, no je pomalý a správne načasovanie aj tak nezaručí."
+ },
+ {
+  "id": 6,
+  "level": "junior",
+  "area": "Locators & selectors",
+  "topic": "Locators & selectors",
+  "type": "trap",
+  "question": "Ktoré tvrdenie najpresnejšie opisuje nasledujúci CSS selektor?",
+  "code": "button:nth-child(3)",
+  "options": [
+   "Vždy vyberie tretí element `button` na stránke",
+   "Vyberie tretieho potomka rodiča, ak je tento potomok sám `button`",
+   "Vždy vyberie tretie viditeľné tlačidlo",
+   "Vyberie iba tretie tlačidlo, ktoré má atribút `id`"
+  ],
+  "answer": 1,
+  "explanation": "`:nth-child(3)` označuje tretiu pozíciu medzi potomkami rodiča, nie tretí element `button`. Ak tretí potomok nie je `button`, selektor nenájde nič. Interpretácia ako „tretie tlačidlo“ je lákavá, pretože názov selektora môže zavádzať, no pozícia sa počíta medzi všetkými súrodencami."
+ },
+ {
+  "id": 7,
+  "level": "junior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "debug",
+  "question": "UI test občas zlyhá, pretože tlačidlo `Save` sa dá kliknúť až po odpovedi z API. Aký je najlepší prvý krok?",
+  "options": [
+   "Náhodne pridať na koniec testu 10-sekundové čakanie",
+   "Spustiť test trikrát a brať do úvahy iba tretí výsledok",
+   "Preskúmať stav aplikácie a čakať na relevantný stav tlačidla",
+   "Ignorovať zlyhanie, pretože flaky testy sú pri UI testoch normálne"
+  ],
+  "answer": 2,
+  "explanation": "Cieľom by malo byť odstrániť príčinu flaky testu, nie ju zakryť. Ak kliknutie vyžaduje, aby bolo tlačidlo aktívne, test by mal čakať práve na tento stav. Pevný 10-sekundový sleep láka, pretože môže okamžite znížiť počet zlyhaní, no test zbytočne spomalí a race condition spoľahlivo nevyrieši."
+ },
+ {
+  "id": 8,
+  "level": "junior",
+  "area": "Page Object Model",
+  "topic": "Page Object Model",
+  "type": "theory",
+  "question": "Aký je jeden z hlavných prínosov Page Object Modelu v UI testovacom frameworku postavenom na Seleniu alebo Playwrighte?",
+  "options": [
+   "Prehliadač vždy beží rýchlejšie",
+   "Automaticky ukladá testovacie dáta do databázy",
+   "Úplne nahrádza unit testy",
+   "Oddeľuje lokátory a akcie špecifické pre stránku od biznisového toku testov"
+  ],
+  "answer": 3,
+  "explanation": "Cieľom Page Object Modelu je skryť detaily UI, ako sú lokátory a akcie špecifické pre stránku, za abstrakciu, ktorú používajú testy. Zmena lokátora tak priamo ovplyvní menej testov. Môže lákať očakávať zrýchlenie prehliadača, keďže framework je štruktúrovanejší, no samotný POM prehliadač nezrýchli."
+ },
+ {
+  "id": 9,
+  "level": "junior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "output",
+  "question": "Čo overuje nasledujúci REST Assured test?",
+  "code": "given()\n    .when()\n    .get(\"/api/users/42\")\n    .then()\n    .statusCode(200)\n    .body(\"id\", equalTo(42));",
+  "options": [
+   "Že HTTP status odpovede je 200 a JSON pole `id` má hodnotu 42",
+   "Že požiadavka sa vždy posiela metódou POST",
+   "Že v databáze API je presne 42 používateľov",
+   "Že telo odpovede môže obsahovať iba pole `id`"
+  ],
+  "answer": 0,
+  "explanation": "Test pošle GET požiadavku na `/api/users/42` a potom overí HTTP status 200 a to, že pole `id` v JSON odpovedi má hodnotu 42. Neoveruje, že v odpovedi nie sú iné polia. Z týchto dvoch asercií sa nedá vyvodiť ani počet záznamov v databáze."
+ },
+ {
+  "id": 10,
+  "level": "junior",
+  "area": "BDD & Cucumber",
+  "topic": "BDD & Cucumber",
+  "type": "theory",
+  "question": "Aká je hlavná úloha štruktúry Gherkin `Given / When / Then` v Cucumberi?",
+  "options": [
+   "Slúži na spracovanie Java výnimiek",
+   "Automaticky vytvára testovaciu databázu",
+   "Čitateľne opisuje predpoklad, akciu a očakávaný výsledok",
+   "Nahrádza konfiguráciu Selenium WebDrivera"
+  ],
+  "answer": 2,
+  "explanation": "`Given` zvyčajne opisuje počiatočný stav, `When` vykonávanú akciu a `Then` očakávaný výsledok. Gherkin tak pomáha vyjadriť správanie čitateľnou formou, zatiaľ čo step definitions prepájajú tento text so skutočným automatizačným kódom. Zámena s konfiguráciou WebDrivera je lákavá, pretože Cucumber sa často používa spolu so Seleniom."
+ },
+ {
+  "id": 11,
+  "level": "junior",
+  "area": "Test data management",
+  "topic": "Test data management",
+  "type": "scenario",
+  "question": "Test registrácie potrebuje unikátnu e-mailovú adresu. Ktorý prístup je najvhodnejší, keď testy bežia paralelne?",
+  "options": [
+   "V každom teste použiť rovnakú pevnú adresu `test@example.com`",
+   "Každému behu dať unikátne, reprodukovateľné alebo vhodne generované testovacie dáta",
+   "Pred každým spustením testov náhodne vymazať nejakého používateľa",
+   "Vybrať voľnú e-mailovú adresu z produkčnej databázy"
+  ],
+  "answer": 1,
+  "explanation": "Pevné testovacie dáta môžu pri paralelnom behu testov kolidovať. Lepší prístup je použiť izolované, unikátne a ideálne reprodukovateľné testovacie dáta, napríklad e-mailovú adresu vygenerovanú pomocou identifikátora behu. Použitie produkčnej databázy je obzvlášť problematické, pretože je nepredvídateľné a môže priniesť bezpečnostné problémy a problémy s ochranou osobných údajov."
+ },
+ {
+  "id": 12,
+  "level": "junior",
+  "area": "CI integration",
+  "topic": "CI integration",
+  "type": "scenario",
+  "question": "Git repozitár má CI pipeline. Aký je jeden z najdôležitejších cieľov automatického spúšťania testov pri každom pull requeste?",
+  "options": [
+   "Zvýšiť výkon počítačov vývojárov",
+   "Vymazať logy produkčného servera",
+   "Automaticky prepísať históriu Gitu",
+   "Dať rýchlu spätnú väzbu o tom, či zmena nemohla spôsobiť regresiu"
+  ],
+  "answer": 3,
+  "explanation": "Automatické spúšťanie testov pri pull requeste dáva rýchlu spätnú väzbu o regresiách ešte predtým, ako sa zmena zlúči do cieľovej vetvy. CI nemá optimalizovať počítač vývojára ani meniť históriu Gitu. Mazanie produkčných logov s účelom testovacej pipeline vôbec nesúvisí."
+ },
+ {
+  "id": 13,
+  "level": "junior",
+  "area": "Parallel execution",
+  "topic": "Parallel execution",
+  "type": "behavior",
+  "question": "Čo sa môže priamo stať, ak dva paralelné testy upravujú ten istý záznam v databáze?",
+  "options": [
+   "Testy zaručene dajú nezávisle od seba rovnaký výsledok",
+   "Prehliadač automaticky serializuje databázové operácie",
+   "Môže vzniknúť race condition a nedeterministický výsledok testu",
+   "JUnit automaticky vráti späť každú zmenu v databáze"
+  ],
+  "answer": 2,
+  "explanation": "Ak dva testy pracujú s tým istým zdieľaným stavom, výsledok jedného testu môže závisieť od načasovania druhého. To môže spôsobiť race conditions a flaky testy. Automatický rollback nastane iba vtedy, ak ho testovacie prostredie a vhodná transakčná konfigurácia naozaj zabezpečujú."
+ },
+ {
+  "id": 14,
+  "level": "junior",
+  "area": "Reporting",
+  "topic": "Reporting",
+  "type": "theory",
+  "question": "Ktoré informácie sú obzvlášť užitočné pri ladení zlyhaného UI testu bežiaceho v CI?",
+  "options": [
+   "Iba názov testu, ktorý sa zobrazí v reporte",
+   "Stack trace spolu s artefaktmi, ako je screenshot, log prehliadača alebo trace",
+   "Iba čas behu testu",
+   "Iba výsledný stav celej CI pipeline"
+  ],
+  "answer": 1,
+  "explanation": "Pri zlyhanom UI teste môžu screenshot, trace, log prehliadača a podrobný stack trace výrazne urýchliť nájdenie hlavnej príčiny. Samotný názov testu alebo stav pipeline poskytuje málo kontextu. Môže lákať uchovávať iba čas behu, keďže sa ľahko meria, no zlyhanie nevysvetlí."
+ },
+ {
+  "id": 15,
+  "level": "junior",
+  "area": "Contract testing",
+  "topic": "Contract testing",
+  "type": "theory",
+  "question": "Dve mikroslužby spolu komunikujú cez REST API. Aký je jeden z hlavných cieľov contract testingu?",
+  "options": [
+   "Overiť, že API kontrakt medzi konzumentom a poskytovateľom zostáva kompatibilný",
+   "Overiť pixelovo presné vykreslenie CSS na frontende",
+   "Merať výkon produkčnej databázy",
+   "Skrátiť čas behu unit testov"
+  ],
+  "answer": 0,
+  "explanation": "Contract testing overuje tie časti API kontraktu, na ktoré sa konzument a poskytovateľ spoliehajú, napríklad štruktúru požiadavky a odpovede alebo stavové kódy. Je to užitočné najmä v prostredí mikroslužieb, kde pomáha včas odhaliť regresie v kompatibilite. Validácia CSS patrí do vizuálneho testovania, nie do contract testingu."
+ },
+ {
+  "id": 16,
+  "level": "junior",
+  "area": "Visual & accessibility testing",
+  "topic": "Visual & accessibility testing",
+  "type": "edgecase",
+  "question": "Pri teste prístupnosti sa aktívny a neaktívny stav tlačidla líši iba zmenou farby. Prečo to môže byť problém?",
+  "options": [
+   "Prehliadače nepodporujú tlačidlá",
+   "Štandard HTML zakazuje používanie tlačidiel",
+   "Selenium nedokáže čítať farby",
+   "Pre niektorých používateľov samotná farba nemusí stačiť na rozlíšenie stavu"
+  ],
+  "answer": 3,
+  "explanation": "Oznamovanie stavu iba farbou môže spôsobiť problém s prístupnosťou, napríklad pre používateľov s poruchami farebného videnia. Treba zvážiť ďalšie vizuálne alebo sémantické indikátory a tiež automatizované kontroly prístupnosti. Je lákavé vnímať to ako obmedzenie Selenia, keďže otázka je v kontexte UI automatizácie, no podstatou problému je prístupnosť pre používateľov."
+ },
+ {
+  "id": 17,
+  "level": "junior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "theory",
+  "question": "Ktorý prístup najlepšie podporuje udržiavateľnosť automatizovaného testovacieho frameworku?",
+  "options": [
+   "V každom teste samostatne vytvárať a konfigurovať každý komponent",
+   "V každom teste používať dlhé, opakujúce sa lokátory a setup kód",
+   "Zdieľanú konfiguráciu, pomocné a doménovo špecifické komponenty usporiadať pomocou vhodných abstrakcií",
+   "Zachytiť každú chybu cez `try/catch`, aby sada mohla bežať ďalej"
+  ],
+  "answer": 2,
+  "explanation": "Dobre štruktúrovaný framework znižuje duplicitu, zjednocuje konfiguráciu a oddeľuje technickú infraštruktúru od biznisového zámeru testov. S abstrakciou však treba narábať opatrne, pretože prílišná generalizácia môže framework tiež sťažiť na údržbu. Potláčanie výnimiek je obzvlášť nebezpečné, pretože môže zakryť skutočné chyby."
+ },
+ {
+  "id": 18,
+  "level": "junior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "debug",
+  "question": "Aký je problém s nasledujúcim JUnit testom, ak `UserService` v skutočnosti hľadá používateľa v externej databáze?",
+  "code": "@Test\nvoid shouldFindUser() {\n    UserService service = new UserService();\n    User user = service.findByEmail(\"alice@example.com\");\n\n    assertEquals(\"Alice\", user.getName());\n}",
+  "options": [
+   "Test nevyhnutne zostáva unit testom, pretože používa JUnit",
+   "Test nemôže byť unit testom, pretože obsahuje aserciu",
+   "Test môže fungovať iba vtedy, ak projekt nemá žiadnu databázu",
+   "Ak služba komunikuje so skutočnou databázou, test je skôr integračný a pre unit test by sa mala závislosť izolovať"
+  ],
+  "answer": 3,
+  "explanation": "O type testu nerozhoduje to, či používa JUnit, ale napríklad to, či pracuje so skutočnými externými závislosťami. Ak `findByEmail` pristupuje k skutočnej databáze, test závisí od prostredia a má charakter integračného testu. V unit teste by sa repository alebo prístup k databáze zvyčajne izoloval."
+ },
+ {
+  "id": 19,
+  "level": "junior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "behavior",
+  "question": "Čo primárne kontroluje overovanie interakcií pomocou mocku?",
+  "options": [
+   "Či prebehlo očakávané volanie konkrétnej závislosti",
+   "Či sú všetky záznamy v produkčnej databáze správne",
+   "Či sa v prehliadači správne aplikuje každé CSS pravidlo",
+   "Či aplikácia vráti správny výsledok pre každý možný vstup"
+  ],
+  "answer": 0,
+  "explanation": "Mock sa dá použiť nielen na poskytovanie kontrolovaných odpovedí, ale aj na overenie toho, ako bola závislosť zavolaná, napríklad či bola zavolaná raz alebo s konkrétnymi parametrami. Ide o testovanie interakcií. Overenie správnosti pre každý možný vstup nie je účelom jednej mock verifikácie."
+ },
+ {
+  "id": 20,
+  "level": "junior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "output",
+  "question": "Čo sa stane v Selenium teste, ak má na stránke viacero elementov `class=\"submit\"`?",
+  "code": "WebElement button = driver.findElement(By.cssSelector(\".submit\"));\nbutton.click();",
+  "options": [
+   "Selenium automaticky klikne postupne na každý zodpovedajúci element",
+   "`findElement` vráti prvý zodpovedajúci element, ak nejaký nájde",
+   "Selenium pri viacerých zhodách vždy vyhodí chybu",
+   "`findElement` náhodne vyberie jeden zo zodpovedajúcich elementov"
+  ],
+  "answer": 1,
+  "explanation": "Seleniová metóda `findElement` vracia jeden WebElement a pri viacerých zhodách vráti prvý podľa poradia vyhľadávania v DOM. Ak chceš pracovať so všetkými zodpovedajúcimi elementmi, môžeš použiť iné API, napríklad `findElements`. Náhodný výber sa môže zdať pravdepodobný, keďže selektoru zodpovedá viacero elementov, no Selenium nevyberá náhodne."
+ },
+ {
+  "id": 21,
+  "level": "junior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "output",
+  "question": "Čo overuje nasledujúci Playwright kód?",
+  "code": "await expect(page.getByRole('heading', { name: 'Dashboard' }))\n    .toBeVisible();",
+  "options": [
+   "Že URL `/Dashboard` je dostupná",
+   "Že server vrátil HTTP 200",
+   "Že nadpis so správnym názvom je v UI viditeľný",
+   "Že na stránke existuje presne jeden HTML element"
+  ],
+  "answer": 2,
+  "explanation": "Lokátor hľadá element s rolou heading a prístupným názvom `Dashboard` a očakávanie overuje, že nájdený element je viditeľný. Nejde o kontrolu HTTP statusu a samo osebe to netvrdí, že na stránke existuje presne jeden taký element. Na overenie URL by bola potrebná samostatná asercia na URL."
+ },
+ {
+  "id": 22,
+  "level": "junior",
+  "area": "Locators & selectors",
+  "topic": "Locators & selectors",
+  "type": "scenario",
+  "question": "Test obsahuje nasledujúci lokátor:\nVývojár neskôr zmení názov CSS triedy, pričom rola tlačidla a jeho prístupný názov viditeľný pre používateľa zostanú nezmenené. Ktorý lokátor je voči takejto zmene vo všeobecnosti odolnejší?",
+  "code": "page.locator('.btn-primary').click()",
+  "options": [
+   "Všeobecný selektor, ktorý vyberie prvý element v DOM",
+   "Dlhá, úplná CSS cesta, ktorá obsahuje všetky rodičovské elementy",
+   "Selektor založený na aktuálnom atribúte `style` tlačidla",
+   "Lokátor založený na sémantickej role tlačidla a názve viditeľnom pre používateľa"
+  ],
+  "answer": 3,
+  "explanation": "Lokátor založený na role a zameraný na používateľa, napríklad `getByRole` v Playwrighte s vhodným prístupným názvom, je často stabilnejší, pretože menej závisí od CSS tried určených na vzhľad. Dlhé CSS cesty a selektory založené na štýloch sú vo všeobecnosti krehkejšie. Výber prvého elementu v DOM ľahko zasiahne nesprávny element."
+ },
+ {
+  "id": 23,
+  "level": "junior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "behavior",
+  "question": "Prečo môže byť nasledujúci prístup v UI teste problematický?",
+  "code": "Thread.sleep(5000);\ndriver.findElement(By.id(\"result\")).click();",
+  "options": [
+   "Pretože `Thread.sleep` zaručuje, že element vždy zmizne",
+   "Pretože v každom prehliadači treba čakať presne 5 sekúnd",
+   "Pretože element môže byť pripravený po 500 ms, no aplikácia bude aj tak čakať ďalších 4,5 sekundy",
+   "Pretože Selenium v prostredí Javy nepodporuje čakanie"
+  ],
+  "answer": 2,
+  "explanation": "Pevný sleep nečaká na skutočný stav aplikácie. Ak je element pripravený skôr, test sa zbytočne spomalí; ak to trvá dlhšie ako 5 sekúnd, test môže aj tak zlyhať. Presnejšie je explicitné čakanie naviazané na relevantný stav alebo zabudované auto-waiting frameworku."
+ },
+ {
+  "id": 24,
+  "level": "junior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "debug",
+  "question": "Požiadavka REST API `POST /users` pri úspešnom vytvorení vracia `201 Created`. Test napriek tomu zlyháva:\nČo je najpravdepodobnejší problém?",
+  "code": "given()\n    .contentType(\"application/json\")\n    .body(\"{\\\"name\\\":\\\"Alice\\\"}\")\n.when()\n    .post(\"/users\")\n.then()\n    .statusCode(200);",
+  "options": [
+   "Test očakáva 200, hoci podľa špecifikácie by mal pri úspešnom vytvorení očakávať 201",
+   "Metódu POST nemožno použiť s JSON telom",
+   "REST Assured dokáže overiť iba status 500",
+   "Asercia `statusCode` funguje iba s GET požiadavkami"
+  ],
+  "answer": 0,
+  "explanation": "Test tvrdí, že status má byť 200, zatiaľ čo uvedený API kontrakt pri úspešnom vytvorení zdroja určuje 201. REST Assured podporuje POST požiadavky s JSON telom a overiť sa dá akýkoľvek HTTP stavový kód. Môže lákať podozrievať POST alebo JSON, keďže zlyhanie nastane hneď po požiadavke, no asercia jednoducho nezodpovedá API kontraktu."
+ },
+ {
+  "id": 25,
+  "level": "junior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "scenario",
+  "question": "V testovacom frameworku si každá testovacia trieda vytvára vlastný WebDriver, konfiguruje prehliadač, načítava konfiguráciu a rieši teardown. Aký by bol rozumný prvý krok refaktoringu?",
+  "options": [
+   "V každom teste vytvárať ešte viac inštancií WebDrivera",
+   "Presunúť setup a správu životného cyklu do zdieľanej, opakovane použiteľnej infraštruktúry",
+   "Úplne odstrániť teardown",
+   "V každom teste nastaviť konfiguráciu prehliadača náhodne"
+  ],
+  "answer": 1,
+  "explanation": "Zdieľaná správa životného cyklu drivera, konfigurácie a setup/teardown znižuje duplicitu a zjednocuje správanie frameworku. Presná implementácia závisí od testovacieho frameworku a modelu paralelného behu, no centralizácia týchto zodpovedností je rozumným východiskom. Odstránenie teardownu môže pôsobiť lákavo, keďže znamená menej kódu, no môže viesť k únikom zdrojov a k tomu, že sa testy budú navzájom ovplyvňovať."
+ },
+ {
+  "id": 26,
+  "level": "junior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "debug",
+  "question": "V Selenium teste je element prítomný v DOM, no kliknutie aj tak zlyhá s `ElementClickInterceptedException`. Čo je najpravdepodobnejšia príčina?",
+  "options": [
+   "Selenium v Jave nepodporuje kliknutie",
+   "Cieľ kliknutia prekrýva iný element, napríklad overlay alebo modálne okno",
+   "Lokátor musí byť nesprávny, pretože element sa našiel",
+   "WebDriver dokáže kliknúť iba na input elementy"
+  ],
+  "answer": 1,
+  "explanation": "`ElementClickInterceptedException` často nastane, keď je nad cieľom umiestnený iný element, napríklad modálne okno, cookie lišta alebo loading overlay. V takom prípade by mal test počkať, kým overlay zmizne alebo kým sa na cieľ dá naozaj kliknúť. Podozrenie na zlý lokátor je lákavé, keďže zlyhanie nastane pri kliknutí, no úspešné nájdenie elementu ukazuje, že samotný lokátor funguje."
+ },
+ {
+  "id": 27,
+  "level": "junior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "output",
+  "question": "Čo overuje nasledujúca REST Assured asercia?",
+  "code": "given()\n    .when()\n    .get(\"/api/users/42\")\n    .then()\n    .body(\"active\", equalTo(true));",
+  "options": [
+   "Že endpoint vracia iba aktívnych používateľov",
+   "Že HTTP stavový kód API je určite 200",
+   "Že pole `active` v JSON odpovedi má hodnotu `true`",
+   "Že databázový záznam používateľa je aktívny"
+  ],
+  "answer": 2,
+  "explanation": "Asercia priamo kontroluje hodnotu poľa `active` v JSON tele HTTP odpovede. Sama osebe neoveruje stavový kód, stav databázy ani to, či rovnaké pravidlo platí aj pre iných používateľov. Predpoklad, že sa overuje stav databázy, je lákavý, keďže odpovede API často vznikajú z dát v databáze, no test kontroluje iba odpoveď."
+ },
+ {
+  "id": 28,
+  "level": "junior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "scenario",
+  "question": "Unit test má overiť iba jedno biznisové pravidlo, no pri každom behu spúšťa celý Spring kontext. Aká je najväčšia nevýhoda?",
+  "options": [
+   "Test bude pravdepodobne pomalší a menej izolovaný, než je potrebné",
+   "Test určite nemôže používať asercie",
+   "Spustenie Spring kontextu z testu automaticky urobí produkčný test",
+   "Test nemôže používať mocky"
+  ],
+  "answer": 0,
+  "explanation": "Na overenie jedného biznisového pravidla na úrovni unit testu zvyčajne netreba inicializovať celý Spring kontext. Prináša to výraznú réžiu pri štarte a ďalšiu externú konfiguráciu a zároveň znižuje izoláciu. Samotné použitie Springu nebráni používaniu asercií ani mockov."
+ },
+ {
+  "id": 29,
+  "level": "junior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "output",
+  "question": "Aký bude výsledok nasledujúceho Mockito testu, ak je `UserRepository` mock a volanie `findById(1L)` vráti zadaný objekt `User`?",
+  "code": "User user = new User(1L, \"Alice\");\n\nwhen(userRepository.findById(1L))\n    .thenReturn(Optional.of(user));\n\nOptional<User> result = userRepository.findById(1L);",
+  "options": [
+   "`result` je vždy `Optional.empty()`, pretože mock nemôže vracať skutočné hodnoty",
+   "`result` je null, pretože Mockito dokáže iba overovať volania metód",
+   "Test funguje iba vtedy, ak beží skutočná databáza",
+   "`result` obsahuje zadaný objekt `User` vnútri `Optional`"
+  ],
+  "answer": 3,
+  "explanation": "`when(...).thenReturn(...)` nastavuje správanie mocku: keď sa zavolá presne `findById(1L)`, mock vráti `Optional.of(user)`. Skutočná databáza nie je potrebná, pretože repository je izolované ako mock. Predpoklad `Optional.empty()` je lákavý, pretože mock objekty často vracajú prázdne alebo null-ové predvolené hodnoty, no tu je nastavený explicitný stubbing."
+ },
+ {
+  "id": 30,
+  "level": "junior",
+  "area": "Locators & selectors",
+  "topic": "Locators & selectors",
+  "type": "edgecase",
+  "question": "Na stránke sú dve tlačidlá s rovnakým viditeľným textom: `Delete`. Aký je hlavný problém, ak sa test pokúsi vybrať tlačidlo iba podľa textu?",
+  "options": [
+   "Lokátory podľa textu sa s tlačidlami nedajú použiť nikdy",
+   "Lokátor môže zodpovedať viacerým elementom, takže nemusí jednoznačne určiť, ktoré tlačidlo sa má použiť",
+   "Prehliadač automaticky premenuje jedno z tlačidiel",
+   "Selenium a Playwright nevedia vyhľadávať podľa textu"
+  ],
+  "answer": 1,
+  "explanation": "Ak majú dve tlačidlá rovnaký prístupný názov, výber iba podľa neho nemusí jednoznačne určiť zamýšľaný element. Lokátor treba spresniť pomocou vhodného kontajnera, unikátneho atribútu alebo iného stabilného kontextu. Lokátor podľa textu láka, pretože je pre ľudí ľahko čitateľný, no dôležitá je aj jednoznačnosť."
+ },
+ {
+  "id": 31,
+  "level": "junior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "behavior",
+  "question": "Prečo môže byť použitie Playwright lokátora v nasledujúcej podobe výhodnejšie než priamy CSS selektor?",
+  "code": "await page.getByRole('button', { name: 'Submit' }).click();",
+  "options": [
+   "Lokátor automaticky upraví zdrojový kód aplikácie",
+   "Lokátor funguje iba v Chromiu",
+   "Lokátor využíva sémantickú rolu tlačidla a jeho prístupný názov",
+   "Lokátor obchádza všetky bezpečnostné pravidlá prehliadača"
+  ],
+  "answer": 2,
+  "explanation": "`getByRole` vychádza zo sémantických informácií, ktoré vníma používateľ, ako je rola elementu a jeho prístupný názov. Často to môže byť stabilnejšie a bližšie k interakcii používateľa než CSS trieda určená na vzhľad. Výber CSS selektora láka, pretože ho priamo vidíš v nástrojoch pre vývojárov, no nemusí vyjadrovať sémantiku viditeľnú pre používateľa."
+ },
+ {
+  "id": 32,
+  "level": "junior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "trap",
+  "question": "Prečo nie je `Thread.sleep(10000)` na začiatku každého Selenium testu vo všeobecnosti dobré riešenie?",
+  "options": [
+   "Selenium zakazuje používanie `Thread.sleep`",
+   "Desať sekúnd je pre každú aplikáciu príliš krátko",
+   "Test sa potom nikdy nespustí",
+   "Zbytočne spomalí každý test a neprispôsobí sa skutočnému stavu aplikácie"
+  ],
+  "answer": 3,
+  "explanation": "Pevné čakanie nezohľadňuje, kedy je aplikácia naozaj pripravená. Ak je stránka pripravená po jednej sekunde, deväť sekúnd sa premrhá; ak to trvá dlhšie ako desať sekúnd, test môže aj tak zlyhať. Láka svojou jednoduchosťou a tým, že dokáže dočasne zakryť niektoré flaky zlyhania."
+ },
+ {
+  "id": 33,
+  "level": "junior",
+  "area": "Page Object Model",
+  "topic": "Page Object Model",
+  "type": "scenario",
+  "question": "Ktorá zodpovednosť najlepšie patrí do Page Objectu `LoginPage`?",
+  "options": [
+   "Správa konfigurácie celej CI pipeline",
+   "Správa lokátorov a akcií dostupných na prihlasovacej stránke",
+   "Ukladanie všetkých výsledkov testov do databázy",
+   "Spustenie produkčného nasadenia"
+  ],
+  "answer": 1,
+  "explanation": "Page Object `LoginPage` zvyčajne zapuzdruje detaily UI a akcie prihlasovacej stránky, napríklad lokátory používateľského mena, hesla a prihlasovacieho tlačidla. Zodpovednosti za CI a nasadenie patria do iných vrstiev. Môže lákať naložiť do Page Objectu priveľa zodpovedností, pretože pôsobí ako centrálne miesto, no to môže časom viesť k takzvanému God Objectu."
+ },
+ {
+  "id": 34,
+  "level": "junior",
+  "area": "Test data management",
+  "topic": "Test data management",
+  "type": "edgecase",
+  "question": "Test pred každým behom vytvorí používateľa s menom `test-user`. Čo sa môže stať, ak má pole e-mailu v testovacej databáze obmedzenie UNIQUE?",
+  "options": [
+   "Druhý beh sa môže pokúsiť znovu vytvoriť tie isté unikátne dáta a zlyhať",
+   "Obmedzenie UNIQUE zabezpečí, že každý test automaticky prejde",
+   "Test už nebude môcť volať backendové API",
+   "Obmedzenie UNIQUE funguje iba v produkčných databázach"
+  ],
+  "answer": 0,
+  "explanation": "Ak je pole e-mailu unikátne, pokus o opätovné vytvorenie tej istej e-mailovej adresy môže spôsobiť porušenie obmedzenia, ak predchádzajúci záznam nebol vymazaný alebo izolovaný. Testovacie dáta preto musia počítať s opakovanými behmi aj s paralelným spúšťaním. Môže lákať to prehliadnuť, pretože prvý lokálny beh môže prebehnúť bez problémov."
+ },
+ {
+  "id": 35,
+  "level": "junior",
+  "area": "CI integration",
+  "topic": "CI integration",
+  "type": "production",
+  "question": "UI test lokálne v Chrome beží spoľahlivo, no v CI prostredí na Linuxe často zlyháva. Čo by si mal preskúmať ako jedno z prvých?",
+  "options": [
+   "Odstrániť všetky asercie",
+   "Náhodne spúšťať test znova, kým neprejde",
+   "Preskúmať rozdiely medzi lokálnym a CI prostredím, napríklad verziu prehliadača, viewport, fonty a konfiguráciu",
+   "Vymazať a prepísať celú sadu testov"
+  ],
+  "answer": 2,
+  "explanation": "Rozdiely v prostredí sú častou príčinou zlyhaní špecifických pre CI, najmä pri UI testoch. Treba porovnať verziu prehliadača, viewport, nastavenia headless režimu, fonty, locale, časové pásmo a ďalšiu relevantnú konfiguráciu. Náhodné opakovanie behov môže základný problém iba zakryť."
+ },
+ {
+  "id": 36,
+  "level": "junior",
+  "area": "Reporting",
+  "topic": "Reporting",
+  "type": "scenario",
+  "question": "V CI sade s 500 testami zlyhá jeden test. Ktorá vlastnosť reportingu najviac pomôže pri rýchlom ladení?",
+  "options": [
+   "Iba súhrnné označenie „FAILED“",
+   "Zakaždým znovu spustiť celú sadu",
+   "Skryť názov testu v reporte",
+   "Uchovať podrobné logy, screenshoty a relevantné trace súvisiace so zlyhaným testom"
+  ],
+  "answer": 3,
+  "explanation": "Podrobné artefakty zlyhania umožnia vývojárovi alebo testerovi zistiť, čo sa stalo, bez opätovného spúšťania celej sady. Pri UI testoch môžu byť obzvlášť užitočné screenshoty, trace, logy konzoly a sieťové informácie. Zobraziť iba stav sady môže lákať, pretože je to jednoduché, no diagnostických informácií je tak primálo."
+ },
+ {
+  "id": 37,
+  "level": "junior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "behavior",
+  "question": "REST API vracia `404 Not Found`, keď sa požaduje neexistujúci používateľ. Ktorý test najlepšie vyjadruje očakávané správanie?",
+  "options": [
+   "Pri každej GET požiadavke očakávať status 200",
+   "Pri GET požiadavke očakávať status 404 a podľa potreby overiť štruktúru chybovej odpovede",
+   "Pri neplatnej požiadavke očakávať status 500, pretože každá chyba je chybou servera",
+   "HTTP stavový kód v teste ignorovať"
+  ],
+  "answer": 1,
+  "explanation": "Ak špecifikácia pre neexistujúci zdroj definuje `404 Not Found`, toto správanie treba testovať ako súčasť API kontraktu. Overiť sa dá aj telo chybovej odpovede, ak je jeho štruktúra súčasťou API kontraktu. Zámena 404 s 500 je bežná, keďže obe predstavujú chybu, no majú odlišnú HTTP sémantiku."
+ },
+ {
+  "id": 38,
+  "level": "junior",
+  "area": "Visual & accessibility testing",
+  "topic": "Visual & accessibility testing",
+  "type": "trap",
+  "question": "Test vizuálnej regresie založený na screenshotoch zlyhá vždy, keď sa celý screenshot líši čo i len v jednom pixeli. Prečo to môže byť problematické?",
+  "options": [
+   "Každý rozdiel v pixeloch vždy predstavuje biznisovú chybu",
+   "Screenshot testy sa s webovými aplikáciami nedajú používať",
+   "Dynamický obsah, vykresľovanie fontov alebo rozdiely v prostredí môžu spôsobiť falošné rozdiely",
+   "Screenshot testy sa automaticky stávajú unit testami"
+  ],
+  "answer": 2,
+  "explanation": "Nie každý rozdiel v pixeloch pri vizuálnej regresii predstavuje skutočnú regresiu. Rozdiely môžu spôsobiť dynamické dátumy, animácie, vykresľovanie fontov, verzie prehliadačov či operačné systémy. Testovacie prostredie preto treba stabilizovať a možno použiť vhodné prahy, maskovanie alebo cielené porovnania."
+ },
+ {
+  "id": 39,
+  "level": "junior",
+  "area": "Parallel execution",
+  "topic": "Parallel execution",
+  "type": "performance",
+  "question": "Sada testov beží 40 minút a väčšina testov je od seba nezávislá. Aký je jeden priamy prínos paralelizácie?",
+  "options": [
+   "Pri vhodnej izolácii môže skrátiť celkový čas behu",
+   "Automaticky odstráni všetky flaky testy",
+   "Zaručí, že všetky testy pobežia v rovnakom poradí",
+   "Vďaka nej netreba spravovať testovacie dáta"
+  ],
+  "answer": 0,
+  "explanation": "Paralelné spúšťanie nezávislých testov môže skrátiť celkový čas, ak je k dispozícii dostatok CPU, pamäte a ďalšej infraštruktúry. Paralelizácia však flaky testy automaticky nevyrieši a pri zdieľanom stave môže priniesť nové race conditions. Správna izolácia je preto nevyhnutná."
+ },
+ {
+  "id": 40,
+  "level": "junior",
+  "area": "Contract testing",
+  "topic": "Contract testing",
+  "type": "scenario",
+  "question": "Frontendová služba predpokladá, že odpoveď API vždy obsahuje pole `customerId` typu string. Ktorý contract test by tento predpoklad ochránil najlepšie?",
+  "options": [
+   "Kontrola iba CSS snapshotu frontendu",
+   "Spustenie iba end-to-end testu prihlásenia",
+   "Kontrola iba toho, že API vracia HTTP 200",
+   "Kontrola kontraktu, ktorá vyžaduje, aby odpoveď obsahovala pole `customerId` typu string"
+  ],
+  "answer": 3,
+  "explanation": "Kontrakt by mal explicitne vyjadrovať štruktúru a typ, na ktoré sa konzument spolieha. Vďaka tomu sa nekompatibilná zmena na strane poskytovateľa odhalí včas. Samotný status HTTP 200 nezaručuje, že požadované pole existuje alebo má správny typ."
+ },
+ {
+  "id": 41,
+  "level": "junior",
+  "area": "BDD & Cucumber",
+  "topic": "BDD & Cucumber",
+  "type": "scenario",
+  "question": "Cucumber feature súbor opisuje ten istý dlhý UI tok v piatich rôznych scenároch s takmer rovnakými krokmi. Aký je s tým potenciálny problém?",
+  "options": [
+   "Gherkin nepodporuje viacero scenárov v jednom feature",
+   "Cucumber pred každým scenárom automaticky vymaže repozitár",
+   "Špecifikácia môže byť redundantná a ťažšie udržiavateľná",
+   "Kľúčové slová `Given`, `When` a `Then` sa dajú použiť iba raz"
+  ],
+  "answer": 2,
+  "explanation": "Výrazná duplicita krokov zvyšuje náklady na údržbu a môže zatieniť, v čom sa scenáre naozaj líšia. Spoločný setup treba riešiť vhodne a zároveň zachovať čitateľnosť feature z biznisového pohľadu. Kopírovanie všetkého do samostatných scenárov láka, pretože je krátkodobo jednoduchšie, no dlhodobo si vyžaduje oveľa viac zmien."
+ },
+ {
+  "id": 42,
+  "level": "junior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "production",
+  "question": "Vo frameworku sa rovnaká logika opakovania (retry) objavuje v piatich rôznych testoch, zakaždým v trochu inej podobe. Čo by mohlo byť dobrým riešením?",
+  "options": [
+   "Ponechať každú kópiu, aby testy zostali úplne nezávislé",
+   "Presunúť správanie retry do zdieľanej, jasne definovanej infraštruktúry a pravidlá jeho použitia ponechať explicitné",
+   "Dať každú aserciu za retry",
+   "Spúšťať každý test trikrát bez ohľadu na to, či je to potrebné"
+  ],
+  "answer": 1,
+  "explanation": "Zdieľaná retry infraštruktúra môže znížiť duplicitu a zjednotiť správanie. Retry však nesmie maskovať skutočné chyby produktu ani zle navrhnuté čakania. Automatické opakovanie každej asercie je nebezpečné, pretože testy môžu pôsobiť stabilnejšie, zatiaľ čo základný problém zostane skrytý."
+ },
+ {
+  "id": 43,
+  "level": "junior",
+  "area": "Test strategy & pyramid",
+  "topic": "Test strategy & pyramid",
+  "type": "scenario",
+  "question": "Vývojár overuje jednoduché validačné pravidlo iba cez úplný end-to-end test v prehliadači. Prečo by mohlo byť lepšie pokryť pravidlo aj na nižšej úrovni testov?",
+  "options": [
+   "Pretože end-to-end testy nemôžu byť nikdy užitočné",
+   "Pretože biznisovú logiku nemožno testovať v unit testoch",
+   "Pretože každý test treba prerobiť na unit test",
+   "Pretože jednoduché pravidlo sa dá na úrovni unit testu otestovať rýchlejšie a nezávislejšie, zatiaľ čo test vyššej úrovne môže overiť celú integráciu"
+  ],
+  "answer": 3,
+  "explanation": "Izolované biznisové pravidlo spravidla dostane rýchlejšiu a presnejšiu spätnú väzbu z unit testu, zatiaľ čo end-to-end test môže overiť, že to isté pravidlo funguje ako súčasť celého používateľského toku. Obe úrovne teda slúžia na iný účel. Môže lákať spoliehať sa výlučne na E2E test, pretože sa zdá, že jedným testom overí všetko."
+ },
+ {
+  "id": 44,
+  "level": "junior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "output",
+  "question": "Čo vráti `findElements`, ak selektoru nezodpovedá žiadny element?",
+  "code": "List<WebElement> elements =\n    driver.findElements(By.cssSelector(\".missing\"));\n\nSystem.out.println(elements.size());",
+  "options": [
+   "Vypíše `0`",
+   "Vypíše `1`, pretože Selenium vždy vytvorí element",
+   "Vypíše `null`",
+   "Vyhodí `NoSuchElementException`"
+  ],
+  "answer": 0,
+  "explanation": "`findElements` pri žiadnej zhode vráti prázdny zoznam, takže veľkosť zoznamu je `0`. Tým sa líši od `findElement`, ktorý pri neúspešnom vyhľadaní vyhodí výnimku. Voľba `NoSuchElementException` môže lákať, keďže ide o bežnú chybu Selenia pri vyhľadávaní elementov, no obe metódy sa správajú odlišne."
+ },
+ {
+  "id": 45,
+  "level": "junior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "output",
+  "question": "Čo sa stane v nasledujúcom JUnit teste, ak `calculateDiscount(100)` vráti presne `90.0`?",
+  "code": "double actual = service.calculateDiscount(100);\n\nassertEquals(90.0, actual);",
+  "options": [
+   "Test nevyhnutne zlyhá, pretože hodnoty `double` sa nedajú porovnávať",
+   "Test prejde, ak sa skutočná hodnota presne zhoduje s očakávanou",
+   "Test sa spustí iba vtedy, ak sa použije `BigDecimal`",
+   "Asercia vždy očakáva hodnotu 0.0"
+  ],
+  "answer": 1,
+  "explanation": "Ak metóda naozaj vráti presne `90.0`, asercia v tomto prípade môže prejsť. Pri výpočtoch s pohyblivou desatinnou čiarkou je však vo všeobecnosti často vhodné použiť toleranciu, pretože môžu vzniknúť rozdiely v zaokrúhľovaní a reprezentácii. Úplné odmietnutie porovnávania `double` hodnôt láka, pretože problémy s presnosťou sú skutočné, no neznamená to, že každá takáto asercia je neplatná."
+ },
+ {
+  "id": 46,
+  "level": "junior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "edgecase",
+  "question": "API endpoint `GET /users/1` bežne vracia JSON objekt. Čo by sa malo testovať samostatne, keď používateľ neexistuje?",
+  "options": [
+   "Iba to, že sa endpoint zobrazí v adresnom riadku prehliadača",
+   "Že server vždy vráti 200, aj keď žiadne dáta neexistujú",
+   "Chybový stavový kód definovaný špecifikáciou a definovanú štruktúru chybovej odpovede",
+   "Že API chýbajúceho používateľa automaticky vytvorí"
+  ],
+  "answer": 2,
+  "explanation": "Neexistujúci zdroj je typický hraničný prípad, pri ktorom API kontrakt definuje očakávaný stavový kód a formát chyby. Treba ich testovať explicitne, pretože sa ľahko môžu líšiť od štruktúr úspešných odpovedí. Automatické vytvorenie používateľa by bolo správne iba vtedy, ak by to špecifikácia výslovne vyžadovala."
+ },
+ {
+  "id": 47,
+  "level": "junior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "debug",
+  "question": "Playwright test pomocou nasledujúceho kódu niekedy prečíta predchádzajúci stav:\nBackend aktualizuje stav až po načítaní stránky. V čom môže byť problém?",
+  "code": "await page.goto('/orders');\nconst text = await page.locator('#status').textContent();\nconsole.log(text);",
+  "options": [
+   "`goto` nevyhnutne čaká aj na všetky následné aktualizácie z API",
+   "`textContent()` vždy vráti budúcu hodnotu, ktorá sa nakoniec zobrazí",
+   "CSS selektor automaticky cachuje stav databázy",
+   "Test číta hodnotu príliš skoro, ešte predtým, ako sa ustáli relevantný stav UI"
+  ],
+  "answer": 3,
+  "explanation": "`page.goto` neznamená, že sa dokončil aj každý biznisový proces spustený po načítaní stránky. Ak sa stav zmení neskôr v dôsledku volania API, test musí počkať na relevantný stav, napríklad pomocou vhodnej asercie alebo cielenej synchronizácie na sieť či stav. Môže lákať predpokladať, že `goto` zabezpečí úplnú synchronizáciu s aplikáciou, keďže navigácia úspešne skončila, no to nie je to isté ako dokončenie všetkých následných procesov aplikácie."
+ },
+ {
+  "id": 48,
+  "level": "junior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "scenario",
+  "question": "Test občas zlyhá, pretože sa pokúša kliknúť na element, kým ešte beží animácia. Aký je najlepší prístup?",
+  "options": [
+   "Určiť stabilný stav potrebný na interakciu a čakať na tento stav",
+   "V každom teste náhodne meniť dĺžku animácie",
+   "Zlyhanie úplne zakryť pomocou retry",
+   "Na začiatku každého testu čakať 30 sekúnd"
+  ],
+  "answer": 0,
+  "explanation": "Test by mal čakať na stav, v ktorom je interakcia naozaj bezpečná, napríklad keď je element stabilný a dá sa naň kliknúť. Podľa aplikácie a možností frameworku to môžu riešiť zabudované kontroly actionability alebo explicitná asercia stavu. Dlhé pevné sleepy a neobmedzené opakovania problém s načasovaním iba zakryjú."
+ },
+ {
+  "id": 49,
+  "level": "junior",
+  "area": "Test data management",
+  "topic": "Test data management",
+  "type": "production",
+  "question": "Test potrebuje prístup k dátovej sade s 10 000 záznamami, no v skutočnosti používa iba tri konkrétne záznamy. Aký je vhodnejší prístup?",
+  "options": [
+   "Pred každým testom vždy vytvoriť všetkých 10 000 záznamov",
+   "Použiť produkčnú databázu, aby boli dáta realistické",
+   "Vytvoriť minimálnu kontrolovanú dátovú sadu, ktorú test naozaj potrebuje",
+   "Vyberať náhodné záznamy z celej dátovej sady"
+  ],
+  "answer": 2,
+  "explanation": "Ak test potrebuje iba tri záznamy, minimálna kontrolovaná dátová sada je rýchlejšia, deterministickejšia a ľahšie udržiavateľná. Produkčné dáta môžu spôsobiť problémy s bezpečnosťou, ochranou súkromia a reprodukovateľnosťou. Vytváranie celej dátovej sady pred každým testom môže tiež priniesť zbytočnú réžiu."
+ },
+ {
+  "id": 50,
+  "level": "junior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "algorithm",
+  "question": "V testovacom frameworku potrebujú tú istú operáciu `login` stovky testov. Ktorý prístup najúčinnejšie zníži duplicitu a zároveň zachová čitateľnosť testov?",
+  "options": [
+   "V každom teste znovu napísať kroky s používateľským menom, heslom a kliknutím",
+   "Zapuzdriť prihlasovací tok do opakovane použiteľnej abstrakcie s dobrým názvom",
+   "Náhodne rozložiť kroky prihlásenia po testovacom kóde",
+   "Odstrániť všetky asercie súvisiace s prihlásením"
+  ],
+  "answer": 1,
+  "explanation": "Dobre pomenovaná metóda `login()` alebo podobná doménovo špecifická abstrakcia znižuje duplicitu a zároveň zachováva čitateľný biznisový zámer testu. Abstrakcia môže skryť lokátory a technické detaily za jednoduché rozhranie. Opakovanie krokov v každom teste láka, pretože celý tok je priamo viditeľný, no keď od neho závisí veľa testov, vzniká výrazná záťaž pri údržbe."
+ },
+ {
+  "id": 51,
+  "level": "junior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "behavior",
+  "question": "Čo sa stane s nasledujúcim Selenium kódom, ak pole `#email` už existuje, no prekrýva ho cookie lišta?",
+  "code": "driver.findElement(By.id(\"email\")).sendKeys(\"alice@example.com\");",
+  "options": [
+   "Selenium automaticky zatvorí cookie lištu",
+   "`sendKeys` je vždy úspešný, pretože lokátor element našiel",
+   "Selenium automaticky znovu načíta stránku",
+   "Operácia môže zlyhať, ak interakcii s cieľom bráni iný element"
+  ],
+  "answer": 3,
+  "explanation": "To, že sa element našiel v DOM, ešte nemusí znamenať, že s ním možno pracovať. Overlay alebo cookie lišta môže zabrániť použitiu poľa, takže najprv treba vyriešiť relevantný stav UI. Je lákavé predpokladať, že úspešný lokátor automaticky znamená úspešnú interakciu, pretože vyhľadanie elementu a interakcia s ním často pôsobia ako jeden krok testu."
+ },
+ {
+  "id": 52,
+  "level": "junior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "debug",
+  "question": "REST Assured test posiela POST požiadavku s JSON telom, no API vracia `415 Unsupported Media Type`. Čo je najpravdepodobnejšia príčina?",
+  "code": "given()\n    .body(\"{\\\"name\\\":\\\"Alice\\\"}\")\n.when()\n    .post(\"/users\")\n.then()\n    .statusCode(201);",
+  "options": [
+   "Chýba vhodný `Content-Type`, napríklad `application/json`",
+   "Metóda POST nepodporuje JSON telá požiadaviek",
+   "Stavový kód 415 signalizuje iba chybu autentifikácie",
+   "Asercia `statusCode` bráni odoslaniu POST požiadaviek"
+  ],
+  "answer": 0,
+  "explanation": "Odpoveď `415 Unsupported Media Type` zvyčajne znamená, že server nepodporuje alebo správne neprijal typ média tela požiadavky. Pri posielaní JSON-u treba často nastaviť hlavičku `Content-Type` na `application/json`. Podozrenie na metódu POST alebo aserciu je lákavé, keďže chyba sa objaví hneď po požiadavke, no 415 súvisí konkrétne s typom média."
+ },
+ {
+  "id": 53,
+  "level": "junior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "edgecase",
+  "question": "Metóda vracia prvý prvok zoznamu. Ktorý hraničný prípad by mal pokryť samostatný unit test?",
+  "options": [
+   "Iba prípad, keď zoznam obsahuje presne 10 prvkov",
+   "Prázdny zoznam, ak je podľa biznisových pravidiel platným vstupom",
+   "Iba najväčší zoznam, ktorý sa vyskytuje v produkčnej databáze",
+   "Iba náhodne vybraný prvok zoznamu"
+  ],
+  "answer": 1,
+  "explanation": "Prázdny zoznam je typický hraničný prípad pre metódu, ktorá pristupuje k prvému prvku, pretože môže viesť k výnimke alebo špeciálnej návratovej hodnote. Test by mal pokrývať hraničné prípady, ktoré majú podľa špecifikácie zmysel. Zoznam s presne 10 prvkami sám osebe nie je reprezentatívnym hraničným prípadom."
+ },
+ {
+  "id": 54,
+  "level": "junior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "theory",
+  "question": "Aká je typická vlastnosť fake objektu v prostredí automatizovaných testov?",
+  "options": [
+   "Vždy volá skutočnú produkčnú službu",
+   "Dokáže iba overovať volania metód",
+   "Namiesto skutočnej závislosti poskytuje funkčnú, no zjednodušenú implementáciu",
+   "Dá sa použiť iba v UI testoch"
+  ],
+  "answer": 2,
+  "explanation": "Fake je vo všeobecnosti zjednodušená, ale funkčná implementácia, napríklad in-memory repository. Nemusí sa správať presne ako skutočný komponent, no umožňuje testovať aplikačnú logiku izolovane. Môže lákať považovať fake za mock, keďže oba v testovacom prostredí nahrádzajú skutočnú závislosť, no fake obsahuje reálne fungujúce správanie."
+ },
+ {
+  "id": 55,
+  "level": "junior",
+  "area": "Locators & selectors",
+  "topic": "Locators & selectors",
+  "type": "scenario",
+  "question": "Frontendový vývojár kvôli zmenám dizajnu často mení CSS triedy, zatiaľ čo prístupné názvy tlačidiel zostávajú stabilné. Ktorá stratégia lokátorov môže byť vhodnejšia?",
+  "options": [
+   "Postaviť lokátor na aktuálnych CSS triedach tlačidiel",
+   "Použiť XPath založený na kompletnej štruktúre DOM",
+   "Vždy vybrať prvý zodpovedajúci element v DOM",
+   "Použiť lokátor založený na stabilnej role viditeľnej pre používateľa a prístupnom názve"
+  ],
+  "answer": 3,
+  "explanation": "Ak sa CSS triedy kvôli vzhľadu často menia, lokátor založený na sémantickej role a prístupnom názve môže menej závisieť od vizuálnej implementácie. Stratégia lokátorov tak zostáva bližšie k skutočnej interakcii používateľa. Použitie aktuálnych tried láka, pretože sa dajú ľahko nájsť v DevTools, no pri častých zmenách dizajnu sú krehké."
+ },
+ {
+  "id": 56,
+  "level": "junior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "output",
+  "question": "Čo overuje nasledujúca Playwright asercia?",
+  "code": "await expect(page.locator('[data-testid=\"message\"]'))\n    .toHaveText('Saved');",
+  "options": [
+   "Že element je viditeľný presne jednu sekundu",
+   "Že textový obsah elementu je `Saved`, keď sa dosiahne očakávaný stav",
+   "Že backend vrátil HTTP 200",
+   "Že CSS trieda elementu je `Saved`"
+  ],
+  "answer": 1,
+  "explanation": "`toHaveText('Saved')` kontroluje textový obsah vybraného elementu. Playwright asercie primerane čakajú na dosiahnutie očakávaného stavu, takže to netreba chápať ako okamžitý snapshot. Je lákavé spájať aserciu s HTTP statusom, keďže text môže byť výsledkom úspešného volania API, no asercia priamo kontroluje stav DOM."
+ },
+ {
+  "id": 57,
+  "level": "junior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "trap",
+  "question": "Test pred každou aserciou automaticky volá `Thread.sleep(2000)`. Prečo je to zlá stratégia?",
+  "options": [
+   "Pretože sleep funguje iba na Linuxe",
+   "Pretože by sa mal používať po asercii, nie pred ňou",
+   "Pretože zbytočne predlžuje čas behu a pritom nemusí čakať na požadovaný stav",
+   "Pretože testovacie frameworky nepovoľujú použitie sleep"
+  ],
+  "answer": 2,
+  "explanation": "Pevný sleep vždy čaká celú dobu, aj keď je aplikácia pripravená skôr. Zároveň, ak je aplikácia pomalšia, dve sekundy stále nezaručia, že sa požadovaný stav dosiahol. Dať sleep pred každú aserciu láka, pretože to vyzerá ako jednoduché pravidlo, no nemodeluje to skutočný stav aplikácie."
+ },
+ {
+  "id": 58,
+  "level": "junior",
+  "area": "CI integration",
+  "topic": "CI integration",
+  "type": "scenario",
+  "question": "V CI pipeline sa testy spúšťajú až po merge, takže chybná zmena sa už môže dostať do zdieľanej vetvy. Aká je jedna potenciálna nevýhoda?",
+  "options": [
+   "Chyby sa prejavia neskôr, keď už môže byť zmena skombinovaná s inými zmenami",
+   "Testy sa pri lokálnom spustení automaticky spomalia",
+   "Git už nedokáže pracovať s viacerými vetvami",
+   "CI už nedokáže spúšťať testy"
+  ],
+  "answer": 0,
+  "explanation": "Ak sa regresia odhalí až po merge, môže byť ťažšie zistiť, ktorá zmena ju spôsobila, najmä keď sa paralelne vyvíja viacero zmien. Validácia naviazaná na pull requesty môže dať rýchlejšiu spätnú väzbu. Spúšťanie testov až po merge láka, pretože sa spúšťa menej pipeline, no spätná väzba o chybách prichádza neskôr."
+ },
+ {
+  "id": 59,
+  "level": "junior",
+  "area": "Reporting",
+  "topic": "Reporting",
+  "type": "behavior",
+  "question": "Test v CI zlyhá, no report obsahuje iba toto: `AssertionError: expected true`. Ktoré zlepšenie by diagnostiku zlepšilo najviac?",
+  "options": [
+   "Úplne odstrániť report",
+   "Odstrániť asercie",
+   "Automaticky spustiť test trikrát znova",
+   "Pridať zmysluplné správy k asercii a relevantné artefakty zlyhania, napríklad screenshot alebo trace"
+  ],
+  "answer": 3,
+  "explanation": "Podrobné informácie z asercie a artefakty zlyhania pomáhajú určiť, v akom stave bol systém, keď zlyhanie nastalo. Je to obzvlášť dôležité v CI, kde vývojár nemusí vedieť zlyhanie hneď zreprodukovať. Samotný retry neprinesie o hlavnej príčine žiadne ďalšie informácie."
+ },
+ {
+  "id": 60,
+  "level": "junior",
+  "area": "Test strategy & pyramid",
+  "topic": "Test strategy & pyramid",
+  "type": "scenario",
+  "question": "Tím má 1 000 unit testov, 20 API/integračných testov a 2 000 UI end-to-end testov. Sada je pomalá a často flaky. Aký by mohol byť rozumný strategický smer?",
+  "options": [
+   "Ponechať všetky UI testy a každé zlyhanie riešiť pomocou retry",
+   "Zistiť, ktoré UI testy pokrývajú logiku, ktorú možno testovať aj na nižšej úrovni, a vhodné pokrytie presunúť na nižšie úrovne",
+   "Vymazať všetky unit testy",
+   "Presunúť každý test na úroveň UI, aby všetky bežali v rovnakom prostredí"
+  ],
+  "answer": 1,
+  "explanation": "Sada príliš zameraná na UI testy môže byť pomalá a krehká. Oplatí sa preskúmať, či sa niektoré biznisové pravidlá alebo správanie API nedajú overiť na nižšej, rýchlejšej a stabilnejšej úrovni, a pritom ponechať UI testy, ktoré prinášajú skutočnú end-to-end hodnotu. Samotné retry nevhodnú štruktúru testov nevyriešia."
+ },
+ {
+  "id": 61,
+  "level": "medior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "debug",
+  "question": "Nasledujúci test občas zlyhá, pretože `Clock` poskytuje skutočný aktuálny čas. Aké by bolo najlepšie riešenie?",
+  "code": "@Test\nvoid expiresToken() {\n    TokenService service = new TokenService();\n    Token token = service.createToken();\n\n    assertTrue(service.isExpired(token));\n}",
+  "options": [
+   "Na začiatku testu vždy čakať 24 hodín",
+   "Spúšťať test zakaždým dvakrát",
+   "Urobiť závislosť od času injektovateľnou a v teste použiť kontrolovaný čas",
+   "Odstrániť logiku expirácie z produkčného kódu"
+  ],
+  "answer": 2,
+  "explanation": "Aktuálny čas je z pohľadu testu externá, meniaca sa závislosť. Ak sa dá ovládať cez injektovaný `Clock` alebo iného poskytovateľa času, test môže deterministicky nastaviť čas a overiť hraničné podmienky. Použitie skutočného času láka, pretože je jednoduché a podobá sa správaniu v produkcii, no môže spôsobiť zlyhania súvisiace s načasovaním."
+ },
+ {
+  "id": 62,
+  "level": "medior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "trap",
+  "question": "V unit teste je namockovaná každá závislosť vrátane doménových objektov, ktoré patria samotnej aplikácii. Aká je jedna potenciálna nevýhoda?",
+  "options": [
+   "Testy môžu byť príliš úzko naviazané na detaily implementácie a overovať menej zo skutočného správania",
+   "Kvôli mockom test nikdy nemôže bežať v CI",
+   "Mocky automaticky nadväzujú skutočné sieťové spojenia",
+   "Mockito podporuje iba jeden mock na test"
+  ],
+  "answer": 0,
+  "explanation": "Keď je namockovaných priveľa komponentov, test môže skončiť pri overovaní toho, aké presne volania metód implementácia robí, namiesto toho, či dáva správny biznisový výsledok. To môže viesť ku krehkým testom úzko naviazaným na detaily implementácie. Mockovať všetko láka, pretože to poskytuje maximálnu izoláciu, no prehnaná izolácia môže znížiť hodnotu testu."
+ },
+ {
+  "id": 63,
+  "level": "medior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "debug",
+  "question": "V Selenium teste je lokátor správny a element viditeľný, no po kliknutí sa ďalší krok niekedy spustí príliš skoro. V čom je problém?",
+  "options": [
+   "`click()` vždy zablokuje prehliadač, kým sa nedokončí celý biznisový proces",
+   "Úspešné kliknutie nemusí znamenať, že sa dokončil aj asynchrónny proces aplikácie, ktorý sa ním spustil",
+   "Selenium po kliknutí automaticky zatvorí stránku",
+   "WebDriver podporuje iba synchrónne JavaScript aplikácie"
+  ],
+  "answer": 1,
+  "explanation": "Vykonanie kliknutia a dokončenie následných volaní API alebo aktualizácií UI, ktoré aplikácia spustí, sú dve samostatné udalosti. Ďalší krok by mal čakať na relevantný biznisový stav, nie iba na úspešné kliknutie. Je lákavé predpokladať, že kliknutie zabezpečí úplnú synchronizáciu, keďže samotná akcia Selenia môže blokovať, kým sa nesplnia určité podmienky."
+ },
+ {
+  "id": 64,
+  "level": "medior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "scenario",
+  "question": "V Playwright teste sa na základe odpovede API zobrazí správa `Success`. Aký prístup môže byť vhodný, ak test potrebuje ovládať aj samotné volanie API?",
+  "options": [
+   "Vždy použiť `sleep(10000)`",
+   "Po volaní API úplne reštartovať prehliadač",
+   "Ovládať odpoveď API pomocou vhodného mechanizmu Playwrightu na zachytávanie route alebo mockovanie API",
+   "Odstrániť lokátor pre element `Success`"
+  ],
+  "answer": 2,
+  "explanation": "Playwright dokáže zachytávať sieťové požiadavky a vracať kontrolované odpovede. Vďaka tomu môžeš testovať hraničné prípady, chybové odpovede alebo deterministické úspešné odpovede bez závislosti od skutočného stavu backendu. Pevný sleep mení iba načasovanie; odpoveď API neovláda."
+ },
+ {
+  "id": 65,
+  "level": "medior",
+  "area": "Locators & selectors",
+  "topic": "Locators & selectors",
+  "type": "algorithm",
+  "question": "Dynamický zoznam obsahuje v každom riadku tlačidlo `Edit`. Správne tlačidlo treba vybrať podľa textu `Product A` v danom riadku. Ktorá stratégia je najrobustnejšia?",
+  "options": [
+   "Vždy vybrať tretie tlačidlo `Edit`",
+   "Náhodne vybrať jedno z tlačidiel `Edit`",
+   "Vybrať prvé tlačidlo `Edit` na celej stránke",
+   "Najprv nájsť riadok obsahujúci `Product A` a potom vybrať tlačidlo `Edit` v rámci tohto riadku"
+  ],
+  "answer": 3,
+  "explanation": "Lokátor by mal byť naviazaný na požadovaný biznisový kontext: najprv nájsť správny riadok a potom akciu v ňom. Test tak bude menej citlivý na zmeny poradia v zozname. Pevný index láka, pretože je krátky a ľahko sa píše, no pri dynamických dátach je krehký."
+ },
+ {
+  "id": 66,
+  "level": "medior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "performance",
+  "question": "Sada obsahuje 500 testov a každý test pred každým dôležitým krokom pevne čaká 2 sekundy. Prečo to môže byť výrazný výkonový problém?",
+  "options": [
+   "Pevné čakania sa môžu sčítavať a výrazne predĺžiť celkový čas behu sady",
+   "Selenium a Playwright fungujú iba s menej ako 500 testami",
+   "Pevné čakania automaticky využívajú viacero jadier CPU",
+   "Vďaka čakaniam testy zaručene bežia paralelne"
+  ],
+  "answer": 0,
+  "explanation": "Ak test obsahuje niekoľko zbytočných 2-sekundových čakaní, tie sa sčítavajú a pri 500 testoch môžu spôsobiť značnú stratu času. Čakanie založené na stave čaká iba tak dlho, ako je potrebné. Pevný sleep láka, pretože jeho jednotlivá cena pôsobí malá, no vo veľkej sade sa z neho rýchlo stane výrazná réžia."
+ },
+ {
+  "id": 67,
+  "level": "medior",
+  "area": "Page Object Model",
+  "topic": "Page Object Model",
+  "type": "scenario",
+  "question": "Veľká trieda Page Objectu narástla na 1 500 riadkov a obsahuje operácie pre prihlásenie, vyhľadávanie, checkout, administráciu a reporting. Aký by bol rozumný smer refaktoringu?",
+  "options": [
+   "Pridávať všetku budúcu funkcionalitu do tej istej triedy",
+   "Prepísať testy tak, aby priamo používali CSS selektory",
+   "Rozdeliť Page Object na viacero komponentov alebo stránkových či doménových objektov usporiadaných okolo súdržných zodpovedností",
+   "Prerobiť všetky UI testy na unit testy"
+  ],
+  "answer": 2,
+  "explanation": "Príliš veľký Page Object rieši viacero nesúvisiacich zodpovedností, a preto sa ťažšie udržiava. Zodpovednosti UI alebo domény sa dajú rozdeliť do menších, súdržných objektov, napríklad do samostatných komponentov pre checkout alebo administráciu. Ponechať jeden centrálny Page Object láka, pretože všetky lokátory sú na jednom mieste, no jeho veľkosť a zmiešané zodpovednosti sa časom stanú problémom."
+ },
+ {
+  "id": 68,
+  "level": "medior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "behavior",
+  "question": "Endpoint REST API `PUT /users/42` je definovaný ako idempotentný. Čo to znamená z pohľadu testovania?",
+  "options": [
+   "Druhá rovnaká PUT požiadavka musí vždy vrátiť 500",
+   "Viacnásobné odoslanie tej istej PUT požiadavky by malo zanechať zdroj v rovnakom výslednom stave ako po jej jednom použití",
+   "PUT požiadavku možno odoslať iba raz",
+   "PUT musí zakaždým vytvoriť nový zdroj"
+  ],
+  "answer": 1,
+  "explanation": "Idempotencia znamená, že opakovanie tej istej operácie nad tým istým zdrojom ďalej nemení zamýšľaný výsledný stav. Nemusí to znamenať, že každá odpoveď musí byť bajt po bajte rovnaká alebo že každá implementácia musí pri každom opakovaní vrátiť rovnaký stavový kód; podstatné je, že opakované použitie nehromadí na zdroji ďalšie efekty. Je lákavé vykladať idempotenciu ako „dá sa použiť iba raz“, no to je opak jej zamýšľaného významu."
+ },
+ {
+  "id": 69,
+  "level": "medior",
+  "area": "BDD & Cucumber",
+  "topic": "BDD & Cucumber",
+  "type": "trap",
+  "question": "Tím opisuje každý malý technický detail ako Gherkin krok vrátane CSS tried, XPath výrazov a konkrétnych API endpointov. Aký je s tým hlavný problém?",
+  "options": [
+   "Gherkin nedokáže pracovať s reťazcami",
+   "Cucumber sa dá použiť iba na backendové testy",
+   "Feature súbory sú príliš úzko naviazané na implementáciu a môžu stratiť hodnotu ako špecifikácie na biznisovej úrovni",
+   "Kľúčové slovo `Then` sa nedá použiť na technické detaily"
+  ],
+  "answer": 2,
+  "explanation": "Jednou z hodnôt BDD feature súborov je, že opisujú správanie jazykom zrozumiteľným z biznisového pohľadu. Ak špecifikácia obsahuje CSS triedy, XPath výrazy a konkrétne endpointy, dokument je pri zmenách implementácie krehkejší a ako biznisová špecifikácia menej čitateľný. Uvádzať každý technický detail láka, pretože sa zdá, že vykonanie bude úplne explicitné, no miešajú sa tak špecifikácia a implementácia."
+ },
+ {
+  "id": 70,
+  "level": "medior",
+  "area": "Test data management",
+  "topic": "Test data management",
+  "type": "production",
+  "question": "Paralelné API testy používajú rovnaké ID zákazníka a niekedy menia stav zákazníka. Aký by bol najlepší smer?",
+  "options": [
+   "V každom teste použiť rovnaké ID, aby testovacie dáta zostali jednoduché",
+   "Zlyhania riešiť pomocou retry a zdieľané dáta ponechať bez zmeny",
+   "Odstrániť z testov všetky asercie na dáta",
+   "Zaviesť izoláciu testovacích dát, napríklad pomocou unikátnych testovacích dát alebo vhodnej stratégie fixture/rollback"
+  ],
+  "answer": 3,
+  "explanation": "Zdieľané meniteľné testovacie dáta môžu pri paralelnom behu spôsobiť race conditions a nedeterministické výsledky. Izoláciu dát možno dosiahnuť unikátnymi záznamami, menným priestorom pre každý test, fixtures alebo vhodným transakčným rollbackom. Retry problém iba zakryje, zatiaľ čo samotný súboj o dáta zostáva."
+ },
+ {
+  "id": 71,
+  "level": "medior",
+  "area": "CI integration",
+  "topic": "CI integration",
+  "type": "performance",
+  "question": "CI pipeline pri každom commite spúšťa celú 90-minútovú end-to-end sadu. Ktorá stratégia by mohla najviac skrátiť čas spätnej väzby pre vývojárov?",
+  "options": [
+   "Ponechať celú sadu, ale pred každý test pridať 5-sekundové čakanie",
+   "Rozdeliť testy do vhodných kategórií a rýchle smoke/regresné kontroly spúšťať skôr",
+   "Pred každým spustením testov vyžadovať manuálne schválenie",
+   "Prestať spúšťať celú sadu a povoliť iba lokálne testovanie"
+  ],
+  "answer": 1,
+  "explanation": "Pre rýchlu spätnú väzbu možno testy usporiadať do kategórií, napríklad smoke, API, integračné a dlhšie E2E testy, a spúšťať ich vo vhodných fázach pipeline. Kritické chyby sa tak k vývojárom dostanú skôr a úplné regresné pokrytie zostane zachované v neskoršej fáze. Úplné odstránenie celej sady by oslabilo ochranu pred regresiami."
+ },
+ {
+  "id": 72,
+  "level": "medior",
+  "area": "Parallel execution",
+  "topic": "Parallel execution",
+  "type": "edgecase",
+  "question": "V testovacom frameworku paralelné worker procesy menia ten istý statický globálny konfiguračný objekt. Čo sa môže stať?",
+  "options": [
+   "Každý worker automaticky dostane izolovanú konfiguráciu",
+   "Konfigurácia si vždy ponechá hodnotu z prvého testu",
+   "Môže nastať race condition a nedeterministické správanie závislé od workera",
+   "Paralelný beh sa automaticky zastaví"
+  ],
+  "answer": 2,
+  "explanation": "Zdieľaný meniteľný stav môže spôsobiť, že sa workery navzájom ovplyvňujú. Ten istý test tak môže podľa načasovania bežať s rôznou konfiguráciou alebo zlyhanie nastane iba pri paralelnom behu. Je lákavé predpokladať automatickú izoláciu, keďže framework používa samostatné workery, no globálny meniteľný stav môže aj tak spôsobiť problémy."
+ },
+ {
+  "id": 73,
+  "level": "medior",
+  "area": "Visual & accessibility testing",
+  "topic": "Visual & accessibility testing",
+  "type": "scenario",
+  "question": "Pri audite prístupnosti nemá vstupné pole formulára viditeľný label a v teste sa dá identifikovať iba podľa textu placeholdera. Prečo to môže byť problém?",
+  "options": [
+   "Placeholder je vždy zakázaný HTML element",
+   "Placeholder automaticky plní rovnakú úlohu ako label",
+   "Placeholder sa nemôže objaviť vo vstupných poliach",
+   "Samotný placeholder nemusí poskytovať vhodný, trvalý prístupný názov poľa"
+  ],
+  "answer": 3,
+  "explanation": "Placeholder môže poskytnúť užitočnú doplňujúcu informáciu, no vo všeobecnosti nenahrádza riadny label ani iný stabilný zdroj prístupného názvu. Label zlepšuje použiteľnosť aj prácu s asistenčnými technológiami. Je lákavé považovať placeholder za label, pretože vizuálne zobrazuje text spojený s poľom, no sémanticky nemusí plniť rovnakú úlohu."
+ },
+ {
+  "id": 74,
+  "level": "medior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "scenario",
+  "question": "Automatizačný framework podporuje viacero prehliadačových frameworkov a značná časť testov priamo volá Playwright API. Tím teraz chce pridať podporu Selenia. Ktorý smer návrhu by mohol najviac znížiť technologickú previazanosť?",
+  "options": [
+   "V každom teste používať ešte viac Playwright API",
+   "Zaviesť vhodnú abstrakčnú vrstvu medzi logiku testov a nízkoúrovňové API prehliadača",
+   "Každý test zvlášť zduplikovať pre Selenium",
+   "Ignorovať rozdiely medzi prehliadačovými frameworkmi"
+  ],
+  "answer": 1,
+  "explanation": "Dobre navrhnutá abstrakčná vrstva môže oddeliť biznisový zámer testov od konkrétnej implementácie automatizácie prehliadača. Je však dôležité nevtláčať umelo všetky schopnosti frameworkov do jednej sady primitív. Úplná duplikácia testov môže byť krátkodobo jednoduchá, no prináša výrazné náklady na údržbu."
+ },
+ {
+  "id": 75,
+  "level": "medior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "performance",
+  "question": "Sada API testov pred každým testom vytvára nové spojenie HTTP klienta a nový autentifikačný token, hoci väčšina testov používa rovnaké prostredie. Aká by mohla byť rozumná optimalizácia?",
+  "options": [
+   "Preskúmať opätovné použitie spojení a primerane kontrolované opätovné použitie tokenov/session pri zachovaní izolácie testov",
+   "Pre každý test vytvoriť tri samostatné HTTP spojenia",
+   "Odstrániť všetky API asercie",
+   "Presunúť všetky testy na úroveň UI"
+  ],
+  "answer": 0,
+  "explanation": "Vytváranie nového spojenia a autentifikácia pred každým testom môžu vo veľkej sade priniesť výraznú réžiu. Connection pooling alebo opätovné použitie klienta spolu s vhodne spravovanými tokenmi môžu túto réžiu znížiť, pokiaľ zostane zachovaná izolácia testov a bezpečnostný model. Môže lákať vytvárať pre každý test všetky zdroje od nuly, pretože to dáva jednoduchú predstavu o izolácii, no nie vždy to zabezpečí technicky potrebnú izoláciu."
+ },
+ {
+  "id": 76,
+  "level": "medior",
+  "area": "Test strategy & pyramid",
+  "topic": "Test strategy & pyramid",
+  "type": "scenario",
+  "question": "Tím vytvoril pre novú biznisovú funkciu 15 UI testov a iba 2 unit testy. Väčšina UI testov overuje to isté validačné pravidlo s rôznymi vstupnými dátami. Aká zmena by bola najvhodnejšia?\nOPTIONS:",
+  "options": [
+   "Podstatnú časť validačných pravidiel pokryť na úrovni unit testov a UI testy obmedziť na dôležité integrované používateľské toky",
+   "Pridať ďalšie UI testy, aby každý vstup bežal v samostatnom prehliadači",
+   "Úplne odstrániť unit testy, pretože UI testy sú na vyššej úrovni",
+   "Presunúť všetky testy na úroveň API bez ohľadu na to, či existuje správanie špecifické pre UI"
+  ],
+  "answer": 0,
+  "explanation": "Jednoduché biznisové pravidlá sa často dajú overiť rýchlejšie a deterministickejšie na úrovni unit testov. Na vrstve UI je vhodnejšie overovať, či sú komponenty a používateľské toky správne prepojené."
+ },
+ {
+  "id": 77,
+  "level": "medior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "edgecase",
+  "question": "Metóda `calculateDiscount(int itemCount)` musí podľa biznisového pravidla vrátiť 0 % pre 0 položiek, 5 % pre 1 – 9 položiek a 10 % pre 10 a viac položiek. Ktorá sada testovacích dát najlepšie pokrýva relevantné hraničné hodnoty?\nOPTIONS:",
+  "options": [
+   "1, 5, 15",
+   "0, 1, 9, 10, 11",
+   "5, 10, 20",
+   "0, 5, 20"
+  ],
+  "answer": 1,
+  "explanation": "Testovanie okolo hraničných hodnôt pomáha odhaliť chyby spôsobené nesprávnym použitím podmienok `<`, `<=`, `>` alebo `>=`. Hodnoty 0, 1, 9, 10 a 11 pokrývajú relevantné hranice rozsahov aj ich susedov."
+ },
+ {
+  "id": 78,
+  "level": "medior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "theory",
+  "question": "Aký je najdôležitejší rozdiel medzi stubom a mockom pri ich typickom použití v unit testovaní?\nOPTIONS:",
+  "options": [
+   "Stub sa dá použiť iba pre databázy, mock iba pre HTTP",
+   "Stub je vždy skutočná implementácia, mock vždy vracia falošné dáta",
+   "Stub typicky poskytuje vopred definovanú odpoveď, kým mock sa dá použiť aj na overenie interakcií so závislosťou",
+   "Medzi mockom a stubom nie je žiadny praktický rozdiel"
+  ],
+  "answer": 2,
+  "explanation": "Hlavnou úlohou stubu je vo všeobecnosti poskytnúť odpovede alebo stavy, ktoré testovaný komponent potrebuje. Mock sa dá navyše použiť na overenie interakcií, napríklad volaní, argumentov alebo počtu volaní."
+ },
+ {
+  "id": 79,
+  "level": "medior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "behavior",
+  "question": "Selenium test kontroluje stav `displayed` elementu. Element v DOM existuje, no úplne ho prekrýva iný element. Na čo by si mal pamätať?",
+  "options": [
+   "Prítomnosť v DOM a pripravenosť na skutočnú interakciu nemusia byť to isté",
+   "Ak je element v DOM, Selenium ho vždy považuje za klikateľný",
+   "Overlay je čisto otázka validácie CSS, takže WebDriver si ho nemôže všimnúť",
+   "`findElement` automaticky odstráni každý overlay"
+  ],
+  "answer": 0,
+  "explanation": "To, že element existuje alebo je dokonca viditeľný, nezaručuje, že s ním používateľ môže naozaj pracovať. Kvôli overlayu, animácii alebo inému prekrývajúcemu elementu môže kliknutie na element, ktorý sa zdá byť na mieste, zlyhať (napríklad s `ElementClickInterceptedException`), preto čakaj, kým bude element klikateľný a overlaye zmiznú."
+ },
+ {
+  "id": 80,
+  "level": "medior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "output",
+  "question": "Čo overuje nasledujúci Playwright kód?\nOPTIONS:",
+  "code": "CODE:\nawait expect(page.getByRole('heading', { name: 'Dashboard' }))\n    .toBeVisible();",
+  "options": [
+   "Že je otvorená presne jedna karta prehliadača s názvom `Dashboard`",
+   "Že aplikačný server vrátil HTTP odpoveď 200",
+   "Že element zodpovedajúci lokátoru nadpisu `Dashboard` sa stane viditeľným v rámci nastaveného timeoutu asercie",
+   "Že celé HTML stránky sa zhoduje s predchádzajúcim snapshotom"
+  ],
+  "answer": 2,
+  "explanation": "`toBeVisible()` je web-first asercia, ktorá overuje viditeľný stav elementu určeného lokátorom. Na dynamickej stránke môže Playwright počkať, kým očakávaný stav nastane v rámci nastaveného timeoutu."
+ },
+ {
+  "id": 81,
+  "level": "medior",
+  "area": "Locators & selectors",
+  "topic": "Locators & selectors",
+  "type": "trap",
+  "question": "Test momentálne používa tento lokátor: `div.container > div:nth-child(3) > button`. Frontend často mení štruktúru DOM, zatiaľ čo prístupný názov tlačidla zostáva stabilný. Ktorá zmena by najviac znížila krehkosť lokátora?\nOPTIONS:",
+  "options": [
+   "Pridať ďalšie úrovne `nth-child`",
+   "Klikať podľa aktuálnej pozície v pixeloch",
+   "Urobiť úplnú XPath cestu ešte podrobnejšou",
+   "Identifikovať tlačidlo pomocou stabilných sémantických vlastností, napríklad jeho roly a prístupného názvu"
+  ],
+  "answer": 3,
+  "explanation": "Lokátory naviazané na štruktúru DOM sú citlivé na refaktoring layoutu. Stabilné sémantické vlastnosti majú význam pre používateľov, a preto spravidla poskytujú odolnejšie ciele testov."
+ },
+ {
+  "id": 82,
+  "level": "medior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "scenario",
+  "question": "Test má po vyhľadávaní pokračovať, keď zoznam výsledkov obsahuje aspoň jednu položku. Čas odozvy aplikácie kolíše približne od 200 ms do 8 sekúnd. Ktorý prístup tejto požiadavke najlepšie zodpovedá?\nOPTIONS:",
+  "options": [
+   "Vždy čakať presne 8 sekúnd",
+   "Ak test zlyhá, spustiť ho trikrát znova",
+   "Použiť čakanie založené na stave, ktoré s timeoutom sleduje požadovaný stav zoznamu výsledkov",
+   "Úplne odstrániť čakanie"
+  ],
+  "answer": 2,
+  "explanation": "Čakanie založené na stave aplikácie sa prispôsobí skutočnému času odozvy. Keď je aplikácia rýchla, vyhne sa zbytočnému zdržaniu, a keď je pomalšia, stále nechá dosť času na to, aby požadovaný stav nastal."
+ },
+ {
+  "id": 83,
+  "level": "medior",
+  "area": "Page Object Model",
+  "topic": "Page Object Model",
+  "type": "production",
+  "question": "Page Object obsahuje desiatky lokátorov a testy tieto lokátory používajú priamo. Tím chce zlepšiť udržiavateľnosť Page Objectu. Aký by bol vhodný prístup?\nOPTIONS:",
+  "options": [
+   "V každom teste lokátory znovu definovať",
+   "V testoch používať operácie Page Objectu vyššej úrovne a detaily lokátorov skryť vnútri Page Objectu",
+   "Urobiť z každého lokátora statickú globálnu premennú",
+   "Úplne odstrániť Page Object"
+  ],
+  "answer": 1,
+  "explanation": "Jedným zo základných účelov Page Objectu je zabrániť tomu, aby testy priamo záviseli od technickej štruktúry stránky. Ideálne by sa zmena lokátora mala riešiť v príslušnom Page Objecte."
+ },
+ {
+  "id": 84,
+  "level": "medior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "debug",
+  "question": "REST Assured test dostane odpoveď API s `Content-Type: application/json`, no asercia na telo zlyhá, pretože test považuje pole `items` za zoznam, zatiaľ čo API vracia objekt. Aký je najlepší prvý krok?\nOPTIONS:",
+  "options": [
+   "Náhodne upraviť asercie testu",
+   "Porovnať skutočnú štruktúru JSON odpovede s API kontraktom a potom použiť správnu cestu a typ",
+   "Odstrániť hlavičku `Content-Type`",
+   "Vypnúť všetku validáciu odpovedí API"
+  ],
+  "answer": 1,
+  "explanation": "Asercia musí zodpovedať skutočnej a kontraktom definovanej štruktúre API. Najprv zisti, či je problém v ceste v teste, v očakávanom type, alebo v samotnej odpovedi API."
+ },
+ {
+  "id": 85,
+  "level": "medior",
+  "area": "BDD & Cucumber",
+  "topic": "BDD & Cucumber",
+  "type": "scenario",
+  "question": "Tím píše Gherkin scenáre, ktoré podrobne opisujú SQL dopyty a názvy databázových tabuliek. Product owner ich ťažko číta. Aká zmena by bola vhodná?\nOPTIONS:",
+  "options": [
+   "Prepísať scenáre jazykom zameraným na biznisové správanie a výsledky a technické detaily riešiť v implementácii",
+   "Pridať ešte viac SQL detailov",
+   "Úplne odstrániť feature súbory",
+   "Pridať do každého scenára aspoň dvadsať SQL krokov"
+  ],
+  "answer": 0,
+  "explanation": "Cieľom BDD je, aby bolo očakávané správanie zrozumiteľné v spoločnom jazyku. Technické detaily špecifické pre databázu spravidla patria do step definitions alebo inej testovacej infraštruktúry."
+ },
+ {
+  "id": 86,
+  "level": "medior",
+  "area": "Test data management",
+  "topic": "Test data management",
+  "type": "performance",
+  "question": "E2E sada pred každým testom vytvára cez UI 500 záznamov, hoci testy v skutočnosti potrebujú iba niekoľko konkrétnych záznamov. Ktorá zmena by mohla priniesť najväčšie zlepšenie výkonu?\nOPTIONS:",
+  "options": [
+   "Urobiť kroky prípravy cez UI ešte podrobnejšími",
+   "Pre každý záznam urobiť samostatný screenshot",
+   "Vytvoriť iba potrebné minimum dát cez API, fixture alebo dedikovaný setup testovacích dát",
+   "Zvýšiť timeout testu"
+  ],
+  "answer": 2,
+  "explanation": "Spôsob vytvárania testovacích dát môže výrazne ovplyvniť čas behu E2E sady. Ak príprava dát nie je sama súčasťou testovaného UI toku, je spravidla efektívnejšie robiť ju cez rýchlejší technický kanál."
+ },
+ {
+  "id": 87,
+  "level": "medior",
+  "area": "CI integration",
+  "topic": "CI integration",
+  "type": "scenario",
+  "question": "V pipeline môžu unit testy a API testy bežať nezávisle, no momentálne sa vykonávajú úplne sekvenčne. Aká by mohla byť jedna z najjednoduchších optimalizácií?\nOPTIONS:",
+  "options": [
+   "Vymazať unit testy",
+   "Spúšťať API testy iba lokálne",
+   "Presunúť celú pipeline na nočný beh",
+   "Spúšťať nezávislé fázy testov paralelne a zabezpečiť pritom potrebné závislosti a zdroje"
+  ],
+  "answer": 3,
+  "explanation": "Ak dve skupiny testov nemajú navzájom závislé predpoklady, ich paralelný beh môže skrátiť celkové trvanie pipeline. Úspešná paralelizácia si vyžaduje aj vhodne izolovanú infraštruktúru a testovacie dáta."
+ },
+ {
+  "id": 88,
+  "level": "medior",
+  "area": "Parallel execution",
+  "topic": "Parallel execution",
+  "type": "edgecase",
+  "question": "Sada testov je so štyrmi workermi stabilná, no s ôsmimi častejšie narazí na chyby `connection pool exhausted`. Čo to najpravdepodobnejšie vysvetľuje?\nOPTIONS:",
+  "options": [
+   "Zvýšenie počtu workerov znížilo počet testov",
+   "Paralelné workery potrebujú viac súbežných databázových spojení a môžu naraziť na limit connection poolu alebo kapacity databázy",
+   "Osem workerov automaticky vypne databázové transakcie",
+   "Connection pool môžu používať iba unit testy"
+  ],
+  "answer": 1,
+  "explanation": "Zvýšenie paralelizmu môže zvýšiť počet súbežných požiadaviek na zdroje. Ak je veľkosť connection poolu alebo maximálny počet spojení databázy obmedzený, priveľa workerov môže spôsobiť súperenie o zdroje a vyčerpanie spojení."
+ },
+ {
+  "id": 89,
+  "level": "medior",
+  "area": "Reporting",
+  "topic": "Reporting",
+  "type": "theory",
+  "question": "Prečo je v reporte testov užitočné odlíšiť primárne zlyhanie testu od následných zlyhaní pri upratovaní (cleanup)?\nOPTIONS:",
+  "options": [
+   "Pretože sa tak odlíši, čo pôvodne spôsobilo zlyhanie testu, od toho, čo sa stalo v dôsledku chybného stavu",
+   "Pretože zlyhanie cleanupu by malo test vždy nechať prejsť",
+   "Pretože zlyhania cleanupu by sa nikdy nemali brať do úvahy",
+   "Pretože report dokáže spracovať iba jednu výnimku"
+  ],
+  "answer": 0,
+  "explanation": "Keď nastane viacero výnimiek, je dôležité zachovať ich poradie a príčinnú súvislosť. Pomáha to zabrániť tomu, aby sekundárny problém pri cleanupe zakryl skutočné zlyhanie v testovanom správaní."
+ },
+ {
+  "id": 90,
+  "level": "medior",
+  "area": "Contract testing",
+  "topic": "Contract testing",
+  "type": "production",
+  "question": "V systéme mikroslužieb používa to isté API poskytovateľa viacero konzumentov. Vývojári poskytovateľa chcú bezpečne refaktorovať, no nemajú spoľahlivé informácie o tom, ktoré polia odpovede konzumenti naozaj používajú. Ktorý prístup môže pomôcť?\nOPTIONS:",
+  "options": [
+   "Vymazať všetky API testy",
+   "Každú zmenu poľa odpovede považovať za breaking change",
+   "Zaviesť konzumentské kontrakty, ktoré zachytávajú časti rozhrania, ktoré jednotliví konzumenti naozaj očakávajú",
+   "Spúšťať iba manuálne UI testy"
+  ],
+  "answer": 2,
+  "explanation": "Konzumentské kontrakty môžu zdokumentovať a automaticky overiť správanie poskytovateľa, ktoré konzumenti naozaj potrebujú. Tímu poskytovateľa to môže pomôcť pochopiť, ktoré zmeny by mohli ovplyvniť existujúcich konzumentov."
+ },
+ {
+  "id": 91,
+  "level": "medior",
+  "area": "Visual & accessibility testing",
+  "topic": "Visual & accessibility testing",
+  "type": "edgecase",
+  "question": "V mobilnom zobrazení webu je text tlačidla viditeľný, no keď tlačidlo dostane fokus, nie je vidieť žiadny vizuálne vnímateľný indikátor fokusu. Na aký problém pri testovaní to môže poukazovať?\nOPTIONS:",
+  "options": [
+   "Iba na problém s výkonom API",
+   "Na problém s prístupnosťou, ktorý môže sťažiť navigáciu klávesnicou alebo inú navigáciu založenú na fokuse",
+   "Na chybu backendovej databázy",
+   "Na vypršanú session prehliadača"
+  ],
+  "answer": 1,
+  "explanation": "Viditeľný indikátor fokusu je dôležitý na sledovanie toho, kde sa fokus práve nachádza. Ak interaktívny element môže dostať fokus, no ten sa nedá vizuálne rozlíšiť, môže ísť o problém s prístupnosťou."
+ },
+ {
+  "id": 92,
+  "level": "medior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "production",
+  "question": "V testovacom frameworku sa Selenium, Playwright a API klienti inicializujú priamo v každej testovacej triede. Ktorá architektonická zmena by mohla znížiť duplicitu?\nOPTIONS:",
+  "options": [
+   "Pridať do každej testovacej triedy ešte viac inicializačného kódu",
+   "Urobiť zo všetkých klientov globálne meniteľné singletony",
+   "Prepísať testy tak, aby používali iba statické metódy",
+   "Vytvoriť zdieľanú vrstvu životného cyklu závislostí alebo fixtures, ktorá kontrolovane poskytuje potrebných klientov"
+  ],
+  "answer": 3,
+  "explanation": "Zdieľaná vrstva životného cyklu môže zjednotiť vytváranie a upratovanie zdrojov. Abstrakcia musí zachovať správnu izoláciu testov a nesmie zavádzať nežiaduci globálny stav."
+ },
+ {
+  "id": 93,
+  "level": "medior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "performance",
+  "question": "Selenium sada spúšťa 100 testov a každý test vykonáva úplné spustenie prehliadača. Spustenie trvá v priemere 4 sekundy. Ktoré tvrdenie je podstatné?\nOPTIONS:",
+  "options": [
+   "Samotné spúšťanie prehliadača môže predstavovať približne 400 sekúnd kumulatívneho času, takže optimalizácia životného cyklu môže mať na sadu citeľný vplyv",
+   "Čas spustenia prehliadača sa do času behu testu nezapočítava",
+   "100 spustení trvá dokopy najviac 4 sekundy",
+   "Prehliadač sa spúšťa iba pri prvom teste"
+  ],
+  "answer": 0,
+  "explanation": "Ak každý test spúšťa prehliadač samostatne, 4-sekundová réžia sa zopakuje stokrát. Pri správnej izolácii môže optimalizácia životného cyklu alebo opätovné použitie prehliadača na úrovni workera túto réžiu výrazne znížiť."
+ },
+ {
+  "id": 94,
+  "level": "medior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "debug",
+  "question": "Playwright test používa:\nNiekedy sa element `.loading` vôbec neobjaví, pričom objednávka sa úspešne vytvorí. Prečo to môže byť problém?\nOPTIONS:",
+  "code": "CODE:\nawait page.locator('.loading').waitFor({ state: 'hidden' });\nawait expect(page.getByText('Order created')).toBeVisible();",
+  "options": [
+   "`getByText()` na dynamických stránkach nefunguje",
+   "Playwright nepodporuje stav `hidden`",
+   "Čakanie na zmiznutie spinnera môže urobiť test závislým od predpokladu, ktorý neexistuje v každom platnom toku UI",
+   "Lokátory akceptujú iba CSS selektory"
+  ],
+  "answer": 2,
+  "explanation": "Čakanie je lepšie postaviť na stave, ktorý test naozaj potrebuje. Ak sa spinner objavuje iba voliteľne, čakanie na jeho zmiznutie sa môže stať zbytočnou a nestabilnou medzipodmienkou."
+ },
+ {
+  "id": 95,
+  "level": "medior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "scenario",
+  "question": "API endpoint uplatňuje rate limiting a po priveľa požiadavkách vracia `429 Too Many Requests`. Ktorý test by bol vhodný na overenie tohto správania?\nOPTIONS:",
+  "options": [
+   "V testovacom prostredí úplne vypnúť rate limiting",
+   "Kontrolovane poslať viacero požiadaviek a potom overiť status 429 a relevantné dáta odpovede definované API",
+   "Po každej požiadavke čakať náhodný čas",
+   "Odpovede 429 vždy považovať za nesprávne odpovede servera"
+  ],
+  "answer": 1,
+  "explanation": "Rate limiting môže byť súčasťou API kontraktu, preto treba automatizovane overiť aj jeho negatívne správanie. Test by mal vychádzať zo zdokumentovaného limitu a správania odpovede."
+ },
+ {
+  "id": 96,
+  "level": "medior",
+  "area": "Test data management",
+  "topic": "Test data management",
+  "type": "scenario",
+  "question": "Test potrebuje zákazníka s predplatným, ktoré k určitému dátumu vypršalo. Test sa momentálne spolieha na skutočný aktuálny dátum, takže o niekoľko mesiacov môže dávať iné výsledky. Aké je najlepšie riešenie?\nOPTIONS:",
+  "options": [
+   "Zakaždým ručne upraviť testovacie dáta",
+   "Spúšťať test iba v jeden konkrétny deň v roku",
+   "Dátum vypršania predplatného generovať náhodne",
+   "Použiť deterministický dátum alebo kontrolované testovacie hodiny, aby stav testu nezávisel od skutočného dňa, keď beží"
+  ],
+  "answer": 3,
+  "explanation": "Testovacie dáta závislé od času môžu ľahko viesť k časovej nestabilite. S pevným alebo injektovateľným zdrojom času a deterministickými fixtures sa dá rovnaký biznisový stav zreprodukovať pri každom behu."
+ },
+ {
+  "id": 97,
+  "level": "medior",
+  "area": "Parallel execution",
+  "topic": "Parallel execution",
+  "type": "scenario",
+  "question": "Pri paralelnom behu sady používajú dva testy rovnaký názov dočasného súboru, takže jeden test občas prečíta súbor druhého testu. Aké je najvhodnejšie riešenie?\nOPTIONS:",
+  "options": [
+   "Použiť unikátne názvy súborov obsahujúce identifikátor workera alebo testu a samostatné dočasné adresáre",
+   "Pred čítaním súboru čakať 2 sekundy",
+   "Náhodne reštartovať paralelný beh",
+   "Ignorovať obsah súboru"
+  ],
+  "answer": 0,
+  "explanation": "Problém spôsobuje použitie zdieľaného, neizolovaného zdroja. Unikátne cesty zabránia tomu, aby si testy navzájom prepisovali artefakty, a paralelný beh bude deterministickejší."
+ },
+ {
+  "id": 98,
+  "level": "medior",
+  "area": "Reporting",
+  "topic": "Reporting",
+  "type": "performance",
+  "question": "CI report ukazuje, že 20-minútová sada strávi 14 minút na jedinom teste. Test vykonáva stovky malých krokov, no report zobrazuje iba celkové trvanie testu. Aký by bol najlepší ďalší krok?\nOPTIONS:",
+  "options": [
+   "Úplne vymazať test",
+   "Znovu spustiť každý test v sade",
+   "Pridať meranie času na úrovni krokov a podrobné diagnostické dáta, aby sa zistilo, ktoré operácie dominujú času behu",
+   "Skryť čas behu testu v reporte"
+  ],
+  "answer": 2,
+  "explanation": "Samotné celkové trvanie testu úzke hrdlo neodhalí. Podrobné meranie času umožní zamerať optimalizáciu na operácie, ktoré sú naozaj drahé."
+ },
+ {
+  "id": 99,
+  "level": "medior",
+  "area": "Contract testing",
+  "topic": "Contract testing",
+  "type": "trap",
+  "question": "API poskytovateľa zmení JSON pole zo `string` na `number`, pričom názov a význam poľa zostanú rovnaké. Konzument hodnotu stále spracúva ako reťazec. Prečo to môže byť z pohľadu kontraktu breaking change?\nOPTIONS:",
+  "options": [
+   "Pretože každá JSON odpoveď musí nevyhnutne obsahovať iba reťazce",
+   "Pretože dátový typ poľa môže byť súčasťou kontraktu, ktorý konzument očakáva, takže zmena typu môže spôsobiť nekompatibilitu",
+   "Pretože poskytovateľ nikdy nesmie meniť JSON polia",
+   "Pretože contract testy overujú iba stavové kódy"
+  ],
+  "answer": 1,
+  "explanation": "API kontrakt môže definovať nielen prítomnosť polí, ale aj ich typy a sémantiku. Ak sa konzument spolieha na predchádzajúci typ, jeho zmena môže spôsobiť problém s kompatibilitou."
+ },
+ {
+  "id": 100,
+  "level": "medior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "algorithm",
+  "question": "Testovací framework musí pri zlyhaných UI testoch jednotne spracúvať artefakty ako screenshot, log konzoly a trace. Ktorý prístup k návrhu je lepšie škálovateľný?\nOPTIONS:",
+  "options": [
+   "Každý test implementuje vlastnú, odlišnú logiku spracovania artefaktov",
+   "Framework ignoruje všetky zlyhania",
+   "Vytvoriť centralizovaný failure hook alebo mechanizmus životného cyklu, ktorý z kontextu testu automaticky zbiera a ukladá relevantné artefakty",
+   "Robiť screenshoty iba ručne pri lokálnom behu"
+  ],
+  "answer": 2,
+  "explanation": "Centralizované spracovanie zlyhaní zjednocuje zber diagnostických artefaktov a znižuje opakujúci sa infraštruktúrny kód v testoch. Riešenie by malo pri paralelnom behu zabezpečiť aj unikátne cesty k artefaktom a vhodnú správu životného cyklu."
+ },
+ {
+  "id": 101,
+  "level": "medior",
+  "area": "Test strategy & pyramid",
+  "topic": "Test strategy & pyramid",
+  "type": "scenario",
+  "question": "Tím sa musí rozhodnúť, ktoré úrovne testov majú pokryť nový platobný tok. Platobné výpočty sú zložité, zatiaľ čo celý checkout tok pozostáva iba z niekoľkých kritických biznisových ciest. Ktorá stratégia je najvhodnejšia?\nOPTIONS:",
+  "options": [
+   "Pravidlá výpočtov podrobne otestovať na úrovni unit testov a pre celý checkout tok ponechať niekoľko kritických UI alebo E2E testov",
+   "Každú možnú kombináciu pokryť výlučne UI testami",
+   "Vynechať unit testy, pretože platobnú funkcionalitu možno pochopiť iba na integračnej úrovni",
+   "Používať iba manuálne testovanie, pretože platobný tok je zložitý"
+  ],
+  "answer": 0,
+  "explanation": "Zložité pravidlá výpočtov sa dobre hodia na rýchle unit testy, zatiaľ čo testy vyššej úrovne by sa mali sústrediť na integrácie a kritické biznisové toky. Sada testov tak zostane menšia a rýchlejšia bez straty dôležitého pokrytia na úrovni systému."
+ },
+ {
+  "id": 102,
+  "level": "medior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "debug",
+  "question": "JUnit test mení ten istý objekt vo viacerých testovacích prípadoch a výsledok závisí od toho, ktorý test bežal predtým. Čo je najpravdepodobnejší problém?\nOPTIONS:",
+  "options": [
+   "JUnit vždy spúšťa metódy v náhodnom poradí",
+   "Testy používajú zdieľaný alebo nesprávne inicializovaný stav",
+   "Asercie sa nedajú použiť vo viacerých testoch",
+   "Unit testy musia používať databázu"
+  ],
+  "answer": 1,
+  "explanation": "Unit testy by mali byť ideálne nezávislé a deterministické. Zdieľaný meniteľný stav môže spôsobiť, že jeden test zmení počiatočný stav iného testu."
+ },
+ {
+  "id": 103,
+  "level": "medior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "scenario",
+  "question": "Služba závisí od externého API s počasím. Unit test musí overiť aj to, ako sa aplikácia správa, keď API vyprší timeout. Ktorý test double je najvhodnejší?\nOPTIONS:",
+  "options": [
+   "Použiť skutočné externé API s náhodnými údajmi o počasí",
+   "Úplne odstrániť volanie API z testu",
+   "Použiť test double, ktorý deterministicky simuluje zlyhanie na timeout",
+   "Spúšťať test iba vtedy, keď je externé API náhodou pomalé"
+  ],
+  "answer": 2,
+  "explanation": "Timeout môže byť externá podmienka, ktorú je ťažké spoľahlivo zreprodukovať, preto je užitočné simulovať ho v unit teste deterministicky. Logiku spracovania chýb tak overíš rýchlo a opakovateľne."
+ },
+ {
+  "id": 104,
+  "level": "medior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "scenario",
+  "question": "Selenium test musí nahrať súbor cez element `<input type=\"file\">`. Ktorý prístup je najvhodnejší?\nOPTIONS:",
+  "options": [
+   "Zadať obsah súboru znak po znaku pomocou klávesnice",
+   "V každom prípade simulovať drag-and-drop animáciu",
+   "Klikať podľa pixelových súradníc okna prehliadača a prejsť cez výber súboru",
+   "Priamo zadať cestu k súboru do elementu file input, napríklad pomocou `sendKeys`"
+  ],
+  "answer": 3,
+  "explanation": "V Seleniu možno elementu file input priamo zadať cestu k súboru. Je to stabilnejšie a lepšie automatizovateľné než ovládanie natívneho dialógu operačného systému cez pixely alebo klávesnicu."
+ },
+ {
+  "id": 105,
+  "level": "medior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "behavior",
+  "question": "V Playwright teste sa po kliknutí na tlačidlo otvorí nová karta. Ktorý prístup najlepšie zodpovedá modelu Playwrightu?\nOPTIONS:",
+  "options": [
+   "Spracovať udalosť popup alebo kontext v koordinácii s akciou a potom pokračovať v teste s novým objektom Page",
+   "Náhodne vybrať jednu z otvorených kariet",
+   "Vždy zatvoriť pôvodnú stránku",
+   "Počkať päť sekúnd a potom nájsť novú kartu v globálnom stave"
+  ],
+  "answer": 0,
+  "explanation": "Playwright poskytuje explicitnú podporu na prácu s popupmi a novými stránkami. Výsledný objekt Page treba vhodne zosynchronizovať s akciou, ktorá ho spúšťa, aby test nezávisel od pevného načasovania."
+ },
+ {
+  "id": 106,
+  "level": "medior",
+  "area": "Locators & selectors",
+  "topic": "Locators & selectors",
+  "type": "edgecase",
+  "question": "Aplikácia obsahuje dve tlačidlá s rovnakým názvom, no aktívne je iba jedno a druhé je v skrytom komponente. Test musí pracovať s aktívnym tlačidlom. Ktorý prístup je najlepší?\nOPTIONS:",
+  "options": [
+   "Vždy vybrať prvý zodpovedajúci element",
+   "Použiť stratégiu lokátorov, ktorá zohľadňuje jedinečný kontext elementu aj požadovaný stav",
+   "Nájsť tlačidlo podľa pixelových súradníc",
+   "Náhodne vybrať jednu zo zhôd"
+  ],
+  "answer": 1,
+  "explanation": "Keď majú elementy rovnaký názov, je dôležité určiť správny kontext. Lokátor by mal vyjadrovať sémantickú alebo štruktúrnu jedinečnosť cieľového elementu, a nie sa spoliehať na jeho aktuálnu pozíciu v DOM."
+ },
+ {
+  "id": 107,
+  "level": "medior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "production",
+  "question": "UI test v CI zlyhá na timeout 2 z 20 behov. Logy ukazujú, že čas odozvy backendu aplikácie sa niekedy výrazne zvýši. Aký by mal byť prvý krok pri riešení problému?\nOPTIONS:",
+  "options": [
+   "Donekonečna zvyšovať timeout",
+   "Po retry automaticky označiť test ako úspešný",
+   "Preskúmať stav závislý od času odozvy backendu a stratégiu čakania v teste a potom ju na základe nameraných dát zlepšiť",
+   "Vypnúť v CI všetky UI testy"
+  ],
+  "answer": 2,
+  "explanation": "Prvým krokom by malo byť zistiť príčinu nestability, nie ju iba zakryť dlhším čakaním. Ak zlyhanie spôsobuje skutočná latencia backendu, treba zvlášť preskúmať test aj výkon aplikácie."
+ },
+ {
+  "id": 108,
+  "level": "medior",
+  "area": "Page Object Model",
+  "topic": "Page Object Model",
+  "type": "theory",
+  "question": "Prečo môže byť problematické, ak Page Object vloží každý možný biznisový tok do jednej metódy?\nOPTIONS:",
+  "options": [
+   "Pretože Page Object nemôže obsahovať metódy",
+   "Pretože Selenium nepodporuje dlhé metódy",
+   "Pretože každý tok nevyhnutne vyžaduje samostatný prehliadač",
+   "Pretože trieda môže prevziať priveľa zodpovednosti a testy môžu prísť o flexibilné, opakovane použiteľné stavebné bloky"
+  ],
+  "answer": 3,
+  "explanation": "Page Object by mal zapuzdrovať správanie súvisiace s UI, no nemusí zabaliť každý úplný biznisový proces do jednej veľkej metódy. Menšie, dobre pomenované operácie môžu urobiť testy lepšie opakovane použiteľnými a udržiavateľnými."
+ },
+ {
+  "id": 109,
+  "level": "medior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "output",
+  "question": "Čo overuje nasledujúci REST Assured kód?\nOPTIONS:",
+  "code": "CODE:\ngiven()\n    .queryParam(\"status\", \"ACTIVE\")\n.when()\n    .get(\"/users\")\n.then()\n    .statusCode(200)\n    .body(\"findAll { it.status == 'ACTIVE' }.size()\", greaterThan(0));",
+  "options": [
+   "V odpovedi musí byť aspoň jeden používateľ so stavom ACTIVE",
+   "Musí byť prítomný presne jeden používateľ ACTIVE",
+   "Odpoveď musí byť prázdna",
+   "Požiadavka vykonáva operáciu POST"
+  ],
+  "answer": 0,
+  "explanation": "Query parameter spôsobí, že test požaduje používateľov so stavom ACTIVE. Asercia na telo overuje, že odpoveď obsahuje aspoň jeden prvok s týmto stavom."
+ },
+ {
+  "id": 110,
+  "level": "medior",
+  "area": "BDD & Cucumber",
+  "topic": "BDD & Cucumber",
+  "type": "scenario",
+  "question": "Cucumber feature opakuje rovnaký predpoklad prihlásenia v 12 scenároch. Tím chce znížiť duplicitu a zachovať biznisovú čitateľnosť. Ktoré riešenie môže byť vhodné?\nOPTIONS:",
+  "options": [
+   "Pridať do každého scenára ďalšie technické kroky prihlásenia",
+   "Vyjadriť spoločný predpoklad pomocou vhodného `Background`, ak naozaj platí pre každý scenár",
+   "Úplne odstrániť kroky prihlásenia",
+   "Zlúčiť celý feature do jedného scenára"
+  ],
+  "answer": 1,
+  "explanation": "`Background` sa dá použiť na opis spoločných predpokladov relevantných pre každý dotknutý scenár. Takto by sa mali vyčleniť iba predpoklady, ktoré sú naozaj spoločné a zrozumiteľné z biznisového pohľadu."
+ },
+ {
+  "id": 111,
+  "level": "medior",
+  "area": "Test data management",
+  "topic": "Test data management",
+  "type": "production",
+  "question": "Sada testov používa pre stovky testov tie isté vopred načítané databázové záznamy. Zmena dátového modelu spôsobí, že časť fixtures zastará. Ktorý prístup môže najviac zlepšiť udržiavateľnosť?\nOPTIONS:",
+  "options": [
+   "Pre každý test uložiť kompletnú zálohu databázy",
+   "Dáta nikdy neaktualizovať",
+   "Spravovať dáta potrebné pre testy pomocou cielených, verziovaných a ideálne minimálnych fixtures",
+   "Pred každým testom skopírovať celú produkčnú databázu"
+  ],
+  "answer": 2,
+  "explanation": "Veľké, centrálne zdieľané fixtures sa ťažko udržiavajú a môžu obsahovať veľa skrytých závislostí. Cielené, verziované testovacie dáta dokážu lepšie sledovať zmeny v dátovom modeli aplikácie."
+ },
+ {
+  "id": 112,
+  "level": "medior",
+  "area": "CI integration",
+  "topic": "CI integration",
+  "type": "performance",
+  "question": "Pipeline pri každom commite spúšťa 45 minút úplných regresných UI testov, zatiaľ čo rýchle unit a API testy skončia za 5 minút. Ktorá CI stratégia môže skrátiť čas spätnej väzby pre vývojárov?\nOPTIONS:",
+  "options": [
+   "Pri každom commite ponechať úplnú UI regresiu na začiatku pipeline",
+   "Rýchlejšie testy spúšťať ako skorú spätnú väzbu a úplnú regresiu presunúť do vhodnej neskoršej fázy",
+   "Odstrániť unit testy",
+   "Všetky testy spúšťať iba pred vydaním"
+  ],
+  "answer": 1,
+  "explanation": "Rýchle testy dokážu za krátky čas odhaliť základné problémy. Drahá regresná sada môže bežať v neskoršej fáze alebo cez iný spúšťač a stále poskytovať dôležitú ochranu."
+ },
+ {
+  "id": 113,
+  "level": "medior",
+  "area": "Parallel execution",
+  "topic": "Parallel execution",
+  "type": "scenario",
+  "question": "Testovací framework spúšťa UI testy so 16 workermi, no počítaču kvôli inštanciám prehliadača dochádza pamäť. Aké by bolo rozumné riešenie?\nOPTIONS:",
+  "options": [
+   "Pridať ďalšie workery",
+   "Ignorovať chyby pamäte",
+   "Prispôsobiť počet workerov dostupným zdrojom a v prípade potreby rozdeliť testy medzi viacero počítačov alebo jobov",
+   "V každom teste spustiť ďalšie inštancie prehliadača"
+  ],
+  "answer": 2,
+  "explanation": "Paralelizmus treba prispôsobiť kapacite infraštruktúry. Ak jeden počítač nedokáže bezpečne prevádzkovať toľko inštancií prehliadača, môže byť vhodné znížiť počet workerov alebo záťaž rozložiť horizontálne."
+ },
+ {
+  "id": 114,
+  "level": "medior",
+  "area": "Reporting",
+  "topic": "Reporting",
+  "type": "behavior",
+  "question": "Report pri viacerých testoch zobrazuje iba `AssertionError`, no neukazuje skutočné a očakávané hodnoty. Prečo je to problém?\nOPTIONS:",
+  "options": [
+   "Report bude príliš malý",
+   "Test sa automaticky spomalí",
+   "Asercie sa nevykonajú",
+   "Na diagnostiku zlyhania chýbajú informácie potrebné na porovnanie skutočného a očakávaného stavu"
+  ],
+  "answer": 3,
+  "explanation": "Užitočný report by mal zobrazovať aspoň relevantný očakávaný a skutočný stav a ideálne aj kontext behu. To môže výrazne skrátiť čas potrebný na ladenie."
+ },
+ {
+  "id": 115,
+  "level": "medior",
+  "area": "Contract testing",
+  "topic": "Contract testing",
+  "type": "scenario",
+  "question": "Frontendový konzument používa endpoint API `POST /orders`. Poskytovateľ zmení stavový kód úspešnej odpovede z `201` na `200` a telo odpovede ponechá bez zmeny. Prečo to môže byť zmena kontraktu?\nOPTIONS:",
+  "options": [
+   "Pretože aj HTTP stavový kód môže byť súčasťou API kontraktu, ktorý konzument očakáva",
+   "Pretože každý API endpoint musí vracať iba 201",
+   "Pretože POST požiadavka nemôže mať telo odpovede",
+   "Pretože contract testy dokážu overovať iba JSON polia"
+  ],
+  "answer": 0,
+  "explanation": "API kontrakt nemusí obsahovať iba štruktúru tela odpovede. Súčasťou kontraktu môže byť aj sémantika stavových kódov a správanie, ktoré konzument očakáva."
+ },
+ {
+  "id": 116,
+  "level": "medior",
+  "area": "Visual & accessibility testing",
+  "topic": "Visual & accessibility testing",
+  "type": "scenario",
+  "question": "Test vizuálnej regresie beží na tej istej stránke v Chrome aj Firefoxe a kvôli odlišnému vykresľovaniu fontov hlási veľké množstvo rozdielov v pixeloch. Aký by bol najvhodnejší prístup?\nOPTIONS:",
+  "options": [
+   "Automaticky akceptovať každý rozdiel v pixeloch",
+   "Naviazať vizuálne baseline na kontrolované a vhodne definované prostredie vykresľovania a rozdiely medzi prehliadačmi riešiť samostatne",
+   "Úplne odstrániť testovanie screenshotov",
+   "Spúšťať testy v náhodných prehliadačoch"
+  ],
+  "answer": 1,
+  "explanation": "Testy vizuálnej regresie sú citlivé na prostredie vykresľovania vrátane verzie prehliadača, fontov a platformy. Na odlíšenie skutočných regresií od rozdielov v prostredí je potrebné deterministické baseline prostredie."
+ },
+ {
+  "id": 117,
+  "level": "medior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "scenario",
+  "question": "Testovací framework poskytuje zdieľané utility pre Selenium, Playwright a API viacerým projektom. Jedna utilita obsahuje meniteľnú globálnu konfiguráciu, ktorú testy počas behu menia. Aké riziko to prináša pri paralelnom behu?\nOPTIONS:",
+  "options": [
+   "Zdieľaná meniteľná konfigurácia môže spôsobiť race conditions a únik stavu medzi testami",
+   "Globálna konfigurácia testy vždy zrýchli",
+   "Paralelný beh automaticky izoluje globálne objekty",
+   "Utility triedy nemôžu obsahovať konfiguráciu"
+  ],
+  "answer": 0,
+  "explanation": "Zdieľaný meniteľný stav je pri paralelnom behu testov obzvlášť nebezpečný. Zmena urobená jedným workerom môže ovplyvniť test bežiaci v inom workeri, preto by konfigurácia mala byť ideálne nemeniteľná alebo vhodne ohraničená."
+ },
+ {
+  "id": 118,
+  "level": "medior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "trap",
+  "question": "Selenium test nastaví implicitné čakanie na 10 sekúnd a potom pre konkrétny element použije 2-sekundové explicitné čakanie. Tím predpokladá, že celkové čakanie bude vždy presne 2 sekundy. Prečo môže byť tento predpoklad nesprávny?\nOPTIONS:",
+  "options": [
+   "Explicitné čakanie vždy ignoruje implicitné čakanie",
+   "Kombinácia implicitného a explicitného čakania môže urobiť skutočné správanie čakania menej predvídateľným a nemali by sa kombinovať naslepo",
+   "Implicitné čakania fungujú iba v JavaScript testoch",
+   "Explicitné čakanie vždy čaká 10 sekúnd"
+  ],
+  "answer": 1,
+  "explanation": "Dokumentácia Selenia neodporúča kombinovať implicitné a explicitné čakania, pretože skutočné správanie čakania nemusí zodpovedať jednoduchému výpočtu očakávaného timeoutu. Explicitné čakania založené na stave spravidla poskytujú lepšiu kontrolu nad synchronizáciou testov."
+ },
+ {
+  "id": 119,
+  "level": "medior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "production",
+  "question": "Playwright sada pred každým testom vytvára úplne nový browser context. Testy potrebujú izolované cookies a local storage, no ten istý proces prehliadača sa dá bezpečne zdieľať. Aká by mohla byť vhodná optimalizácia?\nOPTIONS:",
+  "options": [
+   "Nechať všetky testy používať ten istý context a rovnaké cookies",
+   "Pred každou aserciou zopakovať celé spustenie prehliadača",
+   "Opätovne používať proces prehliadača a pre každý test ponechať samostatný context, aby sa zachovala potrebná izolácia",
+   "Odstrániť izoláciu a spúšťať všetky testy na tej istej stránke"
+  ],
+  "answer": 2,
+  "explanation": "Browser contexty v Playwrighte môžu poskytnúť ľahkú izoláciu cookies a ďalšieho stavu prehliadača. V niektorých prípadoch tak možno opätovne použiť drahší proces prehliadača bez miešania stavu testov."
+ },
+ {
+  "id": 120,
+  "level": "medior",
+  "area": "Locators & selectors",
+  "topic": "Locators & selectors",
+  "type": "algorithm",
+  "question": "Riadok tabuľky má unikátny atribút `data-testid` a obsahuje niekoľko tlačidiel. Test musí v tomto riadku vybrať tlačidlo `Delete`. Ktorá stratégia lokátorov je najvhodnejšia?\nOPTIONS:",
+  "options": [
+   "Vybrať prvé tlačidlo `Delete` na celej stránke",
+   "Nájsť kontajner pomocou unikátneho identifikátora riadka a potom v ňom vybrať tlačidlo `Delete`",
+   "Použiť aktuálne pixelové súradnice tlačidla",
+   "Nájsť tlačidlo pomocou jeho úplného XPath indexu v DOM"
+  ],
+  "answer": 1,
+  "explanation": "Hierarchická stratégia lokátorov najprv pomocou stabilného identifikátora nájde správny riadok a potom v tomto kontexte hľadá požadované tlačidlo. Znižuje sa tak riziko interakcie s rovnako pomenovaným elementom v inom riadku."
+ },
+ {
+  "id": 121,
+  "level": "medior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "scenario",
+  "question": "Po kliknutí na tlačidlo musí UI test overiť, že sa dokončil proces na pozadí. Aplikácia neposkytuje stabilný indikátor načítavania, no po dokončení spracovania sa zobrazí stav `Completed`. Na čo by mal test čakať?\nOPTIONS:",
+  "options": [
+   "S timeoutom čakať na skutočný konečný stav aplikácie, napríklad na zobrazenie stavu `Completed`",
+   "Vždy čakať presne 60 sekúnd",
+   "Čakať na reštart prehliadača",
+   "Opakovať test, kým sa stav neobjaví"
+  ],
+  "answer": 0,
+  "explanation": "Stabilný konečný stav je lepším synchronizačným bodom než prechodný indikátor načítavania, ktorého existencia nie je zaručená. Timeout je aj tak potrebný, aby naozaj zaseknutý proces neblokoval test donekonečna."
+ },
+ {
+  "id": 122,
+  "level": "medior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "edgecase",
+  "question": "API v požiadavke `PATCH /users/42` akceptuje voliteľné polia. Test musí overiť, že zmena jedného poľa omylom nezmení ostatné dáta. Ktorá validácia je najdôležitejšia?\nOPTIONS:",
+  "options": [
+   "Kontrolovať iba HTTP stavový kód",
+   "Kontrolovať iba veľkosť tela odpovede",
+   "Overiť zmenené pole aj relevantné polia, ktoré by podľa API kontraktu mali zostať nezmenené",
+   "Úplne odstrániť telo požiadavky"
+  ],
+  "answer": 2,
+  "explanation": "Pri čiastočnej aktualizácii nestačí overiť iba to, že sa požadované pole zmenilo. Test by mal overiť aj to, že operácia nespôsobila nezamýšľané zmeny ďalších relevantných polí."
+ },
+ {
+  "id": 123,
+  "level": "medior",
+  "area": "CI integration",
+  "topic": "CI integration",
+  "type": "production",
+  "question": "V CI pipeline beží tá istá úplná E2E sada súbežne na troch rôznych vetvách, pričom všetky behy používajú to isté zdieľané testovacie prostredie a rovnaké dáta. Testy sa často navzájom ovplyvňujú. Ktoré riešenie môže situáciu najviac zlepšiť?\nOPTIONS:",
+  "options": [
+   "Ignorovať zlyhania",
+   "Zvýšiť timeout sady",
+   "Na každej vetve ešte častejšie resetovať tie isté dáta",
+   "Zabezpečiť vhodne izolované prostredia a testovacie dáta pre každú vetvu alebo beh a v prípade potreby koordinovať súbežné behy"
+  ],
+  "answer": 3,
+  "explanation": "Zdieľané meniteľné prostredie môže spôsobiť konflikty stavu medzi súbežnými pipeline. Izolované prostredia alebo stavy dát tieto zlyhania znižujú, a keď úplná izolácia nie je možná, môže byť potrebná koordinácia."
+ },
+ {
+  "id": 124,
+  "level": "medior",
+  "area": "Parallel execution",
+  "topic": "Parallel execution",
+  "type": "performance",
+  "question": "Sada testov s 10 workermi beží 12 minút, no zvýšenie na 20 workerov skráti čas iba na 11 minút. Využitie CPU je počas behu nad 95 %. Čo to naznačuje?\nOPTIONS:",
+  "options": [
+   "Testy sú určite napísané nesprávne",
+   "CPU sa pravdepodobne stalo úzkym hrdlom, takže ďalšie workery prinášajú iba minimálne zrýchlenie",
+   "Paralelný beh nefunguje",
+   "Testy sú určite pomalé kvôli sieťovým chybám"
+  ],
+  "answer": 1,
+  "explanation": "Keď je CPU už takmer úplne vyťažené, ďalšie workery súperia o tú istú výpočtovú kapacitu. V takej situácii sa oplatí pred ďalším zvyšovaním paralelizmu preskúmať systémové zdroje a skutočné úzke hrdlo."
+ },
+ {
+  "id": 125,
+  "level": "medior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "production",
+  "question": "V testovacom frameworku každý test rieši logiku retry samostatne. Niektoré testy opakujú trikrát, iné päťkrát, a z reportov nie je jasné, ktorý výsledok pochádza z prvého behu. Aké by bolo najlepšie riešenie na úrovni frameworku?\nOPTIONS:",
+  "options": [
+   "V každom teste ďalej zvýšiť počet opakovaní",
+   "V každom prostredí úplne vypnúť retry",
+   "Zaviesť centralizovaný, konfigurovateľný mechanizmus retry a reporting, ktorý zachová výsledky prvého behu aj následných opakovaní",
+   "Po úspešnom retry automaticky vymazať pôvodné zlyhanie"
+  ],
+  "answer": 2,
+  "explanation": "Centralizovaná politika retry zabezpečí konzistentné správanie a konfigurovateľnosť. Reporting by však mal zachovať výsledok prvého behu, pretože úspešný retry nedokazuje, že pôvodná nestabilita alebo chyba bola vyriešená."
+ },
+ {
+  "id": 126,
+  "level": "medior",
+  "area": "Test strategy & pyramid",
+  "topic": "Test strategy & pyramid",
+  "type": "scenario",
+  "question": "V aplikácii podporuje biznisové pravidlo 40 rôznych kombinácií. Pravidlo je v jednej službe a na výpočet nepotrebuje databázu. Tím chce pre každú kombináciu vytvoriť úplný UI test. Aký by bol vhodnejší prístup?",
+  "options": [
+   "Väčšinu kombinácií pokryť rýchlymi unit testami a na vyššej úrovni overiť iba kritické používateľské toky.",
+   "Pre každú kombináciu spustiť samostatnú session prehliadača.",
+   "Pred každým vydaním ručne overiť všetky kombinácie.",
+   "Na úrovni UI otestovať iba niekoľko náhodných kombinácií."
+  ],
+  "answer": 0,
+  "explanation": "Deterministickú, izolovanú biznisovú logiku možno oveľa efektívnejšie pokryť rýchlymi unit testami. Testy vyššej úrovne by mali predovšetkým overovať integračné a end-to-end riziká, a nie opakovane pokrývať tú istú logiku."
+ },
+ {
+  "id": 127,
+  "level": "medior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "behavior",
+  "question": "Čo overuje nasledujúci JUnit test?",
+  "code": "@Test\nvoid shouldRejectEmptyUsername() {\n    IllegalArgumentException exception = assertThrows(\n        IllegalArgumentException.class,\n        () -> validator.validate(\"\")\n    );\n\n    assertEquals(\"Username is required\", exception.getMessage());\n}",
+  "options": [
+   "Validátor vyhodí `IllegalArgumentException` pri každom vstupe.",
+   "Prázdne používateľské meno je platné, pokiaľ je chybová správa správna.",
+   "Pri prázdnom používateľskom mene validátor vyhodí očakávanú výnimku s konkrétnou chybovou správou.",
+   "Test kontroluje iba chybovú správu, nie typ výnimky."
+  ],
+  "answer": 2,
+  "explanation": "Test najprv overí, že spracovanie prázdneho vstupu vyhodí `IllegalArgumentException`, a potom overí aj správu výnimky. Kontroluje tak dva dôležité aspekty spracovania neplatného vstupu."
+ },
+ {
+  "id": 128,
+  "level": "medior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "scenario",
+  "question": "V unit teste služby vracia repository `Optional.empty()`. Od služby sa očakáva, že vyhodí `NotFoundException`. Prečo je tu vhodný stub?",
+  "options": [
+   "Pretože stub môže poskytnúť kontrolovanú návratovú hodnotu a zreprodukovať tak potrebný stav závislosti.",
+   "Pretože stub automaticky overí implementáciu repository.",
+   "Pretože stub sa vždy pripája k skutočnej databáze.",
+   "Pretože stub sa dá použiť iba na HTTP požiadavky."
+  ],
+  "answer": 0,
+  "explanation": "Stub umožňuje vopred definovať odpoveď závislosti. Službu tak môžeš otestovať izolovane v stave, ktorý by sa so skutočným zdrojom dát reprodukoval ťažšie alebo drahšie."
+ },
+ {
+  "id": 129,
+  "level": "medior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "edgecase",
+  "question": "V Selenium teste sa nasledujúci element nachádza vnútri Shadow DOM:\nBežné `driver.findElement(By.id(\"username\"))` input nenájde. Prečo?",
+  "code": "<custom-login>\n    #shadow-root\n        <input id=\"username\">\n</custom-login>",
+  "options": [
+   "Selenium nevie pracovať s input elementmi.",
+   "Elementy v Shadow DOM sú vždy vnútri iframe.",
+   "K inputu sa dá dostať iba z JavaScriptu, nie zo Selenia.",
+   "Vyhľadávanie predvolene neprechádza do vnútorného dokumentu Shadow DOM."
+  ],
+  "answer": 3,
+  "explanation": "Shadow DOM vytvára samostatnú hranicu DOM. K príslušnému shadow root sa treba dostať cez hostiteľský element a potom v ňom nájsť požadovaný element pomocou API, ktoré podporuje použitá verzia Selenia."
+ },
+ {
+  "id": 130,
+  "level": "medior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "output",
+  "question": "Čo overuje nasledujúci Playwright kód?\n```typescript id=\"4ilaof\"\nawait expect(page.getByRole('button', { name: 'Delete' })).toBeEnabled();\n```",
+  "options": [
+   "Tlačidlo je neviditeľné.",
+   "Tlačidlo existuje a je aktívne (enabled).",
+   "Tlačidlo už vykonalo vymazanie.",
+   "Na stránke je presne jedna inštancia tlačidla."
+  ],
+  "answer": 1,
+  "explanation": "`toBeEnabled()` overuje, že element určený lokátorom je v aktívnom (enabled) stave. Asercia nedokazuje, že na tlačidlo sa už kliklo ani že operácia úspešne skončila."
+ },
+ {
+  "id": 131,
+  "level": "medior",
+  "area": "Locators & selectors",
+  "topic": "Locators & selectors",
+  "type": "production",
+  "question": "Test používa nasledujúci CSS selektor:\nTrieda `css-1a2b3c` sa medzi buildmi mení, zatiaľ čo funkcionalita tlačidla zostáva rovnaká. Čo by sa malo urobiť?",
+  "code": "button.btn.btn-primary.css-1a2b3c",
+  "options": [
+   "Pred každým behom automaticky načítať aktuálnu hodnotu triedy.",
+   "Pridať do selektora ďalšie generované triedy.",
+   "Použiť stabilný, zámerne testovateľný atribút alebo sémantický lokátor.",
+   "Vybrať tlačidlo podľa jeho indexu v DOM."
+  ],
+  "answer": 2,
+  "explanation": "Generované CSS triedy sú detailom implementácie, a preto nie sú dobrým stabilným kontraktom pre testy. Stabilný `data-testid`, prístupná rola/názov alebo iný trvácny atribút je menej citlivý na zmeny vo frontendovom builde."
+ },
+ {
+  "id": 132,
+  "level": "medior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "debug",
+  "question": "Test obsahuje nasledujúce čakanie:\nTest niekedy zlyhá s `NoSuchElementException` ešte pred uplynutím 10-sekundového timeoutu. V čom môže byť problém?",
+  "code": "new WebDriverWait(driver, Duration.ofSeconds(10))\n    .until(d -> d.findElement(By.id(\"result\")).getText().equals(\"Done\"));",
+  "options": [
+   "`until` podporuje iba CSS selektory.",
+   "WebDriverWait vždy čaká presne 10 sekúnd, kým začne hľadať.",
+   "Java v Seleniu nepodporuje lambda výrazy.",
+   "Spracovanie `NoSuchElementException` pri vyhodnocovaní podmienky musí zodpovedať použitej konfigurácii čakania."
+  ],
+  "answer": 3,
+  "explanation": "Počas čakania element spočiatku nemusí byť v DOM. Explicitné čakanie v Seleniu štandardne `NoSuchElementException` ignoruje, no toto správanie sa dá zmeniť konfiguráciou, preto keď takáto výnimka nečakane ukončí čakanie, treba skontrolovať konfiguráciu spracovania výnimiek v čakaní."
+ },
+ {
+  "id": 133,
+  "level": "medior",
+  "area": "Page Object Model",
+  "topic": "Page Object Model",
+  "type": "scenario",
+  "question": "Metóda Page Objectu vykoná celý checkout tok: zadanie adresy, výber dopravy, platbu, odoslanie objednávky a overenie stránky s potvrdením. Viacero testov potrebuje iba prvé dve operácie. Aký je hlavný problém?",
+  "options": [
+   "Page Object nemôže obsahovať asercie.",
+   "Page Object je príliš vysokoúrovňový a spája priveľa samostatných krokov toku do jednej operácie.",
+   "Selenium nedokáže pracovať naprieč viacerými stránkami.",
+   "Každý test musí vykonať presne ten istý checkout tok."
+  ],
+  "answer": 1,
+  "explanation": "Príliš veľká metóda pre celý tok znižuje opakovanú použiteľnosť a môže vynútiť kroky, ktoré sú pre daný test irelevantné. Spravidla je lepšie poskytnúť menšie, skladateľné UI operácie alebo vhodné abstrakcie tokov vyššej úrovne."
+ },
+ {
+  "id": 134,
+  "level": "medior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "debug",
+  "question": "API test dostane úspešnú odpoveď HTTP 200, no testovaná operácia v skutočnosti očakávaný zdroj nezmenila. Test aj tak prejde. Čo chýba?",
+  "options": [
+   "Validácia tela odpovede alebo výsledného biznisového stavu.",
+   "Druhý HTTP klient.",
+   "Dlhší timeout spojenia.",
+   "Ďalšia asercia na HTTP 200."
+  ],
+  "answer": 0,
+  "explanation": "HTTP stavový kód overuje iba výsledok na úrovni protokolu. Ak je súčasťou kontraktu aj efekt biznisovej operácie, treba ho overiť cez odpoveď a v prípade potreby cez výsledný stav."
+ },
+ {
+  "id": 135,
+  "level": "medior",
+  "area": "BDD & Cucumber",
+  "topic": "BDD & Cucumber",
+  "type": "trap",
+  "question": "Tím pridáva na koniec každého Cucumber scenára technickú kontrolu databázy, aj keď sa biznisový výsledok scenára dá jasne overiť cez správanie používateľa. Aká je potenciálna nevýhoda?",
+  "options": [
+   "Cucumber automaticky vymaže databázu.",
+   "Scenáre nemôžu používať kroky Then.",
+   "Feature súbory nemôžu reprezentovať stav databázy.",
+   "Scenár sa môže stať zbytočne závislým od implementácie a stratiť biznisové zameranie."
+  ],
+  "answer": 3,
+  "explanation": "Hlavným účelom BDD scenára je komunikovať požadované správanie a biznisový výsledok. Priame overenie databázy môže byť v niektorých prípadoch opodstatnené, no nemalo by sa automaticky stať súčasťou každého scenára."
+ },
+ {
+  "id": 136,
+  "level": "medior",
+  "area": "Test data management",
+  "topic": "Test data management",
+  "type": "performance",
+  "question": "Sada API testov pred každým testom vymaže tisíce záznamov a potom znovu vytvorí tú istú malú sadu testovacích dát. Na tento setup pripadá značná časť celkového času behu. Aká by mohla byť vhodná optimalizácia?",
+  "options": [
+   "Pre každý test vytvoriť ešte viac záznamov.",
+   "Zosúladiť správu testovacích dát so skutočnými potrebami, napríklad pomocou cielených fixtures a vhodnej stratégie resetu.",
+   "Spúšťať testy v náhodnom poradí.",
+   "Odstrániť asercie v setupe."
+  ],
+  "answer": 1,
+  "explanation": "Prestavba celej databázy pre každý test je často zbytočný náklad. Vytvorenie iba dát, ktoré test naozaj potrebuje, alebo efektívny mechanizmus resetu môže výrazne skrátiť čas setupu."
+ },
+ {
+  "id": 137,
+  "level": "medior",
+  "area": "CI integration",
+  "topic": "CI integration",
+  "type": "scenario",
+  "question": "Pri pull requeste beží 30-minútový E2E test. Vývojár pushne na tú istú vetvu nový commit, kým predchádzajúci beh ešte prebieha, takže predchádzajúci výsledok už nie je relevantný. Aká CI schopnosť by mohla byť užitočná?",
+  "options": [
+   "Vždy bez obmedzenia spúšťať predchádzajúci aj nový beh paralelne.",
+   "Každý beh dvakrát reštartovať.",
+   "Rušiť zastarané behy pipeline a uprednostniť validáciu najnovšieho commitu.",
+   "Spúšťať E2E testy iba raz za mesiac."
+  ],
+  "answer": 2,
+  "explanation": "Ak starší commit už nereprezentuje aktuálny stav pull requestu, jeho dlhý beh testov môže zbytočne spotrebúvať zdroje. Stratégia súbežnosti a rušenia behov môže znížiť náklady na zastarané behy."
+ },
+ {
+  "id": 138,
+  "level": "medior",
+  "area": "Parallel execution",
+  "topic": "Parallel execution",
+  "type": "performance",
+  "question": "Sada testov s 8 workermi beží 14 minút. Zvýšenie na 16 workerov skráti čas behu na 9 minút, zatiaľ čo s 32 workermi je to 8,9 minúty. Pri 32 workeroch dosahuje využitie pamäte 95 %. Aký je najpravdepodobnejší záver?",
+  "options": [
+   "32 workerov je určite optimálnych.",
+   "Ďalšia paralelizácia pravdepodobne neprinesie citeľné zlepšenie kvôli limitu zdrojov.",
+   "Testy by sa mali spúšťať iba s jedným workerom.",
+   "Zvýšenie počtu sessions prehliadača vždy prinesie lineárne zrýchlenie."
+  ],
+  "answer": 1,
+  "explanation": "Zdvojnásobenie počtu workerov zo 16 na 32 neprinieslo takmer žiadne ďalšie zrýchlenie, zatiaľ čo využitie pamäte sa priblížilo k nasýteniu. To naznačuje, že ďalšie škálovanie už obmedzujú zdroje infraštruktúry."
+ },
+ {
+  "id": 139,
+  "level": "medior",
+  "area": "Reporting",
+  "topic": "Reporting",
+  "type": "production",
+  "question": "UI test v CI zlyhá, no report neobsahuje žiadny screenshot, DOM snapshot ani trace. Lokálne sa zlyhanie ťažko reprodukuje. Ktoré zlepšenie by mohlo priniesť najväčšiu diagnostickú hodnotu?",
+  "options": [
+   "Skrátiť názov testu.",
+   "Zdvojnásobiť timeout testu.",
+   "Automaticky znovu spúšťať každý test.",
+   "V momente zlyhania automaticky zbierať relevantné artefakty, napríklad screenshoty, trace a logy."
+  ],
+  "answer": 3,
+  "explanation": "Artefakty, ktoré zachytia stav UI v momente zlyhania, môžu ladenie výrazne uľahčiť bez nutnosti reprodukcie. Obzvlášť užitočný môže byť screenshot v kombinácii s trace a logmi."
+ },
+ {
+  "id": 140,
+  "level": "medior",
+  "area": "Contract testing",
+  "topic": "Contract testing",
+  "type": "edgecase",
+  "question": "Konzument považuje pole `total` za celé číslo. V novej verzii začne poskytovateľ bez dokumentácie vracať hodnotu s desatinnou čiarkou, napríklad `19.5`. Prečo je dôležité overiť to contract testingom?",
+  "options": [
+   "Pretože každá desatinná hodnota spôsobí HTTP chybu.",
+   "Pretože JSON nepodporuje čísla.",
+   "Pretože sa zmenil typ a reprezentácia poľa, čo môže urobiť konzumenta nekompatibilným.",
+   "Pretože poskytovatelia môžu vracať iba reťazce."
+  ],
+  "answer": 2,
+  "explanation": "Kontrakt môže definovať očakávania týkajúce sa typov a reprezentácie polí. Zmena číselnej reprezentácie môže spôsobiť chyby pri parsovaní alebo v biznisovej logike podľa toho, ako konzument hodnotu spracúva."
+ },
+ {
+  "id": 141,
+  "level": "senior",
+  "area": "Visual & accessibility testing",
+  "topic": "Visual & accessibility testing",
+  "type": "scenario",
+  "question": "Pri audite prístupnosti sa zistí, že tlačidlo iba s ikonou nemá prístupný názov. Vizuálne aj funkčné testy kliknutia prechádzajú. Prečo tieto testy nestačia?",
+  "options": [
+   "Pretože vizuálne testy fungujú iba na mobilných zariadeniach.",
+   "Pretože funkčné kliknutie nedokazuje, že asistenčné technológie dokážu element správne identifikovať.",
+   "Pretože prístupnosť je iba záležitosťou testovania backendu.",
+   "Pretože každý problém s prístupnosťou vedie k HTTP chybovému kódu."
+  ],
+  "answer": 1,
+  "explanation": "Element môže byť vizuálne aj funkčne správny, a pritom neprístupný. Prístupné názvy a ďalšie sémantické informácie sú dôležité pre čítačky obrazovky a ďalšie asistenčné technológie."
+ },
+ {
+  "id": 142,
+  "level": "senior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "architecture",
+  "question": "V enterprise testovacom frameworku testy čítajú premenné prostredia priamo, používajú vlastné predvolené hodnoty a dodržiavajú rôzne konvencie pomenovania. V dôsledku toho môže byť tá istá konfigurácia v CI interpretovaná rôzne. Aký je najlepší architektonický smer?",
+  "options": [
+   "Ponechať konfiguračnú logiku špecifickú pre každý test.",
+   "V každom teste ručne validovať konfiguráciu.",
+   "Sprístupniť konfiguráciu cez centralizovanú, typovanú a validovanú vrstvu s jasnými pravidlami priority.",
+   "Pre každé prostredie napísať samostatný testovací kód."
+  ],
+  "answer": 2,
+  "explanation": "Centralizovaná konfiguračná vrstva zjednocuje prácu s názvami, predvolenými hodnotami, validáciou a prepisovaním hodnôt. Znižuje to nekonzistentnosti medzi prostrediami a odstraňuje z testov detaily konfigurácie infraštruktúry."
+ },
+ {
+  "id": 143,
+  "level": "senior",
+  "area": "Test strategy & pyramid",
+  "topic": "Test strategy & pyramid",
+  "type": "production",
+  "question": "Tím zistí, že úplná UI regresná sada beží niekoľko hodín, pričom veľa zlyhaní súvisí s jednoduchými biznisovými pravidlami. Tieto pravidlá sa momentálne overujú iba na úrovni UI. Aká by mohla byť dlhodobá stratégia?",
+  "options": [
+   "Predĺžiť čas behu UI sady pevnými volaniami sleep.",
+   "Spúšťať všetky UI testy bez paralelizácie.",
+   "Ponechať kritické UI toky, no stabilné biznisové pravidlá, ktoré sa dajú testovať na nižších úrovniach, presunúť na vhodnejšie úrovne testov.",
+   "Odovzdať celé testovanie manuálnym testerom."
+  ],
+  "answer": 2,
+  "explanation": "Testovaciu pyramídu treba navrhovať nielen podľa počtu testov, ale aj podľa nákladov a hodnoty pokrytia. Presun biznisových pravidiel na rýchlejšie úrovne testov môže zmenšiť E2E sadu bez straty pokrytia kritických systémových tokov."
+ },
+ {
+  "id": 144,
+  "level": "senior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "edgecase",
+  "question": "Unit test sa spolieha na náhodné generovanie UUID a výsledok potom porovnáva s napevno zadaným UUID. Test občas zlyhá. Aké je vhodné riešenie?",
+  "options": [
+   "Dať generovanie UUID za abstrakciu a v teste poskytnúť deterministickú hodnotu.",
+   "Spustiť test päťkrát za sebou.",
+   "Ignorovať zlyhanie, ak nastáva iba občas.",
+   "Úplne odstrániť porovnanie UUID."
+  ],
+  "answer": 0,
+  "explanation": "Priame použitie náhodnosti robí test nedeterministickým. Injektovateľný generátor alebo factory pre UUID umožní testu použiť kontrolovanú hodnotu."
+ },
+ {
+  "id": 145,
+  "level": "senior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "production",
+  "question": "Mock platobnej brány vždy vracia úspešnú odpoveď. V produkcii však brána môže vypršať na timeout, vrátiť 429 alebo nahlásiť biznisovú chybu. Ako by sa malo testovanie rozšíriť?",
+  "options": [
+   "Posielať každý unit test na skutočnú platobnú bránu.",
+   "Odstrániť mock a používať iba manuálne testovanie.",
+   "V unit testoch modelovať relevantné chybové odpovede a timeouty a skutočnú integráciu overiť na vhodnej samostatnej úrovni testov.",
+   "Každú chybu brány považovať za úspešnú odpoveď."
+  ],
+  "answer": 2,
+  "explanation": "Unit testy môžu zámerne a kontrolovane reprodukovať zlyhania externých závislostí. Mock však nenahrádza overenie kontraktu a integrácie skutočnej brány, na to je potrebná vhodná ďalšia vrstva testovania."
+ },
+ {
+  "id": 146,
+  "level": "senior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "production",
+  "question": "V sade testov pre Selenium Grid beží ten istý test proti rôznym verziám prehliadača. Konkrétna verzia dáva sústavne iné výsledky, no report obsahuje iba názov testu. Ktorú informáciu je pre diagnostiku najdôležitejšie doplniť?",
+  "options": [
+   "Meno vývojára.",
+   "Presný prehliadač, verziu prehliadača, driver, OS a prostredie Gridu.",
+   "Úplnú kópiu zdrojového kódu testu z každého behu.",
+   "Celú históriu commitov v repozitári."
+  ],
+  "answer": 1,
+  "explanation": "Presné informácie o prostredí behu sú pri skúmaní zlyhaní špecifických pre prehliadač nevyhnutné. Zaznamenanie verzií a capabilities umožní problém zreprodukovať a porovnať rozdiely v prostredí."
+ },
+ {
+  "id": 147,
+  "level": "senior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "scenario",
+  "question": "Playwright sada pred každým testom vykonáva celý UI tok prihlásenia. Ten tvorí 40 % času behu sady, pričom väčšina testov funkcionalitu prihlásenia v skutočnosti netestuje. Aká by mohla byť vhodná optimalizácia?",
+  "options": [
+   "V každom teste vykonať tok prihlásenia dvakrát.",
+   "Odstrániť asercie na prihlásenie.",
+   "Zvýšiť timeout prehliadača.",
+   "Pripraviť pre testy kontrolovaný autentifikačný stav a UI prihlásenia pokryť samostatnými cielenými testami."
+  ],
+  "answer": 3,
+  "explanation": "Ak prihlásenie nie je súčasťou účelu každého testu, opakované prihlasovanie cez UI pridáva zbytočné náklady. Pripravený autentifikačný stav môže sadu zrýchliť, zatiaľ čo samotný tok prihlásenia zostane pokrytý dedikovanými testami."
+ },
+ {
+  "id": 148,
+  "level": "senior",
+  "area": "Locators & selectors",
+  "topic": "Locators & selectors",
+  "type": "algorithm",
+  "question": "Zoznam produktov obsahuje viacero tlačidiel `Add to cart`. Každá karta produktu má unikátny atribút `data-product-id`. Ako by sa malo nájsť tlačidlo pre produkt 847?",
+  "options": [
+   "Vybrať prvé tlačidlo `Add to cart`.",
+   "Použiť aktuálny index tlačidiel v DOM.",
+   "Napevno zadať úplnú absolútnu XPath štruktúru stránky.",
+   "Nájsť kartu produktu s `data-product-id=\"847\"` a potom v nej nájsť tlačidlo `Add to cart`."
+  ],
+  "answer": 3,
+  "explanation": "Stabilný identifikátor produktu slúži na to, aby sa najprv našiel správny kontajner, a tlačidlo sa potom hľadá v tomto kontexte. Je to odolnejšie voči zmenám poradia v zozname aj okolitej štruktúry DOM."
+ },
+ {
+  "id": 149,
+  "level": "senior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "performance",
+  "question": "V sade testov má každá akcia 30-sekundový timeout, pretože pomalé volania backendu predtým spôsobovali flaky testy. Zlyhávajúci test však teraz môže čakať niekoľko minút. Aká by bola lepšia stratégia?",
+  "options": [
+   "Zvýšiť všetky timeouty na 120 sekúnd.",
+   "Vypnúť timeouty.",
+   "Pre pomalé operácie použiť cielené timeouty a vhodné čakania založené na stave a bežným operáciám dať kratšie timeouty.",
+   "Automaticky znovu spúšťať každý test."
+  ],
+  "answer": 2,
+  "explanation": "Príliš vysoký globálny timeout môže zakryť skutočné problémy a oneskoriť hlásenie zlyhaní. Timeouty by mali zodpovedať očakávanému správaniu jednotlivých operácií a asynchrónne procesy treba synchronizovať podľa skutočných stavov aplikácie."
+ },
+ {
+  "id": 150,
+  "level": "senior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "architecture",
+  "question": "V testovacom frameworku, ktorý používa viacero tímov, implementuje každá sada vlastné mechanizmy pre screenshoty, trace, logovanie a retry. Zavedenie nového globálneho pravidla si preto vyžaduje zmeny na mnohých rôznych miestach kódu. Ktoré architektonické riešenie tento problém najlepšie zmierni?",
+  "options": [
+   "Dať každej sade ešte viac vlastnej konfigurácie.",
+   "Usporiadať prierezovú funkcionalitu do centralizovaných služieb a lifecycle hookov s jasne definovanými bodmi rozšírenia.",
+   "Dať každej sade vlastný framework.",
+   "Screenshoty a trace všade riešiť ručne."
+  ],
+  "answer": 1,
+  "explanation": "Retry, logovanie a zber artefaktov sú typické prierezové záležitosti (cross-cutting concerns), preto by ich mala riešiť zdieľaná infraštruktúra. Body rozšírenia umožňujú potrebné odchýlky bez toho, aby každý tím musel udržiavať samostatnú implementáciu."
+ },
+ {
+  "id": 151,
+  "level": "senior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "production",
+  "question": "Vo veľkej sade API testov používajú testy tú istú dátovú sadu podobnú produkcii. Testy si niekedy navzájom menia dáta, takže zlyhania nie sú vždy reprodukovateľné. Aká by bola najvhodnejšia stratégia?",
+  "options": [
+   "Po každom teste vygenerovať náhodné dáta.",
+   "Spúšťať testy výlučne v náhodnom poradí.",
+   "Použiť izolované testovacie dáta s jasným vlastníctvom a deterministickú stratégiu cleanupu/resetu.",
+   "Spúšťať testy iba s jedným workerom."
+  ],
+  "answer": 2,
+  "explanation": "Zdieľaný meniteľný stav medzi testami môže ľahko spôsobiť závislosti medzi testami a nereprodukovateľné zlyhania, či už testy bežia paralelne, alebo sekvenčne. Izolované testovacie dáta a deterministická správa stavu toto riziko znižujú a zároveň stále umožňujú paralelný beh."
+ },
+ {
+  "id": 152,
+  "level": "senior",
+  "area": "BDD & Cucumber",
+  "topic": "BDD & Cucumber",
+  "type": "scenario",
+  "question": "Vo veľkej Cucumber sade opakujú stovky scenárov tie isté dlhé technické kroky Given. Feature súbory sú čoraz ťažšie čitateľné a zmena infraštruktúry si vyžaduje úpravy mnohých step definitions. Aký by bol rozumný prístup?",
+  "options": [
+   "Pridať do každého scenára ďalšie technické kroky.",
+   "Presunúť spoločné technické detaily za vhodné abstrakcie a Gherkin ponechať zameraný na biznisové správanie.",
+   "Úplne odstrániť kroky Given.",
+   "Pre každý feature vytvoriť samostatný testovací framework."
+  ],
+  "answer": 1,
+  "explanation": "Na úrovni BDD feature a scenára je lepšie komunikovať biznisové správanie systému než každý detail infraštruktúry. Presun technického setupu do vhodnej vrstvy znižuje duplicitu a obmedzuje dopad zmien infraštruktúry."
+ },
+ {
+  "id": 153,
+  "level": "senior",
+  "area": "Test data management",
+  "topic": "Test data management",
+  "type": "edgecase",
+  "question": "Test pracuje s menami viacerých krajín a medzi očakávanou a vypočítanou sumou sa občas objaví rozdiel 0,01. Test používa porovnanie čísel s pohyblivou desatinnou čiarkou. V čom môže byť problém?",
+  "options": [
+   "Meny sa nedajú testovať automaticky.",
+   "API nedokážu pracovať s desatinnými číslami.",
+   "Testovacie dáta treba pred každým behom randomizovať.",
+   "Reprezentácia s pohyblivou desatinnou čiarkou môže vnášať chyby zaokrúhľovania, preto finančné hodnoty vyžadujú vhodnú decimálnu/fixnú reprezentáciu a explicitné pravidlá zaokrúhľovania."
+  ],
+  "answer": 3,
+  "explanation": "Binárna reprezentácia s pohyblivou desatinnou čiarkou nedokáže presne vyjadriť každú desatinnú hodnotu. Pri finančných testoch preto treba číselnú reprezentáciu a pravidlá zaokrúhľovania riešiť explicitne, a nie sa naslepo spoliehať na presnú rovnosť čísel s pohyblivou desatinnou čiarkou."
+ },
+ {
+  "id": 154,
+  "level": "senior",
+  "area": "Contract testing",
+  "topic": "Contract testing",
+  "type": "production",
+  "question": "V systéme mikroslužieb používajú API poskytovateľa desiatky konzumentov. Tím poskytovateľa často zavádza zmeny a úplná end-to-end sada je príliš pomalá na spúšťanie pri každom commite. Aká je v tejto situácii dôležitá výhoda contract testingu?",
+  "options": [
+   "Kompatibilitu kontraktu medzi konzumentom a poskytovateľom možno overiť rýchlejšie bez nutnosti spúšťať každý tok konzumenta v úplnom E2E prostredí.",
+   "Contract test automaticky pokryje každý biznisový proces.",
+   "Contract test nahrádza všetky unit testy.",
+   "Contract test zaručuje, že implementácia poskytovateľa je bez chýb."
+  ],
+  "answer": 0,
+  "explanation": "Contract testing sa sústreďuje špecificky na integračný kontrakt. Môže dať rýchlu spätnú väzbu o tom, či zmena poskytovateľa zostáva kompatibilná so známymi očakávaniami konzumentov, pričom nenahrádza iné úrovne testovania."
+ },
+ {
+  "id": 155,
+  "level": "senior",
+  "area": "Visual & accessibility testing",
+  "topic": "Visual & accessibility testing",
+  "type": "performance",
+  "question": "Sada vizuálnej regresie veľkej webovej aplikácie porovnáva niekoľko tisíc screenshotov. Mnohé z nich však obsahujú dynamické oblasti, ako sú časové značky, reklamy a náhodné odporúčania. Aká by bola vhodná optimalizácia?",
+  "options": [
+   "Nastaviť prah rozdielu v pixeloch pri každom screenshote na nulu.",
+   "Vypnúť všetky vizuálne testy.",
+   "Dynamický obsah v relevantných oblastiach validácie kontrolovať alebo vylúčiť a sústrediť sa na stabilné vizuálne oblasti.",
+   "Spustiť každú stránku desaťkrát a screenshoty spriemerovať."
+  ],
+  "answer": 2,
+  "explanation": "Nedeterministický vizuálny obsah vytvára šum a namiesto skutočných regresií môže hlásiť irelevantné rozdiely. Kontrola dynamických elementov a zámerné vymedzenie validovaných oblastí zlepšuje pomer signálu k šumu."
+ },
+ {
+  "id": 156,
+  "level": "senior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "architecture",
+  "question": "V testovacom frameworku každý test priamo volá API Selenia, Playwrightu a REST klienta. Keď sa zavedie nová prierezová požiadavka, napríklad centralizovaný tracing, treba upraviť stovky testov. Aký architektonický prístup by mohol tento problém zmierniť?",
+  "options": [
+   "Pridať do každého testu samostatný kód pre tracing.",
+   "Spúšťať testy výlučne na úrovni UI.",
+   "Pre každú aserciu vytvoriť samostatnú inštanciu každej závislosti.",
+   "Zaviesť stabilné abstrakcie frameworku a centralizované adaptéry, ktoré oddelia detaily špecifické pre technológiu od logiky testov."
+  ],
+  "answer": 3,
+  "explanation": "Keď testy priamo závisia od detailov každej technologickej závislosti, zmeny infraštruktúry vytvárajú veľkú plochu úprav. Vhodné abstrakcie a adaptéry centralizujú takúto prierezovú technickú logiku."
+ },
+ {
+  "id": 157,
+  "level": "senior",
+  "area": "Test strategy & pyramid",
+  "topic": "Test strategy & pyramid",
+  "type": "scenario",
+  "question": "V systéme sa to isté validačné pravidlo testuje v plnom detaile na úrovni unit, API aj UI. Náklady na údržbu stále rastú, pričom validačné pravidlo sa mení zriedka. Aká by mohla byť lepšia stratégia?",
+  "options": [
+   "Ponechať úplné kombinatorické pokrytie na každej úrovni testov.",
+   "Podrobné kombinatorické pokrytie sústrediť na najvhodnejšiu, rýchlejšiu úroveň testov a na vyšších úrovniach ponechať niekoľko kritických integračných prípadov.",
+   "Odstrániť unit testy, pretože API testy sú na vyššej úrovni.",
+   "Validáciu testovať iba manuálne."
+  ],
+  "answer": 1,
+  "explanation": "Úplné opakované testovanie toho istého deterministického pravidla na každej úrovni môže vytvoriť výraznú redundanciu. Podrobné pokrytie by sa spravidla malo umiestniť tam, kde sa dá overiť najlacnejšie a najrýchlejšie, zatiaľ čo vyššie úrovne by mali klásť dôraz na integračné riziká."
+ },
+ {
+  "id": 158,
+  "level": "senior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "debug",
+  "question": "V Java unit teste sa nachádza nasledujúci kód:\nTest niekedy zlyhá kvôli hodnote ako `89.999999999`. Aká by bola vhodná oprava?",
+  "code": "@Test\nvoid shouldCalculateDiscount() {\n    PriceCalculator calculator = new PriceCalculator();\n    assertEquals(90.0, calculator.calculate(100.0, 0.10));\n}",
+  "options": [
+   "Spúšťať test vždy dvakrát.",
+   "Previesť výsledok `PriceCalculator` na reťazec.",
+   "Ignorovať hodnotu s pohyblivou desatinnou čiarkou.",
+   "Použiť toleranciu vhodnú pre danú doménu alebo presnú decimálnu/fixnú reprezentáciu."
+  ],
+  "answer": 3,
+  "explanation": "Výpočty s pohyblivou desatinnou čiarkou môžu kvôli binárnej reprezentácii dávať malé číselné rozdiely. Stratégia testovania závisí od toho, či biznisová doména povoľuje toleranciu, alebo vyžaduje presnú finančnú reprezentáciu."
+ },
+ {
+  "id": 159,
+  "level": "senior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "trap",
+  "question": "V unit teste vracia namockované repository pri každom volaní metódy vopred definovanú hodnotu. Test prejde, no neskôr sa zistí, že produkčný kód volá nesprávnu metódu repository. Prečo to mohlo byť ťažké odhaliť?",
+  "options": [
+   "Mock vždy používa skutočnú databázu.",
+   "Mock automaticky opraví nesprávne volanie metódy.",
+   "Príliš benevolentný mock môže pripustiť správanie, ktoré presne nezodpovedá kontraktu produkčnej závislosti.",
+   "Repository sa v unit teste nedá namockovať."
+  ],
+  "answer": 2,
+  "explanation": "Príliš benevolentný mock môže vytvoriť falošný pocit istoty. Test má väčšiu hodnotu, keď primerane overuje relevantné interakcie so závislosťami a ich kontrakt bez toho, aby sa zbytočne viazal na každý detail implementácie."
+ },
+ {
+  "id": 160,
+  "level": "senior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "production",
+  "question": "V infraštruktúre Selenium Grid po výpadku siete občas zostanú sessions prehliadača živé. Po niekoľkých stovkách takých sessions sa vyčerpajú dostupné zdroje. Aký je najdôležitejší obranný prístup?",
+  "options": [
+   "Zaručiť upratovanie životného cyklu a správu sessions na konci každého testu a zabezpečiť timeouty a cleanup na úrovni infraštruktúry.",
+   "V každom teste nastaviť nekonečné timeouty.",
+   "Zlyhané testy automaticky označiť ako úspešné.",
+   "Spúšťať Grid iba počas pracovného času."
+  ],
+  "answer": 0,
+  "explanation": "Správa životného cyklu sessions je v distribuovanej infraštruktúre prehliadačov kritická. Vhodný cleanup, timeouty a mechanizmy upratovania na úrovni infraštruktúry môžu zabrániť tomu, aby po zlyhaniach siete alebo testov zostávali dlho žijúce zdroje."
+ },
+ {
+  "id": 161,
+  "level": "senior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "output",
+  "question": "Čo robí nasledujúci Playwright kód?",
+  "code": "const rows = page.getByRole('row');\nawait expect(rows).toHaveCount(5);",
+  "options": [
+   "Zviditeľní všetky elementy `row`.",
+   "Automaticky vyberie piaty riadok.",
+   "Overí, že počet elementov `row`, ktoré zodpovedajú lokátoru, je 5.",
+   "Päťkrát znovu načíta stránku."
+  ],
+  "answer": 2,
+  "explanation": "Asercia `toHaveCount(5)` overuje počet elementov, ktoré lokátor reprezentuje. Vďaka zabudovanému čakaniu asercie môže počkať na očakávaný stav, keď sa elementy objavujú dynamicky."
+ },
+ {
+  "id": 162,
+  "level": "senior",
+  "area": "Locators & selectors",
+  "topic": "Locators & selectors",
+  "type": "algorithm",
+  "question": "Stránka obsahuje viacero tlačidiel s rovnakým názvom, no každé je v samostatnom komponente dialógu. Test musí vybrať tlačidlo `Save` v konkrétnom dialógu. Aký je najrobustnejší prístup?",
+  "options": [
+   "Vybrať prvé tlačidlo `Save` v celom dokumente.",
+   "Identifikovať dialóg stabilným lokátorom a potom v jeho kontexte nájsť tlačidlo `Save`.",
+   "Použiť absolútnu XPath tlačidla.",
+   "Vybrať tlačidlo podľa jeho pozície v DOM."
+  ],
+  "answer": 1,
+  "explanation": "Zúženie rozsahu lokátora na správny komponent znižuje riziko výberu iného elementu s rovnakým názvom. Stabilný identifikátor komponentu v kombinácii s ohraničeným vyhľadávaním je spravidla odolnejší voči zmenám štruktúry DOM."
+ },
+ {
+  "id": 163,
+  "level": "senior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "production",
+  "question": "V SPA po kliknutí na tlačidlo zmizne loading spinner a potom sa tabuľka naplní novými dátami. Test čaká iba na zmiznutie spinnera, takže niekedy overuje starý obsah tabuľky. Aké je vhodné riešenie?",
+  "options": [
+   "Pridať do testu pevný 30-sekundový sleep.",
+   "Pred každou aserciou reštartovať prehliadač.",
+   "Nastaviť neobmedzený timeout.",
+   "Synchronizovať test so skutočným biznisovým stavom, napríklad so zobrazením nového obsahu tabuľky alebo jednoznačným indikátorom stavu."
+  ],
+  "answer": 3,
+  "explanation": "Zmiznutie spinnera nemusí znamenať, že požadované dáta sú už vykreslené. Čakanie založené na stave sa synchronizuje priamo s podmienkou, ktorú test naozaj chce overiť."
+ },
+ {
+  "id": 164,
+  "level": "senior",
+  "area": "Page Object Model",
+  "topic": "Page Object Model",
+  "type": "scenario",
+  "question": "Vo veľkom testovacom frameworku majú triedy Page Objectov tisíce riadkov a pri tej istej stránke sa nahromadili metódy pre viacero nezávislých funkčných oblastí. Aký prístup k refaktoringu by mohol byť vhodný?",
+  "options": [
+   "Spojiť všetky metódy do jednej metódy `performEverything()`.",
+   "Pre každý test vytvoriť samostatnú kópiu Page Objectu.",
+   "Rozdeliť komponenty stránky a zodpovednosti do menších, súdržných abstrakcií a tam, kde je to vhodné, použiť objekty na úrovni komponentov alebo tokov.",
+   "Skopírovať každý lokátor priamo do testov."
+  ],
+  "answer": 2,
+  "explanation": "Príliš veľký Page Object často naznačuje, že v jednej triede je viacero zodpovedností. Menšie, súdržné komponenty a vhodné abstrakcie tokov môžu zlepšiť opakovanú použiteľnosť a udržiavateľnosť."
+ },
+ {
+  "id": 165,
+  "level": "senior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "edgecase",
+  "question": "REST API test pošle požiadavku `POST /orders` a hneď potom pošle požiadavku `GET /orders/{id}` s ID objednávky vráteným v odpovedi. GET občas vráti 404, hoci POST bol úspešný. Čo to môže vysvetľovať?",
+  "options": [
+   "Odpoveď na POST nikdy nemôže obsahovať ID.",
+   "Medzi oboma endpointmi nemusí byť žiadny vzťah.",
+   "GET požiadavka je vždy syntakticky neplatná.",
+   "Systém môže používať eventual consistency, takže novo vytvorený zdroj ešte nemusí byť viditeľný cez každú cestu čítania."
+  ],
+  "answer": 3,
+  "explanation": "V distribuovaných systémoch môže medzi úspešným zápisom a následným čítaním nastať dočasné oneskorenie konzistencie. Test by to mal riešiť podľa kontraktu systému, napríklad vhodným opakovaním založeným na stave alebo explicitnou zárukou read-after-write, ak ju očakávané správanie vyžaduje."
+ },
+ {
+  "id": 166,
+  "level": "senior",
+  "area": "CI integration",
+  "topic": "CI integration",
+  "type": "scenario",
+  "question": "CI pipeline pozostáva z viacerých fáz testov: unit, API, integračné a E2E. Pipeline spúšťa drahé E2E testy aj vtedy, keď už veľká časť unit testov zlyhala. Aká by mohla byť lepšia stratégia pipeline?",
+  "options": [
+   "Drahé neskoršie fázy podmieniť úspechom skorších povinných quality gates a zachovať pritom potrebné diagnostické artefakty.",
+   "Vždy spúšťať všetky testy paralelne.",
+   "Odstrániť unit testy.",
+   "Po každom commite spustiť E2E testy dvakrát."
+  ],
+  "answer": 0,
+  "explanation": "Ak zlyhanie na skoršej povinnej úrovni testov už znamená, že build nemožno považovať za platný, automatické spúšťanie drahých neskorších testov môže plytvať zdrojmi. Pipeline by však stále mala zachovať informácie potrebné na diagnostiku."
+ },
+ {
+  "id": 167,
+  "level": "senior",
+  "area": "Parallel execution",
+  "topic": "Parallel execution",
+  "type": "performance",
+  "question": "Sada s 1 000 testami trvá s 10 workermi 20 minút. S 20 workermi trvá 12 minút a so 40 workermi 11,5 minúty. Na CI stroji je využitie CPU 95 % a connection pool databázy je neustále na maxime. Aký je najdôležitejší záver?",
+  "options": [
+   "Počet workerov treba zvyšovať bez obmedzenia.",
+   "Škálovanie teraz obmedzuje nielen testovací framework, ale aj úzke hrdlá infraštruktúry.",
+   "Testy určite obsahujú primálo asercií.",
+   "Paralelný beh treba úplne vypnúť."
+  ],
+  "answer": 1,
+  "explanation": "Zvýšenie počtu workerov z 20 na 40 prinieslo iba minimálne zlepšenie, zatiaľ čo zdroje CPU a databázy boli nasýtené. To zvyčajne naznačuje, že namiesto ďalšieho zvyšovania počtu workerov treba preskúmať úzke hrdlá infraštruktúry."
+ },
+ {
+  "id": 168,
+  "level": "senior",
+  "area": "Reporting",
+  "topic": "Reporting",
+  "type": "production",
+  "question": "CI dashboard ukazuje, že test zlyhal 7-krát z posledných 30 behov, no po každom retry prejde. Tím ho jednoducho označí ako „flaky“. Ktoré ďalšie informácie by boli obzvlášť užitočné?",
+  "options": [
+   "Iba názov testovacej triedy.",
+   "Kompletná história commitov v repozitári.",
+   "Trendy typov zlyhaní, korelácie s prostredím a výsledky prvých behov testu.",
+   "Počet riadkov v súbore s testom."
+  ],
+  "answer": 2,
+  "explanation": "Samotná nestabilita povie o základnej príčine len málo. Typy zlyhaní, prostredia, verzie prehliadačov, časové trendy a porovnanie výsledkov prvého behu a retry môžu pomôcť odlíšiť infraštruktúrne zlyhania, problémy s načasovaním a skutočné chyby aplikácie."
+ },
+ {
+  "id": 169,
+  "level": "senior",
+  "area": "Contract testing",
+  "topic": "Contract testing",
+  "type": "trap",
+  "question": "Consumer-driven contract test prejde, pretože poskytovateľ presne spĺňa polia a štruktúru odpovede definované konzumentom. Tím poskytovateľa z toho usúdi, že celkové biznisové správanie poskytovateľa je správne. Prečo je tento záver nesprávny?",
+  "options": [
+   "Contract testy môžu bežať iba v UI prostredí.",
+   "Contract test overuje konkrétny integračný kontrakt; nedokazuje, že celková biznisová logika poskytovateľa je správna.",
+   "Poskytovateľa nikdy nemožno testovať bez konzumenta.",
+   "Contract test automaticky vygeneruje každý hraničný prípad."
+  ],
+  "answer": 1,
+  "explanation": "Účelom contract testingu je overiť kompatibilitu kontraktu medzi konzumentom a poskytovateľom. Stále môžu existovať biznisové pravidlá, problémy s databázou alebo správanie iných endpointov, ktoré treba overiť na iných úrovniach testov."
+ },
+ {
+  "id": 170,
+  "level": "senior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "production",
+  "question": "Na enterprise testovacej platforme pozostávajúcej z viacerých repozitárov používa každý tím inú verziu zdieľanej knižnice frameworku. Keď vyjde kritická bezpečnostná oprava, trvá niekoľko mesiacov, kým sa aktualizuje každá sada. Aký by mohol byť vhodný prístup?",
+  "options": [
+   "Nechať každý tím prepísať vlastný framework.",
+   "Zdieľanú knižnicu vôbec neverziovať.",
+   "Aktualizácie frameworku robiť ručne a bez dokumentácie.",
+   "Zaviesť verziovanú, kompatibilnú stratégiu vydávania a automatizovaný proces aktualizácie závislostí s vhodnými pravidlami migrácie."
+  ],
+  "answer": 3,
+  "explanation": "Verziovanie a kontrolované aktualizácie zdieľanej testovacej infraštruktúry sú potrebné na to, aby boli zmeny dohľadateľné a zvládnuteľné. Automatizovaný proces aktualizácie závislostí a politika kompatibility môžu skrátiť oneskorenie pri zavádzaní bezpečnostných opráv."
+ },
+ {
+  "id": 171,
+  "level": "senior",
+  "area": "Test strategy & pyramid",
+  "topic": "Test strategy & pyramid",
+  "type": "scenario",
+  "question": "V release pipeline kritickej finančnej aplikácie spustí každá zmena úplnú šesťhodinovú E2E regresnú sadu. Väčšina testov overuje nezávislé biznisové pravidlá, pričom rýchlosť vydávania sa stala biznisovým problémom. Ktorá stratégia by mohla byť vhodná?",
+  "options": [
+   "Ignorovať čas behu úplnej E2E sady.",
+   "Prerobiť všetky E2E testy na manuálne testy.",
+   "Reštrukturalizovať portfólio testov podľa rizika: deterministické pravidlá pokryť rýchlymi testami a ponechať kritické end-to-end toky.",
+   "Spúšťať úplnú sadu raz týždenne a každý build vydať bez testovania."
+  ],
+  "answer": 2,
+  "explanation": "V kritických systémoch je obzvlášť dôležité vyvážiť náklady na testovanie a riziko. Kombinácia podrobných rýchlejších testov a cielených E2E kontrol môže skrátiť čas spätnej väzby bez toho, aby sa rezignovalo na overenie kritických používateľských tokov."
+ },
+ {
+  "id": 172,
+  "level": "senior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "behavior",
+  "question": "Unit test pomocou reflexie priamo volá privátnu pomocnú metódu triedy a jej návratovú hodnotu overuje aserciou. Aký je hlavný problém tohto prístupu?",
+  "options": [
+   "Test je príliš úzko naviazaný na detaily implementácie, takže sa pri refaktoringu môže zbytočne rozbiť.",
+   "Reflexia je vždy pomalšia ako HTTP požiadavka.",
+   "Privátne metódy sa v produkcii nikdy nevykonajú.",
+   "Unit testy nemôžu používať asercie."
+  ],
+  "answer": 0,
+  "explanation": "Unit test by mal predovšetkým overovať pozorovateľné správanie, nie konkrétnu vnútornú štruktúru implementácie. Premenovanie, zlúčenie alebo odstránenie privátnej pomocnej metódy by si samo osebe nemalo vyžadovať údržbu testov, ak verejné správanie zostáva nezmenené."
+ },
+ {
+  "id": 173,
+  "level": "senior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "scenario",
+  "question": "Zložitý unit test obsahuje 15 rôznych mock závislostí a príprava testu trvá dlhšie ako samotná produkčná metóda. Test sa rozbije pri každej malej zmene implementácie. Čo to môže naznačovať?",
+  "options": [
+   "Produkčný kód je určite nesprávny.",
+   "Test môže byť naviazaný na priveľa detailov implementácie alebo testovaný komponent môže mať priveľa zodpovedností.",
+   "Treba pridať ďalšie mocky.",
+   "Počet mockov by sa mal vždy zvýšiť presne na 15."
+  ],
+  "answer": 1,
+  "explanation": "Veľký počet mockov a zložitý setup často naznačujú, že test zachytáva priveľa interakcií alebo detailov implementácie. Oplatí sa preskúmať zodpovednosti komponentu, počet závislostí a to, či test naozaj overuje podstatné správanie."
+ },
+ {
+  "id": 174,
+  "level": "senior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "edgecase",
+  "question": "Selenium test v aplikácii s viacerými oknami otvorí nové okno prehliadača a hneď sa pokúsi pracovať s novou stránkou. Test niekedy pokračuje v starom okne. Čo je potrebné?",
+  "options": [
+   "Po každom kliknutí reštartovať celý prehliadač.",
+   "Nastaviť dĺžku `Thread.sleep()` na nekonečno.",
+   "Explicitne pracovať s window handles a prepnúť sa do správneho okna, keď je nový handle dostupný.",
+   "Ignorovať window handles."
+  ],
+  "answer": 2,
+  "explanation": "Selenium identifikuje kontexty prehliadača, ako sú okná a karty, pomocou window handles. Keď sa nové okno objaví, test musí nájsť príslušný handle a explicitne ho aktivovať, ideálne s vhodnou stratégiou čakania."
+ },
+ {
+  "id": 175,
+  "level": "senior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "performance",
+  "question": "Playwright sada pre každý test znovu sťahuje a pripravuje tú istú veľkú testovaciu dátovú sadu. Testy sú logicky nezávislé, no príprava dát tvorí 50 % celkového času behu. Aká by mohla byť vhodná optimalizácia?",
+  "options": [
+   "V každom teste vytvoriť ešte väčšiu dátovú sadu.",
+   "Spúšťať testy v náhodnom poradí.",
+   "Spojiť všetky testy do jedného veľkého testu.",
+   "Presunúť prípravu dát do vhodného fixture alebo rozsahu workera pri zachovaní izolácie testov a vytvárať iba meniteľný stav, ktorý potrebuje konkrétny test."
+  ],
+  "answer": 3,
+  "explanation": "Ak sa zdieľaná časť veľkej dátovej sady dá bezpečne opätovne použiť, jej prestavba pred každým testom predstavuje výrazný zbytočný náklad. Vhodný rozsah fixtures a oddelenie meniteľných dát špecifických pre test môže skrátiť čas behu bez toho, aby si testy navzájom menili stav."
+ },
+ {
+  "id": 176,
+  "level": "senior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "scenario",
+  "question": "API podporuje stránkovanie endpointu `GET /users` pomocou parametrov `page` a `size`. Testy overujú iba stránku zo stredu, pričom v produkcii sa už predtým objavili problémy so spracovaním prvej a poslednej stránky. Ktorá stratégia testovania by bola vhodnejšia?",
+  "options": [
+   "Používať iba najväčšiu možnú hodnotu `size`.",
+   "Testovať aj hraničné podmienky, napríklad prvú stránku, prázdnu poslednú stránku a neplatné parametre stránkovania.",
+   "Pri každom behu zvoliť náhodné číslo stránky.",
+   "Testovať stránkovanie iba UI testami."
+  ],
+  "answer": 1,
+  "explanation": "Stránkovanie často obsahuje chyby pri hraničných podmienkach. Cielené testovanie prvej stránky, poslednej stránky alebo stránok s prázdnym výsledkom a neplatných parametrov poskytuje lepšie pokrytie než overenie jednej stránky zo stredu."
+ },
+ {
+  "id": 177,
+  "level": "senior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "behavior",
+  "question": "Java unit test overuje výsledok metódy služby a zároveň vyžaduje, aby sa interný helper zavolal presne trikrát. Počet volaní helpera však nie je súčasťou verejného kontraktu. V čom môže byť problém?",
+  "options": [
+   "Test je príliš úzko naviazaný na interný detail implementácie.",
+   "Volania metód sa v unit testoch nikdy nesmú overovať.",
+   "Helper sa musí vždy vykonať presne trikrát.",
+   "Službu nemožno otestovať bez mockov."
+  ],
+  "answer": 0,
+  "explanation": "Ak tri volania nie sú súčasťou pozorovateľného správania ani kontraktu, takéto overenie zbytočne viaže test na implementáciu. Refaktoring, ktorý zachová výsledok, by potom mohol test rozbiť bez zmysluplného dôvodu."
+ },
+ {
+  "id": 178,
+  "level": "senior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "production",
+  "question": "Tím sa snaží zložitým mockom modelovať kompletné správanie externej fakturačnej služby. Mock má tisíce riadkov a postupne sa výrazne odchýlil od správania skutočnej služby. Aký by mohol byť lepší prístup?",
+  "options": [
+   "Rozšíriť mock o ďalších niekoľko tisíc riadkov.",
+   "Volať externú službu priamo z každého unit testu.",
+   "Používať jednoduchšie test doubles na úrovni unit testov a proti skutočnej službe spúšťať samostatné integračné alebo contract testy.",
+   "Ignorovať zlyhania externej služby."
+  ],
+  "answer": 2,
+  "explanation": "Príliš zložitý mock sa ľahko stane samostatnou implementáciou, ktorej správanie sa odchyľuje od skutočnej služby a ktorej údržba je drahá. Cielené test doubles na úrovni unit testov v kombinácii so samostatnými integračnými alebo contract testami proti skutočnej externej službe poskytujú jasnejšie hranice zodpovedností."
+ },
+ {
+  "id": 179,
+  "level": "senior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "edgecase",
+  "question": "Selenium test sa pokúša pristúpiť k inputu vnútri iframe, no `driver.findElement(By.id(\"email\"))` vyhodí `NoSuchElementException`. Input sa v dokumente iframe určite nachádza. Čo je potrebné?",
+  "options": [
+   "Iframe treba skryť pomocou CSS.",
+   "Prehliadač treba reštartovať.",
+   "Input treba vždy hľadať pomocou JavaScriptu.",
+   "Test sa musí najprv prepnúť do kontextu príslušného iframe a až potom v ňom hľadať input."
+  ],
+  "answer": 3,
+  "explanation": "Iframe vytvára vlastný dokument a kontext prehliadania. Element v ňom nemusí byť z aktuálneho kontextu Selenia priamo dostupný, preto sa test musí prepnúť do príslušného framu a vyhľadávanie vykonať tam."
+ },
+ {
+  "id": 180,
+  "level": "senior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "production",
+  "question": "V Playwright teste analytický skript tretej strany pravidelne spomaľuje stránku a občas spôsobí výpadok externej siete. Analytická funkcionalita nie je súčasťou cieľa testu. Aké by mohlo byť vhodné riešenie?",
+  "options": [
+   "Pre každý test nastaviť päťminútový timeout.",
+   "Relevantné externé požiadavky kontrolovať alebo namockovať a analytickú integráciu overiť samostatne cielenými testami.",
+   "Zlyhania analytiky vždy ignorovať.",
+   "Zablokovať všetky sieťové požiadavky."
+  ],
+  "answer": 1,
+  "explanation": "Externé závislosti mimo rozsahu testu môžu predĺžiť čas behu a zvýšiť riziko nestability. Kontrola relevantného sieťového správania môže urobiť test deterministickejším, zatiaľ čo samotnú integráciu treba overiť samostatne."
+ },
+ {
+  "id": 181,
+  "level": "senior",
+  "area": "Locators & selectors",
+  "topic": "Locators & selectors",
+  "type": "trap",
+  "question": "Test používa pre element dlhú XPath, ktorá obsahuje celú aktuálnu hierarchiu DOM. Test sa často rozbije, keď frontendoví vývojári preusporiadajú layout, hoci funkcionalita elementu zostáva rovnaká. Prečo je tento lokátor problematický?",
+  "options": [
+   "XPath je zakázaná v každom prehliadači.",
+   "XPath sa dá použiť iba v backendových testoch.",
+   "Lokátor sa spolieha na priveľa štruktúrnych detailov, ktoré nie sú súčasťou funkčnej identity elementu.",
+   "Dlhá XPath je vždy pomalšia ako akýkoľvek iný lokátor."
+  ],
+  "answer": 2,
+  "explanation": "Absolútna alebo príliš štruktúrna XPath je úzko naviazaná na aktuálnu štruktúru DOM. Ak je na účely testovania k dispozícii stabilný atribút alebo sémantický identifikátor, spravidla poskytuje trvácnejší kontrakt lokátora."
+ },
+ {
+  "id": 182,
+  "level": "senior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "debug",
+  "question": "V teste sa nachádza nasledujúci kód:\nTest napriek tomu občas zlyhá, pretože element `status` sa stane klikateľným až po piatich sekundách. Aká je najlepšia oprava?",
+  "code": "Thread.sleep(5000);\ndriver.findElement(By.id(\"status\")).click();",
+  "options": [
+   "Zvýšiť dĺžku `Thread.sleep` na 60 sekúnd.",
+   "Volať sleep opakovane.",
+   "Po každom čakaní reštartovať prehliadač.",
+   "Použiť explicitné čakanie založené na stave, ktoré čaká, kým bude element klikateľný."
+  ],
+  "answer": 3,
+  "explanation": "Sleep s pevnou dĺžkou nepozná skutočný stav aplikácie. Ak je aplikácia rýchlejšia, test čaká zbytočne; ak je pomalšia, čakanie stále nemusí stačiť. Explicitné čakanie založené na stave rieši oba problémy účinnejšie."
+ },
+ {
+  "id": 183,
+  "level": "senior",
+  "area": "Page Object Model",
+  "topic": "Page Object Model",
+  "type": "scenario",
+  "question": "Metóda Page Objectu vykoná celý tento tok: prihlásenie, vyhľadávanie, pridanie produktu do košíka a checkout. Iný test potrebuje iba vyhľadávanie a pridanie do košíka. Aký návrh by bol vhodnejší?",
+  "options": [
+   "Zduplikovať celý tok v každom teste.",
+   "Rozdeliť Page Object na menšie opakovane použiteľné operácie alebo vhodné abstrakcie tokov.",
+   "Nechať každý test používať celý tok.",
+   "Checkout vždy vykonať ručne."
+  ],
+  "answer": 1,
+  "explanation": "Príliš veľká metóda pre celý tok vynucuje operácie, ktoré nie sú relevantné pre každý test. Menšie, skladateľné operácie a tam, kde je to vhodné, samostatné abstrakcie tokov robia testovací kód flexibilnejším."
+ },
+ {
+  "id": 184,
+  "level": "senior",
+  "area": "API testing",
+  "topic": "API testing",
+  "type": "edgecase",
+  "question": "API podporuje čiastočné aktualizácie cez endpoint `PATCH /users/{id}`. Test overuje iba to, že zmenené pole dostane novú hodnotu. Neskoršia regresia spôsobí, že sa zmení aj nesúvisiace, neupravované pole. Čo v teste chýba?",
+  "options": [
+   "Overenie verzie HTTP v odpovedi API.",
+   "Použitie druhého HTTP klienta.",
+   "Overenie, že neupravené polia zostanú nezmenené, ak je to súčasťou kontraktu.",
+   "Úplné odstránenie tela požiadavky."
+  ],
+  "answer": 2,
+  "explanation": "Pri čiastočnej aktualizácii kontrakt často určuje, že nedotknuté polia zostanú nezmenené. Overenie toho môže odhaliť regresie, ktoré by validácia iba explicitne zmeneného poľa nezachytila."
+ },
+ {
+  "id": 185,
+  "level": "senior",
+  "area": "BDD & Cucumber",
+  "topic": "BDD & Cucumber",
+  "type": "trap",
+  "question": "Každý scenár v Cucumber feature obsahuje viac ako dvadsať technických krokov Given, ktoré existujú iba na vytvorenie jedného biznisového stavu. Čitateľ feature ťažko chápe, ktoré biznisové správanie sa testuje. V čom môže byť problém?",
+  "options": [
+   "Feature komunikuje priveľa technických detailov implementácie a stráca biznisové zameranie BDD.",
+   "Cucumber nepodporuje kroky Given.",
+   "Scenár môže obsahovať najviac päť krokov Given.",
+   "Technické kroky sú vždy povinné."
+  ],
+  "answer": 0,
+  "explanation": "Jedným z cieľov BDD je, aby scenáre jasne komunikovali očakávané biznisové správanie. Keď feature súbory obsahujú priveľa detailov infraštruktúry a implementácie, môže utrpieť biznisová čitateľnosť aj udržiavateľnosť."
+ },
+ {
+  "id": 186,
+  "level": "senior",
+  "area": "Test data management",
+  "topic": "Test data management",
+  "type": "production",
+  "question": "V sade API testov bežiacej s viacerými workermi používa každý worker tie isté pevné testovacie dáta `customerId=1000`. Testy občas vidia zmeny, ktoré urobili iné testy. Aké by bolo vhodné riešenie?",
+  "options": [
+   "Nechať každý worker používať rovnaké ID, ale spúšťať testy v náhodnom poradí.",
+   "Predĺžiť čas sleep medzi testami.",
+   "Spúšťať testy výlučne sekvenčne.",
+   "Používať izolované, explicitne pridelené testovacie dáta na úrovni workera alebo testu."
+  ],
+  "answer": 3,
+  "explanation": "Zdieľané meniteľné testovacie dáta môžu pri paralelnom behu spôsobiť race conditions a nedeterministické výsledky. Izolované dáta umožňujú workerom pracovať nezávisle."
+ },
+ {
+  "id": 187,
+  "level": "senior",
+  "area": "CI integration",
+  "topic": "CI integration",
+  "type": "performance",
+  "question": "V CI pipeline sa v každom jobe od nuly vykonáva rovnaká inštalácia závislostí. Inštalácia tvorí značnú časť času behu testov a závislosti sa menia zriedka. Aká by mohla byť vhodná optimalizácia?",
+  "options": [
+   "V každom jobe nainštalovať závislosti dvakrát.",
+   "Použiť vhodnú stratégiu cache pre závislosti a cache invalidovať podľa zmien verzie alebo lockfile.",
+   "Úplne odstrániť závislosti.",
+   "Spúšťať testy iba lokálne."
+  ],
+  "answer": 1,
+  "explanation": "Opätovná inštalácia stabilných závislostí v každom jobe môže spotrebovať veľa času a sieťových zdrojov. Správne kľúčovaná cache môže pipeline zrýchliť a pri zmene závislostí automaticky vytvoriť novú cache."
+ },
+ {
+  "id": 188,
+  "level": "senior",
+  "area": "Parallel execution",
+  "topic": "Parallel execution",
+  "type": "scenario",
+  "question": "V sade testov mení 200 testov toho istého globálneho admin používateľa. S jedným workerom bežia spoľahlivo, no s 10 workermi náhodne zlyhávajú. Aký je hlavný problém?",
+  "options": [
+   "Testy majú race condition, pretože zdieľajú meniteľný stav.",
+   "Selenium alebo Playwright nepodporuje paralelný beh.",
+   "CI vždy zlyhá, keď testy bežia paralelne.",
+   "Je potrebných viac asercií."
+  ],
+  "answer": 0,
+  "explanation": "Paralelné testy používajú ten istý meniteľný globálny stav, takže jeden test môže zmeniť stav, ktorý očakáva iný. Izolovaní používatelia alebo správne synchronizované zdroje môžu túto závislosť odstrániť."
+ },
+ {
+  "id": 189,
+  "level": "senior",
+  "area": "Reporting",
+  "topic": "Reporting",
+  "type": "production",
+  "question": "Vo veľkom CI prostredí denne bežia tisíce testov, no tím vidí iba počty úspešných a neúspešných testov. Po regresii je ťažké určiť, ktorý komponent alebo prostredie je zasiahnuté. Ktoré zlepšenie reportingu by mohlo byť najužitočnejšie?",
+  "options": [
+   "Skrátiť názov každého testu na jeden znak.",
+   "Zobrazovať iba úspešné testy.",
+   "Korelovať výsledky testov s relevantnými metadátami, ako je komponent, prostredie, verzia a kategória zlyhania.",
+   "Raz denne report vymazať."
+  ],
+  "answer": 2,
+  "explanation": "Jednoduché počty úspešných a neúspešných testov na diagnostiku veľkých systémov nestačia. Štruktúrované metadáta umožňujú rýchlejšie identifikovať trendy zlyhaní a korelácie s prostredím."
+ },
+ {
+  "id": 190,
+  "level": "senior",
+  "area": "Contract testing",
+  "topic": "Contract testing",
+  "type": "edgecase",
+  "question": "V API kontrakte poskytovateľ garantuje, že voliteľné pole `middleName` môže chýbať. Konzument sa ho však vždy pokúša deserializovať ako povinné pole. Aký problém môže contract testing odhaliť?",
+  "options": [
+   "Využitie CPU databázy poskytovateľa.",
+   "Nesúlad v očakávaniach o voliteľnosti medzi konzumentom a poskytovateľom, ktorý môže viesť k zlyhaniu kompatibility počas behu.",
+   "CSS chyby vo frontende poskytovateľa.",
+   "Fyzický stav sieťového kábla."
+  ],
+  "answer": 1,
+  "explanation": "Nesúlad medzi voliteľnými a povinnými poliami môže byť priamym problémom kompatibility. Contract testing dokáže takéto rozdiely v integračnom kontrakte odhaliť skôr, než sa prejavia pri behu skutočného konzumenta."
+ },
+ {
+  "id": 191,
+  "level": "senior",
+  "area": "Visual & accessibility testing",
+  "topic": "Visual & accessibility testing",
+  "type": "scenario",
+  "question": "Testy vizuálnej regresie webovej aplikácie sa dokonale zhodujú vo všetkých viewportoch, no test prístupnosti ukazuje, že dôležité ovládacie prvky v modálnom dialógu nie sú dostupné klávesnicou. Čo výsledok vizuálnej regresie dokazuje?",
+  "options": [
+   "Že modálne okno je úplne prístupné.",
+   "Že navigácia klávesnicou je správna.",
+   "Že čítačky obrazovky modálne okno interpretujú správne.",
+   "Predovšetkým to, že testovaný vizuálny vzhľad zodpovedá referenčnému stavu; správanie z hľadiska prístupnosti treba overiť samostatne."
+  ],
+  "answer": 3,
+  "explanation": "Vizuálna zhoda nedokazuje správnu navigáciu klávesnicou, správu fokusu ani sémantickú prístupnosť. Na to sú potrebné samostatné testy prístupnosti a tam, kde je to vhodné, manuálne overenie."
+ },
+ {
+  "id": 192,
+  "level": "senior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "production",
+  "question": "V enterprise testovacom frameworku každý test číta nastavenia prostredia, prehliadača a timeoutov priamo z globálneho konfiguračného singletonu. Pri paralelnom behu potrebujú rôzne testy rôzne konfigurácie. Aký by bol vhodný smer návrhu?",
+  "options": [
+   "Pred každým testom upraviť globálnu konfiguráciu.",
+   "Odovzdávať konfiguráciu ako nemeniteľný, ohraničený testovací kontext, ktorý podporuje paralelný beh a nastavenia špecifické pre test.",
+   "Nechať každý test vytvoriť vlastný súbor s premennými prostredia.",
+   "Vypnúť paralelný beh v každej sade."
+  ],
+  "answer": 1,
+  "explanation": "Zdieľaný meniteľný singleton môže pri paralelnom behu spôsobiť race conditions a vzájomné ovplyvňovanie konfigurácie. Nemeniteľná konfigurácia spravovaná vo vhodnom rozsahu poskytuje jasnejší a bezpečnejší kontext behu."
+ },
+ {
+  "id": 193,
+  "level": "senior",
+  "area": "Test strategy & pyramid",
+  "topic": "Test strategy & pyramid",
+  "type": "production",
+  "question": "Produktový tím chce, aby každá nová funkcia mala aspoň jeden E2E test, aj keď je biznisová logika funkcie úplne obsiahnutá v jednej izolovanej službe. Ktorý prístup lepšie zodpovedá stratégii testovania založenej na riziku?",
+  "options": [
+   "Pre každú funkciu vyžadovať viacero E2E testov.",
+   "Úplne zrušiť E2E testy.",
+   "Voliť úrovne testov podľa rizika a architektúry funkcie a tam, kde sa biznisová logika dá testovať izolovane, použiť podrobnejšie pokrytie na nižšej úrovni.",
+   "Robiť iba manuálne regresné testovanie."
+  ],
+  "answer": 2,
+  "explanation": "Nie každá funkcia potrebuje rovnaké vrstvy testovania. Izolovanú, deterministickú logiku často možno testovať efektívnejšie a rýchlejšie na nižšej úrovni, zatiaľ čo E2E testy sú vhodné tam, kde riziko vyplýva zo správania celého systémového toku."
+ },
+ {
+  "id": 194,
+  "level": "senior",
+  "area": "Unit testing",
+  "topic": "Unit testing",
+  "type": "edgecase",
+  "question": "Unit test pracujúci s dátumami priamo používa `LocalDate.now()`. Okolo hraníc mesiacov alebo prechodov časových pásiem test občas dá iný výsledok. Aké je vhodné riešenie?",
+  "options": [
+   "Spúšťať test iba ráno.",
+   "Použiť v teste pevné volanie `Thread.sleep()`.",
+   "Po každom behu spustiť test dvakrát.",
+   "Dať aktuálny čas za abstrakciu, napríklad injektovateľný `Clock`, a v teste poskytnúť kontrolovaný časový okamih."
+  ],
+  "answer": 3,
+  "explanation": "Priame použitie systémových hodín vytvára nedeterministickú podmienku testovania. Injektovanie hodín umožní testu overiť hraničné podmienky s explicitne definovaným dátumom a časom."
+ },
+ {
+  "id": 195,
+  "level": "senior",
+  "area": "Mocks, stubs & fakes",
+  "topic": "Mocks, stubs & fakes",
+  "type": "scenario",
+  "question": "Unit test služby overuje, že namockované repository sa zavolá presne raz, no neoveruje, či bolo zavolané so správnym parametrom. Pri regresii služba odovzdá nesprávne ID používateľa a test aj tak prejde. Čo chýba?",
+  "options": [
+   "Overenie relevantnej časti interakcie, v tomto prípade parametrov volania.",
+   "Skutočná produkčná databáza.",
+   "Druhý mock toho istého repository.",
+   "Odstránenie unit testu repository."
+  ],
+  "answer": 0,
+  "explanation": "Overenie iba počtu volaní nedokazuje, že závislosť bola použitá so správnymi dátami. Ak je parameter súčasťou kontraktu komponentu, treba ho overiť, aby sa takáto regresia odhalila."
+ },
+ {
+  "id": 196,
+  "level": "senior",
+  "area": "Selenium WebDriver",
+  "topic": "Selenium WebDriver",
+  "type": "production",
+  "question": "V Selenium sade testov pretrváva cache prehliadača a local storage medzi testami. V dôsledku toho test zlyhá iba vtedy, keď pred ním bežal iný test. Aký by bol najdôležitejší krok?",
+  "options": [
+   "Spúšťať všetky testy v náhodnom poradí.",
+   "Zvýšiť timeouty medzi testami.",
+   "Dať testom izolované sessions prehliadača a v prípade potreby kontrolovane upratať stav.",
+   "Zakryť zlyhanie pomocou retry."
+  ],
+  "answer": 2,
+  "explanation": "Stav prehliadača pretrvávajúci medzi testami môže vytvárať skryté závislosti. Izolácia sessions a explicitná správa potrebného stavu zabezpečia, že stav zanechaný jedným testom neovplyvní ďalší."
+ },
+ {
+  "id": 197,
+  "level": "senior",
+  "area": "Playwright & Cypress",
+  "topic": "Playwright & Cypress",
+  "type": "debug",
+  "question": "V Playwright teste sa nachádza nasledujúci lokátor:\n```typescript id=\"hl6if8\"\npage.locator('.item').nth(0)\n```\nPo novej optimalizácii backendu sa však zmení poradie v zozname, takže test vyberie nesprávny produkt. Aké by bolo lepšie riešenie?",
+  "options": [
+   "Pred každým behom ručne opraviť poradie v zozname.",
+   "Identifikovať požadovaný element stabilným lokátorom s biznisovým významom, napríklad rolou, názvom alebo stabilným atribútom.",
+   "Nahradiť `nth(0)` za `nth(1)`.",
+   "V každom teste randomizovať odpoveď backendu."
+  ],
+  "answer": 1,
+  "explanation": "Lokátor založený na pozícii v DOM nie je stabilný, keď sa poradie v zozname môže meniť. Výber požadovaného elementu pomocou sémantického alebo stabilného biznisového identifikátora je odolnejší voči zmenám triedenia a implementácie."
+ },
+ {
+  "id": 198,
+  "level": "senior",
+  "area": "Waits & flaky tests",
+  "topic": "Waits & flaky tests",
+  "type": "production",
+  "question": "V sade testov väčšina flaky testov po retry prejde. Tím preto nastavil pre každý test tri automatické opakovania a zdanlivý počet flaky zlyhaní klesol. Aké je hlavné riziko?",
+  "options": [
+   "Retry môže zvýšiť rozlíšenie prehliadača.",
+   "Retry automaticky urobí testy deterministickými.",
+   "Retry odstráni skutočné chyby aplikácie.",
+   "Retry môže zakryť skutočné problémy so stabilitou a viesť k falošne zelenému buildu, keď test prejde až po opakovanom spustení."
+  ],
+  "answer": 3,
+  "explanation": "Retry môže byť užitočný pri diagnostike alebo riešení prechodných infraštruktúrnych zlyhaní, no sám osebe nestabilný test spoľahlivým neurobí. Ak sa test, ktorý pravidelne zlyháva, po retry automaticky považuje za úspešný, problémy so spoľahlivosťou sady môžu zostať skryté."
+ },
+ {
+  "id": 199,
+  "level": "senior",
+  "area": "Reporting",
+  "topic": "Reporting",
+  "type": "algorithm",
+  "question": "Testovací framework generuje reporty z viacerých rôznych formátov výsledkov testov. Jeden adaptér používa pre ten istý sémantický stav `PASSED`, iný `SUCCESS` a tretí `OK`. Aké by bolo dobré architektonické riešenie?",
+  "options": [
+   "Každý report zvlášť spracúva každý možný reťazec.",
+   "Jednotlivé adaptéry preložia svoje stavy do spoločného kanonického interného modelu výsledkov a vrstva reportingu používa tento model.",
+   "Prinútiť všetky adaptéry bez dokumentácie používať jeden reťazec.",
+   "Normalizovať stavy výlučne vo frontende."
+  ],
+  "answer": 1,
+  "explanation": "Spoločný interný model výsledkov oddeľuje vrstvu reportingu od terminológie jednotlivých vstupných formátov a adaptérov. Zjednodušuje to generovanie reportov a nevyžaduje, aby každý konzument zvlášť riešil tie isté sémantické rozdiely."
+ },
+ {
+  "id": 200,
+  "level": "senior",
+  "area": "Framework design",
+  "topic": "Framework design",
+  "type": "production",
+  "question": "Enterprise testovací framework slúži stovkám sád testov. Nové prierezové pravidlo bolo implementované v každej sade samostatne, takže rovnaké správanie sa medzi sadami postupne rozišlo. Aké by bolo najdôležitejšie dlhodobé riešenie?",
+  "options": [
+   "Ďalej dolaďovať vlastnú implementáciu v každej sade.",
+   "Pravidlo iba zdokumentovať.",
+   "Usporiadať zdieľané správanie do jednej verziovanej schopnosti na úrovni frameworku s konzistentnými bodmi rozšírenia a automatizovanou validáciou.",
+   "Skopírovať všetky sady do jedného repozitára."
+  ],
+  "answer": 2,
+  "explanation": "Decentralizované implementácie zdieľaného prierezového správania sa ľahko rozídu. Verziovaná centrálna schopnosť, jasne definované body rozšírenia a automatizovaná validácia na úrovni frameworku umožňujú konzistentnejšie správanie a jednoduchšiu údržbu."
+ }
+]

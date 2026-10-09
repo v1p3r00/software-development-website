@@ -1,0 +1,123 @@
+{
+  "title": "Spring Security a JWT",
+  "intro": "Spring Security dáva tvojmu API v Spring Boote jednotný spôsob, ako autentifikovať požiadavky a vynucovať pravidlá autorizácie. V tejto lekcii uvidíš, ako funguje bezstavové API založené na JWT – od prihlásenia cez overenie tokenu až po autorizáciu na úrovni metód.",
+  "body": "## Čo robí Spring Security\n\nSpring Security je framework na ochranu tvojej aplikácie v Spring Boote. Rieši bežné bezpečnostné úlohy, ako je autentifikácia, autorizácia, práca s heslami a ochrana požiadaviek.\n\nÚstredným pojmom je **security filter chain** (reťazec bezpečnostných filtrov). Filter je komponent, ktorý skúma alebo mení prichádzajúcu HTTP požiadavku skôr, než sa dostane k tvojmu controlleru. Security filter chain je postupnosť takýchto filtrov.\n\nZjednodušene si to predstav ako bezpečnostnú kontrolu pred tvojím API:\n\n~~~text\nHTTP request\n    ↓\nSecurity filters\n    ↓\nIs the request authenticated?\n    ↓\nIs the requested operation allowed?\n    ↓\nController\n~~~\n\nVďaka tomu nemusíš bezpečnostné kontroly ručne opakovať v každej metóde controllera.\n\nKonkrétnejšie autorizačné kontroly môžeš neskôr pridať aj tak, vrátane kontrol priamo na metódach služieb.\n\n## Pridanie Spring Security\n\nDo aplikácie v Spring Boote postavenej na Mavene pridaj starter Spring Security:\n\n~~~xml\n<dependency>\n    <groupId>org.springframework.boot</groupId>\n    <artifactId>spring-boot-starter-security</artifactId>\n</dependency>\n~~~\n\nStarter pre Spring Boot prinesie do tvojej aplikácie hlavné komponenty Spring Security.\n\nAk ho pridáš do existujúcej aplikácie bez akejkoľvek konfigurácie, Spring Boot použije predvolené bezpečnostné správanie. Požiadavky budú chránené a Spring Security vytvorí predvolené prihlasovanie, ktoré sa hodí na začiatok, nie však pre tvoje hotové API správcu úloh.\n\nToto predvolené správanie je užitočné, pretože hneď ukáže, že zabezpečenie je aktívne. Pri REST API však zvyčajne konfiguruješ vlastný mechanizmus autentifikácie a pravidlá pre požiadavky.\n\n## Vytvorenie SecurityFilterChain\n\nBežným východiskom pre naše API je bean typu `SecurityFilterChain`. **Bean** je objekt spravovaný aplikačným kontextom Springu.\n\n~~~diagram\n{\"type\": \"flow\", \"title\": \"Security filter chain\", \"caption\": \"Každá požiadavka prejde filtrami skôr, než sa dostane k tvojmu controlleru.\", \"nodes\": [{\"id\": \"req\", \"label\": \"HTTP požiadavka\", \"kind\": \"client\"}, {\"id\": \"cors\", \"label\": \"CorsFilter\"}, {\"id\": \"jwt\", \"label\": \"JwtAuthFilter\", \"sub\": \"prečíta Bearer token\", \"highlight\": true}, {\"id\": \"az\", \"label\": \"AuthorizationFilter\", \"sub\": \"permitAll · hasRole\"}, {\"id\": \"ctl\", \"label\": \"Controller\", \"kind\": \"server\"}, {\"id\": \"rej\", \"label\": \"401 / 403\", \"dashed\": true}], \"edges\": [{\"from\": \"req\", \"to\": \"cors\"}, {\"from\": \"cors\", \"to\": \"jwt\"}, {\"from\": \"jwt\", \"to\": \"az\", \"label\": \"SecurityContext\"}, {\"from\": \"az\", \"to\": \"ctl\"}, {\"from\": \"az\", \"to\": \"rej\", \"dashed\": true}]}\n~~~\n\nNapríklad:\n\n~~~java\n@Bean\nSecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {\n    http\n        .csrf(csrf -> csrf.disable())\n        .sessionManagement(session -> session\n            .sessionCreationPolicy(SessionCreationPolicy.STATELESS))\n        .authorizeHttpRequests(auth -> auth\n            .requestMatchers(\"/api/auth/**\").permitAll()\n            .anyRequest().authenticated());\n\n    return http.build();\n}\n~~~\n\nDôležitou časťou je konfigurácia autorizácie.\n\n`/api/auth/**` je verejne prístupné. Tu môžeš sprístupniť endpointy ako prihlásenie alebo registrácia.\n\n`anyRequest().authenticated()` znamená, že každá ďalšia požiadavka vyžaduje autentifikovaného používateľa.\n\nAplikácia tak dostane užitočné predvolené správanie: nové chránené endpointy sa omylom nestanú verejnými len preto, že niekto zabudol pridať pravidlo.\n\n## Bezstavová autentifikácia s JWT\n\nTradičná serverová session uchováva stav autentifikácie na serveri. API založené na JWT môže byť naopak **bezstavové** (stateless).\n\nBezstavové znamená, že server neudržiava prihlasovaciu session pre každého klienta. Každá chránená požiadavka nesie token s informáciami potrebnými na identifikáciu autentifikovaného používateľa.\n\nSpring Security sa dá nakonfigurovať zodpovedajúco:\n\n~~~java\n.sessionManagement(session -> session\n    .sessionCreationPolicy(SessionCreationPolicy.STATELESS))\n~~~\n\nServer stále musí token pri každej chránenej požiadavke overiť. Bezstavové neznamená, že „neexistuje žiadny bezpečnostný stav“; znamená, že server neudržiava tradičnú session pre každého prihláseného klienta.\n\n## Prečo tu vypnúť CSRF?\n\n**CSRF** (Cross-Site Request Forgery) je útok, pri ktorom sa škodlivá webová stránka snaží prinútiť prehliadač používateľa poslať na iný web nechcenú autentifikovanú požiadavku.\n\nOchrana pred CSRF je obzvlášť dôležitá vtedy, keď prehliadač prihlasovacie údaje pripája automaticky, ako napríklad pri tradičných session cookies.\n\nBezstavové API, ktoré používa hlavičku `Authorization: Bearer <token>`, má iný model hrozieb, pretože prehliadač túto hlavičku k ľubovoľným požiadavkám z iných webov automaticky nepripája.\n\nPri skutočne bezstavovom JWT API, ktoré používa bearer tokeny, a nie autentifikačné cookies spravované prehliadačom, preto môže byť vypnutie ochrany pred CSRF namieste:\n\n~~~java\n.csrf(csrf -> csrf.disable())\n~~~\n\nToto nastavenie nekopíruj naslepo. Ak požiadavky z prehliadača autentifikuješ pomocou cookies, úvahy o CSRF sa menia. Pri takejto architektúre by si mal ochranu pred CSRF starostlivo nakonfigurovať, a nie predpokladať, že „JWT znamená, že CSRF sa dá vždy vypnúť“.\n\n## Kódovanie hesiel\n\nKeď si používatelia vytvárajú účty alebo menia heslá, nikdy neukladaj pôvodné heslo. Spring Security na tento účel poskytuje password encodery.\n\nMôžeš napríklad nakonfigurovať BCrypt:\n\n~~~java\n@Bean\nPasswordEncoder passwordEncoder() {\n    return new BCryptPasswordEncoder();\n}\n~~~\n\nTvoja logika registrácie potom môže heslo pred uložením používateľa zakódovať:\n\n~~~java\nString encoded = passwordEncoder.encode(request.password());\nuser.setPassword(encoded);\n~~~\n\nPri prihlásení dokáže Spring Security porovnať zadané heslo s uloženým hashom bez toho, aby potreboval obnoviť pôvodné heslo.\n\nO soľ (salt) a spracovanie cez BCrypt sa postará encoder. Hashovanie hesiel by si nemal implementovať sám.\n\n## Prihlásenie a JWT\n\nTypický proces autentifikácie sa začína požiadavkou na prihlásenie:\n\n~~~diagram\n{\"type\": \"sequence\", \"title\": \"Prihlásenie a potom volanie API\", \"actors\": [\"React\", \"Spring Security\", \"UserRepository\"], \"steps\": [{\"from\": \"React\", \"to\": \"Spring Security\", \"label\": \"POST /api/auth/login {email, password}\"}, {\"from\": \"Spring Security\", \"to\": \"UserRepository\", \"label\": \"findByEmail\"}, {\"from\": \"UserRepository\", \"to\": \"Spring Security\", \"label\": \"user + BCrypt hash\", \"dashed\": true}, {\"note\": \"passwordEncoder.matches(…) → podpísanie JWT\", \"over\": \"Spring Security\"}, {\"from\": \"Spring Security\", \"to\": \"React\", \"label\": \"200 { token, expiresIn }\", \"dashed\": true}, {\"from\": \"React\", \"to\": \"Spring Security\", \"label\": \"GET /api/me + Authorization: Bearer …\"}, {\"note\": \"overenie podpisu + exp\", \"over\": \"Spring Security\"}, {\"from\": \"Spring Security\", \"to\": \"React\", \"label\": \"200 { name, roles }\", \"dashed\": true}]}\n~~~\n\n~~~text\nPOST /api/auth/login\n        ↓\nemail + password\n        ↓\nverify password\n        ↓\ncreate JWT\n        ↓\nreturn token\n~~~\n\n**JWT** (JSON Web Token) je kompaktný token zložený z troch častí oddelených bodkami:\n\n~~~text\nheader.payload.signature\n~~~\n\nHlavička (header) opisuje token vrátane podpisového algoritmu. Payload obsahuje **claims**, teda údaje o tokene alebo autentifikovanom používateľovi. Podpis (signature) umožňuje serveru overiť, že podpísaný token nebol zmenený.\n\nBežné claims:\n\n- `sub` — subjekt, zvyčajne identifikátor používateľa.\n- `roles` — roly pridelené používateľovi.\n- `iat` — čas vydania.\n- `exp` — čas exspirácie.\n\nZjednodušený payload môže vyzerať takto:\n\n~~~json\n{\n  \"sub\": \"user-42\",\n  \"roles\": [\"USER\"],\n  \"iat\": 1791000000,\n  \"exp\": 1791003600\n}\n~~~\n\nJWT sú zakódované, nie automaticky zašifrované. Do payloadu nedávaj heslá ani iné tajomstvá len preto, že sú vnútri JWT.\n\n## Podpisovanie tokenu\n\nPodpis sa vytvára pomocou kryptografického podpisového algoritmu.\n\n~~~widget jwt-inspector\n~~~\n\nPri **HS256** server používa na vytvorenie aj overenie podpisu zdieľané tajomstvo. To isté tajomstvo preto musí mať k dispozícii každý komponent, ktorý potrebuje tokeny overovať alebo vytvárať.\n\nPri **RS256** systém používa asymetrickú kryptografiu: súkromný kľúč tokeny podpisuje a zodpovedajúci verejný kľúč ich overuje. Hodí sa to, keď viacero služieb potrebuje tokeny overovať bez toho, aby dostali súkromný podpisový kľúč.\n\nNech použiješ ktorýkoľvek prístup, **produkčné tajomstvá nikdy nezapisuj natvrdo do zdrojového kódu v Jave ani ich necommituj do Gitu**.\n\nAplikácia môže tajomstvo načítať napríklad z konfigurácie dodanej cez prostredie:\n\n~~~yaml\njwt:\n  secret: ${JWT_SECRET}\n~~~\n\nSamotné tajomstvo by malo bezpečne dodať prostredie, do ktorého aplikáciu nasadzuješ.\n\n## Overenie každej požiadavky\n\nVytvorenie JWT pri prihlásení je len polovica systému. API musí token overiť pri každej chránenej požiadavke.\n\nServer by mal overiť, že:\n\n1. Token má očakávanú štruktúru.\n2. Podpis je platný.\n3. Token neexspiroval.\n4. Token obsahuje prijateľné claims.\n5. Identita autentifikovaného používateľa je správne určená.\n\nSpring Security podporuje autentifikáciu pomocou JWT bearer tokenov prostredníctvom podpory OAuth2 Resource Server. Ak štandardná podpora zodpovedá tvojej architektúre, je to vo všeobecnosti lepšie než písať vlastný filter na overovanie tokenov.\n\nKoncepčne:\n\n~~~text\nRequest\n  ↓\nBearer token\n  ↓\nSpring Security validates signature and claims\n  ↓\nAuthenticated user\n  ↓\nAuthorization rules\n  ↓\nController\n~~~\n\nVlastný filter sa dá implementovať aj vtedy, keď má aplikácia požiadavky, ktoré do štandardných mechanizmov nezapadajú. Vlastný bezpečnostný kód však vytvára viac príležitostí na chyby, preto podľa možnosti používaj vstavanú podporu frameworku.\n\n## Zabezpečenie metód pomocou @PreAuthorize\n\nPravidlá na úrovni požiadaviek odpovedajú na otázky typu „Vyžaduje tento endpoint autentifikáciu?“. Niekedy však chceš chrániť aj konkrétnu operáciu služby.\n\nSpring Security podporuje zabezpečenie metód pomocou `@PreAuthorize`.\n\nPo zapnutí zabezpečenia metód môžeš písať pravidlá ako:\n\n~~~java\n@PreAuthorize(\"hasRole('ADMIN')\")\npublic void deleteUser(UUID userId) {\n    // ...\n}\n~~~\n\nTo znamená, že metóda vyžaduje príslušnú rolu skôr, než sa jej vykonanie povolí.\n\nZabezpečenie metód je užitočné, pretože autorizácia môže byť blízko operácie, ktorú chráni. Pri pravidlách viazaných na konkrétne zdroje, napríklad „používateľ môže upraviť iba vlastnú úlohu“, možno stále budeš potrebovať aplikačnú logiku, ktorá porovná ID autentifikovaného používateľa s ID vlastníka úlohy.\n\n## Exspirácia tokenu a refresh tokeny\n\nJWT by mali bežne exspirovať. Claim `exp` určuje čas exspirácie.\n\nKrátkodobé prístupové tokeny skracujú čas, počas ktorého môže byť ukradnutý token použiteľný. Veľmi krátka životnosť však môže používateľov nútiť opakovane sa prihlasovať, čo je nepohodlné.\n\nBežným riešením je **refresh token**. Prístupový token (access token) je krátkodobý a používa sa pri bežných požiadavkách na API. Dlhodobejší refresh token sa dá po exspirácii prístupového tokenu vymeniť za nový prístupový token.\n\n~~~text\nLogin\n  ↓\nshort-lived access token + refresh token\n  ↓\nAPI requests use access token\n  ↓\naccess token expires\n  ↓\nrefresh token -> new access token\n~~~\n\nRefresh tokeny sú silné prihlasovacie údaje, a preto potrebujú starostlivo premyslené ukladanie, exspiráciu, rotáciu a odvolávanie. Nepovažuj ich za neškodné reťazce.\n\n## Kde majú byť tokeny v prehliadači?\n\nPri aplikáciách v prehliadači prináša ukladanie tokenov kompromisy.\n\nCookie s príznakom `HttpOnly` JavaScript bežne nedokáže prečítať. To môže obmedziť možnosť, aby vložený JavaScript prihlasovacie údaje priamo ukradol. Cookies sa však k zodpovedajúcim požiadavkám pripájajú automaticky, takže musíš zvážiť ochranu pred CSRF a konfiguráciu cookies.\n\nAk token držíš iba v pamäti JavaScriptu, vyhneš sa trvalému úložisku v prehliadači. Nevýhodou je, že token po obnovení stránky zmizne, pokiaľ nový nezíska iný mechanizmus.\n\nAko predvolenú stratégiu neukladaj dlhodobé autentifikačné tokeny do `localStorage`. JavaScript dokáže `localStorage` čítať, takže úspešný útok typu cross-site scripting môže potenciálne získať prístup k tokenom, ktoré sú tam uložené.\n\nNeexistuje jediná voľba úložiska, ktorá by autentifikáciu automaticky urobila bezpečnou. Musíš spoločne zvážiť XSS, CSRF, životnosť tokenov, prácu s refresh tokenmi, konfiguráciu cookies a architektúru svojej aplikácie.\n\n## Časté chyby\n\n### Natvrdo zapísané tajomstvo pre JWT\n\nProdukčné podpisové tajomstvá nikdy nedávaj priamo do zdrojového kódu v Jave ani ich necommituj do Gitu. Tajomstvá načítavaj z bezpečnej konfigurácie nasadenia.\n\n### Dôverovať payloadu JWT bez overenia podpisu\n\nPayload JWT sú len zakódované dáta, kým sa jeho podpis úspešne neoverí. Backend musí vykonať skutočné kryptografické overenie.\n\n### Sprístupniť každý endpoint verejne\n\nŠiroké pravidlo `permitAll()` môže omylom sprístupniť citlivé operácie API. Uprednostni bezpečné predvolené správanie, napríklad vyžadovanie autentifikácie pre požiadavky, ktoré nie sú výslovne verejné.\n\n### Vypnúť CSRF bez pochopenia architektúry\n\nVypnutie CSRF môže byť pri bezstavovom API s bearer tokenmi namieste, no nemalo by sa považovať za univerzálne nastavenie pre JWT. Autentifikácia založená na cookies si vyžaduje iné úvahy.\n\n### Používať dlhodobé prístupové tokeny\n\nDlhodobé bearer tokeny zväčšujú dopad krádeže tokenu. Používaj rozumné časy exspirácie a prácu s refresh tokenmi navrhni premyslene.\n\n### Zbytočne písať vlastný bezpečnostný kód\n\nSpring Security už poskytuje vyspelé mechanizmy pre bežné vzory autentifikácie a autorizácie. Ak vstavaná podpora JWT vo frameworku spĺňa tvoje požiadavky, uprednostni ju.\n\n## Celý proces dohromady\n\nKompletný proces v správcovi úloh teraz vyzerá takto:\n\n~~~text\nPOST /api/auth/login\n        ↓\nSpring verifies the password hash\n        ↓\nServer creates signed JWT\n        ↓\nClient receives credential\n        ↓\nGET /api/tasks\nAuthorization: Bearer <token>\n        ↓\nSpring Security validates JWT\n        ↓\nUser identity and roles become available\n        ↓\nAuthorization rules run\n        ↓\nController/service executes\n~~~\n\nDôležitá myšlienka je, že autentifikácia pomocou JWT nie je len „dekóduj token a ver jeho obsahu“. Server musí overiť podpis a platnosť tokenu skôr, než bude jeho claims považovať za autentifikované informácie.\n\nV cvičení si precvičíš mechanickú časť čítania hlavičky a payloadu JWT. Cvičenie zámerne neimplementuje kryptografické overenie: v skutočnej aplikácii v Spring Boote toto bezpečnostne kritické overenie vykonáva Spring Security na serveri.",
+  "takeaways": [
+    "Spring Security používa reťazec filtrov na spracovanie a ochranu prichádzajúcich HTTP požiadaviek.",
+    "Bezstavové JWT API autentifikuje každú chránenú požiadavku pomocou tokenu namiesto tradičnej serverovej session.",
+    "JWT obsahuje hlavičku, payload a podpis, no jeho payload je zakódovaný, nie automaticky zašifrovaný.",
+    "Produkčné tajomstvá na podpisovanie JWT musia zostať mimo zdrojového kódu a token každej chránenej požiadavky sa musí overiť.",
+    "Krátkodobé prístupové tokeny a starostlivo spravované refresh tokeny dokážu vyvážiť bezpečnosť a pohodlné prihlasovanie."
+  ],
+  "quiz": [
+    {
+      "question": "Aký je hlavný účel reťazca filtrov v Spring Security?",
+      "options": [
+        "Skompilovať zdrojové súbory v Jave pred spustením",
+        "Uchovávať heslo každého používateľa v pamäti",
+        "Preniesť požiadavky cez bezpečnostné kontroly skôr, než sa dostanú k chránenému kódu aplikácie",
+        "Nahradiť databázu PostgreSQL"
+      ],
+      "answer": 2,
+      "explanation": "Security filter chain prevedie prichádzajúce požiadavky cez bezpečnostné filtre skôr, než sa dostanú k chránenému kódu aplikácie, napríklad ku controllerom."
+    },
+    {
+      "question": "Prečo sa pri API s JWT bearer tokenmi bežne používa SessionCreationPolicy.STATELESS?",
+      "options": [
+        "Server neudržiava pre každého klienta tradičnú prihlasovaciu session",
+        "JWT nemôžu obsahovať čas exspirácie",
+        "Vypne všetky kontroly autentifikácie",
+        "Automaticky zašifruje každý JWT"
+      ],
+      "answer": 0,
+      "explanation": "Bezstavové JWT API sa nespolieha na tradičnú serverovú session. Každá chránená požiadavka nesie token, ktorý server overí."
+    },
+    {
+      "question": "Ktoré tri časti tvoria základnú štruktúru JWT?",
+      "options": [
+        "username.password.database",
+        "header.payload.signature",
+        "request.response.session",
+        "role.permission.password"
+      ],
+      "answer": 1,
+      "explanation": "JWT sa skladá z hlavičky, payloadu a podpisu oddelených bodkami."
+    },
+    {
+      "question": "Prečo sa tajomstvo na podpisovanie JWT nesmie commitnúť do Gitu?",
+      "options": [
+        "Git nedokáže uložiť reťazce obsahujúce čísla",
+        "Spring Boot odmieta čítať tajomstvá zo zdrojového kódu",
+        "JWT fungujú iba s verejnými tajomstvami",
+        "Ktokoľvek, kto tajomstvo získa, môže byť v závislosti od podpisovej architektúry schopný tokeny vytvárať alebo overovať"
+      ],
+      "answer": 3,
+      "explanation": "Podpisové tajomstvo je bezpečnostne citlivé. Jeho prezradenie môže útočníkom v architektúrach so zdieľaným tajomstvom umožniť falšovať platné tokeny, preto treba produkčné tajomstvá chrániť."
+    },
+    {
+      "question": "Aký je účel refresh tokenu?",
+      "options": [
+        "Nahradiť hashovanie hesiel",
+        "Sprístupniť každý endpoint API verejne",
+        "Získať nový prístupový token po exspirácii krátkodobého prístupového tokenu",
+        "Uložiť pôvodné heslo používateľa"
+      ],
+      "answer": 2,
+      "explanation": "Refresh tokeny sa dajú použiť na získanie nových prístupových tokenov bez toho, aby sa používateľ musel po exspirácii každého krátkodobého prístupového tokenu znova autentifikovať."
+    }
+  ],
+  "exercise": {
+    "title": "Prečítaj JWT",
+    "task": "Precvič si čítanie JWT bez implementácie kryptografie. Napíš `decodeJwt(token)`, ktorá rozdelí JWT na presne tri časti, dekóduje hlavičku a payload z base64url, obe sparsuje ako JSON a vráti `{ header, payload }`. Pri dekódovaní base64url nahraď `-` za `+`, `_` za `/`, dopĺňaj `=` dovtedy, kým dĺžka nebude deliteľná 4, a potom použi `atob` a `JSON.parse`. Ak token nemá presne tri časti alebo sa hlavičku či payload nepodarí dekódovať a sparsovať, vyhoď `Error(\"Malformed token\")`. Napíš aj `isExpired(payload, nowSeconds)`, ktorá vráti `true`, keď `payload.exp` chýba alebo platí `payload.exp <= nowSeconds`, a inak `false`. Nakoniec napíš `hasRole(payload, role)`, ktorá vráti, či je `payload.roles` pole obsahujúce požadovanú rolu. V skutočnej aplikácii v Spring Boote overuje podpis Spring Security na serveri; toto cvičenie zámerne precvičuje iba čítanie zakódovanej hlavičky a payloadu. Testy si vytvárajú vlastné tokeny pomocou `btoa`, takže ich base64url dáta sú vždy platné.",
+    "kind": "ts",
+    "starter": "function decodeJwt(token: string) {\n  // TODO\n}\n\nfunction isExpired(payload: any, nowSeconds: number): boolean {\n  // TODO\n  return false;\n}\n\nfunction hasRole(payload: any, role: string): boolean {\n  // TODO\n  return false;\n}",
+    "solution": "function decodeJwt(token: string) {\n  try {\n    const parts = token.split(\".\");\n\n    if (parts.length !== 3) {\n      throw new Error(\"Malformed token\");\n    }\n\n    const decodePart = (part: string) => {\n      const base64 = part\n        .replace(/-/g, \"+\")\n        .replace(/_/g, \"/\");\n      const padded = base64 + \"=\".repeat((4 - (base64.length % 4)) % 4);\n      return JSON.parse(atob(padded));\n    };\n\n    return {\n      header: decodePart(parts[0]),\n      payload: decodePart(parts[1])\n    };\n  } catch {\n    throw new Error(\"Malformed token\");\n  }\n}\n\nfunction isExpired(payload: any, nowSeconds: number): boolean {\n  return typeof payload.exp !== \"number\" || payload.exp <= nowSeconds;\n}\n\nfunction hasRole(payload: any, role: string): boolean {\n  return Array.isArray(payload.roles) && payload.roles.includes(role);\n}",
+    "hint": "Začni rozdelením podľa `.` a kontrolou, že vzniknú presne tri časti. Pri každej zakódovanej časti preveď znaky base64 bezpečné pre URL späť na bežné base64, doplň padding, zavolaj `atob` a výsledný JSON sparsuj. Pamätaj, že aby sa token považoval za neexspirovaný, `exp` musí existovať a byť väčšie než `nowSeconds`.",
+    "tests": [
+      {
+        "name": "Dekóduje hlavičku a payload JWT",
+        "code": "const encode = value => btoa(JSON.stringify(value)).replace(/=/g, \"\").replace(/\\+/g, \"-\").replace(/\\//g, \"_\"); const header = { alg: \"HS256\", typ: \"JWT\" }; const payload = { sub: \"user-42\", roles: [\"USER\"] }; const token = encode(header) + \".\" + encode(payload) + \".signature\"; const result = decodeJwt(token); return result.header.alg === \"HS256\" && result.header.typ === \"JWT\" && result.payload.sub === \"user-42\" && Array.isArray(result.payload.roles) && result.payload.roles[0] === \"USER\";"
+      },
+      {
+        "name": "Odmietne token s nesprávnym počtom častí",
+        "code": "let threw = false; try { decodeJwt(\"one.two\"); } catch (error) { threw = error instanceof Error && error.message === \"Malformed token\"; } return threw;"
+      },
+      {
+        "name": "Odmietne neplatný JSON",
+        "code": "const invalid = btoa(\"not-json\").replace(/=/g, \"\").replace(/\\+/g, \"-\").replace(/\\//g, \"_\"); let threw = false; try { decodeJwt(invalid + \".\" + invalid + \".signature\"); } catch (error) { threw = error instanceof Error && error.message === \"Malformed token\"; } return threw;"
+      },
+      {
+        "name": "Akceptuje token, ktorý používa znaky base64url",
+        "code": "const header = btoa(JSON.stringify({ alg: \"RS256\" })).replace(/=/g, \"\").replace(/\\+/g, \"-\").replace(/\\//g, \"_\"); const payload = btoa(JSON.stringify({ sub: \"user-1\", roles: [\"ADMIN\"] })).replace(/=/g, \"\").replace(/\\+/g, \"-\").replace(/\\//g, \"_\"); const result = decodeJwt(header + \".\" + payload + \".signature\"); return result.header.alg === \"RS256\" && result.payload.sub === \"user-1\";"
+      },
+      {
+        "name": "Chýbajúcu exspiráciu označí ako exspirovanú",
+        "code": "return isExpired({ sub: \"user-1\" }, 1000) === true;"
+      },
+      {
+        "name": "Starú exspiráciu označí ako exspirovanú",
+        "code": "return isExpired({ exp: 999 }, 1000) === true;"
+      },
+      {
+        "name": "Exspiráciu rovnú aktuálnemu času označí ako exspirovanú",
+        "code": "return isExpired({ exp: 1000 }, 1000) === true;"
+      },
+      {
+        "name": "Akceptuje exspiráciu v budúcnosti",
+        "code": "return isExpired({ exp: 1001 }, 1000) === false;"
+      },
+      {
+        "name": "Nájde rolu v payloade",
+        "code": "return hasRole({ roles: [\"USER\", \"ADMIN\"] }, \"ADMIN\") === true;"
+      },
+      {
+        "name": "Odmietne chýbajúcu rolu",
+        "code": "return hasRole({ roles: [\"USER\"] }, \"ADMIN\") === false;"
+      },
+      {
+        "name": "Odmietne hodnotu roles, ktorá nie je pole",
+        "code": "return hasRole({ roles: \"ADMIN\" }, \"ADMIN\") === false;"
+      }
+    ]
+  }
+}

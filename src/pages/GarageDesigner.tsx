@@ -6,7 +6,7 @@ import { useI18n } from '../i18n';
 import { useSeo } from '../hooks/useSeo';
 import { useTheme } from '../hooks/useTheme';
 import { Section, SectionHeader } from '../components/ui';
-import { ConsultCta, Group, Segmented, Slider, Swatches, Toggle, huf } from '../components/tools/kit';
+import { ConsultCta, Group, Segmented, Slider, Swatches, Toggle, money } from '../components/tools/kit';
 import { buildGarage, buildGround, disposeGroup, setDoors } from '../components/tools/garageScene';
 import type { Cladding, Door, GarageOpts, Roof } from '../components/tools/garageScene';
 import { createSky } from '../components/tools/garageSky';
@@ -17,26 +17,26 @@ import type { Stage } from '../components/tools/stage';
 type View = 'front' | 'side' | 'top';
 
 const WALLS = [
-  { id: '#ebe8e2', en: 'White', hu: 'Fehér' },
-  { id: '#d9cbb0', en: 'Sand', hu: 'Homok' },
-  { id: '#9ea3a6', en: 'Grey', hu: 'Szürke' },
-  { id: '#41464b', en: 'Anthracite', hu: 'Antracit' },
-  { id: '#7a5539', en: 'Walnut', hu: 'Dió' },
-  { id: '#5f6e58', en: 'Moss', hu: 'Moha' },
+  { id: '#ebe8e2', en: 'White', hu: 'Fehér', sk: 'Biela' },
+  { id: '#d9cbb0', en: 'Sand', hu: 'Homok', sk: 'Piesková' },
+  { id: '#9ea3a6', en: 'Grey', hu: 'Szürke', sk: 'Sivá' },
+  { id: '#41464b', en: 'Anthracite', hu: 'Antracit', sk: 'Antracitová' },
+  { id: '#7a5539', en: 'Walnut', hu: 'Dió', sk: 'Orech' },
+  { id: '#5f6e58', en: 'Moss', hu: 'Moha', sk: 'Machová' },
 ];
 const TRIMS = [
-  { id: '#34383c', en: 'Anthracite', hu: 'Antracit' },
-  { id: '#f2f2f0', en: 'White', hu: 'Fehér' },
-  { id: '#a8acb0', en: 'Silver', hu: 'Ezüst' },
-  { id: '#5b3d2a', en: 'Brown', hu: 'Barna' },
-  { id: '#7d2f2a', en: 'Oxide red', hu: 'Oxidvörös' },
+  { id: '#34383c', en: 'Anthracite', hu: 'Antracit', sk: 'Antracitová' },
+  { id: '#f2f2f0', en: 'White', hu: 'Fehér', sk: 'Biela' },
+  { id: '#a8acb0', en: 'Silver', hu: 'Ezüst', sk: 'Strieborná' },
+  { id: '#5b3d2a', en: 'Brown', hu: 'Barna', sk: 'Hnedá' },
+  { id: '#7d2f2a', en: 'Oxide red', hu: 'Oxidvörös', sk: 'Oxidovo červená' },
 ];
 const HANDLES = [
-  { id: '#c9ccd0', en: 'Stainless', hu: 'Rozsdamentes' },
-  { id: '#1b1c1e', en: 'Matt black', hu: 'Matt fekete' },
-  { id: '#c49a52', en: 'Brass', hu: 'Sárgaréz' },
-  { id: '#b87452', en: 'Copper', hu: 'Vörösréz' },
-  { id: '#f2f2f0', en: 'White', hu: 'Fehér' },
+  { id: '#c9ccd0', en: 'Stainless', hu: 'Rozsdamentes', sk: 'Nerez' },
+  { id: '#1b1c1e', en: 'Matt black', hu: 'Matt fekete', sk: 'Matná čierna' },
+  { id: '#c49a52', en: 'Brass', hu: 'Sárgaréz', sk: 'Mosadz' },
+  { id: '#b87452', en: 'Copper', hu: 'Vörösréz', sk: 'Meď' },
+  { id: '#f2f2f0', en: 'White', hu: 'Fehér', sk: 'Biela' },
 ];
 
 const T = {
@@ -125,6 +125,49 @@ const T = {
     views: { front: 'Elöl', side: 'Oldal', top: 'Felülről' },
     open: 'Kapu nyitása',
     close: 'Kapu zárása',
+  },
+  sk: {
+    subtitle: 'Návrhár garáže — orientačné ceny',
+    intro: 'Zadajte rozmery garáže a potom vyberte strechu, bránu, obklad a farby — 3D model aj odhad ceny sa prispôsobia každej zmene.',
+    size: 'Rozmery',
+    width: 'Šírka',
+    depth: 'Hĺbka',
+    height: 'Výška steny',
+    roof: 'Strecha',
+    roofs: { flat: 'Plochá', mono: 'Pultová', gable: 'Sedlová' },
+    door: 'Garážová brána',
+    doors: { sectional: 'Sekcionálna', tilt: 'Výklopná', swing: 'Krídlová', none: 'Bez brány' },
+    doorCount: 'Počet brán',
+    one: '1 brána',
+    two: '2 brány',
+    cladding: 'Obklad',
+    cladd: { sheet: 'Trapézový plech', wood: 'Imitácia dreva', render: 'Omietka' },
+    wall: 'Farba stien',
+    trim: 'Farba strechy a brány',
+    handle: 'Povrch kľučky',
+    extras: 'Doplnky',
+    sideDoor: 'Bočné dvere',
+    window: 'Okno',
+    gutter: 'Odkvapový žľab a zvod',
+    estimate: 'Odhad ceny',
+    demo: 'Orientačné ceny s DPH, bez základov.',
+    total: 'Spolu',
+    items: {
+      base: 'Konštrukcia garáže',
+      roof: 'Príplatok za strechu',
+      doors: 'Garážová brána',
+      side: 'Bočné dvere',
+      window: 'Okno',
+      gutter: 'Odkvapový žľab',
+      clad: 'Obklad s imitáciou dreva',
+    },
+    drag: 'Potiahnutím otočíte · kolieskom alebo prstami priblížite',
+    save: 'Uložiť obrázok',
+    loading: 'Načítava sa 3D zobrazenie…',
+    noGl: 'Tento prehliadač nedokázal spustiť 3D zobrazenie.',
+    views: { front: 'Spredu', side: 'Zboku', top: 'Zhora' },
+    open: 'Otvoriť bránu',
+    close: 'Zatvoriť bránu',
   },
 };
 
@@ -345,13 +388,13 @@ export default function GarageDesigner() {
     <Section id="garage-designer" className="pt-24 lg:pt-24">
       <SectionHeader
         index="11"
-        title={lang === 'hu' ? 'Garázstervező' : 'Garage designer'}
+        title={{ en: 'Garage designer', hu: 'Garázstervező', sk: 'Návrhár garáže' }[lang]}
         inHeader
         subtitle={t.subtitle}
         right={
           <button
             type="button"
-            onClick={() => stage.current && download(stage.current.snapshot(), lang === 'hu' ? 'garazs-terv.png' : 'garage-design.png')}
+            onClick={() => stage.current && download(stage.current.snapshot(), { en: 'garage-design.png', hu: 'garazs-terv.png', sk: 'garaz-navrh.png' }[lang])}
             disabled={state !== 'ready'}
             data-cursor="follow"
             className="group flex items-center gap-2 font-mono text-[12.5px] uppercase tracking-tech text-text transition-colors hover:text-accent disabled:opacity-40"
@@ -461,13 +504,13 @@ export default function GarageDesigner() {
               {est.lines.map((l) => (
                 <li key={l.label} className="flex justify-between gap-3 text-[13px] text-muted">
                   <span className="min-w-0">{l.label}</span>
-                  <span className="shrink-0 font-mono text-text">{huf(l.value)}</span>
+                  <span className="shrink-0 font-mono text-text">{money(l.value, lang)}</span>
                 </li>
               ))}
             </ul>
             <div className="mt-3 flex items-baseline justify-between gap-3 border-t border-line pt-3">
               <span className="font-mono text-[12px] uppercase tracking-tech text-text">{t.total}</span>
-              <span className="display text-[1.7rem] leading-none text-accent">{huf(est.total)}</span>
+              <span className="display text-[1.7rem] leading-none text-accent">{money(est.total, lang)}</span>
             </div>
             <p className="mt-2 text-[12px] text-dim">{t.demo}</p>
           </div>

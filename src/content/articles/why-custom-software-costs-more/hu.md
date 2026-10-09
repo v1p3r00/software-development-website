@@ -21,7 +21,7 @@ Havi 20 000 Ft, 50 000 Ft vagy 100 000 Ft még egészen más döntésnek látszi
 
 **A probléma akkor kezdődik, amikor csak a kezdeti árat hasonlítjuk össze, nem pedig a teljes használati költséget és az üzleti értéket.**
 
-A Microsoft Azure Well-Architected Framework is azt javasolja, hogy a build-or-buy döntésnél a fejlesztési erőforrást, infrastruktúrát, karbantartást, támogatást, licenceket és előfizetéseket együtt vizsgáljuk. :contentReference[oaicite:0]{index=0}
+A Microsoft Azure Well-Architected Framework is azt javasolja, hogy a build-or-buy döntésnél a fejlesztési erőforrást, infrastruktúrát, karbantartást, támogatást, licenceket és előfizetéseket együtt vizsgáljuk.
 
 ---
 
@@ -71,7 +71,7 @@ Egy havi 100 000 Ft-os előfizetés:
 - migráció,
 - esetleges bevezetési díj.
 
-A teljes tulajdonlási költség (TCO) éppen azért hasznos, mert nem csak a vételárat, hanem a teljes életciklus közvetlen és közvetett költségeit vizsgálja. :contentReference[oaicite:1]{index=1}
+A teljes tulajdonlási költség (TCO) éppen azért hasznos, mert nem csak a vételárat, hanem a teljes életciklus közvetlen és közvetett költségeit vizsgálja.
 
 ---
 
@@ -178,7 +178,7 @@ Megjelenhetnek:
 - egyedi adatmozgatás,
 - karbantartási költségek.
 
-A Microsoft build-or-buy útmutatója is kiemeli, hogy a vásárolt megoldás előnye lehet az alacsonyabb induló költség és gyorsabb bevezetés, miközben a testreszabás és a hosszú távú karbantartás külön szempontként jelenik meg. :contentReference[oaicite:2]{index=2}
+A Microsoft build-or-buy útmutatója is kiemeli, hogy a vásárolt megoldás előnye lehet az alacsonyabb induló költség és gyorsabb bevezetés, miközben a testreszabás és a hosszú távú karbantartás külön szempontként jelenik meg.
 
 ---
 
@@ -197,7 +197,7 @@ A szolgáltató dönthet például:
 - egy funkció megszüntetéséről,
 - egy régi verzió kivezetéséről.
 
-A SaaS-előfizetések egyik jellemzője éppen a folyamatos szolgáltatási modell: a számlázás lehet havi vagy éves, a szolgáltató pedig a terméket továbbra is karbantartja. :contentReference[oaicite:3]{index=3}
+A SaaS-előfizetések egyik jellemzője éppen a folyamatos szolgáltatási modell: a számlázás lehet havi vagy éves, a szolgáltató pedig a terméket továbbra is karbantartja.
 
 Ez kényelmes.
 
@@ -225,7 +225,7 @@ Például:
 - új funkciók,
 - külső API-k változásainak kezelése.
 
-A Microsoft saját útmutatója is kiemeli, hogy a saját megoldások jelentős kezdeti beruházást és folyamatos karbantartást igényelnek. :contentReference[oaicite:4]{index=4}
+A Microsoft saját útmutatója is kiemeli, hogy a saját megoldások jelentős kezdeti beruházást és folyamatos karbantartást igényelnek.
 
 SaaS esetében ezeknek a feladatoknak egy jelentős részét a szolgáltató végzi el.
 
@@ -285,7 +285,7 @@ Ha egy kész termék:
 
 akkor az egyedi fejlesztés könnyen felesleges költség lehet.
 
-A Microsoft platformstratégiai útmutatója is azt javasolja, hogy egyedi fejlesztést elsősorban olyan területeken érdemes használni, amelyek egyediek és nagy üzleti értéket képviselnek; egyéb esetekben a kész megoldás előnyösebb lehet. :contentReference[oaicite:5]{index=5}
+A Microsoft platformstratégiai útmutatója is azt javasolja, hogy egyedi fejlesztést elsősorban olyan területeken érdemes használni, amelyek egyediek és nagy üzleti értéket képviselnek; egyéb esetekben a kész megoldás előnyösebb lehet.
 
 ---
 
@@ -342,7 +342,7 @@ Tervezés
 = teljes költség
 ```
 
-A TCO célja éppen az, hogy az egyszeri és folyamatos, közvetlen és közvetett költségeket együtt lásd. :contentReference[oaicite:6]{index=6}
+A TCO célja éppen az, hogy az egyszeri és folyamatos, közvetlen és közvetett költségeket együtt lásd.
 
 ---
 

@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { site } from '../data/site';
 import { useI18n } from '../i18n';
 import { localePath } from '../i18n/paths';
+import { LANGS } from '../data/projects';
+import type { Lang } from '../data/projects';
 export { clip } from '../lib/seo-shared';
 
 export interface Seo {
@@ -12,11 +14,13 @@ export interface Seo {
   type?: 'website' | 'article';
   image?: string;
   noindex?: boolean;
-  /** languages this page exists in (for hreflang); both by default */
-  langs?: ('en' | 'hu')[];
+  /** languages this page exists in (for hreflang); all of them by default */
+  langs?: Lang[];
   /** page-specific structured data, e.g. a BlogPosting */
   jsonLd?: Record<string, unknown>;
 }
+
+const OG_LOCALE: Record<Lang, string> = { en: 'en_GB', hu: 'hu_HU', sk: 'sk_SK' };
 
 function setMeta(attr: 'name' | 'property', key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
@@ -35,7 +39,7 @@ function setMeta(attr: 'name' | 'property', key: string, content: string) {
  */
 export function useSeo({ title, description, path, type = 'website', image, noindex = false, langs, jsonLd }: Seo) {
   const { lang } = useI18n();
-  const langKey = (langs ?? ['en', 'hu']).join(',');
+  const langKey = (langs ?? LANGS).join(',');
   useEffect(() => {
     const url = site.url + localePath(path, lang);
     const img = site.url + (image ?? site.ogImage);
@@ -46,8 +50,15 @@ export function useSeo({ title, description, path, type = 'website', image, noin
     setMeta('property', 'og:description', description);
     setMeta('property', 'og:url', url);
     setMeta('property', 'og:type', type);
-    setMeta('property', 'og:locale', lang === 'hu' ? 'hu_HU' : 'en_GB');
-    setMeta('property', 'og:locale:alternate', lang === 'hu' ? 'en_GB' : 'hu_HU');
+    setMeta('property', 'og:locale', OG_LOCALE[lang]);
+    document.head.querySelectorAll('meta[property="og:locale:alternate"]').forEach((el) => el.remove());
+    for (const l of LANGS) {
+      if (l === lang) continue;
+      const el = document.createElement('meta');
+      el.setAttribute('property', 'og:locale:alternate');
+      el.content = OG_LOCALE[l];
+      document.head.appendChild(el);
+    }
     setMeta('property', 'og:image', img);
     setMeta('name', 'twitter:title', title);
     setMeta('name', 'twitter:description', description);
@@ -63,9 +74,10 @@ export function useSeo({ title, description, path, type = 'website', image, noin
 
     // hreflang: point search engines at the other language's address
     document.head.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
-    const available = langKey.split(',') as ('en' | 'hu')[];
+    const available = langKey.split(',') as Lang[];
     if (available.length > 1) {
-      for (const [code, l] of [['en', 'en'], ['hu', 'hu'], ['x-default', 'en']] as const) {
+      const pairs: Array<[string, Lang]> = [...available.map((l): [string, Lang] => [l, l]), ['x-default', available.includes('en') ? 'en' : available[0]]];
+      for (const [code, l] of pairs) {
         const link = document.createElement('link');
         link.rel = 'alternate';
         link.hreflang = code;

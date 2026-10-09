@@ -22,6 +22,14 @@ const T = {
     run: 'Ellenőrzés',
     for: 'Weboldal:',
   },
+  sk: {
+    label: 'Bezplatná kontrola webu',
+    title: 'Ako si dnes vedie váš web?',
+    text: 'Rýchlosť, základy pre Google, mobil a bezpečnosť — okamžitá správa s riešením ku každému problému.',
+    ph: 'vasweb.sk',
+    run: 'Skontrolovať',
+    for: 'Weby pre',
+  },
 };
 
 /** a home-page band leading to the website check and the industry pages */
@@ -64,7 +72,7 @@ export default function CheckBand() {
               </Link>
             ))}
             <Link to={lp('/industries/')} data-cursor="follow" className="text-text underline-offset-4 transition-colors hover:text-accent hover:underline">
-              {lang === 'hu' ? 'Összes iparág' : 'All industries'} →
+              {{ en: 'All industries', hu: 'Összes iparág', sk: 'Všetky odvetvia' }[lang]} →
             </Link>
           </div>
         </div>

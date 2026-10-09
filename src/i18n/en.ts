@@ -294,6 +294,7 @@ export const en = {
     copied: 'Copied',
     hu: 'Hungarian',
     en: 'English',
+    sk: 'Slovak',
     hintOpen: 'to open',
     hintSelect: 'select',
     hintClose: 'close',

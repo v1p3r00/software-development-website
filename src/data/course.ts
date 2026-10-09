@@ -61,11 +61,11 @@ const files = import.meta.glob<{ default: LessonContent }>('../content/course/*.
 
 const fileOf = (slug: string, lang: Lang) => `../content/course/${slug}.${lang}.json`;
 
-export const isReady = (slug: string) => fileOf(slug, 'en') in files || fileOf(slug, 'hu') in files;
+export const isReady = (slug: string) => (['en', 'hu', 'sk'] as const).some((l) => fileOf(slug, l) in files);
 
-/** the lesson in the requested language, else the other one */
+/** the lesson in the requested language, else English, else whichever exists */
 export async function loadLesson(slug: string, lang: Lang): Promise<{ content: LessonContent; lang: Lang } | null> {
-  const order: Lang[] = lang === 'hu' ? ['hu', 'en'] : ['en', 'hu'];
+  const order: Lang[] = [lang, 'en', 'hu', 'sk'];
   for (const l of order) {
     const load = files[fileOf(slug, l)];
     if (load) return { content: (await load()).default, lang: l };

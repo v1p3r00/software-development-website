@@ -1,8 +1,13 @@
 import { langOfPath, localePath } from './paths';
 
+const KNOWN = ['en', 'hu', 'sk'] as const;
+type Known = (typeof KNOWN)[number];
+const isLang = (v: string | null): v is Known => !!v && (KNOWN as readonly string[]).includes(v);
+
 /**
- * Runs once, before the app renders: turns old `?lang=hu` links into their /hu/
- * address, and sends a returning visitor who chose Hungarian to the /hu/ page.
+ * Runs once, before the app renders: turns old `?lang=hu` / `?lang=sk` links into
+ * their /hu/ or /sk/ address, and sends a returning visitor who chose Hungarian or
+ * Slovak to that language's page.
  * Done with replaceState up front so the first render is already in the right
  * language (no flash, no extra history entry).
  */
@@ -21,7 +26,7 @@ export function applyInitialLang(): boolean {
 
   const current = langOfPath(pathname);
   const wanted =
-    fromQuery === 'hu' || fromQuery === 'en' ? fromQuery : current === 'en' && stored === 'hu' ? 'hu' : current;
+    isLang(fromQuery) ? fromQuery : current === 'en' && isLang(stored) && stored !== 'en' ? stored : current;
 
   if (fromQuery !== null || wanted !== current) {
     const rest = params.toString() ? `?${params}` : '';

@@ -31,8 +31,8 @@ export default function ReactRerender({ lang }: WidgetProps) {
     timer.current = window.setTimeout(() => setFlash([]), 700);
     setWhy(
       memo
-        ? t(`With memo(), only components whose props changed re-render: ${hit.join(', ')}.`, `memo() mellett csak azok renderelnek újra, akiknek változott a propja: ${hit.join(', ')}.`)
-        : t('App’s state changed, so App and every child below it re-render — even TaskList, whose props did not change.', 'Az App állapota változott, ezért az App és alatta minden gyerek újrarenderel — még a TaskList is, pedig a propjai nem változtak.'),
+        ? t(`With memo(), only components whose props changed re-render: ${hit.join(', ')}.`, `memo() mellett csak azok renderelnek újra, akiknek változott a propja: ${hit.join(', ')}.`, `S memo() sa prerenderujú len komponenty, ktorým sa zmenili props: ${hit.join(', ')}.`)
+        : t('App’s state changed, so App and every child below it re-render — even TaskList, whose props did not change.', 'Az App állapota változott, ezért az App és alatta minden gyerek újrarenderel — még a TaskList is, pedig a propjai nem változtak.', 'Zmenil sa stav v App, takže sa prerenderuje App aj každé dieťa pod ním – dokonca aj TaskList, hoci sa jeho props nezmenili.'),
     );
   };
 
@@ -41,7 +41,7 @@ export default function ReactRerender({ lang }: WidgetProps) {
       <div className="flex items-baseline justify-between gap-2">
         <span className="font-mono text-[14.5px] font-semibold text-text">{'<' + c + ' />'}</span>
         <span className="font-mono text-[12px] text-dim">
-          {t('renders', 'render')}: <span className={flash.includes(c) ? 'text-accent' : 'text-muted'}>{renders[c]}</span>
+          {t('renders', 'render', 'rendery')}: <span className={flash.includes(c) ? 'text-accent' : 'text-muted'}>{renders[c]}</span>
         </span>
       </div>
       <div className="mt-1 truncate font-mono text-[12.5px] text-muted">{props}</div>
@@ -49,13 +49,13 @@ export default function ReactRerender({ lang }: WidgetProps) {
   );
 
   return (
-    <Frame lang={lang} title={t('Who re-renders when state changes?', 'Ki renderel újra, ha változik az állapot?')} hint={t('State lives in App. Click the buttons and watch the render counters.', 'Az állapot az Appban él. Kattints a gombokra, és figyeld a renderszámlálókat.')}>
+    <Frame lang={lang} title={t('Who re-renders when state changes?', 'Ki renderel újra, ha változik az állapot?', 'Kto sa prerenderuje, keď sa zmení stav?')} hint={t('State lives in App. Click the buttons and watch the render counters.', 'Az állapot az Appban él. Kattints a gombokra, és figyeld a renderszámlálókat.', 'Stav žije v App. Klikaj na tlačidlá a sleduj počítadlá renderov.')}>
       <div className="flex flex-wrap gap-1.5">
         <button type="button" className="vw-btn on" onClick={() => update('count')}>setCount(count + 1)</button>
         <button type="button" className="vw-btn" onClick={() => update('theme')}>setDark(!dark)</button>
         <label className="ml-auto flex items-center gap-2 text-[14.5px] text-muted">
           <input type="checkbox" checked={memo} onChange={(e) => setMemo(e.target.checked)} className="accent-[rgb(var(--c-accent))]" />
-          {t('wrap children in', 'gyerekek becsomagolása:')} <code className="font-mono text-[13.5px]">memo()</code>
+          {t('wrap children in', 'gyerekek becsomagolása:', 'obaľ deti do')} <code className="font-mono text-[13.5px]">memo()</code>
         </label>
       </div>
       <div className="mt-5 grid gap-3">
@@ -67,7 +67,7 @@ export default function ReactRerender({ lang }: WidgetProps) {
           {node('TaskList', 'props: { tasks }', '')}
         </div>
       </div>
-      <p className="mt-4 min-h-[2.75rem] text-[15.5px] leading-relaxed text-muted">{why || t('Data flows down as props; a state change re-runs the component that owns it.', 'Az adat propként lefelé áramlik; az állapotváltozás újrafuttatja azt a komponenst, amelyiké az állapot.')}</p>
+      <p className="mt-4 min-h-[2.75rem] text-[15.5px] leading-relaxed text-muted">{why || t('Data flows down as props; a state change re-runs the component that owns it.', 'Az adat propként lefelé áramlik; az állapotváltozás újrafuttatja azt a komponenst, amelyiké az állapot.', 'Dáta tečú nadol ako props; zmena stavu znova spustí komponent, ktorý ten stav vlastní.')}</p>
     </Frame>
   );
 }

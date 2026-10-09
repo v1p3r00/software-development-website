@@ -25,7 +25,7 @@ export default function BoxModel({ lang }: WidgetProps) {
     </div>
   );
   return (
-    <Frame lang={lang} title={t('The CSS box model', 'A CSS dobozmodell')} hint={t('Drag the sliders and switch box-sizing to see where every pixel goes.', 'Húzd a csúszkákat és váltsd a box-sizinget: lásd, hová megy minden pixel.')}>
+    <Frame lang={lang} title={t('The CSS box model', 'A CSS dobozmodell', 'CSS box model')} hint={t('Drag the sliders and switch box-sizing to see where every pixel goes.', 'Húzd a csúszkákat és váltsd a box-sizinget: lásd, hová megy minden pixel.', 'Posúvaj posuvníky a prepínaj box-sizing – uvidíš, kam ide každý pixel.')}>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,15rem)_1fr]">
         <div className="grid content-start gap-4">
           {sliders.map(([name, v, set, min, max]) => (
@@ -54,9 +54,9 @@ export default function BoxModel({ lang }: WidgetProps) {
           <pre className="vw-code mt-4">{`.card {\n  box-sizing: ${sizing};\n  width: ${width}px;\n  padding: ${padding}px;\n  border: ${border}px solid;\n  margin: ${margin}px;\n}`}</pre>
           <div className="mt-3 grid grid-cols-3 gap-2 text-center">
             {[
-              [t('content', 'tartalom'), content],
-              [t('visible box', 'látható doboz'), borderBox],
-              [t('space taken', 'elfoglalt hely'), total],
+              [t('content', 'tartalom', 'obsah'), content],
+              [t('visible box', 'látható doboz', 'viditeľný box'), borderBox],
+              [t('space taken', 'elfoglalt hely', 'zabrané miesto'), total],
             ].map(([k, v]) => (
               <div key={k} className="border border-line px-2 py-2">
                 <div className="font-mono text-[16.5px] font-semibold text-text">{v}px</div>
@@ -66,8 +66,8 @@ export default function BoxModel({ lang }: WidgetProps) {
           </div>
           <p className="mt-3 text-[15px] leading-relaxed text-muted">
             {sizing === 'content-box'
-              ? t(`content-box: width is only the content, so the box grows to ${borderBox}px once padding and border are added.`, `content-box: a width csak a tartalom, így a padding és a border hozzáadásával a doboz ${borderBox}px lesz.`)
-              : t(`border-box: width includes padding and border, so the box stays ${width}px and the content shrinks instead.`, `border-box: a width tartalmazza a paddinget és a bordert, így a doboz ${width}px marad, a tartalom zsugorodik.`)}
+              ? t(`content-box: width is only the content, so the box grows to ${borderBox}px once padding and border are added.`, `content-box: a width csak a tartalom, így a padding és a border hozzáadásával a doboz ${borderBox}px lesz.`, `content-box: width je len obsah, takže po pridaní paddingu a borderu box narastie na ${borderBox}px.`)
+              : t(`border-box: width includes padding and border, so the box stays ${width}px and the content shrinks instead.`, `border-box: a width tartalmazza a paddinget és a bordert, így a doboz ${width}px marad, a tartalom zsugorodik.`, `border-box: width zahŕňa padding aj border, takže box ostane ${width}px a zmenší sa obsah.`)}
           </p>
         </div>
       </div>

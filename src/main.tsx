@@ -27,7 +27,7 @@ const app = (
 
 // pages are prerendered at build time (scripts/prerender.ts): pick up that HTML
 // instead of rebuilding it — unless the address just changed (a returning
-// Hungarian visitor sent from / to /hu/), when the markup no longer matches
+// Hungarian or Slovak visitor sent from / to /hu/ or /sk/), when the markup no longer matches
 const root = document.getElementById('root')!;
 if (root.firstElementChild && !moved) hydrateRoot(root, app);
 else {

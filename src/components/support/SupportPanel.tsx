@@ -4,7 +4,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n';
 import { stripLang } from '../../i18n/paths';
 import { site } from '../../data/site';
-import type { Lang } from '../../data/projects';
+import type { Lang, VisualKey } from '../../data/projects';
+import ProjectVisual from '../ProjectVisual';
+import LabIcon from '../LabIcon';
 import { cx } from '../ui';
 import { TEXT } from './text';
 import type { Text } from './text';
@@ -52,6 +54,8 @@ interface Card {
   text: string;
   meta?: string;
   image?: string;
+  visual?: VisualKey;
+  icon?: string;
   path?: string;
   cta: string;
   /** "I want one like this" starts a request with this as the interest */
@@ -230,7 +234,7 @@ export default function SupportPanel({ open, onClose, request }: { open: boolean
     (it: Item): Card => {
       const cta = it.kind === 'article' ? T.read : it.kind === 'lab' || it.kind === 'landing' || it.kind === 'case' ? T.try : T.open;
       const like = it.kind === 'landing' || it.kind === 'lab' || it.kind === 'case' || it.kind === 'project' || it.kind === 'service' || it.kind === 'industry' ? it.title : undefined;
-      return { id: it.id, title: it.title, text: it.text, meta: it.meta, image: it.image, path: it.path, cta, like };
+      return { id: it.id, title: it.title, text: it.text, meta: it.meta, image: it.image, visual: it.visual, icon: it.icon, path: it.path, cta, like };
     },
     [T],
   );
@@ -887,7 +891,7 @@ function Message({
   if (m.link)
     return (
       <Link to={lp(m.link.href)} onClick={onNavigate} data-cursor="follow" className="support-in group flex max-w-[90%] items-center gap-3 border border-line bg-surface px-3 py-2.5 transition-colors hover:border-accent">
-        <span className="font-mono text-[10px] uppercase tracking-tech text-accent">{lang === 'hu' ? 'Cikk' : 'Article'}</span>
+        <span className="font-mono text-[10px] uppercase tracking-tech text-accent">{{ en: 'Article', hu: 'Cikk', sk: 'Článok' }[lang]}</span>
         <span className="flex-1 text-[13.5px] leading-snug text-text">{m.link.label}</span>
         <span className="font-mono text-[12px] text-muted transition-transform group-hover:translate-x-0.5">→</span>
       </Link>
@@ -913,7 +917,17 @@ function CardView({ c, T, lp, onLike, onNavigate, single }: { c: Card; T: Text; 
   return (
     <article className={cx('flex shrink-0 snap-start flex-col border border-line bg-surface', single ? 'w-[88%]' : 'w-[230px]')}>
       {c.image ? (
-        <img src={c.image} alt={c.title} loading="lazy" decoding="async" className="aspect-[16/9] w-full border-b border-line object-cover" />
+        <img src={c.image} alt="" loading="lazy" decoding="async" className="aspect-[16/9] w-full border-b border-line bg-surface2 object-cover" />
+      ) : c.visual ? (
+        <div className="aspect-[16/9] w-full overflow-hidden border-b border-line bg-surface2 [&>svg]:block" aria-hidden>
+          <ProjectVisual variant={c.visual} />
+        </div>
+      ) : c.icon ? (
+        <div className="support-cardart grid aspect-[16/9] w-full place-items-center border-b border-line text-text" aria-hidden>
+          <span className="grid h-14 w-14 place-items-center border border-line-strong bg-surface">
+            <LabIcon id={c.icon} />
+          </span>
+        </div>
       ) : (
         <div className="support-cardart aspect-[16/6] w-full border-b border-line" aria-hidden />
       )}

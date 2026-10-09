@@ -6,6 +6,7 @@ import { useSeo } from '../hooks/useSeo';
 import { site } from '../data/site';
 import { CATS, CAT_NAMES, CHECKS, CHECK_SEO, GRADE_TEXT, evaluate } from '../data/siteCheck';
 import type { Facts, Report, Result, Speed, Status } from '../data/siteCheck';
+import type { Lang } from '../data/projects';
 import { featuredIndustries } from '../data/industries';
 import { CornerMarks, Section, cx } from '../components/ui';
 
@@ -123,6 +124,63 @@ const T = {
     },
     limits: 'Az automatikus ellenőrzés csak a kezdőlapot nézi, és nem tudja megítélni a designt, a szövegeket vagy azt, hogy mennyire jól ad el az oldal — erre való a személyes értékelés.',
     forTitle: 'Weboldalak a te iparágadnak',
+  },
+  sk: {
+    kicker: 'Bezplatná kontrola webu',
+    title: ['Aký dobrý je', 'váš web', 'dnes?'],
+    lead: 'Zadajte adresu a okamžite dostanete správu o rýchlosti, nájditeľnosti v Googli, prispôsobení pre mobily a bezpečnosti — ku každému problému zrozumiteľný návrh riešenia.',
+    placeholder: 'vasweb.sk',
+    run: 'Skontrolovať',
+    running: 'Kontrolujem…',
+    note: 'Zadarmo, bez registrácie. Trvá asi 10 sekúnd, rýchlostný test Googlu najviac 30.',
+    try: 'Vyskúšajte s',
+    steps: ['Načítanie stránky', 'Kontrola HTTPS a bezpečnostných hlavičiek', 'Čítanie titulkov, popisov a nadpisov', 'Hľadanie robots.txt a mapy stránok', 'Kontrola základov pre mobily a obrázkov', 'Hodnotenie'],
+    errBad: 'Toto nevyzerá ako adresa webu. Skúste napríklad priklad.sk.',
+    errDown: 'Web sa nepodarilo načítať. Skontrolujte adresu — alebo je web práve nedostupný.',
+    errService: 'Kontrola momentálne nie je dostupná. Skúste to, prosím, znova o minútu.',
+    scoreOf: 'zo 100',
+    checked: 'Skontrolované',
+    fixFirst: 'Opravte najskôr',
+    better: 'Mohlo by byť lepšie',
+    good: 'V poriadku',
+    showGood: 'Zobraziť, čo už funguje dobre',
+    hideGood: 'Skryť',
+    how: 'Riešenie',
+    speedTitle: 'Google PageSpeed — mobil',
+    speedWait: 'Google meria rýchlosť na mobile… môže to trvať až 30 sekúnd.',
+    speedFail: 'Rýchlostný test Googlu tentoraz neodpovedal; hodnotenie rýchlosti vyššie vychádza z našich vlastných meraní.',
+    speedCats: { performance: 'Výkon', accessibility: 'Prístupnosť', bestPractices: 'Osvedčené postupy', seo: 'SEO' },
+    lcp: 'Hlavný obsah',
+    tbt: 'Čas blokovania',
+    cls: 'Posun rozloženia',
+    weight: 'Veľkosť stránky',
+    share: 'Kopírovať odkaz na túto správu',
+    copied: 'Odkaz skopírovaný',
+    ctaTitle: 'Chcete to dať do poriadku?',
+    ctaText: 'Požiadajte o bezplatné osobné posúdenie: David prejde správu, povie vám, čo je pre vašu firmu najdôležitejšie a koľko by to stálo — zvyčajne do 24 hodín. Bez záväzkov.',
+    name: 'Meno',
+    email: 'E-mail',
+    phone: 'Telefón (nepovinné)',
+    message: 'Chcete niečo doplniť? (nepovinné)',
+    messagePh: 'napr. máme málo dopytov, web je na mobile pomalý…',
+    send: 'Chcem bezplatné posúdenie',
+    sending: 'Odosiela sa…',
+    sent: 'Ďakujem! Vaša žiadosť o posúdenie je na ceste — odpoveď dostanete e-mailom, zvyčajne do 24 hodín.',
+    failed: 'Nepodarilo sa odoslať. Skúste to znova alebo napíšte na',
+    errName: 'Zadajte, prosím, svoje meno.',
+    errEmail: 'Zadajte, prosím, platnú e-mailovú adresu.',
+    orChat: 'Alebo pošlite dopyt na celý projekt',
+    modernize: 'Pozrite si, ako vyzerá modernizovaný web',
+    whatTitle: 'Čo kontrola sleduje',
+    what: {
+      speed: 'Vlastný rýchlostný test Googlu pre mobily, k tomu čas odozvy servera, veľkosť stránky, kompresia, obrázky a skripty.',
+      seo: 'Všetko, čo Google číta ako prvé: titulok, popis, nadpisy, kanonická adresa, jazyk, robots.txt, mapa stránok, náhľady odkazov a štruktúrované dáta.',
+      mobile: 'Či je stránka prispôsobená pre mobily, popisy obrázkov pre čítačky obrazovky, ikona webu a kontakty na jedno ťuknutie.',
+      security: 'HTTPS, presmerovanie z http a bezpečnostné hlavičky, ktorými prehliadače chránia návštevníkov.',
+      care: 'Známky zanedbaného webu: starý rok v pätičke, zastarané knižnice, viditeľné verzie softvéru, chýbajúce štatistiky alebo súhlas s cookies.',
+    },
+    limits: 'Automatická kontrola číta iba úvodnú stránku a nedokáže posúdiť dizajn, texty ani to, ako dobre web predáva — na to slúži osobné posúdenie.',
+    forTitle: 'Weby pre vaše odvetvie',
   },
 };
 
@@ -331,7 +389,7 @@ export default function WebsiteCheck() {
             ))}
             <li>
               <Link to={lp('/industries/')} data-cursor="follow" className="group flex items-center justify-between border border-line px-4 py-3 transition-colors hover:border-accent">
-                <span className="font-mono text-[12px] uppercase tracking-tech text-text">{lang === 'hu' ? 'Összes iparág' : 'All industries'}</span>
+                <span className="font-mono text-[12px] uppercase tracking-tech text-text">{{ en: 'All industries', hu: 'Összes iparág', sk: 'Všetky odvetvia' }[lang]}</span>
                 <span className="font-mono text-[13px] text-muted transition-transform group-hover:translate-x-1 group-hover:text-accent">→</span>
               </Link>
             </li>
@@ -350,7 +408,7 @@ export default function WebsiteCheck() {
 
 type Txt = (typeof T)['en'];
 
-function Summary({ report, facts, lang, t }: { report: Report; facts: Facts; lang: 'en' | 'hu'; t: Txt }) {
+function Summary({ report, facts, lang, t }: { report: Report; facts: Facts; lang: Lang; t: Txt }) {
   const [copied, setCopied] = useState(false);
   const color = report.score >= 75 ? '#3ccf7a' : report.score >= 50 ? '#f2b33d' : 'rgb(var(--c-accent))';
   const top = report.results.filter((r) => r.status === 'fail').sort((a, b) => b.weight - a.weight).slice(0, 3);
@@ -482,7 +540,7 @@ function SpeedCard({ speed, state, t }: { speed: Speed | null; state: string; t:
   );
 }
 
-function Row({ r, lang, t }: { r: Result; lang: 'en' | 'hu'; t: Txt }) {
+function Row({ r, lang, t }: { r: Result; lang: Lang; t: Txt }) {
   const c = CHECKS[r.id];
   return (
     <li className="grid grid-cols-[18px_minmax(0,1fr)] gap-3 border-b border-line py-4 last:border-0">
@@ -506,7 +564,7 @@ function Row({ r, lang, t }: { r: Result; lang: 'en' | 'hu'; t: Txt }) {
   );
 }
 
-function Findings({ report, lang, t, showGood, setShowGood }: { report: Report; lang: 'en' | 'hu'; t: Txt; showGood: boolean; setShowGood: (v: boolean) => void }) {
+function Findings({ report, lang, t, showGood, setShowGood }: { report: Report; lang: Lang; t: Txt; showGood: boolean; setShowGood: (v: boolean) => void }) {
   const by = (s: Status) => report.results.filter((r) => r.status === s).sort((a, b) => b.weight - a.weight);
   const groups: Array<[Status, string]> = [
     ['fail', t.fixFirst],
@@ -554,7 +612,7 @@ function Findings({ report, lang, t, showGood, setShowGood }: { report: Report; 
   );
 }
 
-function ReviewForm({ report, facts, speed, lang, t, lp }: { report: Report; facts: Facts; speed: Speed | null; lang: 'en' | 'hu'; t: Txt; lp: (p: string) => string }) {
+function ReviewForm({ report, facts, speed, lang, t, lp }: { report: Report; facts: Facts; speed: Speed | null; lang: Lang; t: Txt; lp: (p: string) => string }) {
   const [v, setV] = useState({ name: '', email: '', phone: '', message: '', honey: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [err, setErr] = useState('');
@@ -603,7 +661,7 @@ function ReviewForm({ report, facts, speed, lang, t, lp }: { report: Report; fac
     <div className="relative grid gap-8 border border-accent/70 bg-surface p-5 sm:p-7 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
       <CornerMarks />
       <div>
-        <div className="label">// {lang === 'hu' ? 'Személyes értékelés' : 'Personal review'}</div>
+        <div className="label">// {{ en: 'Personal review', hu: 'Személyes értékelés', sk: 'Osobné posúdenie' }[lang]}</div>
         <h2 className="display mt-2 text-[clamp(1.7rem,6vw,2.6rem)] leading-[0.95]">{t.ctaTitle}</h2>
         <p className="mt-4 max-w-[48ch] text-[14.5px] leading-relaxed text-muted">{t.ctaText}</p>
         <Link to={lp('/modernization/')} data-cursor="follow" className="mt-5 inline-block font-mono text-[11.5px] uppercase tracking-tech text-text underline-offset-4 hover:text-accent hover:underline">

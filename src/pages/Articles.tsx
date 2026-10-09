@@ -105,7 +105,7 @@ export default function Articles() {
         subtitle={t.articles.subtitle}
         right={
           <span className="label flex items-center gap-4">
-            <a href={lang === 'hu' ? '/hu/feed.xml' : '/feed.xml'} className="inline-flex items-center gap-1.5 transition-colors hover:text-accent" title={t.ux.rss}>
+            <a href={lp('/feed.xml')} className="inline-flex items-center gap-1.5 transition-colors hover:text-accent" title={t.ux.rss}>
               <svg viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="currentColor" aria-hidden>
                 <circle cx="3" cy="13" r="1.8" />
                 <path d="M1.5 6.5a8 8 0 0 1 8 8h-2a6 6 0 0 0-6-6zM1.5 1.5a13 13 0 0 1 13 13h-2a11 11 0 0 0-11-11z" />
@@ -219,7 +219,7 @@ export default function Articles() {
         <ol className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {shown.map(({ article, v, number }, i) => {
             // the share picture of the language shown, else the other language's
-            const image = v.image ?? article.versions.en?.image ?? article.versions.hu?.image;
+            const image = v.image ?? article.versions.en?.image ?? article.versions.hu?.image ?? article.versions.sk?.image;
             const to = lp(`/articles/${article.slug}/`);
             return (
               <li key={article.slug} className="flex">

@@ -76,7 +76,7 @@ export function siteGraph() {
         '@id': `${site.url}/#website`,
         url: `${site.url}/`,
         name: site.domain,
-        inLanguage: ['en', 'hu'],
+        inLanguage: ['en', 'hu', 'sk'],
         publisher: { '@id': `${site.url}/#person` },
       },
     ],

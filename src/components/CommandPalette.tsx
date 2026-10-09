@@ -165,6 +165,13 @@ export default function CommandPalette({ open, setOpen }: { open: boolean; setOp
         hint: lang === 'hu' ? '●' : 'HU',
         run: () => setLang('hu'),
       },
+      {
+        id: 'lang-sk',
+        group: t.palette.language,
+        label: t.palette.sk,
+        hint: lang === 'sk' ? '●' : 'SK',
+        run: () => setLang('sk'),
+      },
     ];
     const articleCmds: Command[] = listedArticles().map((a) => {
       const v = inLang(a, lang);

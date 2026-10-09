@@ -174,8 +174,8 @@ function SectionBlock({ section, cv, side = false }: { section: Section; cv: Cv;
 function Contact({ cv, layout }: { cv: Cv; layout: 'list' | 'line' }) {
   const p = cv.personal;
   const items: Array<{ key: string; label?: string; text: string; href?: string }> = [];
-  if (p.email.trim()) items.push({ key: 'e', label: 'Email', text: p.email.trim(), href: `mailto:${p.email.trim()}` });
-  if (p.phone.trim()) items.push({ key: 'p', label: cv.design.lang === 'hu' ? 'Telefon' : 'Phone', text: p.phone.trim(), href: `tel:${p.phone.replace(/\s/g, '')}` });
+  if (p.email.trim()) items.push({ key: 'e', label: cv.design.lang === 'sk' ? 'E-mail' : 'Email', text: p.email.trim(), href: `mailto:${p.email.trim()}` });
+  if (p.phone.trim()) items.push({ key: 'p', label: { en: 'Phone', hu: 'Telefon', sk: 'Telefón' }[cv.design.lang], text: p.phone.trim(), href: `tel:${p.phone.replace(/\s/g, '')}` });
   if (p.location.trim()) items.push({ key: 'l', text: p.location.trim() });
   for (const l of p.links) {
     if (!l.url.trim()) continue;

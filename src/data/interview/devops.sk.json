@@ -1,0 +1,3228 @@
+[
+ {
+  "id": 1,
+  "level": "junior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "theory",
+  "question": "CI pipeline má pri každom pull requeste automaticky overiť kód. Ktorý prístup najlepšie zabezpečí, že sa chybný kód nedostane do merge?",
+  "options": [
+   "Spúšťať pipeline až po nasadení do produkcie",
+   "Spúšťať pipeline v rámci kontroly pull requestu a zablokovať merge, ak zlyhajú povinné kvalitatívne alebo testovacie fázy",
+   "Nechať vývojára spustiť testy lokálne a výsledok nahlásiť ručne",
+   "Spúšťať pipeline až po merge, aby nespomaľovala vývoj"
+  ],
+  "answer": 1,
+  "explanation": "CI pipeline má dať spätnú väzbu ešte pred merge a zlyhané povinné kontroly by mali merge zablokovať. Chybná zmena je tak viditeľná skôr, než sa dostane do spoločného branchu. Kontrola až po produkcii prichádza neskoro a spoliehanie sa len na manuálne testovanie nie je reprodukovateľné a ľahko sa vynechá. Spúšťanie pipeline až po produkcii láka, pretože pipeline vyzerá jednoduchšie, ale nezabráni tomu, aby sa chybný kód dostal do merge."
+ },
+ {
+  "id": 2,
+  "level": "junior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "behavior",
+  "question": "Čo sa stane po spustení nasledujúceho príkazu, ak image `nginx:alpine` ešte nie je stiahnutý lokálne?",
+  "code": "docker run -d --name web nginx:alpine",
+  "options": [
+   "Vytvorí kontajner, ale nespustí ho",
+   "Zlyhá, pretože image treba najprv stiahnuť ručne",
+   "Stiahne image, vytvorí kontajner a spustí ho na pozadí",
+   "Spustí Nginx v produkčnom režime"
+  ],
+  "answer": 2,
+  "explanation": "`docker run` automaticky stiahne image, ak nie je dostupný lokálne, a potom z neho vytvorí a spustí kontajner. Prepínač `-d` spustí kontajner v detached režime. Samostatný `docker pull` preto vopred nie je potrebný. Ručné stiahnutie image láka, pretože `docker pull` sa naozaj bežne používa ako samostatný krok v CI pipelinách a pri nasadzovaní."
+ },
+ {
+  "id": 3,
+  "level": "junior",
+  "area": "Dockerfile best practices",
+  "topic": "Dockerfile best practices",
+  "type": "output",
+  "question": "Ktorý z nasledujúcich Dockerfilov vytvorí pre Node.js aplikáciu menší a spravidla bezpečnejší runtime image?",
+  "options": [
+   "FROM node:22\nCOPY . /app\nWORKDIR /app\nRUN npm install\nCMD [\"npm\", \"start\"]",
+   "FROM ubuntu:latest\nRUN apt-get update && apt-get install -y nodejs npm\nCOPY . /app\nWORKDIR /app\nRUN npm install\nCMD [\"npm\", \"start\"]",
+   "FROM node:22\nUSER root\nCOPY . /app\nWORKDIR /app\nRUN npm install\nCMD [\"npm\", \"start\"]",
+   "FROM node:22-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci --omit=dev\nCOPY . .\nUSER node\nCMD [\"node\", \"server.js\"]"
+  ],
+  "answer": 3,
+  "explanation": "Image založený na Alpine je spravidla menší, `npm ci` zabezpečí reprodukovateľnú inštaláciu závislostí pri použití lockfilu, produkčné závislosti sa dajú riešiť samostatne a `USER node` znižuje riziko, že aplikácia beží ako root. Samostatné kopírovanie súborov `package*.json` navyše umožňuje efektívnejšie využiť build cache Dockeru. Beh pod rootom láka, pretože mnohé kontajnery predvolene používajú root a spočiatku sa tým dá vyhnúť niektorým problémom s oprávneniami."
+ },
+ {
+  "id": 4,
+  "level": "junior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "behavior",
+  "question": "Kubernetes `Deployment` má nastavený požadovaný stav 3 bežiacich podov. Čo sa spravidla stane, ak jeden z podov nečakane skončí?",
+  "options": [
+   "Deployment automaticky vytvorí nový pod, aby udržal požadovaný počet replík",
+   "Celý Deployment sa zastaví",
+   "Kubernetes počká do ďalšieho nasadenia",
+   "Service automaticky vytvorí nový Deployment"
+  ],
+  "answer": 0,
+  "explanation": "Deployment pomocou ReplicaSetu zabezpečuje, aby bol dostupný požadovaný počet replík podov. Keď pod skončí, control plane sa snaží obnoviť požadovaný stav vytvorením náhradného podu. Service nie je zodpovedná za vytváranie inštancií workloadu. Pripísať to Service láka, pretože sprístupňuje pody v sieti, ale nie je to workload controller."
+ },
+ {
+  "id": 5,
+  "level": "junior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "scenario",
+  "question": "Aplikácia v pode vytvára súbory vo vnútri kontajnera, ale po reštarte podu zmiznú. Aplikácia potrebuje ukladať dáta, ktoré reštart podu prežijú. Aké je vhodné riešenie?",
+  "options": [
+   "Uviesť viacero záznamov `containerPort`",
+   "Použiť perzistentné úložisko, napríklad PersistentVolumeClaim",
+   "Spustiť viacero replík nad tým istým dočasným súborovým systémom",
+   "Zmeniť typ Service na `NodePort`"
+  ],
+  "answer": 1,
+  "explanation": "Zapisovateľný súborový systém kontajnera ani dočasné úložisko podu nie sú vhodné na spoľahlivé ukladanie perzistentných biznis dát. V Kubernetes sa perzistentné dáta zvyčajne ukladajú na úložisko pripojené cez PersistentVolumeClaim. `NodePort` zabezpečuje iba sieťový prístup a súbory perzistentnými nespraví. Viacero replík láka, pretože prinášajú redundanciu, ale samy o sebe problém perzistentného ukladania dát neriešia."
+ },
+ {
+  "id": 6,
+  "level": "junior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "theory",
+  "question": "Na čo sa Helm v prostredí Kubernetes primárne používa?",
+  "options": [
+   "Na aktualizáciu operačného systému Kubernetes nodov",
+   "Na build Docker imagov",
+   "Na balenie, konfiguráciu a nasadzovanie Kubernetes zdrojov",
+   "Na nahradenie Kubernetes API Servera"
+  ],
+  "answer": 2,
+  "explanation": "Helm organizuje Kubernetes manifesty do chartov a pomocou šablón umožňuje rôzne konfigurácie pre rôzne prostredia. Podporuje aj správu Helm releasov. Nie je to nástroj na Docker build a nenahrádza Kubernetes API Server. Brať Helm ako všeobecný runtime Kubernetes láka, pretože môže hrať v procese nasadzovania ústrednú úlohu, ale nie je to control plane klastra."
+ },
+ {
+  "id": 7,
+  "level": "junior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "output",
+  "question": "Čo urobí Terraform s nasledujúcou konfiguráciou, ak zdroj ešte neexistuje?",
+  "code": "resource \"example_server\" \"web\" {\n  name = \"web-01\"\n  size = \"small\"\n}",
+  "options": [
+   "Iba vypíše konfiguráciu a nič nevytvorí",
+   "Automaticky zmaže všetky existujúce zdroje",
+   "Spustí Docker kontajner s názvom `web-01`",
+   "Na základe implementácie providera vytvorí zdroj `example_server.web`"
+  ],
+  "answer": 3,
+  "explanation": "Terraform definuje požadovaný stav deklaratívnou konfiguráciou a prostredníctvom providera vytvorí deklarovaný zdroj, ak ešte neexistuje. Pri bežnom používaní sa samotná operácia vykoná cez `terraform plan` a následne `terraform apply`. Blok resource nie je špecifický pre Docker. Láka predstava, že Terraform priamo vytvorí akýkoľvek zdroj, keďže konfigurácia je abstraktná, ale za konkrétnu implementáciu zodpovedá provider."
+ },
+ {
+  "id": 8,
+  "level": "junior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "theory",
+  "question": "Aplikácia má premenlivú záťaž a pri raste dopytu potrebuje automaticky ďalšiu výpočtovú kapacitu. Ktorá cloudová schopnosť túto požiadavku priamo rieši?",
+  "options": [
+   "Auto scaling",
+   "DNS caching",
+   "Object versioning",
+   "Static IP reservation"
+  ],
+  "answer": 0,
+  "explanation": "Autoscaling dokáže na základe záťaže alebo vopred definovaných pravidiel zvyšovať či znižovať počet bežiacich výpočtových inštancií alebo dostupnú kapacitu. DNS, verzovanie objektového úložiska a statické IP adresy riešia iné problémy. Statická IP láka, pretože prináša stabilitu infraštruktúry, ale sama o sebe škálovanie nezabezpečí."
+ },
+ {
+  "id": 9,
+  "level": "junior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "output",
+  "question": "Klient prekladá doménu `api.example.com`. DNS obsahuje záznam, ktorý tento hostname mapuje na IP adresu servera. Ktorý typ záznamu sa na to používa pri IPv4?",
+  "options": [
+   "MX",
+   "CNAME",
+   "TXT",
+   "A"
+  ],
+  "answer": 3,
+  "explanation": "Záznam `A` mapuje hostname na IPv4 adresu. Pre IPv6 adresu sa používa záznam `AAAA`. Záznam MX určuje cieľ pre doručovanie pošty a záznam TXT môže obsahovať ľubovoľné textové informácie v DNS. CNAME mapuje jeden hostname na iný hostname. CNAME láka, pretože tiež mapuje hostname, ale IPv4 adresu priamo neukladá."
+ },
+ {
+  "id": 10,
+  "level": "junior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "scenario",
+  "question": "Čas odozvy webovej aplikácie sa náhle zvýšil. Ktorá metrika priamo ukazuje, ako rýchlo sa vybavujú požiadavky používateľov?",
+  "options": [
+   "Teplota CPU",
+   "Request latency",
+   "Disk inode count",
+   "Container image size"
+  ],
+  "answer": 1,
+  "explanation": "Request latency priamo meria, ako dlho trvá vybavenie požiadavky. V produkčnom monitoringu sa často sledujú percentily ako p95 alebo p99, pretože priemer dokáže pomalé požiadavky zakryť. Využitie CPU, počet inodov či veľkosť imagu môžu poskytnúť užitočné informácie pri iných problémoch. CPU láka, pretože vysoké vyťaženie CPU môže spôsobiť spomalenie, ale samotné využitie CPU čas odozvy pre používateľa nemeria."
+ },
+ {
+  "id": 11,
+  "level": "junior",
+  "area": "Logging",
+  "topic": "Logging",
+  "type": "behavior",
+  "question": "Kontajnerizovaná aplikácia zapisuje logy na stdout. Prečo je to v štandardnom prostredí Docker/Kubernetes výhodné?",
+  "options": [
+   "Logy sa automaticky ukladajú do SQL databázy",
+   "stdout vždy zabráni ukončeniu kontajnera",
+   "Container runtime a logovacie systémy platformy dokážu logy jednoduchšie zbierať a posielať ďalej",
+   "stdout zaručuje, že sa logy uchovajú navždy"
+  ],
+  "answer": 2,
+  "explanation": "V kontajnerizovaných prostrediach umožňuje použitie stdout a stderr, aby runtime alebo logovacia infraštruktúra klastra jednotne zbierali a posielali ďalej výstup aplikácie. Uchovávanie logov si vyžaduje samostatnú logovaciu infraštruktúru a retenčné pravidlá. Láka predpoklad, že sa logy uchovajú natrvalo, keďže sa dajú pozrieť príkazmi ako `kubectl logs`, to však neznamená neobmedzenú retenciu."
+ },
+ {
+  "id": 12,
+  "level": "junior",
+  "area": "SRE & incident management",
+  "topic": "SRE & incident management",
+  "type": "scenario",
+  "question": "V produkcii nastal incident a dôležité API je nedostupné. Čo by malo byť hlavným cieľom v úvodnej fáze incidentu?",
+  "options": [
+   "Okamžite prepracovať architektúru všetkých dotknutých komponentov",
+   "Znížiť dopad výpadku a stabilizovať systém",
+   "Napísať kompletný postmortem incidentu",
+   "Vypnúť všetky monitorovacie alerty"
+  ],
+  "answer": 1,
+  "explanation": "Počas incidentu je prioritou znížiť dopad na používateľov a biznis škody a stabilizovať systém. Hlbšia analýza príčiny a trvalé opravy zvyčajne prichádzajú, až keď je incident pod kontrolou. Okamžité prepracovanie celej architektúry láka, pretože tím chce príčinu natrvalo odstrániť, no počas prebiehajúceho výpadku to môže priniesť ďalšie riziká."
+ },
+ {
+  "id": 13,
+  "level": "junior",
+  "area": "Deployment strategies",
+  "topic": "Deployment strategies",
+  "type": "theory",
+  "question": "Pri rolling nasadení nová verzia aplikácie postupne nahrádza inštancie starej verzie. Aká je jedna dôležitá výhoda tohto prístupu?",
+  "options": [
+   "Celú službu netreba nevyhnutne odstaviť naraz",
+   "Health checky pri nasadení nikdy nie sú potrebné",
+   "Nová verzia je zaručene bez chýb",
+   "Stará verzia sa vždy okamžite zmaže"
+  ],
+  "answer": 0,
+  "explanation": "Pri rolling nasadení môžu staré a nové inštancie dočasne bežať paralelne, čo pri správnej konfigurácii pomôže vyhnúť sa úplnému výpadku služby. Health checky zostávajú dôležité a rolling nasadenie nezaručuje, že nová verzia je bez chýb. Láka považovať nulový výpadok za samozrejmosť, keďže táto stratégia je naň navrhnutá, ale zlá konfigurácia readiness, nedostatočná kapacita alebo nekompatibilné zmeny môžu výpadok aj tak spôsobiť."
+ },
+ {
+  "id": 14,
+  "level": "junior",
+  "area": "Secrets & security",
+  "topic": "Secrets & security",
+  "type": "trap",
+  "question": "Aplikácia potrebuje heslo k databáze. Ktorý prístup je v produkčnom prostredí najvhodnejší?",
+  "options": [
+   "Natvrdo zapísať heslo do zdrojového kódu",
+   "Commitnúť heslo do privátneho Git repozitára",
+   "Vložiť heslo do Docker imagu",
+   "Použiť systém na správu secretov, z ktorého si aplikácia secret načíta za behu"
+  ],
+  "answer": 3,
+  "explanation": "V produkcii by sa secrety mali spravidla spravovať v dedikovanom systéme na správu secretov s primeranou kontrolou prístupu, rotáciou a auditom. V Kubernetes sa napríklad dá použiť objekt Secret, hoci sám osebe nie je úplným riešením správy secretov. Privátny repozitár nie je bezpečné úložisko secretov. Privátny Git repozitár láka, pretože prístup sa dá obmedziť, ale keď sa secret raz dostane do histórie Gitu, môže sa dať neskôr obnoviť."
+ },
+ {
+  "id": 15,
+  "level": "junior",
+  "area": "GitOps",
+  "topic": "GitOps",
+  "type": "theory",
+  "question": "Ktorá charakteristika najlepšie vystihuje prístup GitOps?",
+  "options": [
+   "Produkčné prostredia sa spravujú výlučne ručne spúšťanými príkazmi",
+   "Požadovaný stav je verzovaný v Gite a automatizačný mechanizmus s ním zosúlaďuje bežiace prostredie",
+   "Git slúži iba na ukladanie vývojárskej dokumentácie",
+   "Git nahrádza Kubernetes API Server a priamo prevádzkuje klaster"
+  ],
+  "answer": 1,
+  "explanation": "V GitOps je Git zvyčajne zdrojom pravdy pre deklaratívny požadovaný stav a reconciler alebo controller sa priebežne snaží zosúladiť bežiaci systém s týmto stavom. Výsledkom sú auditovateľné zmeny a verzovaná konfigurácia. Git nenahrádza Kubernetes API Server. Nazvať ručné nasadzovanie GitOps láka, keďže konfigurácia nasadenia môže byť uložená v Gite, ale to samo osebe automatické zosúlaďovanie nezabezpečí."
+ },
+ {
+  "id": 16,
+  "level": "junior",
+  "area": "Scripting & automation",
+  "topic": "Scripting & automation",
+  "type": "output",
+  "question": "Aký je výstup nasledujúceho Bash skriptu?",
+  "code": "#!/bin/bash\n\nname=\"DevOps\"\n\nif [ \"$name\" = \"DevOps\" ]; then\n  echo \"match\"\nelse\n  echo \"no match\"\nfi",
+  "options": [
+   "match",
+   "no match",
+   "DevOps",
+   "Syntax error"
+  ],
+  "answer": 0,
+  "explanation": "Premenná obsahuje `DevOps`, takže podmienka `[ \"$name\" = \"DevOps\" ]` sa vyhodnotí ako pravdivá a vykoná sa príkaz `echo \"match\"`. Úvodzovky okolo premenných sú dôležité najmä vtedy, keď môžu byť hodnoty prázdne alebo obsahovať medzery. Syntaktická chyba láka, pretože `[` v Bashi je v skutočnosti príkaz a jeho syntax je citlivá na medzery."
+ },
+ {
+  "id": 17,
+  "level": "junior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "output",
+  "question": "Nasledujúca CI pipeline definuje tieto fázy (stages). V akom poradí sa vykonajú pre joby v tej istej pipeline?",
+  "code": "stages:\n  - test\n  - build\n  - deploy\n\njob_test:\n  stage: test\n\njob_build:\n  stage: build\n\njob_deploy:\n  stage: deploy",
+  "options": [
+   "`deploy`, potom `build`, potom `test`",
+   "Joby vždy bežia v úplne náhodnom poradí",
+   "`test`, potom `build`, potom `deploy`",
+   "Joby bežia v abecednom poradí podľa názvov"
+  ],
+  "answer": 2,
+  "explanation": "Deklarované poradie fáz určuje postupnosť fáz pipeline: najprv beží `test`, potom `build` a nakoniec `deploy`. CI systém môže viacero jobov v rámci tej istej fázy spúšťať paralelne. Abecedné poradie láka, pretože názvy jobov pôsobia ako intuitívna postupnosť, ale tok pipeline určuje deklarované poradie fáz."
+ },
+ {
+  "id": 18,
+  "level": "junior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "debug",
+  "question": "Vývojár spustí kontajner nasledujúcim príkazom, ale aplikácia nie je z prehliadača na hostiteľovi dostupná na `localhost:8080`. Čo v príkaze chýba?",
+  "code": "docker run my-app",
+  "options": [
+   "`docker stop`",
+   "`docker exec`",
+   "`docker build`",
+   "Mapovanie portov, napríklad `-p 8080:8080`"
+  ],
+  "answer": 3,
+  "explanation": "Port, ktorý aplikácia otvorí vo vnútri kontajnera, nemusí byť dostupný cez hostiteľa. Napríklad `-p 8080:8080` mapuje port 8080 hostiteľa na port 8080 kontajnera. Aplikácia zároveň musí počúvať na vhodnom rozhraní kontajnera. `docker build` láka, pretože je potrebný na vytvorenie imagu, ale sieťový port aplikácie nepublikuje."
+ },
+ {
+  "id": 19,
+  "level": "junior",
+  "area": "Dockerfile best practices",
+  "topic": "Dockerfile best practices",
+  "type": "performance",
+  "question": "Prečo je v nasledujúcej časti Dockerfilu výhodné skopírovať najprv iba súbory so závislosťami?",
+  "code": "COPY package.json package-lock.json ./\nRUN npm ci\nCOPY . .",
+  "options": [
+   "Pretože vďaka tomu aplikácia vždy beží ako root",
+   "Pretože vrstvu s inštaláciou závislostí možno znovu použiť, ak sa zmení iba zdrojový kód",
+   "Pretože `COPY . .` automaticky zmaže adresár node_modules",
+   "Pretože image tým automaticky dostane viac CPU"
+  ],
+  "answer": 1,
+  "explanation": "Vďaka cachovaniu vrstiev v Dockeri sa vrstva `RUN npm ci` môže znovu použiť z cache, ak sa `package.json` a lockfile nezmenili, takže pri zmene iba zdrojového kódu netreba závislosti inštalovať znova. Build sa tým môže výrazne zrýchliť. `COPY . .` už nainštalované závislosti automaticky nemaže. Ignorovať cache láka, pretože Dockerfile funguje aj bez nej, len sa builduje pomalšie."
+ },
+ {
+  "id": 20,
+  "level": "junior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "output",
+  "question": "Čo primárne definuje nasledujúci Kubernetes manifest?",
+  "code": "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: app-config\ndata:\n  LOG_LEVEL: \"info\"",
+  "options": [
+   "PersistentVolume",
+   "Kubernetes Secret so zašifrovaným heslom",
+   "ConfigMap s konfiguračnými dátami",
+   "Nový Deployment"
+  ],
+  "answer": 2,
+  "explanation": "Manifest uvádza `kind: ConfigMap`, definuje teda zdroj ConfigMap. Pole `data` môže obsahovať konfiguračné hodnoty, ktoré pody môžu použiť ako premenné prostredia alebo súbory. ConfigMap nie je Secret ani Deployment. Zámena so Secretom láka, pretože oba dokážu podom poskytnúť konfiguračné dáta, ale Secrety sú určené na citlivé údaje."
+ },
+ {
+  "id": 21,
+  "level": "junior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "behavior",
+  "question": "Kubernetes Service je typu `ClusterIP`. Ktoré tvrdenie ho správne opisuje?",
+  "options": [
+   "Predvolene sprístupňuje pody za Service iba z vnútra Kubernetes klastra",
+   "Automaticky vytvorí load balancer dostupný z internetu",
+   "Service spustí na každom node samostatný VM",
+   "Service vytvorí PersistentVolumeClaim"
+  ],
+  "answer": 0,
+  "explanation": "`ClusterIP` poskytuje virtuálnu IP adresu dostupnú v rámci Kubernetes klastra a smeruje prevádzku na zodpovedajúce endpointy, zvyčajne vybrané pody. Externý prístup sa dá zabezpečiť inými typmi Service alebo mechanizmami ingress/gateway. Láka predpokladať správanie LoadBalancera, pretože cloudové prostredia vedia pre Service vhodného typu vytvoriť cloudový load balancer, ale ClusterIP Service to sama nerobí."
+ },
+ {
+  "id": 22,
+  "level": "junior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "scenario",
+  "question": "V Terraform projekte upravíš konfiguráciu zdroja. Prečo je užitočné spustiť pred `apply` príkaz `terraform plan`?",
+  "options": [
+   "Pretože vykoná zmeny v produkcii",
+   "Pretože zmaže Terraform state",
+   "Pretože zakaždým nainštaluje nového Terraform providera",
+   "Pretože ukáže, aké zmeny Terraform plánuje vykonať"
+  ],
+  "answer": 3,
+  "explanation": "`terraform plan` porovná konfiguráciu s Terraform state a aktuálnym stavom známym cez providera a vytvorí navrhovanú sadu zmien. Vďaka tomu si môžeš očakávané zmeny infraštruktúry skontrolovať ešte pred úpravou prostredia. Pri bežnej prevádzke `plan` zmeny neaplikuje. Považovať `plan` za vykonanie láka, pretože Terraform už v tejto fáze zobrazuje podrobné zmeny zdrojov."
+ },
+ {
+  "id": 23,
+  "level": "junior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "trap",
+  "question": "Aplikácia sa pripája k inej službe cez HTTP pomocou hostname `api.example.com`. DNS preklad uspeje, no spojenie sa aj tak nepodarí nadviazať. Čo úspešný DNS preklad s istotou dokazuje?",
+  "options": [
+   "Že TCP spojenie určite uspeje",
+   "Že cieľová aplikácia je určite v poriadku",
+   "Že hostname sa dá preložiť na IP adresu",
+   "Že HTTP požiadavka sa úspešne spracuje"
+  ],
+  "answer": 2,
+  "explanation": "Úspešný DNS preklad znamená, že pre hostname sa dá zistiť IP adresa, ale nezaručuje, že uspeje TCP spojenie, TLS handshake ani HTTP požiadavka na aplikačnej úrovni. Ide o ďalšie kroky na sieťovej a aplikačnej vrstve. Láka predpoklad, že úspešný DNS preklad znamená úspešné HTTP spojenie, keďže DNS je súčasťou prístupu k hostname, ale preklad mena je iba skorým krokom komunikácie."
+ },
+ {
+  "id": 24,
+  "level": "junior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "scenario",
+  "question": "Kubernetes pody aplikácie sa opakovane reštartujú a monitoring ukazuje exit code kontajnera `137`. Aká je typická príčina?",
+  "options": [
+   "Platnosť DNS záznamu vypršala",
+   "Proces bol ukončený signálom SIGKILL, často pre nedostatok pamäte",
+   "Názov Docker imagu je príliš dlhý",
+   "Selector Service nezodpovedá žiadnemu podu"
+  ],
+  "answer": 1,
+  "explanation": "Exit code `137` zvyčajne znamená `128 + 9`, teda že proces bol ukončený signálom SIGKILL. V Kubernetes je častou príčinou stav OOMKilled, keď kontajner prekročí svoj pamäťový limit alebo je node pod tlakom na pamäť. Presnú príčinu treba overiť v stave podu a v udalostiach. Obviňovať iné Kubernetes objekty láka, pretože reštarty podov môžu vyzerať ako problém na úrovni klastra, no exit code dáva priamu stopu, ako bol proces ukončený."
+ },
+ {
+  "id": 25,
+  "level": "junior",
+  "area": "Secrets & security",
+  "topic": "Secrets & security",
+  "type": "production",
+  "question": "Docker image sa builduje pomocou nasledujúceho Dockerfilu. Aký je najvážnejší bezpečnostný problém?",
+  "code": "FROM alpine:3.20\nWORKDIR /app\nCOPY . .\nENV DB_PASSWORD=\"SuperSecret123\"\nCMD [\"./app\"]",
+  "options": [
+   "Použitie `WORKDIR` vytvára bezpečnostnú zraniteľnosť",
+   "Alpine image sa nedá použiť v produkcii",
+   "Secret sa môže stať súčasťou konfigurácie a vrstiev imagu, takže sa s ním nezaobchádza správne",
+   "`CMD` vždy odstráni premenné prostredia"
+  ],
+  "answer": 2,
+  "explanation": "`ENV DB_PASSWORD=...` vloží citlivé údaje do konfigurácie imagu, takže secret sa môže prezradiť pri distribúcii imagu alebo jeho build artefaktov. V produkcii treba použiť dedikované riešenie na správu secretov a secret vložiť za behu s primeranou kontrolou prístupu. Samotné Alpine image pre produkciu nediskvalifikuje. Premenná prostredia láka, pretože je bežným mechanizmom konfigurácie za behu, ale natvrdo zapísaný secret v Dockerfile nie je to isté ako jeho bezpečné vloženie za behu."
+ },
+ {
+  "id": 26,
+  "level": "junior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "debug",
+  "question": "V CI pipeline testy prebehnú úspešne, ale build job vzápätí zlyhá kvôli nasledujúcemu Bash skriptu. V čom môže byť problém?",
+  "code": "#!/bin/bash\nset -e\n\nnpm test\necho \"Tests passed\"\nnpm run build",
+  "options": [
+   "`set -e` zabráni tomu, aby sa `npm run build` vôbec vykonal",
+   "Príkaz `echo` zmaže premenné prostredia CI",
+   "`npm test` pri úspechu vždy ukončí shell",
+   "Ak `npm run build` vráti nenulový exit code, `set -e` spôsobí ukončenie skriptu s chybou"
+  ],
+  "answer": 3,
+  "explanation": "`set -e` hovorí Bashu, aby skončil, keď príkaz vráti nenulový exit code, s istými výnimkami špecifickými pre shell. Ak build príkaz zlyhá, skript sa ukončí a CI job zlyhá. Láka predstava, že `set -e` zabráni spusteniu buildu, keďže mení spracovanie chýb v shelli, ale vykonávanie ukončí iba vtedy, keď príkaz podľa platných pravidiel shellu naozaj zlyhá."
+ },
+ {
+  "id": 27,
+  "level": "junior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "behavior",
+  "question": "Čo sa stane, ak hlavný proces bežiaci v kontajneri skončí a v kontajneri nebeží žiadny iný dlhodobý proces?",
+  "options": [
+   "Docker automaticky vyberie nový hlavný proces",
+   "Kontajner sa za normálnych okolností zastaví",
+   "Kontajner sa automaticky premení na image",
+   "Kontajner sa vždy reštartuje"
+  ],
+  "answer": 1,
+  "explanation": "Životný cyklus kontajnera je v zásade naviazaný na jeho hlavný proces, zvyčajne PID 1. Keď tento proces skončí, kontajner sa za normálnych okolností zastaví, pokiaľ ho nereštartuje restart policy alebo externý orchestrátor. Láka predpoklad, že sa kontajner automaticky reštartuje, pretože Docker Compose či Kubernetes kontajnery reštartovať vedia, ide však o samostatne nastavené správanie."
+ },
+ {
+  "id": 28,
+  "level": "junior",
+  "area": "Dockerfile best practices",
+  "topic": "Dockerfile best practices",
+  "type": "performance",
+  "question": "Build Docker imagu je veľmi pomalý a vývojár po každej zmene znova inštaluje stovky závislostí. Ktorá zmena by najviac zlepšila využitie build cache v Dockeri?",
+  "options": [
+   "COPY . .\nRUN npm ci",
+   "RUN npm ci\nCOPY . .",
+   "COPY package.json package-lock.json ./\nRUN npm ci\nCOPY . .",
+   "COPY package.json package-lock.json ./\nCOPY . .\nRUN npm ci"
+  ],
+  "answer": 2,
+  "explanation": "Ak sa súbory so závislosťami kopírujú samostatne, vrstva s inštaláciou závislostí sa zneplatní iba pri zmene deklarácií závislostí. Pri zmene samotného zdrojového kódu sa vrstva `RUN npm ci` môže znovu použiť z cache. Skopírovať najprv celý projekt láka, pretože Dockerfile vyzerá jednoduchšie, ale potom môže každá zmena zdrojového kódu zneplatniť vrstvu s inštaláciou závislostí."
+ },
+ {
+  "id": 29,
+  "level": "junior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "output",
+  "question": "Manifest podu obsahuje nasledujúcu konfiguráciu `resources`. Čo znamená pole `requests`?",
+  "code": "resources:\n  requests:\n    cpu: \"250m\"\n    memory: \"128Mi\"\n  limits:\n    cpu: \"500m\"\n    memory: \"256Mi\"",
+  "options": [
+   "Hovorí schedulerovi, aké minimálne množstvo zdrojov pod požaduje",
+   "Zaručuje, že proces bude používať presne toľko CPU",
+   "Definuje maximálnu spotrebu pamäte podu",
+   "Kubernetes toto množstvo zdrojov automaticky rezervuje na každom node"
+  ],
+  "answer": 0,
+  "explanation": "Resource request hovorí schedulerovi, koľko kapacity zdrojov musí byť k dispozícii, keď rozhoduje, kam pod umiestniť. Limit naopak definuje hornú hranicu spotreby zdrojov podľa platných pravidiel. Request neznamená, že aplikácia skutočne spotrebuje presne toto množstvo. Vykladať request ako maximálnu spotrebu láka, pretože requests aj limits sa týkajú CPU a pamäte."
+ },
+ {
+  "id": 30,
+  "level": "junior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "debug",
+  "question": "Kubernetes Service neposiela prevádzku na pody. Medzi selectorom Service a labelmi podu vidno nasledujúci nesúlad. V čom je problém?",
+  "code": "Service:\n  selector:\n    app: backend\n\nPod:\n  labels:\n    app: api",
+  "options": [
+   "Pod musí mať vždy label `app: service`",
+   "Service môže selector používať iba vtedy, keď je typu `NodePort`",
+   "Selector nezodpovedá labelu podu, takže Service pod nenájde",
+   "Hodnotou labelu môže byť iba Kubernetes namespace"
+  ],
+  "answer": 2,
+  "explanation": "Service vyberá cieľové pody podľa svojho selectora. Keďže Service hľadá `app: backend`, no pod má `app: api`, pod sa nestane zodpovedajúcim endpointom. Selector a labely podu sa musia zhodovať. Podozrievať `NodePort` láka, pretože ide o ďalší typ Service, ale správanie selectora sa podľa typu nemení."
+ },
+ {
+  "id": 31,
+  "level": "junior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "output",
+  "question": "Súbor `values.yaml` Helm chartu obsahuje nasledujúce. Aká bude hodnota v `ConfigMap`, keď sa chart nainštaluje s predvolenými hodnotami?",
+  "code": "values.yaml:\nreplicaCount: 2\n\nconfig:\n  logLevel: \"info\"\n\nConfigMap template:\ndata:\n  LOG_LEVEL: {{ .Values.config.logLevel | quote }}",
+  "options": [
+   "`LOG_LEVEL: \"2\"`",
+   "`LOG_LEVEL: \"info\"`",
+   "`LOG_LEVEL: null`",
+   "Helm ohlási chybu, pretože `quote` sa v YAML nedá použiť"
+  ],
+  "answer": 1,
+  "explanation": "Šablóna číta `.Values.config.logLevel`, ktorého predvolená hodnota v súbore values je `\"info\"`. Funkcia `quote` zabezpečí, že vyrenderovaná hodnota bude v úvodzovkách. `replicaCount` je nesúvisiaca hodnota. Hodnota `2` láka, pretože je to ďalšia hodnota na najvyššej úrovni súboru values, ale šablóna explicitne pristupuje k ceste `config.logLevel`."
+ },
+ {
+  "id": 32,
+  "level": "junior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "output",
+  "question": "Čo znamená nasledujúca referencia v Terraforme?",
+  "code": "resource \"aws_instance\" \"web\" {\n  ami           = \"ami-123\"\n  instance_type = \"t3.micro\"\n}\n\noutput \"server_id\" {\n  value = aws_instance.web.id\n}",
+  "options": [
+   "Skopíruje celú konfiguráciu AWS inštancie do outputu",
+   "Vytvorí novú AWS inštanciu iba kvôli outputu",
+   "Vráti privátnu IP adresu inštancie",
+   "Sprístupní atribút `id` zdroja `aws_instance.web` ako output"
+  ],
+  "answer": 3,
+  "explanation": "`aws_instance.web.id` je Terraform referencia na atribút zdroja a output túto hodnotu sprístupní ako Terraform output. Samostatný zdroj nevytvára. Privátna IP adresa láka, pretože sieťové údaje inštancie sa cez outputy tiež bežne zverejňujú, ale táto konfigurácia explicitne odkazuje na atribút `id`."
+ },
+ {
+  "id": 33,
+  "level": "junior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "scenario",
+  "question": "Aplikácia hostovaná v cloude potrebuje ukladať veľmi veľké množstvo zriedka menených súborov, napríklad obrázkov a záloh. Ktorý model služby sa hodí najlepšie?",
+  "options": [
+   "Object storage",
+   "Dedicated CPU VM",
+   "DNS resolver",
+   "Load balancer"
+  ],
+  "answer": 0,
+  "explanation": "Objektové úložisko je navrhnuté na ukladanie veľkého množstva súborov a blobov a pre tento typ dát je zvyčajne vysoko škálovateľné, odolné a nákladovo efektívne. VM alebo load balancer slúžia na iný účel. VM láka, pretože na ňom sa dajú súbory spravovať priamo, ale objektové úložisko je spravidla optimalizované na veľké množstvo statických objektov."
+ },
+ {
+  "id": 34,
+  "level": "junior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "debug",
+  "question": "Server úspešne preloží hostname `example.com`, ale spojenie na `example.com:443` skončí timeoutom. Ktorý záver z diagnostiky je najpresnejší?",
+  "options": [
+   "DNS je určite pokazené",
+   "Platnosť TLS certifikátu určite vypršala",
+   "Úspešný DNS preklad nedokazuje, že TCP/443 spojenie je povolené a dosiahnuteľné",
+   "Doména určite neexistuje"
+  ],
+  "answer": 2,
+  "explanation": "Úspešný DNS preklad ukazuje, že hostname sa dá preložiť na IP adresu, ale nedokazuje, že TCP port je dosiahnuteľný. Timeout môže spôsobiť firewall, security group, problém so smerovaním, network policy alebo samotná cieľová služba. Podozrievať DNS láka, pretože problém nastáva pri použití toho istého hostname, ale DNS a TCP konektivita sú samostatné vrstvy."
+ },
+ {
+  "id": 35,
+  "level": "junior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "theory",
+  "question": "Prečo je pri API užitočné sledovať okrem priemernej latencie aj p95 latenciu?",
+  "options": [
+   "p95 vždy predstavuje latenciu jedinej najpomalšej požiadavky",
+   "p95 pomáha ukázať latenciu, pod ktorou sa vybaví väčšina požiadaviek, a pomalšie požiadavky odhalí lepšie ako priemer",
+   "p95 meria iba vyťaženie CPU",
+   "p95 automaticky opraví pomalé požiadavky"
+  ],
+  "answer": 1,
+  "explanation": "p95 predstavuje hodnotu latencie, pod ktorou leží približne 95 % pozorovaní v danom meracom okne. Preto je užitočná na odhalenie zhoršenia tail latency, ktoré priemer ľahko zakryje. Nepredstavuje najpomalšiu požiadavku. Vykladať ju ako maximum láka, pretože obe metriky súvisia s pomalými požiadavkami, ale p95 nie je metrika extrémnych hodnôt."
+ },
+ {
+  "id": 36,
+  "level": "junior",
+  "area": "Logging",
+  "topic": "Logging",
+  "type": "debug",
+  "question": "Aplikácia v produkcii zapisuje pri každej požiadavke niekoľko podrobných debug riadkov, čím výrazne rastú náklady na ukladanie a príjem logov. Aký je najlepší prvý krok?",
+  "options": [
+   "Úplne vypnúť všetko logovanie",
+   "Posielať logy výlučne na laptop vývojára",
+   "Zmeniť každý riadok logu na úroveň warning",
+   "Zaviesť vhodnú konfiguráciu úrovní logovania a stratégie retencie/samplingu"
+  ],
+  "answer": 3,
+  "explanation": "Objem logov treba riadiť vhodnými úrovňami logovania, retenčnými pravidlami a prípadne samplingom, pričom sa zachovajú informácie potrebné na diagnostiku. Úplné vypnutie logovania v produkcii by výrazne obmedzilo schopnosť riešiť poruchy. Vypnúť všetko láka, pretože to okamžite zníži náklady, ale zároveň to odstráni dôležité diagnostické signály."
+ },
+ {
+  "id": 37,
+  "level": "junior",
+  "area": "SRE & incident management",
+  "topic": "SRE & incident management",
+  "type": "scenario",
+  "question": "On-call inžinier dostáva alert, ktorý sa spúšťa pravidelne, no služba z pohľadu používateľov funguje. Aký je najlepší dlhodobý prístup?",
+  "options": [
+   "Alert automaticky ignorovať",
+   "Alert zakaždým ručne potvrdiť",
+   "Zistiť príčinu a upraviť prah alebo podmienku alertu tak, aby signalizoval skutočný dopad na používateľov",
+   "Vypnúť všetok monitoring"
+  ],
+  "answer": 2,
+  "explanation": "Časté, ale neakčné alerty vedú k únave z alertov a zvyšujú riziko, že sa prehliadne skutočný incident. Tím by mal zistiť, či alert predstavuje skutočný problém na úrovni služby, a podľa toho podmienku spresniť. Zakaždým alert potvrdiť láka, pretože to rýchlo odstráni okamžitý šum, ale skutočný problém to nevyrieši."
+ },
+ {
+  "id": 38,
+  "level": "junior",
+  "area": "Deployment strategies",
+  "topic": "Deployment strategies",
+  "type": "scenario",
+  "question": "Chceš novú verziu postupne vydať iba pre malú časť prevádzky, zatiaľ čo ostatní používatelia ďalej používajú stabilnú verziu. Ktorá stratégia nasadenia tejto požiadavke zodpovedá?",
+  "options": [
+   "Canary deployment",
+   "Recreate deployment",
+   "Big-bang deployment",
+   "Manual rollback"
+  ],
+  "answer": 0,
+  "explanation": "Pri canary nasadení dostáva nová verzia spočiatku prevádzku od malej časti používateľov alebo požiadaviek a tento podiel sa po pozitívnych pozorovaniach môže postupne zvyšovať. Tým sa dá znížiť počiatočný dopad chybného vydania. Stratégia recreate zvyčajne zastaví staré inštancie pred spustením nových. Recreate láka, pretože tiež zavádza novú verziu, ale postupné presúvanie prevádzky neposkytuje."
+ },
+ {
+  "id": 39,
+  "level": "junior",
+  "area": "Secrets & security",
+  "topic": "Secrets & security",
+  "type": "behavior",
+  "question": "Prečo samotné pridanie citlivého konfiguračného súboru do `.gitignore` nepovažujeme za dostatočnú ochranu?",
+  "options": [
+   "Pretože `.gitignore` platí iba pre binárne súbory",
+   "Pretože Git ignorované súbory automaticky nahrá",
+   "Pretože `.gitignore` funguje iba v produkcii",
+   "Pretože `.gitignore` zabráni náhodnému sledovaniu, ale ak bol súbor už skôr commitnutý, z histórie repozitára ho neodstráni"
+  ],
+  "answer": 3,
+  "explanation": "`.gitignore` určuje, ktoré nové alebo nesledované súbory má Git ignorovať. Ak bol secret už commitnutý, môže zostať dostupný v predchádzajúcich commitoch. V takom prípade treba secret zrotovať a podľa potreby vyčistiť aj históriu repozitára. Brať `.gitignore` ako úplnú ochranu secretov láka, pretože dokáže zabrániť budúcim náhodným commitom, ale spätne problém nerieši."
+ },
+ {
+  "id": 40,
+  "level": "junior",
+  "area": "GitOps",
+  "topic": "GitOps",
+  "type": "scenario",
+  "question": "V Kubernetes prostredí založenom na GitOps administrátor priamo v klastri upraví Deployment, ale v Git repozitári sa nič nezmení. Čo sa môže stať po reconciliácii?",
+  "options": [
+   "GitOps systém nevyhnutne zmaže celý klaster",
+   "GitOps systém môže Deployment vrátiť do požadovaného stavu deklarovaného v Gite",
+   "Kubernetes API Server zmenu automaticky commitne do Gitu",
+   "Deployment zostane natrvalo nezmenený, pretože GitOps sleduje iba pushe do Gitu"
+  ],
+  "answer": 1,
+  "explanation": "Pri GitOps reconciliácii controller porovnáva bežiaci stav s požadovaným stavom uloženým v Gite a pri zistení odchýlky (drift) môže konfiguráciu vrátiť do deklarovaného stavu. Presné správanie závisí od GitOps nástroja a jeho konfigurácie. Láka predpoklad, že ručná zmena v klastri zostane natrvalo, keďže je hneď viditeľná, ale reconciliácia môže obnoviť deklaratívny zdrojový stav."
+ },
+ {
+  "id": 41,
+  "level": "junior",
+  "area": "Scripting & automation",
+  "topic": "Scripting & automation",
+  "type": "output",
+  "question": "Aký je výstup nasledujúceho Bash skriptu?",
+  "code": "#!/bin/bash\n\nfor env in dev test prod; do\n  echo \"$env\"\ndone",
+  "options": [
+   "`prod`, potom `test`, potom `dev`",
+   "Iba `dev`",
+   "`dev`, potom `test`, potom `prod`",
+   "Syntax error"
+  ],
+  "answer": 2,
+  "explanation": "Cyklus `for` prechádza prvky zadaného zoznamu v deklarovanom poradí, takže na samostatných riadkoch vypíše `dev`, `test` a potom `prod`. Shell zoznam automaticky nezoraďuje. Opačné poradie láka, pretože produkcia sa často vníma ako posledné prostredie nasadenia, ale cyklus dodrží presne zadané poradie."
+ },
+ {
+  "id": 42,
+  "level": "junior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "scenario",
+  "question": "V pipeline unit testy prejdú, ale build imagu zlyhá. Prečo je užitočné mať build ako samostatnú CI fázu?",
+  "options": [
+   "Pretože build je vždy rýchlejší ako testy",
+   "Pretože Docker engine automaticky nasadzuje do produkcie",
+   "Pretože build nikdy nezávisí od zdrojového kódu",
+   "Pretože úspešné unit testy nezaručujú, že skutočný nasaditeľný artefakt/image sa dá úspešne vytvoriť"
+  ],
+  "answer": 3,
+  "explanation": "Unit testy overujú určité aspekty správania aplikácie, ale nemusia pokrývať Docker build, riešenie závislostí, konfiguráciu imagu ani iné problémy s balením. Samostatné overenie buildu zabezpečí, že artefakt potrebný pre ďalšiu fázu nasadenia sa naozaj dá vytvoriť. Považovať úspešné unit testy za postačujúce láka, pretože sú často dôležitou skorou kontrolou kvality, ale všetky chyby pri builde nepokrývajú."
+ },
+ {
+  "id": 43,
+  "level": "junior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "edgecase",
+  "question": "Aplikácia v kontajneri počúva na `localhost:8080`. Iný kontajner v tej istej Docker sieti sa snaží k prvej aplikácii pripojiť. Prečo z druhého kontajnera nefunguje `localhost:8080`?",
+  "options": [
+   "Pretože `localhost` odkazuje na vlastný sieťový namespace druhého kontajnera",
+   "Pretože port 8080 sa v Docker sieti nedá použiť",
+   "Pretože localhost vždy odkazuje na hostiteľský stroj",
+   "Pretože kontajnery spolu môžu komunikovať iba cez UDP"
+  ],
+  "answer": 0,
+  "explanation": "Každý kontajner má vlastný sieťový namespace, takže `localhost` odkazuje na vlastný sieťový stack daného kontajnera. Na pripojenie k inému kontajneru treba použiť vhodný názov kontajnera alebo služby, ktorý sa dá preložiť cez DNS Dockeru, a príslušný port. Láka predstava, že localhost odkazuje na hostiteľa, pretože v prehliadači alebo shelli hostiteľa localhost bežne znamená lokálny stroj."
+ },
+ {
+  "id": 44,
+  "level": "junior",
+  "area": "Dockerfile best practices",
+  "topic": "Dockerfile best practices",
+  "type": "trap",
+  "question": "Prečo je užitočné mať v Docker build kontexte súbor `.dockerignore`?",
+  "options": [
+   "Automaticky zašifruje Docker image",
+   "Určuje, ktoré súbory sa majú vylúčiť z build kontextu, čím znižuje zbytočný prenos dát a riziko náhodného zahrnutia nechcených súborov",
+   "Zabráni tomu, aby kontajner bežal ako root",
+   "Automaticky optimalizuje využitie CPU"
+  ],
+  "answer": 1,
+  "explanation": "`.dockerignore` dokáže z build kontextu vylúčiť adresáre ako `.git`, lokálne závislosti, výstupy buildu či iné nepotrebné súbory. Tým sa môže zmenšiť build kontext a znížiť riziko náhodného zahrnutia citlivých alebo nepodstatných súborov. Image nešifruje ani nemení používateľa kontajnera. Spájať ho priamo s bezpečnosťou imagu láka, pretože môže obmedziť únik citlivých súborov, ale jeho hlavným účelom je filtrovanie build kontextu."
+ },
+ {
+  "id": 45,
+  "level": "junior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "behavior",
+  "question": "Čo sa spravidla stane, ak `livenessProbe` kontajnera v Kubernetes `Pod` opakovane zlyháva?",
+  "options": [
+   "Service sa automaticky zmaže",
+   "Deployment vždy okamžite zmaže celý namespace",
+   "Kubelet môže zlyhávajúci kontajner reštartovať",
+   "Kubernetes automaticky zbuilduje nový Docker image"
+  ],
+  "answer": 2,
+  "explanation": "Liveness probe udáva, či sa kontajner stále považuje za dostatočne zdravý na to, aby ďalej bežal. Po opakovaných zlyhaniach ho kubelet môže reštartovať podľa nastavenej probe a restart policy. Readiness probe naopak primárne udáva, či má pod dostávať prevádzku. Obviňovať Deployment láka, pretože Deploymenty spravujú požadovaný stav podov, ale spracovanie liveness probe priamo vedie k reštartom kontajnera."
+ },
+ {
+  "id": 46,
+  "level": "junior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "scenario",
+  "question": "Aplikácia potrebuje sprístupniť konfiguračný súbor viacerým podom a súbor neobsahuje citlivé údaje. Ktorý Kubernetes objekt je najvhodnejší?",
+  "options": [
+   "ConfigMap",
+   "Secret",
+   "ServiceAccount",
+   "PersistentVolumeClaim"
+  ],
+  "answer": 0,
+  "explanation": "ConfigMap je navrhnutá na poskytovanie necitlivých konfiguračných dát, napríklad properties alebo konfiguračných súborov, podom. Secrety sú určené na citlivé údaje, ServiceAccounty poskytujú identitu workloadu a prístup k API a PersistentVolumeClaimy žiadajú o perzistentné úložisko. Secret láka, pretože tiež dokáže podom poskytnúť konfiguračné dáta, ale pre necitlivú konfiguráciu je vhodným modelom ConfigMap."
+ },
+ {
+  "id": 47,
+  "level": "junior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "debug",
+  "question": "Renderovanie Helm šablóny zlyhá s chybou `nil pointer evaluating interface`. Šablóna obsahuje:\nSúbor `values.yaml` neobsahuje štruktúru `app.logging`. Aká je najpravdepodobnejšia príčina?",
+  "code": "env:\n  LOG_LEVEL: {{ .Values.app.logging.level | quote }}",
+  "options": [
+   "`quote` vždy spôsobí chybu null pointer",
+   "Helm nepodporuje vnorené štruktúry values",
+   "YAML parser automaticky prevedie každú chýbajúcu hodnotu na string",
+   "Šablóna sa pokúša pristúpiť k vnorenej hodnote, ktorá nebola definovaná"
+  ],
+  "answer": 3,
+  "explanation": "Šablóna sa pokúša vyhodnotiť vnorenú hodnotu `app.logging.level`, ale potrebná štruktúra vo values chýba. Možným riešením je definovať vhodnú predvolenú hodnotu, dodať očakávanú štruktúru values alebo použiť bezpečnejšiu logiku šablóny. Obviňovať `quote` láka, pretože v šablóne nasleduje hneď za hodnotou, ale problémom je vyhodnotenie chýbajúcej vnorenej hodnoty."
+ },
+ {
+  "id": 48,
+  "level": "junior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "edgecase",
+  "question": "Prečo je nebezpečné spravovať ten istý infraštruktúrny zdroj z dvoch samostatných Terraform stavov?",
+  "options": [
+   "Terraform viacero stavov vôbec nepodporuje",
+   "Oba stavy automaticky používajú ten istý state súbor",
+   "Každý stav si môže myslieť, že zdroj spravuje práve on, čo môže viesť k driftu a konfliktným zmenám",
+   "Terraform pri vytvorení druhého stavu zdroj automaticky zmaže"
+  ],
+  "answer": 2,
+  "explanation": "Terraform state sleduje, ktoré infraštruktúrne zdroje spravuje konkrétna konfigurácia. Ak ten istý reálny zdroj spravuje viacero stavov, môžu mať o ňom rozdielny obraz a navzájom si prepisovať alebo nesprávne vykladať zmeny. Láka predpoklad, že Terraform tomu automaticky zabráni, keďže state je pre jeho fungovanie ústredný, ale samostatné stavy predstavujú samostatné hranice správy."
+ },
+ {
+  "id": 49,
+  "level": "junior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "scenario",
+  "question": "Aplikácia musí bežať vo viacerých availability zónach, aby výpadok jednej zóny službu úplne neodstavil. Ktorý architektonický prístup tento cieľ podporuje?",
+  "options": [
+   "Umiestniť všetky inštancie do jednej availability zóny",
+   "Prevádzkovať viacero inštancií vo viacerých availability zónach s vhodným load balancingom",
+   "Použiť jeden veľký VM bez redundancie",
+   "Nastaviť DNS TTL na nulu"
+  ],
+  "answer": 1,
+  "explanation": "Použitie viacerých availability zón znižuje riziko, že porucha v jednej zóne spôsobí úplný výpadok služby. Viacero inštancií a vhodné rozdeľovanie prevádzky umožnia, aby zvyšné zóny naďalej obsluhovali prevádzku. Jeden veľký VM láka, pretože je jednoduchší a pôsobí výkonnejšie, ale zostáva potenciálnym single point of failure."
+ },
+ {
+  "id": 50,
+  "level": "junior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "output",
+  "question": "Na Linux serveri sa vykoná nasledujúci príkaz:\nČo požaduje prepínač `-I` v porovnaní s predvoleným správaním `curl`?",
+  "code": "curl -I https://example.com",
+  "options": [
+   "Požaduje iba HTTP hlavičky odpovede",
+   "Stiahne celé HTML telo a hlavičky ignoruje",
+   "Priamo sa dotazuje na DNS záznamy",
+   "Pošle HTTP požiadavku bez nadviazania TCP spojenia"
+  ],
+  "answer": 0,
+  "explanation": "`curl -I` vykoná HEAD požiadavku, ktorá má získať hlavičky odpovede bez sťahovania tela. Hodí sa na rýchlu kontrolu HTTP stavových kódov, typov obsahu, cache hlavičiek a podobných metadát. Láka predpoklad, že sa stiahne celé HTML, pretože `curl` bežne vypisuje telo odpovede, ale `-I` zmení požiadavku na HEAD."
+ },
+ {
+  "id": 51,
+  "level": "junior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "behavior",
+  "question": "V CI pipeline job úspešne vytvorí súbor `build/app.tar.gz` a nasledujúci job tento súbor potrebuje. Aké je vhodné riešenie, ak môžu oba joby bežať na rôznych CI runneroch?",
+  "options": [
+   "Druhý job vždy dostane ten istý workspace",
+   "Súbor treba uložiť ako artefakt a nasledujúci job si ho stiahne",
+   "Súbor stačí uviesť v commit správe v Gite",
+   "Stačí súbor vypísať do logu pipeline"
+  ],
+  "answer": 1,
+  "explanation": "Keď joby bežia na rôznych runneroch, ďalší job nemusí používať ten istý súborový systém ani workspace. Mechanizmus CI artefaktov je navrhnutý na to, aby zachoval súbory vytvorené jedným jobom a sprístupnil ich neskorším jobom v pipeline. Predpoklad zdieľaného workspace láka, pretože v lokálnom prostredí je prirodzený, ale CI joby často bežia v izolovaných prostrediach."
+ },
+ {
+  "id": 52,
+  "level": "junior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "output",
+  "question": "Čo sa stane po vykonaní nasledujúceho príkazu?",
+  "code": "docker run --rm alpine echo \"hello\"",
+  "options": [
+   "Vytvorí image s názvom `hello`",
+   "Spustí Alpine kontajner na pozadí",
+   "Spustí kontajner, vypíše `hello` a potom kontajner odstráni",
+   "Zlyhá, pretože Alpine nevie vykonávať príkazy shellu"
+  ],
+  "answer": 2,
+  "explanation": "Docker vytvorí a spustí Alpine kontajner, proces `echo` sa dokončí a kontajner sa zastaví. Prepínač `--rm` spôsobí, že Docker zastavený kontajner automaticky odstráni. Láka predpoklad, že kontajner beží na pozadí, keďže `docker run` spúšťa kontajner, ale chýba tu prepínač `-d` a hlavný proces skončí takmer okamžite."
+ },
+ {
+  "id": 53,
+  "level": "junior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "scenario",
+  "question": "Kubernetes Deployment má nastavené 3 repliky, ale počas rolling update sa jeden z nových podov nikdy nedostane do stavu Ready. Ktorý mechanizmus pomáha zabrániť tomu, aby Deployment považoval nový pod za pripravený príliš skoro?",
+  "options": [
+   "`readinessProbe`",
+   "`containerPort`",
+   "`metadata.name`",
+   "`restartPolicy`"
+  ],
+  "answer": 0,
+  "explanation": "Readiness probe udáva, či je aplikácia pripravená prijímať prevádzku. Deployment počas rolloutu zohľadňuje pripravenosť podov, takže pod, ktorý nie je Ready, sa nepovažuje za riadne dostupnú inštanciu. `containerPort` dokumentuje konfiguráciu portu alebo s ňou pomáha, ale sama osebe zdravie aplikácie neoveruje. `restartPolicy` láka, pretože súvisí s reštartom zlyhaných podov, ale neudáva, či je aplikácia pripravená prijímať prevádzku."
+ },
+ {
+  "id": 54,
+  "level": "junior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "output",
+  "question": "PersistentVolumeClaim je definovaný takto. Čo znamená hodnota `10Gi` pod `requests.storage`?",
+  "code": "apiVersion: v1\nkind: PersistentVolumeClaim\nmetadata:\n  name: app-data\nspec:\n  accessModes:\n    - ReadWriteOnce\n  resources:\n    requests:\n      storage: 10Gi",
+  "options": [
+   "Maximálna spotreba pamäte podu je 10 GiB",
+   "PVC žiada úložisko s kapacitou aspoň 10 GiB",
+   "PVC žiada presne 10 GiB sieťovej priepustnosti",
+   "CPU limit kontajnera bude 10 GiB"
+  ],
+  "answer": 1,
+  "explanation": "`requests.storage` určuje kapacitu úložiska, ktorú PersistentVolumeClaim požaduje. Kubernetes môže nájsť vhodný PersistentVolume alebo úložisko dynamicky vytvoriť, aby túto požiadavku splnil. Pamäť ani CPU tým nenastavuje. Zámena s pamäťou láka, pretože Kubernetes používa `requests` aj pri iných zdrojoch, ale typ zdroja tu určuje kľúč `storage`."
+ },
+ {
+  "id": 55,
+  "level": "junior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "behavior",
+  "question": "Chceš ten istý Helm chart používať v `dev` aj `prod`, ale požadovaný počet replík sa medzi prostrediami líši. Aký je najlepší prístup?",
+  "options": [
+   "Vytvoriť pre každé prostredie samostatný chart",
+   "Upraviť zdrojový kód Kubernetes API Servera",
+   "Natvrdo zapísať počet replík do šablóny Deploymentu",
+   "Parametrizovať počet replík cez values a pre každé prostredie použiť iný values súbor"
+  ],
+  "answer": 3,
+  "explanation": "Mechanizmus values v Helme umožňuje nasadiť ten istý chart s rôznymi konfiguráciami. Napríklad `values-dev.yaml` a `values-prod.yaml` môžu definovať rôzny počet replík a pritom zdieľať tie isté šablóny. Samostatné charty lákajú, pretože úplné oddelenie prostredí sa spočiatku zdá jednoduchšie, ale môže viesť k výraznej duplicite konfigurácie."
+ },
+ {
+  "id": 56,
+  "level": "junior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "debug",
+  "question": "Terraform konfigurácia odkazuje na premennú, ktorá nebola definovaná:\nTerraform pri spracovaní konfigurácie ohlási chybu. Čo najpravdepodobnejšie chýba?",
+  "code": "resource \"example_server\" \"web\" {\n  name = var.server_name\n}",
+  "options": [
+   "Kubernetes Deployment",
+   "Dockerfile",
+   "Deklarácia `variable \"server_name\"` alebo iná platná definícia premennej",
+   "Príkaz `terraform destroy`"
+  ],
+  "answer": 2,
+  "explanation": "`var.server_name` odkazuje na vstupnú premennú. Ak táto premenná nie je správne deklarovaná, Terraform ohlási chybu. Deklarácia môže vyzerať napríklad ako `variable \"server_name\" {}`. `terraform destroy` láka, pretože chyby týkajúce sa zdrojov v Terraform state sú tiež časté, ale tento konkrétny problém je neplatná referencia v konfigurácii."
+ },
+ {
+  "id": 57,
+  "level": "junior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "theory",
+  "question": "Aplikácia beží na cloudovom VM a po strate VM sa stav aplikácie nedá obnoviť. Ktorý pojem tento problém vystihuje najlepšie?",
+  "options": [
+   "Single point of failure",
+   "Horizontal scaling",
+   "CDN caching",
+   "Infrastructure tagging"
+  ],
+  "answer": 0,
+  "explanation": "Ak porucha jedného komponentu spôsobí výpadok celej služby, tento komponent je single point of failure. Viacero inštancií, viacero availability zón alebo iné redundantné architektonické vzory môžu toto riziko znížiť. Horizontálne škálovanie láka, pretože viacero inštancií naozaj môže zlepšiť dostupnosť, ale samotný problém najlepšie vystihuje pojem single point of failure."
+ },
+ {
+  "id": 58,
+  "level": "junior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "output",
+  "question": "DNS záznam má TTL 300 sekúnd. Čo to zvyčajne znamená?",
+  "options": [
+   "DNS server ukladá presne 300 DNS záznamov",
+   "Záznam môže používať iba 300 klientov",
+   "Záznam sa automaticky mení každých 300 sekúnd",
+   "Resolvery môžu záznam podľa TTL zvyčajne cachovať približne až 300 sekúnd"
+  ],
+  "answer": 3,
+  "explanation": "TTL (Time To Live) hovorí cachovacím systémom DNS, ako dlho sa záznam môže v cache považovať za platný. TTL 300 sekúnd nezaručuje, že sa každý klient na záznam opýta znova presne o päť minút, ale udáva bežné pravidlo cachovania. Výklad ako presné obnovovanie každých päť minút láka, pretože TTL sa vyjadruje ako čas, no DNS cachovanie nefunguje ako jeden globálny časovač."
+ },
+ {
+  "id": 59,
+  "level": "junior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "performance",
+  "question": "Vyťaženie CPU na Linux serveri sa drží na 95 %, pričom latencia aplikácie zostáva normálna. Aký je najpresnejší záver?",
+  "options": [
+   "Aplikácia je určite chybná",
+   "Samotné vysoké vyťaženie CPU nedokazuje, že používatelia majú problém",
+   "Systém treba okamžite vypnúť",
+   "DNS je určite preťažené"
+  ],
+  "answer": 1,
+  "explanation": "Vysoké vyťaženie CPU je dôležitý technický signál, ale samo osebe nedokazuje problém viditeľný pre používateľov. Ak sú latencia, chybovosť a priepustnosť v poriadku, systém môže zámerne bežať pri vysokom vyťažení CPU. Záver, že aplikácia je chybná, láka, pretože 95 % pôsobí vysoko, ale jedna infraštruktúrna metrika nestačí na posúdenie celkového zdravia služby."
+ },
+ {
+  "id": 60,
+  "level": "junior",
+  "area": "Scripting & automation",
+  "topic": "Scripting & automation",
+  "type": "output",
+  "question": "Aký je výstup nasledujúceho Bash príkazu, ak `file.txt` existuje?",
+  "code": "if [ -f file.txt ]; then\n  echo \"exists\"\nfi",
+  "options": [
+   "`exists`",
+   "`file.txt`",
+   "`true`",
+   "Nevypíše sa nič"
+  ],
+  "answer": 0,
+  "explanation": "Test `-f` overuje, či zadaná cesta existuje a odkazuje na bežný súbor. Ak `file.txt` existuje a je bežným súborom, podmienka `if` sa vyhodnotí ako pravdivá a vypíše sa `exists`. `true` láka, pretože podmienka je logicky pravdivá, ale skript explicitne vypisuje reťazec `exists`, nie booleovský výsledok."
+ },
+ {
+  "id": 61,
+  "level": "medior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "production",
+  "question": "Monorepo obsahuje viacero aplikácií. Po zmene jediného backendu sa spustia testy všetkých frontendov a backendov v repozitári a pipeline trvá 40 minút. Akým smerom je najlepšie pipeline optimalizovať?",
+  "options": [
+   "Spúšťať všetky testy až po nasadení do produkcie",
+   "Náhodne niektoré testy preskakovať",
+   "Použiť spúšťanie podľa grafu závislostí alebo zmenených ciest, aby sa overovali iba dotknuté komponenty",
+   "Znížiť CPU kapacitu CI runnera"
+  ],
+  "answer": 2,
+  "explanation": "V monorepe dokážu pipeline založené na zmenených cestách alebo grafe závislostí určiť, ktorých komponentov sa zmena týka, a spustiť príslušné kontroly. Tým sa dá skrátiť trvanie pipeline pri zachovaní zmysluplného pokrytia testami. Náhodné preskakovanie testov láka, pretože pipeline okamžite zrýchli, ale nepredvídateľne znižuje dôveru v zmenu."
+ },
+ {
+  "id": 62,
+  "level": "medior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "performance",
+  "question": "Java aplikácia má Docker image s veľkosťou 1,8 GB, hoci za behu potrebuje iba JRE a niekoľko súborov aplikácie. Ktorý prístup dokáže veľkosť imagu výrazne zmenšiť?",
+  "options": [
+   "Pri každom builde inštalovať ďalšie balíky",
+   "Použiť multi-stage build, ktorý oddelí build prostredie od runtime imagu",
+   "Ponechať v runtime image celý zdrojový repozitár",
+   "Pridať viac príkazov `RUN apt-get update`"
+  ],
+  "answer": 1,
+  "explanation": "Pri multi-stage builde môžu JDK, build nástroje a ďalšie závislosti potrebné pri builde zostať v samostatnej builder fáze, zatiaľ čo výsledný image obsahuje iba artefakty aplikácie a runtime komponenty potrebné na jej beh. Tým sa môže výrazne zmenšiť veľkosť imagu aj plocha útoku. Ponechať ďalšie balíky láka, pretože ich build prostredie môže potrebovať, ale v runtime image sú zbytočné."
+ },
+ {
+  "id": 63,
+  "level": "medior",
+  "area": "Dockerfile best practices",
+  "topic": "Dockerfile best practices",
+  "type": "debug",
+  "question": "Počas Docker buildu si vývojár všimne, že súbor `.env` je súčasťou imagu, hoci aplikácia má konfiguráciu dostávať ako premenné prostredia za behu. Súbor `.dockerignore` v repozitári je momentálne prázdny. Aké je najlepšie riešenie?",
+  "options": [
+   "Pridať súbor `.env` do `.dockerignore` a citlivú konfiguráciu dodať cez mechanizmus secretov/konfigurácie za behu",
+   "Na konci buildu zmazať súbor `.env` pomocou `RUN cat .env`",
+   "Zakódovať súbor `.env` v Dockerfile do base64",
+   "Skopírovať súbor `.env` do inej vrstvy imagu"
+  ],
+  "answer": 0,
+  "explanation": "Ak súbor `.env` pri builde nie je potrebný, treba ho vylúčiť z build kontextu a konfiguráciu za behu dodať vhodným mechanizmom na vkladanie secretov alebo konfigurácie. Neskoršie zmazanie súboru nemusí odstrániť jeho obsah zo skorších vrstiev imagu. Base64 je kódovanie, nie šifrovanie. Neskorší príkaz `rm` láka, pretože súbor môže zmiznúť z výsledného pohľadu na súborový systém, ale jeho obsah môže stále zostať v histórii imagu alebo v skoršej vrstve."
+ },
+ {
+  "id": 64,
+  "level": "medior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "scenario",
+  "question": "Po aktualizácii Deploymentu sú nové pody v stave Running, ale Service na ne neposiela prevádzku. `kubectl get pods` ukazuje, že všetky pody sú Running, ale nie Ready. Aká je najpravdepodobnejšia príčina?",
+  "options": [
+   "Názov Deploymentu je príliš dlhý",
+   "Service bola určite zmazaná",
+   "Pody nemajú hodnotu `containerPort`",
+   "Readiness probe alebo stav pripravenosti aplikácie bráni tomu, aby sa pod použil ako endpoint Service"
+  ],
+  "answer": 3,
+  "explanation": "Stav `Running` ukazuje, že pod beží, ale nezaručuje, že je pripravený prijímať prevádzku. Stav pripravenosti ovplyvňuje, či sa pod zaradí medzi použiteľné endpointy Service. Deklarácia `containerPort` sama osebe nie je pre smerovanie prevádzky cez Service potrebná. Považovať `Running` za zdravý stav láka, pretože naznačuje, že kontajner funguje, ale Running a Ready sú v Kubernetes odlišné pojmy."
+ },
+ {
+  "id": 65,
+  "level": "medior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "edgecase",
+  "question": "Kubernetes aplikácia potrebuje zdieľaný súborový systém, do ktorého môžu súčasne zapisovať pody bežiace na viacerých nodoch. Ktorý access mode tejto požiadavke zodpovedá?",
+  "options": [
+   "ReadWriteOnce",
+   "ReadOnlyMany",
+   "ReadWriteMany",
+   "WriteOnceReadMany"
+  ],
+  "answer": 2,
+  "explanation": "`ReadWriteMany` predstavuje úložisko, ktoré sa dá pripojiť s právom zápisu z viacerých nodov, ak to backend úložiska podporuje. `ReadWriteOnce` zvyčajne umožňuje zápis z jedného nodu a `ReadOnlyMany` umožňuje viacerým nodom pripojiť volume iba na čítanie. `ReadWriteOnce` láka, pretože zahŕňa zápis, ale jeho obmedzenie na jeden node požiadavku nespĺňa."
+ },
+ {
+  "id": 66,
+  "level": "medior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "debug",
+  "question": "Pri inštalácii Helm chartu sa hodnota, ktorá sa má použiť ako číslo, vyrenderuje v Kubernetes manifeste ako string, čo spôsobí chybu validácie. Súbor values obsahuje:\nAká je vhodná oprava?",
+  "code": "replicaCount: \"3\"",
+  "options": [
+   "Uložiť `replicaCount` ako číselnú hodnotu, napríklad `3`, a v šablóne s typom zaobchádzať správne",
+   "Nahradiť každý Kubernetes zdroj Secretom",
+   "Pred každým nasadením zmazať Helm release",
+   "Zmeniť odsadenie celého YAML súboru z dvoch medzier na štyri"
+  ],
+  "answer": 0,
+  "explanation": "Úvodzovky spôsobia, že `\"3\"` je v YAML reprezentované ako string, kým `3` je číselná hodnota. Ak Kubernetes pole očakáva celé číslo, typ vo values aj spracovanie v šablóne s tým musia byť v súlade. Záleží aj na konkrétnej šablóne a pravidlách renderovania v Helme, preto sa v prípade potreby dá použiť explicitná konverzia typu. Obviňovať odsadenie láka, pretože chyby odsadenia v YAML sú časté, ale tu ide o typ hodnoty."
+ },
+ {
+  "id": 67,
+  "level": "medior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "behavior",
+  "question": "Zmeníš hodnotu atribútu v konfigurácii Terraform zdroja a provider dokáže túto zmenu aplikovať iba nahradením zdroja. Čo sa môže stať pri `terraform plan`?",
+  "options": [
+   "Terraform zmenu vždy ignoruje",
+   "Terraform iba vypíše správu do logu",
+   "Terraform zdroj upraví na mieste bez ohľadu na podporu providera",
+   "Plán môže ukázať, že existujúci zdroj treba nahradiť"
+  ],
+  "answer": 3,
+  "explanation": "Niektoré atribúty zdroja si pri zmene vyžadujú nahradenie a provider to môže Terraformu signalizovať. Plán to zvyčajne zobrazí ako zmenu typu destroy/create alebo create/destroy, podľa životného cyklu zdroja a správania providera. Predpoklad úpravy na mieste láka, pretože sa zmenila iba jedna hodnota konfigurácie, ale API podkladovej infraštruktúry nemusí podporovať zmenu každého atribútu bez nahradenia."
+ },
+ {
+  "id": 68,
+  "level": "medior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "scenario",
+  "question": "Bezstavová aplikácia náhle dostáva výrazne viac HTTP prevádzky. Tím chce rýchlo spustiť viac rovnakých inštancií. Ktorá stratégia škálovania tejto požiadavke zodpovedá?",
+  "options": [
+   "Vertikálne škálovanie, teda výrazné zvýšenie kapacity jedného stroja",
+   "Horizontálne škálovanie, teda pridanie ďalších inštancií a rozdelenie prevádzky medzi ne",
+   "Zmazanie DNS záznamov",
+   "Skrátenie retencie logov"
+  ],
+  "answer": 1,
+  "explanation": "Pri bezstavových aplikáciách môže horizontálne škálovanie zvýšiť kapacitu obsluhy pridaním ďalších inštancií, zvyčajne za load balancerom. Vertikálne škálovanie zvyšuje zdroje existujúcej inštancie a má iné kompromisy. Vertikálne škálovanie láka, pretože väčší stroj dokáže kapacitu rýchlo zvýšiť, ale nevyužíva jednoduché škálovanie počtu inštancií, ktoré bezstavová architektúra umožňuje."
+ },
+ {
+  "id": 69,
+  "level": "medior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "performance",
+  "question": "DNS preklad internej služby prebieha pred každou požiadavkou a latencia výrazne vzrástla. Ktorý prístup dokáže znížiť náklady na DNS lookupy?",
+  "options": [
+   "Pre každú požiadavku vytvoriť nový DNS server",
+   "Vo všetkých prípadoch nastaviť DNS TTL na nulu",
+   "Použiť vhodné DNS cachovanie v aplikácii alebo na sieťovej vrstve",
+   "Úplne odstrániť DNS záznamy"
+  ],
+  "answer": 2,
+  "explanation": "Pri DNS cachovaní už preložený hostname nevyžaduje pri každej požiadavke nový upstream DNS dotaz. S vhodným TTL dokáže cachovanie znížiť latenciu aj záťaž DNS infraštruktúry. Nastavenie TTL na nulu môže naopak počet lookupov zvýšiť. Nulové TTL láka, pretože umožňuje rýchle šírenie zmien v DNS, ale z pohľadu výkonu má často opačný efekt."
+ },
+ {
+  "id": 70,
+  "level": "medior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "production",
+  "question": "API má normálne metriky CPU, pamäte aj siete, ale používatelia zažívajú vysokú latenciu a občasné chyby. Ktorý prístup k observability je najužitočnejší na sledovanie cesty jednotlivých požiadaviek naprieč viacerými službami?",
+  "options": [
+   "Distributed tracing",
+   "Zmena hostname",
+   "Zmenšenie container imagu",
+   "Zvýšenie DNS TTL"
+  ],
+  "answer": 0,
+  "explanation": "Distributed tracing umožňuje pomocou spanov a časových údajov sledovať cestu jednotlivej požiadavky naprieč viacerými službami. Pomáha tak určiť, ktorý downstream komponent je zodpovedný za latenciu alebo chyby. Tradičné infraštruktúrne metriky samy osebe tento vzťah na úrovni požiadaviek nemusia odhaliť. Ďalej hľadať problémy s CPU či pamäťou láka, pretože ide o klasické výkonnostné metriky, ale úzke hrdlá na úrovni aplikácie môžu existovať aj pri normálnych infraštruktúrnych metrikách."
+ },
+ {
+  "id": 71,
+  "level": "medior",
+  "area": "Logging",
+  "topic": "Logging",
+  "type": "scenario",
+  "question": "V mikroservisnom systéme prechádza požiadavka viacerými službami a produkčnú chybu treba v systéme spätne dohľadať. Ktorý prístup k logovaniu je najužitočnejší na prepojenie súvisiacich záznamov v logoch?",
+  "options": [
+   "V každej službe použiť iný formát časovej pečiatky",
+   "Pri každej požiadavke zapisovať tú istú statickú správu",
+   "Zapisovať logy výlučne do lokálnych súborov",
+   "Prenášať correlation ID alebo trace ID a používať štruktúrované logovanie"
+  ],
+  "answer": 3,
+  "explanation": "Spoločné correlation ID alebo trace ID umožňuje prepojiť logy patriace k tej istej požiadavke naprieč viacerými službami. Pri štruktúrovanom logovaní sa dajú tieto identifikátory a ďalšie polia efektívne vyhľadávať a analyzovať. Prepájať logy iba podľa časových pečiatok láka, pretože každá požiadavka má časovú pečiatku, ale súbežné požiadavky a rozdiely hodín to robia nespoľahlivým."
+ },
+ {
+  "id": 72,
+  "level": "medior",
+  "area": "SRE & incident management",
+  "topic": "SRE & incident management",
+  "type": "scenario",
+  "question": "Služba má SLO, ktoré v danom časovom okne vyžaduje 99,9 % úspešných požiadaviek. Aktuálna nameraná hodnota je 99,7 %. Aký je najdôležitejší záver?",
+  "options": [
+   "Systém určite úplne zlyhal",
+   "SLO sa momentálne neplní",
+   "SLO sa automaticky zmení na 99,7 %",
+   "Rozdiel 0,2 percentuálneho bodu sa dá ignorovať, pretože hodnota je nad 99 %"
+  ],
+  "answer": 1,
+  "explanation": "Ak je SLO 99,9 % a nameraná hodnota pri rovnakej definícii merania a časovom okne je 99,7 %, aktuálny výkon je pod SLO. To samo osebe neurčuje, aká náprava je potrebná, ale ukazuje, že cieľ sa neplní. Považovať 99 %+ za dostatočné láka, pretože hodnota v absolútnom vyjadrení pôsobí vysoko, ale rozhodujúce je porovnanie s konkrétnym cieľom SLO."
+ },
+ {
+  "id": 73,
+  "level": "medior",
+  "area": "Deployment strategies",
+  "topic": "Deployment strategies",
+  "type": "edgecase",
+  "question": "Zavádzaš novú verziu API pomocou rolling nasadenia. Nová verzia mení formát request/response jedného endpointu tak, že stará a nová verzia nie sú navzájom kompatibilné. Prečo to môže byť pri rolling nasadení nebezpečné?",
+  "options": [
+   "Rolling nasadenie automaticky vypne load balancer",
+   "Kubernetes nedokáže súčasne prevádzkovať dva rôzne tagy imagu",
+   "Počas prechodu môžu staré aj nové inštancie súčasne obsluhovať požiadavky, takže nekompatibilní klienti alebo služby môžu zlyhať",
+   "Rolling nasadenie vždy zmaže databázu"
+  ],
+  "answer": 2,
+  "explanation": "Počas rolling nasadenia môžu stará a nová verzia istý čas bežať paralelne. Ak API kontrakt nie je spätne ani dopredne kompatibilný, rôzne inštancie môžu očakávať rôzne protokoly, čo spôsobí chyby za behu. V takých prípadoch môže byť potrebný spätne kompatibilný vývoj API, vhodné poradie krokov alebo iná stratégia nasadenia. Obviňovať Kubernetes láka, pretože počas nasadenia sa objavia dve verzie, ale skutočným problémom je nekompatibilita kontraktov aplikácie."
+ },
+ {
+  "id": 74,
+  "level": "medior",
+  "area": "Secrets & security",
+  "topic": "Secrets & security",
+  "type": "production",
+  "question": "V aplikácii, ktorá používa Kubernetes Secret, vývojár spustí `kubectl get secret db-credentials -o yaml`, aby si pozrel obsah produkčného Secretu. Prečo je to bezpečnostné riziko?",
+  "options": [
+   "Objekty Secret nemôžu obsahovať dáta",
+   "Príkaz Secret automaticky zmaže",
+   "YAML sa pri Kubernetes Secretoch nedá použiť",
+   "Hodnoty Secretu sa môžu v manifeste objaviť v podobe zakódovanej do base64, čo je kódovanie, nie skutočné šifrovanie"
+  ],
+  "answer": 3,
+  "explanation": "Hodnoty v poli `data` Kubernetes Secretu sú zvyčajne reprezentované kódovaním base64. Base64 nie je šifrovanie, takže ktokoľvek, kto má prístup k zakódovanej hodnote, ju ľahko dekóduje. V produkcii treba prístup prísne kontrolovať a zvážiť vhodnú správu secretov, šifrovanie at rest a audit. Považovať base64 za šifrovanie láka, pretože výsledná hodnota vyzerá nečitateľne, ale ide len o reverzibilné kódovanie."
+ },
+ {
+  "id": 75,
+  "level": "medior",
+  "area": "GitOps",
+  "topic": "GitOps",
+  "type": "debug",
+  "question": "GitOps controller opakovane vracia ručnú úpravu Kubernetes Deploymentu. Vývojár zakaždým mení počet replík priamo v klastri. Aký je správny prístup v duchu GitOps?",
+  "options": [
+   "Zmeniť požadovaný počet replík v deklarácii uloženej v Gite a nechať ho aplikovať GitOps reconciliáciu",
+   "Pred každým nasadením zastaviť GitOps controller",
+   "Zabrániť Kubernetes API Serveru upravovať Deployment",
+   "Zmenu urobiť iba vo vnútri podu"
+  ],
+  "answer": 0,
+  "explanation": "V GitOps prostredí je požadovaný stav deklarovaný v Gite zdrojom pravdy pre konfiguráciu. Ak sa má počet replík zmeniť natrvalo, treba ho upraviť v repozitári a reconciliácia potom zosúladí stav klastra. Ručná úprava v klastri vytvára drift, ktorý controller môže vrátiť. Zastaviť GitOps controller láka, pretože ručná zmena tak okamžite pretrvá, ale tým sa stráca jedna z hlavných výhod reconciliácie."
+ },
+ {
+  "id": 76,
+  "level": "medior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "scenario",
+  "question": "V CI pipeline trvá inštalácia závislostí pri každom behu 8 minút, hoci lockfile sa mení zriedka. Ktoré riešenie dokáže skrátiť čas behu pipeline bez toho, aby sa inštalácia závislostí úplne vynechala?",
+  "options": [
+   "Uložiť výsledok inštalácie závislostí do CI cache s vhodným cache kľúčom",
+   "Na začiatku každej pipeline zmazať lockfile",
+   "Ignorovať chyby pri inštalácii závislostí",
+   "Spúšťať testy v produkcii"
+  ],
+  "answer": 0,
+  "explanation": "CI cache dokáže zachovať lokálne nainštalované závislosti, takže ak sa lockfile nezmenil, nie je nutné všetko sťahovať znova. Cache kľúč by mal byť naviazaný na definície závislostí, aby sa cache pri ich zmene zneplatnila. Zmazanie lockfilu by znížilo reprodukovateľnosť a ignorovanie chýb pri inštalácii prináša bezpečnostné a stabilitné problémy. Zmazanie lockfilu môže lákať, pretože vyvolá nové riešenie závislostí, ale v skutočnosti znižuje cachovateľnosť aj reprodukovateľnosť."
+ },
+ {
+  "id": 77,
+  "level": "medior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "debug",
+  "question": "Kontajnerizovaná aplikácia sa opakovane reštartuje. Podľa `docker ps` sa kontajner po niekoľkých sekundách dostane do stavu `Exited`. Aký by mal byť prvý užitočný krok pri ladení?",
+  "options": [
+   "Okamžite zbuildovať nový image",
+   "Preinštalovať operačný systém hostiteľa",
+   "Pozrieť si logy kontajnera a exit code, napríklad pomocou `docker logs` a `docker inspect`",
+   "Náhodne zvýšiť pamäťový limit kontajnera"
+  ],
+  "answer": 2,
+  "explanation": "Logy kontajnera a exit code rýchlo ukážu, či aplikácia končí chybou, chýba jej konfigurácia alebo naráža na iný problém za behu. `docker inspect` poskytne ďalšie informácie o stave a konfigurácii. Build nového imagu bez dôkazov by bol len hádaním. Zvýšenie pamäte môže lákať, pretože reštart môže spôsobiť OOM, ale najprv to treba overiť."
+ },
+ {
+  "id": 78,
+  "level": "medior",
+  "area": "Dockerfile best practices",
+  "topic": "Dockerfile best practices",
+  "type": "performance",
+  "question": "Dockerfile obsahuje nasledujúce dve inštrukcie:\nPrečo to môže byť pri builde produkčného imagu problematické?",
+  "code": "RUN apt-get update\nRUN apt-get install -y curl",
+  "options": [
+   "`curl` sa v Dockeri nedá nainštalovať nikdy",
+   "Aktualizácia indexu balíkov a inštalácia prebiehajú v samostatných vrstvách, čo môže spôsobiť problémy s cachovaním a čistotou imagu",
+   "Docker automaticky zmaže konfiguráciu `apt`",
+   "`apt-get update` sa dá použiť iba v Kubernetes"
+  ],
+  "answer": 1,
+  "explanation": "Index balíkov vytvorený príkazom `apt-get update` a inštalácia prebiehajú v samostatných vrstvách. Kvôli cachovaniu môže neskorší build použiť zastaraný index balíkov, zatiaľ čo krok inštalácie sa načíta z cache. Bežnou dobrou praxou je vykonať aktualizáciu aj inštaláciu v jednej inštrukcii `RUN` a potom odstrániť nepotrebné zoznamy balíkov. Rozdelenie do samostatných krokov môže lákať, pretože Dockerfile je čitateľnejší, ale kvôli cachovaniu vrstiev v Dockeri to nie je vždy žiaduce."
+ },
+ {
+  "id": 79,
+  "level": "medior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "behavior",
+  "question": "Kubernetes Deployment používa predvolenú stratégiu rolling update. Aký je hlavný účel nastavení `maxUnavailable` a `maxSurge`?",
+  "options": [
+   "Obmedzujú spotrebu CPU a pamäte podov",
+   "Nastavujú sieťové porty Service",
+   "Nastavujú dobu uchovávania objektov Secret",
+   "Určujú, koľko podov môže byť počas rolloutu nedostupných a koľko podov navyše sa môže vytvoriť nad požadovaný počet replík"
+  ],
+  "answer": 3,
+  "explanation": "`maxUnavailable` obmedzuje, koľko replík môže byť počas rolloutu nedostupných, a `maxSurge` určuje, koľko podov navyše môže existovať nad požadovaný počet replík. Týmito nastaveniami sa dá vyladiť kompromis medzi kapacitou nasadenia a dostupnosťou. Myslieť na limity zdrojov môže lákať, pretože tieto nastavenia ovplyvňujú správanie podov, ale CPU ani pamäťové limity nedefinujú."
+ },
+ {
+  "id": 80,
+  "level": "medior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "debug",
+  "question": "Pod dosiahne aplikáciu cez IP adresu iného podu, ale nie cez DNS meno Kubernetes Service. Čo treba preveriť ako prvé?",
+  "options": [
+   "Selector Service, samotný objekt Service a fungovanie DNS v klastri",
+   "Veľkosť container imagu",
+   "CPU architektúru nodu",
+   "Kapacitu PersistentVolume"
+  ],
+  "answer": 0,
+  "explanation": "Ak je IP podu priamo dosiahnuteľná, ale meno Service nie, oplatí sa skontrolovať, či Service existuje, má správny selector a endpointy a či funguje DNS v klastri. Úložisko ani veľkosť imagu problém s DNS menom Service priamo nevysvetľujú. Obviňovať iba DNS môže lákať, keďže problém sa týka hostname, ale problémy s konektivitou Service môže spôsobiť aj nesprávny selector alebo zoznam endpointov."
+ },
+ {
+  "id": 81,
+  "level": "medior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "scenario",
+  "question": "V Helm charte sa používa tajná hodnota a vývojár ju vloží priamo do súboru `values.yaml`. Aký je najvážnejší problém?",
+  "options": [
+   "Helm nepodporuje stringové hodnoty",
+   "`values.yaml` sa po inštalácii vždy zmaže",
+   "Secret sa môže dostať do zdrojového repozitára a Helm artefaktov, takže sa spravuje na nevhodnom mieste",
+   "Helm automaticky šifruje každý values súbor"
+  ],
+  "answer": 2,
+  "explanation": "`values.yaml` je zvyčajne súčasťou konfigurácie v správe verzií, takže citlivý secret vložený priamo doň sa môže objaviť v Gite alebo iných artefaktoch. V produkcii treba použiť dedikovanú správu secretov, šifrované úložisko secretov alebo vhodný externý mechanizmus. Vložiť hodnotu do values súboru môže lákať, pretože je to technicky jednoduché a Helm šablóna ju má hneď k dispozícii, ale bezpečné ukladanie secretov to nezabezpečí."
+ },
+ {
+  "id": 82,
+  "level": "medior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "scenario",
+  "question": "Tím spravuje produkčnú infraštruktúru Terraformom a viacero inžinierov môže súčasne spustiť `terraform apply` proti tomu istému prostrediu. Aká je najdôležitejšia ochrana?",
+  "options": [
+   "Každý inžinier by mal používať vlastný lokálny state súbor",
+   "Použiť vzdialený state backend so zamykaním (locking), ktorý koordinuje úpravy stavu",
+   "Úplne vypnúť Terraform state",
+   "Zakázať používanie `terraform plan`"
+  ],
+  "answer": 1,
+  "explanation": "Zdieľaný vzdialený state backend s vhodným zamykaním dokáže zabrániť tomu, aby súbežné apply operácie nekompatibilne menili ten istý stav. Presné možnosti zamykania závisia od backendu. Nezávislé lokálne state súbory koordináciu pri zdieľanej infraštruktúre nevyriešia. Samostatný state pre každého inžiniera môže lákať, pretože znižuje priame konflikty, ale viacero stavov spravujúcich tú istú infraštruktúru môže naopak spôsobiť drift a problémy s vlastníctvom."
+ },
+ {
+  "id": 83,
+  "level": "medior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "behavior",
+  "question": "Aplikácia beží vo viacerých inštanciách za load balancerom. Jedna inštancia zlyhá. Prečo je health check load balancera dôležitý?",
+  "options": [
+   "Automaticky zbuilduje nový image zo zlyhanej inštancie",
+   "Zmení zdrojový kód aplikácie",
+   "Dokáže nezdravú inštanciu vyradiť zo smerovania prevádzky, kým sa neozdraví",
+   "Automaticky zvýši CPU každej inštancie"
+  ],
+  "answer": 2,
+  "explanation": "Health check umožní load balanceru zistiť, že backend nedokáže správne obsluhovať prevádzku, a vyradiť ho z aktívneho smerovania. Tým sa znižuje pravdepodobnosť, že používatelia budú posielaní na zlyhanú inštanciu. Myslieť na autoscaling môže lákať, pretože po výpadku inštancie môže byť naozaj potrebná ďalšia kapacita, ale hlavným účelom health checku je smerovať prevádzku na zdravé inštancie."
+ },
+ {
+  "id": 84,
+  "level": "medior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "scenario",
+  "question": "HTTPS spojenie je niekedy pomalé a merateľný je aj čas DNS lookupu. Aký kompromis môže priniesť zvýšenie DNS TTL?",
+  "options": [
+   "Menej DNS dotazov a nižšiu réžiu lookupov, ale zmeny v DNS sa kvôli cachovaniu môžu šíriť pomalšie",
+   "Viac DNS dotazov a vždy rýchlejší failover",
+   "Úplné odstránenie TLS handshake",
+   "Automatické zašifrovanie DNS záznamu"
+  ],
+  "answer": 0,
+  "explanation": "Pri dlhšom TTL môžu resolvery dlhšie používať záznamy z cache, čo môže znížiť počet DNS lookupov a súvisiacu réžiu. Zmeny v DNS alebo failover sa však môžu ku všetkým klientom dostať neskôr, pretože predchádzajúce hodnoty môžu zostať v cache. Vnímať to čisto ako zlepšenie výkonu môže lákať, keďže cachovanie znižuje počet lookupov, ale môže to byť na úkor pomalších zmien a failoveru."
+ },
+ {
+  "id": 85,
+  "level": "medior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "debug",
+  "question": "Počet požiadaviek na aplikáciu sa nemení, ale chybovosť rastie, hoci využitie CPU a pamäte je normálne. Aký je najužitočnejší ďalší krok?",
+  "options": [
+   "Okamžite reštartovať nody",
+   "Preskúmať logy, traces a metriky na úrovni aplikácie, najmä typy chýb a downstream závislosti",
+   "Nastaviť DNS TTL na nulu",
+   "Znovu zbuildovať Docker image bez akýchkoľvek zmien"
+  ],
+  "answer": 1,
+  "explanation": "Ak sú metriky infraštruktúrnych zdrojov normálne, ale chybovosť na úrovni aplikácie rastie, treba preskúmať požiadavky, typy chýb, traces a downstream závislosti. Problém môže súvisieť s databázou, externým API, konfiguráciou alebo logikou aplikácie. Reštart nodov môže lákať, pretože je rýchly a niekedy dočasne odstráni symptómy, ale bez podkladov neodhalí skutočnú príčinu."
+ },
+ {
+  "id": 86,
+  "level": "medior",
+  "area": "Logging",
+  "topic": "Logging",
+  "type": "performance",
+  "question": "V službe s vysokou prevádzkou sa v produkcii loguje celé telo požiadavky aj odpovede pri každej požiadavke. Aká je podstatná nevýhoda tohto prístupu?",
+  "options": [
+   "Logovanie automaticky vypne HTTP server",
+   "Logovanie nespotrebúva žiadne CPU",
+   "Logovanie celých tiel požiadaviek a odpovedí môže zvýšiť I/O, využitie CPU, nároky na úložisko aj riziko pre ochranu súkromia",
+   "Logovanie tela požiadavky automaticky komprimuje odpoveď"
+  ],
+  "answer": 2,
+  "explanation": "Pri vysokej prevádzke môže logovanie celých tiel požiadaviek a odpovedí spôsobiť výraznú réžiu I/O a CPU, zvýšiť náklady na úložisko a príjem logov a vytvoriť riziko náhodného zalogovania citlivých údajov. Namiesto toho treba používať štruktúrované, cielené logovanie a podľa potreby sampling. Logovať všetko môže lákať, pretože to poskytuje maximum diagnostických detailov, ale náklady v produkcii a dopad na súkromie môžu byť značné."
+ },
+ {
+  "id": 87,
+  "level": "medior",
+  "area": "SRE & incident management",
+  "topic": "SRE & incident management",
+  "type": "production",
+  "question": "Počas produkčného incidentu tím identifikuje nesprávnu konfiguráciu, ktorá výpadok priamo spôsobila. Prečo môže byť analýza príčiny (RCA) aj potom dôležitá?",
+  "options": [
+   "Pretože bezprostredný problém by sa nikdy nemal opravovať",
+   "Pretože jediným cieľom RCA je obviniť konkrétneho inžiniera",
+   "Pretože RCA vždy automaticky opraví produkčný systém",
+   "Pretože okrem bezprostredného spúšťača je užitočné pochopiť, ktoré systémové podmienky zlyhanie umožnili a ako zabrániť jeho opakovaniu"
+  ],
+  "answer": 3,
+  "explanation": "RCA by nemala iba identifikovať nesprávnu hodnotu konfigurácie, ale aj preskúmať, prečo sa nesprávna hodnota mohla dostať do produkcie, prečo nebola odhalená skôr a ktoré kontroly by mohli zabrániť opakovaniu. Môže to viesť k zlepšeniam v testoch, review, ochranných mechanizmoch nasadenia alebo monitoringu. Zredukovať incident na jednu ľudskú chybu môže lákať, pretože sa ľahko identifikuje, ale len zriedka to prinesie trvalú systémovú prevenciu."
+ },
+ {
+  "id": 88,
+  "level": "medior",
+  "area": "Deployment strategies",
+  "topic": "Deployment strategies",
+  "type": "scenario",
+  "question": "Tím používa stratégiu nasadenia blue-green. Aká je jedna dôležitá vlastnosť tohto prístupu?",
+  "options": [
+   "K dispozícii sú dve samostatné prostredia alebo verzie nasadenia a prevádzku možno prepnúť na nové prostredie",
+   "Nová verzia sa vždy spúšťa na tých istých podoch",
+   "Nová verzia môže bežať iba proti kópii produkčnej databázy",
+   "Počas nasadenia nie je potrebný mechanizmus rollbacku"
+  ],
+  "answer": 0,
+  "explanation": "Pri blue-green nasadení sa dajú udržiavať dve samostatné prostredia alebo nasadenia. Novú verziu možno overiť v neaktívnom prostredí a potom na ňu prepnúť prevádzku. Ak staré prostredie zostane dostupné, umožňuje to aj rýchly rollback. Považovať ho za ekvivalent rolling nasadenia môže lákať, pretože oba prístupy podporujú zmenu verzie bez výpadku alebo s minimálnym výpadkom, ale používajú odlišné infraštruktúrne modely."
+ },
+ {
+  "id": 89,
+  "level": "medior",
+  "area": "Secrets & security",
+  "topic": "Secrets & security",
+  "type": "edgecase",
+  "question": "Secret CI pipeline sa omylom objavil v logu jobu. Pipeline potom úspešne dobehla. Aká je vhodná reakcia?",
+  "options": [
+   "Netreba robiť nič, pretože pipeline uspela",
+   "Iba zmazať log, samotný secret môže zostať nezmenený",
+   "Považovať secret za kompromitovaný, zrotovať ho alebo zneplatniť a preveriť následný prístup",
+   "Commitnúť secret znova s rovnakou hodnotou"
+  ],
+  "answer": 2,
+  "explanation": "Ak sa secret objaví v CI logu, treba ho považovať za kompromitovaný, pretože ho mohol získať ktokoľvek alebo čokoľvek s prístupom k logu. Vhodnou reakciou je secret zrotovať alebo zneplatniť, vyriešiť únik v logu a preveriť dotknutý prístup. Samotné zmazanie logu nedokazuje, že secret nikto nevidel ani neskopíroval. Zmazať iba log môže lákať, pretože to odstráni viditeľný dôkaz, ale už prezradený prístupový údaj tým neprestane platiť."
+ },
+ {
+  "id": 90,
+  "level": "medior",
+  "area": "GitOps",
+  "topic": "GitOps",
+  "type": "behavior",
+  "question": "V GitOps repozitári sa image tag Kubernetes Deploymentu zmení z `1.4.2` na `1.4.3` a nasleduje commit a merge. Čo sa v GitOps systéme zvyčajne stane?",
+  "options": [
+   "GitOps controller zistí zmenu požadovaného stavu a pri reconciliácii môže nasadiť nový image",
+   "Git repozitár automaticky zbuilduje nový Docker image bez CI",
+   "Kubernetes vždy vytvorí nový klaster",
+   "Zmena sa prejaví v produkcii iba vtedy, ak inžinier ručne spustí `kubectl apply`"
+  ],
+  "answer": 0,
+  "explanation": "V typickom GitOps modeli controller sleduje zmeny požadovaného stavu v repozitári a zosúlaďuje klaster s novou konfiguráciou. Samotný build imagu môže samostatne zabezpečovať CI pipeline. Predpoklad, že je potrebný ručný `kubectl apply`, môže lákať, pretože pri tradičnom nasadzovaní je to bežné, ale GitOps tento krok automatizuje pomocou reconciliácie."
+ },
+ {
+  "id": 91,
+  "level": "medior",
+  "area": "Scripting & automation",
+  "topic": "Scripting & automation",
+  "type": "debug",
+  "question": "Nasledujúci Bash skript sa má pri chybe zastaviť, ale správa sa neočakávane:\nAký je jeden dôležitý dôvod, prečo sa skript nemusí správať podľa očakávaní?",
+  "code": "#!/bin/bash\n\nset -e\n\ngrep \"ERROR\" application.log\necho \"Continuing deployment\"",
+  "options": [
+   "`grep` pri nájdení zhody vždy vráti exit code 1",
+   "`set -e` funguje iba v Pythone",
+   "`echo` automaticky vypne `set -e`",
+   "`grep` môže vrátiť exit code 1, keď nenájde žiadnu zhodu, hoci nejde o technickú chybu, a `set -e` to môže považovať za zlyhanie"
+  ],
+  "answer": 3,
+  "explanation": "`grep` zvyčajne vracia 0, keď nájde zhodu, 1, keď zhodu nenájde, a 2 alebo inú nenulovú hodnotu pri chybe. Pri `set -e` preto aj obyčajný výsledok „žiadna zhoda“ môže ukončiť skript, hoci nejde nevyhnutne o technické zlyhanie. Považovať akýkoľvek nenulový exit code z `grep` za chybu môže lákať, pretože nenulový stav pri príkazoch shellu často znamená zlyhanie, ale pri `grep` je exit status aj súčasťou bežnej sémantiky vyhľadávania."
+ },
+ {
+  "id": 92,
+  "level": "medior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "scenario",
+  "question": "V deployment pipeline má zbuildovaný artefakt vždy názov `app-latest.tar.gz`, takže neskoršia pipeline nevie jednoznačne určiť, ktorý presne build artefakt používa. Aký prístup by bol lepší?",
+  "options": [
+   "Ukladať každý artefakt pod rovnakým názvom",
+   "Verzovať artefakt nemenným, jedinečným identifikátorom buildu, napríklad commit SHA alebo číslom buildu",
+   "Pred každým nasadením artefakt ručne premenovať",
+   "Automaticky prepisovať staré artefakty"
+  ],
+  "answer": 1,
+  "explanation": "Nemenné a jednoznačné verzovanie artefaktov umožňuje presne určiť, ktorý build bol nasadený. Dá sa použiť commit SHA, číslo buildu alebo iný nemenný identifikátor verzie. Zlepšuje to dohľadateľnosť aj reprodukovateľnosť rollbacku. Použitie `latest` môže lákať, pretože je jednoduché a odpadá správa verzií, ale presnú identifikáciu vydania neposkytne."
+ },
+ {
+  "id": 93,
+  "level": "medior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "edgecase",
+  "question": "Kontajner dosiahne iný kontajner v tej istej Docker sieti cez DNS meno. Čo to zvyčajne umožňuje?",
+  "options": [
+   "Vstavaná sieťová DNS služba Dockeru",
+   "Súbor `/etc/hosts` hostiteľa je automaticky rovnaký v každom kontajneri",
+   "Názov container imagu automaticky vytvorí globálny DNS záznam na internete",
+   "Docker priradí každému kontajneru verejnú IP adresu"
+  ],
+  "answer": 0,
+  "explanation": "Používateľom definované siete v Dockeri poskytujú zúčastneným kontajnerom vstavaný DNS preklad, vďaka čomu sa dá preložiť príslušný názov kontajnera alebo služby. Neznamená to, že kontajner dostane verejný DNS záznam alebo IP adresu smerovateľnú z internetu. Pripísať to súboru `/etc/hosts` hostiteľa môže lákať, pretože môže obsahovať mapovanie hostname, ale DNS medzi kontajnermi v Dockeri je samostatný mechanizmus."
+ },
+ {
+  "id": 94,
+  "level": "medior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "performance",
+  "question": "V Kubernetes klastri sa pody Deploymentu opakovane umiestňujú na nové nody, pretože jeden node je preťažený, zatiaľ čo ostatné sú menej vyťažené. Ktoré mechanizmy Kubernetes môžu pomôcť umiestnenie podov doladiť?",
+  "options": [
+   "Secret rotation",
+   "Container image tagging",
+   "Affinity, anti-affinity alebo topology spread constraints",
+   "ConfigMap reload"
+  ],
+  "answer": 2,
+  "explanation": "Affinity, anti-affinity a topology spread constraints dokážu určovať, na ktoré nody alebo topologické domény sa pody umiestnia. Môžu napríklad rozložiť repliky naprieč doménami porúch alebo uprednostniť konkrétne node pooly. Myslieť iba na autoscaling môže lákať, pretože preťaženie vyzerá ako problém kapacity, ale aj pravidlá umiestnenia môžu výrazne ovplyvniť rozloženie workloadu."
+ },
+ {
+  "id": 95,
+  "level": "medior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "debug",
+  "question": "Konfigurácia Kubernetes Ingress vyzerá správne, ale HTTP požiadavky na hostname vracajú `404`. Backend Service je z vnútra klastra priamo dosiahnuteľná. Čo treba preveriť medzi prvými?",
+  "options": [
+   "PersistentVolume je príliš veľký",
+   "Ingress controller nebeží alebo zdroj Ingress nie je priradený k príslušnému controlleru",
+   "Image podu je príliš malý",
+   "Service nemôže používať typ ClusterIP"
+  ],
+  "answer": 1,
+  "explanation": "Ak backend Service funguje priamo, skontroluj, či Ingress controller beží, sleduje príslušný zdroj Ingress a správne spracúva pravidlá pre host a path. Samotný zdroj Ingress spracovanie prevádzky nemusí implementovať, potrebný je vhodný controller alebo implementácia gateway. Obviňovať typ Service môže lákať, pretože Ingress smeruje na Service, ale ClusterIP Service je úplne platný backend."
+ },
+ {
+  "id": 96,
+  "level": "medior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "output",
+  "question": "Helm šablóna obsahuje nasledujúci kód:\nSúbor `values.yaml` obsahuje `enabled: false`. Čo táto časť šablóny vytvorí?",
+  "code": "{{- if .Values.enabled }}\nreplicas: 3\n{{- end }}",
+  "options": [
+   "Riadok `replicas: 3` nebude súčasťou vyrenderovaného manifestu",
+   "Helm automaticky vyrenderuje `replicas: 0`",
+   "Helm vždy vyrenderuje `replicas: 3`",
+   "Helm skončí syntaktickou chybou, pretože booleovské hodnoty sa v podmienke `if` nedajú použiť"
+  ],
+  "answer": 0,
+  "explanation": "Podmienka `if` v Helm šablóne vyrenderuje blok iba vtedy, keď je hodnota podľa logiky Helm šablón pravdivá (truthy). Pri `false` sa blok z vyrenderovaného výstupu vynechá. Očakávať `replicas: 3` môže lákať, pretože riadok je v šablóne fyzicky prítomný, ale podmienené renderovanie znamená, že sa vygeneruje iba pri splnení podmienky."
+ },
+ {
+  "id": 97,
+  "level": "medior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "scenario",
+  "question": "Terraform modul sa používa vo viacerých prostrediach, ale každé prostredie potrebuje iný región a veľkosť inštancie. Aký je najlepší prístup?",
+  "options": [
+   "Skopírovať celý modul pre každé prostredie",
+   "Natvrdo zapísať všetky regióny a veľkosti do modulu",
+   "Pred každým nasadením ručne upraviť Terraform state",
+   "Parametrizovať hodnoty špecifické pre prostredie pomocou vstupných premenných modulu"
+  ],
+  "answer": 3,
+  "explanation": "Vstupné premenné modulu umožňujú opakovane použiť ten istý modul v rôznych prostrediach s rôznou konfiguráciou. Znovupoužiteľná infraštruktúrna logika tak zostáva na jednom mieste a parametre špecifické pre prostredie sa dodávajú pri volaní modulu. Kopírovanie celého modulu môže lákať, pretože hodnoty špecifické pre prostredie sa potom dajú vložiť priamo doň, ale vzniká tým výrazná duplicita a dlhodobý drift."
+ },
+ {
+  "id": 98,
+  "level": "medior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "edgecase",
+  "question": "Cloudová aplikácia beží v jednej availability zóne, kým databáza je spravovaná služba vo viacerých zónach. Tím tvrdí, že aplikácia je plne vysoko dostupná. Prečo to nemusí byť pravda?",
+  "options": [
+   "Spravovaná databáza nikdy nemôže byť vysoko dostupná",
+   "Aplikačná vrstva môže byť pri výpadku availability zóny stále single point of failure",
+   "Databáza vo viacerých zónach automaticky vypne aplikáciu",
+   "Load balancer vždy zabezpečí, že jedna zóna stačí"
+  ],
+  "answer": 1,
+  "explanation": "Redundancia databázy automaticky nespraví redundantnou aplikačnú vrstvu. Ak aplikačná vrstva beží v jednej availability zóne, strata tejto zóny môže aj tak spôsobiť úplný výpadok služby. Považovať celý systém za vysoko dostupný môže lákať, pretože jeden kritický komponent už je redundantný, ale treba zohľadniť každú relevantnú doménu porúch v architektúre."
+ },
+ {
+  "id": 99,
+  "level": "medior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "debug",
+  "question": "Aplikácia funguje cez IPv4, ale v sieti s podporou IPv6 je občas dosiahnuteľná až po dlhom timeoute. DNS záznamy obsahujú aj záznam `AAAA`. Aký môže byť jeden z možných problémov?",
+  "options": [
+   "Smerovanie alebo konfigurácia firewallu pre IPv6 je nesprávna, kým cesta cez IPv4 funguje",
+   "Záznam `A` automaticky zmaže záznam `AAAA`",
+   "DNS TTL vždy bráni IPv6 spojeniam",
+   "IPv6 sa dá používať iba cez UDP"
+  ],
+  "answer": 0,
+  "explanation": "Ak existuje záznam `AAAA`, klient s podporou IPv6 sa môže pokúsiť pripojiť cez IPv6. Ak je smerovanie IPv6, pravidlá firewallu alebo IPv6 binding služby nesprávne nakonfigurované, spojenie môže skončiť timeoutom, kým IPv4 naďalej funguje. V dual-stack prostredí treba preto obe protokolové cesty kontrolovať samostatne. Podozrievať DNS TTL môže lákať, pretože problém sa objavuje spolu s DNS záznamom, ale úspešný preklad záznamu nezaručuje sieťovú konektivitu cez IPv6."
+ },
+ {
+  "id": 100,
+  "level": "medior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "production",
+  "question": "Chybovosť služby vzrastie z 0,1 % na 2 %, pričom výrazne vzrastie aj počet požiadaviek. Ktorý prístup je užitočnejší na určenie, či problém pravdepodobne súvisí so záťažou?",
+  "options": [
+   "Skontrolovať iba hostname služby",
+   "Porovnať iba digest container imagu",
+   "Sledovať chybovosť a latenciu v čase spolu s počtom požiadaviek a hľadať metriky zdrojov a závislostí, ktoré korelujú so zvýšenou záťažou",
+   "Vypnúť všetky alerty, aby sa znížil šum"
+  ],
+  "answer": 2,
+  "explanation": "Korelácia počtu požiadaviek, chybovosti, latencie a metrík zdrojov či závislostí v čase môže pomôcť určiť, či sa chyby objavili s rastom záťaže. Samo osebe to skutočnú príčinu nedokazuje, ale môže to poskytnúť silný diagnostický signál pre ďalšie skúmanie. Kontrolovať iba digest imagu môže lákať, pretože chyby môže priniesť aj nové vydanie, ale časový vzťah medzi záťažou a chybami poskytuje dôležitý kontext."
+ },
+ {
+  "id": 101,
+  "level": "medior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "scenario",
+  "question": "V CI pipeline môžu unit testy a integračné testy bežať nezávisle a žiadne z nich nezávisia od výsledku tých druhých. Aký je najlepší prístup na skrátenie času behu?",
+  "options": [
+   "Spustiť obe sady testov paralelne ako samostatné joby",
+   "Integračné testy úplne odstrániť",
+   "Spúšťať testy v produkčnom prostredí",
+   "Dať všetky testy do toho istého shell skriptu"
+  ],
+  "answer": 0,
+  "explanation": "Keď sú dve sady testov nezávislé, môžu bežať paralelne ako samostatné CI joby, takže celkové trvanie pipeline sa približuje trvaniu dlhšieho jobu namiesto súčtu oboch. Dať všetko do jedného skriptu môže vyzerať ako jednoduchšie na riadenie, ale zvyčajne to vedie k sekvenčnému behu."
+ },
+ {
+  "id": 102,
+  "level": "medior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "behavior",
+  "question": "Aplikácia bežiaca v Linux kontajneri sa spúšťa ako PID 1. Prečo môže byť dôležité, aby aplikácia alebo entrypoint správne spracúvali Unix signály?",
+  "options": [
+   "Pretože PID 1 automaticky beží ako root",
+   "Pretože kontajner vždy zostáva na tom istom hostiteľovi",
+   "Pretože pri zastavení kontajnera runtime pošle hlavnému procesu signál a pre graceful shutdown je potrebné ho správne spracovať",
+   "Pretože PID 1 obsluhuje iba sieťové spojenia"
+  ],
+  "answer": 2,
+  "explanation": "Pri zastavení kontajnera runtime zvyčajne pošle signál hlavnému procesu kontajnera, takže správne spracovanie signálov umožní zatvoriť spojenia, dokončiť rozbehnuté operácie a čisto ukončiť proces. Predpoklad, že PID 1 automaticky znamená proces pod rootom, môže lákať pre špeciálnu úlohu PID 1, ale samotné číslo PID o oprávneniach Unix používateľa nerozhoduje."
+ },
+ {
+  "id": 103,
+  "level": "medior",
+  "area": "Dockerfile best practices",
+  "topic": "Dockerfile best practices",
+  "type": "scenario",
+  "question": "Build produkčného Docker imagu musí zakaždým priniesť rovnaké verzie závislostí. Ktorý prístup najviac zlepší reprodukovateľnosť buildu?",
+  "options": [
+   "Vždy používať verziu závislostí `latest`",
+   "Použiť lockfile závislostí a podľa možnosti nemennú referenciu na base image, napríklad digest",
+   "Úplne odstrániť verzie závislostí",
+   "Pred každým buildom vymazať cache balíkov a všetky verzie znova vyriešiť"
+  ],
+  "answer": 1,
+  "explanation": "Lockfile zafixuje graf a verzie závislostí a digest base imagu identifikuje presný použitý image. Spolu výrazne zvyšujú pravdepodobnosť, že rovnaké vstupy vytvoria rovnaký image. Použitie `latest` môže lákať, pretože vždy pôsobí aktuálne, ale meniteľný tag nezaručuje rovnaké vstupy buildu."
+ },
+ {
+  "id": 104,
+  "level": "medior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "behavior",
+  "question": "Kubernetes Deployment je nastavený na `replicas: 3`, ale bežia iba dva pody. Klaster má dostatočnú kapacitu. Čo sa za normálnych okolností stane?",
+  "options": [
+   "Deployment sa automaticky zmení na `replicas: 2`",
+   "Service zmaže jeden z bežiacich podov",
+   "ConfigMap vytvorí nový pod",
+   "Deployment controller sa pokúsi obnoviť požadovaný stav troch replík"
+  ],
+  "answer": 3,
+  "explanation": "Požadovaný stav Deploymentu sú tri repliky, takže controller priebežne zosúlaďuje skutočný stav s požadovaným. Ak pod zmizne alebo neexistuje, controller cez príslušný ReplicaSet iniciuje vytvorenie nového podu. Predpoklad, že sa Deployment prispôsobí aktuálnym dvom podom, môže lákať, pretože Kubernetes sleduje aktuálny stav, ale reconciliácia existuje práve na obnovenie požadovaného stavu."
+ },
+ {
+  "id": 105,
+  "level": "medior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "scenario",
+  "question": "Pody v Kubernetes StatefulSete potrebujú stabilné sieťové identity a každá replika má používať vlastné perzistentné úložisko. Ktoré riešenie v Kubernetes sa na to hodí najlepšie?",
+  "options": [
+   "StatefulSet s Headless Service a PersistentVolumeClaimom pre každý pod",
+   "Jedna ConfigMap zdieľaná všetkými podmi",
+   "DaemonSet so zdieľaným `emptyDir`",
+   "Jeden statický Pod manifest"
+  ],
+  "answer": 0,
+  "explanation": "StatefulSet poskytuje stabilné identity podov a Headless Service umožňuje stabilný prístup k jednotlivým podom cez DNS. Pomocou `volumeClaimTemplates` môže každá replika dostať vlastný PersistentVolumeClaim. Zdieľaný `emptyDir` môže lákať, pretože pôsobí ako jednoduché riešenie úložiska, ale `emptyDir` je viazaný na životný cyklus podu a perzistenciu neposkytuje."
+ },
+ {
+  "id": 106,
+  "level": "medior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "scenario",
+  "question": "Helm chart sa nasadzuje do viacerých prostredí. Základný `values.yaml` obsahuje predvolené hodnoty a values súbor špecifický pre prostredie niektoré z nich prepisuje. Čo sa zvyčajne stane, keď sa zadajú oba?",
+  "options": [
+   "Helm náhodne vyberie jednu z dvoch hodnôt",
+   "Základný `values.yaml` vždy prepíše súbor špecifický pre prostredie",
+   "Hodnoty z neskôr zadaného values súboru môžu prepísať predvolené hodnoty",
+   "Helm automaticky prevedie všetky hodnoty na stringy"
+  ],
+  "answer": 2,
+  "explanation": "Pri použití viacerých values súborov môžu mať neskôr zadané súbory vyššiu prioritu ako predvolené hodnoty, takže konfigurácia špecifická pre prostredie môže prepísať vybrané predvolené hodnoty. Výsledok závisí aj od pravidiel priority values v Helme a prípadných parametrov `--set`. Považovať základný súbor za konečný zdroj môže lákať, pretože obsahuje predvolenú konfiguráciu chartu, ale prepisy existujú práve na to, aby tieto predvolené hodnoty menili."
+ },
+ {
+  "id": 107,
+  "level": "medior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "behavior",
+  "question": "V Terraform konfigurácii treba ten istý zdroj dynamicky vytvoriť pre viacero položiek a každá inštancia sa má identifikovať stabilnými kľúčmi. Ktorý meta-argument sa na to hodí lepšie?",
+  "options": [
+   "`depends_on`",
+   "`for_each`",
+   "`provider`",
+   "`lifecycle`"
+  ],
+  "answer": 1,
+  "explanation": "`for_each` dokáže vytvoriť samostatné inštancie zdroja z prvkov kolekcie alebo mapy a inštancie identifikuje stabilnými kľúčmi. Hodí sa najmä vtedy, keď treba zdroje spravovať podľa názvov alebo iných trvalých identifikátorov. `count` môže lákať, keď je cieľom jednoducho vytvoriť viacero inštancií, ale jeho adresovanie podľa indexu môže byť pri zmene podkladovej kolekcie menej stabilné."
+ },
+ {
+  "id": 108,
+  "level": "medior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "scenario",
+  "question": "Aplikácia musí bežať v privátnom subnete, ale zároveň potrebuje pristupovať k externému API cez internet. Ktorá architektúra môže byť vhodná?",
+  "options": [
+   "Dať každej inštancii aplikácie priamo verejnú IP adresu",
+   "Prevádzkovať aplikáciu bez prístupu na internet",
+   "Odstrániť všetky bezpečnostné kontroly",
+   "Prevádzkovať aplikáciu v privátnom subnete a zabezpečiť kontrolovaný odchádzajúci prístup na internet, napríklad cez NAT gateway"
+  ],
+  "answer": 3,
+  "explanation": "V privátnom subnete nie je aplikácia priamo verejne vystavená prichádzajúcej prevádzke, zatiaľ čo vhodne nakonfigurovaná odchádzajúca cesta cez NAT umožní prístup k externým službám. Presné riešenie závisí od cloudového poskytovateľa a topológie siete. Dať každej inštancii verejnú IP môže lákať, pretože prístup na internet je potom priamočiary, ale môže to výrazne zväčšiť plochu útoku."
+ },
+ {
+  "id": 109,
+  "level": "medior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "scenario",
+  "question": "Klient dokáže nadviazať TCP spojenie so serverom, ale HTTPS požiadavka zlyhá počas TLS handshake. Čo táto situácia ukazuje?",
+  "options": [
+   "DNS je určite pokazené",
+   "TCP spojenie sa nadviazalo, ale na vrstve TLS je ďalší problém",
+   "Aplikácia cez HTTP určite funguje správne",
+   "Server nemá IP adresu"
+  ],
+  "answer": 1,
+  "explanation": "Úspešný TCP handshake ukazuje, že medzi klientom a serverom vzniklo TCP spojenie. TLS handshake potom prebieha na samostatnej vrstve, kde môžu nastať problémy napríklad s certifikátom, protokolom alebo kompatibilitou SNI. Obviňovať DNS môže lákať, pretože HTTPS prístup používa hostname, ale úspešné TCP spojenie je už dôležitým dôkazom, že základná sieťová cesta funguje."
+ },
+ {
+  "id": 110,
+  "level": "medior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "scenario",
+  "question": "HTTP API má priemernú latenciu 100 ms, kým jeho p99 latencia je 4 sekundy. Čo to najpravdepodobnejšie naznačuje?",
+  "options": [
+   "Každá požiadavka sa vybaví presne za 100 ms alebo rýchlejšie",
+   "Systém nemá problém s latenciou",
+   "Malé percento požiadaviek je výrazne pomalšie ako typické požiadavky",
+   "Využitie CPU je vždy na 99 %"
+  ],
+  "answer": 2,
+  "explanation": "p99 ukazuje, že približne 99 % požiadaviek je rýchlejších ako daná hodnota percentilu, kým menšia časť môže byť pomalšia. p99 na úrovni 4 sekúnd teda naznačuje výraznú tail latency, hoci priemer je 100 ms. Považovať systém za zdravý podľa priemeru môže lákať, pretože poskytuje jednu súhrnnú hodnotu pre všetky požiadavky, ale môže pomalé požiadavky zakryť."
+ },
+ {
+  "id": 111,
+  "level": "medior",
+  "area": "Logging",
+  "topic": "Logging",
+  "type": "scenario",
+  "question": "V mikroservisnej architektúre zapisuje logy patriace k tej istej požiadavke viacero služieb. Ktorý prístup je najužitočnejší na sledovanie konkrétnej požiadavky naprieč službami?",
+  "options": [
+   "V každej službe vygenerovať iné náhodné request ID",
+   "Logovať iba časovú pečiatku",
+   "Nastaviť všetky úrovne logovania na ERROR",
+   "Prenášať medzi službami jednotné correlation alebo trace ID a logovať ho v štruktúrovanej podobe"
+  ],
+  "answer": 3,
+  "explanation": "Spoločné correlation alebo trace ID umožňuje prepojiť udalosti patriace k tej istej požiadavke v logoch viacerých služieb. Mimoriadne užitočné je to pri ladení distribuovaných systémov. Hľadať iba podľa časovej pečiatky môže lákať, pretože je dostupná v každom logu, ale súbežné požiadavky a rozdiely hodín ju robia nedostatočnou na spoľahlivé jednoznačné prepojenie."
+ },
+ {
+  "id": 112,
+  "level": "medior",
+  "area": "SRE & incident management",
+  "topic": "SRE & incident management",
+  "type": "scenario",
+  "question": "Služba má SLO 99,9 % dostupnosti, ale nameraná dostupnosť za aktuálne obdobie je 99,95 %. Čo to znamená?",
+  "options": [
+   "SLO je splnené, pretože nameraná dostupnosť je vyššia ako cieľ",
+   "SLO bolo porušené",
+   "Systém má každý mesiac presne 0,05 % výpadkov",
+   "SLO sa automaticky zmení na 99,99 %"
+  ],
+  "answer": 0,
+  "explanation": "Nameraná dostupnosť 99,95 % je vyššia ako cieľ SLO 99,9 %, takže služba v danom meracom období SLO splnila. Neznamená to, že SLO bude nevyhnutne splnené v každom budúcom období. Považovať SLO za porušené môže lákať, pretože rozdiel 0,05 percentuálneho bodu pôsobí malý, ale SLO sa vyhodnocuje voči konkrétnej cieľovej hodnote."
+ },
+ {
+  "id": 113,
+  "level": "medior",
+  "area": "Deployment strategies",
+  "topic": "Deployment strategies",
+  "type": "scenario",
+  "question": "Nová verzia aplikácie má byť spočiatku sprístupnená iba 5 % používateľov, kým zvyšnú prevádzku obsluhuje stará verzia. Ktorá stratégia nasadenia tejto požiadavke zodpovedá?",
+  "options": [
+   "Recreate deployment",
+   "Canary deployment",
+   "Big-bang deployment",
+   "Database-only deployment"
+  ],
+  "answer": 1,
+  "explanation": "Pri canary nasadení dostáva nová verzia spočiatku malú časť prevádzky, takže jej správanie a metriky sa dajú kontrolovane sledovať. Ak funguje podľa očakávaní, podiel prevádzky sa môže postupne zvyšovať. Plné nasadenie naraz sa môže zdať jednoduchšie na prevádzku, ale vystavilo by všetkých používateľov prípadným problémom novej verzie naraz."
+ },
+ {
+  "id": 114,
+  "level": "medior",
+  "area": "Secrets & security",
+  "topic": "Secrets & security",
+  "type": "scenario",
+  "question": "Aplikácia potrebuje iba čítať jeden S3 objekt z konkrétneho bucketu. Ktorý IAM prístup najlepšie dodržiava princíp najmenších oprávnení?",
+  "options": [
+   "Dať aplikácii administrátorské oprávnenia",
+   "Dať prístup na čítanie k celému cloudovému účtu",
+   "Dať iba minimálne oprávnenia na čítanie potrebné pre konkrétny objekt alebo zdroj",
+   "Nechať všetky aplikácie používať ten istý root prístupový údaj"
+  ],
+  "answer": 2,
+  "explanation": "Princíp najmenších oprávnení znamená, že identita dostane iba minimálne oprávnenia potrebné na vykonanie svojej úlohy. Ak aplikácia potrebuje čítať iba jeden objekt, nie je dôvod dávať jej prístup na úrovni celého bucketu alebo účtu. Administrátorské oprávnenia môžu lákať, pretože okamžite vyriešia problémy s prístupom, ale vytvárajú zbytočne veľkú plochu útoku."
+ },
+ {
+  "id": 115,
+  "level": "medior",
+  "area": "GitOps",
+  "topic": "GitOps",
+  "type": "scenario",
+  "question": "GitOps controller po ručnej zmene klastra inžinierom opakovane vracia Kubernetes objekt do predchádzajúcej konfigurácie. Čo toto správanie vysvetľuje?",
+  "options": [
+   "GitOps reconciliácia považuje požadovaný stav definovaný v Gite za zdroj pravdy a dokáže drift vrátiť",
+   "Kubernetes náhodne upravuje manifesty",
+   "Docker daemon automaticky prepisuje Kubernetes objekty",
+   "Git repozitár po každom commite zmaže klaster"
+  ],
+  "answer": 0,
+  "explanation": "V GitOps je požadovaný stav uložený v Gite primárnym zdrojom konfigurácie a controller voči nemu priebežne zosúlaďuje stav klastra. Ručná zmena tak môže vytvoriť drift, ktorý controller neskôr vráti. Považovať ručnú zmenu v klastri za trvalú môže lákať, pretože jej efekt je hneď viditeľný, ale v GitOps sa často líši od deklarovaného požadovaného stavu."
+ },
+ {
+  "id": 116,
+  "level": "medior",
+  "area": "Scripting & automation",
+  "topic": "Scripting & automation",
+  "type": "debug",
+  "question": "V nasledujúcom Bash skripte obsahuje premenná názov súboru s medzerami:\nPrečo je skript problematický?",
+  "code": "FILE=\"my report.txt\"\ncat $FILE",
+  "options": [
+   "`cat` podporuje iba číselné názvy súborov",
+   "Premenná nie je v úvodzovkách, takže word splitting v shelli môže názov súboru rozdeliť na viacero argumentov",
+   "Bash nepodporuje medzery v názvoch súborov",
+   "Hodnotu premennej treba definovať v jednoduchých úvodzovkách"
+  ],
+  "answer": 1,
+  "explanation": "Keď sa `$FILE` použije bez úvodzoviek, shell môže vykonať word splitting, takže z `my report.txt` sa stanú dva samostatné argumenty. Použitie `cat \"$FILE\"` zachová celý názov súboru ako jeden argument. Vynechať úvodzovky môže lákať, pretože premenné bez úvodzoviek pri jednoduchých hodnotách zdanlivo fungujú, ale pri medzerách a špeciálnych znakoch vo vstupe môžu zlyhať."
+ },
+ {
+  "id": 117,
+  "level": "medior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "debug",
+  "question": "V CI pipeline build job uspeje, ale deploy job nenájde súbor vytvorený počas buildu. Oba joby bežia na samostatných runneroch. V čom môže byť problém?",
+  "options": [
+   "CI runnery automaticky zdieľajú všetky lokálne súbory",
+   "Build artefakt nikdy nemôže byť súbor",
+   "Deploy job beží v tom istom procese shellu",
+   "Súbor treba explicitne publikovať ako artefakt a ďalší job si ho potom musí stiahnuť alebo preniesť"
+  ],
+  "answer": 3,
+  "explanation": "Keď joby bežia na samostatných runneroch, nie je spravidla zaručené, že súbory vo workspace jedného jobu budú existovať aj v ďalšom. Výstup buildu treba preto publikovať ako CI artefakt a potom ho stiahnuť alebo inak preniesť do deploy jobu. Predpoklad, že súbor zostane dostupný, môže lákať, pretože to môže fungovať, keď pipeline beží na jednom stroji, ale distribuované CI má iný životný cyklus workspace."
+ },
+ {
+  "id": 118,
+  "level": "medior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "performance",
+  "question": "Aplikácia bežiaca v Docker kontajneri v krátkom čase zapisuje a maže veľmi veľké množstvo súborov. Čo môže pomôcť, ak dáta nemusia byť perzistentné a treba znížiť réžiu I/O úložiska?",
+  "options": [
+   "Dať každý súbor do samostatnej vrstvy Docker imagu",
+   "Ukladať každý súbor vo formáte base64",
+   "Ak je to vhodné, použiť tmpfs mount pre rýchle, neperzistentné dáta",
+   "Zdvojnásobiť veľkosť container imagu"
+  ],
+  "answer": 2,
+  "explanation": "tmpfs ukladá dáta v pamäti, takže pre dočasné dáta môže byť rýchly a vyhnúť sa časti tradičného I/O úložiska. Pamäť je však obmedzená a obsah sa stratí pri odstránení kontajnera a spravidla aj pri jeho reštarte, podľa toho, ako je mount spravovaný. Zväčšiť image môže lákať, pretože by poskytol viac miesta, ale vrstvy imagu nie sú určené ako dočasné úložisko za behu."
+ },
+ {
+  "id": 119,
+  "level": "medior",
+  "area": "Dockerfile best practices",
+  "topic": "Dockerfile best practices",
+  "type": "debug",
+  "question": "Počas buildu Dockerfilu sa použije build-time secret a súbor sa po vytvorení imagu zmaže. Prečo to nemusí byť bezpečné?",
+  "options": [
+   "Docker nikdy nedovolí mazať súbory počas buildu imagu",
+   "Secrety dokáže ukladať iba Kubernetes",
+   "Secret sa vždy zapíše do súboru `/etc/passwd` hostiteľa",
+   "Secret môže zostať v skoršej vrstve imagu, aj keď sa v neskoršej vrstve zmaže"
+  ],
+  "answer": 3,
+  "explanation": "Vrstvy Docker imagu sú svojou podstatou nemenné, takže odstránenie súboru v neskoršej vrstve nemusí odstrániť jeho obsah zo skoršej vrstvy. Na build-time secrety preto treba používať dedikované mechanizmy, napríklad BuildKit secret mounty. Považovať image po zmazaní súboru za bezpečný môže lákať, pretože vo výslednom súborovom systéme už nie je viditeľný, ale predchádzajúca vrstva ho môže stále obsahovať."
+ },
+ {
+  "id": 120,
+  "level": "medior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "edgecase",
+  "question": "Kubernetes pod má nastavené `requests.cpu: 500m` a `limits.cpu: 1`. Ktoré tvrdenie je správne?",
+  "options": [
+   "Pod vždy používa presne 500m CPU",
+   "Pod nikdy nemôže použiť viac ako 500m CPU",
+   "Request primárne udáva potrebné CPU pre plánovanie, kým limit definuje hornú hranicu spotreby CPU",
+   "Request a limit vždy znamenajú to isté"
+  ],
+  "answer": 2,
+  "explanation": "CPU request je pre scheduler dôležitý ako údaj o nárokoch workloadu na zdroje, kým CPU limit definuje maximálnu spotrebu CPU povolenú kontajneru v rámci nastaveného mechanizmu vynucovania. Request nezaručuje, že proces použije presne toto množstvo, a ani nemusí obmedzovať spotrebu CPU za behu na túto hodnotu. Považovať request za hornú hranicu môže lákať, pretože obe nastavenia sa týkajú CPU, ale slúžia na rôzne účely."
+ },
+ {
+  "id": 121,
+  "level": "medior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "scenario",
+  "question": "PersistentVolumeClaim pôvodne žiadal 10Gi, ale teraz ho treba rozšíriť na 20Gi. Aká je vhodná prvá kontrola?",
+  "options": [
+   "Či použitá StorageClass a backend úložiska podporujú rozširovanie volume",
+   "Či má názov Podu presne 10 znakov",
+   "Či Service používa typ ClusterIP",
+   "Či ConfigMap obsahuje kľúč storage"
+  ],
+  "answer": 0,
+  "explanation": "Rozšírenie PVC je riadnym spôsobom možné iba vtedy, ak StorageClass a podkladový backend úložiska podporujú rozširovanie volume. Ak je to podporované, veľkosť PVC sa dá upraviť a Kubernetes spolu s CSI driverom vykonajú potrebné operácie s úložiskom. Upraviť priamo veľkosť PV môže lákať, pretože predstavuje skutočné úložisko, ale treba dodržať postup rozširovania cez PVC a StorageClass."
+ },
+ {
+  "id": 122,
+  "level": "medior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "debug",
+  "question": "Inštalácia Helm chartu zlyhá, pretože chýba voliteľná konfiguračná sekcia. Ktorý prístup môže pomôcť spraviť šablónu robustnejšou?",
+  "options": [
+   "Spraviť každú voliteľnú hodnotu povinnou bez dokumentácie",
+   "Použiť `default` alebo vhodnú podmienenú logiku na spracovanie chýbajúcich hodnôt",
+   "Úplne vypnúť šablónový engine Helmu",
+   "Zmazať všetky values súbory"
+  ],
+  "answer": 1,
+  "explanation": "Helm šablóny môžu používať `default`, podmienenú logiku a vhodnú štruktúru values na bezpečné spracovanie voliteľnej konfigurácie. Tým sa dajú obmedziť chyby renderovania spôsobené chýbajúcimi hodnotami. Spraviť každú hodnotu povinnou môže lákať, pretože to odstráni chýbajúcu konfiguráciu, ale zároveň to odstráni flexibilitu voliteľnej konfigurácie."
+ },
+ {
+  "id": 123,
+  "level": "medior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "scenario",
+  "question": "Existujúci cloudový zdroj bol vytvorený ručne a teraz sa má spravovať Terraformom bez okamžitého znovuvytvorenia. Aký je vhodný prístup?",
+  "options": [
+   "Blok resource úplne vynechať",
+   "Zdroj zmazať a znovu ho vytvoriť cez `terraform apply`",
+   "Importovať existujúci zdroj do Terraform state a potom s ním zosúladiť konfiguráciu",
+   "Ručne zmeniť Terraform state na ľubovoľné hodnoty"
+  ],
+  "answer": 2,
+  "explanation": "Terraform import dokáže dostať existujúci infraštruktúrny zdroj pod správu Terraform state. Konfiguráciu potom treba zosúladiť so skutočnou infraštruktúrou, aby sa nasledujúce plány nepokúšali o zbytočné zmeny. Znovuvytvorenie zdroja môže lákať, pretože by zabezpečilo čisté vlastníctvo v Terraforme, ale mohlo by spôsobiť výpadok alebo stratu dát."
+ },
+ {
+  "id": 124,
+  "level": "medior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "behavior",
+  "question": "Cloudový load balancer rozdeľuje prevádzku medzi backendy bežiace vo viacerých availability zónach. Aká je jedna hlavná výhoda tejto topológie?",
+  "options": [
+   "Každý backend automaticky dostane administrátorské oprávnenia",
+   "Pri výpadku jednej availability zóny môže kapacita backendov zostať dostupná v iných zónach",
+   "DNS už nie je potrebné",
+   "Databáza sa automaticky stane bezstavovou"
+  ],
+  "answer": 1,
+  "explanation": "Použitie viacerých availability zón môže znížiť riziko, že výpadok jednej zóny spraví celú službu nedostupnou, za predpokladu, že aj ostatné komponenty a smerovanie sú primerane redundantné. Ide o dôležitý vzor vysokej dostupnosti založený na doménach porúch. Predpoklad, že samotný load balancer zaručí vysokú dostupnosť, môže lákať, ale primerane redundantná musí byť celá architektúra."
+ },
+ {
+  "id": 125,
+  "level": "medior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "edgecase",
+  "question": "IPv4 sieť `/24` treba rozdeliť na dva rovnako veľké subnety. Ktorý prefix poskytne dva rovnako veľké subnety?",
+  "options": [
+   "`/25`",
+   "`/26`",
+   "`/27`",
+   "`/28`"
+  ],
+  "answer": 0,
+  "explanation": "Sieť `/24` sa dá rozdeliť na siete `/25` predĺžením prefixu o jeden bit, čím vzniknú dva rovnako veľké subnety. V IPv4 obsahuje `/25` 128 adries, hoci počet použiteľných adries závisí od konkrétneho prostredia. `/26` môže lákať, pretože tiež delí sieť `/24`, ale vznikli by štyri rovnako veľké subnety, nie dva."
+ },
+ {
+  "id": 126,
+  "level": "medior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "performance",
+  "question": "V CI pipeline sťahuje rovnaké závislosti viacero paralelne bežiacich jobov. Čo môže byť účinným riešením na obmedzenie nadbytočného sťahovania?",
+  "options": [
+   "Pre každý job zvoliť inú verziu závislostí",
+   "Použiť vhodne zdieľanú cache závislostí alebo cache spravovanú CI systémom",
+   "Inštaláciu závislostí úplne vynechať",
+   "Úplne vypnúť paralelný beh jobov"
+  ],
+  "answer": 1,
+  "explanation": "Pri vhodnej stratégii cachovania môže viacero jobov znovu použiť už stiahnuté závislosti, čím sa znižuje sieťová prevádzka aj čas buildu. Cache kľúč by mal zohľadňovať zmeny v definíciách závislostí. Vypnutie paralelizmu môže lákať, pretože sa vyhne súbežnému sťahovaniu, ale zároveň odstráni výhody paralelného behu."
+ },
+ {
+  "id": 127,
+  "level": "medior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "debug",
+  "question": "Proces bežiaci v Docker kontajneri nečakane dostane signál `SIGTERM`, ale aplikácia nevykoná graceful shutdown. Ktorú oblasť treba skontrolovať ako prvú?",
+  "options": [
+   "Región registry container imagov",
+   "Dĺžku tagu Docker imagu",
+   "Entrypoint, úlohu procesu ako PID 1 a fungovanie preposielania signálov",
+   "DNS TTL hostname kontajnera"
+  ],
+  "answer": 2,
+  "explanation": "Hlavný proces v kontajneri má špeciálnu úlohu PID 1, takže od entrypointu a modelu procesov môže závisieť, či sa signály k aplikácii správne dostanú. Shell wrapper alebo nesprávna správa procesov môžu očakávanému preposielaniu signálov zabrániť. Skúmať registry imagov môže lákať, pretože problém zdanlivo súvisí so štartom kontajnera, ale spracovanie signálov za behu je oveľa priamejšia oblasť na preverenie."
+ },
+ {
+  "id": 128,
+  "level": "medior",
+  "area": "Dockerfile best practices",
+  "topic": "Dockerfile best practices",
+  "type": "scenario",
+  "question": "Veľký build toolchain je potrebný iba počas kompilácie a aplikácia ho za behu nepotrebuje. Ktorý prístup dokáže výrazne zmenšiť výsledný image?",
+  "options": [
+   "Použiť multi-stage build, v ktorom sú build a runtime fáza oddelené",
+   "Ponechať build toolchain v runtime image",
+   "Skopírovať každý build artefakt viackrát bez kompresie",
+   "Zväčšiť base image"
+  ],
+  "answer": 0,
+  "explanation": "Pri multi-stage builde môžu nástroje potrebné na kompiláciu zostať v build fáze, zatiaľ čo výsledný image obsahuje iba artefakty potrebné za behu. Tým sa môže zmenšiť veľkosť imagu aj plocha útoku. Ponechanie toolchainu môže lákať, pretože Dockerfile môže byť jednoduchší, ale v produkčnom image tak zostanú nepotrebné komponenty."
+ },
+ {
+  "id": 129,
+  "level": "medior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "scenario",
+  "question": "Začne sa rollout novej verzie Deploymentu, ale nové pody sa nedostanú do stavu Ready. Staré pody naďalej bežia. Prečo môže byť toto správanie žiaduce?",
+  "options": [
+   "Pretože Deployment ignoruje stav pripravenosti",
+   "Pretože Service automaticky zastaví všetky staré pody",
+   "Pretože Kubernetes nedokáže vytvoriť nový pod, kým existuje starý",
+   "Pretože rolling update môže zohľadňovať podmienky pripravenosti a pomáha tak zabrániť tomu, aby pody, ktoré nie sú Ready, dostávali prevádzku"
+  ],
+  "answer": 3,
+  "explanation": "Počas rolloutu Deploymentu je stav pripravenosti dôležitý na určenie, kedy sa nové pody považujú za dostupné na obsluhu prevádzky. Môže to pomôcť zabrániť tomu, aby nová, ešte nefunkčná verzia dostala prevádzku príliš skoro, zatiaľ čo staré inštancie naďalej obsluhujú požiadavky. Očakávať, že rollout staré pody okamžite nahradí, môže lákať, pretože cieľom je novú verziu nasadiť rýchlo, ale ochrana dostupnosti je dôležitou súčasťou správania rolling update."
+ },
+ {
+  "id": 130,
+  "level": "medior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "behavior",
+  "question": "Za Kubernetes Service nie sú žiadne pody, pretože jej selector nezodpovedá labelom žiadneho podu. Čo sa zvyčajne stane?",
+  "options": [
+   "Service automaticky vytvorí zodpovedajúci pod",
+   "Service môže existovať, ale nebude mať žiadne zodpovedajúce backend endpointy",
+   "Kubernetes objekt Service zmaže",
+   "Service automaticky upraví svoj selector"
+  ],
+  "answer": 1,
+  "explanation": "Service pomocou selectora identifikuje pody, ktoré k nej patria. Ak žiadny pod nezodpovedá, nebudú existovať zodpovedajúce backend endpointy, takže prevádzka poslaná cez Service sa k aplikácii nedostane. Očakávať, že Service chýbajúci pod vytvorí, môže lákať, pretože sprístupňuje aplikáciu, ale Service nie je workload controller."
+ },
+ {
+  "id": 131,
+  "level": "medior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "debug",
+  "question": "Rovnaká konfigurácia sa opakuje vo viacerých šablónach Helm chartu, takže chart sa ťažko udržiava. Ktorý prístup môže štruktúru zlepšiť?",
+  "options": [
+   "Spojiť všetky šablóny do jedného súboru s tisíckami riadkov",
+   "Natvrdo zapísať celú konfiguráciu",
+   "Definovať znovupoužiteľné pomenované šablóny alebo helper šablóny a opakovane ich používať",
+   "Úplne zrušiť values súbory"
+  ],
+  "answer": 2,
+  "explanation": "Helm helper šablóny dokážu centralizovať spoločnú logiku renderovania, napríklad labely alebo konvencie pomenovania zdrojov, a umožniť jej opakované použitie vo viacerých manifestoch. Tým sa znižuje duplicita a chart sa ľahšie udržiava. Dať všetko do jedného súboru môže lákať, pretože celá konfigurácia je potom viditeľná na jednom mieste, ale veľké šablóny sa ťažšie testujú a udržiavajú."
+ },
+ {
+  "id": 132,
+  "level": "medior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "scenario",
+  "question": "Pri Terraform zdroji dokumentácia providera uvádza, že zmenu konkrétneho atribútu možno vyriešiť iba vytvorením nového zdroja. Čo to môže naznačovať v Terraform pláne?",
+  "options": [
+   "Zdroj určite zostane nezmenený",
+   "Terraform vždy vykonáva iba úpravy na mieste",
+   "State sa automaticky zmaže",
+   "Terraform môže naplánovať nahradenie, ktoré zdroj vytvorí znova"
+  ],
+  "answer": 3,
+  "explanation": "Ak provider považuje zmenu atribútu za zmenu vyžadujúcu nahradenie, Terraform plán môže ukázať destroy/create alebo ekvivalentnú operáciu nahradenia. Môže to byť dôležité pre riziko straty dát, výpadku alebo závislé zdroje, takže plán treba pred aplikovaním dôkladne skontrolovať. Predpoklad úpravy na mieste môže lákať, pretože mnohé cloudové zdroje takéto zmeny podporujú, ale toto správanie je špecifické pre providera a zdroj."
+ },
+ {
+  "id": 133,
+  "level": "medior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "scenario",
+  "question": "Databáza cloudovej aplikácie obsahuje citlivé údaje a nemala by byť priamo dostupná z internetu. Ktorá architektúra tejto požiadavke zodpovedá?",
+  "options": [
+   "Ponechať databázu v privátnom sieťovom segmente a povoliť prístup iba z potrebnej aplikačnej vrstvy",
+   "Dať databáze verejnú IP adresu a použiť silné heslo",
+   "Povoliť port 5432 zo všetkých IP adries na internete",
+   "Umiestniť databázu do toho istého verejného subnetu ako load balancer"
+  ],
+  "answer": 0,
+  "explanation": "Ponechanie databázy v privátnom sieťovom segmente a obmedzenie sieťového prístupu na aplikačnú vrstvu znižuje jej priame vystavenie útokom z internetu. Presná implementácia závisí od security groups, sieťových ACL a cloudového poskytovateľa. Kombinácia verejnej IP a silného hesla môže lákať, pretože databáza je tak ľahko dostupná, ale zbytočne to zvyšuje sieťovú expozíciu."
+ },
+ {
+  "id": 134,
+  "level": "medior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "debug",
+  "question": "DNS lookup úspešne vráti IP adresu, ale TCP spojenie aplikácie skončí timeoutom. Ktoré tvrdenie je najpresnejšie?",
+  "options": [
+   "DNS určite vrátilo nesprávnu IP adresu",
+   "TCP spojenie musí fungovať, pretože DNS fungovalo",
+   "Preklad hostname uspel, ale timeout môže stále spôsobiť smerovanie, firewall, security group alebo problém cieľovej služby",
+   "Úspešný DNS preklad automaticky povolí TCP prevádzku"
+  ],
+  "answer": 2,
+  "explanation": "DNS preklad iba ukazuje, že hostname sa dá preložiť na adresu. Nadviazanie TCP spojenia si navyše vyžaduje správne smerovanie, pravidlá firewallu, počúvajúcu službu a prípadne vhodné povolenia v security group. Považovať DNS za dôkaz, že funguje celé spojenie, môže lákať, pretože klient použije DNS ako prvé, ale preklad mien a TCP konektivita sú samostatné problémové oblasti."
+ },
+ {
+  "id": 135,
+  "level": "medior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "performance",
+  "question": "V metrickom systéme podobnom Prometheu bol k HTTP metrike pridaný nasledujúci label: `user_id`. Systém má veľmi vysokú prevádzku a niekoľko miliónov rôznych používateľov. Aký podstatný problém to môže spôsobiť?",
+  "options": [
+   "Názov metriky sa automaticky zmení",
+   "Vysoká kardinalita môže vytvoriť veľmi veľké množstvo časových radov a spôsobiť výraznú réžiu pamäte a úložiska",
+   "Metrika sa automaticky prevedie na logy",
+   "Prometheus nedokáže ukladať HTTP metriky"
+  ],
+  "answer": 1,
+  "explanation": "Každá odlišná kombinácia labelov môže viesť k samostatnému časovému radu, takže label `user_id` s vysokou kardinalitou môže vytvoriť milióny radov. To môže spôsobiť výraznú réžiu pamäte, úložiska a dotazov. Používať ID používateľov ako labely môže lákať, pretože umožňujú veľmi podrobnú agregáciu, ale vysoká kardinalita sa v metrických systémoch môže stať vážnym prevádzkovým problémom."
+ },
+ {
+  "id": 136,
+  "level": "medior",
+  "area": "Logging",
+  "topic": "Logging",
+  "type": "production",
+  "question": "Produkčná služba ukladá časovú pečiatku, závažnosť, request ID a ďalšie údaje do jedného dlhého textového reťazca. Prečo môže byť štruktúrované logovanie, napríklad JSON logy, výhodnejšie?",
+  "options": [
+   "Pretože JSON logy nikdy nemôžu obsahovať chyby",
+   "Pretože štruktúrované polia uľahčujú vyhľadávanie, filtrovanie a agregáciu dát",
+   "Pretože JSON logy automaticky šifruje",
+   "Pretože štruktúrované logovanie odstráni náklady na úložisko"
+  ],
+  "answer": 1,
+  "explanation": "Pri štruktúrovanom logovaní sú polia ako časová pečiatka, závažnosť, request ID a ďalšie atribúty reprezentované ako samostatné dátové polia, takže systémy na agregáciu logov ich dokážu efektívnejšie filtrovať a agregovať. Zlepšuje to automatizovanú analýzu a observability workflow. Vykladať štruktúrované formáty ako automatické šifrovanie môže lákať, pretože ich stroje ľahšie spracujú, ale samotná štruktúra bezpečnosť neposkytuje."
+ },
+ {
+  "id": 137,
+  "level": "medior",
+  "area": "SRE & incident management",
+  "topic": "SRE & incident management",
+  "type": "scenario",
+  "question": "Služba v aktuálnom období spotrebovala väčšinu svojho error budgetu, ale tím aj tak plánuje do produkcie vydať významnú novú funkciu. Prečo to môže byť z pohľadu SRE riskantné?",
+  "options": [
+   "Pretože error budget je výlučne finančný rozpočet",
+   "Pretože error budget slúži iba na meranie platov vývojárov",
+   "Pretože error budget predstavuje povolené riziko spoľahlivosti, a keď je z veľkej časti spotrebovaný, môže byť vhodné uprednostniť prácu na spoľahlivosti",
+   "Pretože error budget automaticky zastaví CI pipeline"
+  ],
+  "answer": 2,
+  "explanation": "Error budget odvodený od SLO predstavuje mieru zlyhaní spoľahlivosti, ktorú možno v danom období tolerovať. Ak je jeho podstatná časť už spotrebovaná, ďalšie riskantné zmeny môžu zvýšiť pravdepodobnosť porušenia SLO, preto mnohé SRE postupy v takejto situácii uprednostňujú zlepšenia spoľahlivosti. Vykladať ho čisto ako finančný rozpočet môže lákať pre slovo „budget“, ale tu predstavuje spoľahlivosť služby."
+ },
+ {
+  "id": 138,
+  "level": "medior",
+  "area": "Deployment strategies",
+  "topic": "Deployment strategies",
+  "type": "behavior",
+  "question": "Počas rolling nasadenia beží istý čas stará aj nová verzia podov aplikácie. Ktorá vlastnosť na úrovni aplikácie najviac pomáha, aby bol takýto typ nasadenia bezpečný?",
+  "options": [
+   "Nová verzia komunikuje iba cez IPv6",
+   "Každé databázové spojenie sa po každej požiadavke reštartuje",
+   "Všetky staré pody sa počas nasadenia okamžite zmažú",
+   "Spätne kompatibilné zmeny API a dátového modelu, vďaka ktorým môžu verzie dočasne koexistovať"
+  ],
+  "answer": 3,
+  "explanation": "Počas rolling nasadenia môžu byť stará a nová verzia istý čas aktívne súčasne, takže API a dátové štruktúry musia počas tohto prechodu zostať kompatibilné. Pri databázových migráciách je bežným vzorom prístup expand-and-contract. Okamžité zmazanie starých podov môže lákať, pretože odstráni problém koexistencie verzií, ale zároveň odstráni dôležitú výhodu rolling nasadenia."
+ },
+ {
+  "id": 139,
+  "level": "medior",
+  "area": "Secrets & security",
+  "topic": "Secrets & security",
+  "type": "edgecase",
+  "question": "CI pipeline odovzdáva secret ako premennú prostredia príkazu shellu. Ktorá prax najviac znižuje riziko, že sa secret náhodne objaví v logoch?",
+  "options": [
+   "Po každom príkaze secret pre kontrolu vypísať",
+   "Všade odovzdávať secret ako argument príkazového riadka",
+   "Odovzdať secret podporovaným mechanizmom, napríklad cez súbor alebo stdin, ak je to vhodné, a použiť maskovanie secretov a kontrolu logovania v CI systéme",
+   "Commitnúť secret do repozitára, aby k nemu mal prístup každý job"
+  ],
+  "answer": 2,
+  "explanation": "Odovzdanie secretu priamo ako argumentu príkazového riadka ho môže v niektorých prostrediach prezradiť cez výpis procesov alebo debug výstup. Bezpečnejšie môže byť podporované vkladanie secretov, pripojenie súborov alebo stdin, pričom treba vhodne nastaviť aj maskovanie secretov v CI systéme. Odovzdávať všetko ako argumenty príkazového riadka môže lákať, pretože je to jednoduché a čitateľné, ale môže to zvýšiť riziko úniku prístupových údajov."
+ },
+ {
+  "id": 140,
+  "level": "medior",
+  "area": "GitOps",
+  "topic": "GitOps",
+  "type": "debug",
+  "question": "GitOps controller hlási, že niektoré zdroje prítomné v klastri už nie sú definované v Gite, no v klastri naďalej bežia. Ktorá funkcia GitOps môže byť pri riešení tohto relevantná?",
+  "options": [
+   "Prune alebo spracovanie osirelých zdrojov, ktoré pri vhodnej konfigurácii dokáže odstrániť zdroje, ktoré už nie sú deklarované",
+   "Vypnutie garbage collection Docker imagov",
+   "Zvýšenie DNS TTL",
+   "Premenovanie Kubernetes nodov"
+  ],
+  "answer": 0,
+  "explanation": "Mnohé GitOps systémy podporujú pruning alebo spracovanie osirelých zdrojov, ktoré pri zapnutí príslušných nastavení dokáže odstrániť objekty, ktoré už nie sú deklarované v Gite. Treba to používať opatrne, pretože nesprávna zmena v repozitári by mohla viesť k neželanému mazaniu. Skúmať nody alebo DNS môže lákať, pretože problém sa týka stavu klastra, ale súvisí priamo s driftom medzi požadovaným stavom a skutočnými zdrojmi."
+ },
+ {
+  "id": 141,
+  "level": "senior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "architecture",
+  "question": "Veľké monorepo obsahuje stovky služieb. Commit sa zvyčajne týka iba niekoľkých služieb, ale build a testovanie celého repozitára trvá niekoľko hodín. Ktorý architektonický prístup škáluje CI najefektívnejšie?",
+  "options": [
+   "Pri každom commite úplne prebuildovať a otestovať každú službu",
+   "Úplne vypnúť CI, pretože repozitár je monorepo",
+   "Každú službu nasadzovať ručne",
+   "Pomocou grafu závislostí a analýzy zmenených ciest overovať iba dotknuté služby a rozsah ich závislostí, v kombinácii s vhodnou stratégiou úplného overenia"
+  ],
+  "answer": 3,
+  "explanation": "Graf závislostí v kombinácii s analýzou zmenených ciest dokáže určiť, ktoré komponenty sú priamo alebo nepriamo dotknuté, takže pri väčšine commitov netreba prebuildovať celý repozitár. Kritické kontroly na úrovni repozitára by sa však mali zachovať, napríklad pravidelné úplné buildy alebo úplné overenie pred vydaním. Zakaždým prebuildovať všetko môže lákať, pretože je to jednoduché a konzervatívne, ale pri veľkých monorepách to môže spôsobiť značné a často zbytočné náklady."
+ },
+ {
+  "id": 142,
+  "level": "senior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "production",
+  "question": "Produkčný kontajner beží pod používateľom root, hoci aplikácia nepotrebuje privilegované operácie. Ktorá zmena môže znížiť možný dopad, ak by bol kontajner kompromitovaný?",
+  "options": [
+   "Spúšťať ho pod non-root používateľom a minimalizovať potrebné Linux capabilities",
+   "Nastaviť v image heslo pre root",
+   "Pridať všetky Linux capabilities",
+   "Použiť privilegovaný kontajner"
+  ],
+  "answer": 0,
+  "explanation": "Beh pod non-root používateľom a odstránenie nepotrebných Linux capabilities môžu znížiť niektoré riziká eskalácie oprávnení a úniku z kontajnera. Ide o opatrenie defense-in-depth, nie o absolútnu záruku bezpečnosti. Privilegovaný režim môže lákať, pretože dokáže rýchlo odstrániť niektoré problémy s oprávneniami za behu, ale zároveň výrazne zvyšuje oprávnenia kontajnera."
+ },
+ {
+  "id": 143,
+  "level": "senior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "scenario",
+  "question": "V Kubernetes klastri sú repliky kritického workloadu sústredené v tej istej fyzickej doméne porúch. Ak táto doména zlyhá, všetky repliky budú naraz nedostupné. Ktoré riešenie tomu môže pomôcť predísť?",
+  "options": [
+   "Zmeniť tag imagu podu",
+   "Použiť topology spread constraints alebo vhodnú anti-affinity na rozloženie replík naprieč doménami porúch",
+   "Zväčšiť ConfigMap",
+   "Zmeniť port kontajnera"
+  ],
+  "answer": 1,
+  "explanation": "Topology spread constraints a anti-affinity dokážu rozložiť repliky na rôzne nody alebo domény porúch. Tým sa znižuje pravdepodobnosť, že porucha jedného nodu, zóny alebo inej topologickej jednotky zasiahne všetky inštancie naraz. Upraviť image alebo port podu môže lákať, pretože ide o viditeľné nastavenia konfigurácie podu, ale fyzické umiestnenie neovplyvňujú."
+ },
+ {
+  "id": 144,
+  "level": "senior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "scenario",
+  "question": "V stavovom databázovom workloade v Kubernetes spôsobuje použitie jedného PersistentVolume problémy s pripojením úložiska, keď sa pod naplánuje na nový node. Ktorú architektonickú otázku treba preveriť ako prvú?",
+  "options": [
+   "Poradie kľúčov v ConfigMap",
+   "Formát tagu container imagu",
+   "Access mode backendu úložiska, podporu topológie a požiadavky workloadu na mobilitu",
+   "Dĺžku ClusterIP adresy Service"
+  ],
+  "answer": 2,
+  "explanation": "Pri stavových workloadoch môžu byť kritickými faktormi model prístupu k úložisku, access mode, topológia úložiska a to, či sa volume dá presúvať medzi nodmi. Nie všetky backendy úložiska podporujú rovnaké správanie pri pripájaní alebo pripojenie z viacerých nodov. Obviňovať plánovanie podov môže lákať, pretože problém sa objaví na novom node, ale skutočnými obmedzeniami sú často životný cyklus a topológia úložiska."
+ },
+ {
+  "id": 145,
+  "level": "senior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "architecture",
+  "question": "Veľký Helm chart spravuje desiatky mikroslužieb a tímy chcú služby verzovať a nasadzovať nezávisle. Ktorý prístup môže najviac znížiť previazanosť chartu?",
+  "options": [
+   "Pri akejkoľvek zmene služby ručne upraviť všetky manifesty",
+   "Dať konfiguráciu všetkých služieb do jednej obrovskej šablóny",
+   "Používať pre každú službu ten istý pevný tag imagu",
+   "Použiť samostatné znovupoužiteľné charty alebo subcharty s jasnými závislosťami a dobre definovanými rozhraniami values"
+  ],
+  "answer": 3,
+  "explanation": "Samostatné charty alebo dobre definované subcharty môžu poskytnúť lepšiu izoláciu pri verzovaní a vydávaní služieb. Rozhrania values a explicitné závislosti spresňujú konfiguračné kontrakty medzi komponentmi. Udržiavať jednu veľkú šablónu môže lákať, pretože celá konfigurácia je centrálne dostupná, ale vytvára to silnú previazanosť a sťažuje správu vydaní."
+ },
+ {
+  "id": 146,
+  "level": "senior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "architecture",
+  "question": "Vo veľkom Terraform kóde spravuje viacero tímov rôzne infraštruktúrne komponenty, ale zdieľajú aj spoločné zdroje. Ktorá stratégia pre state môže pomôcť znížiť blast radius?",
+  "options": [
+   "Použiť jeden obrovský state pre každé prostredie a každý tím",
+   "Nechať každého inžiniera používať vlastný nezávislý state",
+   "Rozdeliť infraštruktúru na viacero menších stavov podľa logických hraníc a vlastníctva, s jasnými závislosťami a rozhraniami cez remote state",
+   "Úplne zrušiť state súbory"
+  ],
+  "answer": 2,
+  "explanation": "Viacero stavov organizovaných podľa vlastníctva a životného cyklu môže znížiť riziko, že nesprávna zmena zasiahne celú infraštruktúru. Vzťahy medzi komponentmi treba riešiť explicitne, napríklad cez outputy a dobre definované rozhrania. Jeden state môže lákať, pretože správa zdrojov na jednom mieste pôsobí jednoduchšie, ale veľké organizácie môžu pri takom prístupe naraziť na väčšie problémy so zamykaním a blast radius."
+ },
+ {
+  "id": 147,
+  "level": "senior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "scenario",
+  "question": "V globálne používanej aplikácii majú používatelia rôznu latenciu podľa svojej geografickej polohy. Aplikácia momentálne beží v jednom regióne. Ktorý architektonický smer môže geografickú latenciu znížiť?",
+  "options": [
+   "Prevádzkovať aplikáciu vo viacerých geografických regiónoch a použiť vhodné globálne smerovanie prevádzky",
+   "Zmeniť port databázy",
+   "Zväčšiť container image",
+   "Úplne vypnúť DNS cachovanie"
+  ],
+  "answer": 0,
+  "explanation": "Nasadenie vo viacerých regiónoch v kombinácii s vhodným globálnym smerovaním umožní obsluhovať požiadavky z regiónu geograficky bližšieho používateľom. Prináša to však ďalšiu zložitosť, najmä pri stavových komponentoch, vrátane konzistencie dát, failoveru a nasadzovania. Vypnúť DNS cachovanie môže lákať, pretože smerovanie môže využívať DNS, ale samotná zmena správania DNS lookupov sieťovú vzdialenosť nevyrieši."
+ },
+ {
+  "id": 148,
+  "level": "senior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "architecture",
+  "question": "Veľký distribuovaný systém má tisíce služieb a endpointov. Monitoring generuje priveľa alertov s nízkou hodnotou, zatiaľ čo dôležité zlyhania viditeľné pre používateľov sa niekedy v šume stratia. Ktorý prístup môže architektúru observability zlepšiť najviac?",
+  "options": [
+   "Vytvoriť samostatný alert pre každú metriku",
+   "Nastaviť závažnosť každého alertu na ERROR",
+   "Vybudovať alerting založený na SLI/SLO zameraný na dopad na používateľov a vhodne korelovať symptómy so závislosťami",
+   "Úplne vypnúť všetky alerty"
+  ],
+  "answer": 2,
+  "explanation": "Vo veľkých systémoch by sa alerting mal primárne zameriavať na udalosti, ktoré naznačujú dopad na používateľov alebo riziko pre SLO. Použitie SLI, SLO a vhodnej korelácie závislostí môže znížiť šum a zlepšiť odhaľovanie skutočne dôležitých problémov. Vytvoriť alert pre každú metriku môže lákať, pretože to zdanlivo zaručí, že nič nezostane nemonitorované, ale môže to viesť k únave z alertov."
+ },
+ {
+  "id": 149,
+  "level": "senior",
+  "area": "SRE & incident management",
+  "topic": "SRE & incident management",
+  "type": "production",
+  "question": "Počas kritického incidentu sa technický tím zároveň snaží problém vyriešiť, komunikovať so zákazníkmi a koordinovať sa s vedením. Prečo môže byť užitočné zaviesť samostatné roly incident command?",
+  "options": [
+   "Pretože potom nikto nemusí pracovať na technickom probléme",
+   "Pretože rozdelenie zodpovedností môže znížiť koordinačnú réžiu a zabezpečiť, že komunikácia a rozhodovanie prebiehajú popri technickej obnove",
+   "Pretože incident commander automaticky získa prístup ku každému produkčnému secretu",
+   "Pretože každý incident sa tak automaticky vyrieši rýchlejšie"
+  ],
+  "answer": 1,
+  "explanation": "Štruktúra incident command môže rozdeliť technickú obnovu, komunikáciu a prevádzkovú koordináciu do samostatných rolí. Pri väčších incidentoch to môže znížiť prepínanie kontextu a spresniť zodpovednosti za rozhodovanie. Predpoklad, že incident commander má prístup ku všetkému, môže lákať pre jeho koordinačnú úlohu, ale automaticky mu to žiadne ďalšie oprávnenia nedáva."
+ },
+ {
+  "id": 150,
+  "level": "senior",
+  "area": "Deployment strategies",
+  "topic": "Deployment strategies",
+  "type": "architecture",
+  "question": "Databázová schéma kritickej aplikácie si vyžaduje zmenu, ktorú stará a nová verzia aplikácie nedokážu zvládnuť súčasne. Tím chce nasadenie bez výpadku. Ktorý prístup môže byť vhodný?",
+  "options": [
+   "Vykonať nekompatibilnú databázovú migráciu okamžite ako prvý krok nasadenia",
+   "Okamžite nasadiť novú aplikáciu a starú verziu vypnúť",
+   "Použiť expand-and-contract alebo podobnú stratégiu kompatibility, pri ktorej sa najprv zavedie kompatibilná zmena schémy a stará štruktúra sa odstráni neskôr",
+   "Databázovú migráciu úplne vynechať"
+  ],
+  "answer": 2,
+  "explanation": "Pri nasadení bez výpadku môžu stará a nová verzia aplikácie istý čas bežať súčasne, takže aj databázová schéma musí počas tohto prechodu zostať kompatibilná. Stratégia expand-and-contract najprv pridá novú štruktúru tak, aby stará verzia zostala funkčná, a starú štruktúru možno odstrániť po prechode aplikácie. Vykonať nekompatibilnú migráciu okamžite môže lákať, pretože prechod schémy pôsobí jednoduchšie, ale môže spôsobiť výpadok alebo chyby za behu."
+ },
+ {
+  "id": 151,
+  "level": "senior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "architecture",
+  "question": "Veľké monorepo obsahuje stovky služieb a commit sa týka iba niekoľkých z nich. Build a testovanie celého repozitára by trvali niekoľko hodín. Ktorý prístup najefektívnejšie skráti čas behu CI a zároveň overí aj závislé komponenty, ktorých sa zmeny týkajú?",
+  "options": [
+   "Na základe grafu závislostí spúšťať pipeline iba pre zmenené komponenty a ich tranzitívne dotknuté závislosti",
+   "Pri každom commite spúšťať iba unit testy a všetky ostatné testy raz za týždeň",
+   "Zakaždým zbuildovať celý repozitár, ale všetky testy spustiť paralelne na tom istom runneri",
+   "Vždy spustiť presne jednu pipeline iba na základe upravených súborov"
+  ],
+  "answer": 0,
+  "explanation": "Prístup založený na grafe závislostí overí priamo zmenené komponenty aj závislé komponenty, ktorých sa zmena môže týkať. Tým sa dá výrazne znížiť objem práce v CI bez ignorovania skutočných vzťahov medzi závislosťami. Build celého repozitára pri každom commite je jednoduchší, ale vo veľkých monorepách zbytočne míňa veľa zdrojov. Rozhodovanie iba podľa priamo upravených súborov môže prehliadnuť tranzitívne dotknuté komponenty."
+ },
+ {
+  "id": 152,
+  "level": "senior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "behavior",
+  "question": "V kontajnerizovanej aplikácii sa pravidelne hromadia zombie procesy. Aplikácia nebeží ako PID 1, namiesto toho skutočný proces aplikácie spúšťa shell skript. Aká je najdôležitejšia oprava?",
+  "options": [
+   "Dať kontajneru viac CPU",
+   "Zabezpečiť, aby podprocesy obsluhoval a upratoval (reap) vhodný init proces alebo správne implementovaný PID 1",
+   "Spustiť kontajner v privilegovanom režime",
+   "Nahradiť base image väčším base imagom"
+  ],
+  "answer": 1,
+  "explanation": "PID 1 má v Linuxe špeciálnu úlohu, okrem iného zodpovedá za spracovanie osirelých procesov a upratovanie podprocesov. Vhodný init proces, napríklad tini, alebo správne implementovaný PID 1 dokáže zabrániť hromadeniu zombie procesov. Pridelenie CPU, privilegovaný režim ani veľkosť base imagu problém so správou procesov neriešia."
+ },
+ {
+  "id": 153,
+  "level": "senior",
+  "area": "Dockerfile best practices",
+  "topic": "Dockerfile best practices",
+  "type": "performance",
+  "question": "Build Docker imagu je veľmi pomalý, pretože po každej malej zmene zdrojového kódu sa znova inštalujú gigabajty závislostí. Používaš nasledujúci úryvok Dockerfilu:\nAká je najdôležitejšia optimalizácia?",
+  "code": "FROM node:22-alpine\n\nWORKDIR /app\n\nCOPY . .\n\nRUN npm ci\n\nCMD [\"node\", \"server.js\"]",
+  "options": [
+   "Použiť namiesto toho `CMD` v shell forme",
+   "Nahradiť base image Debianom",
+   "Skopírovať lockfile a manifest balíkov samostatne a závislosti nainštalovať ešte pred skopírovaním zdrojového kódu",
+   "Nahradiť `npm ci` príkazom `npm install`"
+  ],
+  "answer": 2,
+  "explanation": "Ak sa manifest balíkov a lockfile skopírujú najprv do príslušnej vrstvy, vrstva s inštaláciou závislostí môže zostať v cache, kým sa tieto súbory nezmenia. Zmeny zdrojového kódu neskôr v Dockerfile tak cache vrstvy so závislosťami nezneplatnia. Použitie `npm install` cachovanie vrstiev v Dockeri nezlepší a `CMD` v shell forme s výkonom buildu nesúvisí."
+ },
+ {
+  "id": 154,
+  "level": "senior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "architecture",
+  "question": "Kubernetes Deployment má 20 replík a počas rolling update chceš zabezpečiť, aby boli vždy dostupné aspoň 18 Pody, pričom nad požadovaný počet replík môžu vzniknúť najviac 4 Pody navyše. Ktorá konfigurácia to vyjadruje?",
+  "options": [
+   "`maxUnavailable: 4` a `maxSurge: 2`",
+   "`maxUnavailable: 0` a `maxSurge: 4`",
+   "`maxUnavailable: 10%` a `maxSurge: 20%`",
+   "`maxUnavailable: 2` a `maxSurge: 4`"
+  ],
+  "answer": 3,
+  "explanation": "Pri 20 replikách `maxUnavailable: 2` dovoľuje, aby boli dočasne nedostupné najviac dva Pody, takže dostupných zostane aspoň 18. `maxSurge: 4` dovoľuje až štyri Pody navyše nad požadovaných 20. `maxUnavailable: 0` by predstavovalo prísnejšiu požiadavku a percentuálne hodnoty túto konkrétnu kombináciu 18/4 nevytvoria."
+ },
+ {
+  "id": 155,
+  "level": "senior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "edgecase",
+  "question": "Pody StatefulSetu bežia na rôznych nodoch a aplikácia chce používať ten istý súborový systém so súčasným zápisom z viacerých Podov. PVC bol vytvorený s access mode `ReadWriteOnce`. Aký je najdôležitejší problém?",
+  "options": [
+   "`ReadWriteOnce` spravidla neposkytuje sémantiku potrebnú na súčasný zápis do toho istého volume z viacerých nodov",
+   "StatefulSet nikdy nemôže používať PVC",
+   "Kubernetes podporuje iba volumes typu `ReadOnlyMany`",
+   "`ReadWriteOnce` automaticky replikuje dáta na viacero nodov"
+  ],
+  "answer": 0,
+  "explanation": "`ReadWriteOnce` primárne poskytuje model zápisu viazaný na jeden node a nie je to isté ako `ReadWriteMany`, ktorý je navrhnutý na súčasný prístup z viacerých nodov. Presné správanie závisí aj od možností backendu úložiska a CSI drivera. StatefulSety bežne používajú perzistentné volumes pre každý Pod a Kubernetes podporuje viacero access modes."
+ },
+ {
+  "id": 156,
+  "level": "senior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "debug",
+  "question": "Helm chart sa nasadzuje do viacerých prostredí. V produkcii chceš, aby bola konkrétna hodnota povinná, pretože použitie predvolenej hodnoty by predstavovalo bezpečnostné riziko. Ktorý prístup je najvhodnejší?",
+  "options": [
+   "Zdokumentovať hodnotu ako komentár v `values.yaml`",
+   "Použiť v šablóne `required`, aby renderovanie zlyhalo, keď hodnota chýba",
+   "Nastaviť hodnotu v produkčnom values súbore na prázdny string",
+   "Po nasadení Helm chartu hodnotu ručne vytvoriť v Kubernetes Secrete"
+  ],
+  "answer": 1,
+  "explanation": "Funkcia `required` v Helme explicitne vyvolá chybu, keď povinná hodnota nie je zadaná, takže neplatnú konfiguráciu možno odhaliť už pri renderovaní alebo inštalácii. Samotná dokumentácia validáciu nevynúti a prázdny string nemusí predstavovať platnú konfiguráciu. Ručné zmeny po nasadení sú problematické najmä v GitOps a deklaratívnych prostrediach."
+ },
+ {
+  "id": 157,
+  "level": "senior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "architecture",
+  "question": "Firma používa Terraform a sieť, databázy a aplikačnú infraštruktúru spravujú tri samostatné tímy. Keďže zdieľajú jeden state súbor, zmena v aplikácii zamkne celú infraštruktúru. Ktorý architektonický prístup je vhodný?",
+  "options": [
+   "Všetky tímy by mali ďalej používať ten istý state súbor, ale spúšťať `apply` častejšie",
+   "Presunúť všetky zdroje do jedného veľkého Terraform modulu",
+   "Rozdeliť state na viacero dobre definovaných stackov podľa logického vlastníctva a životného cyklu",
+   "Úplne vypnúť zamykanie stavu, aby sa vyriešil problém s vlastníctvom"
+  ],
+  "answer": 2,
+  "explanation": "Viacero Terraform stavov organizovaných podľa vlastníctva a životného cyklu môže znížiť blast radius, konflikty pri zamykaní aj priamu previazanosť medzi tímami. Vypnutie zamykania stavu môže pri súbežných zmenách zvýšiť riziko race conditions a poškodenia stavu. Väčší zdieľaný state ani monolitický modul skutočný problém s vlastníctvom neriešia."
+ },
+ {
+  "id": 158,
+  "level": "senior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "architecture",
+  "question": "Globálne používaná webová aplikácia beží v jednom cloudovom regióne. Požiadavkou je poskytovať službu aj vtedy, keď bude celý cloudový región nedostupný. Ktorá architektonická zmena túto požiadavku priamo rieši?",
+  "options": [
+   "Prevádzkovať viac inštancií v tej istej Availability Zone",
+   "Použiť väčší typ inštancie",
+   "Použiť viacero Availability Zones v rámci toho istého regiónu",
+   "Nasadiť aplikáciu do viacerých regiónov s vhodnou replikáciou aplikácie a kritických dátových závislostí"
+  ],
+  "answer": 3,
+  "explanation": "Ochrana pred úplným výpadkom regiónu si vyžaduje redundanciu naprieč regiónmi pre workload aj jeho kritické dátové závislosti. Viacero inštancií alebo viacero Availability Zones v tom istom regióne pred výpadkom na úrovni regiónu nechráni. Ani architektúra vo viacerých regiónoch nestačí, ak sa stavové závislosti nedokážu vhodne replikovať alebo prepnúť (failover)."
+ },
+ {
+  "id": 159,
+  "level": "senior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "debug",
+  "question": "DNS meno služby sa u viacerých klientov ešte dlho po zmene záznamu na autoritatívnom DNS serveri prekladá na starú IP adresu. Nový záznam má TTL 60 sekúnd. Aké je najpravdepodobnejšie vysvetlenie?",
+  "options": [
+   "DNS záznamy sa nikdy necachujú",
+   "Klienti alebo sprostredkujúce resolvery môžu mať stále v cache skôr získaný záznam s vyšším pôvodným TTL",
+   "Záznam A funguje iba pre TCP spojenia",
+   "Autoritatívny DNS server aktualizuje záznam až po prijatí HTTP požiadaviek"
+  ],
+  "answer": 1,
+  "explanation": "TTL určuje, ako dlho sa konkrétna DNS odpoveď smie cachovať, a skôr získaný záznam môže zostať v cache podľa svojho pôvodného TTL. Zmena TTL pri novom zázname spätne nemení čas vypršania odpovedí, ktoré už sú v cache. DNS môže používať UDP a v prípade potreby TCP, ale to starú IP adresu nevysvetľuje."
+ },
+ {
+  "id": 160,
+  "level": "senior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "performance",
+  "question": "Pri API vzrástla priemerná latencia z 80 ms na 85 ms, kým p99 latencia vyskočila zo 400 ms na 2,5 sekundy. Počet požiadaviek aj vyťaženie CPU zostali zhruba nezmenené. Aký je najdôležitejší záver?",
+  "options": [
+   "Výkon služby je v podstate nezmenený, pretože priemer vzrástol iba mierne",
+   "CPU je určite preťažené",
+   "Problém s latenciou môže spôsobiť iba chyba monitorovacieho systému",
+   "Tail latency sa výrazne zhoršila, preto treba preskúmať downstream závislosti, chyby a traces spojené s pomalými požiadavkami"
+  ],
+  "answer": 3,
+  "explanation": "Veľký nárast p99 ukazuje, že najpomalšia časť požiadaviek sa výrazne zhoršila, zatiaľ čo priemer toto správanie môže zakryť. Môže sa to diať iba pri niektorých downstream volaniach, databázových operáciách alebo zriedkavých situáciách súperenia o zdroje. Nezmenené vyťaženie CPU nevylučuje iné výkonnostné problémy, preto treba preskúmať traces a latenciu závislostí."
+ },
+ {
+  "id": 161,
+  "level": "senior",
+  "area": "Logging",
+  "topic": "Logging",
+  "type": "architecture",
+  "question": "V systéme s desiatkami mikroslužieb prechádza požiadavka používateľa viacerými službami. Počas incidentu potrebuješ rýchlo zistiť, ktorá downstream služba spôsobila latenciu. Ktorý prístup k logovaniu/observability to podporuje najlepšie?",
+  "options": [
+   "Konzistentne prenášať correlation/trace ID v štruktúrovanej podobe vo všetkých záznamoch logov",
+   "V každej službe použiť iný, nezávislý formát časovej pečiatky",
+   "Zbierať iba logy na úrovni ERROR",
+   "V produkcii vypnúť logovanie kvôli výkonu"
+  ],
+  "answer": 0,
+  "explanation": "Spoločné correlation alebo trace ID umožňuje prepojiť udalosti patriace k tej istej požiadavke v logoch viacerých služieb. V kombinácii so štruktúrovaným logovaním zostáva vyhľadávanie efektívne aj pri veľkých objemoch. Nekonzistentné formáty časových pečiatok, zbieranie iba chybových logov alebo úplné vypnutie logovania sťažujú riešenie problémov naprieč celou cestou požiadavky."
+ },
+ {
+  "id": 162,
+  "level": "senior",
+  "area": "SRE & incident management",
+  "topic": "SRE & incident management",
+  "type": "scenario",
+  "question": "Počas produkčného incidentu sa viacero tímov súčasne pokúša o opravy, pričom nikto nekoordinuje, aké zmeny sa robia a aký môžu mať dopad. Aký je v tejto situácii jeden z najdôležitejších cieľov incident command?",
+  "options": [
+   "Delegovať každé technické rozhodnutie na jedného vývojára",
+   "Odložiť komunikáciu o incidente, kým sa obnova nedokončí",
+   "Počas incidentu zaviesť jasné roly, koordináciu a zodpovednosť za rozhodovanie",
+   "Úplne zastaviť proces nasadzovania vo všetkých prostrediach"
+  ],
+  "answer": 2,
+  "explanation": "Incident command má zabezpečiť koordináciu, vyjasniť roly, riadiť komunikáciu a štruktúrovať rozhodovanie, aby technické tímy mohli kontrolovane pracovať paralelne. Neznamená to, že každé technické rozhodnutie musí urobiť jeden človek, a komunikácia by sa nemala odkladať až na koniec incidentu."
+ },
+ {
+  "id": 163,
+  "level": "senior",
+  "area": "Deployment strategies",
+  "topic": "Deployment strategies",
+  "type": "production",
+  "question": "Treba nasadiť zmenu databázovej schémy a novú verziu aplikácie tak, aby stará a nová verzia aplikácie mohli počas rolling nasadenia istý čas bežať paralelne. Ktorý prístup je najbezpečnejší?",
+  "options": [
+   "Najprv nasadiť iba novú aplikáciu a databázu upraviť až potom",
+   "Použiť spätne kompatibilnú zmenu schémy, ktorú zvládne stará aj nová verzia aplikácie",
+   "Zmazať databázovú tabuľku a vytvoriť ju znova s novou verziou",
+   "Nasmerovať starú a novú verziu aplikácie na samostatné databázy bez migrácie"
+  ],
+  "answer": 1,
+  "explanation": "Migrácia v štýle expand-and-contract zabezpečí, že obe verzie aplikácie zostanú počas prechodného obdobia funkčné. Napríklad nové pole sa dá najprv pridať tak, aby ho stará verzia ignorovala, a nová verzia ho potom môže postupne začať používať. Deštruktívna zmena schémy počas rolling nasadenia môže spôsobiť chyby kompatibility alebo stratu dát."
+ },
+ {
+  "id": 164,
+  "level": "senior",
+  "area": "Secrets & security",
+  "topic": "Secrets & security",
+  "type": "architecture",
+  "question": "CI/CD systém potrebuje na krok nasadenia produkčný cloudový prístupový údaj. Cieľom je neukladať v CI systéme dlhodobo platný secret. Ktorý prístup tento cieľ spĺňa najlepšie?",
+  "options": [
+   "Uložiť prístupový údaj do zašifrovaného ZIP súboru v repozitári",
+   "Commitnúť prístupový údaj ako premennú prostredia zakódovanú v Base64",
+   "Používať pre každú pipeline ten istý dlhodobo platný prístupový kľúč",
+   "Použiť krátkodobé federované prístupové údaje odvodené z identity CI workloadu alebo z OIDC tokenu"
+  ],
+  "answer": 3,
+  "explanation": "Workload identity federation a krátkodobé prístupové údaje založené na OIDC znižujú riziká spojené so správou a kompromitáciou dlhodobo platných secretov. Base64 nie je šifrovanie a prístupový údaj uložený v repozitári môže byť aj tak kompromitovaný. Zdieľaný dlhodobo platný prístupový kľúč navyše vytvára veľký blast radius."
+ },
+ {
+  "id": 165,
+  "level": "senior",
+  "area": "GitOps",
+  "topic": "GitOps",
+  "type": "behavior",
+  "question": "V GitOps systéme niekto ručne zmení počet replík Deploymentu v klastri z 10 na 20. Git stále deklaruje 10 a GitOps controller funguje normálne. Čo sa dá očakávať?",
+  "options": [
+   "Controller pri ďalšej reconciliácii zvyčajne obnoví deklarovaný stav 10",
+   "20 replík nastavených v klastri automaticky upraví Git repozitár",
+   "GitOps controller sa zastaví, pretože ručná zmena je vždy fatálna chyba",
+   "Deployment sa zmaže, pretože stav v Gite a v klastri sa líši"
+  ],
+  "answer": 0,
+  "explanation": "V GitOps modeli je požadovaný stav deklarovaný v Gite zdrojom pravdy a controller sa pri reconciliácii snaží zosúladiť skutočný stav klastra s ním. Presné správanie môže závisieť od konfigurácie controllera a od toho, ako je dané pole spravované, ale očakávaným správaním GitOps je drift opraviť."
+ },
+ {
+  "id": 166,
+  "level": "senior",
+  "area": "Scripting & automation",
+  "topic": "Scripting & automation",
+  "type": "edgecase",
+  "question": "Bash skript dostane z API JSON odpoveď, v ktorej meno používateľa môže obsahovať medzery, úvodzovky a Unicode znaky. Aký je najbezpečnejší spôsob spracovania JSON poľa?",
+  "options": [
+   "Použiť `echo $response | cut -d '\"' -f 4`",
+   "Rozdeliť celú JSON odpoveď podľa bielych znakov",
+   "Použiť JSON parser, napríklad `jq`",
+   "Odstrániť z JSON reťazca všetky úvodzovky jednoduchou náhradou cez `sed`"
+  ],
+  "answer": 2,
+  "explanation": "JSON sú štruktúrované dáta, preto ich treba spracúvať JSON parserom, ktorý správne zvláda escapovanie, biele znaky a Unicode znaky. Jednoduché delenie reťazcov ľahko vedie k nesprávnym výsledkom pri platnom, no zložitejšom JSON. Odstránenie úvodzoviek môže spôsobiť stratu dát alebo vytvoriť neplatný JSON."
+ },
+ {
+  "id": 167,
+  "level": "senior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "security",
+  "question": "Počas buildu v CI pipeline sa spúšťa action alebo plugin tretej strany, ktorý môže upravovať súbory vo workspace a pristupovať k niektorým prístupovým údajom pipeline. Ktorý prístup najlepšie znižuje riziko v dodávateľskom reťazci (supply chain)?",
+  "options": [
+   "Automaticky aktualizovať každú externú action na najnovšiu verziu",
+   "Povoliť neobmedzené používanie externej action v každom repozitári",
+   "Automaticky sprístupniť prístupové údaje každému kroku pipeline",
+   "Zafixovať verziu závislosti/action na dôveryhodnú referenciu, minimalizovať oprávnenia a používať kontrolovaný proces aktualizácií"
+  ],
+  "answer": 3,
+  "explanation": "Jedným z rizík supply chain je, že kompromitovaná závislosť alebo action môže získať prístup k oprávneniam pipeline. Fixovanie verzií na kontrolované referencie, princíp najmenších oprávnení a review aktualizácií toto riziko znižujú. Neobmedzené automatické aktualizácie a sprístupnenie prístupových údajov každému kroku zväčšujú blast radius."
+ },
+ {
+  "id": 168,
+  "level": "senior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "architecture",
+  "question": "Kubernetes aplikácia potrebuje pristupovať k službe bežiacej v inom namespace cez stabilné DNS meno. Cieľom je, aby klient nezávisel od IP adries Podov. Ktoré riešenie je vhodné?",
+  "options": [
+   "Natvrdo zapísať IP adresy Podov do konfigurácie aplikácie",
+   "Vytvoriť Kubernetes Service, ktorá poskytne stabilné meno pre service discovery backend Podov",
+   "Priradiť každému Podu statickú verejnú IP adresu",
+   "Použiť názov Deploymentu priamo ako DNS hostname"
+  ],
+  "answer": 1,
+  "explanation": "Kubernetes Service poskytuje stabilný virtuálny endpoint a DNS meno, pričom podkladové Pody sa môžu vymieňať. Z iného namespace sa dá použiť aj plne kvalifikované DNS meno Service. IP adresy Podov môžu byť dynamické, preto ich natvrdo zapísanie nie je stabilným mechanizmom service discovery."
+ },
+ {
+  "id": 169,
+  "level": "senior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "scenario",
+  "question": "Vo webovej aplikácii sú metriky CPU a pamäte normálne, no latencia vnímaná používateľmi rastie. Distributed tracing ukazuje, že oneskorenie vzniká pri volaní externého poskytovateľa platieb. Aký je najvhodnejší ďalší krok?",
+  "options": [
+   "Okamžite zdvojnásobiť CPU limit webového servera",
+   "Zmazať všetky logy aplikácie, aby sa znížilo využitie disku",
+   "Reštartovať celý Kubernetes klaster",
+   "Preskúmať latenciu downstream závislosti, timeouty, retry a chybové metriky a potom zaviesť vhodnú stratégiu timeoutov/circuit breakingu"
+  ],
+  "answer": 3,
+  "explanation": "Trace priamo lokalizuje problém s latenciou na downstream závislosť, preto treba preskúmať jej timeouty, chyby, správanie pri retry a dostupnosť. Zvýšenie CPU ani reštart celého klastra nerieši problém, o ktorom sa ukázalo, že sa týka externej závislosti. Nadmerné retry môžu navyše nezdravý downstream systém ešte viac preťažiť."
+ },
+ {
+  "id": 170,
+  "level": "senior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Terraform",
+  "type": "trap",
+  "question": "V konfigurácii Terraform zdroja upravíš atribút, ktorý dokumentácia providera označuje ako `ForceNew` alebo ako atribút vyžadujúci nahradenie. Čo môžeš očakávať pri `terraform plan`?",
+  "options": [
+   "Terraform zdroj vždy upraví na mieste",
+   "Terraform zmenu atribútu ignoruje",
+   "Terraform atribút automaticky upraví bez ohľadu na obmedzenia providera",
+   "Terraform môže ukázať operáciu nahradenia, ktorá zdroj zničí a vytvorí znova"
+  ],
+  "answer": 3,
+  "explanation": "Ak provider pri zmene atribútu vyžaduje nahradenie, Terraform túto zmenu nedokáže aplikovať na mieste, takže plán môže ukázať operáciu destroy/create alebo replace. Presné správanie životného cyklu a podrobnosti nahradenia sú špecifické pre providera a zdroj. V produkcii je to obzvlášť dôležité, pretože to môže spôsobiť výpadok alebo riziko straty dát."
+ },
+ {
+  "id": 171,
+  "level": "senior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "performance",
+  "question": "Záťaž bezstavovej webovej aplikácie sa mení nepredvídateľne a obdobia špičky si rýchlo vyžadujú ďalšiu výpočtovú kapacitu. Ktorá stratégia škálovania sa na tento problém hodí najlepšie?",
+  "options": [
+   "Horizontálne škálovanie s autoscalingom podľa záťaže",
+   "Použiť jednu, neustále sa zväčšujúcu inštanciu",
+   "Pri každej špičke prevádzky zväčšiť databázovú inštanciu",
+   "Namiesto výpočtovej kapacity zvýšiť retenciu logov"
+  ],
+  "answer": 0,
+  "explanation": "Pri bezstavovej aplikácii sa záťaž dá rozdeliť medzi viacero inštancií, takže horizontálny autoscaling sa na premenlivú záťaž dobre hodí. Vertikálne škálovanie viaže kapacitu na veľkosť jednej inštancie a pri rýchlo sa meniacej prevádzke je menej flexibilné. Škálovanie databázy ani retencia logov problém výpočtovej kapacity webu priamo neriešia."
+ },
+ {
+  "id": 172,
+  "level": "senior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "debug",
+  "question": "TCP port služby je dosiahnuteľný z internej siete, ale klient pri nadväzovaní TLS spojenia dostane chybu validácie certifikátu. TCP spojenie sa úspešne nadviaže. Čo to dokazuje?",
+  "options": [
+   "Certifikát servera je určite platný",
+   "DNS meno určite ukazuje na správny hostiteľ",
+   "Sieťová konektivita funguje až po TCP handshake, ale to nedokazuje, že TLS handshake alebo validácia certifikátu uspeje",
+   "Aplikačný protokol HTTP určite funguje"
+  ],
+  "answer": 2,
+  "explanation": "Úspešné TCP spojenie iba ukazuje, že klient dokázal dosiahnuť zadanú IP adresu a port a nadviazať TCP spojenie. TLS handshake nasleduje potom a zahŕňa samostatné kontroly, napríklad reťazca certifikátov, hostname a dôveryhodnosti. Úspešná TCP konektivita neznamená, že TLS alebo HTTP fungujú správne."
+ },
+ {
+  "id": 173,
+  "level": "senior",
+  "area": "SRE & incident management",
+  "topic": "SRE & incident management",
+  "type": "scenario",
+  "question": "Služba má SLO dostupnosti 99,9 %, ale väčšina jej error budgetu už bola počas mesiaca spotrebovaná. Vývoj nových funkcií pritom pokračuje. Aká je reakcia v súlade so SRE?",
+  "options": [
+   "Automaticky znížiť SLO na 99 %",
+   "Natrvalo zastaviť všetok vývoj funkcií",
+   "Ignorovať error budget, pretože je to len metrika",
+   "Použiť zostávajúci error budget na posúdenie rizika vydania a v prípade potreby sa zamerať na prácu na spoľahlivosti"
+  ],
+  "answer": 3,
+  "explanation": "Error budget poskytuje objektívnejší spôsob, ako riadiť kompromis medzi rýchlosťou vydávania a spoľahlivosťou. Keď je väčšina rozpočtu spotrebovaná, treba zvážiť riziko ďalších zmien a možno klásť väčší dôraz na zlepšenie spoľahlivosti. Automaticky to neznamená zastaviť všetok vývoj ani svojvoľne meniť SLO."
+ },
+ {
+  "id": 174,
+  "level": "senior",
+  "area": "Deployment strategies",
+  "topic": "Deployment strategies",
+  "type": "architecture",
+  "question": "Nová verzia aplikácie s vysokou prevádzkou má spočiatku dostávať 1 % prevádzky a po úspešnom pozorovaní sa má jej podiel postupne zvyšovať. Ktorá stratégia nasadenia tejto požiadavke zodpovedá?",
+  "options": [
+   "Recreate deployment",
+   "Canary deployment",
+   "Big-bang deployment",
+   "Database-only deployment"
+  ],
+  "answer": 1,
+  "explanation": "Pri canary nasadení dostáva nová verzia spočiatku iba malú časť prevádzky, takže jej správanie sa dá sledovať za kontrolovaných podmienok. Ak sú namerané výsledky úspešné, podiel prevádzky sa môže postupne zvyšovať. Recreate nasadenie prepne verzie naraz a big-bang nasadenie postupné presúvanie prevádzky neposkytuje."
+ },
+ {
+  "id": 175,
+  "level": "senior",
+  "area": "Secrets & security",
+  "topic": "Secrets & security",
+  "type": "production",
+  "question": "Počas produkčného incidentu sa zistí, že cloudový prístupový kľúč bol commitnutý do verejného Git repozitára. Commit bol neskôr odstránený a aktuálny stav repozitára ho už neukazuje. Aký je najdôležitejší okamžitý krok?",
+  "options": [
+   "Okamžite prístupový údaj zneplatniť alebo zrotovať a potom preveriť jeho možné použitie",
+   "Stačí odstrániť commit pomocou force-push",
+   "Stačí repozitár zmeniť na privátny",
+   "Stačí pridať názov súboru s prístupovým údajom do `.gitignore`"
+  ],
+  "answer": 0,
+  "explanation": "Prístupový údaj, ktorý už bol verejne prezradený, treba považovať za kompromitovaný, takže prioritou je ho zneplatniť alebo zrotovať a preveriť, či bol použitý. Prepísanie histórie Gitu spoľahlivo nezvráti skutočnosť, že secret bol predtým dostupný. Zmena repozitára na privátny ani pridanie názvu súboru do `.gitignore` už uniknutý prístupový údaj nezneplatní."
+ },
+ {
+  "id": 176,
+  "level": "senior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "security",
+  "question": "V CI systéme môže kód z pull requestu z nedôveryhodného zdroja spúšťať testy, pričom pipeline má zároveň prístup k prístupovým údajom na produkčné nasadenie. Ktorý architektonický prístup najúčinnejšie znižuje riziko kompromitácie?",
+  "options": [
+   "Poskytnúť pipelinám pull requestov iba izolované, krátkodobé prostredia a oddeliť produkčné prístupové údaje od nedôveryhodných krokov buildu",
+   "Poskytnúť každému pull requestu ten istý produkčný prístupový údaj, ale s prístupom k repozitáru iba na čítanie",
+   "Prístupové údaje pred odovzdaním ako premenné prostredia zakódovať do Base64",
+   "Vypnúť testy v pipelinách pull requestov, aby nedôveryhodný kód nebežal"
+  ],
+  "answer": 0,
+  "explanation": "Kód pochádzajúci z pull requestu treba považovať za potenciálne nedôveryhodný, preto by nemal byť prepojený s produkčnými prístupovými údajmi ani citlivými prostrediami. Izolácia a krátkodobé oprávnenia znižujú blast radius. Base64 nie je bezpečnostná kontrola a vypnutie testov skutočný bezpečnostný problém pipeline nerieši."
+ },
+ {
+  "id": 177,
+  "level": "senior",
+  "area": "Docker & containers",
+  "topic": "Docker & containers",
+  "type": "edgecase",
+  "question": "Aplikácia bežiaca v kontajneri sa po prijatí `SIGTERM` správne neukončí a Kubernetes nakoniec pošle `SIGKILL`. Container image používa entrypoint v shell forme a shell beží ako PID 1. V čom môže byť problém?",
+  "options": [
+   "Kontajner nepodporuje signál SIGTERM",
+   "Shell môže byť PID 1 a nemusí signál správne preposlať skutočnému procesu aplikácie",
+   "Kubernetes vie posielať iba SIGKILL",
+   "Docker preposiela signály iba vtedy, keď kontajner beží v privilegovanom režime"
+  ],
+  "answer": 1,
+  "explanation": "Pri entrypointe v shell forme sa shell môže stať procesom PID 1 kontajnera, zatiaľ čo aplikácia beží ako podproces. Ak shell signály správne nepreposiela, aplikácia nemusí dostať SIGTERM včas a graceful shutdown neprebehne. Tomuto problému sa dá vyhnúť entrypointom v exec forme alebo vhodným init procesom."
+ },
+ {
+  "id": 178,
+  "level": "senior",
+  "area": "Dockerfile best practices",
+  "topic": "Dockerfile best practices",
+  "type": "security",
+  "question": "Produkčný image potrebuje počas buildu prístupový údaj k privátnej registry balíkov. Ktorý prístup najlepšie zabráni tomu, aby sa prístupový údaj dostal do histórie vrstiev Docker imagu?",
+  "options": [
+   "Odovzdať prístupový údaj cez `ARG` a na konci buildu ho zmazať",
+   "Nastaviť prístupový údaj ako premennú `ENV` a potom ho odstrániť cez `unset`",
+   "Použiť mechanizmus build secretov, ktorý sprístupní prístupový údaj iba potrebnému kroku buildu",
+   "Zapísať prístupový údaj do samostatného súboru a potom ho zmazať v tej istej inštrukcii `RUN`"
+  ],
+  "answer": 2,
+  "explanation": "Mechanizmus build secretov v Docker BuildKite umožňuje sprístupniť citlivé dáta iba potrebnému kroku buildu bez toho, aby sa uložili ako bežná vrstva imagu. Použitie `ARG`, `ENV` alebo mazanie súboru vytvoreného v skoršej vrstve nie je spoľahlivý spôsob, ako odstrániť secret z histórie buildu imagu."
+ },
+ {
+  "id": 179,
+  "level": "senior",
+  "area": "Kubernetes core objects",
+  "topic": "Kubernetes core objects",
+  "type": "architecture",
+  "question": "Počas rolloutu Kubernetes Deploymentu sa nové Pody úspešne spustia, ale aplikácia dokáže prijímať prevádzku až po dlhej inicializácii. Nechceš, aby sa staré Pody nahradili príliš skoro. Ktoré riešenie tejto požiadavke zodpovedá najlepšie?",
+  "options": [
+   "Upraviť `command` kontajnera",
+   "Pred každým rolloutom nastaviť počet replík Deploymentu na nulu",
+   "Nastaviť novým Podom iba CPU limit",
+   "Použiť vhodnú readiness probe a parametre rolloutu, aby sa za dostupné považovali iba Pody pripravené na prevádzku"
+  ],
+  "answer": 3,
+  "explanation": "Readiness probe udáva, kedy je aplikácia skutočne pripravená prijímať prevádzku. Parametre rolloutu Deploymentu, napríklad `maxUnavailable` a `maxSurge`, môžu spolu s readiness riadiť, ako agresívne sa staré Pody nahrádzajú. Samotné spustenie kontajnera neznamená, že aplikácia je pripravená obsluhovať prevádzku."
+ },
+ {
+  "id": 180,
+  "level": "senior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "architecture",
+  "question": "Kubernetes aplikácia potrebuje perzistentne uložiť veľké množstvo dát, ktoré musia zostať dostupné aj po reštarte Podu alebo jeho naplánovaní na iný node. Ktoré riešenie tejto požiadavke zodpovedá najlepšie?",
+  "options": [
+   "Použiť lokálne dočasné úložisko Podu",
+   "Ukladať dáta do súborového systému kontajnera bez perzistentného volume",
+   "Naviazať dáta na IP adresu Podu",
+   "Použiť PersistentVolumeClaim podporovaný vhodnou StorageClass"
+  ],
+  "answer": 3,
+  "explanation": "PersistentVolumeClaim deklaruje potrebné perzistentné úložisko, ktoré môže vhodná StorageClass aj dynamicky vytvoriť. Tým sa životný cyklus úložiska oddelí od životného cyklu Podu. Dočasné úložisko ani súborový systém kontajnera neposkytujú potrebnú perzistenciu pri reštarte alebo preplánovaní Podu."
+ },
+ {
+  "id": 181,
+  "level": "senior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "debug",
+  "question": "Ten istý Helm chart používaš vo viacerých prostrediach, ale produkcia potrebuje iný repozitár imagov a iné limity zdrojov. Ktorý prístup zabezpečí najlepšiu udržiavateľnosť?",
+  "options": [
+   "Vytvoriť pre každé prostredie samostatný chart skopírovaním tých istých šablón",
+   "Použiť samostatné values súbory pre každé prostredie a spoločné šablóny ponechať v jednom charte",
+   "Pred nasadením do produkcie ručne upraviť šablóny",
+   "Ukladať tie isté Kubernetes manifesty v samostatnom Git repozitári pre každé prostredie"
+  ],
+  "answer": 1,
+  "explanation": "Spoločné šablóny chartu môžu obsahovať spoločnú štruktúru a logiku Kubernetes, zatiaľ čo samostatné values súbory poskytujú konfiguráciu špecifickú pre prostredie. Znižuje to duplicitu a umožňuje čisto spravovať nastavenia jednotlivých prostredí. Ručné úpravy šablón a duplikovanie celých chartov či manifestov prinášajú drift a problémy s údržbou."
+ },
+ {
+  "id": 182,
+  "level": "senior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "edgecase",
+  "question": "V Terraform konfigurácii sú zdroje spravované pomocou `count` a adresy ich inštancií vychádzajú z indexov vstupného zoznamu. Keď vložíš nový prvok na začiatok zoznamu, viacero existujúcich zdrojov je naplánovaných na zničenie a znovuvytvorenie. Čo to spôsobuje?",
+  "options": [
+   "Terraform pri každom apply znova vytvorí každý zdroj s `count`",
+   "Provider nepodporuje zoznamy",
+   "Adresy inštancií založené na indexoch sa zmenili, takže Terraform vidí iné inštancie zdrojov",
+   "Terraform state neobsahuje adresy inštancií zdrojov"
+  ],
+  "answer": 2,
+  "explanation": "Keď sú inštancie zdrojov cez `count` adresované indexmi zoznamu, vloženie prvku môže posunúť indexy viacerých existujúcich prvkov. Terraform potom tieto posunuté indexy vykladá ako iné adresy inštancií zdrojov a môže naplánovať ich nahradenie. Stabilné, významovo zmysluplné kľúče s `for_each` môžu tento typ neželaných zmien obmedziť."
+ },
+ {
+  "id": 183,
+  "level": "senior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "architecture",
+  "question": "Aplikácia potrebuje vysokú dostupnosť v rámci regiónu a musí prežiť úplnú stratu jednej Availability Zone. Ktorá architektúra túto požiadavku spĺňa najlepšie?",
+  "options": [
+   "Prevádzkovať viacero inštancií aplikácie aspoň v dvoch Availability Zones s vhodným load balancingom a redundantnými závislosťami",
+   "Prevádzkovať jednu veľkú inštanciu v jednej Availability Zone",
+   "Prevádzkovať viacero inštancií v tej istej Availability Zone",
+   "Použiť väčšiu databázovú inštanciu bez redundancie aplikácie"
+  ],
+  "answer": 0,
+  "explanation": "Na prežitie straty Availability Zone musí byť workload rozložený do viacerých domén porúch. Load balancer môže smerovať prevádzku na zostávajúce inštancie, pričom aj kritické stavové závislosti musia byť primerane redundantné. Viacero inštancií v tej istej AZ zostáva závislých od jednej domény porúch."
+ },
+ {
+  "id": 184,
+  "level": "senior",
+  "area": "Networking & DNS",
+  "topic": "Networking & DNS",
+  "type": "performance",
+  "question": "Interný DNS resolver dostáva veľmi veľké množstvo opakovaných dotazov na tie isté hostnames, pričom záznamy sa menia zriedka. Ktorý prístup dokáže najúčinnejšie znížiť záťaž resolvera a autoritatívnych DNS serverov?",
+  "options": [
+   "Nastaviť TTL DNS záznamov na nulu",
+   "Vypnúť DNS cachovanie",
+   "Ručne nastaviť IP adresy na každom klientovi",
+   "Použiť primerane vysoké TTL zodpovedajúce frekvencii zmien spolu s efektívnym cachovaním v resolveri"
+  ],
+  "answer": 3,
+  "explanation": "Vhodné TTL umožní resolverom cachovať odpovede dlhšie, keď sa záznamy menia zriedka, čím sa znižuje počet dotazov smerujúcich na autoritatívne servery. Veľmi nízke TTL alebo vypnuté cachovanie naopak DNS prevádzku zvyšujú. Ručné nastavovanie IP adries nie je škálovateľné a ruší výhody service discovery založeného na DNS."
+ },
+ {
+  "id": 185,
+  "level": "senior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "architecture",
+  "question": "V mikroservisnom systéme infraštruktúrne metriky ukazujú, že každý komponent vyzerá zdravo, no čoraz viac požiadaviek používateľov je pomalých. Ktorý prístup k observability je najužitočnejší na lokalizáciu problému?",
+  "options": [
+   "Zbierať iba ďalšie metriky CPU a pamäte hostiteľov",
+   "Použiť distributed tracing a metriky na úrovni služieb na sledovanie cesty požiadavky",
+   "Skrátiť retenciu logov",
+   "Agregovať všetky metriky do jednej globálnej metriky CPU"
+  ],
+  "answer": 1,
+  "explanation": "Distributed tracing dokáže ukázať, ktorými komponentmi požiadavka prechádza a kde sa stráca podstatný čas. Metriky na úrovni služieb umožňujú skúmať latenciu, chybovosť a priepustnosť pre každý komponent zvlášť. Samotné infraštruktúrne metriky nemusia odhaliť problémy na ceste požiadavky v aplikácii."
+ },
+ {
+  "id": 186,
+  "level": "senior",
+  "area": "Logging",
+  "topic": "Logging",
+  "type": "security",
+  "question": "Produkčná aplikácia zapisuje štruktúrované JSON logy a niektoré požiadavky obsahujú citlivé údaje používateľov. Aký je najdôležitejší bezpečnostný princíp logovania?",
+  "options": [
+   "Logovať celé telo každej požiadavky bez úprav",
+   "Uchovávať každý log natrvalo",
+   "Logovať iba nevyhnutné údaje, citlivé polia maskovať alebo redigovať a používať vhodnú retenciu",
+   "V produkcii úplne vypnúť logovanie"
+  ],
+  "answer": 2,
+  "explanation": "Produkčné logy majú poskytovať diagnostickú hodnotu bez zbytočného ukladania citlivých údajov. Maskovanie alebo vynechanie osobných údajov (PII), tokenov, hesiel a iných secretov znižuje riziká pre súkromie aj bezpečnosť. Neobmedzená retencia a logovanie celých tiel požiadaviek zväčšujú blast radius pri prípadnom incidente s prístupom k logom."
+ },
+ {
+  "id": 187,
+  "level": "senior",
+  "area": "SRE & incident management",
+  "topic": "SRE & incident management",
+  "type": "scenario",
+  "question": "Počas kritického produkčného incidentu on-call inžinier identifikuje pravdepodobnú technickú chybu, ale pravidelné informácie o stave potrebuje aj viacero dotknutých tímov a biznis stakeholderov. Aký je vhodný model fungovania?",
+  "options": [
+   "Nechať on-call inžiniera vybavovať všetku komunikáciu osobne a medzitým prestať riešiť problém",
+   "Nekomunikovať, kým nie je známa úplná príčina",
+   "Poskytovať informácie iba vedeniu firmy",
+   "Prideliť komunikáciu o incidente samostatnej role, kým sa technický tím sústredí na obnovu"
+  ],
+  "answer": 3,
+  "explanation": "V štruktúre incident command možno komunikáciu a technickú obnovu rozdeliť do rôznych rolí. Technický tím sa tak môže sústrediť na diagnostiku a zmierňovanie dopadu, zatiaľ čo dotknuté strany dostávajú pravidelné a konzistentné informácie. Na poskytovanie užitočných informácií o stave nie je potrebné poznať úplnú príčinu."
+ },
+ {
+  "id": 188,
+  "level": "senior",
+  "area": "Deployment strategies",
+  "topic": "Deployment strategies",
+  "type": "architecture",
+  "question": "Nová verzia aplikácie má dátový model nekompatibilný so starou verziou a aplikácia nedokáže dlhší čas podporovať obe verzie paralelne. Ktorá stratégia môže najlepšie obmedziť problémy s kompatibilitou?",
+  "options": [
+   "Použiť stratégiu nasadenia, ktorá zabezpečí, že stará a nová verzia neobsluhujú ten istý dátový model súčasne, s koordinovanou migráciou",
+   "Počas rolling update náhodne vymieňať Pody",
+   "Migráciu schémy úplne vynechať",
+   "Nasmerovať starú aj novú verziu aplikácie na tú istú databázu bez akéhokoľvek plánu kompatibility"
+  ],
+  "answer": 0,
+  "explanation": "Keď dve verzie používajú nekompatibilné dátové modely, ich paralelný beh je obzvlášť nebezpečný. Je potrebná stratégia nasadenia, ktorá riadi, kedy sa aplikácia prepne a kedy prebehne migrácia schémy, pričom prípadný potrebný výpadok alebo izoláciu rieši vedome. Náhodná výmena pri rolling nasadení problém kompatibility nerieši."
+ },
+ {
+  "id": 189,
+  "level": "senior",
+  "area": "Secrets & security",
+  "topic": "Secrets & security",
+  "type": "edgecase",
+  "question": "V aplikácii, ktorá používa objekt Kubernetes Secret, sa hodnota secretu v manifeste zobrazuje zakódovaná v Base64. Vývojár tvrdí, že to znamená, že secret je zašifrovaný. Aký je správny výklad?",
+  "options": [
+   "Base64 automaticky znamená šifrovanie AES-256",
+   "Base64 je iba kódovanie, skutočnú ochranu môžu poskytnúť mechanizmy ako šifrovanie at rest, vhodné RBAC a bezpečná správa secretov",
+   "Base64 je silnejšie ako TLS",
+   "Vďaka Base64 sa Kubernetes Secret nikdy nemôže objaviť v audit logoch API servera"
+  ],
+  "answer": 1,
+  "explanation": "Base64 je reverzibilné kódovanie, nie kryptografická ochrana. V Kubernetes si ochrana secretov vyžaduje viacero kontrol, napríklad vhodné RBAC, šifrovanie at rest a bezpečnú správu prístupu. Hodnotu zakódovanú v Base64 viditeľnú v manifeste nemožno sama osebe považovať za tajnú."
+ },
+ {
+  "id": 190,
+  "level": "senior",
+  "area": "GitOps",
+  "topic": "GitOps",
+  "type": "architecture",
+  "question": "V GitOps prostredí externý systém automaticky zmení image tag workloadu bežiaceho v klastri, zatiaľ čo Git repozitár stále deklaruje predchádzajúci tag. Aký je hlavný problém?",
+  "options": [
+   "GitOps systém automaticky stratí prístup ku Kubernetes API",
+   "Kubernetes nepodporuje image tagy",
+   "Stav klastra sa líši od stavu deklarovaného v Gite, takže reconciliácia môže externú zmenu vrátiť alebo prepísať",
+   "Git repozitár sa pri každej zmene klastra automaticky upraví"
+  ],
+  "answer": 2,
+  "explanation": "V GitOps systéme predstavuje rozdiel medzi deklarovaným stavom v Gite a skutočným stavom klastra drift. Ak controller priebežne zosúlaďuje požadovaný stav, môže externú úpravu prepísať. Správnym GitOps prístupom je dostať nový požadovaný stav do deklaratívneho zdroja alebo použiť dedikovaný proces aktualizácie imagov."
+ },
+ {
+  "id": 191,
+  "level": "senior",
+  "area": "Scripting & automation",
+  "topic": "Scripting & automation",
+  "type": "performance",
+  "question": "Bash automatizačný skript spúšťa externý príkaz raz pre každý z niekoľkých tisíc súborov, pričom pre každý súbor vytvorí samostatný proces. Čas behu je neprijateľne dlhý. Ktorá optimalizácia môže byť najúčinnejšia?",
+  "options": [
+   "Pre každý súbor spustiť ďalší shell",
+   "Spracovať výstup príkazu viackrát celý",
+   "Spracúvať súbory vždy po jednom so sériovým `sleep`",
+   "Spracovať operáciu po dávkach alebo použiť nástroj, ktorý dokáže spracovať viacero súborov v jednom spustení procesu"
+  ],
+  "answer": 3,
+  "explanation": "Spustenie tisícov procesov môže priniesť značnú réžiu, preto spracovanie po dávkach alebo odovzdanie viacerých vstupov jednému procesu môže túto réžiu výrazne znížiť. Zbytočné spúšťanie shellu a úmyselné oneskorenia čas behu ešte predlžujú. Presná optimalizácia závisí od použitého príkazu a objemu dát."
+ },
+ {
+  "id": 192,
+  "level": "senior",
+  "area": "CI/CD pipelines",
+  "topic": "CI/CD pipelines",
+  "type": "performance",
+  "question": "CI pipeline má päť nezávislých sád testov, z ktorých každá trvá 10 minút. Medzi nimi nie sú žiadne dátové závislosti a k dispozícii je päť runnerov. Čo najúčinnejšie skráti celkový čas behu (wall-clock)?",
+  "options": [
+   "Spustiť sady paralelne na samostatných runneroch",
+   "Spustiť všetky sady sekvenčne na jednom runneri",
+   "Pred spustením testov zmazať všetky cache závislostí",
+   "Vynútiť beh každého kroku pipeline v tom istom kontajneri"
+  ],
+  "answer": 0,
+  "explanation": "Pri nezávislých sadách testov môže paralelný beh skrátiť celkový čas zhruba na trvanie najdlhšej jednotlivej sady, ak je k dispozícii dosť runnerov. Sekvenčný beh časy v podstate sčíta. Mazanie cache ani umelé vtesnanie všetkých krokov do jedného kontajnera tento workload nezrýchlia."
+ },
+ {
+  "id": 193,
+  "level": "senior",
+  "area": "Kubernetes networking & storage",
+  "topic": "Kubernetes networking & storage",
+  "type": "edgecase",
+  "question": "Pody za Kubernetes Service vyzerajú zdravo, ale cez Service nedostávajú žiadnu prevádzku. Pri priamom prístupe cez IP adresy Podov aplikácia funguje. Aká je najdôležitejšia prvá kontrola?",
+  "options": [
+   "Zmeniť hostnames nodov",
+   "Porovnať selector Service s labelmi Podov a potom skontrolovať stav Endpoints alebo EndpointSlice",
+   "Nastaviť CPU limit Podov na nulu",
+   "Zrotovať prístupový údaj k registry imagov"
+  ],
+  "answer": 1,
+  "explanation": "Ak sú Pody priamo dosiahnuteľné, ale cez Service nie, medzi prvými podozreniami je problém s výberom Service alebo s endpointmi. Nesprávne labely Podov môžu zabrániť selectoru Service nájsť zamýšľané backendy. Stav Endpoints alebo EndpointSlice môže priamo ukázať, či boli backend endpointy vybrané."
+ },
+ {
+  "id": 194,
+  "level": "senior",
+  "area": "Helm",
+  "topic": "Helm",
+  "type": "architecture",
+  "question": "Organizácia používa Helm charty, ktoré udržiava viacero tímov. Po zmene jedného zdieľaného chartu sa naraz pokazí viacero aplikácií, pretože štruktúra values bola zmenená nekompatibilne. Ktorý prístup túto previazanosť najlepšie znižuje?",
+  "options": [
+   "Úplne odstrániť values súbory zo všetkých chartov",
+   "Prinútiť každú aplikáciu používať tú istú verziu chartu s automatickými aktualizáciami",
+   "Používať stabilné verzie chartov a explicitné rozhrania values, pričom zmeny kompatibility sa riadia kontrolovaným verzovaním",
+   "Pred každým nasadením ručne upraviť charty"
+  ],
+  "answer": 2,
+  "explanation": "Stabilné, verzované rozhranie chartu umožňuje používateľom kontrolovane prechádzať na novšie verzie a zabraňuje tomu, aby sa nekompatibilné zmeny automaticky prejavili v každej aplikácii. Štruktúra values v podstate funguje ako konfiguračné API, preto treba riadiť aj jej kompatibilitu. Automatické spoločné aktualizácie zväčšujú blast radius."
+ },
+ {
+  "id": 195,
+  "level": "senior",
+  "area": "Infrastructure as Code (Terraform)",
+  "topic": "Infrastructure as Code (Terraform)",
+  "type": "architecture",
+  "question": "Terraform zdroj bol ručne upravený v cloudovej konzole a ďalší `terraform plan` hlási drift. Ručná zmena nebola zámerná. Aký je vhodný všeobecný postup?",
+  "options": [
+   "Drift ignorovať, pretože Terraform pri ďalšom apply zdroj vždy automaticky zmaže",
+   "Zistiť príčinu driftu, rozhodnúť, či má požadovaný stav predstavovať Terraform konfigurácia alebo externá zmena, a podľa toho opraviť konfiguráciu aj infraštruktúru",
+   "Okamžite zmazať Terraform state súbor",
+   "Vypnúť `terraform plan`, aby sa drift už nehlásil"
+  ],
+  "answer": 1,
+  "explanation": "Drift je dôležitá informácia: ukazuje, že skutočná infraštruktúra sa líši od deklarovaného stavu. Najprv treba pochopiť príčinu a potom zosúladiť konfiguráciu a infraštruktúru podľa zamýšľaného zdroja pravdy. Zmazanie stavu nesúlad medzi konfiguráciou a skutočnou infraštruktúrou nevyrieši."
+ },
+ {
+  "id": 196,
+  "level": "senior",
+  "area": "Cloud fundamentals",
+  "topic": "Cloud fundamentals",
+  "type": "architecture",
+  "question": "Bezstavová aplikácia bežiaca v cloude je za load balancerom, zatiaľ čo databáza beží ako jedna inštancia. Aplikačná vrstva je redundantná naprieč viacerými Availability Zones. Ktoré tvrdenie je presné?",
+  "options": [
+   "Celý systém je automaticky HA vo viacerých regiónoch",
+   "Bez redundancie databázy dokáže celý systém prežiť stratu každej domény porúch",
+   "Samotný load balancer zaručuje dostupnosť databázy",
+   "Aplikačná vrstva môže byť redundantná, zatiaľ čo jediná databázová inštancia zostáva kritickým single point of failure"
+  ],
+  "answer": 3,
+  "explanation": "Prevádzka bezstavovej aplikačnej vrstvy vo viacerých Availability Zones zlepšuje jej dostupnosť, ale jediná databázová inštancia môže dostupnosť celého systému stále obmedzovať. Load balancer automaticky nespraví stavové závislosti redundantnými. Požiadavky na dostupnosť treba preto posudzovať samostatne pre každý kritický komponent."
+ },
+ {
+  "id": 197,
+  "level": "senior",
+  "area": "Monitoring & observability",
+  "topic": "Monitoring & observability",
+  "type": "edgecase",
+  "question": "V monitoringu založenom na Prometheu dostáva nová metrika pri každej požiadavke jedinečné labely `user_id` a `request_id`. Po niekoľkých dňoch výrazne vzrastie spotreba pamäte Promethea. Aký je najpravdepodobnejší problém?",
+  "options": [
+   "Vysoká kardinalita vytvára veľmi veľké množstvo jedinečných časových radov",
+   "Prometheus nedokáže ukladať celočíselné hodnoty",
+   "Názov labelu je príliš krátky",
+   "Metrika CPU obsahuje príliš málo vzoriek"
+  ],
+  "answer": 0,
+  "explanation": "Vysoká kardinalita znamená veľa jedinečných kombinácií labelov, a teda veľa časových radov. Request ID je ako label obzvlášť nebezpečné, pretože takmer každá požiadavka môže vytvoriť nový rad. To môže výrazne zvýšiť nároky na pamäť a úložisko, preto by sa identifikátory s vysokou kardinalitou spravidla nemali používať ako labely metrík."
+ },
+ {
+  "id": 198,
+  "level": "senior",
+  "area": "Logging",
+  "topic": "Logging",
+  "type": "architecture",
+  "question": "V distribuovanom systéme fungujú aplikačné logy a tracing systém nezávisle, takže počas incidentov je ťažké nájsť záznamy v logoch patriace ku konkrétnemu trace spanu. Ktoré riešenie najviac zlepší koreláciu?",
+  "options": [
+   "Odstrániť časové pečiatky zo všetkých logov",
+   "Zaznamenávať trace a span ID ako štruktúrované polia logov",
+   "Ponechať iba logy ERROR",
+   "Nechať každú službu generovať vlastné náhodné request ID"
+  ],
+  "answer": 1,
+  "explanation": "Zaznamenávanie trace ID a span ID ako štruktúrovaných polí logov umožňuje priamo prepojiť logy s dátami z tracingu. Výrazne to zrýchľuje riešenie problémov pri distribuovaných požiadavkách. Nezávislé identifikátory, ktoré sa nedajú prepojiť, alebo odstránenie časových pečiatok diagnostiku naopak sťažujú."
+ },
+ {
+  "id": 199,
+  "level": "senior",
+  "area": "Deployment strategies",
+  "topic": "Deployment strategies",
+  "type": "production",
+  "question": "Počas canary nasadenia novej verzie zostávajú technické metriky normálne, ale chybovosť na biznis úrovni výrazne rastie u používateľov obsluhovaných canary verziou. Aký je vhodný ďalší krok?",
+  "options": [
+   "Okamžite zvýšiť prevádzku novej verzie na 100 %, pretože infraštruktúra je zdravá",
+   "Ignorovať biznis metriku a rozhodovať iba podľa CPU",
+   "Znížiť alebo zastaviť canary prevádzku a potom preskúmať dotknutý biznis tok a zmeny vo vydaní",
+   "Zmazať celú databázu a začať rollout odznova"
+  ],
+  "answer": 2,
+  "explanation": "Úspešnosť nasadenia by sa nemala posudzovať iba podľa infraštruktúrnych metrík. Ak rastú chyby viditeľné pre používateľov alebo na biznis úrovni, je vhodné canary znížiť alebo zastaviť a preskúmať súvislosť medzi vydaním a biznis chybou. Normálne metriky CPU a pamäte nedokazujú, že biznis správanie aplikácie je správne."
+ },
+ {
+  "id": 200,
+  "level": "senior",
+  "area": "Secrets & security",
+  "topic": "Secrets & security",
+  "type": "architecture",
+  "question": "Veľká organizácia prevádzkuje workloady vo viacerých Kubernetes klastroch a chce centralizovanú správu secretov bez vkladania statických prístupových údajov do Git repozitárov. Ktorá architektúra udáva vhodný smer?",
+  "options": [
+   "Ukladať všetky secrety v otvorenom texte v Gite, pretože k repozitáru majú prístup iba vývojári",
+   "Natvrdo zapísať ten istý dlhodobo platný prístupový údaj do každého klastra",
+   "Ukladať hodnoty secretov do objektov ConfigMap",
+   "Použiť centralizovaný secret manager s prístupom založeným na workload identity, vhodným RBAC a krátkodobými prístupovými údajmi"
+  ],
+  "answer": 3,
+  "explanation": "Centralizovaný secret manager umožňuje citlivé dáta izolovať, rotovať a auditovať, zatiaľ čo workload identity znižuje potrebu statických prístupových údajov. Kubernetes RBAC môže ďalej obmedziť, ktoré workloady majú prístup ku ktorým secretom. Secrety v otvorenom texte v Gite, zdieľané dlhodobo platné prístupové údaje ani ConfigMapy vhodnú správu secretov neposkytujú."
+ }
+]

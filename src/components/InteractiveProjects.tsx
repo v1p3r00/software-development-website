@@ -14,6 +14,7 @@ import LandingCover from './LandingCover';
 import { landings, readyLandings } from '../data/landings';
 import { Arrow, CornerMarks, Section, SectionHeader, cx } from './ui';
 import { site } from '../data/site';
+import type { Lang } from '../data/projects';
 
 /** a generic person silhouette for the sample CV photos */
 function Avatar({ className = '', hue = '#c9b8a6' }: { className?: string; hue?: string }) {
@@ -29,22 +30,61 @@ function Avatar({ className = '', hue = '#c9b8a6' }: { className?: string; hue?:
 }
 
 /** the CV maker as it feels: three real-looking printed CVs in different layouts */
-function CvVisual({ lang }: { lang: 'en' | 'hu' }) {
-  const hu = lang === 'hu';
-  const features = hu
-    ? ['Élő előnézet', '24 elrendezés', 'PDF export', 'Útmutató']
-    : ['Live preview', '24 layouts', 'PDF export', 'Writing guide'];
+function CvVisual({ lang }: { lang: Lang }) {
+  const features = {
+    en: ['Live preview', '24 layouts', 'PDF export', 'Writing guide'],
+    hu: ['Élő előnézet', '24 elrendezés', 'PDF export', 'Útmutató'],
+    sk: ['Živý náhľad', '24 rozložení', 'Export do PDF', 'Sprievodca písaním'],
+  }[lang];
   const L = {
-    role: hu ? 'Termékdizájner' : 'Product Designer',
-    profile: hu ? 'Profil' : 'Profile',
-    exp: hu ? 'Tapasztalat' : 'Experience',
-    edu: hu ? 'Tanulmányok' : 'Education',
-    skills: hu ? 'Készségek' : 'Skills',
-    lang: hu ? 'Nyelvek' : 'Languages',
-    blurb: hu
-      ? 'Felhasználóközpontú termékeket tervezek, a kutatástól a kész felületig.'
-      : 'I design user-centred products, from research to polished interfaces.',
-  };
+    en: {
+      role: 'Product Designer',
+      profile: 'Profile',
+      exp: 'Experience',
+      edu: 'Education',
+      skills: 'Skills',
+      lang: 'Languages',
+      blurb: 'I design user-centred products, from research to polished interfaces.',
+      analyst: 'Financial Analyst',
+      marketing: 'Marketing Lead',
+      contact: 'Contact',
+      languages: 'English · German',
+      degree: 'MOME · BA Design',
+    },
+    hu: {
+      role: 'Termékdizájner',
+      profile: 'Profil',
+      exp: 'Tapasztalat',
+      edu: 'Tanulmányok',
+      skills: 'Készségek',
+      lang: 'Nyelvek',
+      blurb: 'Felhasználóközpontú termékeket tervezek, a kutatástól a kész felületig.',
+      analyst: 'Pénzügyi elemző',
+      marketing: 'Marketing vezető',
+      contact: 'Kapcsolat',
+      languages: 'Angol · Német',
+      degree: 'MOME · BA Formatervezés',
+    },
+    sk: {
+      role: 'Produktová dizajnérka',
+      profile: 'Profil',
+      exp: 'Prax',
+      edu: 'Vzdelanie',
+      skills: 'Zručnosti',
+      lang: 'Jazyky',
+      blurb: 'Navrhujem produkty zamerané na používateľa, od výskumu až po vyladené rozhranie.',
+      analyst: 'Finančný analytik',
+      marketing: 'Vedúca marketingu',
+      contact: 'Kontakt',
+      languages: 'Angličtina · Nemčina',
+      degree: 'VŠVU · Bc. Dizajn',
+    },
+  }[lang];
+  // the sample people: Hungarian names on the English and Hungarian pages, Slovak ones on the Slovak page
+  const P =
+    lang === 'sk'
+      ? { back: 'PETER HORVÁTH', side: 'Eva Tóthová', name: 'Jana Nováková', email: 'jana.novakova@mail.sk', phone: '+421 905 123 456', city: 'Bratislava' }
+      : { back: 'MÁRK SZABÓ', side: 'Eszter Tóth', name: 'Anna Kovács', email: 'anna.kovacs@mail.hu', phone: '+36 30 123 4567', city: 'Budapest' };
   // greyed text lines, like body copy seen from a distance
   const lines = (ws: number[], c = 'bg-[#c9ccd3]') => (
     <span className="flex flex-col gap-[3px]">
@@ -60,8 +100,8 @@ function CvVisual({ lang }: { lang: 'en' | 'hu' }) {
         {/* back left: classic, centred header */}
         <div className={cx(page, 'left-[2%] top-8 h-[80%] -rotate-[8deg] p-[7%] group-hover/lab:-translate-x-4 group-hover/lab:-rotate-[12deg]')}>
           <div className="border-b border-[#1f2430] pb-[5%] text-center">
-            <div className="font-serif text-[9px] font-semibold tracking-[0.18em]">MÁRK SZABÓ</div>
-            <div className="mt-[2px] text-[5px] uppercase tracking-[0.2em] text-[#6b7280]">{hu ? 'Pénzügyi elemző' : 'Financial Analyst'}</div>
+            <div className="font-serif text-[9px] font-semibold tracking-[0.18em]">{P.back}</div>
+            <div className="mt-[2px] text-[5px] uppercase tracking-[0.2em] text-[#6b7280]">{L.analyst}</div>
           </div>
           <div className="mt-[7%] text-[5px] font-bold uppercase tracking-[0.15em]">{L.exp}</div>
           <div className="mt-[3%]">{lines([95, 88, 92, 70])}</div>
@@ -73,8 +113,8 @@ function CvVisual({ lang }: { lang: 'en' | 'hu' }) {
           <div className="flex items-center gap-[6%] bg-[#0f766e] px-[7%] py-[8%] text-white">
             <Avatar className="h-7 w-6 rounded-full" hue="#99d5cc" />
             <div>
-              <div className="text-[8px] font-bold leading-none">Eszter Tóth</div>
-              <div className="mt-[3px] text-[5px] opacity-80">{hu ? 'Marketing vezető' : 'Marketing Lead'}</div>
+              <div className="text-[8px] font-bold leading-none">{P.side}</div>
+              <div className="mt-[3px] text-[5px] opacity-80">{L.marketing}</div>
             </div>
           </div>
           <div className="p-[7%]">
@@ -92,11 +132,11 @@ function CvVisual({ lang }: { lang: 'en' | 'hu' }) {
         <div className={cx(page, 'left-1/2 top-0 z-10 grid h-[94%] -translate-x-1/2 grid-cols-[36%_1fr] group-hover/lab:-translate-y-2 group-hover/lab:scale-[1.03]')}>
           <div className="flex flex-col gap-[6px] bg-[#1f2a44] px-[10%] py-[12%] text-white">
             <Avatar className="mx-auto h-11 w-9 rounded-[3px]" />
-            <div className="mt-1 text-[5px] font-bold uppercase tracking-[0.15em] text-[#f59e0b]">{hu ? 'Kapcsolat' : 'Contact'}</div>
+            <div className="mt-1 text-[5px] font-bold uppercase tracking-[0.15em] text-[#f59e0b]">{L.contact}</div>
             <div className="space-y-[2px] text-[4.5px] leading-tight text-white/80">
-              <div>anna.kovacs@mail.hu</div>
-              <div>+36 30 123 4567</div>
-              <div>Budapest</div>
+              <div>{P.email}</div>
+              <div>{P.phone}</div>
+              <div>{P.city}</div>
             </div>
             <div className="mt-1 text-[5px] font-bold uppercase tracking-[0.15em] text-[#f59e0b]">{L.skills}</div>
             {[90, 75, 82, 60].map((w, i) => (
@@ -105,10 +145,10 @@ function CvVisual({ lang }: { lang: 'en' | 'hu' }) {
               </span>
             ))}
             <div className="mt-1 text-[5px] font-bold uppercase tracking-[0.15em] text-[#f59e0b]">{L.lang}</div>
-            <div className="text-[4.5px] text-white/80">{hu ? 'Angol · Német' : 'English · German'}</div>
+            <div className="text-[4.5px] text-white/80">{L.languages}</div>
           </div>
           <div className="px-[9%] py-[10%]">
-            <div className="text-[11px] font-extrabold leading-none tracking-tight">Anna Kovács</div>
+            <div className="text-[11px] font-extrabold leading-none tracking-tight">{P.name}</div>
             <div className="mt-[3px] text-[6px] font-semibold text-[#b45309]">{L.role}</div>
             <div className="mt-[8%] text-[5px] font-bold uppercase tracking-[0.15em] text-[#1f2a44]">{L.profile}</div>
             <p className="mt-[3px] text-[4.5px] leading-[1.35] text-[#4b5563]">{L.blurb}</p>
@@ -126,7 +166,7 @@ function CvVisual({ lang }: { lang: 'en' | 'hu' }) {
               </div>
             ))}
             <div className="mt-[8%] text-[5px] font-bold uppercase tracking-[0.15em] text-[#1f2a44]">{L.edu}</div>
-            <div className="mt-[3px] text-[4.5px] text-[#4b5563]">MOME · BA {hu ? 'Formatervezés' : 'Design'}</div>
+            <div className="mt-[3px] text-[4.5px] text-[#4b5563]">{L.degree}</div>
           </div>
         </div>
         {/* export badge */}
@@ -148,7 +188,7 @@ function CvVisual({ lang }: { lang: 'en' | 'hu' }) {
 }
 
 /** the course as a compact route of its ten modules */
-function CourseVisual({ lang }: { lang: 'en' | 'hu' }) {
+function CourseVisual({ lang }: { lang: Lang }) {
   const { t, lp } = useI18n();
   const { link } = usePageTransition();
   const { progress } = useProgress();
@@ -184,7 +224,7 @@ function CourseVisual({ lang }: { lang: 'en' | 'hu' }) {
             <span className="h-1 w-16 bg-line">
               <span className="block h-full w-[38%] bg-accent transition-[width] duration-700 ease-tech group-hover/lab:w-[46%]" />
             </span>
-            {lang === 'hu' ? '18/48 lecke' : '18/48 lessons'}
+            {{ en: '18/48 lessons', hu: '18/48 lecke', sk: '18/48 lekcií' }[lang]}
           </span>
         </div>
         <div className="grid min-h-0 flex-1 grid-cols-[38%_1fr]">
@@ -224,7 +264,7 @@ function CourseVisual({ lang }: { lang: 'en' | 'hu' }) {
             <div className="flex items-center justify-between border-t border-white/10 bg-[#0c2a1c] px-3 py-1.5 font-mono text-[10px]">
               <span className="flex items-center gap-1.5 text-[#4ade80]">
                 <span className="grid h-3.5 w-3.5 place-items-center bg-[#22c55e] text-[8px] text-[#052e16]">✓</span>
-                {lang === 'hu' ? '3/3 teszt' : '3/3 tests'}
+                {{ en: '3/3 tests', hu: '3/3 teszt', sk: '3/3 testy' }[lang]}
               </span>
               <span className="bg-accent px-1.5 py-0.5 font-bold text-onaccent transition-transform duration-500 ease-tech group-hover/lab:scale-110">+20 XP</span>
             </div>
@@ -233,9 +273,11 @@ function CourseVisual({ lang }: { lang: 'en' | 'hu' }) {
       </div>
       <FeatureGrid
         items={
-          lang === 'hu'
-            ? [`${modules.length} modul`, 'Kvízek', 'Böngészős gyakorlatok', site.showPatreon ? 'Mintaprojektek' : 'Haladási térkép']
-            : [`${modules.length} modules`, 'Quizzes', 'In-browser exercises', site.showPatreon ? 'Sample projects' : 'Progress map']
+          {
+            en: [`${modules.length} modules`, 'Quizzes', 'In-browser exercises', site.showPatreon ? 'Sample projects' : 'Progress map'],
+            hu: [`${modules.length} modul`, 'Kvízek', 'Böngészős gyakorlatok', site.showPatreon ? 'Mintaprojektek' : 'Haladási térkép'],
+            sk: [`${modules.length} modulov`, 'Kvízy', 'Cvičenia v prehliadači', site.showPatreon ? 'Ukážkové projekty' : 'Mapa pokroku'],
+          }[lang]
         }
       />
     </div>
@@ -259,7 +301,11 @@ function FeatureGrid({ items }: { items: string[] }) {
 /** a question as the simulator shows it, framed like the other project previews */
 function InterviewVisual() {
   const { lang } = useI18n();
-  const hu = lang === 'hu';
+  const L = {
+    en: { question: 'Question 7 / 20', ask: 'What does this print?', level: 'Mid-level' },
+    hu: { question: '7. kérdés / 20', ask: 'Mit ír ki ez a kód?', level: 'Medior' },
+    sk: { question: 'Otázka 7 / 20', ask: 'Čo vypíše tento kód?', level: 'Medior' },
+  }[lang];
   const options = ['"null"', '"object"', '"undefined"', '"number"'];
   return (
     <div className="flex h-full flex-col">
@@ -267,7 +313,7 @@ function InterviewVisual() {
         <div className="flex items-center justify-between border-b border-line px-3 py-2 font-mono text-[10px] uppercase tracking-tech text-dim">
           <span className="flex items-center gap-2">
             <span className="bg-[#f7df1e] px-1 py-px font-bold text-black">JS</span>
-            {hu ? '7. kérdés / 20' : 'Question 7 / 20'}
+            {L.question}
           </span>
           <span className="flex items-center gap-1.5 text-accent">
             <span className="h-1.5 w-1.5 animate-pulse bg-accent" />
@@ -279,7 +325,7 @@ function InterviewVisual() {
         </div>
         <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 px-4 py-3 sm:px-5">
           <div className="flex items-center justify-between gap-3">
-            <div className="text-[13px] font-semibold text-text sm:text-[15px]">{hu ? 'Mit ír ki ez a kód?' : 'What does this print?'}</div>
+            <div className="text-[13px] font-semibold text-text sm:text-[15px]">{L.ask}</div>
             <div className="flex shrink-0 items-center gap-2 border border-line-strong bg-surface py-1 pl-1 pr-2.5">
               <svg viewBox="0 0 36 36" className="h-7 w-7 -rotate-90">
                 <circle cx="18" cy="18" r="15" fill="none" stroke="rgb(var(--c-line))" strokeWidth="4" />
@@ -287,7 +333,7 @@ function InterviewVisual() {
               </svg>
               <span className="font-mono text-[10px] leading-tight">
                 <span className="block font-bold text-text">82%</span>
-                <span className="block text-dim">{hu ? 'Medior' : 'Mid-level'}</span>
+                <span className="block text-dim">{L.level}</span>
               </span>
             </div>
           </div>
@@ -315,9 +361,11 @@ function InterviewVisual() {
       </div>
       <FeatureGrid
         items={
-          hu
-            ? [`${readyTracks.length} téma`, `${(readyTracks.length * 200).toLocaleString('hu')} kérdés`, 'Szint és pontszám', 'Kódolvasás, hibakeresés']
-            : [`${readyTracks.length} tracks`, `${(readyTracks.length * 200).toLocaleString('en')} questions`, 'Level & score', 'Code reading & bugs']
+          {
+            en: [`${readyTracks.length} tracks`, `${(readyTracks.length * 200).toLocaleString('en')} questions`, 'Level & score', 'Code reading & bugs'],
+            hu: [`${readyTracks.length} téma`, `${(readyTracks.length * 200).toLocaleString('hu')} kérdés`, 'Szint és pontszám', 'Kódolvasás, hibakeresés'],
+            sk: [`${readyTracks.length} tém`, `${(readyTracks.length * 200).toLocaleString('sk')} otázok`, 'Úroveň a skóre', 'Čítanie kódu a hľadanie chýb'],
+          }[lang]
         }
       />
     </div>
@@ -325,11 +373,13 @@ function InterviewVisual() {
 }
 
 /** the modernization showcase in miniature: an old and a new page split by a divider */
-function ModernVisual({ lang }: { lang: 'en' | 'hu' }) {
+function ModernVisual({ lang }: { lang: Lang }) {
   const points =
-    lang === 'hu'
-      ? ['3 élő demó', 'Asztali + mobil', 'Működő kosár', 'Foglalás, űrlapok']
-      : ['3 live demos', 'Desktop + mobile', 'Working cart', 'Booking & forms'];
+    {
+      en: ['3 live demos', 'Desktop + mobile', 'Working cart', 'Booking & forms'],
+      hu: ['3 élő demó', 'Asztali + mobil', 'Működő kosár', 'Foglalás, űrlapok'],
+      sk: ['3 živé ukážky', 'Desktop + mobil', 'Funkčný košík', 'Rezervácie a formuláre'],
+    }[lang];
   return (
     <div className="flex h-full flex-col">
       <div className="relative aspect-[16/10] w-full overflow-hidden border border-line-strong bg-[#fff4f7]" aria-hidden>
@@ -365,10 +415,10 @@ function ModernVisual({ lang }: { lang: 'en' | 'hu' }) {
           </span>
         </div>
         <span className="absolute bottom-2 left-2 bg-black/70 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-tech text-white">
-          {lang === 'hu' ? 'Előtte' : 'Before'}
+          {{ en: 'Before', hu: 'Előtte', sk: 'Predtým' }[lang]}
         </span>
         <span className="absolute bottom-2 right-2 bg-white/85 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-tech text-black">
-          {lang === 'hu' ? 'Utána' : 'After'}
+          {{ en: 'After', hu: 'Utána', sk: 'Potom' }[lang]}
         </span>
       </div>
       <ul className="mt-6 grid grid-cols-2 gap-px border border-line bg-line">
@@ -384,12 +434,14 @@ function ModernVisual({ lang }: { lang: 'en' | 'hu' }) {
 }
 
 /** a fan of brand covers that spreads out on hover */
-function LandingVisual({ lang }: { lang: 'en' | 'hu' }) {
+function LandingVisual({ lang }: { lang: Lang }) {
   const fan = [landings[3], landings[1], landings[4], landings[0]];
   const points =
-    lang === 'hu'
-      ? [`${landings.length} márka`, 'Teljes képernyő', 'Élő interakciók', 'Könnyed animáció']
-      : [`${landings.length} brands`, 'Full screen', 'Live interactions', 'Light animation'];
+    {
+      en: [`${landings.length} brands`, 'Full screen', 'Live interactions', 'Light animation'],
+      hu: [`${landings.length} márka`, 'Teljes képernyő', 'Élő interakciók', 'Könnyed animáció'],
+      sk: [`${landings.length} značiek`, 'Celá obrazovka', 'Živé interakcie', 'Jemná animácia'],
+    }[lang];
   return (
     <div className="flex h-full flex-col">
       <div className="relative aspect-[16/10] w-full" aria-hidden>
@@ -427,25 +479,31 @@ function LandingVisual({ lang }: { lang: 'en' | 'hu' }) {
 }
 
 const TOOL_ALT = {
-  garage: { en: '3D garage designer: a configurable garage model with roof, door and cladding options', hu: '3D garázstervező: konfigurálható garázsmodell tető-, kapu- és burkolatválasztással' },
-  shirt: { en: '3D T-shirt and hoodie designer with a custom print on the model', hu: '3D póló- és pulóvertervező egyedi mintával a modellen' },
-  camera: { en: '3D camera study: a statue scene filmed along curved camera paths', hu: '3D kameratanulmány: szoborjelenet íves kamerapályákon' },
+  garage: { en: '3D garage designer: a configurable garage model with roof, door and cladding options', hu: '3D garázstervező: konfigurálható garázsmodell tető-, kapu- és burkolatválasztással', sk: '3D návrhár garáže: konfigurovateľný model garáže s výberom strechy, brány a obkladu' },
+  shirt: { en: '3D T-shirt and hoodie designer with a custom print on the model', hu: '3D póló- és pulóvertervező egyedi mintával a modellen', sk: '3D návrhár tričiek a mikín s vlastnou potlačou na modeli' },
+  camera: { en: '3D camera study: a statue scene filmed along curved camera paths', hu: '3D kameratanulmány: szoborjelenet íves kamerapályákon', sk: '3D kamerová štúdia: scéna so sochou snímaná po oblúkových dráhach kamery' },
 };
 
 /** a still from a 3D configurator, framed like the other previews */
-function ToolVisual({ id, lang }: { id: 'garage' | 'shirt' | 'camera'; lang: 'en' | 'hu' }) {
+function ToolVisual({ id, lang }: { id: 'garage' | 'shirt' | 'camera'; lang: Lang }) {
   const points =
     id === 'camera'
-      ? lang === 'hu'
-        ? ['Arc → mérleg → totál → kard', 'Íves kamerapályák', 'Mélységélesség', 'Szöveg a jelenetben']
-        : ['Face → scales → wide → sword', 'Curved camera paths', 'Depth of field', 'Text placed in the scene']
+      ? {
+          en: ['Face → scales → wide → sword', 'Curved camera paths', 'Depth of field', 'Text placed in the scene'],
+          hu: ['Arc → mérleg → totál → kard', 'Íves kamerapályák', 'Mélységélesség', 'Szöveg a jelenetben'],
+          sk: ['Tvár → váhy → celok → meč', 'Oblúkové dráhy kamery', 'Hĺbka ostrosti', 'Text priamo v scéne'],
+        }[lang]
       : id === 'garage'
-      ? lang === 'hu'
-        ? ['Élő 3D modell', 'Tető, kapu, burkolat', 'Szín és extrák', 'Árbecslés']
-        : ['Live 3D model', 'Roof, door, cladding', 'Colours & extras', 'Price estimate']
-      : lang === 'hu'
-        ? ['Póló és kapucnis pulóver', 'Saját szöveg vagy kép', 'Stúdióvilágítás', 'Mockup letöltés']
-        : ['T-shirt & hoodie', 'Your text or image', 'Studio lighting', 'Mockup download'];
+      ? {
+          en: ['Live 3D model', 'Roof, door, cladding', 'Colours & extras', 'Price estimate'],
+          hu: ['Élő 3D modell', 'Tető, kapu, burkolat', 'Szín és extrák', 'Árbecslés'],
+          sk: ['Živý 3D model', 'Strecha, brána, obklad', 'Farby a doplnky', 'Odhad ceny'],
+        }[lang]
+      : {
+          en: ['T-shirt & hoodie', 'Your text or image', 'Studio lighting', 'Mockup download'],
+          hu: ['Póló és kapucnis pulóver', 'Saját szöveg vagy kép', 'Stúdióvilágítás', 'Mockup letöltés'],
+          sk: ['Tričko a mikina', 'Vlastný text alebo obrázok', 'Štúdiové osvetlenie', 'Stiahnutie mockupu'],
+        }[lang];
   return (
     <div className="flex h-full flex-col">
       <div className="relative aspect-[16/10] w-full overflow-hidden border border-line-strong bg-bg" aria-hidden>

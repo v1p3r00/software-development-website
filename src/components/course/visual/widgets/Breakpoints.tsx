@@ -14,9 +14,9 @@ export default function Breakpoints({ lang }: WidgetProps) {
   const active = [...BPS].reverse().find((b) => w >= b.min)!;
   const sidebar = w >= 1024;
   return (
-    <Frame lang={lang} title={t('Mobile-first breakpoints', 'Mobile-first töréspontok')} hint={t('Drag the viewport width. Styles stack up as the screen grows.', 'Húzd a nézetszélességet. Ahogy nő a képernyő, egymásra épülnek a stílusok.')}>
+    <Frame lang={lang} title={t('Mobile-first breakpoints', 'Mobile-first töréspontok', 'Mobile-first breakpointy')} hint={t('Drag the viewport width. Styles stack up as the screen grows.', 'Húzd a nézetszélességet. Ahogy nő a képernyő, egymásra épülnek a stílusok.', 'Posúvaj šírku viewportu. Ako obrazovka rastie, štýly sa na seba vrstvia.')}>
       <label className="grid gap-1.5">
-        <span className="label">viewport: {w}px {w < 640 ? t('(phone)', '(telefon)') : w < 1024 ? t('(tablet)', '(tablet)') : t('(desktop)', '(asztali)')}</span>
+        <span className="label">viewport: {w}px {w < 640 ? t('(phone)', '(telefon)', '(telefón)') : w < 1024 ? t('(tablet)', '(tablet)', '(tablet)') : t('(desktop)', '(asztali)', '(desktop)')}</span>
         <input className="vw-range" type="range" min={320} max={1440} step={5} value={w} onChange={(e) => setW(Number(e.target.value))} aria-label="viewport width" />
       </label>
       <div className="mt-5 overflow-hidden border border-line bg-bg p-3">
@@ -42,12 +42,12 @@ export default function Breakpoints({ lang }: WidgetProps) {
             <div key={b.name} className={'flex flex-wrap items-baseline gap-x-3 border px-3 py-2 font-mono text-[13.5px] transition-colors ' + (on ? 'border-accent/60 text-text' : 'border-line text-dim')}>
               <span className={on ? 'text-accent' : ''}>{on ? '●' : '○'}</span>
               <span>{b.q}</span>
-              <span className="ml-auto">{b.cols} {t(b.cols === 1 ? 'column' : 'columns', 'oszlop')}{b.min >= 1024 ? t(' + sidebar', ' + oldalsáv') : ''}</span>
+              <span className="ml-auto">{b.cols} {t(b.cols === 1 ? 'column' : 'columns', 'oszlop', b.cols === 1 ? 'stĺpec' : 'stĺpce')}{b.min >= 1024 ? t(' + sidebar', ' + oldalsáv', ' + bočný panel') : ''}</span>
             </div>
           );
         })}
       </div>
-      <p className="mt-3 text-[15px] text-muted">{t('Base styles apply everywhere; each min-width query adds on top once the screen is wide enough.', 'Az alapstílusok mindenhol érvényesek; minden min-width lekérdezés csak akkor tesz hozzá, ha elég széles a képernyő.')}</p>
+      <p className="mt-3 text-[15px] text-muted">{t('Base styles apply everywhere; each min-width query adds on top once the screen is wide enough.', 'Az alapstílusok mindenhol érvényesek; minden min-width lekérdezés csak akkor tesz hozzá, ha elég széles a képernyő.', 'Základné štýly platia všade; každý min-width query pridá svoje až vtedy, keď je obrazovka dosť široká.')}</p>
     </Frame>
   );
 }
