@@ -219,6 +219,17 @@ export const en = {
   },
 
   contact: {
+    survey: {
+      steps: ['What are you planning?', 'What budget are you thinking of?', 'When would you like to start?', 'Tell me about the project', 'How should I reach you?', 'Your details', 'Almost done'],
+      hints: ['Pick the closest one — you can explain in a moment.', 'A rough range is enough. You can skip this.', 'You can skip this too.', 'A few sentences are plenty: what it should do and for whom.', '', 'So I know who to reply to.', 'Check your answers, then send.'],
+      next: 'Next',
+      back: 'Back',
+      skip: 'Skip',
+      step: 'Step {n} of {total}',
+      edit: 'Edit',
+      sourceShort: 'How did you hear about me? (optional)',
+      start: 'Start a new message',
+    },
     replyTime: 'I reply within one working day.',
     index: '07',
     title: 'Contact',

@@ -230,6 +230,17 @@ export const hu: Dict = {
   },
 
   contact: {
+    survey: {
+      steps: ['Mit tervezel?', 'Mekkora keretben gondolkodsz?', 'Mikor kezdenéd?', 'Mesélj a projektről', 'Hogyan érjelek el?', 'Az adataid', 'Mindjárt kész'],
+      hints: ['Válaszd a legközelebbit — mindjárt elmondhatod a részleteket.', 'Elég egy hozzávetőleges sáv. Ki is hagyhatod.', 'Ezt is kihagyhatod.', 'Pár mondat bőven elég: mit csináljon és kinek.', '', 'Hogy tudjam, kinek válaszoljak.', 'Nézd át a válaszaidat, aztán küldd el.'],
+      next: 'Tovább',
+      back: 'Vissza',
+      skip: 'Kihagyom',
+      step: '{n}. lépés / {total}',
+      edit: 'Módosítás',
+      sourceShort: 'Honnan hallottál rólam? (nem kötelező)',
+      start: 'Új üzenet írása',
+    },
     replyTime: 'Egy munkanapon belül válaszolok.',
     index: '07',
     title: 'Kapcsolat',

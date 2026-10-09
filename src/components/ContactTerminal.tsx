@@ -13,6 +13,23 @@ const CALL_HOURS = { from: '09:00', to: '17:00' };
 const PHONE = /^\+?[\d\s()\-/]{7,20}$/;
 type Errors = Partial<Record<Field, string>>;
 
+/** phones get the form as a short survey: one question per screen, big tap targets */
+const PHONE_QUERY = '(max-width: 767px)';
+function usePhoneLayout() {
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia(PHONE_QUERY);
+    const on = () => setPhone(mq.matches);
+    on();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  return phone;
+}
+/** survey steps: type, budget, timeline, project, contact method, details, review */
+const STEPS = 7;
+const STEP_OF: Partial<Record<Field, number>> = { project: 3, name: 5, email: 5, phone: 5 };
+
 function useTypewriter(text: string, enabled: boolean) {
   const [out, setOut] = useState(enabled ? '' : text);
   useEffect(() => {
@@ -45,6 +62,21 @@ export default function ContactTerminal() {
   const [honey, setHoney] = useState('');
   const [visible, setVisible] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
+  const phone = usePhoneLayout();
+  const [step, setStep] = useState(0);
+  const sv = t.contact.survey;
+
+  // on phones the chat button would sit on the survey's buttons: it steps aside while the form is on screen
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!phone || !el) return;
+    const io = new IntersectionObserver(([e]) => document.body.classList.toggle('contact-in-view', e.isIntersecting), { threshold: 0.15 });
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      document.body.classList.remove('contact-in-view');
+    };
+  }, [phone]);
 
   useEffect(() => {
     const el = boxRef.current;
@@ -92,7 +124,9 @@ export default function ContactTerminal() {
     if (Object.keys(next).length) {
       // take the visitor straight to the first thing to fix
       const first = (['name', 'email', 'phone', 'company', 'project'] as Field[]).find((f) => next[f]);
-      if (first) window.setTimeout(() => document.getElementById(`contact-${first}`)?.focus(), 0);
+      // in the survey, go back to the screen that holds it
+      if (phone && first && STEP_OF[first] !== undefined) setStep(STEP_OF[first]!);
+      if (first) window.setTimeout(() => document.getElementById(`contact-${first}`)?.focus(), phone ? 60 : 0);
       return;
     }
 
@@ -132,6 +166,7 @@ export default function ContactTerminal() {
         return;
       }
       setStatus('sent');
+      setStep(0);
       setValues(EMPTY);
       setChoices(NO_CHOICES);
       setCallHours(CALL_HOURS);
@@ -229,6 +264,283 @@ export default function ContactTerminal() {
     );
   };
 
+  /* ---------- the phone survey ---------- */
+
+  // keep the survey card in view when its height changes from one screen to the next
+  const goStep = (n: number) => {
+    setStep(n);
+    window.requestAnimationFrame(() => {
+      const top = boxRef.current?.getBoundingClientRect().top ?? 0;
+      if (top < 0 || top > window.innerHeight * 0.4) boxRef.current?.scrollIntoView({ block: 'start', behavior: reduced ? 'auto' : 'smooth' });
+    });
+  };
+  const stepErrors = (n: number): Errors => {
+    const all = validate();
+    return Object.fromEntries(Object.entries(all).filter(([f]) => STEP_OF[f as Field] === n)) as Errors;
+  };
+  const next = () => {
+    const errs = stepErrors(step);
+    if (Object.keys(errs).length) {
+      setErrors((prev) => ({ ...prev, ...errs }));
+      const first = (['name', 'email', 'phone', 'project'] as Field[]).find((f) => errs[f]);
+      if (first) document.getElementById(`contact-${first}`)?.focus();
+      return;
+    }
+    goStep(Math.min(STEPS - 1, step + 1));
+  };
+  /** one tap answers the question and moves on (tapping the chosen one again clears it) */
+  const pick = (key: Choice, option: string, advance: boolean) => {
+    const on = choices[key] === option;
+    setChoices((c) => ({ ...c, [key]: on ? '' : option }));
+    if (!on && advance) window.setTimeout(() => goStep(step + 1), reduced ? 0 : 220);
+  };
+  const options = (key: Choice, list: readonly string[], advance: boolean) => (
+    <div role="radiogroup" className="grid grid-cols-1 gap-2">
+      {list.map((option) => {
+        const on = choices[key] === option;
+        return (
+          <button
+            key={option}
+            type="button"
+            role="radio"
+            aria-checked={on}
+            onClick={() => pick(key, option, advance)}
+            className={cx(
+              'flex min-h-[52px] w-full items-center justify-between gap-3 border px-4 py-3 text-left text-[15px] transition-colors',
+              on ? 'border-accent bg-accent/10 text-text' : 'border-line bg-bg text-text active:border-line-strong',
+            )}
+          >
+            {option}
+            <span className={cx('grid h-5 w-5 shrink-0 place-items-center rounded-full border', on ? 'border-accent bg-accent text-onaccent' : 'border-line-strong')}>
+              {on && (
+                <svg viewBox="0 0 16 16" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden>
+                  <path d="M3.5 8.5l3 3 6-7" />
+                </svg>
+              )}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+  const input = (name: Field, label: string, placeholder: string, textarea = false) => {
+    const id = `contact-${name}`;
+    const invalid = Boolean(errors[name]);
+    const shared = {
+      id,
+      name,
+      value: values[name],
+      onChange: set(name),
+      onBlur: onBlurField(name),
+      placeholder,
+      autoComplete: ({ name: 'name', email: 'email', phone: 'tel', company: 'organization', project: 'off' } as const)[name],
+      'aria-invalid': invalid,
+      'aria-describedby': invalid ? `${id}-error` : undefined,
+      className: cx(
+        'w-full border bg-bg px-3.5 py-3 text-base text-text placeholder:text-dim focus:border-accent focus:outline-none',
+        invalid ? 'border-accent' : 'border-line',
+        textarea && 'min-h-[132px] resize-none',
+      ),
+    };
+    return (
+      <div>
+        <label htmlFor={id} className={cx('mb-1.5 block font-mono text-[11.5px] font-semibold uppercase tracking-tech', invalid ? 'text-accent' : 'text-muted')}>
+          {label}
+        </label>
+        {textarea ? (
+          <textarea rows={5} {...shared} />
+        ) : (
+          <input
+            type={name === 'email' ? 'email' : name === 'phone' ? 'tel' : 'text'}
+            inputMode={name === 'phone' ? 'tel' : name === 'email' ? 'email' : undefined}
+            enterKeyHint="next"
+            {...shared}
+          />
+        )}
+        {invalid && (
+          <p id={`${id}-error`} role="alert" className="mt-1.5 font-mono text-2xs tracking-tech text-accent">
+            ! {errors[name]}
+          </p>
+        )}
+      </div>
+    );
+  };
+  const summary: [string, string, number][] = [
+    [t.contact.typeLabel, choices.type, 0],
+    [t.contact.budgetLabel, choices.budget, 1],
+    [t.contact.timelineLabel, choices.timeline, 2],
+    [t.contact.project, values.project, 3],
+    [t.contact.contactLabel, [choices.contact, wantsCall ? `${callHours.from}–${callHours.to}` : '', wantsMeeting ? choices.meeting : ''].filter(Boolean).join(' · '), 4],
+    [t.contact.name, [values.name, values.email, values.phone, values.company].filter((v) => v.trim()).join(' · '), 5],
+  ];
+
+  const survey = (
+    <form onSubmit={submit} noValidate className="contact-survey">
+      <input
+        type="text"
+        name="_honey"
+        value={honey}
+        onChange={(e) => setHoney(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden
+        aria-label="Leave this field empty"
+        className="absolute -left-[9999px] h-px w-px opacity-0"
+      />
+      {status === 'sent' ? (
+        <div className="py-6 text-center">
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-accent text-onaccent">
+            <svg viewBox="0 0 16 16" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <path d="M3.5 8.5l3 3 6-7" />
+            </svg>
+          </span>
+          <p role="status" className="mt-4 text-[16px] font-semibold text-text">
+            {t.contact.sent}
+          </p>
+          <p className="mt-1.5 text-[13px] text-muted">{t.contact.replyTime}</p>
+          <button type="button" onClick={() => setStatus('idle')} className="mt-5 border border-line-strong px-4 py-2.5 font-mono text-[12px] uppercase tracking-tech text-text">
+            {sv.start}
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* progress */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-tech text-muted">
+              <span>{sv.step.replace('{n}', String(step + 1)).replace('{total}', String(STEPS))}</span>
+              {step <= 2 && (
+                <button type="button" onClick={() => goStep(step + 1)} className="-my-2 py-2 pl-3 text-muted underline-offset-4 active:text-text">
+                  {sv.skip} →
+                </button>
+              )}
+            </div>
+            <div className="mt-2 h-1 overflow-hidden bg-line" aria-hidden>
+              <div className="h-full bg-accent transition-[width] duration-500 ease-tech" style={{ width: `${((step + 1) / STEPS) * 100}%` }} />
+            </div>
+          </div>
+
+          <div key={step} className="contact-step">
+            <h3 className="font-display text-[1.45rem] font-extrabold leading-tight tracking-tight text-text">{sv.steps[step]}</h3>
+            {sv.hints[step] && <p className="mt-1 text-[13.5px] leading-snug text-muted">{sv.hints[step]}</p>}
+
+            <div className="mt-4 space-y-3">
+              {step === 0 && options('type', t.contact.types, true)}
+              {step === 1 && options('budget', t.contact.budgets, true)}
+              {step === 2 && options('timeline', t.contact.timelines, true)}
+              {step === 3 && input('project', t.contact.project, t.contact.projectPh, true)}
+              {step === 4 && (
+                <>
+                  {options('contact', t.contact.contactMethods, false)}
+                  {wantsMeeting && (
+                    <div className="pt-2">
+                      <p className="mb-2 font-mono text-[11.5px] font-semibold uppercase tracking-tech text-muted">{t.contact.meetingLabel}</p>
+                      {options('meeting', t.contact.meetings, false)}
+                    </div>
+                  )}
+                  {wantsCall && (
+                    <div className="pt-2">
+                      <p className="mb-2 font-mono text-[11.5px] font-semibold uppercase tracking-tech text-muted">{t.contact.callLabel}</p>
+                      <div className="flex items-center gap-2">
+                        {(['from', 'to'] as const).map((edge, i) => (
+                          <span key={edge} className="flex flex-1 items-center gap-2">
+                            {i === 1 && <span className="text-dim">–</span>}
+                            <input
+                              type="time"
+                              step={900}
+                              value={callHours[edge]}
+                              onChange={(e) => setCallHours((h) => ({ ...h, [edge]: e.target.value }))}
+                              aria-label={`${t.contact.callLabel} ${edge === 'from' ? t.contact.callFrom : t.contact.callTo}`}
+                              className="time-input w-full border border-line bg-bg px-3 py-3 text-base text-text focus:border-accent focus:outline-none"
+                            />
+                          </span>
+                        ))}
+                      </div>
+                      <p className="mt-1.5 text-[12px] text-dim">{t.contact.callHint}</p>
+                    </div>
+                  )}
+                </>
+              )}
+              {step === 5 && (
+                <>
+                  {input('name', t.contact.name, t.contact.namePh)}
+                  {input('email', t.contact.email, t.contact.emailPh)}
+                  {input('phone', t.contact.phone, t.contact.phonePh)}
+                  {input('company', t.contact.company, t.contact.companyPh)}
+                </>
+              )}
+              {step === 6 && (
+                <>
+                  <dl className="divide-y divide-line border border-line">
+                    {summary.map(([k, v, at]) => (
+                      <div key={k} className="flex items-start gap-3 px-3.5 py-2.5">
+                        <div className="min-w-0 flex-1">
+                          <dt className="font-mono text-[10.5px] uppercase tracking-tech text-muted">{k}</dt>
+                          <dd className={cx('mt-0.5 line-clamp-3 text-[14px] leading-snug', v ? 'text-text' : 'text-dim')}>{v || '—'}</dd>
+                        </div>
+                        <button type="button" onClick={() => goStep(at)} className="-my-1 shrink-0 py-1 font-mono text-[11px] uppercase tracking-tech text-accent">
+                          {sv.edit}
+                        </button>
+                      </div>
+                    ))}
+                  </dl>
+                  <div className="pt-1">
+                    <p className="mb-2 font-mono text-[11.5px] font-semibold uppercase tracking-tech text-muted">{sv.sourceShort}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {t.contact.sources.map((o) => {
+                        const on = choices.source === o;
+                        return (
+                          <button
+                            key={o}
+                            type="button"
+                            aria-pressed={on}
+                            onClick={() => setChoices((c) => ({ ...c, source: on ? '' : o }))}
+                            className={cx('min-h-[40px] border px-3.5 py-2 text-[14px]', on ? 'border-accent bg-accent text-onaccent' : 'border-line text-text')}
+                          >
+                            {o}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* navigation */}
+          <div className="mt-5 flex items-center gap-3">
+            {step > 0 && (
+              <button type="button" onClick={() => goStep(step - 1)} className="min-h-[52px] border border-line-strong px-4 font-mono text-[13px] uppercase tracking-tech text-text">
+                ← {sv.back}
+              </button>
+            )}
+            {step < STEPS - 1 ? (
+              <button type="button" onClick={next} className="flex min-h-[52px] flex-1 items-center justify-center gap-2 bg-accent px-5 font-mono text-[14px] font-semibold uppercase tracking-tech text-onaccent">
+                {sv.next} <span aria-hidden>→</span>
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={status === 'sending'}
+                className="flex min-h-[52px] flex-1 items-center justify-center gap-2 bg-accent px-5 font-mono text-[14px] font-semibold uppercase tracking-tech text-onaccent disabled:opacity-70"
+              >
+                {status === 'sending' ? `${t.contact.sending}…` : t.contact.send} <span aria-hidden>→</span>
+              </button>
+            )}
+          </div>
+          {status === 'error' && (
+            <p role="status" className="mt-3 text-[13px] text-muted">
+              ! {t.contact.error}{' '}
+              <a href={`mailto:${site.email}`} className="text-accent underline underline-offset-2">
+                {site.email}
+              </a>
+            </p>
+          )}
+        </>
+      )}
+    </form>
+  );
+
   return (
     <Section id="contact">
       <SectionHeader index={t.contact.index} title={t.contact.title} subtitle={t.contact.subtitle} />
@@ -249,6 +561,7 @@ export default function ContactTerminal() {
             </div>
 
             <div className="px-4 pb-4 pt-3 sm:px-6 sm:pb-5">
+              {phone ? survey : (<>
               <p className="mb-2 font-mono text-[12px] font-semibold uppercase tracking-tech text-accent [@media(max-height:800px)]:hidden">● {t.contact.ready}</p>
 
               <form onSubmit={submit} noValidate>
@@ -329,6 +642,7 @@ export default function ContactTerminal() {
                   </p>
                 </div>
               </form>
+              </>)}
             </div>
           </div>
         </div>

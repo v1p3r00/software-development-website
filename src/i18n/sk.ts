@@ -221,6 +221,17 @@ export const sk: Dict = {
   },
 
   contact: {
+    survey: {
+      steps: ['Čo plánujete?', 'S akým rozpočtom počítate?', 'Kedy by ste chceli začať?', 'Povedzte mi o projekte', 'Ako vás mám kontaktovať?', 'Vaše údaje', 'Takmer hotovo'],
+      hints: ['Vyberte najbližšiu možnosť — podrobnosti doplníte o chvíľu.', 'Stačí približný rozsah. Môžete to aj preskočiť.', 'Aj toto môžete preskočiť.', 'Stačí pár viet: čo má robiť a pre koho.', '', 'Aby som vedel, komu odpovedať.', 'Skontrolujte odpovede a odošlite.'],
+      next: 'Ďalej',
+      back: 'Späť',
+      skip: 'Preskočiť',
+      step: 'Krok {n} z {total}',
+      edit: 'Upraviť',
+      sourceShort: 'Ako ste sa o mne dozvedeli? (nepovinné)',
+      start: 'Napísať novú správu',
+    },
     replyTime: 'Odpovedám do jedného pracovného dňa.',
     index: '07',
     title: 'Kontakt',
