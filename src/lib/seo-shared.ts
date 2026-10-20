@@ -22,7 +22,7 @@ export function siteGraph() {
         '@id': `${site.url}/#person`,
         name: site.name,
         alternateName: 'Mészáros Dávid',
-        jobTitle: 'Full-Stack Developer & Web Designer',
+        jobTitle: 'Website & Web Application Developer',
         url: `${site.url}/`,
         email: `mailto:${site.email}`,
         image: `${site.url}/portrait.jpg`,
@@ -30,8 +30,11 @@ export function siteGraph() {
         sameAs: [linkedin, site.github, site.facebook].filter(Boolean),
         knowsLanguage: ['en', 'hu'],
         knowsAbout: [
-          'Full-stack development',
+          'Website development',
+          'Web application development',
           'Web design',
+          'Full-stack development',
+          'Search engine optimization',
           'E-commerce',
           'Enterprise software',
           'Software architecture',
@@ -46,7 +49,9 @@ export function siteGraph() {
       {
         '@type': 'ProfessionalService',
         '@id': `${site.url}/#service`,
-        name: `${site.name} — Software development & web design`,
+        name: `${site.name} — Website & web application development`,
+        description:
+          'Website and web application development in Budapest: business websites, landing pages, webshops and custom web apps, designed and built end to end.',
         url: `${site.url}/`,
         email: site.email,
         image: site.url + site.ogImage,
@@ -63,12 +68,21 @@ export function siteGraph() {
           email: site.email,
           availableLanguage: ['English', 'Hungarian'],
         },
+        knowsAbout: ['Website development', 'Web application development', 'Web design', 'Webshop development', 'Technical SEO'],
         hasOfferCatalog: {
           '@type': 'OfferCatalog',
-          name: 'Services',
-          itemListElement: ['Custom web applications', 'Websites', 'E-commerce', 'Enterprise systems', 'UI/UX design'].map(
-            (name) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name } }),
-          ),
+          name: 'Website & web application development',
+          itemListElement: [
+            ['Website development', 'Business websites and landing pages, designed and built from scratch: fast, mobile-first and search-friendly.'],
+            ['Web application development', 'Custom web apps: customer portals, booking and admin systems, dashboards and internal tools.'],
+            ['Webshop development', 'Online shops built around how the business sells.'],
+            ['UI/UX & web design', 'Interface and website design made with the front-end build in view.'],
+            ['Website modernization', 'Redesigning and rebuilding dated websites and legacy web systems.'],
+            ['System integration & APIs', 'Connecting websites and web apps with ERP, CRM, billing and other systems.'],
+          ].map(([name, description]) => ({
+            '@type': 'Offer',
+            itemOffered: { '@type': 'Service', name, description, serviceType: name, provider: { '@id': `${site.url}/#person` } },
+          })),
         },
       },
       {

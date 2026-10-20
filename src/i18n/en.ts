@@ -57,16 +57,16 @@ export const en = {
   hero: {
     visitors: 'Visitors',
     visitorsTitle: 'Visits since launch, counted once per browser session',
-    kicker: 'Turning ideas into useful products',
+    kicker: 'Website & web app development · Budapest',
     l1: 'Build.',
     l2: 'Solve.',
     l3: 'Improve.',
     intro:
-      'Full-stack developer, web designer and product builder. I design and build digital products, enterprise systems and custom web experiences.',
+      'I design and build fast websites and custom web applications — from a company’s first site to the tools a team works in every day. Full-stack developer and web designer.',
     cta: 'Interactive projects',
     ctaSub: 'live demos — try them in your browser',
     scroll: 'Scroll',
-    roles: ['Full-stack developer', 'Product builder', 'Web designer'],
+    roles: ['Website developer', 'Web app developer', 'Full-stack developer', 'Web designer'],
     note: 'Same curiosity,\ndifferent problems.',
     inspectModel: 'Inspect the 3D model',
     inspectHint: 'Drag to rotate · scroll to zoom · Esc to close',
@@ -137,9 +137,9 @@ export const en = {
 
   services: {
     index: '04',
-    title: 'Capabilities',
-    subtitle: 'What I take on',
-    hint: 'Select a capability to inspect the process',
+    title: 'Services',
+    subtitle: 'Website & web app development',
+    hint: 'Select a service to inspect the process',
     flow: { input: 'Input', process: 'Process', system: 'System', output: 'Output' },
   },
 
@@ -315,12 +315,12 @@ export const en = {
   },
 
   seo: {
-    homeTitle: 'David Mészáros — Full-Stack Developer & Web Designer, Budapest',
+    homeTitle: 'Website & Web App Development — David Mészáros, Budapest',
     homeDescription:
-      'Full-stack developer and web designer in Budapest. Custom web apps, websites, e-commerce and enterprise systems built with Java, Spring, Angular and React.',
-    articlesTitle: 'Articles — David Mészáros',
+      'Website and web app development in Budapest: fast, mobile-first business websites, webshops and custom web applications, designed and built end to end.',
+    articlesTitle: 'Articles on website & web app development — David Mészáros',
     articlesDescription:
-      'Notes on building web apps, websites and enterprise software: planning, costs, architecture and lessons from real projects.',
+      'Practical notes on website and web app development: planning, costs, speed, SEO, architecture and lessons from real projects.',
     interviewTitle: 'Technical Interview Simulator — David Mészáros',
     interviewDescription:
       'Free technical interview practice for software engineers: realistic questions with explanations, scored by level and topic.',

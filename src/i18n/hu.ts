@@ -59,16 +59,16 @@ export const hu: Dict = {
   hero: {
     visitors: 'Látogató',
     visitorsTitle: 'Látogatások az indulás óta, böngésző-munkamenetenként egyszer számolva',
-    kicker: 'Ötletekből működő termékek',
+    kicker: 'Weboldal-készítés és webalkalmazás-fejlesztés',
     l1: 'Építs.',
     l2: 'Oldd meg.',
     l3: 'Fejleszd.',
     intro:
-      'Full-stack fejlesztő, webdizájner és terméképítő. Digitális termékeket, vállalati rendszereket és egyedi webes megoldásokat tervezek és fejlesztek.',
+      'Gyors weboldalakat és egyedi webalkalmazásokat tervezek és fejlesztek — egy cég első bemutatkozó oldalától azokig a rendszerekig, amelyekben a csapat nap mint nap dolgozik. Full-stack fejlesztő és webdizájner.',
     cta: 'Interaktív projektek',
     ctaSub: 'élő demó — próbáld ki a böngészőben',
     scroll: 'Görgess',
-    roles: ['Full-stack fejlesztő', 'Terméképítő', 'Webdizájner'],
+    roles: ['Weboldal-fejlesztő', 'Webalkalmazás-fejlesztő', 'Full-stack fejlesztő', 'Webdizájner'],
     note: 'Ugyanaz a kíváncsiság,\nmás-más probléma.',
     inspectModel: '3D modell megtekintése',
     inspectHint: 'Húzd a forgatáshoz · görgess a nagyításhoz · Esc a bezáráshoz',
@@ -143,9 +143,9 @@ export const hu: Dict = {
 
   services: {
     index: '04',
-    title: 'Kompetenciák',
-    subtitle: 'Amiben segíteni tudok',
-    hint: 'Válassz egy kompetenciát a folyamat megtekintéséhez',
+    title: 'Szolgáltatások',
+    subtitle: 'Weboldalak és webalkalmazások',
+    hint: 'Válassz egy szolgáltatást a folyamat megtekintéséhez',
     flow: {
       input: 'Bemenet',
       process: 'Folyamat',
@@ -326,12 +326,12 @@ export const hu: Dict = {
   },
 
   seo: {
-    homeTitle: 'Mészáros Dávid — Full-stack fejlesztő és webdesigner, Budapest',
+    homeTitle: 'Weboldal-készítés és webalkalmazás-fejlesztés — Mészáros Dávid',
     homeDescription:
-      'Full-stack fejlesztő és webdesigner Budapesten. Egyedi webalkalmazások, weboldalak, webshopok és vállalati rendszerek Java, Spring, Angular és React alapokon.',
-    articlesTitle: 'Cikkek — Mészáros Dávid',
+      'Weboldal-készítés és egyedi webalkalmazás-fejlesztés Budapesten: gyors, mobilbarát céges weboldalak, webshopok és webes rendszerek, tervezéstől az élesítésig.',
+    articlesTitle: 'Cikkek weboldal-készítésről és webalkalmazás-fejlesztésről — Mészáros Dávid',
     articlesDescription:
-      'Jegyzetek webalkalmazások, weboldalak és vállalati szoftverek építéséről: tervezés, költségek, architektúra és tanulságok valós projektekből.',
+      'Gyakorlati írások weboldal-készítésről és webalkalmazás-fejlesztésről: tervezés, költségek, sebesség, SEO, architektúra és tanulságok valós projektekből.',
     interviewTitle: 'Technikai interjú szimulátor — Mészáros Dávid',
     interviewDescription:
       'Ingyenes technikai interjú gyakorlás fejlesztőknek: valósághű kérdések magyarázattal, szint és témakör szerinti kiértékeléssel.',

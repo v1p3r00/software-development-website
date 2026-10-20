@@ -150,12 +150,14 @@ export default function Hero() {
       <div className="relative mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-0 px-5 sm:px-8 lg:grid-cols-12 lg:px-12">
         {/* ── left column: headline ── */}
         <div className="hero-text order-2 flex flex-col justify-center py-10 lg:order-1 lg:col-span-5 lg:py-16">
-          <div style={reveal(60)} className="hero-kicker hero-rise label-a mb-5 flex items-center gap-3">
-            <span className="h-px w-8 bg-accent" />
-            // {t.hero.kicker}
-          </div>
+          {/* the page's h1 is the kicker: it names what I offer (website & web app
+              development), which is what search engines should rank the home page for */}
+          <h1 style={reveal(60)} className="hero-kicker hero-rise label-a mb-5 flex items-center gap-3">
+            <span className="h-px w-8 shrink-0 bg-accent" aria-hidden />
+            <span><span aria-hidden>// </span>{t.hero.kicker}</span>
+          </h1>
 
-          <h1 className="hero-h1 display text-[clamp(2.8rem,10.5vw,5rem)] lg:text-[clamp(2.6rem,5.6vw,6rem)]">
+          <p className="hero-h1 display text-[clamp(2.8rem,10.5vw,5rem)] lg:text-[clamp(2.6rem,5.6vw,6rem)]">
             {[t.hero.l1, t.hero.l2, t.hero.l3].map((line, i) => (
               <span key={line} className="block">
                 <span
@@ -170,7 +172,7 @@ export default function Hero() {
                 </span>
               </span>
             ))}
-          </h1>
+          </p>
 
           <p style={reveal(520)} className="hero-intro hero-rise mt-7 max-w-[46ch] text-sm leading-relaxed text-muted sm:text-base">
             {t.hero.intro}

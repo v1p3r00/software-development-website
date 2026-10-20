@@ -59,16 +59,16 @@ export const sk: Dict = {
   hero: {
     visitors: 'Návštevy',
     visitorsTitle: 'Návštevy od spustenia, počítané raz za reláciu prehliadača',
-    kicker: 'Z nápadov užitočné produkty',
+    kicker: 'Tvorba webov a vývoj webových aplikácií',
     l1: 'Tvoriť.',
     l2: 'Riešiť.',
     l3: 'Zlepšovať.',
     intro:
-      'Full-stack vývojár, webdizajnér a tvorca produktov. Navrhujem a vyvíjam digitálne produkty, podnikové systémy a webové riešenia na mieru.',
+      'Navrhujem a vyvíjam rýchle webové stránky a webové aplikácie na mieru — od prvého webu firmy až po nástroje, v ktorých tím pracuje každý deň. Full-stack vývojár a webdizajnér.',
     cta: 'Interaktívne projekty',
     ctaSub: 'živých ukážok — vyskúšajte si ich priamo v prehliadači',
     scroll: 'Posúvajte',
-    roles: ['Full-stack vývojár', 'Tvorca produktov', 'Webdizajnér'],
+    roles: ['Tvorca webov', 'Vývojár webových aplikácií', 'Full-stack vývojár', 'Webdizajnér'],
     note: 'Rovnaká zvedavosť,\nrôzne problémy.',
     inspectModel: 'Prezrieť si 3D model',
     inspectHint: 'Ťahaním otáčajte · kolieskom približujte · Esc zatvorí',
@@ -139,9 +139,9 @@ export const sk: Dict = {
 
   services: {
     index: '04',
-    title: 'Kompetencie',
-    subtitle: 'S čím vám pomôžem',
-    hint: 'Vyberte kompetenciu a pozrite si postup',
+    title: 'Služby',
+    subtitle: 'Weby a webové aplikácie',
+    hint: 'Vyberte službu a pozrite si postup',
     flow: { input: 'Vstup', process: 'Proces', system: 'Systém', output: 'Výstup' },
   },
 
@@ -317,12 +317,12 @@ export const sk: Dict = {
   },
 
   seo: {
-    homeTitle: 'David Mészáros — full-stack vývojár a webdizajnér, Budapešť',
+    homeTitle: 'Tvorba webových stránok a webových aplikácií — David Mészáros',
     homeDescription:
-      'Full-stack vývojár a webdizajnér z Budapešti. Webové aplikácie na mieru, weby, e-shopy a podnikové systémy postavené na Jave, Springu, Angulari a Reacte.',
-    articlesTitle: 'Články — David Mészáros',
+      'Tvorba webových stránok a vývoj webových aplikácií na mieru: rýchle firemné weby pre mobil, e-shopy a webové systémy od návrhu až po spustenie.',
+    articlesTitle: 'Články o tvorbe webov a webových aplikácií — David Mészáros',
     articlesDescription:
-      'Poznámky o tvorbe webových aplikácií, webov a podnikového softvéru: plánovanie, náklady, architektúra a skúsenosti z reálnych projektov.',
+      'Praktické poznámky o tvorbe webov a vývoji webových aplikácií: plánovanie, náklady, rýchlosť, SEO, architektúra a skúsenosti z reálnych projektov.',
     interviewTitle: 'Simulátor technického pohovoru — David Mészáros',
     interviewDescription:
       'Bezplatná príprava na technický pohovor pre vývojárov: realistické otázky s vysvetlením, vyhodnotené podľa úrovne a témy.',
