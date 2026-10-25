@@ -18,9 +18,12 @@ export const site = {
   checkEndpoint: 'https://softwaredevelopment-site-check.punkboy40.workers.dev',
   formAccessKey: '6663fd0a-d3f1-4c91-b881-8ea938ffb30e',
   // Patreon page for the course's sample projects; set the real address here
-  patreon: 'https://www.patreon.com/',
+  patreon: 'https://www.patreon.com/softwaredevelopment',
   // hides every Patreon button and link until the Patreon page is ready
   showPatreon: false,
+  // the /effects "Get the source" buttons and the footer Patreon link (the Effects Pack tiers);
+  // separate from showPatreon, which also switches on the course's sample-project offers
+  showEffectsPatreon: false,
   build: '2026.09',
   version: 'v2.6',
   timezone: 'Europe/Budapest',

@@ -49,6 +49,8 @@ export const IndustryPage = lazyPage(() => import('./Industry'));
 export const GarageDesignerPage = lazyPage(() => import('./GarageDesigner'));
 export const ShirtDesignerPage = lazyPage(() => import('./ShirtDesigner'));
 export const CameraStudyPage = lazyPage(() => import('./CameraStudy'));
+// the effects gallery (each effect is its own chunk)
+export const EffectsPage = lazyPage(() => import('./Effects'));
 
 /** preloaders for the interactive projects, by `labs` id */
 export const labPreload: Record<string, () => Promise<void>> = {

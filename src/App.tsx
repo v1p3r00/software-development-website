@@ -11,7 +11,7 @@ import MobileTalk from './components/MobileTalk';
 import SupportBot from './components/support/SupportBot';
 import NotFound from './pages/NotFound';
 import Home from './pages/Home';
-import { ProjectDetailPage, ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, GarageDesignerPage, InterviewPage, InterviewTrackPage, LandingPagesPage, LandingStagePage, ModernizationPage, ShirtDesignerPage, CameraStudyPage, WebsiteCheckPage, IndustryPage } from './pages/lazy';
+import { ProjectDetailPage, ArticlePage, ArticlesPage, CourseLessonPage, CoursePage, CvMakerPage, GarageDesignerPage, InterviewPage, InterviewTrackPage, LandingPagesPage, LandingStagePage, ModernizationPage, ShirtDesignerPage, CameraStudyPage, WebsiteCheckPage, IndustryPage, EffectsPage } from './pages/lazy';
 import { stripLang } from './i18n/paths';
 import { labFor } from './data/labs';
 import { isLandingStage } from './data/landings';
@@ -105,6 +105,7 @@ export default function App() {
               <Route key={`${pre}/garage-designer`} path={`${pre}/garage-designer`} element={<GarageDesignerPage />} />,
               <Route key={`${pre}/shirt-designer`} path={`${pre}/shirt-designer`} element={<ShirtDesignerPage />} />,
               <Route key={`${pre}/camera-study`} path={`${pre}/camera-study`} element={<CameraStudyPage />} />,
+              <Route key={`${pre}/effects`} path={`${pre}/effects`} element={<EffectsPage />} />,
               <Route key={`${pre}/website-check`} path={`${pre}/website-check`} element={<WebsiteCheckPage />} />,
               <Route key={`${pre}/industries`} path={`${pre}/industries`} element={<IndustryPage />} />,
               <Route key={`${pre}/industries/:slug`} path={`${pre}/industries/:slug`} element={<IndustryPage />} />,

@@ -119,6 +119,18 @@ export default function Footer() {
                 {l.short}
               </a>
             ))}
+            {site.showEffectsPatreon && (
+              <a
+                href={`${site.patreon}?utm_source=site-footer&utm_medium=referral&utm_campaign=effects-pack`}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Patreon"
+                data-cursor="follow"
+                className="grid h-9 w-9 place-items-center border border-line font-mono text-2xs tracking-tech text-muted transition-colors hover:border-accent hover:text-accent"
+              >
+                PA
+              </a>
+            )}
           </div>
         </div>
 

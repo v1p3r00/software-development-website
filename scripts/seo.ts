@@ -26,6 +26,7 @@ import { readyLandings } from '../src/data/landings.ts';
 import { industries, INDUSTRIES_SEO } from '../src/data/industries.ts';
 import { industryDemo } from '../src/data/industryDemo.ts';
 import { CHECK_SEO } from '../src/data/siteCheck.ts';
+import { EFFECTS_SEO } from '../src/effects/seo.ts';
 
 type Lang = 'en' | 'hu' | 'sk';
 const LANGS = ['en', 'hu', 'sk'] as const;
@@ -210,6 +211,7 @@ function pages(root: string): Page[] {
     list.push({ path: at('/garage-designer/'), lang, alternates: both('/garage-designer/'), title: t.seo.garageTitle, description: t.seo.garageDescription, ...ogTool('garage-designer') });
     list.push({ path: at('/shirt-designer/'), lang, alternates: both('/shirt-designer/'), title: t.seo.shirtTitle, description: t.seo.shirtDescription, ...ogTool('shirt-designer') });
     list.push({ path: at('/camera-study/'), lang, alternates: both('/camera-study/'), title: t.seo.cameraTitle, description: t.seo.cameraDescription, ...ogTool('camera-study') });
+    list.push({ path: at('/effects/'), lang, alternates: both('/effects/'), title: EFFECTS_SEO[lang].title, description: EFFECTS_SEO[lang].description });
     // the free website check and the industry offers
     list.push({ path: at('/website-check/'), lang, alternates: both('/website-check/'), title: CHECK_SEO[lang].title, description: CHECK_SEO[lang].description, image: og('website-check'), imageAlt: CHECK_SEO[lang].title });
     list.push({ path: at('/industries/'), lang, alternates: both('/industries/'), title: INDUSTRIES_SEO.title[lang], description: INDUSTRIES_SEO.description[lang], image: og('industries'), imageAlt: INDUSTRIES_SEO.title[lang] });
